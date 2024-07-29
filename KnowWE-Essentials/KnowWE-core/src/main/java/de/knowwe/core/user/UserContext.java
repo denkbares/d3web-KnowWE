@@ -33,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.rendering.RenderResultKeyStore;
+import de.knowwe.core.kdom.rendering.ServletRequestKeyStore;
 
 /**
  * UserContext which represents the users interaction with the server.
@@ -187,5 +189,9 @@ public interface UserContext {
 		HttpServletRequest request = getRequest();
 		Cookie[] cookies = request == null ? null : request.getCookies();
 		return cookies == null ? new Cookie[0] : cookies;
+	}
+
+	default RenderResultKeyStore getRenderResultKeyStore() {
+		return new ServletRequestKeyStore(getRequest());
 	}
 }

@@ -37,11 +37,11 @@ public class RenderResult {
 	private List<Pair<SectionFilter, Renderer>> customRenderers = Collections.emptyList();
 
 	public RenderResult(UserContext context) {
-		this(context.getRequest());
+		this(context.getRenderResultKeyStore());
 	}
 
-	private RenderResult(HttpServletRequest request) {
-		this.maskKey = createMaskKey(request);
+	private RenderResult(RenderResultKeyStore keyStore) {
+		this.maskKey = createMaskKey(keyStore);
 		this.maskedHtml = createMaskHtml(maskKey);
 	}
 
@@ -66,16 +66,16 @@ public class RenderResult {
 		customRenderers = newList;
 	}
 
-	private String createMaskKey(HttpServletRequest request) {
-		if (request != null) {
-			Object storedMaskKey = request.getAttribute(storeKey);
-			if (storedMaskKey != null) return (String) storedMaskKey;
+	private String createMaskKey(RenderResultKeyStore keyStore) {
+		if (keyStore != null) {
+			String storedMaskKey = keyStore.getAttribute(storeKey);
+			if (storedMaskKey != null) return storedMaskKey;
 		}
 
 		int rnd = Math.abs(new Random().nextInt());
 		String maskKey = Integer.toString(rnd, Character.MAX_RADIX);
-		if (request != null) {
-			request.setAttribute(storeKey, maskKey);
+		if (keyStore != null) {
+			keyStore.setAttribute(storeKey, maskKey);
 		}
 		return maskKey;
 	}
@@ -359,8 +359,8 @@ public class RenderResult {
 		return renderResult.mask(string);
 	}
 
-	public static String mask(String string, HttpServletRequest request) {
-		RenderResult renderResult = new RenderResult(request);
+	public static String mask(String string, RenderResultKeyStore keyStore) {
+		RenderResult renderResult = new RenderResult(keyStore);
 		return renderResult.mask(string);
 	}
 
@@ -422,8 +422,8 @@ public class RenderResult {
 		return renderResult.unmask(string);
 	}
 
-	public static String unmask(String string, HttpServletRequest request) {
-		RenderResult renderResult = new RenderResult(request);
+	public static String unmask(String string, RenderResultKeyStore keyStore) {
+		RenderResult renderResult = new RenderResult(keyStore);
 		return renderResult.unmask(string);
 	}
 

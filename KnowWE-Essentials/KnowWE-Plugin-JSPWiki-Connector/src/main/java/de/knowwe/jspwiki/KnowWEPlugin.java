@@ -32,6 +32,7 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.knowwe.core.kdom.rendering.ServletRequestKeyStore;
 import de.knowwe.event.*;
 
 import org.apache.commons.io.FileUtils;
@@ -211,7 +212,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			// Since this version with no http request is not shown to the user,
 			// we can just ignore it.
 			if (httpRequest != null) {
-				htmlContent = RenderResult.unmask(htmlContent, httpRequest);
+				htmlContent = RenderResult.unmask(htmlContent, new ServletRequestKeyStore(httpRequest));
 			}
 
 			return htmlContent;

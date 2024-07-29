@@ -52,6 +52,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.RenderResultKeyStore;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -188,6 +189,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		private final Cookie[] cookies;
 		private final Locale[] locales;
 		private final ReadOnlyHttpSession session;
+		private final Map<String, String> attributes = new ConcurrentHashMap<>();
 
 		public AsyncActionContext(UserActionContext context) {
 			super(context.getActionName(), context.getPath(), context.getParameters(), null, null, context.getServletContext(), context.getManager());
@@ -209,6 +211,21 @@ public class ReRenderContentPartAction extends AbstractAction {
 		@Override
 		public HttpSession getSession() {
 			return session;
+		}
+
+		@Override
+		public RenderResultKeyStore getRenderResultKeyStore() {
+			return new RenderResultKeyStore() {
+				@Override
+				public String getAttribute(String storeKey) {
+					return attributes.get(storeKey);
+				}
+
+				@Override
+				public void setAttribute(String storeKey, String maskKey) {
+					attributes.put(storeKey, maskKey);
+				}
+			};
 		}
 	}
 
