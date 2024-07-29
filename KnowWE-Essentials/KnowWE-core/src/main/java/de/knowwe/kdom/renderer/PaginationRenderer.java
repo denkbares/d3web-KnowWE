@@ -278,10 +278,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		renderToolBarElement(section, result, () -> {
 			// generate unique id in case the filter is added multiple times
 			String id = "filter-activator-" + section.getID();
-			Integer activators = (Integer) user.getRequest().getAttribute(id);
-			if (activators == null) activators = 0;
+			String activators = user.getRenderResultKeyValueStore().getAttribute(id);
+			if (activators == null) activators = "0";
 			String uniqueId = id + "-" + activators;
-			user.getRequest().setAttribute(id, activators + 1);
+			user.getRenderResultKeyValueStore().setAttribute(id, activators + 1);
 
 			result.appendHtmlTag("input", "class", "filter-activator filter-style", "type", "checkbox", "id", uniqueId, "name", uniqueId);
 			result.appendHtmlElement("label", "Filter", "class", "fillText", "for", uniqueId);
@@ -319,10 +319,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-						+ (setSelected ? "selected='selected' " : "")
-						+ "value='" + size + "'>"
-						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-						+ "</option>");
+								  + (setSelected ? "selected='selected' " : "")
+								  + "value='" + size + "'>"
+								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+								  + "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
@@ -440,8 +440,8 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	private static String getResultSizeString(UserContext user) {
-		if (user.getRequest().getAttribute(RESULT_SIZE) != null) {
-			return user.getRequest().getAttribute(RESULT_SIZE).toString();
+		if (user.getRenderResultKeyValueStore().getAttribute(RESULT_SIZE) != null) {
+			return user.getRenderResultKeyValueStore().getAttribute(RESULT_SIZE);
 		}
 		else {
 			return UNKNOWN_RESULT_SIZE;
@@ -555,6 +555,6 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 * @created 27.01.2014
 	 */
 	public static void setResultSize(UserContext context, int maxResult) {
-		context.getRequest().setAttribute(RESULT_SIZE, Integer.toString(maxResult));
+		context.getRenderResultKeyValueStore().setAttribute(RESULT_SIZE, Integer.toString(maxResult));
 	}
 }
