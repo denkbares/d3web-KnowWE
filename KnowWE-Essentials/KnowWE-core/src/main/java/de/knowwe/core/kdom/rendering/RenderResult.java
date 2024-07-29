@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +35,10 @@ public class RenderResult {
 	private List<Pair<SectionFilter, Renderer>> customRenderers = Collections.emptyList();
 
 	public RenderResult(UserContext context) {
-		this(context.getRenderResultKeyStore());
+		this(context.getRenderResultKeyValueStore());
 	}
 
-	private RenderResult(RenderResultKeyStore keyStore) {
+	private RenderResult(RenderResultKeyValueStore keyStore) {
 		this.maskKey = createMaskKey(keyStore);
 		this.maskedHtml = createMaskHtml(maskKey);
 	}
@@ -66,7 +64,7 @@ public class RenderResult {
 		customRenderers = newList;
 	}
 
-	private String createMaskKey(RenderResultKeyStore keyStore) {
+	private String createMaskKey(RenderResultKeyValueStore keyStore) {
 		if (keyStore != null) {
 			String storedMaskKey = keyStore.getAttribute(storeKey);
 			if (storedMaskKey != null) return storedMaskKey;
@@ -359,7 +357,7 @@ public class RenderResult {
 		return renderResult.mask(string);
 	}
 
-	public static String mask(String string, RenderResultKeyStore keyStore) {
+	public static String mask(String string, RenderResultKeyValueStore keyStore) {
 		RenderResult renderResult = new RenderResult(keyStore);
 		return renderResult.mask(string);
 	}
@@ -422,7 +420,7 @@ public class RenderResult {
 		return renderResult.unmask(string);
 	}
 
-	public static String unmask(String string, RenderResultKeyStore keyStore) {
+	public static String unmask(String string, RenderResultKeyValueStore keyStore) {
 		RenderResult renderResult = new RenderResult(keyStore);
 		return renderResult.unmask(string);
 	}

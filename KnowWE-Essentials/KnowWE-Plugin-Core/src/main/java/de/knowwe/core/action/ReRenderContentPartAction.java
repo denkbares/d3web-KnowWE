@@ -52,7 +52,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.RenderResultKeyStore;
+import de.knowwe.core.kdom.rendering.RenderResultKeyValueStore;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -214,8 +214,8 @@ public class ReRenderContentPartAction extends AbstractAction {
 		}
 
 		@Override
-		public RenderResultKeyStore getRenderResultKeyStore() {
-			return new RenderResultKeyStore() {
+		public RenderResultKeyValueStore getRenderResultKeyValueStore() {
+			return new RenderResultKeyValueStore() {
 				@Override
 				public String getAttribute(String storeKey) {
 					return attributes.get(storeKey);

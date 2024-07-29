@@ -10,7 +10,7 @@ package de.knowwe.core.kdom.rendering;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 29.07.2024
  */
-public interface RenderResultKeyStore {
+public interface RenderResultKeyValueStore {
 
 	String getAttribute(String storeKey);
 

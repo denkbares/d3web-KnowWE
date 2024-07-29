@@ -33,8 +33,8 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.rendering.RenderResultKeyStore;
-import de.knowwe.core.kdom.rendering.ServletRequestKeyStore;
+import de.knowwe.core.kdom.rendering.RenderResultKeyValueStore;
+import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
 
 /**
  * UserContext which represents the users interaction with the server.
@@ -191,7 +191,12 @@ public interface UserContext {
 		return cookies == null ? new Cookie[0] : cookies;
 	}
 
-	default RenderResultKeyStore getRenderResultKeyStore() {
-		return new ServletRequestKeyStore(getRequest());
+	/**
+	 * A key value store usable during rendering and persistent during this context
+	 *
+	 * @return the key value store
+	 */
+	default RenderResultKeyValueStore getRenderResultKeyValueStore() {
+		return new ServletRequestKeyValueStore(getRequest());
 	}
 }

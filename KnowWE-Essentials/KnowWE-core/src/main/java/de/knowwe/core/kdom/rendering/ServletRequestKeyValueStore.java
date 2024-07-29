@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 29.07.2024
  */
-public class ServletRequestKeyStore implements RenderResultKeyStore {
+public class ServletRequestKeyValueStore implements RenderResultKeyValueStore {
 
 	private final HttpServletRequest request;
 
-	public ServletRequestKeyStore(HttpServletRequest request) {
+	public ServletRequestKeyValueStore(HttpServletRequest request) {
 		this.request = request;
 	}
 
