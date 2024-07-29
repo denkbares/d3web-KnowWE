@@ -34,6 +34,7 @@ import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.Div;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.kdom.rendering.elements.HtmlNode;
 import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
@@ -131,7 +132,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 		@NotNull
 		private static HtmlProvider[] getDescriptionContent(DefaultMarkup markup) {
 			ArrayList<HtmlProvider> children = new ArrayList<>();
-			children.add(new Span(markup.getDocumentation()).clazz("markup-description"));
+			children.add(new Span().children(new HtmlNode(markup.getDocumentation())).clazz("markup-description"));
 			if (Strings.isNotBlank(markup.getTemplate())) {
 				children.add(new HtmlElement("br"));
 				children.add(new Span("Template:"));
@@ -187,16 +188,20 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 		}
 
 		@NotNull
-		private static String getMarkupDocumentation(DefaultMarkup markup) {
+		private static HtmlElement getMarkupDocumentation(DefaultMarkup markup) {
+			Div div = new Div();
 			String documentation = markup.getDocumentation();
 			if (Strings.isBlank(documentation)) {
 				documentation = "No general documentation available yet.";
 			}
+			div.children(new Span().children(new HtmlNode(documentation)));
 			if (Strings.isNotBlank(markup.getTemplate())) {
-				if (Strings.isNotBlank(documentation)) documentation += "\n\n";
-				documentation += "Template:\n\n%%prettify\n{{{\n" + markup.getTemplate() + "\n}}}\n";
+				if (Strings.isNotBlank(documentation)) {
+					div.children(new HtmlNode("<br>"));
+				}
+				div.children(new Span("Template:\n\n%%prettify\n{{{\n" + markup.getTemplate() + "\n}}}\n"));
 			}
-			return documentation;
+			return div;
 		}
 
 		@NotNull
