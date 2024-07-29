@@ -145,12 +145,6 @@ used colors
 	user-select: none;
 }
 
-textarea {
-	line-height: 16px;
-	/* we need to set this, because without a set line-height,
-	scrolling of the textarea does not work after changing the selection in TextArea.js*/
-}
-
 a {
 	color: #003366;
 	cursor: pointer;
