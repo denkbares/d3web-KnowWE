@@ -111,7 +111,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 					children.add(toTableRow(markupType));
 					children.add(new HtmlNode("\n"));
 				}
-				HtmlElement table = new HtmlElement("table").clazz("markup-documentation-table")
+				HtmlElement table = new HtmlElement("table").clazz("wikitable markup-documentation-table")
 						.children(children.toArray(HtmlProvider[]::new));
 
 				result.append(table);
