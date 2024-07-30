@@ -102,6 +102,7 @@ public class PackageManager {// implements EventListener {
 
 	public static void addExcludePackageAnnotation(DefaultMarkup markup) {
 		markup.addAnnotation(PackageManager.EXCLUDE_PACKAGE_ATTRIBUTE_NAME, false);
+		markup.getAnnotation(EXCLUDE_PACKAGE_ATTRIBUTE_NAME).setDocumentation("Configure the package or package rule to which the content of the markup belongs to be excluded.");
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
