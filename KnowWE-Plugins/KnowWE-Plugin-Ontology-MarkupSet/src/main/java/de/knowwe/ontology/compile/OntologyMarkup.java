@@ -29,8 +29,10 @@ import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -88,8 +90,8 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 	public static final String ANNOTATION_DEFAULT_NAMESPACE = "defaultNamespace";
 	public static final String ANNOTATION_TERM_MATCHING = "termMatching";
-	public static final String CASE_SENSITIVE = "case sensitive";
-	public static final String CASE_INSENSITIVE = "case insensitive";
+	public static final String CASE_SENSITIVE = "case-sensitive";
+	public static final String CASE_INSENSITIVE = "case-insensitive";
 
 	public static final DefaultMarkup MARKUP;
 	public static final String COMPILER_PRIORITY = "compilerPriority";
@@ -98,45 +100,41 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 		MARKUP = new DefaultMarkup("Ontology");
 		MARKUP.addContentType(new OntologyDefinition());
 
-		MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
-		MARKUP.addAnnotationIcon(ANNOTATION_COMPILE, Icon.PACKAGE.addTitle("Uses"));
-		//MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageTerm());
-		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageSelection());
+		MARKUP.addAnnotation(ANNOTATION_COMPILE, false)
+				.addIcon(Icon.PACKAGE.addTitle("Uses"))
+				.addContentType(new PackageSelection());
 
-		MARKUP.addAnnotation(ANNOTATION_IMPORT, false);
-		MARKUP.addAnnotationIcon(ANNOTATION_IMPORT, Icon.FILE_XML.addTitle("Import"));
-		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType(false));
+		MARKUP.addAnnotation(ANNOTATION_IMPORT, false)
+				.addIcon(Icon.FILE_XML.addTitle("Import"))
+				.addContentType(new AttachmentType(false));
 
-		MARKUP.addAnnotation(ANNOTATION_EXPORT, false);
-		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT, Icon.ATTACHMENT.addTitle("Export"));
+		MARKUP.addAnnotation(ANNOTATION_EXPORT, false).addIcon(Icon.ATTACHMENT.addTitle("Export"));
 
-		MARKUP.addAnnotation(ANNOTATION_EXPORT_DELAY, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
-		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT_DELAY, Icon.CLOCK.addTitle("Time to wait for additional changes to the ontology before starting a new export"));
+		MARKUP.addAnnotation(ANNOTATION_EXPORT_DELAY, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION))
+				.addIcon(Icon.CLOCK.addTitle("Time to wait for additional changes to the ontology before starting a new export"));
 
-		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
-		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
-		MARKUP.addAnnotationContentType(ANNOTATION_SILENT_IMPORT, new AttachmentType(false));
+		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false)
+				.addIcon(Icon.FILE.addTitle("Import silently (faster, but without term support)"))
+				.addContentType(new AttachmentType(false));
 
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
 
 		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false,
-				RepositoryConfigs.values().stream().map(RepositoryConfig::getName).toArray(String[]::new));
-		MARKUP.addAnnotationIcon(ANNOTATION_RULE_SET, Icon.COG.addTitle("Rule Set"));
+						RepositoryConfigs.values().stream().map(RepositoryConfig::getName).toArray(String[]::new))
+				.addIcon(Icon.COG.addTitle("Rule Set"));
 
-		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.class);
-		MARKUP.addAnnotationIcon(ANNOTATION_MULTI_DEF_MODE, Icon.ORDERED_LIST.addTitle("Multi-definition-mode"));
+		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.class)
+				.addIcon(Icon.ORDERED_LIST.addTitle("Multi-definition-mode"));
 
-		MARKUP.addAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE, false, ReferenceValidationMode.class);
-		MARKUP.addAnnotationIcon(ANNOTATION_REFERENCE_VALIDATION_MODE, Icon.ORDERED_LIST.addTitle("Reference-validation-mode"));
-		MARKUP.getAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE)
+		MARKUP.addAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE, false, ReferenceValidationMode.class)
+				.addIcon(Icon.ORDERED_LIST.addTitle("Reference-validation-mode"))
 				.setDocumentation("Specifies how references should be validated for this ontology: error, warn, ignore");
 
-		MARKUP.addAnnotation(ANNOTATION_DEFAULT_NAMESPACE, false);
-		MARKUP.addAnnotationIcon(ANNOTATION_DEFAULT_NAMESPACE, Icon.GLOBE.addTitle("Default Namespace"));
-		MARKUP.getAnnotation(ANNOTATION_DEFAULT_NAMESPACE)
+		MARKUP.addAnnotation(ANNOTATION_DEFAULT_NAMESPACE, false)
+				.addIcon(Icon.GLOBE.addTitle("Default Namespace"))
+				.addContentType(new NamespaceAbbreviationDefinition())
 				.setDocumentation("Allows to define a default namespace that will be used " +
-						"by other markups, if no specific namespace is given.");
-		MARKUP.addAnnotationContentType(ANNOTATION_DEFAULT_NAMESPACE, new NamespaceAbbreviationDefinition());
+								  "by other markups, if no specific namespace is given.");
 
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class);
 	}
@@ -189,7 +187,8 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 			Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
 			if (annotationContentSection == null) return null;
 
-			String abbreviation = $(annotationContentSection).successor(AbbreviationDefinition.class).mapFirst(s -> s.get().getTermName(s));
+			String abbreviation = $(annotationContentSection).successor(AbbreviationDefinition.class)
+					.mapFirst(s -> s.get().getTermName(s));
 			String uri = $(annotationContentSection).successor(NamespaceDefinition.class).mapFirst(Section::getText);
 			if (abbreviation == null || uri == null) return null;
 			return new Namespace(abbreviation, uri);
@@ -210,7 +209,7 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 	}
 
 	private static class OntologyCompilerRegistrationScript implements PackageRegistrationScript<OntologyMarkup> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyCompilerRegistrationScript.class);
+		private static final Logger LOGGER = LoggerFactory.getLogger(OntologyCompilerRegistrationScript.class);
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<OntologyMarkup> section) throws CompilerMessage {
@@ -251,7 +250,7 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 				}
 				catch (IllegalArgumentException e) {
 					LOGGER.warn("'" + value + "' is not a " + enumName + ", please choose one of the following: "
-							+ Strings.concat(", ", enumClass.getEnumConstants()));
+								+ Strings.concat(", ", enumClass.getEnumConstants()));
 				}
 			}
 			return defaultValue;

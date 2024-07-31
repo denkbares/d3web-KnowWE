@@ -223,8 +223,8 @@ public class DefaultMarkup implements Cloneable {
 	 * @param mandatory if the annotation is required for the markup
 	 * @param enumClass the allowed values for the annotation
 	 */
-	public void addAnnotation(String name, boolean mandatory, Class<? extends Enum<?>> enumClass) {
-		addAnnotation(name, mandatory, false, enumClass);
+	public Annotation addAnnotation(String name, boolean mandatory, Class<? extends Enum<?>> enumClass) {
+		return addAnnotation(name, mandatory, false, enumClass);
 	}
 
 	/**
@@ -548,6 +548,20 @@ public class DefaultMarkup implements Cloneable {
 
 		public Pattern getPattern() {
 			return pattern;
+		}
+
+		public Annotation addIcon(Icon icon) {
+			return addNameType(new IconType(icon));
+		}
+
+		public Annotation addNameType(Type nameType) {
+			nameTypes.add(nameType);
+			return this;
+		}
+
+		public Annotation addContentType(Type contentType) {
+			types.add(contentType);
+			return this;
 		}
 	}
 }
