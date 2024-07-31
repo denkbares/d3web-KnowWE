@@ -93,12 +93,14 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
 		MARKUP.setDocumentation("Markup to create a new knowledge base with specified content. Necessary for other d3web markups (like %%Question and %%Rule and so forth) to be compiled.");
-		MARKUP.setTemplate("%%Knowledgebase\n"
-						   + "«KB-Name»\n"
-						   + "\n"
-						   + "@uses: «package-a»\n"
-						   + "@uses: «package-b»\n"
-						   + "%\n"
+		MARKUP.setTemplate("""
+				%%Knowledgebase
+				«KB-Name»
+
+				@uses: «package-a»
+				@uses: «package-b»
+				%
+				"""
 		);
 		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false);
 		MARKUP.getAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME)
