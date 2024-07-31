@@ -102,11 +102,9 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 				%
 				"""
 		);
-		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false);
-		MARKUP.getAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME)
+		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false)
 				.setDocumentation("A package that should be added to this knowledge base");
-		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false);
-		MARKUP.getAnnotation(ANNOTATION_AUTHOR)
+		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false)
 				.setDocumentation("The author of this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_COMMENT, false)
 				.setDocumentation("Some optional comment regarding this knowledge base");
