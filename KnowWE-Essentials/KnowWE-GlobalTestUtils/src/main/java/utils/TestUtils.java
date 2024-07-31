@@ -33,7 +33,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.user.AuthenticationManager;
 
 public class TestUtils {
 
@@ -119,7 +119,7 @@ public class TestUtils {
 		map.put(Attributes.WEB, Environment.DEFAULT_WEB);
 		map.put(Attributes.USER, "Test User");
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
-				map, new TestHttpServletRequest(), null, null, null);
+				map, new TestHttpServletRequest(), null, null, new TestAuthenticationManager());
 	}
 
 	public static int countMatches(String text, String regex) {
@@ -155,6 +155,28 @@ public class TestUtils {
 		}
 		catch (IOException e) {
 			throw new Error(e);
+		}
+	}
+
+	private static class TestAuthenticationManager implements AuthenticationManager {
+		@Override
+		public boolean userIsAdmin() {
+			return false;
+		}
+
+		@Override
+		public boolean userIsAsserted() {
+			return false;
+		}
+
+		@Override
+		public boolean userIsAuthenticated() {
+			return false;
+		}
+
+		@Override
+		public String getUserName() {
+			return "Test";
 		}
 	}
 }
