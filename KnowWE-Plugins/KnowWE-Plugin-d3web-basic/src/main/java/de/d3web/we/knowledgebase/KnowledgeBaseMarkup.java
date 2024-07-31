@@ -85,22 +85,45 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 
 	public static final String DEFAULT_FILENAME = "kb.d3web";
 
-	public static final String CASE_SENSITIVE = "case sensitive";
-	public static final String CASE_INSENSITIVE = "case insensitive";
+	public static final String CASE_SENSITIVE = "case-sensitive";
+	public static final String CASE_INSENSITIVE = "case-insensitive";
 
 	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
+		MARKUP.setDocumentation("Markup to create a new knowledge base with specified content. Necessary for other d3web markups (like %%Question and %%Rule and so forth) to be compiled.");
+		MARKUP.setTemplate("%%Knowledgebase\n"
+						   + "«KB-Name»\n"
+						   + "\n"
+						   + "@uses: «package-a»\n"
+						   + "@uses: «package-b»\n"
+						   + "%\n"
+		);
 		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false);
+		MARKUP.getAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME)
+				.setDocumentation("A package that should be added to this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false);
+		MARKUP.getAnnotation(ANNOTATION_AUTHOR).setDocumentation("The author of this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_COMMENT, false);
+		MARKUP.getAnnotation(ANNOTATION_COMMENT)
+				.setDocumentation("Some optional comment regarding this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_ID, false);
+		MARKUP.getAnnotation(ANNOTATION_ID).setDocumentation("Set the ID of this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_VERSION, false);
+		MARKUP.getAnnotation(ANNOTATION_VERSION).setDocumentation("Set the version of this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
+		MARKUP.getAnnotation(ANNOTATION_FILENAME)
+				.setDocumentation("Set the file name of this knowledge base, will be the placeholder when downloading the knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
+		MARKUP.getAnnotation(ANNOTATION_STATUS)
+				.setDocumentation("Set the status of this knowledge base, e.g. alpha, beta, release");
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
+		MARKUP.getAnnotation(ANNOTATION_AFFILIATION)
+				.setDocumentation("Set the affiliation of this knowledge base, e.g. University of Würzburg");
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
+		MARKUP.getAnnotation(ANNOTATION_TERM_MATCHING)
+				.setDocumentation("Decide whether matching between objects (questions, solutions, choice...) should be case-sensitive or case-insensitive");
 
 		MARKUP.addContentType(new KnowledgeBaseDefinition());
 
