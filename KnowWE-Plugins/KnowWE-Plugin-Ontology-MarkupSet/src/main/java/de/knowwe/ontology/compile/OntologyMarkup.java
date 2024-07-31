@@ -18,21 +18,21 @@
  */
 package de.knowwe.ontology.compile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -98,37 +98,81 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 
 	static {
 		MARKUP = new DefaultMarkup("Ontology");
+		MARKUP.setDocumentation("Markup to create a new ontology with specified content. " +
+								"Necessary for other ontology markups (like %%TSM) to be compiled.");
+		MARKUP.setTemplate("""
+				%%Ontology
+				«Ontology-Name»
+
+				@uses: «package-a»
+				@uses: «package-b»
+				%
+				"""
+		);
 		MARKUP.addContentType(new OntologyDefinition());
 
 		MARKUP.addAnnotation(ANNOTATION_COMPILE, false)
 				.addIcon(Icon.PACKAGE.addTitle("Uses"))
-				.addContentType(new PackageSelection());
+				.addContentType(new PackageSelection())
+				.setDocumentation("A package that should be added to this ontology");
 
 		MARKUP.addAnnotation(ANNOTATION_IMPORT, false)
 				.addIcon(Icon.FILE_XML.addTitle("Import"))
-				.addContentType(new AttachmentType(false));
+				.addContentType(new AttachmentType(false))
+				.setDocumentation("Import the ontology contained in the given attachment");
 
-		MARKUP.addAnnotation(ANNOTATION_EXPORT, false).addIcon(Icon.ATTACHMENT.addTitle("Export"));
+		MARKUP.addAnnotation(ANNOTATION_EXPORT, false)
+				.addIcon(Icon.ATTACHMENT.addTitle("Export"))
+				.setDocumentation("Specify an attachment to export the ontology to after every change");
 
+		String delayDocu = "Time to wait for additional changes to the ontology before starting a new export";
 		MARKUP.addAnnotation(ANNOTATION_EXPORT_DELAY, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION))
-				.addIcon(Icon.CLOCK.addTitle("Time to wait for additional changes to the ontology before starting a new export"));
+				.addIcon(Icon.CLOCK.addTitle(delayDocu))
+				.setDocumentation(delayDocu);
 
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false)
 				.addIcon(Icon.FILE.addTitle("Import silently (faster, but without term support)"))
-				.addContentType(new AttachmentType(false));
+				.addContentType(new AttachmentType(false))
+				.setDocumentation("Import the ontology contained in the given attachment, but without being able to " +
+								  "reference it in wiki markup later, to make compilation a bit faster (especially with big imports)");
 
-		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
+		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE)
+				.setDocumentation("Decide whether matching between IRIs should be case-sensitive or case-insensitive");
 
-		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false,
-						RepositoryConfigs.values().stream().map(RepositoryConfig::getName).toArray(String[]::new))
-				.addIcon(Icon.COG.addTitle("Rule Set"));
+		String[] configNames = RepositoryConfigs.values()
+				.stream()
+				.map(RepositoryConfig::getName)
+				.sorted()
+				.toArray(String[]::new);
+		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, configNames)
+				.addIcon(Icon.COG.addTitle("Rule Set"))
+				.setDocumentation("The reasoning rule set to be used for this ontology.<br>" +
+								  "Choose one of the following: <ul>"
+								  + Arrays.stream(configNames).map(n -> "<li>" + n + "</li>").collect(Collectors.joining("\n")) + "</ul>");
 
 		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.class)
-				.addIcon(Icon.ORDERED_LIST.addTitle("Multi-definition-mode"));
+				.addIcon(Icon.ORDERED_LIST.addTitle("Multi-definition-mode"))
+				.setDocumentation("""
+						Specifies how to handle multiple definitions for the sem term/IRI.<br>
+						There are the following options:
+						<ul>
+							<li>ignore: Multiple definitions are ignored (they are considered ok, no warning/error is shown)</li>
+							<li>warn: If there are multiple definitions of the same term, a warning message is shown.</li>
+							<li>error: If there are multiple definitions of the same term, an error message is show</li>
+						</ul>
+						""");
 
 		MARKUP.addAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE, false, ReferenceValidationMode.class)
 				.addIcon(Icon.ORDERED_LIST.addTitle("Reference-validation-mode"))
-				.setDocumentation("Specifies how references should be validated for this ontology: error, warn, ignore");
+				.setDocumentation("""
+						Specifies how references should be validated for this ontology.<br>
+						There are the following options:
+						<ul>
+							<li>ignore: References not matching a definition are ignored (they are considered ok, no warning/error is shown).</li>
+							<li>warn: If a term reference does not match to a definition, a warning is shown.</li>
+							<li>error: If a term reference does not match to a definition, an error is shown.</li>
+						</ul>
+						""");
 
 		MARKUP.addAnnotation(ANNOTATION_DEFAULT_NAMESPACE, false)
 				.addIcon(Icon.GLOBE.addTitle("Default Namespace"))
@@ -136,7 +180,9 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 				.setDocumentation("Allows to define a default namespace that will be used " +
 								  "by other markups, if no specific namespace is given.");
 
-		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class);
+		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class)
+				.setDocumentation("Specifies whether changes to a page containing statements for the ontology should be " +
+								  "committed to the ontology database immediately after saving, or on demand (button will be shown in header after changes).");
 	}
 
 	public OntologyMarkup() {

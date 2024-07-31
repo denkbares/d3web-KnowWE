@@ -46,6 +46,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -103,6 +104,7 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 				"""
 		);
 		MARKUP.addAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME, false)
+				.addIcon(Icon.PACKAGE.addTitle("Uses"))
 				.setDocumentation("A package that should be added to this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false)
 				.setDocumentation("The author of this knowledge base");
