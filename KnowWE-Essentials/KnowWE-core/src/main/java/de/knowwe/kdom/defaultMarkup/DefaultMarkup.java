@@ -146,8 +146,8 @@ public class DefaultMarkup implements Cloneable {
 	 *
 	 * @param name the name of the annotation to be added
 	 */
-	public void addAnnotation(String name) {
-		this.addAnnotation(name, false, (Pattern) null);
+	public Annotation addAnnotation(String name) {
+		return this.addAnnotation(name, false, (Pattern) null);
 	}
 
 	/**
@@ -156,8 +156,8 @@ public class DefaultMarkup implements Cloneable {
 	 * @param name      the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
 	 */
-	public void addAnnotation(String name, boolean mandatory) {
-		this.addAnnotation(name, mandatory, (Pattern) null);
+	public Annotation addAnnotation(String name, boolean mandatory) {
+		return this.addAnnotation(name, mandatory, (Pattern) null);
 	}
 
 	/**
@@ -167,8 +167,8 @@ public class DefaultMarkup implements Cloneable {
 	 * @param regex     the regex of the name of the annotations to be added
 	 * @param mandatory if the annotation is required for the markup
 	 */
-	public void addRegexAnnotation(String regex, boolean mandatory) {
-		this.addAnnotation(regex, mandatory, true, (Pattern) null);
+	public Annotation addRegexAnnotation(String regex, boolean mandatory) {
+		return this.addAnnotation(regex, mandatory, true, (Pattern) null);
 	}
 
 	/**
@@ -178,8 +178,8 @@ public class DefaultMarkup implements Cloneable {
 	 * @param mandatory  if the annotation is required for the markup
 	 * @param enumValues the allowed values for the annotation
 	 */
-	public void addAnnotation(String name, boolean mandatory, String... enumValues) {
-		addAnnotation(name, mandatory, false, enumValues);
+	public Annotation addAnnotation(String name, boolean mandatory, String... enumValues) {
+		return addAnnotation(name, mandatory, false, enumValues);
 	}
 
 	/**
@@ -190,15 +190,15 @@ public class DefaultMarkup implements Cloneable {
 	 * @param multiple   if multiple values are allowed, separated by white-spaces or ',' or ';'
 	 * @param enumValues the allowed values for the annotation
 	 */
-	public void addAnnotation(String name, boolean mandatory, boolean multiple, String... enumValues) {
-		addAnnotation(name, mandatory, multiple, Stream.of(enumValues));
+	public Annotation addAnnotation(String name, boolean mandatory, boolean multiple, String... enumValues) {
+		return addAnnotation(name, mandatory, multiple, Stream.of(enumValues));
 	}
 
-	private void addAnnotation(String name, boolean mandatory, boolean multiple, Stream<String> enumValues) {
+	private Annotation addAnnotation(String name, boolean mandatory, boolean multiple, Stream<String> enumValues) {
 		String values = enumValues.map(Pattern::quote).collect(Collectors.joining("|"));
 		String regex = "(?<enum>" + values + ")";
 		if (multiple) regex = regex + "(" + REGEX_SEPARATE_MULTIPLE + "(" + values + "))*";
-		addAnnotation(name, mandatory, Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
+		return addAnnotation(name, mandatory, Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
 	}
 
 	public void addAnnotationIcon(String name, Icon icon) {
@@ -235,8 +235,8 @@ public class DefaultMarkup implements Cloneable {
 	 * @param enumClass the allowed values for the annotation
 	 * @param multiple  true if multiple values should be allowed, separated by white-spaces or "," or ";"
 	 */
-	public void addAnnotation(String name, boolean mandatory, boolean multiple, Class<? extends Enum<?>> enumClass) {
-		addAnnotation(name, mandatory, multiple, Stream.of(enumClass.getEnumConstants()).map(Enum::name));
+	public Annotation addAnnotation(String name, boolean mandatory, boolean multiple, Class<? extends Enum<?>> enumClass) {
+		return addAnnotation(name, mandatory, multiple, Stream.of(enumClass.getEnumConstants()).map(Enum::name));
 	}
 
 	/**
@@ -246,8 +246,8 @@ public class DefaultMarkup implements Cloneable {
 	 * @param mandatory if the annotation is required for the markup
 	 * @param pattern   a regular expression to check the allowed values
 	 */
-	public void addAnnotation(String name, boolean mandatory, Pattern pattern) {
-		this.addAnnotation(name, mandatory, false, pattern);
+	public Annotation addAnnotation(String name, boolean mandatory, Pattern pattern) {
+		return this.addAnnotation(name, mandatory, false, pattern);
 	}
 
 	/**
@@ -258,7 +258,7 @@ public class DefaultMarkup implements Cloneable {
 	 * @param isRegex   if the given name is a regex allowing a range of annotations
 	 * @param pattern   a regular expression to check the allowed values
 	 */
-	public void addAnnotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
+	public Annotation addAnnotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
 		// do not allow duplicates
 		String key = name.toLowerCase();
 		if (annotations.containsKey(key)) {
@@ -268,6 +268,7 @@ public class DefaultMarkup implements Cloneable {
 		// add new parameter
 		Annotation annotation = new Annotation(name, mandatory, isRegex, pattern);
 		this.annotations.put(key, annotation);
+		return annotation;
 	}
 
 	public Annotation getAnnotation(String name) {
@@ -475,8 +476,9 @@ public class DefaultMarkup implements Cloneable {
 		 *
 		 * @param documentation the documentation to be set
 		 */
-		public void setDocumentation(String documentation) {
+		public Annotation setDocumentation(String documentation) {
 			this.documentation = documentation;
+			return this;
 		}
 
 		/**
