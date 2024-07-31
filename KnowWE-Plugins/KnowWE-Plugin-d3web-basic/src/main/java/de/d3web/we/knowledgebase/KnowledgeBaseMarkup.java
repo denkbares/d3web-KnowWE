@@ -104,25 +104,21 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 		MARKUP.getAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME)
 				.setDocumentation("A package that should be added to this knowledge base");
 		MARKUP.addAnnotation(ANNOTATION_AUTHOR, false);
-		MARKUP.getAnnotation(ANNOTATION_AUTHOR).setDocumentation("The author of this knowledge base");
-		MARKUP.addAnnotation(ANNOTATION_COMMENT, false);
-		MARKUP.getAnnotation(ANNOTATION_COMMENT)
+		MARKUP.getAnnotation(ANNOTATION_AUTHOR)
+				.setDocumentation("The author of this knowledge base");
+		MARKUP.addAnnotation(ANNOTATION_COMMENT, false)
 				.setDocumentation("Some optional comment regarding this knowledge base");
-		MARKUP.addAnnotation(ANNOTATION_ID, false);
-		MARKUP.getAnnotation(ANNOTATION_ID).setDocumentation("Set the ID of this knowledge base");
-		MARKUP.addAnnotation(ANNOTATION_VERSION, false);
-		MARKUP.getAnnotation(ANNOTATION_VERSION).setDocumentation("Set the version of this knowledge base");
-		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
-		MARKUP.getAnnotation(ANNOTATION_FILENAME)
+		MARKUP.addAnnotation(ANNOTATION_ID, false)
+				.setDocumentation("Set the ID of this knowledge base");
+		MARKUP.addAnnotation(ANNOTATION_VERSION, false)
+				.setDocumentation("Set the version of this knowledge base");
+		MARKUP.addAnnotation(ANNOTATION_FILENAME, false)
 				.setDocumentation("Set the file name of this knowledge base, will be the placeholder when downloading the knowledge base");
-		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
-		MARKUP.getAnnotation(ANNOTATION_STATUS)
+		MARKUP.addAnnotation(ANNOTATION_STATUS, false)
 				.setDocumentation("Set the status of this knowledge base, e.g. alpha, beta, release");
-		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
-		MARKUP.getAnnotation(ANNOTATION_AFFILIATION)
+		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false)
 				.setDocumentation("Set the affiliation of this knowledge base, e.g. University of Würzburg");
-		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
-		MARKUP.getAnnotation(ANNOTATION_TERM_MATCHING)
+		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE)
 				.setDocumentation("Decide whether matching between objects (questions, solutions, choice...) should be case-sensitive or case-insensitive");
 
 		MARKUP.addContentType(new KnowledgeBaseDefinition());
