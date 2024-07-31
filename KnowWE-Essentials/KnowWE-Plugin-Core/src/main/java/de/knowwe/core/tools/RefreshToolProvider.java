@@ -32,7 +32,7 @@ public class RefreshToolProvider implements ToolProvider {
 		return new DefaultTool(
 				Icon.REFRESH,
 				"Refresh",
-				"Performs a fresh rebuild of the knowledge base from the wiki content.",
+				"Rebuild the knowledge base from the content of the specified packages.",
 				jsAction, Tool.CATEGORY_LAST);
 	}
 }

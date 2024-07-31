@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.parsing.Section;
@@ -43,6 +44,11 @@ import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolSet;
+import de.knowwe.tools.ToolUtils;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Markup to shown documentation for other markups
@@ -56,7 +62,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("MarkupDocumentation");
-		MARKUP.setDocumentation("Markup to show documentation for one or all markups.");
+		MARKUP.setDocumentation("Markup to show documentation for a given markup. If no markup is given, a table with all markups is shown.");
 		MARKUP.setTemplate("%%MarkupDocumentation\n«MarkupName»\n%");
 	}
 
@@ -88,7 +94,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 					result.append("Markup ").append(markupName).append(" not found!");
 				}
 				else {
-					generateSingleMarkupDocumentation(markupType.get(), result);
+					generateSingleMarkupDocumentation(markupType.get(), user, result);
 				}
 			}
 			else {
@@ -158,7 +164,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			}
 		}
 
-		private void generateSingleMarkupDocumentation(DefaultMarkupType type, RenderResult result) {
+		private void generateSingleMarkupDocumentation(DefaultMarkupType type, UserContext user, RenderResult result) {
 
 			DefaultMarkup markup = type.getMarkup();
 			result.append("!!").append(markup.getName()).append("\n\n");
@@ -166,9 +172,19 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			result.append("! General\n\n");
 			result.append(getMarkupDocumentation(markup)).append("\n\n");
 
-			result.append("! Annotations\n\n");
+			result.append("! Tools\n\n");
+			result.append(getToolsDocumentation(type, user)).append("\n\n");
 
-			for (DefaultMarkup.Annotation annotation : markup.getAnnotations()) {
+			result.append("! Annotations\n\n");
+			generateAnnotationDocumentation(result, markup);
+		}
+
+		private static void generateAnnotationDocumentation(RenderResult result, DefaultMarkup markup) {
+			DefaultMarkup.Annotation[] annotations = markup.getAnnotations();
+			if (annotations.length == 0) {
+				result.append("This markup does not have annotations.\n");
+			}
+			for (DefaultMarkup.Annotation annotation : annotations) {
 				result.append("* @")
 						.append(annotation.getName())
 						.append(getModifier(annotation))
@@ -177,6 +193,33 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 						.append("\n");
 //				result.append("** Value pattern: ").append(annotation.getPattern()).append("\n");
 			}
+		}
+
+		private HtmlElement getToolsDocumentation(DefaultMarkupType type, UserContext user) {
+			Div div = new Div();
+			DefaultMarkup markup = type.getMarkup();
+			String template = markup.getTemplate();
+			if (Strings.isBlank(template)) {
+				template = "%%" + markup.getName() + "\n%\n";
+			}
+			Article documentationTempArticle = Article.createTemporaryArticle(template, "DocumentationTempArticle", user.getWeb());
+			Section<? extends DefaultMarkupType> typeSection = $(documentationTempArticle).successor(type.getClass())
+					.getFirst();
+			boolean empty = true;
+			if (typeSection != null) {
+				HtmlElement ul = new HtmlElement("ul");
+				ToolSet tools = ToolUtils.getTools(typeSection, user);
+				for (Tool tool : tools) {
+					ul.children(new Li().children(tool.getIcon()
+							.toHtmlElement(), new Span(" " + tool.getTitle() + ": "), new Span(tool.getDescription())));
+					empty = false;
+				}
+				div.children(ul);
+			}
+			if (empty) {
+				div.children(new Span("This markup does not have tools."));
+			}
+			return div;
 		}
 
 		private static String getAnnotationDocumentation(DefaultMarkup.Annotation annotation) {
