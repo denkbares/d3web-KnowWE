@@ -47,6 +47,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -106,11 +107,12 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 				children.add(new HtmlElement("tr").children(
 						new HtmlElement("th").content("Markup Name"),
 						new HtmlElement("th").content("Description"),
+						new HtmlElement("th").content("Tools"),
 						new HtmlElement("th").content("Annotations")
 				));
 
 				for (DefaultMarkupType markupType : markupTypes) {
-					children.add(toTableRow(markupType));
+					children.add(toTableRow(markupType, user));
 					children.add(new HtmlNode("\n"));
 				}
 				HtmlElement table = new HtmlElement("table").clazz("wikitable markup-documentation-table")
@@ -123,13 +125,13 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			}
 		}
 
-		private HtmlElement toTableRow(DefaultMarkupType markupType) {
+		private HtmlElement toTableRow(DefaultMarkupType markupType, UserContext user) {
 			HtmlElement tr = new HtmlElement("tr");
 			DefaultMarkup markup = markupType.getMarkup();
-			HtmlProvider[] brs = getDescriptionContent(markup);
 			tr = tr.children(
 					new HtmlElement("td").content(markup.getName()),
-					new HtmlElement("td").children(brs),
+					new HtmlElement("td").children(getDescriptionContent(markup)),
+					new HtmlElement("td").children(getToolsDocumentation(markupType, user)),
 					new HtmlElement("td").children(getAnnotationDescription(markup))
 			);
 			return tr;
@@ -142,7 +144,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			if (Strings.isNotBlank(markup.getTemplate())) {
 				children.add(new HtmlElement("br"));
 				children.add(new Span("Template:"));
-				children.add(new Span("%%prettify\n{{{\n" + markup.getTemplate() + "}}}\n").clazz("markup-template"));
+				children.add(new Span("%%prettify\n{{{\n" + markup.getTemplate() + "}}}\n/%\n").clazz("markup-template"));
 			}
 			return children.toArray(HtmlProvider[]::new);
 		}
@@ -242,7 +244,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 				if (Strings.isNotBlank(documentation)) {
 					div.children(new HtmlNode("<br>"));
 				}
-				div.children(new Span("Template:\n\n%%prettify\n{{{\n" + markup.getTemplate() + "\n}}}\n"));
+				div.children(new Span("Template:\n\n%%prettify\n{{{\n" + markup.getTemplate() + "\n}}}\n/%\n"));
 			}
 			return div;
 		}
