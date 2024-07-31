@@ -319,7 +319,7 @@ public class CIRenderer {
 		// render test name
 		renderResult.appendHtml(getTitleHtml(title));
 		if (testResult.isSoftTest()) {
-			renderResult.append(new Span("Soft: ").attributes("class", "ci-softTest"));
+			renderResult.append(new Span("Soft:").attributes("class", "ci-softTest"));
 		}
 		renderResult.append(name);
 
