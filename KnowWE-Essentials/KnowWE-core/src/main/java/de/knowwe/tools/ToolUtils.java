@@ -3,11 +3,13 @@ package de.knowwe.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +61,7 @@ public class ToolUtils {
 				if (!provider.hasTools(section, userContext)) continue;
 				Tool[] tools = provider.getTools(section, userContext);
 				if (tools != null) {
-					Collections.addAll(result, tools);
+					Arrays.stream(tools).filter(Objects::nonNull).forEach(result::add);
 				}
 			}
 			catch (Exception e) {
