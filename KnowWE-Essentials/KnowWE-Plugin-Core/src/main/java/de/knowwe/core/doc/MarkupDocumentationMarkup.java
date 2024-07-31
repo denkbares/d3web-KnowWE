@@ -41,13 +41,13 @@ import de.knowwe.core.kdom.rendering.elements.HtmlNode;
 import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
 import de.knowwe.core.kdom.rendering.elements.Li;
 import de.knowwe.core.kdom.rendering.elements.Span;
+import de.knowwe.core.kdom.rendering.elements.TextNode;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
-import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -186,15 +186,12 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			if (annotations.length == 0) {
 				result.append("This markup does not have annotations.\n");
 			}
+			HtmlElement ul = new HtmlElement("ul");
 			for (DefaultMarkup.Annotation annotation : annotations) {
-				result.append("* @")
-						.append(annotation.getName())
-						.append(getModifier(annotation))
-						.append(": ")
-						.appendHtml(getAnnotationDocumentation(annotation))
-						.append("\n");
-//				result.append("** Value pattern: ").append(annotation.getPattern()).append("\n");
+				ul.children(new Li().children(new TextNode("@" + annotation.getName() + getModifier(annotation) + ": "),
+						getAnnotationDocumentation(annotation)));
 			}
+			result.append(ul);
 		}
 
 		private HtmlElement getToolsDocumentation(DefaultMarkupType type, UserContext user) {
@@ -224,12 +221,12 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			return div;
 		}
 
-		private static String getAnnotationDocumentation(DefaultMarkup.Annotation annotation) {
+		private static HtmlElement getAnnotationDocumentation(DefaultMarkup.Annotation annotation) {
 			String documentation = annotation.getDocumentation();
 			if (Strings.isBlank(documentation)) {
-				documentation = "No documentation available yet.";
+				return new Span("No documentation available yet.");
 			}
-			return documentation;
+			return new HtmlNode(annotation.getDocumentation());
 		}
 
 		@NotNull
