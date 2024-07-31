@@ -86,8 +86,8 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 
 	public static final String DEFAULT_FILENAME = "kb.d3web";
 
-	public static final String CASE_SENSITIVE = "case-sensitive";
-	public static final String CASE_INSENSITIVE = "case-insensitive";
+	public static final String CASE_SENSITIVE = "case sensitive";
+	public static final String CASE_INSENSITIVE = "case insensitive";
 
 	private static final DefaultMarkup MARKUP;
 

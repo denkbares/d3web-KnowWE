@@ -90,8 +90,8 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 	public static final String ANNOTATION_DEFAULT_NAMESPACE = "defaultNamespace";
 	public static final String ANNOTATION_TERM_MATCHING = "termMatching";
-	public static final String CASE_SENSITIVE = "case-sensitive";
-	public static final String CASE_INSENSITIVE = "case-insensitive";
+	public static final String CASE_SENSITIVE = "case sensitive";
+	public static final String CASE_INSENSITIVE = "case insensitive";
 
 	public static final DefaultMarkup MARKUP;
 	public static final String COMPILER_PRIORITY = "compilerPriority";
