@@ -273,13 +273,15 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		if (requiresWrapper) ReRenderSectionMarkerRenderer.renderOpen(id, page);
 		page.appendHtmlTag("div", "class", "list-section-wrapper", "sectionId", id);
 		String searchPhrase = getFilterFromCookie();
+		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
 		Predicate<Section<T>> filter = Strings.isBlank(searchPhrase)
 				? Predicates.limit(noFilterPredicate, (noFilterLimit == -1) ? getCountFromCookie() : noFilterLimit)
-				: Predicates.limit(new SearchPredicate(searchPhrase).or(alwaysShowPredicate), getCountFromCookie());
+				: Predicates.limit(searchPredicate.or(alwaysShowPredicate), getCountFromCookie());
 
 		// render the groups
 		AtomicBoolean anyLines = new AtomicBoolean(false);
 		renderers.forEach(rendererPair -> {
+			searchPredicate.setRenderer(rendererPair.getB());
 			ListSectionsRenderer<T> filtered = rendererPair.getB().filter(filter);
 			if (filtered.isEmpty()) return;
 			anyLines.set(true);
@@ -364,8 +366,16 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	private final class SearchPredicate implements Predicate<Section<T>> {
 
 		private final List<Predicate<Section<T>>> filters = new ArrayList<>();
+		private final String searchPhrase;
+		private ListSectionsRenderer<T> renderer;
+		private boolean initialized;
 
 		public SearchPredicate(String searchPhrase) {
+			this.searchPhrase = searchPhrase;
+		}
+
+		private void init() {
+			if (initialized) return;
 			// Search phrases with :<>=
 			Matcher matcher = SEARCH_PATTERN.matcher(searchPhrase);
 			while (matcher.find()) {
@@ -374,9 +384,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				String value = matcher.group(3);
 				addKeyFilter(keyFilterProviders, name, operator, value);
 				addNumFilter(numKeyFilterProviders, name, operator, value);
-				for (Pair<String, ListSectionsRenderer<T>> renderer : renderers) {
-					addKeyFilter(renderer.getB().getKeyFilters(), name, operator, value);
-				}
+				addKeyFilter(renderer.getKeyFilters(), name, operator, value);
 			}
 			// remove all matched filters and add all remaining phrases
 			String rest = Strings.trim(matcher.replaceAll(""));
@@ -400,13 +408,29 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 			// other (simple) search phrases
 			if (Strings.nonBlank(rest)) {
-				Predicate<Section<T>> simpleFilter = createFilter(GroupedFilterListSectionsRenderer.this::getSearchableText, clean(rest));
+				Predicate<Section<T>> simpleFilter = createFilter(s -> getSearchableText(s, renderer), clean(rest));
 				Predicate<Section<T>> filtersPredicate = Predicates.FALSE(); // an empty predicate
 				for (Function<Section<T>, String> filter : keylessFilterProviders) {
 					filtersPredicate = filtersPredicate.or(createFilter(filter, rest.split("[\u00A0\\h\\s\\v]+")));
 				}
 				filters.add(Predicates.or(simpleFilter, filtersPredicate));
 			}
+			initialized = true;
+		}
+
+		@NotNull
+		private String getSearchableText(Section<T> s, ListSectionsRenderer<T> renderer) {
+			StringBuilder b = new StringBuilder();
+			b.append(clean(s.getText()));
+			for (Function<Section<T>, String> textFunction : renderer.getKeyFilters().values()) {
+				b.append(" ").append(clean(textFunction.apply(s)));
+			}
+			return b.toString();
+		}
+
+		@NotNull
+		private static String clean(String rest) {
+			return rest == null ? "" : rest.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", "");
 		}
 
 		private void addNumFilter(Map<String, Pair<Function<Section<T>, Double>, Function<String, Double>>> numKeyFilterProviders, String name, String operator, String value) {
@@ -422,8 +446,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 					.filter(entry -> {
 						String plainKeyLC = Strings.htmlToPlain(entry.getKey()).toLowerCase();
 						return plainKeyLC.startsWith(name.toLowerCase())
-								|| plainKeyLC.replaceAll("\\W", "")
-								.startsWith(name.toLowerCase().replaceAll("\\W", ""));
+							   || plainKeyLC.replaceAll("\\W", "")
+									   .startsWith(name.toLowerCase().replaceAll("\\W", ""));
 					})
 					.map(Entry::getValue)
 					.map(textFun -> createFilter(textFun, operator, value))
@@ -432,6 +456,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 		@Override
 		public boolean test(Section<T> section) {
+			init();
 			return filters.stream().allMatch(pred -> pred.test(section));
 		}
 
@@ -453,7 +478,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 			return section -> {
 				String text = textFunction.apply(section);
 				return Strings.nonBlank(text) &&
-						compare.test(NumberAwareComparator.CASE_INSENSITIVE.compare(text, phrase));
+					   compare.test(NumberAwareComparator.CASE_INSENSITIVE.compare(text, phrase));
 			};
 		}
 
@@ -477,22 +502,10 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				return compare.test(comparatorResult);
 			};
 		}
-	}
 
-	@NotNull
-	private String getSearchableText(Section<T> s) {
-		StringBuilder b = new StringBuilder();
-		b.append(clean(s.getText()));
-		for (Pair<String, ListSectionsRenderer<T>> renderer : this.renderers) {
-			for (Function<Section<T>, String> textFunction : renderer.getB().getKeyFilters().values()) {
-				b.append(" ").append(clean(textFunction.apply(s)));
-			}
+		public void setRenderer(ListSectionsRenderer<T> renderer) {
+			this.renderer = renderer;
+			this.initialized = false;
 		}
-		return b.toString();
-	}
-
-	@NotNull
-	private static String clean(String rest) {
-		return rest == null ? "" : rest.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", "");
 	}
 }
