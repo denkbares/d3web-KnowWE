@@ -17,36 +17,6 @@ public class RawGitExecutor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RawGitExecutor.class);
 
 	public static String executeGitCommand(String[] command, String repositoryPath) {
-		Process process = null;
-		try {
-			process = Runtime.getRuntime().exec(
-					command, null, new File(repositoryPath));
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		InputStream responseStream = process.getInputStream();
-
-		try {
-			int exitVal = process.waitFor();
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-
-		String response = null;
-		try {
-			response = new String(responseStream.readAllBytes());
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return response;
-	}
-
-	public static String executeGitCommand(String command, String repositoryPath) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		Process process = null;
@@ -74,15 +44,23 @@ public class RawGitExecutor {
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		finally {
+			process.destroy();
+		}
 
 		stopWatch.stop();
 		LOGGER.info("Executed command: " + command + " in " + stopWatch.getTime());
 		return response;
 	}
 
-	public static byte[] executeGitCommandWithTempFile(String[] command, String repositoryPath) {
-		long time = System.currentTimeMillis();
+	public static String executeGitCommand(String command, String repositoryPath) {
+		String[] split = command.split(" ");
+		return RawGitExecutor.executeGitCommand(split, repositoryPath);
+	}
 
+	public static byte[] executeGitCommandWithTempFile(String[] command, String repositoryPath) {
+
+		//TODO maybe it is slow to create temp files on linux?
 		File outputFile = null;
 		try {
 			outputFile = File.createTempFile("git-log-output", ".txt");
@@ -90,30 +68,25 @@ public class RawGitExecutor {
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		long time = System.currentTimeMillis();
 
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		processBuilder.directory(new File(repositoryPath));
 		processBuilder.redirectOutput(outputFile);
 
-		// Set the working directory if needed
-		// processBuilder.directory(new File("your_git_repository_directory"));
-
-		// Start the process
 		Process process = null;
-		try {
-			process = processBuilder.start();
-		}
-		catch (IOException e) {
-			outputFile.delete();
-			throw new RuntimeException(e);
-		}
 		int exitCode = 0;
 		try {
+			process = processBuilder.start();
 			exitCode = process.waitFor();
 		}
-		catch (InterruptedException e) {
-			outputFile.delete();
+		catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
+		}
+		finally {
+			if (process != null) {
+				process.destroy();
+			}
 		}
 
 		if (exitCode == 0) {
@@ -129,10 +102,12 @@ public class RawGitExecutor {
 			response = Files.readAllBytes(outputFile.toPath());
 		}
 		catch (IOException e) {
-			outputFile.delete();
+
 			throw new RuntimeException(e);
 		}
-		outputFile.delete();
+		finally {
+			outputFile.delete();
+		}
 		return response;
 	}
 }

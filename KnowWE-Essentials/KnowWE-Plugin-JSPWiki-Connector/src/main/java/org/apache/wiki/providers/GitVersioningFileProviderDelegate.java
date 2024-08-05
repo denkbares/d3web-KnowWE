@@ -22,6 +22,7 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -53,6 +54,7 @@ import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.pages.PageManager;
+import org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy;
 import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
 import org.apache.wiki.structs.DefaultPageIdentifier;
 import org.apache.wiki.structs.PageIdentifier;
@@ -64,6 +66,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.knowwe.core.user.UserContext;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
@@ -124,7 +127,22 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 	private void setGitCommentStrategy(Properties properties) {
 		String commentStrategyClassName = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_COMMENT_STRATEGY, "org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy");
-		this.gitCommentStrategy = GitCommentStrategy.fromProperty(commentStrategyClassName);
+//		//this.gitCommentStrategy = GitCommentStrategy.fromProperty(commentStrategyClassName);
+//		GitCommentStrategy gitCommentStrategy;
+//		try {
+//			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
+//			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor()
+//					.newInstance(new Object[] {});
+//		}
+//		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+//			   InvocationTargetException e) {
+//			LOGGER.error("Comment strategy not found " + commentStrategyClassName, e);
+//			gitCommentStrategy = new ChangeNoteStrategy();
+//		}
+
+		this.gitCommentStrategy = GitCommentStrategy.fromProperty(commentStrategyClassName, this.getClass()
+				.getClassLoader());
+//		 this.gitCommentStrategy=gitCommentStrategy;
 	}
 
 	public Repository getRepository() {
@@ -185,7 +203,6 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 				comment = "-";
 			}
 		}
-		UserProfile userProfile = getUserProfile(page.getAuthor());
 
 		if (this.openCommits.containsKey(page.getAuthor())) {
 			if (addFile) {
@@ -194,7 +211,8 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			this.openCommits.get(page.getAuthor()).add(changedFile.getName());
 		}
 		else {
-			String commitHash = this.gitConnector.changePath(changedFile.toPath(), new UserData(page.getAuthor(), userProfile.getEmail(), comment));
+			UserData userdata = getUserData(page.getAuthor(), comment);
+			String commitHash = this.gitConnector.changePath(changedFile.toPath(), userdata);
 			fireWikiEvent(GitVersioningWikiEvent.UPDATE, page.getAuthor(), List.of(page.getName()), commitHash);
 		}
 	}
@@ -225,13 +243,13 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 
 		String commitHash = this.gitConnector.commitHashForFileAndVersion(pageIdentifier.fileName(), pageIdentifier.version());
-		if(commitHash == null) {
+		if (commitHash == null) {
 			//we have to obtain from filesystem TODO?
 			return null;
 		}
 		int realVersion = pageIdentifier.version();
-		if(pageIdentifier.version()==LATEST_VERSION){
-			realVersion=this.gitConnector.numberOfCommitsForFile(pageIdentifier.fileName());
+		if (pageIdentifier.version() == LATEST_VERSION) {
+			realVersion = this.gitConnector.numberOfCommitsForFile(pageIdentifier.fileName());
 		}
 		return createWikiPageFromCommitHash(pageIdentifier, commitHash, realVersion);
 	}
@@ -313,7 +331,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		//mark page as to be refreshed TODO why???
 		this.refreshCacheList.add(pageIdentifier.pageName());
 		UserData userData = this.gitConnector.userDataFor(commitHash);
-		long filesize =this.gitConnector.getFilesizeForCommit(commitHash, pageIdentifier.fileName());
+		long filesize = this.gitConnector.getFilesizeForCommit(commitHash, pageIdentifier.fileName());
 		long timeInSeconds = this.gitConnector.commitTimeFor(commitHash);
 		Date date = Date.from(Instant.ofEpochSecond(timeInSeconds));
 		return WikiPageProxy.fromUserData(pageIdentifier.pageName(), version, userData, filesize, date, this.engine);
@@ -368,7 +386,6 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	@Override
 	public void deletePage(Page page) throws ProviderException {
 
-
 		final File file = findPage(page.getName());
 
 		if (page.getAuthor() == null) {
@@ -383,7 +400,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 
 		String comment = gitCommentStrategy.getComment(page, "removed page");
-		String commitHash = this.gitConnector.deletePath(file.getName(), getUserData(page.getAuthor(), comment),false);
+		String commitHash = this.gitConnector.deletePath(file.getName(), getUserData(page.getAuthor(), comment), false);
 
 		String author = page.getAuthor();
 		if (this.openCommits.containsKey(author)) {
@@ -394,7 +411,13 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 	public UserData getUserData(String author, String comment) {
 		UserProfile userProfile = getUserProfile(author);
-		return new UserData(userProfile.getFullname(), userProfile.getEmail(), comment);
+		String userName = author;
+		String email = "";
+		if (userProfile != null) {
+			userName = userProfile.getFullname();
+			email = userProfile.getEmail();
+		}
+		return new UserData(userName, email, comment);
 	}
 
 	@Override
@@ -461,7 +484,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 		catch (NoSuchPrincipalException e) {
 			LOGGER.error("Tried to access user: " + user + " but that user does not exist!");
-			throw new RuntimeException(e);
+			return null;
 		}
 	}
 
@@ -477,8 +500,14 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			comment = commitMsg;
 		}
 		UserProfile userProfile = getUserProfile(user);
+		String username = user;
+		String email = "";
+		if (userProfile != null) {
+			username = userProfile.getFullname();
+			email = userProfile.getEmail();
+		}
 
-		String commitHash = this.gitConnector.commitPathsForUser(comment, userProfile.getFullname(), userProfile.getEmail(), this.openCommits.get(user));
+		String commitHash = this.gitConnector.commitPathsForUser(comment, username, email, this.openCommits.get(user));
 		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, this.openCommits.get(user), commitHash);
 
 		this.openCommits.remove(user);

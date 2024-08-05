@@ -22,14 +22,16 @@ public interface GitCommentStrategy {
 
 	/**
 	 * Try to load the according comment strategy via reflections
+	 *
 	 * @param commentStrategyClassName
+	 * @param classLoader
 	 * @return
 	 */
-	static GitCommentStrategy fromProperty(String commentStrategyClassName) {
+	static GitCommentStrategy fromProperty(String commentStrategyClassName, ClassLoader classLoader) {
 
 		GitCommentStrategy gitCommentStrategy;
 		try {
-			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
+			Class<?> commentStrategyClass = classLoader.loadClass(commentStrategyClassName);
 			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor()
 					.newInstance(new Object[] {});
 		}

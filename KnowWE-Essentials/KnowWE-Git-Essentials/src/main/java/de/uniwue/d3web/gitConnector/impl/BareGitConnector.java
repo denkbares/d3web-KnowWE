@@ -141,7 +141,7 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
-		if(Objects.equals(commitHashFrom, commitHashTo)){
+		if (Objects.equals(commitHashFrom, commitHashTo)) {
 			return Collections.emptyList();
 		}
 		String commitHashes = RawGitExecutor.executeGitCommand("git log --pretty=format:\"%H\" " + commitHashFrom + ".." + commitHashTo, this.repositoryPath);
@@ -180,8 +180,6 @@ public class BareGitConnector implements GitConnector {
 		Collections.reverse(commitHashes);
 		return commitHashes;
 	}
-
-
 
 	@Override
 	public List<String> commitHashesForFile(String file) {
@@ -299,8 +297,8 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public long getFilesizeForCommit(String commitHash, String path) {
-		String filesize = RawGitExecutor.executeGitCommand("git cat-file -s " + commitHash+":"+path, this.repositoryPath);
-		if(filesize.trim().isEmpty()){
+		String filesize = RawGitExecutor.executeGitCommand("git cat-file -s " + commitHash + ":" + path, this.repositoryPath);
+		if (filesize.trim().isEmpty()) {
 			return -1;
 		}
 		return Long.parseLong(filesize.trim());
@@ -378,7 +376,7 @@ public class BareGitConnector implements GitConnector {
 	@Override
 	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
 		String joinedPaths = String.join(" ", pathsToDelete);
-		String prefix = cached? "git rm --cached " : "git rm ";
+		String prefix = cached ? "git rm --cached " : "git rm ";
 		String rmResult = RawGitExecutor.executeGitCommand(prefix + joinedPaths, this.repositoryPath);
 		if (!Arrays.stream(rmResult.split("\n")).allMatch(line -> line.startsWith("rm"))) {
 			LOGGER.error("Could not delete paths: " + pathsToDelete);
@@ -431,9 +429,9 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public String commitForUser(UserData userData) {
-		String[] gitCommand = {"git","commit","--author="+userData.user+" <"+userData.email+">","-m",userData.message};
+		String[] gitCommand = { "git", "commit", "--author=" + userData.user + " <" + userData.email + ">", "-m", userData.message };
 		String commitResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
-		if(!commitResult.contains(userData.message)){
+		if (!commitResult.contains(userData.message)) {
 			throw new IllegalStateException("Commit failed! for command: " + Arrays.toString(gitCommand));
 		}
 
@@ -446,6 +444,7 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {
+		LOGGER.info("Init BareGitConnector at path: " + repositoryPath);
 		File file = new File(repositoryPath);
 
 		if (!file.exists()) {
@@ -462,7 +461,7 @@ public class BareGitConnector implements GitConnector {
 			//we are golden this is a git repository!
 			return new BareGitConnector(repositoryPath);
 		}
-
+		LOGGER.info("Git status did no succeed, ended with: " + result);
 		//this is no git repository, we should init it!
 
 		result = RawGitExecutor.executeGitCommand("git init", repositoryPath);
@@ -470,6 +469,6 @@ public class BareGitConnector implements GitConnector {
 			return new BareGitConnector(repositoryPath);
 		}
 
-		throw new IllegalArgumentException("Could not create repository");
+		throw new IllegalArgumentException("Could not create repository: " + result);
 	}
 }
