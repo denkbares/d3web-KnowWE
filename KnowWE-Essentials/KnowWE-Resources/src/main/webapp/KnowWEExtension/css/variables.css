@@ -180,6 +180,12 @@
 	/* quick interview */
 	--bg-color-quicki-answer: var(--color-blue-extra-light);
 
+	/* -------- COOM -------- */
+	/* background colors */
+	--bg-implication: #F8D7DA;
+	--bg-combination: #357ab8; /* TODO */
+	--bg-enumeration: #5eaf7b; /* TODO */
+	--bg-structure: #556677; /* TODO */
 }
 
 
@@ -350,6 +356,12 @@
 	/* quick interview */
 	--bg-color-quicki-answer: var(--bg-color-blue-extra-dark);
 
+	/* -------- COOM -------- */
+	/* background colors */
+	--bg-implication: #75444c;
+	--bg-combination: #357ab8; /* TODO */
+	--bg-enumeration: #5eaf7b; /* TODO */
+	--bg-structure: #556677; /* TODO */
 }
 
 /* ######################################################## */
@@ -455,6 +467,18 @@
 	--bg-color-unknown: #CFD5FF;
 	--bg-color-fired: #CFFFCF;
 
+
+	/* -------- COOM -------- */
+	/* text colors */
+	--text-color-implication: #b35563;
+	--text-color-combination: #357ab8;
+	--text-color-enumeration: #5eaf7b;
+	--text-color-structure: #556677;
+	/* background colors */
+	--bg-color-implication: var(--bg-implication);
+	--bg-color-combination: var(--bg-combination);
+	--bg-color-enumeration: var(--bg-enumeration);
+	--bg-color-structure: var(--bg-structure);
 }
 
 /* ############################################################## */
