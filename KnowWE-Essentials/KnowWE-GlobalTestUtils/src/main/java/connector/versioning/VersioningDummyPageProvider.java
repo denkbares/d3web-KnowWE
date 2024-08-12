@@ -89,6 +89,7 @@ public class VersioningDummyPageProvider extends SimpleDummyPageProvider {
 	@Override
 	public String getArticle(String title) {
 		List<WikiPageInfoFull> wikiPageInfos = articles.get(title);
+		if(wikiPageInfos == null) return null;
 		return wikiPageInfos.get(wikiPageInfos.size() - 1).getText();
 	}
 
