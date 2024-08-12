@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import connector.SimpleDummyPageProvider;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.wikiConnector.WikiPageInfo;
