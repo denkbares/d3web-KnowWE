@@ -432,7 +432,7 @@ public class BareGitConnector implements GitConnector {
 		String[] gitCommand = { "git", "commit", "--author=" + userData.user + " <" + userData.email + ">", "-m", userData.message };
 		String commitResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
 		if (!commitResult.contains(userData.message)) {
-			throw new IllegalStateException("Commit failed! for command: " + Arrays.toString(gitCommand));
+			throw new IllegalStateException("Commit failed! for command: " + Arrays.toString(gitCommand) + "obtained result: \n" + commitResult);
 		}
 
 		return currentHEAD();
