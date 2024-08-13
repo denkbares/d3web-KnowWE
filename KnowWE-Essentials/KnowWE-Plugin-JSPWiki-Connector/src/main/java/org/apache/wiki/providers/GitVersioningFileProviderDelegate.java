@@ -127,22 +127,18 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 	private void setGitCommentStrategy(Properties properties) {
 		String commentStrategyClassName = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_COMMENT_STRATEGY, "org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy");
-//		//this.gitCommentStrategy = GitCommentStrategy.fromProperty(commentStrategyClassName);
-//		GitCommentStrategy gitCommentStrategy;
-//		try {
-//			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
-//			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor()
-//					.newInstance(new Object[] {});
-//		}
-//		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
-//			   InvocationTargetException e) {
-//			LOGGER.error("Comment strategy not found " + commentStrategyClassName, e);
-//			gitCommentStrategy = new ChangeNoteStrategy();
-//		}
-
-		this.gitCommentStrategy = GitCommentStrategy.fromProperty(commentStrategyClassName, this.getClass()
-				.getClassLoader());
-//		 this.gitCommentStrategy=gitCommentStrategy;
+		GitCommentStrategy gitCommentStrategy;
+		try {
+			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
+			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor()
+					.newInstance(new Object[] {});
+		}
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+			   InvocationTargetException e) {
+			LOGGER.error("Comment strategy not found " + commentStrategyClassName, e);
+			gitCommentStrategy = new ChangeNoteStrategy();
+		}
+		 this.gitCommentStrategy=gitCommentStrategy;
 	}
 
 	public Repository getRepository() {
