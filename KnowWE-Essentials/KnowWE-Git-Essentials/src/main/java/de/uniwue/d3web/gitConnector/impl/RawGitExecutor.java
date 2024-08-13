@@ -49,7 +49,7 @@ public class RawGitExecutor {
 		}
 
 		stopWatch.stop();
-		LOGGER.info("Executed command: " + command + " in " + stopWatch.getTime());
+		LOGGER.info("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
 		return response;
 	}
 
