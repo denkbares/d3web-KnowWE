@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,19 +55,22 @@ public class ToolUtils {
 
 	static List<Tool> getToolInstances(Section<?> section, UserContext userContext) {
 		List<Tool> result = new LinkedList<>();
+		Set<Class<?>> toolClasses = new HashSet<>();
 		for (Extension match : extensions.getMatches(section)) {
 			ToolProvider provider = (ToolProvider) match.getSingleton();
-			try {
-				if (isBlocked(provider, section)) continue;
-				if (!provider.hasTools(section, userContext)) continue;
-				Tool[] tools = provider.getTools(section, userContext);
-				if (tools != null) {
-					Arrays.stream(tools).filter(Objects::nonNull).forEach(result::add);
+			if (toolClasses.add(provider.getClass())) { // avoid duplicate tools (e.g. overlapping scopes)
+				try {
+					if (isBlocked(provider, section)) continue;
+					if (!provider.hasTools(section, userContext)) continue;
+					Tool[] tools = provider.getTools(section, userContext);
+					if (tools != null) {
+						Arrays.stream(tools).filter(Objects::nonNull).forEach(result::add);
+					}
 				}
-			}
-			catch (Exception e) {
-				LOGGER.warn("Exception while getting tools from " + provider.getClass()
-						.getSimpleName() + " ignoring this provider.", e);
+				catch (Exception e) {
+					LOGGER.warn("Exception while getting tools from " + provider.getClass()
+							.getSimpleName() + " ignoring this provider.", e);
+				}
 			}
 		}
 		return result;
@@ -250,7 +254,7 @@ public class ToolUtils {
 		CountingSet<Scope> blockedScopes = BLOCKED_PROVIDERS.get(provider);
 		if (blockedScopes == null || !blockedScopes.contains(scope)) {
 			throw new IllegalStateException("unbalanced tool blocking: " +
-					provider.getClass().getSimpleName() + "@" + scope);
+											provider.getClass().getSimpleName() + "@" + scope);
 		}
 		blockedScopes.remove(scope);
 		if (blockedScopes.isEmpty()) BLOCKED_PROVIDERS.remove(provider);
@@ -286,10 +290,10 @@ public class ToolUtils {
 		for (Extension extension : extensions.getAll()) {
 			Object provider = extension.getSingleton();
 			if (extensionIdOrClassName.equals(extension.getParameter("class"))
-					|| extensionIdOrClassName.equals(provider.getClass().getName())
-					|| extensionIdOrClassName.equals(provider.getClass().getSimpleName())
-					|| extensionIdOrClassName.equals(extension.getID())
-					|| extensionIdOrClassName.equals(extension.getPluginID() + "." + extension.getID())) {
+				|| extensionIdOrClassName.equals(provider.getClass().getName())
+				|| extensionIdOrClassName.equals(provider.getClass().getSimpleName())
+				|| extensionIdOrClassName.equals(extension.getID())
+				|| extensionIdOrClassName.equals(extension.getPluginID() + "." + extension.getID())) {
 				result.add((ToolProvider) provider);
 			}
 		}
