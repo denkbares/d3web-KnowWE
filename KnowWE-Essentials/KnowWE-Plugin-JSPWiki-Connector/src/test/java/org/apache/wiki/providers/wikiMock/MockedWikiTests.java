@@ -1,5 +1,7 @@
 package org.apache.wiki.providers.wikiMock;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,10 +9,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import com.denkbares.utils.Files;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,6 +33,11 @@ public class MockedWikiTests {
 		int numPages = 100;
 		wiki.createPages(numPages);
 		assertEquals(numPages, wiki.numPages());
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		gitPath = Files.createTempDir().getAbsolutePath();
 	}
 
 	@Test
@@ -58,8 +70,8 @@ public class MockedWikiTests {
 				}
 			}
 			List<Attachment> attachments = wiki.createAttachments(page.getName(), 4);
-			if(time!=-1){
-				expectednumAtts+=attachments.size();
+			if (time != -1) {
+				expectednumAtts += attachments.size();
 			}
 			for (Attachment att : attachments) {
 				int numVersions = random.nextInt(3);
