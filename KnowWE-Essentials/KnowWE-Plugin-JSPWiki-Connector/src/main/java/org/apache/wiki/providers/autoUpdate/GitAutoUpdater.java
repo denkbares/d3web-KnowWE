@@ -197,7 +197,8 @@ public class GitAutoUpdater {
 			if (title != null) {
 				LOGGER.info("do full parse");
 				Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
-				EventManager.getInstance().fireEvent(new FullParseEvent(article));
+				//lets hope this sticks!
+				EventManager.getInstance().fireEvent(new FullParseEvent(article,null));
 			}
 			stopWatch.stop();
 			LOGGER.info("Update of wiki lasts " + stopWatch);
