@@ -244,7 +244,12 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		String commitHash = this.gitConnector.commitHashForFileAndVersion(pageIdentifier.fileName(), pageIdentifier.version());
 		if (commitHash == null) {
-			//we have to obtain from filesystem TODO?
+			//check if there is an open commit with that page => if so we can safely fetch from disk
+			if(this.openCommits.values().stream().flatMap(it -> it.stream()).anyMatch(it -> it.equals(pageIdentifier.fileName()))){
+				return getWikiPageFromFilesystem(pageIdentifier);
+			}
+
+			//not untracked not in git => no idea
 			return null;
 		}
 		int realVersion = pageIdentifier.version();
