@@ -1,12 +1,22 @@
 package de.uniwue.d3web.gitConnector;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.denkbares.utils.Files;
 import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
 import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
 
@@ -14,15 +24,75 @@ import static org.junit.Assert.assertEquals;
 
 public class TestJGit {
 
-	private String TMP_NEW_REPO = "/Users/mkrug/temp/konap_test/testGit";
+	private File TMP_NEW_REPO = null;
+	private String TEST_GIT = "testGit.zip";
 //	private String TMP_NEW_REPO = "/Users/mkrug/temp/konap_test/wiki";
 
 	private GitConnector gitConnector;
 
 	@Before
 	public void init() {
-//		jGitConnector = JGitConnector.fromPath(TMP_NEW_REPO);
-		gitConnector = new CachingGitConnector(BareGitConnector.fromPath(TMP_NEW_REPO));
+
+		try {
+			TMP_NEW_REPO = Files.createTempDir();
+			InputStream resourceAsStream = TestJGit.class.getClassLoader().getResourceAsStream(TEST_GIT);
+			File zipFile = Paths.get(TMP_NEW_REPO.getAbsolutePath(), TEST_GIT).toFile();
+			FileUtils.copyInputStreamToFile(resourceAsStream,zipFile);
+
+			//unzip
+			File destDir = Paths.get(TMP_NEW_REPO.getAbsolutePath(), TEST_GIT.replaceAll(".zip","")).toFile();
+
+			byte[] buffer = new byte[1024];
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+			ZipEntry zipEntry = zis.getNextEntry();
+			while (zipEntry != null) {
+				while (zipEntry != null) {
+					File newFile = newFile(destDir, zipEntry);
+					if (zipEntry.isDirectory()) {
+						if (!newFile.isDirectory() && !newFile.mkdirs()) {
+							throw new IOException("Failed to create directory " + newFile);
+						}
+					} else {
+						// fix for Windows-created archives
+						File parent = newFile.getParentFile();
+						if (!parent.isDirectory() && !parent.mkdirs()) {
+							throw new IOException("Failed to create directory " + parent);
+						}
+
+						// write file content
+						FileOutputStream fos = new FileOutputStream(newFile);
+						int len;
+						while ((len = zis.read(buffer)) > 0) {
+							fos.write(buffer, 0, len);
+						}
+						fos.close();
+					}
+					zipEntry = zis.getNextEntry();
+				}
+			}
+
+			zis.closeEntry();
+			zis.close();
+
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		gitConnector = new CachingGitConnector(BareGitConnector.fromPath(Paths.get(TMP_NEW_REPO.getAbsolutePath(), TEST_GIT.replaceAll(".zip",""),"testGit").toFile()
+				.getAbsolutePath()));
+	}
+
+	public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+		File destFile = new File(destinationDir, zipEntry.getName());
+
+		String destDirPath = destinationDir.getCanonicalPath();
+		String destFilePath = destFile.getCanonicalPath();
+
+		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+		}
+
+		return destFile;
 	}
 
 	@After
