@@ -186,6 +186,8 @@
 	--bg-combination: #357ab8; /* TODO */
 	--bg-enumeration: #5eaf7b; /* TODO */
 	--bg-structure: #556677; /* TODO */
+
+	--bg-grey-table-cell: #d7d7d7;
 }
 
 
@@ -362,6 +364,8 @@
 	--bg-combination: #357ab8; /* TODO */
 	--bg-enumeration: #5eaf7b; /* TODO */
 	--bg-structure: #556677; /* TODO */
+
+	--bg-grey-table-cell: #646464;
 }
 
 /* ######################################################## */
@@ -479,6 +483,8 @@
 	--bg-color-combination: var(--bg-combination);
 	--bg-color-enumeration: var(--bg-enumeration);
 	--bg-color-structure: var(--bg-structure);
+
+	--bg-color-empty-table-cell: var(--bg-grey-table-cell);
 }
 
 /* ############################################################## */
