@@ -89,6 +89,7 @@ public class Icon {
 	public static final Icon MINUS = new Icon("fa-type fa-minus");
 	public static final Icon PLUS = new Icon("fa-type fa-plus");
 	public static final Icon ADD = new Icon("fa-type fa-circle-plus");
+	public static final Icon PIPE = new Icon("fa-type fa-pipe");
 	public static final Icon BULB = new Icon("fa-solid fa-circle");
 	public static final Icon STOP = new Icon("fa-solid fa-stop");
 	public static final Icon USER = new Icon("fa-type fa-user");
@@ -206,6 +207,9 @@ public class Icon {
 			.addStyle("opacity: 0.6;"), Icon.F.addStyle("padding: 2px 0 0 5px; scale: 0.9;"));
 	public static final Icon CLEAR_TABLE = new Icon(Icon.EDITTABLE.addColor(Color.GRAY)
 			.addStyle("opacity: 0.7;"), Icon.UNSELECT_TARGET.addStyle("padding: 8px 0 0 8px; scale: 0.8;"));
+	public static final Icon FIXED_PLUG = new Icon(Icon.PLUG, Icon.PIPE.addColor(Color.RED)
+			.addStyle("padding: 1.5px 0 0 2px;")
+			.addClasses("fa-rotate-90"));
 
 	public HtmlProvider toHtmlElement() {
 		return result -> result.appendHtml(toHtml());
@@ -282,11 +286,11 @@ public class Icon {
 	public static Icon fromImage(String image) {
 		// we require some icon to get a valid width, color will be set transparent to appear empty
 		return new Icon("fa-pencil image-icon", "color: transparent;" +
-												"display: inline-block;" +
-												"background-image:url(" + image + ");" +
-												"background-repeat: no-repeat;" +
-												"background-size: contain;" +
-												"background-position: 50%",
+				"display: inline-block;" +
+				"background-image:url(" + image + ");" +
+				"background-repeat: no-repeat;" +
+				"background-size: contain;" +
+				"background-position: 50%",
 				null, null);
 	}
 
@@ -315,26 +319,26 @@ public class Icon {
 				}
 			}
 			return "<i class='" + cssClass + "'"
-				   + (style == null ? "" : " style='" + style + "'")
-				   + (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
-				   + (id == null ? "" : " id='" + id + "'")
-				   + "></i>";
+					+ (style == null ? "" : " style='" + style + "'")
+					+ (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
+					+ (id == null ? "" : " id='" + id + "'")
+					+ "></i>";
 		}
 		else {
 			iconsHtml = overlayIcons.stream()
 					.map(Icon::toHtmlWithoutContainer)
 					.collect(Collectors.joining());
 			clazz += (this.cssClass != null && !this.cssClass.isEmpty() ? " " + this.cssClass + " layered" : "");
+			return "<div class='" + clazz + "'" + (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'") + ">" + iconsHtml + "</div>";
 		}
-		return "<div class='" + clazz + "'>" + iconsHtml + "</div>";
 	}
 
 	private String toHtmlWithoutContainer() {
 		return "<i class='" + cssClass + "'"
-			   + (style == null ? "" : " style='" + style + "'")
-			   + (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
-			   + (id == null ? "" : " id='" + id + "'")
-			   + "></i>";
+				+ (style == null ? "" : " style='" + style + "'")
+				+ (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
+				+ (id == null ? "" : " id='" + id + "'")
+				+ "></i>";
 	}
 
 	public Icon addStyle(String style) {
