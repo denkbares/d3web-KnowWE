@@ -36,11 +36,11 @@
 <%@ page import="org.joda.time.DateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.time.LocalDateTime" %>
+<%@ page import="de.knowwe.core.utils.KnowWEUtils" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 
 <%!
 	DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	int ONE_HOUR = 60 * 60 * 1000;
 	Logger log = LoggerFactory.getLogger("JSPWiki");
 %>
 
@@ -57,20 +57,8 @@
 	String deleteall = request.getParameter("delete-all");
 	String delete = request.getParameter("delete");
 
-	List<Page> versionHistory = wiki.getManager(PageManager.class).getVersionHistory(wikiContext.getName());
-	long currentTime = System.currentTimeMillis();
-	Date firstModified;
-	if (versionHistory == null || versionHistory.isEmpty()) {
-		firstModified = new Date(currentTime);
-		versionHistory = new ArrayList<>();
-	}
-	else {
-		firstModified = versionHistory.get(0).getLastModified();
-	}
-	long firstModifiedTime = firstModified.getTime();
-	// if non-admin-button was pressed, last change >1h ago, >=3 versions -> only clear
-	boolean clearPageCriteria = (currentTime - firstModifiedTime) > ONE_HOUR || versionHistory.size() >= 3;
-	if (!(wikiContext.getPage() instanceof Attachment) && deleteAdmin == null && clearPageCriteria) {
+
+	if (!(wikiContext.getPage() instanceof Attachment) && deleteAdmin == null && !KnowWEUtils.allowPageDeletionForNonAdmin(wikiContext.getName())) {
 		String deleteText = "Deleted by " + wikiContext.getCurrentUser()
 				.getName() + " at " + FORMATTER.format(LocalDateTime.now());
 		wiki.getManager(PageManager.class).putPageText(wikiContext.getPage(), deleteText);

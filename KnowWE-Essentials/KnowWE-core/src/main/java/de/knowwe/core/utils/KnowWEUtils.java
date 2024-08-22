@@ -1451,4 +1451,21 @@ public class KnowWEUtils {
 			return "Unable to generate thread dump due to exception: " + e.getClass() + ": " + e.getMessage();
 		}
 	}
+
+	public static boolean allowPageDeletionForNonAdmin(String pageName) throws IOException {
+		List<WikiPageInfo> versionHistory = Environment.getInstance().getWikiConnector().getArticleHistory(pageName);
+		long currentTime = System.currentTimeMillis();
+		Date firstModified;
+		if (versionHistory == null || versionHistory.isEmpty()) {
+			firstModified = new Date(currentTime);
+			versionHistory = new ArrayList<>();
+		}
+		else {
+			firstModified = versionHistory.get(0).getSaveDate();
+		}
+		long firstModifiedTime = firstModified.getTime();
+		// if non-admin-button was pressed, last change >1h ago, >=3 versions -> only clear
+		int oneHour = 60 * 60 * 1000;
+		return (currentTime - firstModifiedTime) <= oneHour && versionHistory.size() <= 3;
+	}
 }
