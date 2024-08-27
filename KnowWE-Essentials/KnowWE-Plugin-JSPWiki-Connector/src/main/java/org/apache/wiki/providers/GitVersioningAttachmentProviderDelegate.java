@@ -350,6 +350,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		}
 	}
 
+	@Override
 	@NotNull
 	public List<Attachment> getVersionHistory(Attachment att) {
 
