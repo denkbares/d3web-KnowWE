@@ -12,7 +12,7 @@ import com.denkbares.events.Event;
  */
 public class ArticleUpdateEvent implements Event {
 	private final String username;
-	private final String titles;
+	private final String title;
 	private Version version;
 
 	/**
@@ -24,7 +24,7 @@ public class ArticleUpdateEvent implements Event {
 
 	public ArticleUpdateEvent(String title, String username) {
 		this.username = username;
-		this.titles = title;
+		this.title = title;
 	}
 
 	public String getUsername() {
@@ -32,7 +32,7 @@ public class ArticleUpdateEvent implements Event {
 	}
 
 	public String getTitle() {
-		return titles;
+		return title;
 	}
 
 	public Version getVersion() {

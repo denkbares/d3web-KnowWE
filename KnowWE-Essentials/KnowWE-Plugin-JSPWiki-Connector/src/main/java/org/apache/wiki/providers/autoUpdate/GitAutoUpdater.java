@@ -20,7 +20,7 @@ import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.attachment.AttachmentManager;
-import org.apache.wiki.event.GitRefreshCacheEvent;
+import org.apache.wiki.event.GitUpdateByPullPageEvent;
 import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.GitVersioningAttachmentProvider;
@@ -330,7 +330,7 @@ public class GitAutoUpdater {
 			}
 
 			if (!refreshedPages.isEmpty()) {
-				WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
+				WikiEventManager.fireEvent(fileProvider, new GitUpdateByPullPageEvent(fileProvider, GitUpdateByPullPageEvent.UPDATE, refreshedPages));
 			}
 
 			title = refreshedPages.stream()

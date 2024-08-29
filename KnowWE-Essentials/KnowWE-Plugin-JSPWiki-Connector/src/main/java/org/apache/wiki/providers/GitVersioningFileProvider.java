@@ -34,6 +34,9 @@ import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.event.WikiEvent;
+import org.apache.wiki.event.WikiEventListener;
+import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.providers.autoUpdate.GitAutoUpdateScheduler;
 import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
@@ -51,7 +54,7 @@ import de.uniwue.d3web.gitConnector.GitConnector;
  * @author Josua Nürnberger, Markus Krug
  * @created 2019-01-02
  */
-public class GitVersioningFileProvider extends AbstractFileProvider {
+public class GitVersioningFileProvider extends AbstractFileProvider implements WikiEventListener {
 
 	//only log timing if they exceed this threshold
 	private final int LOGGING_THRESHOLD_IN_MS = 10;
@@ -94,7 +97,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public void initialize(final Engine engine, final Properties properties) throws NoRequiredPropertyException, IOException {
 		super.initialize(engine, properties);
 		this.delegate.initialize(engine, properties);
-
+		WikiEventManager.addWikiEventListener(this.delegate,this);
 		//TODO this has to go => super dirty!!!
 		this.openCommits = this.delegate.openCommits;
 
@@ -108,6 +111,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		if (autoUpdateEnabled && remoteRepo) {
 			scheduler.initialize(engine, this);
 		}
+
+
 	}
 
 	//TODO this method should be gone!
@@ -373,6 +378,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	public GitVersioningFileProviderDelegate getDelegate() {
 		return delegate;
+	}
+
+	@Override
+	public void actionPerformed(WikiEvent event) {
+		WikiEventManager.fireEvent(this,event);
 	}
 }
 
