@@ -180,6 +180,17 @@
 	/* quick interview */
 	--bg-color-quicki-answer: var(--color-blue-extra-light);
 
+	/* -------- IntelliJ -------- */
+
+	--color-ide-keyword: #0033b3;
+	--color-ide-constant: #00627a;
+	--color-ide-primitive: #871094;
+	--color-ide-number: #1750eb;
+	--color-ide-string: #067d17;
+	--color-ide-comment: #8c8c8c;
+	--color-ide-default: #000000;
+	--color-ide-special: #9e880d;
+
 	/* -------- COOM -------- */
 	/* background colors */
 	--bg-implication: #F8D7DA;
@@ -358,6 +369,17 @@
 	/* quick interview */
 	--bg-color-quicki-answer: var(--bg-color-blue-extra-dark);
 
+	/* -------- IntelliJ -------- */
+
+	--color-ide-keyword: #cf8e6d;
+	--color-ide-constant: #c77dba;
+	--color-ide-primitive: #56a8f5;
+	--color-ide-number: #2aacb8;
+	--color-ide-string: #6aab73;
+	--color-ide-comment: #7a7e85;
+	--color-ide-default: #bcbec4;
+	--color-ide-special: #f75464;
+
 	/* -------- COOM -------- */
 	/* background colors */
 	--bg-implication: #75444c;
@@ -470,7 +492,6 @@
 	--bg-color-false: #FFCFCF;
 	--bg-color-unknown: #CFD5FF;
 	--bg-color-fired: #CFFFCF;
-
 
 	/* -------- COOM -------- */
 	/* text colors */
