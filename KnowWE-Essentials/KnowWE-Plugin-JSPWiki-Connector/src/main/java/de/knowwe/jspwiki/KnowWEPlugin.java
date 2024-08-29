@@ -48,7 +48,7 @@ import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.content.PageRenamer;
-import org.apache.wiki.event.GitRefreshCacheEvent;
+import org.apache.wiki.event.GitUpdateByPullPageEvent;
 import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEngineEvent;
@@ -584,7 +584,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 			ArticleUpdateEvent articleUpdateEvent;
 			String pageTitle = gitEvent.getPages().stream().findFirst().get();
-			if (event instanceof GitRefreshCacheEvent) {
+			if (event instanceof GitUpdateByPullPageEvent) {
 				articleUpdateEvent = new ArticleRefreshEvent(pageTitle, gitEvent.getType());
 			}
 			else {
