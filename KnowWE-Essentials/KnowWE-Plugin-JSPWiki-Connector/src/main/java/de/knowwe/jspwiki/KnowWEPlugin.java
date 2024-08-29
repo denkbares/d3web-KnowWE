@@ -589,7 +589,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			ArticleUpdateEvent articleUpdateEvent;
 			String pageTitle = gitEvent.getPages().stream().findFirst().get();
 			if (event instanceof GitUpdateByPullPageEvent) {
-				articleUpdateEvent = new ArticleRefreshEvent(pageTitle, gitEvent.getType());
+				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
 				handleArticleRefreshEvent(gitEvent.getPages(), gitEvent.getType());
 			}
 			else {
