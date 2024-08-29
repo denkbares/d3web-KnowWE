@@ -57,9 +57,11 @@ import org.apache.wiki.event.WikiEventListener;
 import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.event.WikiPageEvent;
 import org.apache.wiki.event.WikiPageRenameEvent;
+import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
+import org.apache.wiki.providers.GitProviderProperties;
 import org.apache.wiki.ui.TemplateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +88,8 @@ import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
+import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
 
 import static de.knowwe.core.ResourceLoader.Type.*;
 
@@ -586,11 +590,13 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			String pageTitle = gitEvent.getPages().stream().findFirst().get();
 			if (event instanceof GitUpdateByPullPageEvent) {
 				articleUpdateEvent = new ArticleRefreshEvent(pageTitle, gitEvent.getType());
+				handleArticleRefreshEvent(gitEvent.getPages(), gitEvent.getType());
 			}
 			else {
 				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
 				String gitCommitRev = gitEvent.getGitCommitRev();
-				int latestVersionNumber = Environment.retrieveLatestVersionNumber(pageTitle);
+				String pageFile = JSPUtils.mangleName(pageTitle)+".txt";
+				int latestVersionNumber = getGitConnector().numberOfCommitsForFile(pageFile);
 				ArticleUpdateEvent.Version version = new ArticleUpdateEvent.Version(latestVersionNumber);
 				version.setCommitHash(gitCommitRev);
 				articleUpdateEvent.setVersion(version);
@@ -598,6 +604,67 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			EventManager.getInstance().fireEvent(articleUpdateEvent);
 		}
 	}
+
+	private GitConnector gitConnector = null;
+	private GitConnector getGitConnector() {
+		if(gitConnector==null){
+			String gitDir = Environment.getInstance()
+					.getWikiConnector()
+					.getWikiProperty(GitProviderProperties.JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR);
+			gitConnector = JGitBackedGitConnector.fromPath(gitDir);
+		}
+		return gitConnector;
+	}
+
+	private static void handleArticleRefreshEvent(Collection<String> pageTitles, int type) {
+		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		articleManager.open();
+		LOGGER.info("open");
+
+		try {
+			for (String title : pageTitles) {
+				//for some reason we dont want to do this for attachments
+				if (title.contains("/")) {
+					continue;
+				}
+				LOGGER.info(title);
+				if (type == GitUpdateByPullPageEvent.UPDATE) {
+					//this block checks wheter the new text is empty, this gets interpreted as a deletion
+					String articleText = Environment.getInstance()
+							.getWikiConnector()
+							.getArticleText(title);
+					if (articleText == null || articleText.isEmpty()) {
+						Article article = articleManager.getArticle(title);
+						if (article != null) {
+							articleManager.deleteArticle(title);
+						}
+						else {
+							LOGGER.warn("Article not found: " + title);
+						}
+					}
+					else {
+						//standard case of KnowWE article update
+						articleManager.registerArticle(title, articleText);
+					}
+				}
+				else {
+					Article article = articleManager.getArticle(title);
+					if (article != null) {
+						articleManager.deleteArticle(title);
+					}
+				}
+			}
+		}
+		finally {
+			articleManager.commit();
+			LOGGER.info("commit");
+		}
+	}
+
+	private static boolean articleIsEmpty(String title) {
+		return false;
+	}
+
 
 	/**
 	 * Some managers are not available immediately, so register a bit later
