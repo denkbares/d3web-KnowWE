@@ -230,7 +230,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	}
 
 	private static class ReadOnlyHttpSession implements HttpSession {
-		private final HashMap<String, Object> attributes = new HashMap<>();
+		private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
 		public ReadOnlyHttpSession(HttpSession session) {
 			Iterator<String> iterator = session.getAttributeNames().asIterator();
@@ -318,7 +318,8 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		@Override
 		public void setAttribute(String name, Object value) {
-			throw new UnsupportedOperationException();
+			attributes.put(name, value);
+			LOGGER.warn("Setting attribute {} in a read only session, the value will only be present during the current rerender call.", name);
 		}
 
 		@Override
