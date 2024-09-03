@@ -31,10 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -49,14 +47,12 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import com.denkbares.events.EventManager;
-import de.knowwe.event.ArticleRenamedEvent;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
@@ -86,6 +82,7 @@ import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiObjectInfo;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.event.ArticleRenamedEvent;
 import de.knowwe.plugin.Plugins;
 import de.knowwe.plugin.StatusProvider;
 
@@ -143,9 +140,9 @@ public class KnowWEUtils {
 		while (matcher.find()) {
 			final String link = matcher.group(1);
 			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
-					&& !link.startsWith("http")
-					&& !link.startsWith("file")
-					&& !link.startsWith("attach")) {
+				&& !link.startsWith("http")
+				&& !link.startsWith("file")
+				&& !link.startsWith("attach")) {
 				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
@@ -292,8 +289,8 @@ public class KnowWEUtils {
 				.getAttachments();
 		for (final WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
-					&& attachment.getParentName().equals(title))
-					|| attachment.getPath().equals(fileName)) {
+				 && attachment.getParentName().equals(title))
+				|| attachment.getPath().equals(fileName)) {
 				actualAttachment = attachment;
 				break;
 			}
@@ -733,7 +730,30 @@ public class KnowWEUtils {
 	public static String getURLLink(String title, final int version) {
 		title = fixAttachmentArticleLinks(title);
 		return "Wiki.jsp?page=" + Strings.encodeURL(title)
-				+ (version == -1 ? "" : "&version=" + version);
+			   + (version == -1 ? "" : "&version=" + version);
+	}
+
+	/**
+	 * Creates an url link with GET parameters that can be placed into a &lt;a href="..."&gt; tag to reference
+	 * the specified article, e.g., <code>Wiki.jsp?page=MyPage&foo=1&bar=baz</code>.
+	 * Note, that both parameter keys and values will be URL encoded by this method.
+	 *
+	 * @param title      the article title to create the link for
+	 * @param parameters the set of GET parameters, where the first entry is the key and the second entry the value
+	 * @return the link with GET parameters
+	 */
+	@SafeVarargs
+	public static String getURLLink(String title, Pair<String, String>... parameters) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Wiki.jsp?page=")
+				.append(Strings.encodeURL(title));
+		for (Pair<String, String> parameter : parameters) {
+			builder.append("&")
+					.append(Strings.encodeURL(parameter.getA()))
+					.append("=")
+					.append(Strings.encodeURL(parameter.getB()));
+		}
+		return builder.toString();
 	}
 
 	private static String fixAttachmentArticleLinks(ArticleManager manager, String title) {
