@@ -246,3 +246,16 @@
 	margin: 0 13px;
 	color: #666;
 }
+
+/** If preview items aren't grouped by <section-type, article-name> but just <section-type> we want to additionally
+show a preview title (e.g. the name of its article). Since for historic reasons this is difficult to do
+programmatically, we always create the title HTML. However, to avoid side-effects, this title is hidden by default.
+Only if the second selector matches (to select all non-nested preview titles), the titles are shown.
+ */
+.previewTitle {
+	display: none;
+}
+
+.objectInfoPanel .previewTitle:not(.objectInfoPanel .objectInfoPanel .previewTitle) {
+	display: block;
+}

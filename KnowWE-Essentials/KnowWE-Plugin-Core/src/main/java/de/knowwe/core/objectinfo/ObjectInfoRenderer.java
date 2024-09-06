@@ -146,6 +146,9 @@ public class ObjectInfoRenderer implements Renderer {
 			Collection<Section<?>> group = entry.getValue();
 
 			result.appendHtml("<div class='previewItem'>");
+			result.appendHtmlTag("p", "class", "previewTitle")
+					.appendHtmlElement("strong", previewSection.getTitle())
+					.appendHtmlTag("/p");
 			//ObjectInfoRenderer.renderLinkToSection(previewSection, result);
 			ObjectInfoRenderer.renderTermPreview(previewSection, group, user, "reference", result);
 			String clazz = "editanchor";
