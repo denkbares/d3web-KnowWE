@@ -299,4 +299,53 @@ public class TableUtils {
 		}
 		return null;
 	}
+
+	/**
+	 * For the current row, return the first cell with the given header. If there are multiple columns with the same
+	 * header, the first one from the left is returned.
+	 *
+	 * @param rowSection    the section of the row or a successor
+	 * @param columnHeaderRegex  the column header for which we want the cell in the current row
+	 * @param cellTypeClass the type of the section we want to extract from the cell
+	 * @return the section with the given type in the cell with the given header in the current row
+	 */
+	public static <T extends Type> Section<T> getInRowRegex(Section<?> rowSection, String columnHeaderRegex, Class<T> cellTypeClass) {
+		return getInRowRegex(rowSection, columnHeaderRegex, cellTypeClass, 0);
+	}
+
+	/**
+	 * For the current row, return the cell with the given header. Use this method if the table contains
+	 * multiple columns with the same header. The given 0-based index specifies which of those columns will be used.
+	 *
+	 * @param rowSection    the section of the row or a successor
+	 * @param columnHeaderRegex  the column header for which we want the cell in the current row
+	 * @param cellTypeClass the type of the section we want to extract from the cell
+	 * @return the section with the given type in the cell with the given header in the current row
+	 */
+	@Nullable
+	public static <T extends Type> Section<T> getInRowRegex(Section<?> rowSection, String columnHeaderRegex, Class<T> cellTypeClass, int index) {
+		columnHeaderRegex = Strings.trim(columnHeaderRegex.toLowerCase());
+
+		Section<TableLine> headerRow = getHeaderRow(rowSection);
+		if (headerRow == null) return null;
+		List<Section<TableCellContent>> headerCells = Sections.successors(headerRow, TableCellContent.class);
+
+		List<Section<TableCellContent>> currentLineCells = Sections.successors(getTableLine(rowSection), TableCellContent.class);
+		int matchCount = 0;
+		for (int i = 0; i < headerCells.size(); i++) {
+			String headerText = Strings.trim(headerCells.get(i).getText().toLowerCase());
+			if (headerText.matches(columnHeaderRegex)) {
+				if (matchCount == index) {
+					if (currentLineCells.size() >= i + 1) {
+						return $(currentLineCells.get(i)).successor(cellTypeClass).getFirst();
+					}
+					else {
+						return null;
+					}
+				}
+				matchCount++;
+			}
+		}
+		return null;
+	}
 }
