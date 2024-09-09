@@ -188,6 +188,14 @@ public final class StyleRenderer implements Renderer {
 	}
 
 	/**
+	 * Renders a text without escaping JSP wiki syntax
+	 */
+	public void renderTextUnmasked(String text, RenderResult string) {
+		renderOpeningTag(null, string);
+		string.append(text);
+		string.appendHtml("</span>");
+	}
+	/**
 	 * Renders the content that will automatically be styled in the correct way. You may overwrite it for special
 	 * purposes.
 	 *
