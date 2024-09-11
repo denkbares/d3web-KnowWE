@@ -42,6 +42,7 @@ import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
+import com.denkbares.strings.Strings;
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestParser;
@@ -164,19 +165,19 @@ public class CIDashboardType extends DefaultMarkupType {
 		return name;
 	}
 
-
 	public Set<String> getMonitoredArticles(Section<CIDashboardType> dashboardSection) {
 		return Set.copyOf(dashboardSection.getObjectOrDefault(null, MONITORED_ARTICLES, Set.of()));
 	}
+
 	public static Optional<Integer> getMaxBuilds(Section<CIDashboardType> section) {
 		String maxBuildsString = DefaultMarkupType.getAnnotation(section, MAX_BUILDS);
-		if (maxBuildsString == null)return Optional.empty();
+		if (maxBuildsString == null) return Optional.empty();
 
-		try{
+		try {
 			int maxBuilds = Integer.parseInt(maxBuildsString);
 			return Optional.of(maxBuilds);
 		}
-		catch (NumberFormatException e){
+		catch (NumberFormatException e) {
 			return Optional.empty();
 		}
 	}
@@ -240,13 +241,12 @@ public class CIDashboardType extends DefaultMarkupType {
 				.findFirst();
 	}
 
-	private List<String> getTestsToSkip(List<Section<? extends AnnotationContentType>> annotationSections) {
-		Optional<Section<? extends AnnotationContentType>> annoSectionByKey = getAnnoSectionByKey(annotationSections, SKIP_TESTS);
-		String skipString = annoSectionByKey.map(Section::getText).orElse(null);
+	private List<String> getTestsToSkip(Section<CIDashboardType> annotationSections) {
+		@NotNull String[] annotations = DefaultMarkupType.getAnnotations(annotationSections, SKIP_TESTS);
 		List<String> skipTests = new ArrayList<>();
-		if (skipString != null) {
-			String[] skipTestStrings = skipString.split(",");
-			skipTests = Arrays.stream(skipTestStrings).collect(Collectors.toCollection(ArrayList::new));
+		for (String annotation : annotations) {
+			String[] tests = annotation.split(",");
+			skipTests.addAll(Arrays.stream(tests).map(Strings::trim).toList());
 		}
 		return skipTests;
 	}
@@ -270,7 +270,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		List<Section<? extends AnnotationContentType>> annotationSections = section.get()
 				.getAnnotationSections(section);
 		TestProcessingResult dashboardResult = processTests(annotationSections, compiler, section);
-		List<String> skip = section.get().getTestsToSkip(section.get().getAnnotationSections(section));
+		List<String> skip = section.get().getTestsToSkip(section);
 		if (!skip.isEmpty()) testsToSkip.addAll(skip);
 		dashboardResult = getFilteredTests(dashboardResult, testsToSkip);
 		TestProcessingResult templateResult = null;
@@ -401,8 +401,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					handleInvalidTriggers(trigger, monitoredArticles, msgs, cronSchedule);
 				}
 			}
-			List<Section<? extends AnnotationContentType>> annotationSections = getAnnotationSections(section);
-			List<String> testsToSkip = getTestsToSkip(annotationSections);
+			List<String> testsToSkip = getTestsToSkip(section);
 
 			TestProcessingResult result = processDashboard(section, compiler, testsToSkip, new HashSet<>());
 			List<TestSpecification<?>> tests = result.testSpecifications();
@@ -429,7 +428,8 @@ public class CIDashboardType extends DefaultMarkupType {
 					monitoredArticles.add(parameter);
 				}
 				else {
-					Collection<Article> articles = section.getArticleManager() == null ? List.of() : section.getArticleManager().getArticles();
+					Collection<Article> articles = section.getArticleManager() == null ? List.of() : section.getArticleManager()
+							.getArticles();
 					Pattern onSaveArticleRegexPattern = Pattern.compile(parameter);
 					for (Article article : articles) {
 						if (onSaveArticleRegexPattern.matcher(article.getTitle()).matches()) {
