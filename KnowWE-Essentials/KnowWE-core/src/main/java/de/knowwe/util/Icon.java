@@ -111,6 +111,7 @@ public class Icon {
 	public static final Icon TOOLS = new Icon("fa-type fa-screwdriver-wrench");
 	public static final Icon DATABASE = new Icon("fa-type fa-database");
 	public static final Icon CURSOR = new Icon("fa-type fa-arrow-pointer");
+	public static final Icon COPY = new Icon("fa-solid fa-copy");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-type fa-file-lines");
