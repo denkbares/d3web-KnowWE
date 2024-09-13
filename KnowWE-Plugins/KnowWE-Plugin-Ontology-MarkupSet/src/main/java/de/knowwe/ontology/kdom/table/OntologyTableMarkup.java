@@ -57,7 +57,7 @@ import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
  */
 public class OntologyTableMarkup extends DefaultMarkupType {
 
-	private static final DefaultMarkup MARKUP;
+	protected static final DefaultMarkup MARKUP;
 
 	public static final String ANNOTATION_TYPE_RELATION = "typeRelation";
 	public static final String ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET = "defaultPredicateObjectSet";
