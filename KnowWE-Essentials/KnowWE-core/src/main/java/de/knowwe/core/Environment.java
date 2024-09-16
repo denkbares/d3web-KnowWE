@@ -16,6 +16,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
@@ -273,7 +274,7 @@ public class Environment {
 			List<WikiPageInfo> articleHistory = Environment.getInstance()
 					.getWikiConnector()
 					.getArticleHistory(title);
-			if(articleHistory == null || articleHistory.size() == 0) {
+			if(articleHistory == null || articleHistory.isEmpty()) {
 				LOGGER.warn("Error occurred when retrieving wiki page history from WikiConnector: History is empty");
 				return -1;
 			}
@@ -473,6 +474,7 @@ public class Environment {
 		Plugins.checkTypePriorityClarity();
 
 		// queue the queue of paths to be initialized
+		PlainText.getInstance();
 		rootType = new RootType();
 		LinkedList<Type[]> queue = new LinkedList<>();
 		queue.add(new Type[] { rootType });
