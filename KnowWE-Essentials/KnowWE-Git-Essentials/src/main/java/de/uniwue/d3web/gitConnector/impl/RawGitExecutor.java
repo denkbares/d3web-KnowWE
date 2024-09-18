@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
@@ -16,13 +18,21 @@ import org.slf4j.LoggerFactory;
 public class RawGitExecutor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RawGitExecutor.class);
 
-	public static String executeGitCommand(String[] command, String repositoryPath) {
+
+	public static String executeGitCommandWithEnvironment(String[] command, String repositoryPath, Map<String,String> environment) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		Process process = null;
+
+		String[] environmentArray = new String[environment.size()];
+		int index=0;
+		for (Map.Entry<String,String> entry : environment.entrySet()) {
+			environmentArray[index] = entry.getKey()+"="+entry.getValue();
+			index++;
+		}
 		try {
 			process = Runtime.getRuntime().exec(
-					command, null, new File(repositoryPath));
+					command, environmentArray, new File(repositoryPath));
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -51,6 +61,9 @@ public class RawGitExecutor {
 		stopWatch.stop();
 		LOGGER.info("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
 		return response;
+	}
+	public static String executeGitCommand(String[] command, String repositoryPath) {
+		return executeGitCommandWithEnvironment(command, repositoryPath, Collections.emptyMap());
 	}
 
 	public static String executeGitCommand(String command, String repositoryPath) {

@@ -91,8 +91,41 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String commitForUser(UserData userData, long timeStamp) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.commitForUser(userData, timeStamp);
+
+		}
+		return this.jgitConnector.commitForUser(userData, timeStamp);
+	}
+
+	@Override
 	public boolean isRemoteRepository() {
 		return this.jgitConnector.isRemoteRepository();
+	}
+
+	@Override
+	public List<String> listBranches() {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.listBranches();
+		}
+		return this.jgitConnector.listBranches();
+	}
+
+	@Override
+	public List<String> listCommitsForBranch(String branchName) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.listCommitsForBranch(branchName);
+		}
+		return this.jgitConnector.listCommitsForBranch(branchName);
+	}
+
+	@Override
+	public boolean switchToBranch(String branch, boolean createBranch) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.switchToBranch(branch, createBranch);
+		}
+		return this.jgitConnector.switchToBranch(branch, createBranch);
 	}
 
 	@Override
@@ -207,6 +240,7 @@ public class JGitBackedGitConnector implements GitConnector {
 	public void performGC(boolean aggressive, boolean prune) {
 		if (bareGitConnector.isGitInstalled) {
 			this.bareGitConnector.performGC(aggressive, prune);
+			return;
 		}
 		this.jgitConnector.performGC(aggressive, prune);
 	}
@@ -246,6 +280,10 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public void addPath(String path) {
+		if(this.bareGitConnector.isGitInstalled) {
+			this.bareGitConnector.addPath(path);
+			return;
+		}
 		this.jgitConnector.addPath(path);
 	}
 

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -79,8 +80,7 @@ public class BareGitConnector implements GitConnector {
 		try {
 			LOGGER.info("Starting execution of " + label);
 			String command = "git commit-graph write --reachable --changed-paths";
-			Process process = Runtime.getRuntime().exec(
-					command, null, new File(this.repositoryPath));
+			Process process = Runtime.getRuntime().exec(command, null, new File(this.repositoryPath));
 
 			InputStream responseStream = process.getInputStream();
 			int exitVal = process.waitFor();
@@ -111,9 +111,11 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public List<String> listChangedFilesForHash(String commitHash) {
-		String command = "git diff-tree --no-commit-id --name-only -r " + commitHash;
-		String result = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
-		return Arrays.asList(result.split("\n"));
+		String[] command = new String[] { "git", "diff-tree", "--no-commit-id", "--name-only", "-r", commitHash };
+		String result = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
+		List<String> list = new ArrayList<>(Arrays.asList(result.split("\n")));
+		list.remove("");
+		return list;
 	}
 
 	@Override
@@ -439,8 +441,74 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String commitForUser(UserData userData, long timeStamp) {
+		Map<String, String> environment = Map.of("GIT_AUTHOR_DATE", String.valueOf(timeStamp), "GIT_COMMITTER_DATE", String.valueOf(timeStamp));
+		String[] gitCommand = { "git", "commit", "--author=" + userData.user + " <" + userData.email + ">", "-m", userData.message };
+		String commitResult = RawGitExecutor.executeGitCommandWithEnvironment(gitCommand, this.repositoryPath, environment);
+		if (!commitResult.contains(userData.message)) {
+			throw new IllegalStateException("Commit failed! for command: " + Arrays.toString(gitCommand) + "obtained result: \n" + commitResult);
+		}
+
+		return currentHEAD();
+	}
+
+	@Override
 	public boolean isRemoteRepository() {
 		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public List<String> listBranches() {
+		if (!this.isGitInstalled) {
+			return Collections.emptyList();
+		}
+		String[] gitCommand = { "git", "branch" };
+		String branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+
+		List<String> branches = new ArrayList<>();
+		for (String branch : branchResult.split("\n")) {
+			String trim = branch.trim();
+			//active branch
+			if (trim.startsWith("*")) {
+				trim = trim.substring(1);
+			}
+			branches.add(trim);
+		}
+		return branches;
+	}
+
+	@Override
+	public List<String> listCommitsForBranch(String branchName) {
+		String[] command = null;
+		command = new String[] { "git", "log", branchName, "--format=%H" };
+
+		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
+
+		List<String> commitHashes = new ArrayList<>();
+		for (String line : logOutput.split("\n")) {
+			String commitHash = line.replaceAll("\"", "").trim();
+			if (!commitHash.isEmpty()) {
+				commitHashes.add(commitHash);
+			}
+		}
+		Collections.reverse(commitHashes);
+		return commitHashes;
+	}
+
+	@Override
+	public boolean switchToBranch(String branch, boolean createBranch) {
+		String[] command = null;
+		if (createBranch) {
+			command = new String[] { "git", "checkout", "-b", branch };
+		}
+		else {
+			command = new String[] { "git", "checkout", branch };
+		}
+		String logOutput = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+
+		String currentBranch = currentBranch();
+
+		return currentBranch.equals(branch);
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {

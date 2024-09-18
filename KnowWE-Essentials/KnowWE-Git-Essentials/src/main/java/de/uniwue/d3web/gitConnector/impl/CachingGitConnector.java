@@ -335,7 +335,27 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String commitForUser(UserData userData, long timeStamp) {
+		return this.delegate.commitForUser(userData, timeStamp);
+	}
+
+	@Override
 	public boolean isRemoteRepository() {
 		return this.delegate.isRemoteRepository();
+	}
+
+	@Override
+	public List<String> listBranches() {
+		return this.delegate.listBranches();
+	}
+
+	@Override
+	public List<String> listCommitsForBranch(String branchName) {
+		return this.delegate.listCommitsForBranch(branchName);
+	}
+
+	@Override
+	public boolean switchToBranch(String branch, boolean createBranch) {
+		return this.delegate.switchToBranch(branch, createBranch);
 	}
 }

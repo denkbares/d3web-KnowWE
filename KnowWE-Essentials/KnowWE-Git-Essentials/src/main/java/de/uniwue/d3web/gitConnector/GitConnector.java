@@ -203,15 +203,42 @@ public interface GitConnector {
 	boolean isIgnored(String path);
 
 	/**
-	 * Performs a commit operation on the underlying git using the provided userData - returns the commit hash
+	 * Performs a commit operation on the underlying git using the provided userData - returns the commit hash.
+	 *
 	 * @param userData
 	 * @return
 	 */
 	String commitForUser(UserData userData);
 
 	/**
+	 * Performs a commit operation on the underlying git using the provided userData - returns the commit hash. You can specify a timestamp.
+	 * The timestamp has to be specified as a Git timestamp which corresponds to "System.currentTimeMillis()/1000".
+	 * @param userData
+	 * @return
+	 */
+	String commitForUser(UserData userData, long timeStamp);
+	/**
 	 * Returns whether this repository has any remote origins assigned!
 	 * @return
 	 */
 	boolean isRemoteRepository();
+
+	/**
+	 * List all branches of this repository
+	 */
+	 List<String> listBranches();
+
+	/**
+	 * Lists all commit hashes for a given branch
+	 * @return
+	 */
+	List<String> listCommitsForBranch(String branchName);
+
+	/**
+	 * switches to the specified branch and creates the branch if necessary. Returns true if successful
+	 * @param branch
+	 * @param createBranch
+	 * @return
+	 */
+	boolean switchToBranch(String branch, boolean createBranch);
 }

@@ -149,9 +149,29 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String commitForUser(UserData userData, long timeStamp) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
 	public boolean isRemoteRepository() {
 		final Set<String> remoteNames = this.repository.getRemoteNames();
 		return !remoteNames.isEmpty();
+	}
+
+	@Override
+	public List<String> listBranches() {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public List<String> listCommitsForBranch(String branchName) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean switchToBranch(String branch, boolean createBranch) {
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
