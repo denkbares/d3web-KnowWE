@@ -47,6 +47,7 @@
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
 		<implementationVersion>${project.version}</implementationVersion>
+		<logback.version>1.5.8</logback.version>
 	</properties>
 
 	<modules>
@@ -269,12 +270,12 @@
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
-				<version>1.4.14</version>
+				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>1.4.14</version>
+				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
