@@ -195,6 +195,9 @@ public class ReRenderContentPartAction extends AbstractAction {
 			super(context.getActionName(), context.getPath(), context.getParameters(), null, null, context.getServletContext(), context.getManager());
 			this.cookies = context.getRequest().getCookies();
 			this.locales = context.getBrowserLocales();
+			context.getRequest().getAttributeNames().asIterator().forEachRemaining(name -> {
+				this.attributes.put(name, context.getRequest().getParameter(name));
+			});
 			this.session = new ReadOnlyHttpSession(context.getSession());
 		}
 
