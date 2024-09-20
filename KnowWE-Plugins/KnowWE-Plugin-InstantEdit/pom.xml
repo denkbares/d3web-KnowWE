@@ -24,7 +24,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2024.3-SNAPSHOT</version>
+		<version>2024.3-KONAP</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
