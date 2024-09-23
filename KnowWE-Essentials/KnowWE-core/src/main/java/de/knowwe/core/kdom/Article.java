@@ -107,7 +107,6 @@ public final class Article {
 		return createArticle(text, title, web, null, true, root);
 	}
 
-
 	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
 		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType());
 	}
@@ -121,7 +120,7 @@ public final class Article {
 	 * @param manager   the article manager the article belongs to
 	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
 	 *                  versions if possible
-	 * @param root		RootType to be used
+	 * @param root      RootType to be used
 	 */
 	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
 		Article article = null;
@@ -148,14 +147,14 @@ public final class Article {
 		long start = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
-		this.text = text;
+		this.text = cleanupText(text);
 		this.articleManager = manager;
 		this.lastVersion = Environment.isInitialized() && articleManager != null ? Environment.getInstance()
 				.getArticle(web, title) : null;
 
 		this.fullParse = fullParse
-				|| lastVersion == null
-				|| Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
+						 || lastVersion == null
+						 || Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
 
 		sectionizeArticle(text);
 
@@ -167,6 +166,13 @@ public final class Article {
 			LOGGER.info("Sectionized article '" + title + "' in " + time + "ms");
 		}
 		this.sectionized = true;
+	}
+
+	private String cleanupText(@NotNull String text) {
+		// just remove zero-width spaces
+		return text.replace("\u200B", "")
+				// just replace others with regular space
+				.replaceAll("[\u00A0\u2000-\u200B\u202F\u205F\u2060\u3000\u180E]", " ");
 	}
 
 	public boolean isSectionized() {
