@@ -44,8 +44,6 @@ import de.knowwe.core.report.CompilerMessage;
  */
 public class PlainText extends AbstractType {
 
-	private static final int CONTEXT_WINDOWS = 50;
-	private static final String TARGET = "↯";
 	private static PlainText instance;
 
 	public static synchronized PlainText getInstance() {
@@ -58,52 +56,6 @@ public class PlainText extends AbstractType {
 	public PlainText() {
 		this.setRenderer(DefaultTextRenderer.getInstance());
 		this.setSectionFinder(AllTextFinder.getInstance());
-		this.addCompileScript(new DefaultGlobalCompiler.DefaultGlobalScript<PlainText>() {
-			@Override
-			public void compile(DefaultGlobalCompiler compiler, Section<PlainText> section) throws CompilerMessage {
-				String text = section.getText();
-				String regex = "[\u00A0\u2000-\u200B\u202F\u205F\u2060\u3000\u180E]";
-
-				Pattern pattern = Pattern.compile(regex);
-				Matcher matcher = pattern.matcher(text);
-
-				List<String> foundSpaces = new ArrayList<>();
-				while (matcher.find()) {
-					String context = getContext(section, matcher);
-					foundSpaces.add("Found problematic " + getWhitespaceDescription(matcher.group()) + " in the following text, here shown as " + TARGET + ". Remove the character to get rid of this warning.\n" + context.replaceAll("\n", "\\\\n"));
-				}
-				if (!foundSpaces.isEmpty()) {
-					throw CompilerMessage.warning(String.join("\n", foundSpaces));
-				}
-			}
-
-			private @NotNull String getContext(Section<PlainText> section, Matcher matcher) {
-				int indexStart = section.getOffsetInArticle() + matcher.start();
-				int indexEnd = section.getOffsetInArticle() + matcher.end();
-				String articleText = section.getArticle()
-						.getText();
-				String contextBefore = articleText.substring(Math.max(0, indexStart - CONTEXT_WINDOWS), indexStart);
-				String contextAfter = articleText.substring(indexEnd, Math.min(articleText.length(), indexEnd + CONTEXT_WINDOWS));
-				return "..." + contextBefore + TARGET + contextAfter + "...";
-			}
-
-			// Methode zur Beschreibung der gefundenen Whitespaces
-			private static String getWhitespaceDescription(String match) {
-				return switch (match) {
-					case "\u00A0" -> "non-breaking space";
-					case "\u200B" -> "zero width space";
-					case "\u2003" -> "em space";
-					case "\u3000" -> "ideographic space";
-					default -> {
-						// Für Unicode Whitespaces innerhalb \u2000-\u200A
-						if (match.codePointAt(0) >= 0x2000 && match.codePointAt(0) <= 0x200A) {
-							yield String.format("unicode whitespace (U+%04X)", (int) match.charAt(0));
-						}
-						yield "unknown white-space";
-					}
-				};
-			}
-		});
 	}
 
 	/**
