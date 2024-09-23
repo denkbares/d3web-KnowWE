@@ -467,7 +467,7 @@ Spreadsheet.prototype.createTable = function(model) {
       html += "<";
       html += isHeader ? "td class=table-header" : "td";
       html += " id='" + this.getCellID(row, col) + "'><div><a href='#'>";
-      html += text ? text : "&nbsp;";
+      html += text ? text : " ";
       html += "</a></div>";
     }
     html += "</tr>\n";
@@ -842,7 +842,7 @@ Spreadsheet.prototype.setCellText = function(row, col, text) {
   this.stopEditCell();
   const elem = this.getCell(row, col).find("div > a");
   if (!text || text.match(/^\s+$/g)) {
-    elem.html("&nbsp;"); // avoid cell collapsing
+    elem.html(" "); // avoid cell collapsing
   } else {
     elem.text(text);
   }
