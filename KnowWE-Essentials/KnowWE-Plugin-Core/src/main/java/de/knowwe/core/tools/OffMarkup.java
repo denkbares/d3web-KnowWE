@@ -19,6 +19,7 @@
 
 package de.knowwe.core.tools;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -77,7 +78,7 @@ public class OffMarkup extends DefaultMarkupType {
 
 	public static String getOriginalMarkupName(Section<?> section) {
 		String text = section.getText();
-		return text.substring(0, text.indexOf("\n")).replaceAll("^(?i)%%off:", "");
+		return Strings.trim(text.substring(0, text.indexOf("\n")).replaceAll("^(?i)%%off:", ""));
 	}
 
 	@Override
