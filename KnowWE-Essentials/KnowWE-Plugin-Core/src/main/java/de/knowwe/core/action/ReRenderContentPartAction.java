@@ -189,7 +189,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		private final Cookie[] cookies;
 		private final Locale[] locales;
 		private final ReadOnlyHttpSession session;
-		private final Map<String, String> attributes = new ConcurrentHashMap<>();
+		private final Map<String, String> attributes = Collections.synchronizedMap(new HashMap<>());
 
 		public AsyncActionContext(UserActionContext context) {
 			super(context.getActionName(), context.getPath(), context.getParameters(), null, null, context.getServletContext(), context.getManager());
