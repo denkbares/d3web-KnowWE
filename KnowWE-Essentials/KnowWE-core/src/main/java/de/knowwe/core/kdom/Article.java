@@ -147,7 +147,8 @@ public final class Article {
 		long start = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
-		this.text = cleanupText(text);
+		String cleanedText = cleanupText(text);
+		this.text = cleanedText;
 		this.articleManager = manager;
 		this.lastVersion = Environment.isInitialized() && articleManager != null ? Environment.getInstance()
 				.getArticle(web, title) : null;
@@ -156,7 +157,7 @@ public final class Article {
 						 || lastVersion == null
 						 || Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
 
-		sectionizeArticle(text);
+		sectionizeArticle(cleanedText);
 
 		long time = System.currentTimeMillis() - start;
 		if (time < LOG_THRESHOLD && articleManager != null && !articleManager.isInitialized() || articleManager == null) {
