@@ -45,7 +45,7 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		context.setContentType(Action.JSON);
 
-		Collection<GroupingCompiler> compilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class);
+		Collection<GroupingCompiler> compilers = Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class);
 		JSONObject response = new JSONObject();
 
 		if (compilers.size() <= 1) {

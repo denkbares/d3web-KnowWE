@@ -72,6 +72,9 @@ public abstract class AbstractUserContext implements UserContext {
 		if (page == null) {
 			page = this.getParameter("page");
 		}
+		if (page == null) {
+			page = this.getParameter("title");
+		}
 		return page;
 	}
 

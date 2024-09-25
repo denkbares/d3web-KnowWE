@@ -51,7 +51,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		if (Boolean.parseBoolean(context.getParameter(PARAM_FULL_COMPILE, "false"))) {
 			if (compiler.isIncrementalBuild()) {
-				RecompileAction.recompile(compiler.getCompileSection().getArticle(), true, "Knowledge base download", context.getUserName());
+				RecompileAction.recompileVariant(context, "Knowledge base download");
 				Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 				compiler = getCompiler(context);
 				if (compiler == null) failUnexpected(context, "Compile no longer available after recompile");
@@ -70,7 +70,8 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 
 		context.setContentType(BINARY);
 		context.getResponse().addHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
-		context.getResponse().addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
+		context.getResponse()
+				.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 
 		// write the timestamp of the creation (Now!) into the knowledge base
 		base.getInfoStore().addValue(BasicProperties.CREATED, new Date());

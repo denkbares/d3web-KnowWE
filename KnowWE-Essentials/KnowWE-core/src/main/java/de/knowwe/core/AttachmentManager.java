@@ -71,34 +71,30 @@ public class AttachmentManager implements EventListener {
 
 	@Override
 	public void notify(Event event) {
-		if (event instanceof AttachmentStoredEvent) {
-			AttachmentStoredEvent attachmentStoredEvent = (AttachmentStoredEvent) event;
+		if (event instanceof AttachmentStoredEvent attachmentStoredEvent) {
 			registerAttachment(attachmentStoredEvent.getPath());
 		}
-		else if (event instanceof AttachmentDeletedEvent) {
-			AttachmentDeletedEvent attachmentDeletedEvent = (AttachmentDeletedEvent) event;
+		else if (event instanceof AttachmentDeletedEvent attachmentDeletedEvent) {
 			unregisterAttachment(attachmentDeletedEvent.getPath());
 		}
-		else if (event instanceof ArticleRegisteredEvent) {
-			Article article = ((ArticleRegisteredEvent) event).getArticle();
-			handleArticleUpdate(article);
+		else if (event instanceof ArticleRegisteredEvent articleRegisteredEvent) {
+			handleArticleUpdate(articleRegisteredEvent.getArticle());
 		}
-		else if (event instanceof FullParseEvent) {
-			Article article = ((FullParseEvent) event).getArticle();
-			doFullParseOfCompiledAttachments(article);
+		else if (event instanceof FullParseEvent fullParseEvent) {
+			doFullParseOfCompiledAttachments(fullParseEvent.getArticles());
 		}
 		else if (event instanceof InitializedArticlesEvent) {
 			allArticlesInitialized = true;
 		}
 	}
 
-	private void doFullParseOfCompiledAttachments(Article article) {
+	private void doFullParseOfCompiledAttachments(Collection<Article> articles) {
 		Collection<String> queuedArticles = articleManager.getQueuedArticles()
 				.stream()
 				.map(Article::getTitle)
 				.collect(toSet());
-		Set<String> compiledAttachmentArticleTitles = articleTitleToSectionsMap.getValues(article.getTitle())
-				.stream()
+		Set<String> compiledAttachmentArticleTitles = articles.stream()
+				.flatMap(article -> articleTitleToSectionsMap.getValues(article.getTitle()).stream())
 				.map(this::getWikiAttachment)
 				.filter(Objects::nonNull)
 				.map(WikiAttachment::getPath)
@@ -272,20 +268,22 @@ public class AttachmentManager implements EventListener {
 	}
 
 	/**
-	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with @compile: true)
+	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with
 	 *
 	 * @param article the article to check
 	 * @return true if the given article is an attachment article, false otherwise
+	 * @compile: true)
 	 */
 	public boolean isAttachmentArticle(Article article) {
 		return isAttachmentArticle(article.getTitle());
 	}
 
 	/**
-	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with @compile: true)
+	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with
 	 *
 	 * @param title the title of the article to check
 	 * @return true if the given article is an attachment article, false otherwise
+	 * @compile: true)
 	 */
 	public boolean isAttachmentArticle(String title) {
 		return !pathToSectionsMap.getValues(title).isEmpty();

@@ -558,7 +558,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@NotNull
-	public static <C extends Compiler> List<C> getCompilers(ArticleManager manager, Class<C> compilerClass) {
+	public static <C extends Compiler> List<C> getCompilers(@NotNull ArticleManager manager, Class<C> compilerClass) {
 		return getCompilers(null, manager, compilerClass, false);
 	}
 

@@ -702,14 +702,19 @@ KNOWWE.core.plugin.recompile = function() {
     init: function() {
       jq$(document).keyup(function(event) {
           let command = null;
-          const isCMD = event.ctrlKey || event.metaKey;
-          if (isCMD && event.altKey && event.shiftKey && (event.key === "R" || event.key === "¸")) {
-            command = "recompileAll";
-            KNOWWE.notification.success("Full Recompile", "Performing recompilation of the current page and all involved compilers.");
-          } else if (isCMD && event.altKey && (event.key === "r" || event.key === "®")) {
-            command = "recompile";
+          if (event.ctrlKey && event.altKey && event.shiftKey && (event.key === "R" || event.key === "¸")) {
+            command = "all";
+            KNOWWE.notification.success("Full recompile", "Performing full recompilation of the current page and all compilers.");
+          }
+          else if (event.ctrlKey && event.altKey && (event.key === "r" || event.key === "®")) {
+            command = "single";
             KNOWWE.notification.success("Recompile", "Recompiling the current page.");
-          } else {
+          }
+          else if (event.ctrlKey && event.metaKey && event.key === "r") {
+            command = "variant";
+            KNOWWE.notification.success("Full variant recompile", "Recompiling the current page and currently selected variant.");
+          }
+          else {
             return;
           }
 

@@ -3,6 +3,9 @@
  */
 package de.knowwe.event;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,19 +20,23 @@ import de.knowwe.core.kdom.Article;
  * @created 15.05.14
  */
 public class FullParseEvent implements Event {
-	private final Article article;
+	private final Collection<Article> articles;
 	private final String user;
 
-	public FullParseEvent(@NotNull Article article, @Nullable String user) {
-		this.article = article;
+	public FullParseEvent(@NotNull Collection<Article> articles, @Nullable String user) {
+		this.articles = articles;
 		this.user = user == null ? "SYSTEM" : user;
+	}
+
+	public FullParseEvent(Article article, String author) {
+		this(List.of(article), author);
 	}
 
 	/**
 	 * Returns the article the full parse was performed on
 	 */
-	public Article getArticle() {
-		return article;
+	public Collection<Article> getArticles() {
+		return articles;
 	}
 
 	public String getUserName() {

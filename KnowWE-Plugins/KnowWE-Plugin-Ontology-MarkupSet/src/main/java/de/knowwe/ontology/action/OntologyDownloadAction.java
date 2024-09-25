@@ -16,9 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.jetbrains.annotations.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
@@ -70,7 +70,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		if (Boolean.parseBoolean(context.getParameter(PARAM_FULL_COMPILE, "false"))) {
 			Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 			if (compiler.isIncrementalBuild()) {
-				RecompileAction.recompile(compiler.getCompileSection().getArticle(), true, "Ontology download", context.getUserName());
+				RecompileAction.recompileVariant(context, "Ontology download");
 				Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 				compiler = getCompiler(context);
 				if (compiler == null) failUnexpected(context, "Compile no longer available after recompile");
@@ -92,7 +92,8 @@ public class OntologyDownloadAction extends AbstractAction {
 
 		context.setContentType(mimeType);
 		context.getResponse().addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-		context.getResponse().addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
+		context.getResponse()
+				.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 		Stopwatch stopwatch = new Stopwatch();
 		try (OutputStream outputStream = context.getOutputStream()) {
 			if (syntax == RDFFormat.TURTLE) {

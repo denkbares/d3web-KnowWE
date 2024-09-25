@@ -48,7 +48,7 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		if ( false && !context.userIsAdmin()) return;
+		if (!context.userIsAdmin()) return;
 
 		ArticleManager articleManager = context.getArticleManager();
 
@@ -59,7 +59,7 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 				LOGGER.info("Checking " + markup.get().getUrl(markup) + " for updates...");
 				markup.get().performUpdate(markup, true);
 			});
-			RecompileAction.recompile(articleManager.getArticles().iterator().next(), true);
+			RecompileAction.recompileVariant(context, "Update imports tool clicked");
 		}
 		finally {
 			LOGGER.info("Updated all imports, recompiling....");
@@ -73,13 +73,13 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 				"Update imports",
 				"Update all import markups",
 				"jq$.ajax({url : 'action/InterWikiIncludeForceUpdateToolProvider', cache : false });" +
-						"KNOWWE.notification.success(null, 'Triggered all imports to update - this may take a while. Full recompile will be performed at the end.', 'import-all', 20000);",
+				"KNOWWE.notification.success(null, 'Triggered all imports to update - this may take a while. Full recompile will be performed at the end.', 'import-all', 20000);",
 				Tool.CATEGORY_EXECUTE);
 		return new Tool[] { updateImports };
 	}
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return true || userContext.userIsAdmin();
+		return userContext.userIsAdmin();
 	}
 }
