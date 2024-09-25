@@ -20,6 +20,8 @@
 
 package de.knowwe.core.kdom;
 
+import java.util.regex.Pattern;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -44,6 +46,8 @@ public final class Article {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Article.class);
 
 	public static final int LOG_THRESHOLD = 50;
+	private static final Pattern REMOVE_PATTERN = Pattern.compile("[\u200B\r]");
+	private static final Pattern WHITE_SPACE_PATTERN = Pattern.compile("[\u00A0\u2000-\u200B\u202F\u205F\u2060\u3000\u180E]");
 	private final ArticleManager articleManager;
 	/**
 	 * Name of this article (topic-name)
@@ -171,9 +175,10 @@ public final class Article {
 
 	public static String cleanupText(@NotNull String text) {
 		// just remove zero-width spaces and \r
-		return text.replaceAll("[\u200B\r]", "")
-				// just replace others with regular space
-				.replaceAll("[\u00A0\u2000-\u200B\u202F\u205F\u2060\u3000\u180E]", " ");
+		text = REMOVE_PATTERN.matcher(text).replaceAll("");
+		// just replace others with regular space
+		text = WHITE_SPACE_PATTERN.matcher(text).replaceAll(" ");
+		return text;
 	}
 
 	public boolean isSectionized() {
