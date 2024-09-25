@@ -231,15 +231,15 @@ public class Environment {
 	public Article updateArticle(String title, String author, String content, boolean fullParse, HttpServletRequest httpRequest) throws InterruptedException,
 			UpdateNotAllowedException {
 
+		ArticleManager defaultArticleManager = getDefaultArticleManager();
 		String originalText = "";
-		Article article = getArticle(Environment.DEFAULT_WEB, title);
+		Article article = defaultArticleManager.getArticle(title);
 		if (article != null) {
 			originalText = article.getRootSection().getText();
 		}
 
-		ArticleManager defaultArticleManager = getDefaultArticleManager();
-
-		boolean contentChange = !originalText.equals(content);
+		String cleanedContent = Article.cleanupText(content);
+		boolean contentChange = !originalText.equals(cleanedContent);
 		if (contentChange || fullParse) {
 			if (contentChange && !Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
 				throw new UpdateNotAllowedException();
@@ -258,7 +258,7 @@ public class Environment {
 			defaultArticleManager.open();
 			try {
 				// create article with the new content
-				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
+				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, cleanedContent);
 				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article, author));
 			}
 			finally {

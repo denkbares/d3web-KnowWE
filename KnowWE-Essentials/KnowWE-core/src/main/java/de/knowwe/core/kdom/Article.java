@@ -169,9 +169,9 @@ public final class Article {
 		this.sectionized = true;
 	}
 
-	private String cleanupText(@NotNull String text) {
-		// just remove zero-width spaces
-		return text.replace("\u200B", "")
+	public static String cleanupText(@NotNull String text) {
+		// just remove zero-width spaces and \r
+		return text.replaceAll("[\u200B\r]", "")
 				// just replace others with regular space
 				.replaceAll("[\u00A0\u2000-\u200B\u202F\u205F\u2060\u3000\u180E]", " ");
 	}
