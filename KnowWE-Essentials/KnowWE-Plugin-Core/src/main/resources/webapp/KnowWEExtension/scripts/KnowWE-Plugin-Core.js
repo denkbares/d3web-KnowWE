@@ -19,7 +19,7 @@
 
 KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
-KNOWWE.core.plugin = KNOWWE.core.plugin || {}
+KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
 KNOWWE.core.plugin.objectinfo = function() {
 
@@ -31,24 +31,24 @@ KNOWWE.core.plugin.objectinfo = function() {
     lookUp: function(element) {
       if (!element) element = document;
       element = jq$(element);
-      const terms = element.find('.objectinfo-terms');
+      const terms = element.find(".objectinfo-terms");
       if (!terms.exists()) return;
       const response = terms.first().text();
       const termsJson = JSON.parse(response);
       const a = termsJson.allTerms;
-      element.find('.objectinfo-search').autocomplete({
+      element.find(".objectinfo-search").autocomplete({
         source: a
       });
-      element.find('.objectinfo-search').on(
+      element.find(".objectinfo-search").on(
         "autocompleteselect",
         function(event, ui) {
           KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(ui.item.value);
         });
 
       //Open "Show Info" on Enter key press only if term exists - otherwise do nothing
-      element.find('.objectinfo-search').keyup(function(e) {
+      element.find(".objectinfo-search").keyup(function(e) {
         if (e.keyCode === 13) {
-          const val = jq$('.objectinfo-search').val();
+          const val = jq$(".objectinfo-search").val();
           if (jq$.inArray(val, a) !== -1) {
             KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(val);
           }
@@ -56,7 +56,7 @@ KNOWWE.core.plugin.objectinfo = function() {
         }
       });
     }
-  }
+  };
 }();
 
 /**
@@ -76,7 +76,7 @@ KNOWWE.plugin.anchor = function() {
   }
 
   function scrollIntoView($element) {
-    let headerHeight = jq$('.navigation').height();
+    let headerHeight = jq$(".navigation").height();
     let elementOffset = $element.offset().top;
     if (elementOffset === 0) { // some anchors seem to not have an offset or are display: none...
       elementOffset = $element.parent().offset().top;
@@ -100,41 +100,41 @@ KNOWWE.plugin.anchor = function() {
     init: function() {
       if (!window.location.hash) return;
 
-      jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
+      jq$(".anchor-highlight").removeClass("highlight").removeClass("anchor-highlight");
       const name = window.location.hash.substring(1);
       const sectionId = name.substr(name.lastIndexOf("-") + 1).toLowerCase();
       // first, try to find section directly
-      let section = jq$('[sectionid="' + sectionId + '"]');
+      let section = jq$("[sectionid=\"" + sectionId + "\"]");
       if (section.exists()) {
-        section.addClass('highlight');
-        section.addClass('anchor-highlight');
+        section.addClass("highlight");
+        section.addClass("anchor-highlight");
         scrollIntoView(section);
         return;
       }
 
       // section not found, try highlighting from anchor to anchor-end
-      const anchor = jq$('.anchor[name="' + name + '"]');
+      const anchor = jq$(".anchor[name=\"" + name + "\"]");
       if (anchor.exists()) {
         scrollIntoView(anchor.parent());
-        const endSelector = '.anchor,.anchor-end[name="' + name + '"]';
+        const endSelector = ".anchor,.anchor-end[name=\"" + name + "\"]";
         if (!anchor.nextAll(endSelector).exists()) return;
         let next = anchor.next();
         while (!next.is(endSelector)) {
-          next.addClass('highlight');
-          next.addClass('anchor-highlight');
+          next.addClass("highlight");
+          next.addClass("anchor-highlight");
           next = next.next();
         }
       }
 
-      section = jq$('#' + sectionId);
+      section = jq$("#" + sectionId);
       if (section.exists()) {
         scrollIntoView(section);
         return;
       }
 
-      section = jq$('#' + name); // ordinary JSPWiki hash anchor links
+      section = jq$("#" + name); // ordinary JSPWiki hash anchor links
       if (!section.exists()) {
-        section = jq$('[id="' + name + '"]'); // ordinary JSPWiki hash anchor links, if it contains + char
+        section = jq$("[id=\"" + name + "\"]"); // ordinary JSPWiki hash anchor links, if it contains + char
       }
       if (section.exists()) {
         setTimeout(function() { // deferred, so normal hash anchor scroll has already happened
@@ -143,7 +143,7 @@ KNOWWE.plugin.anchor = function() {
         return;
       }
     }
-  }
+  };
 }();
 
 KNOWWE.plugin.renaming = function() {
@@ -164,7 +164,7 @@ KNOWWE.plugin.renaming = function() {
     let sectionId = options.sectionId;
     if (termName && (termReplacement || termReplacement === "")) {
 
-      const changeNote = 'Renaming: "' + termName + '" -> "' + termReplacement + '"';
+      const changeNote = "Renaming: \"" + termName + "\" -> \"" + termReplacement + "\"";
       const params = {
         action: options.action,
         termName: termName,
@@ -181,14 +181,14 @@ KNOWWE.plugin.renaming = function() {
 
         success: function(jsonResponse, text, request) {
           if (jsonResponse.same) {
-            alert('The term has not changed (renaming is case-insensitive).');
+            alert("The term has not changed (renaming is case-insensitive).");
             KNOWWE.core.util.reloadPage(request);
           } else {
             if (jsonResponse.alreadyExists) {
               if (jsonResponse.noForce) {
-                alert('A term with this name already exists!');
+                alert("A term with this name already exists!");
                 KNOWWE.core.util.reloadPage(request);
-              } else if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
+              } else if (confirm("A term with this name already exists, are you sure you want to merge both terms?")) {
                 options.forceRename = true;
                 renameTerms(options);
               } else {
@@ -200,9 +200,9 @@ KNOWWE.plugin.renaming = function() {
             }
             if (jsonResponse.missingEditRights) {
               if (jsonResponse.noForce) {
-                alert('You are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article).');
+                alert("You are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article).");
                 KNOWWE.core.util.reloadPage(request);
-              } else if (confirm('You are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article). \nDo you want to rename all possible ones? WARNING: This will may cause failures in the wiki.\nThe terms used in these articles can not be renamed: ' + jsonResponse.articles)) {
+              } else if (confirm("You are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article). \nDo you want to rename all possible ones? WARNING: This will may cause failures in the wiki.\nThe terms used in these articles can not be renamed: " + jsonResponse.articles)) {
                 options.forceRename = true;
                 renameTerms(options);
               } else {
@@ -211,9 +211,9 @@ KNOWWE.plugin.renaming = function() {
             }
             if (jsonResponse.alreadyExistsMissingEditRights) {
               if (jsonResponse.noForce) {
-                alert('A term with this name already exists and you are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article)');
+                alert("A term with this name already exists and you are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article)");
                 KNOWWE.core.util.reloadPage(request);
-              } else if (confirm('A term with this name already exists and you are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article). Are you sure you want to merge both terms and rename all possible ones? WARNING: This will may cause failures in the wiki.?\nThe terms used in these articles can not be renamed: ' + jsonResponse.articles)) {
+              } else if (confirm("A term with this name already exists and you are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article). Are you sure you want to merge both terms and rename all possible ones? WARNING: This will may cause failures in the wiki.?\nThe terms used in these articles can not be renamed: " + jsonResponse.articles)) {
                 options.forceRename = true;
                 renameTerms(options);
               } else {
@@ -242,7 +242,7 @@ KNOWWE.plugin.renaming = function() {
     const options = {
       url: KNOWWE.core.util.getURL(params),
       response: {
-        action: 'none',
+        action: "none",
         fn: function() {
           const jsonResponse = JSON.parse(this.responseText);
           callback(jsonResponse);
@@ -353,7 +353,7 @@ KNOWWE.plugin.renaming = function() {
           select: true
         });
 
-        jq$('.tool-menu-click').trigger("click");
+        jq$(".tool-menu-click").trigger("click");
         // replace edit field value with sectionText for encoding reasons
         clickedTerm.find("input").val(jsonResponse.lastPathElement).select().autoGrowRenameField(5);
 
@@ -366,34 +366,34 @@ KNOWWE.plugin.renaming = function() {
 
     }
 
-  }
+  };
 
 }();
 
 KNOWWE.core.plugin.renderKDOM = function() {
 
-  jq$('.table_text').hover(function() {
+  jq$(".table_text").hover(function() {
       const that = this;
       setTimeout(function() {
-        jq$(that).css('height', that.scrollHeight);
+        jq$(that).css("height", that.scrollHeight);
       }, 0);
       // alert(this.scrollHeight);
     }, function() {
-      jq$(this).css('height', '18px');
+      jq$(this).css("height", "18px");
     }
   );
 };
 
 KNOWWE.core.plugin.setMarkupSectionActivationStatus = function(id, status) {
   const params = {
-    action: 'SetMarkupActivationStatus',
+    action: "SetMarkupActivationStatus",
     SectionID: id,
     status: status
   };
   const options = {
     url: KNOWWE.core.util.getURL(params),
     response: {
-      action: 'none',
+      action: "none",
       fn: function() {
         window.location.reload();
       },
@@ -408,33 +408,33 @@ KNOWWE.plugin.listFilter = function() {
 
   return {
     initAutoCompletion: function() {
-      jq$('.filter-list-section-input').each(function() {
+      jq$(".filter-list-section-input").each(function() {
         new TextArea(this);
         new AutoComplete(this, function(callback, prefix) {
-          AutoComplete.sendCompletionAction(callback, prefix, "$tsm")
+          AutoComplete.sendCompletionAction(callback, prefix, "$tsm");
         });
       });
     }
-  }
+  };
 }();
 
 KNOWWE.plugin.listSection = function() {
 
   const COOKIE_LIST_SECTION_ID = "list-section.identifier.";
-  const COOKIE_LIST_SECTION_COUNT = "list-section.count."
+  const COOKIE_LIST_SECTION_COUNT = "list-section.count.";
 
   function setCookieAndRerender(cookie, value, element) {
-    const listWrapper = element.parent().next('.ReRenderSectionMarker').children('.list-section-wrapper');
+    const listWrapper = element.parent().next(".ReRenderSectionMarker").children(".list-section-wrapper");
     const sectionId = listWrapper.attr("sectionid");
     jq$.cookie(cookie + sectionId, value);
     listWrapper.rerender({callback: highlight});
   }
 
   function highlight($wrapper, previous) {
-    let className = 'highlighted';
-    let $current = $wrapper.find('.list-sections tr.highlighted');
+    let className = "highlighted";
+    let $current = $wrapper.find(".list-sections tr.highlighted");
     if (!$current.exists()) {
-      $wrapper.find('.list-sections tr:has(th)').addClass(className);
+      $wrapper.find(".list-sections tr:has(th)").addClass(className);
     } else {
       $current.removeClass(className);
       if (previous) {
@@ -450,17 +450,17 @@ KNOWWE.plugin.listSection = function() {
   }
 
   function getCookie(cookie, element) {
-    const sectionId = element.parent().next('.ReRenderSectionMarker').children('.list-section-wrapper').attr("sectionid");
+    const sectionId = element.parent().next(".ReRenderSectionMarker").children(".list-section-wrapper").attr("sectionid");
     return jq$.cookie(cookie + sectionId);
   }
 
   return {
     initListSectionFilter: function() {
 
-      let $input = jq$('input.filter-list-section-input');
+      let $input = jq$("input.filter-list-section-input");
       if (!$input.exists()) return;
 
-      highlight(jq$('.list-section-wrapper'));
+      highlight(jq$(".list-section-wrapper"));
 
       // restore last value (browser history sometimes forgets)
       $input.each(function() {
@@ -474,9 +474,9 @@ KNOWWE.plugin.listSection = function() {
       // focus and highlight first input on page
       $input.first().focus().selectRange(0, $input.val().length);
       $input.on("change paste keyup", function(event) {
-        let $wrapper = jq$(this).parents('.grouped-list-section-wrapper');
+        let $wrapper = jq$(this).parents(".grouped-list-section-wrapper");
         if (event.keyCode === 13) { // ENTER
-          $wrapper.find('.list-sections .highlighted .list-sections-name a')[0].click();
+          $wrapper.find(".list-sections .highlighted .list-sections-name a")[0].click();
           return;
         } else if (event.keyCode === 40) { // ARROW DOWN
           highlight($wrapper);
@@ -490,19 +490,19 @@ KNOWWE.plugin.listSection = function() {
       });
 
       // init drop down to select number of displayed list elements
-      jq$('select.list-sections-filter-select').change(function() {
+      jq$("select.list-sections-filter-select").change(function() {
         const option = jq$(this).find("option:selected").attr("value");
         setCookieAndRerender(COOKIE_LIST_SECTION_COUNT, option, jq$(this));
       });
 
       // init 'clear' button
-      jq$('.grouped-list-section-wrapper .clear-filter').on("click", function() {
-        let $input = jq$(this).parents('.grouped-list-section-wrapper').find('input.filter-list-section-input');
+      jq$(".grouped-list-section-wrapper .clear-filter").on("click", function() {
+        let $input = jq$(this).parents(".grouped-list-section-wrapper").find("input.filter-list-section-input");
         $input.val("");
         $input.trigger("change");
       });
     }
-  }
+  };
 }();
 
 KNOWWE.tooltips = {};
@@ -517,17 +517,17 @@ KNOWWE.tooltips.enrich = function(element) {
   } else {
     element = jq$(document);
   }
-  element.find('.tooltipster').each(function() {
-    const anscestor = jq$(this).parents('.tooltipster');
+  element.find(".tooltipster").each(function() {
+    const anscestor = jq$(this).parents(".tooltipster");
     if (anscestor.exists()) {
-      anscestor.removeAttr('title');
-      anscestor.removeClass('tooltipster');
+      anscestor.removeAttr("title");
+      anscestor.removeClass("tooltipster");
     }
   });
-  element.find('.tooltipster').each(function() {
+  element.find(".tooltipster").each(function() {
     let $this = jq$(this);
-    let delay = $this.attr('delay') || 1300;
-    let trigger = $this.attr('trigger') || "hover";
+    let delay = $this.attr("delay") || 1300;
+    let trigger = $this.attr("trigger") || "hover";
     $this.tooltipster({
       position: "top-left",
       interactive: true,
@@ -544,14 +544,14 @@ KNOWWE.tooltips.enrich = function(element) {
         }
         // check if we have an ajax-tooltip
         // and only do once for each tooltip
-        const src = origin.data('tooltip-src');
+        const src = origin.data("tooltip-src");
         if (!src) {
           continueTooltip();
           return;
         }
-        origin.data('tooltip-src', null);
+        origin.data("tooltip-src", null);
         // show ajax-spinner until request is arriving
-        origin.tooltipster('update', '<span class="ajaxLoader">loading tooltip...</span>');
+        origin.tooltipster("update", "<span class=\"ajaxLoader\">loading tooltip...</span>");
         continueTooltip();
         // request new content
         jq$.ajax(src, {
@@ -565,22 +565,22 @@ KNOWWE.tooltips.enrich = function(element) {
               if (jq$.isArray(obj)) html = obj[0];
             } catch (ignore) {
             }
-            origin.tooltipster('update', html).tooltipster('reposition');
+            origin.tooltipster("update", html).tooltipster("reposition");
           },
           error: function(request, status, error) {
             KNOWWE.notification.error(error, "Cannot get tooltip content", src);
-            origin.tooltipster('hide');
+            origin.tooltipster("hide");
           }
         });
       }
-    })
+    });
   });
 };
 
 KNOWWE.kdomtreetable = {};
 
 KNOWWE.kdomtreetable.init = function() {
-  jq$('.renderKDOMTable').each(function() {
+  jq$(".renderKDOMTable").each(function() {
     jq$(this).agikiTreeTable({
       expandable: true,
       clickableNodeNames: true,
@@ -592,7 +592,7 @@ KNOWWE.kdomtreetable.init = function() {
 };
 
 KNOWWE.kdomtreetable.setOverflow = function() {
-  jq$('.table_text').hover(function() {
+  jq$(".table_text").hover(function() {
     const elem = jq$(this);
     elem.data("stillin", "yes");
     setTimeout(function() {
@@ -601,30 +601,30 @@ KNOWWE.kdomtreetable.setOverflow = function() {
       }
     }, 700);
   }, function() {
-    jq$(this).data('stillin', "no");
+    jq$(this).data("stillin", "no");
     jq$(this).css("overflow", "hidden");
   });
 };
 
 KNOWWE.kdomtreetable.revealRenderKDOMTable = function(id) {
-  const treetable = jq$('.renderKDOMTable.wikitable.treetable').not(".floatThead-table");
-  const markedtitle = treetable.find('td[style="color: var(--color-blue-highlight);"]');
+  const treetable = jq$(".renderKDOMTable.wikitable.treetable").not(".floatThead-table");
+  const markedtitle = treetable.find("td[style=\"color: var(--color-blue-highlight);\"]");
   if (typeof markedtitle != "undefined" || markedtitle != null) {
     for (let i = 0; i < markedtitle.size(); i++) {
       jq$(markedtitle[i]).removeAttr("style");
     }
   }
 
-  const tablerow = treetable.find('tr[data-tt-id="kdom-row-' + id + '"]');
+  const tablerow = treetable.find("tr[data-tt-id=\"kdom-row-" + id + "\"]");
   treetable.treetable("reveal", "kdom-row-" + id);
   tablerow.find("td").first().css("color", "var(--color-blue-highlight)");
-  jq$('html, body').animate({
+  jq$("html, body").animate({
     scrollTop: (tablerow.offset().top - 250)
   }, 400);
 };
 
 KNOWWE.kdomtreetable.collapseAll = function() {
-  const treetable = jq$('.renderKDOMTable.wikitable.treetable')[0];
+  const treetable = jq$(".renderKDOMTable.wikitable.treetable")[0];
   jq$(treetable).treetable("collapseAll");
 };
 
@@ -634,7 +634,7 @@ KNOWWE.core.plugin.attachment = function() {
 
     update: function(sectionId) {
       const params = {
-        action: 'AttachmentUpdateAction',
+        action: "AttachmentUpdateAction",
         SectionID: sectionId
       };
 
@@ -646,7 +646,7 @@ KNOWWE.core.plugin.attachment = function() {
       };
       new _KA(options).send();
     }
-  }
+  };
 }();
 
 KNOWWE.core.plugin.formatterAjax = function(id, actionClass) {
@@ -659,7 +659,7 @@ KNOWWE.core.plugin.formatterAjax = function(id, actionClass) {
       sectionID: id,
       wikiText: wikiText
     },
-    type: 'post',
+    type: "post",
     cache: false,
     success: function(json) {
       textarea.val(json.wikiText);
@@ -668,7 +668,7 @@ KNOWWE.core.plugin.formatterAjax = function(id, actionClass) {
 
   return;
 
-}
+};
 
 KNOWWE.core.plugin.reloadNamespaceFile = function() {
 
@@ -676,7 +676,7 @@ KNOWWE.core.plugin.reloadNamespaceFile = function() {
 
     reloadFile: function(namespaceUrl, filename, title) {
       jq$.ajax("action/NamespaceFileReloadAction", {
-        type: 'post',
+        type: "post",
         data: {
           namespaceUrl: namespaceUrl,
           filename: filename,
@@ -692,7 +692,7 @@ KNOWWE.core.plugin.reloadNamespaceFile = function() {
         }
       });
     }
-  }
+  };
 }();
 
 KNOWWE.core.plugin.recompile = function() {
@@ -703,11 +703,11 @@ KNOWWE.core.plugin.recompile = function() {
       jq$(document).keyup(function(event) {
           let command = null;
           const isCMD = event.ctrlKey || event.metaKey;
-          if (isCMD && event.altKey && event.shiftKey && (event.key === 'R' || event.key === '¸')) {
+          if (isCMD && event.altKey && event.shiftKey && (event.key === "R" || event.key === "¸")) {
             command = "recompileAll";
             KNOWWE.notification.success("Full Recompile", "Performing recompilation of the current page and all involved compilers.");
-          } else if (isCMD && event.altKey && (event.key === 'r' || event.key === '®')) {
-            command = "recompile"
+          } else if (isCMD && event.altKey && (event.key === "r" || event.key === "®")) {
+            command = "recompile";
             KNOWWE.notification.success("Recompile", "Recompiling the current page.");
           } else {
             return;
@@ -721,7 +721,7 @@ KNOWWE.core.plugin.recompile = function() {
             data: {
               command: command,
               title: KNOWWE.helper.getPagename()
-            },
+            }
           }).success(function() {
             // just refresh, server will wait for compilation to finish before rendering
             window.location.reload();
@@ -729,7 +729,7 @@ KNOWWE.core.plugin.recompile = function() {
         }
       );
     }
-  }
+  };
 }();
 
 
@@ -738,8 +738,8 @@ KNOWWE.core.plugin.switchCompiler = function() {
   function addHoverAction(compilerSwitch) {
     jq$(compilerSwitch).hover(function(event) {
       var parent = jq$(this);
-      parent.addClass('open');
-      if (parent.find('input').length > 0) {
+      parent.addClass("open");
+      if (parent.find("input").length > 0) {
         parent.find("input:first").focus();
       }
       event.preventDefault();
@@ -747,8 +747,8 @@ KNOWWE.core.plugin.switchCompiler = function() {
       return false;
     }, function(event) {
       var parent = jq$(this);
-      if (parent.hasClass('open')) {
-        parent.removeClass('open');
+      if (parent.hasClass("open")) {
+        parent.removeClass("open");
       }
       event.preventDefault();
       event.stopPropagation();
@@ -764,31 +764,31 @@ KNOWWE.core.plugin.switchCompiler = function() {
       if (compiler === defaultCompiler) {
         icon = "fa-regular fa-circle-dot";
       }
-      listInnerText = listInnerText + '<li><a onclick="KNOWWE.core.plugin.switchCompiler.setDefaultCompiler(\'' + compiler + '\')"><span class="' + icon + '" style="padding-right: 5px"></span><span>' + compiler + '</span></a></li>';
+      listInnerText = listInnerText + "<li><a onclick=\"KNOWWE.core.plugin.switchCompiler.setDefaultCompiler('" + compiler + "')\"><span class=\"" + icon + "\" style=\"padding-right: 5px\"></span><span>" + compiler + "</span></a></li>";
     }
     return listInnerText;
   }
 
   return {
     init: function() {
-      if (!jq$('.navigation').exists()) return;
+      if (!jq$(".navigation").exists()) return;
 
-      let pullRight = jq$('.navigation').children(".nav.nav-pills.pull-right").first();
-      let compilerSwitch = new Element('li', {
-        'id': 'compilerSwitch'
+      let pullRight = jq$(".navigation").children(".nav.nav-pills.pull-right").first();
+      let compilerSwitch = new Element("li", {
+        "id": "compilerSwitch"
       });
-      let link = new Element('a', {
-        'id': 'selectedCompiler',
-        'href': '#',
+      let link = new Element("a", {
+        "id": "selectedCompiler",
+        "href": "#"
       });
-      let list = new Element('ul', {
-        'id': 'compilerList',
-        'class': 'dropdown-menu pull-right',
+      let list = new Element("ul", {
+        "id": "compilerList",
+        "class": "dropdown-menu pull-right"
       });
       // get the inner html
       jq$.ajax("action/GetCompilerSwitchContentAction", {
         cache: false,
-        dataType: 'json',
+        dataType: "json",
         success: function(response) {
           if (Object.keys(response).length === 0) return;
           let storedDefaultCompiler = localStorage.getItem(defaultCompilerPrefixKey);
@@ -802,9 +802,9 @@ KNOWWE.core.plugin.switchCompiler = function() {
           }
           if (storedDefaultCompiler === defaultCompiler) {
             // If the default compiler of the client and server (for the user) are the same, add the compiler switch.
-            let linkContent = '<span class="fa-regular fa-microchip"></span>' + '<span>' + defaultCompiler + '</span>';
+            let linkContent = "<span class=\"fa-regular fa-microchip\"></span>" + "<span>" + defaultCompiler + "</span>";
             if (compilers.length > 1) {
-              linkContent = linkContent + '<span class="caret"></span>';
+              linkContent = linkContent + "<span class=\"caret\"></span>";
             }
             link.innerHTML = linkContent;
 
@@ -829,7 +829,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
     setDefaultCompiler: function(name) {
       jq$.ajax("action/SetDefaultCompilerAction?name=" + name, {
         cache: false,
-        dataType: 'json',
+        dataType: "json",
         success: function() {
           localStorage.setItem(defaultCompilerPrefixKey, name);
           window.location.reload();
@@ -842,21 +842,21 @@ KNOWWE.core.plugin.switchCompiler = function() {
 KNOWWE.core.plugin.stickyTableHeaders = function() {
   return {
     init: function() {
-      jq$(".haddock table.sticky-header, .haddock .wikitable").not('.renderKDOMTable').floatThead({
+      jq$(".haddock table.sticky-header, .haddock .wikitable").not(".renderKDOMTable").floatThead({
         top: function() {
           let $header = jq$(".header .navigation");
           let rect = $header[0].getBoundingClientRect();
           return rect.top + rect.height;
         },
         responsiveContainer: function($table) {
-          return $table.closest('.zebra-table, .scroll-parent');
+          return $table.closest(".zebra-table, .scroll-parent");
         },
-        zIndex: 400, // has to be < than wiki header, which is 1001
+        zIndex: 400 // has to be < than wiki header, which is 1001
       });
 
       function update() {
-        window.dispatchEvent(new CustomEvent('resize'));
-        window.dispatchEvent(new CustomEvent('scroll'));
+        window.dispatchEvent(new CustomEvent("resize"));
+        window.dispatchEvent(new CustomEvent("scroll"));
       }
 
       // trigger scroll and resize event to make sure sticky position gets recalculated when page height changes
@@ -872,21 +872,21 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
           if (mutations[0].target.hasClass("animating")) {
             mutationCallBack(mutations);
           }
-        })
+        });
       };
       let observer = new MutationObserver(mutationCallBack);
-      document.querySelectorAll('.accordion .panel-heading').forEach(function(heading) {
+      document.querySelectorAll(".accordion .panel-heading").forEach(function(heading) {
         observer.observe(heading, {attributes: true, childList: true, characterData: true});
-      })
+      });
 
       // special handling for sidebar, we want to continuously update while animating
-      let transitionOngoing = false
+      let transitionOngoing = false;
       jq$(".haddock .sidebar").on("transitionstart", function() {
         transitionOngoing = true;
 
         function continuousUpdate() {
           if (!transitionOngoing) return;
-          window.dispatchEvent(new CustomEvent('scroll'));
+          window.dispatchEvent(new CustomEvent("scroll"));
           window.requestAnimationFrame(continuousUpdate);
         }
 
@@ -897,24 +897,24 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
         update();
       });
     }
-  }
+  };
 }();
 
 /* ############################################################### */
 /* ------------- Onload Events ---------------------------------- */
 /* ############################################################### */
 (function init() {
-  window.addEvent('domready', _KL.setup);
+  window.addEvent("domready", _KL.setup);
 
-  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-    window.addEvent('domready', function() {
+  if (KNOWWE.helper.loadCheck(["Wiki.jsp"])) {
+    window.addEvent("domready", function() {
       KNOWWE.tooltips.enrich();
       KNOWWE.core.plugin.renderKDOM();
       KNOWWE.kdomtreetable.init();
       KNOWWE.core.plugin.recompile.init();
       KNOWWE.plugin.anchor.init();
     });
-    jq$(window).on('hashchange', function() {
+    jq$(window).on("hashchange", function() {
       KNOWWE.plugin.anchor.init();
     });
   }
