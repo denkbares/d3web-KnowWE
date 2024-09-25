@@ -93,6 +93,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -555,7 +556,7 @@ public class JSPWikiConnector implements WikiConnector {
 			try {
 				WikiAttachment attachment = getAttachment(title, version);
 				if (attachment != null) {
-					return Streams.getTextAndClose(attachment.getInputStream());
+					return Article.cleanupText(Streams.getTextAndClose(attachment.getInputStream()));
 				}
 			}
 			catch (IOException e) {
@@ -570,7 +571,7 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 
-		return pageText;
+		return Article.cleanupText(pageText);
 	}
 
 	@Override
