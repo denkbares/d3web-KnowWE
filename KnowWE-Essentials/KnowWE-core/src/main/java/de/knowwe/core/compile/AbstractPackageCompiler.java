@@ -115,8 +115,9 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 				|| hasKnowledgeForCompiler(getPackageManager().getAddedSections(packagesToCompile), scriptManager);
 	}
 
-	private boolean hasKnowledgeForCompiler(Collection<Section<?>> addedSections, ScriptManager<AbstractPackageCompiler> scriptManager) {
-		for (Section<?> section : addedSections) {
+	private boolean hasKnowledgeForCompiler(Collection<Section<?>> sections, ScriptManager<AbstractPackageCompiler> scriptManager) {
+		for (Section<?> section : sections) {
+			if (section.get() instanceof PackageCompileType && section != getCompileSection()) continue;
 			if (scriptManager.hasScriptsForSubtree(section)) return true;
 		}
 		return false;
