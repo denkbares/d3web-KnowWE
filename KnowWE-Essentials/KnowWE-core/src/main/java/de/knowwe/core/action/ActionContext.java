@@ -33,10 +33,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.plugin.Extension;
-import com.denkbares.plugin.PluginManager;
 import de.knowwe.core.user.AbstractUserContext;
 import de.knowwe.core.user.AuthenticationManager;
+import de.knowwe.plugin.Plugins;
 
 /**
  * This class is a default implemantation of the UserActionContext interface.
@@ -55,9 +54,6 @@ import de.knowwe.core.user.AuthenticationManager;
  */
 public class ActionContext extends AbstractUserContext implements UserActionContext {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActionContext.class);
-
-	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
-	public static final String EXTENDED_POINT_ID = "Action";
 
 	/**
 	 * The name of the action
@@ -122,13 +118,8 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 
 	public static Action getAction(String actionName) {
 		if (actionName == null) return null;
-		PluginManager manager = PluginManager.getInstance();
-		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_ID);
-		for (Extension e : extensions) {
-			if (actionName.equals(e.getID()) || actionName.equals(e.getName())) {
-				return ((Action) e.getSingleton());
-			}
-		}
+		Action action = Plugins.getAction(actionName);
+		if (action != null) return action;
 		LOGGER.warn("Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;
 	}

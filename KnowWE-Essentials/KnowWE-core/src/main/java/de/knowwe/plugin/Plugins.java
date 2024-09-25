@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +119,24 @@ public class Plugins {
 		return getSingletons(EXTENDED_POINT_KnowWEAction, Action.class);
 	}
 
+	/**
+	 * Get the action for the given action name.
+	 *
+	 * @param actionName the name of the action
+	 * @return the action for the given name
+	 */
+	public static <T extends Action> @Nullable T getAction(String actionName) {
+		PluginManager manager = PluginManager.getInstance();
+		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowWEAction);
+		for (Extension e : extensions) {
+			if (actionName.equals(e.getID()) || actionName.equals(e.getName())) {
+				//noinspection unchecked
+				return ((T) e.getSingleton());
+			}
+		}
+		return null;
+	}
+
 	public static void addChildrenTypesToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Type);
@@ -149,9 +168,9 @@ public class Plugins {
 			}
 			else {
 				LOGGER.warn("Tried to plug CompileScript '"
-						+ extension.getSingleton().getClass().getSimpleName()
-						+ "' into an type '" + type.getClass().getSimpleName()
-						+ "' which is not an AbstractType");
+							+ extension.getSingleton().getClass().getSimpleName()
+							+ "' into an type '" + type.getClass().getSimpleName()
+							+ "' which is not an AbstractType");
 			}
 		}
 	}
@@ -216,7 +235,7 @@ public class Plugins {
 			else {
 				throw new ClassCastException(
 						"renderer can only be plugged to type instances of 'AbstractType', but not to "
-								+ type.getClass().getName());
+						+ type.getClass().getName());
 			}
 		}
 	}
