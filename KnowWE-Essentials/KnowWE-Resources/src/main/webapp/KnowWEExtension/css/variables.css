@@ -194,11 +194,16 @@
 	/* -------- COOM -------- */
 	/* background colors */
 	--bg-implication: #F8D7DA;
-	--bg-combination: #357ab8; /* TODO */
+	--bg-combination: #357ab8;
 	--bg-enumeration: #5eaf7b; /* TODO */
 	--bg-structure: #556677; /* TODO */
 
 	--bg-grey-table-cell: #d7d7d7;
+
+	--icon-color: #4A4A4A;
+	--icon-color-hover: #2B2B2B;
+	--icon-popper-color: #FFF;
+	--icon-popper-color-hover: #E0E0E0;
 }
 
 
@@ -383,11 +388,16 @@
 	/* -------- COOM -------- */
 	/* background colors */
 	--bg-implication: #75444c;
-	--bg-combination: #357ab8; /* TODO */
+	--bg-combination: #357ab8;
 	--bg-enumeration: #5eaf7b; /* TODO */
 	--bg-structure: #556677; /* TODO */
 
 	--bg-grey-table-cell: #646464;
+	
+	--icon-color: #A0A0A0;
+	--icon-color-hover: #F0F0F0;
+	--icon-popper-color: #1F1F1F;
+	--icon-popper-color-hover: #2A2A2B;
 }
 
 /* ######################################################## */
@@ -506,6 +516,11 @@
 	--bg-color-structure: var(--bg-structure);
 
 	--bg-color-empty-table-cell: var(--bg-grey-table-cell);
+
+	--icon-button-color: var(--icon-color);
+	--icon-button-color-hover: var(--icon-color-hover);
+	--icon-button-popper-color: var(--icon-popper-color);
+	--icon-button-popper-color-hover: var(--icon-popper-color-hover);
 }
 
 /* ############################################################## */
