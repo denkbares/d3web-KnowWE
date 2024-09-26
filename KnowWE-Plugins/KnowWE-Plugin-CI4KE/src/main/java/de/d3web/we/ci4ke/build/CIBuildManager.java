@@ -56,6 +56,7 @@ import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.kdom.parsing.Section;
@@ -253,15 +254,21 @@ public class CIBuildManager implements EventListener {
 
 	/**
 	 * Terminates all currently running builds;
+	 *
+	 * @return the stopped dashboards
 	 */
-	public void shutDownNow() {
+	public @NotNull Set<CIDashboard> shutDownNow() {
 		synchronized (ciBuildQueue) {
-			for (CIBuildFuture ciBuildFuture : ciBuildQueue.values()) {
+			Set<CIDashboard> stoppedDashboards = new HashSet<>();
+			for (Map.Entry<CIDashboard, CIBuildFuture> entry : ciBuildQueue.entrySet()) {
+				CIBuildFuture ciBuildFuture = entry.getValue();
 				TestExecutor testExecutor = ciBuildFuture.ciBuildCallable.testExecutor;
 				if (!testExecutor.isShutdown()) {
 					testExecutor.shutDownNow();
+					stoppedDashboards.add(entry.getKey());
 				}
 			}
+			return stoppedDashboards;
 		}
 	}
 
@@ -336,7 +343,9 @@ public class CIBuildManager implements EventListener {
 		// we synchronize the method so there will not be any new builds
 		// added between shutting down and awaiting termination
 		if (event instanceof CompilationStartEvent) {
-			shutDownNow();
+			Set<CIDashboard> ciDashboards = shutDownNow();
+			// restart them with next trigger
+			CIHookManager.getInstance().restartWithNextTrigger(ciDashboards);
 		}
 		else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {
 			priorityOverride.put(prioEvent.getDashboard().getDashboardName(), prioEvent.getPriority());

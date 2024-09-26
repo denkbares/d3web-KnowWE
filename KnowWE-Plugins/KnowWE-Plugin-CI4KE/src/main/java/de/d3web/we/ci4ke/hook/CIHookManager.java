@@ -47,6 +47,7 @@ import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.FullParseEvent;
 
@@ -69,6 +70,7 @@ public class CIHookManager implements EventListener {
 	 * Fore each monitored articles a list of hooks are stored.
 	 */
 	private final MultiMap<String, CIHook> hooks = new DefaultMultiMap<>();
+	private final Set<CIDashboard> dashboardsToRestartWithNextTrigger = new HashSet<>();
 
 	public static CIHookManager getInstance() {
 		if (instance == null) {
@@ -104,6 +106,7 @@ public class CIHookManager implements EventListener {
 	public synchronized void triggerHooks(Collection<Article> monitoredArticles) {
 		if (!Boolean.parseBoolean(System.getProperty(KNOWWE_CI_HOOKS_ACTIVE, "true"))) return;
 		Set<CIDashboard> dashboardsToTrigger = new HashSet<>();
+
 		for (Article monitoredArticle : monitoredArticles) {
 			Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
 			for (final CIHook hook : hookSet) {
@@ -116,6 +119,13 @@ public class CIHookManager implements EventListener {
 				handlePriorityOverride(hook);
 			}
 		}
+
+		for (CIDashboard dashboard : dashboardsToRestartWithNextTrigger) {
+			if (!Sections.isLive(dashboard.getDashboardSection())) continue;
+			dashboardsToTrigger.add(dashboard);
+		}
+		dashboardsToRestartWithNextTrigger.clear();
+
 		CIBuildManager.getInstance().startBuilds(dashboardsToTrigger);
 		List<String> triggered = dashboardsToTrigger.stream().map(CIDashboard::getDashboardName).sorted().toList();
 		if (!triggered.isEmpty()) LOGGER.info("Triggered the following dashboards: " + String.join(", ", triggered));
@@ -187,4 +197,8 @@ public class CIHookManager implements EventListener {
 	}
 
 	private final Map<String, Article> articlesToTrigger = Collections.synchronizedMap(new HashMap<>());
+
+	public synchronized void restartWithNextTrigger(Set<CIDashboard> ciDashboards) {
+		dashboardsToRestartWithNextTrigger.addAll(ciDashboards);
+	}
 }
