@@ -172,13 +172,15 @@ public class CIBuildManager implements EventListener {
 		TreeMap<Double, Set<CIDashboard>> dashboardsByPriority = dashboardsToTrigger.stream()
 				.collect(Collectors.groupingBy(CIDashboard::getPriority, TreeMap::new, Collectors.toSet()));
 		TreeMap<Double, Set<CIBuildFuture>> futuresByPriority = new TreeMap<>();
-		for (Set<CIDashboard> dashboards : dashboardsByPriority.descendingMap().values()) {
-			for (CIDashboard dashboard : dashboards) {
-				shutDownNow(dashboard);
-				CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard));
-				ciBuildQueue.put(dashboard, ciBuildFuture);
-				double priority = priorityOverride.getOrDefault(dashboard.getDashboardName(), dashboard.getPriority());
-				futuresByPriority.computeIfAbsent(priority, k -> new HashSet<>()).add(ciBuildFuture);
+		synchronized (ciBuildQueue) {
+			for (Set<CIDashboard> dashboards : dashboardsByPriority.descendingMap().values()) {
+				for (CIDashboard dashboard : dashboards) {
+					shutDownNow(dashboard);
+					CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard));
+					ciBuildQueue.put(dashboard, ciBuildFuture);
+					double priority = priorityOverride.getOrDefault(dashboard.getDashboardName(), dashboard.getPriority());
+					futuresByPriority.computeIfAbsent(priority, k -> new HashSet<>()).add(ciBuildFuture);
+				}
 			}
 		}
 		priorityOverride.clear();
