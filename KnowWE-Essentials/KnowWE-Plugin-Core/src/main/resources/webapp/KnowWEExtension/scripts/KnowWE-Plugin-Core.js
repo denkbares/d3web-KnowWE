@@ -710,7 +710,7 @@ KNOWWE.core.plugin.recompile = function() {
             command = "single";
             KNOWWE.notification.success("Recompile", "Recompiling the current page.");
           }
-          else if (event.ctrlKey && event.metaKey && event.key === "r") {
+          else if (event.ctrlKey && event.metaKey && event.key === "r" || event.ctrlKey && event.altKey && event.keyCode === 52) {
             command = "variant";
             KNOWWE.notification.success("Full variant recompile", "Recompiling the current page and currently selected variant.");
           }
