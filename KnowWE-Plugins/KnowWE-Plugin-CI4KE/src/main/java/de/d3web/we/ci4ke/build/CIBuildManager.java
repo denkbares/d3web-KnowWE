@@ -147,7 +147,7 @@ public class CIBuildManager implements EventListener {
 				EventManager.getInstance().fireEvent(event);
 
 				// add resulting build to dashboard
-				if (build != null && !Thread.interrupted()) {
+				if (build != null && !testExecutor.isAborted()) {
 					// set verbose persistence flag, will be considered by persistence
 					build.setVerbosePersistence(lookUpVerboseFlag(dashboard));
 					dashboard.addNewBuild(build);
