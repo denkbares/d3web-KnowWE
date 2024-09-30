@@ -70,6 +70,7 @@ public class CIGetProgressAction extends AbstractAction {
 		}
 		JSONObject result = new JSONObject();
 		try {
+			if (context.getTitle().equals("Main")) System.out.println(dashboard.getDashboardName() + " " + percentString + " " + message);
 			result.put("progress", percentString);
 			result.put("message", message);
 			result.write(context.getWriter());

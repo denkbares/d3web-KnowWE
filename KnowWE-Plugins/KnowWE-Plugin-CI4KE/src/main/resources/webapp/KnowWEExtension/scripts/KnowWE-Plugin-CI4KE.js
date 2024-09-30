@@ -21,40 +21,6 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
  */
 KNOWWE.plugin.ci4ke = function() {
-  /**
-   * Fetches the ci state bubble html code for a daemon/dashboard and inserts it. This is called after some build
-   * process has been finished on the server to update the view correspondingly.
-   *
-   * @param dashboardName the name of the dashboard to display the daemon for
-   * @param {undefined | (({dashboardName: string}) => void)} onFinish an optional callback to be called after
-   * successfully refreshing
-   */
-  function refreshCIDeamonBubble(dashboardName, onFinish = undefined) {
-    const params = {
-      action: "CIAction",
-      task: "refreshBubble",
-      name: dashboardName
-    };
-
-    const options = {
-      url: KNOWWE.core.util.getURL(params),
-      loader: true,
-      response: {
-        fn: function() {
-          jq$(".ci-header,.ci-daemon")
-            .find(".ci-state")
-            .filter("[dashboardName=\"" + dashboardName + "\"]")
-            .replaceWith(this.response);
-          if (onFinish) {
-            onFinish(dashboardName);
-          }
-        },
-        onError: onErrorBehavior
-      }
-    };
-
-    new _KA(options).send();
-  }
 
   function onErrorBehavior() {
     if (this.status == null) return;
@@ -202,8 +168,8 @@ KNOWWE.plugin.ci4ke = function() {
         response: {
           fn: function() {
             _CI.refreshBuildProgress(dashboardName);
-            refreshCIDeamonBubble(dashboardName);
-            _CI.refreshBuildProgressDeamon(dashboardName);
+            _CI.refreshCIDaemonBubble(dashboardName);
+            _CI.refreshBuildProgressDaemon(dashboardName);
 
             // make not-up-to-date warning disappear
             jq$(".ci-title").each(function() {
@@ -286,6 +252,13 @@ KNOWWE.plugin.ci4ke = function() {
     },
 
     /**
+     * @deprecated: use refreshBuildProgressDaemon instead
+     */
+    refreshBuildProgressDeamon: function(dashboardName, onFinish = undefined) {
+      this.refreshBuildProgressDaemon(dashboardName, onFinish);
+    },
+
+    /**
      * Repeatedly check whether the current build process is still running. When 'finished' is responded as progress
      * message, the loop terminates and a refresh call of the state bubble is called.
      *
@@ -293,7 +266,7 @@ KNOWWE.plugin.ci4ke = function() {
      * @param {undefined | (({dashboardName: string}) => void)} onFinish an optional callback to be called after
      * termination and successful refresh.
      */
-    refreshBuildProgressDeamon: function(dashboardName, onFinish = undefined) {
+    refreshBuildProgressDaemon: function(dashboardName, onFinish = undefined) {
       const params = {
         action: "CIGetProgressAction",
         name: dashboardName
@@ -310,11 +283,53 @@ KNOWWE.plugin.ci4ke = function() {
                 new _KA(options).send();
               }, 1000);
             } else {
-              refreshCIDeamonBubble(dashboardName, onFinish);
+              _CI.refreshCIDaemonBubble(dashboardName, onFinish);
             }
           }
         },
         onError: function() {
+        }
+      };
+
+      new _KA(options).send();
+    },
+
+    /**
+     * @deprecated: use refreshCIDaemonBubble instead
+     */
+    refreshCIDeamonBubble: function(dashboardName, onFinish = undefined) {
+      refreshCIDaemonBubble(dashboardName, onFinish);
+    },
+
+    /**
+     * Fetches the ci state bubble html code for a daemon/dashboard and inserts it. This is called after some build
+     * process has been finished on the server to update the view correspondingly.
+     *
+     * @param dashboardName the name of the dashboard to display the daemon for
+     * @param {undefined | (({dashboardName: string}) => void)} onFinish an optional callback to be called after
+     * successfully refreshing
+     */
+    refreshCIDaemonBubble: function(dashboardName, onFinish = undefined) {
+      const params = {
+        action: "CIAction",
+        task: "refreshBubble",
+        name: dashboardName
+      };
+
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        loader: true,
+        response: {
+          fn: function() {
+            jq$(".ci-header,.ci-daemon")
+              .find(".ci-state")
+              .filter("[dashboardName=\"" + dashboardName + "\"]")
+              .replaceWith(this.response);
+            if (onFinish) {
+              onFinish(dashboardName);
+            }
+          },
+          onError: onErrorBehavior
         }
       };
 
@@ -409,9 +424,15 @@ jq$(window).ready(function() {
       const runs = jq$(this).attr("running");
       if (runs) {
         const dashboardName = jq$(this).attr("dashboardName");
-        _CI.refreshBuildProgressDeamon(dashboardName);
+        _CI.refreshBuildProgressDaemon(dashboardName);
       }
     }
   );
 
+}).on("focus", () => {
+  jq$(".ci-daemon").find(".ci-state").each(function() {
+    const dashboardName = jq$(this).attr("dashboardName");
+    _CI.refreshCIDaemonBubble(dashboardName, _CI.refreshBuildProgressDaemon);
+  });
 });
+
