@@ -32,7 +32,6 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 
 /**
@@ -48,7 +47,7 @@ public class CIGetProgressAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String name = Strings.decodeURL(context.getParameter("name"));
-		CIDashboard dashboard = CIDashboardManager.getDashboard(KnowWEUtils.getArticleManager(context.getWeb()), name);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(context.getArticleManager(), name);
 		DefaultAjaxProgressListener listener = CIBuildManager.getProgress(dashboard);
 
 		float progress;
@@ -70,7 +69,6 @@ public class CIGetProgressAction extends AbstractAction {
 		}
 		JSONObject result = new JSONObject();
 		try {
-			if (context.getTitle().equals("Main")) System.out.println(dashboard.getDashboardName() + " " + percentString + " " + message);
 			result.put("progress", percentString);
 			result.put("message", message);
 			result.write(context.getWriter());

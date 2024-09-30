@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.d3web.testing.BuildResult;
-import de.d3web.testing.Message.Type;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
@@ -49,7 +48,7 @@ public class CIAction extends AbstractAction {
 
 		String dashboardName = String.valueOf(context.getParameter("name"));
 		dashboardName = Strings.decodeURL(dashboardName);
-		if (task.equals("null") || dashboardName.equals("null")) {
+		if ("null".equals(task) || "null".equals(dashboardName)) {
 			throw new IOException(
 					"CIAction.execute(): Required parameters not set!");
 		}
@@ -60,7 +59,7 @@ public class CIAction extends AbstractAction {
 				dashboardName);
 		if (dashboard == null) {
 			//context.sendError(404, "<message will be inserted in JS>");
-			// NOTE: on current ajax handling this message text will will
+			// NOTE: on current ajax handling this message text will
 			// not be shown. but a list mapping error codes to message texts
 			// is managed in JS
 			return;
@@ -81,7 +80,7 @@ public class CIAction extends AbstractAction {
 		CIRenderer renderer = dashboard.getRenderer();
 
 		RenderResult html = new RenderResult(context);
-		if (task.equals("executeNewBuild")) {
+		if ("executeNewBuild".equals(task)) {
 			if (CIBuildManager.isRunning(dashboard)) {
 				context.sendError(409, "<message will be inserted in JS>");
 				// NOTE: on current ajax handling this message text will will
