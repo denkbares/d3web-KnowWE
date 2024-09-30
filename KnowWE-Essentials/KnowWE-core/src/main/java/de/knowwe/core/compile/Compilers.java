@@ -116,7 +116,7 @@ public class Compilers {
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
-							+ section;
+								 + section;
 					LOGGER.error(msg, e);
 				}
 			}
@@ -155,7 +155,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@Nullable
-	public static <C extends Compiler> C getCompiler(Section<?> section, Class<C> compilerClass) {
+	public static <C extends Compiler> C getCompiler(@NotNull Section<?> section, Class<C> compilerClass) {
 		Collection<C> compilers = getCompilers(null, section, compilerClass);
 		if (compilers.isEmpty()) {
 			return null;
@@ -263,7 +263,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@Nullable
-	public static <C extends Compiler> C getCompiler(UserContext context, Section<?> section, Class<C> compilerClass) {
+	public static <C extends Compiler> C getCompiler(UserContext context, @NotNull Section<?> section, Class<C> compilerClass) {
 		if (context == null) return getCompiler(section, compilerClass);
 
 		Collection<C> compilers = getCompilers(context, section, compilerClass);
@@ -425,7 +425,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@NotNull
-	public static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass) {
+	public static <C extends Compiler> Collection<C> getCompilers(@NotNull Section<?> section, Class<C> compilerClass) {
 		return getCompilers(null, section, compilerClass);
 	}
 
@@ -449,7 +449,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@NotNull
-	public static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, Section<?> section, Class<C> compilerClass) {
+	public static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, @NotNull Section<?> section, Class<C> compilerClass) {
 
 		// GET ALL COMPILERS
 		ArticleManager articleManager = section.getArticleManager();
@@ -523,7 +523,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@NotNull
-	public static <C extends Compiler> Collection<C> getCompilersWithCompileScript(Section<?> section, Class<C> compilerClass) {
+	public static <C extends Compiler> Collection<C> getCompilersWithCompileScript(@NotNull Section<?> section, Class<C> compilerClass) {
 		Collection<C> compilers = getCompilers(null, section, compilerClass);
 		ArrayList<C> filteredCompilers = new ArrayList<>(compilers.size());
 		for (C compiler : compilers) {

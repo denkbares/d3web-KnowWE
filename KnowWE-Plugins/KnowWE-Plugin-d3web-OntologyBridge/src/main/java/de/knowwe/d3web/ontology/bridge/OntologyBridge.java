@@ -163,8 +163,12 @@ public class OntologyBridge {
 		if (d3webId == null) {
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler");
 		}
+		Section<?> section = Sections.get(d3webId);
+		if (section == null) {
+			throw new IllegalStateException("Bridge mapping outdated, section for D3webCompiler not found");
+		}
 		D3webCompiler compiler = CompilationLocal.getCached(ontologyCompiler, D3webCompiler.class + ":" + d3webId,
-				() -> Compilers.getCompiler(Sections.get(d3webId), D3webCompiler.class));
+				() -> Compilers.getCompiler(section, D3webCompiler.class));
 		if (compiler == null) {
 			// should not happen
 			throw new IllegalArgumentException("Mapping not up to date, this is probably a failure of the OntologyBridge");
