@@ -193,9 +193,7 @@
 
 	/* -------- COOM -------- */
 	/* background colors */
-	--bg-implication: #F8D7DA;
-	--bg-combination: #357ab8;
-	--bg-enumeration: #5eaf7b; /* TODO */
+	--bg-implication: #B54D4D;
 	--bg-structure: #556677; /* TODO */
 
 	--bg-grey-table-cell: #d7d7d7;
@@ -386,10 +384,10 @@
 	--color-ide-special: #f75464;
 
 	/* -------- COOM -------- */
+	--text-table-head: white;
+
 	/* background colors */
-	--bg-implication: #75444c;
-	--bg-combination: #357ab8;
-	--bg-enumeration: #5eaf7b; /* TODO */
+	--bg-implication: #9B4D55; /* #75444c;*/
 	--bg-structure: #556677; /* TODO */
 
 	--bg-grey-table-cell: #646464;
@@ -505,14 +503,16 @@
 
 	/* -------- COOM -------- */
 	/* text colors */
-	--text-color-implication: #b35563;
+	--text-color-implication: #B54D4D;
 	--text-color-combination: #357ab8;
 	--text-color-enumeration: #5eaf7b;
 	--text-color-structure: #556677;
+	--text-table-head-color: var(--text-table-head);
+
 	/* background colors */
 	--bg-color-implication: var(--bg-implication);
-	--bg-color-combination: var(--bg-combination);
-	--bg-color-enumeration: var(--bg-enumeration);
+	--bg-color-combination: #357ab8;
+	--bg-color-enumeration: #4C9A6A;
 	--bg-color-structure: var(--bg-structure);
 
 	--bg-color-empty-table-cell: var(--bg-grey-table-cell);
