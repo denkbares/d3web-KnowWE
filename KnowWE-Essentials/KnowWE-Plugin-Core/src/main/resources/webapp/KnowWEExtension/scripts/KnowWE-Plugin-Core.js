@@ -64,7 +64,13 @@ KNOWWE.core.plugin.objectinfo = function() {
  * @type {{init: KNOWWE.plugin.anchor.init}}
  */
 KNOWWE.plugin.anchor = function() {
-
+  function getAnchor() {
+    if (window.location.hash) {
+      return window.location.hash.substring(1);
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("anchor");
+  }
 
   function getFloatingTableHeaderHeight($element) {
     let $tableHeader = $element.parents("table.sticky-header").find("thead");
@@ -98,10 +104,10 @@ KNOWWE.plugin.anchor = function() {
   return {
 
     init: function() {
-      if (!window.location.hash) return;
+      let name = getAnchor();
+      if (!name) return;
 
       jq$(".anchor-highlight").removeClass("highlight").removeClass("anchor-highlight");
-      const name = window.location.hash.substring(1);
       const sectionId = name.substr(name.lastIndexOf("-") + 1).toLowerCase();
       // first, try to find section directly
       let section = jq$("[sectionid=\"" + sectionId + "\"]");
