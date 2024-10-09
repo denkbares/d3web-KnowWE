@@ -990,6 +990,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		return getStatements().size();
 	}
 
+	public long getStatementCacheSize() {
+		return this.statementCache.size();
+	}
+
 	/**
 	 * sets the default namespaces
 	 */
