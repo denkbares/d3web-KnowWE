@@ -79,6 +79,19 @@
 							<goal>exploded</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>deployable-war</id>
+						<phase>package</phase>
+						<goals>
+							<goal>war</goal>
+						</goals>
+						<configuration>
+							<warName>KnowWE</warName> <!-- Setzt den Namen des WAR-Archivs -->
+							<packagingExcludes>
+								**/jspwiki-custom*.properties
+							</packagingExcludes>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
