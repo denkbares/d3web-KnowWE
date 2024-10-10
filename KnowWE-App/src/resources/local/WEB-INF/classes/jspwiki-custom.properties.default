@@ -497,7 +497,7 @@ jspwiki.plugin.externalJars =
 #  the policy file for more details.
 
 
-# Define the policy file here, relative to the WEB-INF folder!
+# Define the policy file here, relative to the WEB-INF folder or absolute
 jspwiki.policy.file = jspwiki.policy
 
 #  AUTHENTICATION
