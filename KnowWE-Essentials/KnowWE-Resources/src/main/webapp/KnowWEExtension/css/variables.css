@@ -387,7 +387,7 @@
 
 	/* background colors */
 	--bg-grey-table-cell: #646464;
-	
+
 	--icon-color: #A0A0A0;
 	--icon-color-hover: #F0F0F0;
 	--icon-popper-color: #1F1F1F;
@@ -503,6 +503,7 @@
 	--text-color-combination: #2266A1;
 	--text-color-enumeration: #168641;
 	--text-color-structure: var(--text-structure);
+	--text-color-include: #F4A300;
 
 	/* background colors */
 	--bg-color-implication: #a4305b;
