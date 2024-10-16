@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.PredicateParser.ParsedPredicate;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.kdom.Article;
@@ -87,6 +89,8 @@ public class PackageManager {// implements EventListener {
 	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages = new LinkedHashMap<>();
 	private final Set<Section<?>> addedPredicateSections = new LinkedHashSet<>();
 	private final Set<Section<?>> removedPredicateSections = new LinkedHashSet<>();
+	private final Map<Set<String>, Set<Section<?>>> addedPredicateSectionsCache = new ConcurrentHashMap<>();
+	private final Map<Set<String>, Set<Section<?>>> removedPredicateSectionsCache = new ConcurrentHashMap<>();
 
 	public static void addPackageAnnotation(DefaultMarkup markup) {
 		addPackageAnnotation(markup, true);
@@ -102,7 +106,8 @@ public class PackageManager {// implements EventListener {
 
 	public static void addExcludePackageAnnotation(DefaultMarkup markup) {
 		markup.addAnnotation(PackageManager.EXCLUDE_PACKAGE_ATTRIBUTE_NAME, false);
-		markup.getAnnotation(EXCLUDE_PACKAGE_ATTRIBUTE_NAME).setDocumentation("Configure the package or package rule to which the content of the markup belongs to be excluded.");
+		markup.getAnnotation(EXCLUDE_PACKAGE_ATTRIBUTE_NAME)
+				.setDocumentation("Configure the package or package rule to which the content of the markup belongs to be excluded.");
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
@@ -192,6 +197,7 @@ public class PackageManager {// implements EventListener {
 		predicateToSection.computeIfAbsent(packageRule, k -> new LinkedHashSet<>()).add(section);
 		sectionToPredicate.computeIfAbsent(section, k -> new LinkedHashSet<>()).add(packageRule);
 		addedPredicateSections.add(section);
+		addedPredicateSectionsCache.clear();
 	}
 
 	@NotNull
@@ -211,6 +217,7 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Gets all package statements of a section.
 	 * It collects the package rules as the condition string and the package names of the section.
+	 *
 	 * @param section the section to get all package statements for
 	 * @return the package statements (rules and package names)
 	 */
@@ -223,7 +230,7 @@ public class PackageManager {// implements EventListener {
 	public String getPackageStatementsOfSectionAsString(Section<?> section) {
 		return getPackageStatementsOfSection(section)
 				.stream()
-				.map(p -> p.contains("\s") ? "(" + p + ")" : p)
+				.map(p -> Strings.containsWhitespace(p) ? "(" + p + ")" : p)
 				.collect(Collectors.joining(" OR "));
 	}
 
@@ -307,6 +314,7 @@ public class PackageManager {// implements EventListener {
 			boolean removed = ruleSet.remove(section);
 			if (removed) {
 				removedPredicateSections.remove(section);
+				removedPredicateSectionsCache.clear();
 			}
 			if (ruleSet.isEmpty()) {
 				predicateToSection.remove(packageRule);
@@ -351,6 +359,19 @@ public class PackageManager {// implements EventListener {
 		}
 	}
 
+	public boolean containsPackage(String packageName) {
+		Set<Section<? extends DefaultMarkupType>> sectionsOfPackage = packageToSection.getOrDefault(packageName, Set.of());
+		if (sectionsOfPackage.isEmpty()) return false;
+		Collection<Section<?>> markedForRemoval = getRemovedSections(packageName);
+		if (markedForRemoval.isEmpty()) return true;
+		for (Section<? extends DefaultMarkupType> section : sectionsOfPackage) {
+			if (!markedForRemoval.contains(section)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Returns an unmodifiable view on the sections of the given packages at the time of calling this method. The
 	 * sections don't have a particular order.
@@ -379,6 +400,8 @@ public class PackageManager {// implements EventListener {
 				}
 			}
 		}
+
+		if (sets.isEmpty()) return Set.of();
 
 		// if there are sections marked to be removed (but not yet removed, will happen later in compilation),
 		// we also no longer return them here, so they are not compiled again by package compilers
@@ -415,16 +438,25 @@ public class PackageManager {// implements EventListener {
 		}
 
 		// check the sections registered with package rules...
-		addChangedPredicateSections(this.addedPredicateSections, sets, packageNames);
+		Set<Section<?>> predicateSections = getAddedPredicateSections(packageNames);
+		if (!predicateSections.isEmpty()) sets.add(predicateSections);
 
 		//noinspection unchecked
 		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
 
-	private void addChangedPredicateSections(Set<Section<?>> addedPredicateSections, List<Set<Section<?>>> sets, String... packageNames) {
+	private @NotNull Set<Section<?>> getAddedPredicateSections(String[] packageNames) {
+		return addedPredicateSectionsCache.computeIfAbsent(Set.of(packageNames), s -> calcPredicateSections(packageNames, this.addedPredicateSections));
+	}
+
+	private @NotNull Set<Section<?>> getRemovedPredicateSections(String[] packageNames) {
+		return removedPredicateSectionsCache.computeIfAbsent(Set.of(packageNames), s -> calcPredicateSections(packageNames, this.removedPredicateSections));
+	}
+
+	private @NotNull Set<Section<?>> calcPredicateSections(String[] packageNames, Set<Section<?>> allPredicateSections) {
 		Set<Section<?>> predicateSections = new LinkedHashSet<>();
 		PackageRule.PackagesValueProvider valueProvider = new PackageRule.PackagesValueProvider(packageNames);
-		for (Section<?> addedPredicateSection : addedPredicateSections) {
+		for (Section<?> addedPredicateSection : allPredicateSections) {
 			Set<ParsedPredicate> packageRulesOfSection = getPackageRulesOfSection(addedPredicateSection);
 			for (ParsedPredicate parsedPredicate : packageRulesOfSection) {
 				if (parsedPredicate.test(valueProvider)) {
@@ -433,7 +465,7 @@ public class PackageManager {// implements EventListener {
 				}
 			}
 		}
-		if (!predicateSections.isEmpty()) sets.add(predicateSections);
+		return predicateSections;
 	}
 
 	/**
@@ -455,11 +487,13 @@ public class PackageManager {// implements EventListener {
 		}
 
 		// check the sections registered with package rules...
-		addChangedPredicateSections(this.removedPredicateSections, sets, packageNames);
+		Set<Section<?>> predicateSections = getRemovedPredicateSections(packageNames);
+		if (!predicateSections.isEmpty()) sets.add(predicateSections);
 
 		//noinspection unchecked
 		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
+
 
 	public void registerPackageCompileSection(Section<? extends DefaultMarkupPackageCompileType> section) {
 
@@ -502,6 +536,8 @@ public class PackageManager {// implements EventListener {
 		this.changedPackages.clear();
 		this.removedPredicateSections.clear();
 		this.addedPredicateSections.clear();
+		this.addedPredicateSectionsCache.clear();
+		this.removedPredicateSectionsCache.clear();
 	}
 
 	/**

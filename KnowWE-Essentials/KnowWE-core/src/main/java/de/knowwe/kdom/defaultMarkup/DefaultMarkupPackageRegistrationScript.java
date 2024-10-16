@@ -76,8 +76,7 @@ public class DefaultMarkupPackageRegistrationScript extends DefaultMarkupPackage
 
 		// register section for all regular packages in the package manager
 		for (String packageName : packageInfo.packageNames) {
-			// TODO implement packageManager.containsPackage?
-			boolean isNewPackage = packageManager.getSectionsOfPackage(packageName).isEmpty();
+			boolean isNewPackage = !packageManager.containsPackage(packageName);
 			packageManager.addSectionToPackage(section, packageName);
 
 			// Special case for package patterns: Since we don't know which new package names will match on a package
@@ -104,10 +103,5 @@ public class DefaultMarkupPackageRegistrationScript extends DefaultMarkupPackage
 	@Override
 	public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
 		compiler.getPackageManager().markForRemoval(section);
-	}
-
-	@Override
-	public Class<PackageRegistrationCompiler> getCompilerClass() {
-		return PackageRegistrationCompiler.class;
 	}
 }
