@@ -1,5 +1,6 @@
 package de.uniwue.d3web.gitConnector.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +32,10 @@ public class GitHashCash {
 	}
 
 	public List<String> get(String key) {
-		return cacheMap.get(key);
+		if(cacheMap.containsKey(key)){
+			return cacheMap.get(key);
+		}
+		return Collections.emptyList();
 	}
 
 	public void put(String key, List<String> value) {
