@@ -315,6 +315,14 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			String hash = null;
 			if (realversion == LATEST_VERSION) {
 				List<String> commitHashes = this.gitConnector.commitHashesForFile(attPath);
+				//if there are no commits, we can still use the information from the filesystem
+				if(commitHashes.isEmpty()){
+					att.setVersion(1);
+					att.setSize(attFile.length());
+					att.setLastModified(new Date(attFile.lastModified()));
+					return att;
+				}
+
 				realversion = commitHashes.size();
 				hash = commitHashes.get(commitHashes.size() - 1);
 			}
