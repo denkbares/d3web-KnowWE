@@ -111,10 +111,11 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public List<String> listChangedFilesForHash(String commitHash) {
-		String[] command = new String[] { "git", "diff-tree", "--no-commit-id", "--name-only", "-r", commitHash };
+		String[] command = new String[] { "git", "show", "--no-commit-id", "--name-only","--pretty=format:\"\"", commitHash };
 		String result = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 		List<String> list = new ArrayList<>(Arrays.asList(result.split("\n")));
 		list.remove("");
+		list.remove("\"\"");
 		return list;
 	}
 
@@ -470,7 +471,7 @@ public class BareGitConnector implements GitConnector {
 			String trim = branch.trim();
 			//active branch
 			if (trim.startsWith("*")) {
-				trim = trim.substring(1);
+				trim = trim.substring(1).trim();
 			}
 			branches.add(trim);
 		}
