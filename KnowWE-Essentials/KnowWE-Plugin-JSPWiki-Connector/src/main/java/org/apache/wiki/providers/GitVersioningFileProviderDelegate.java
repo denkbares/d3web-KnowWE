@@ -66,7 +66,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.knowwe.core.user.UserContext;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
