@@ -335,6 +335,9 @@ SpreadsheetModel.prototype.isHeader = function(row, col) {
 SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
   if (this.isEmpty()) return "";
   let wikiText = this.textBeforeTable ? this.textBeforeTable : "";
+  if (wikiText && wikiText.startsWith("%%") && !wikiText.endsWith("\n")) {
+    wikiText += "\n";
+  }
   for (let row = 0; row < this.height; row++) {
     for (let col = 0; col < this.width; col++) {
       let cellText = this.getCellText(row, col);
