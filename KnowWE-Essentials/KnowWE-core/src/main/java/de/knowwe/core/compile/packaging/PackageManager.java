@@ -23,6 +23,7 @@ package de.knowwe.core.compile.packaging;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -446,11 +447,11 @@ public class PackageManager {// implements EventListener {
 	}
 
 	private @NotNull Set<Section<?>> getAddedPredicateSections(String[] packageNames) {
-		return addedPredicateSectionsCache.computeIfAbsent(Set.of(packageNames), s -> calcPredicateSections(packageNames, this.addedPredicateSections));
+		return addedPredicateSectionsCache.computeIfAbsent(new HashSet<>(List.of(packageNames)), s -> calcPredicateSections(packageNames, this.addedPredicateSections));
 	}
 
 	private @NotNull Set<Section<?>> getRemovedPredicateSections(String[] packageNames) {
-		return removedPredicateSectionsCache.computeIfAbsent(Set.of(packageNames), s -> calcPredicateSections(packageNames, this.removedPredicateSections));
+		return removedPredicateSectionsCache.computeIfAbsent(new HashSet<>(List.of(packageNames)), s -> calcPredicateSections(packageNames, this.removedPredicateSections));
 	}
 
 	private @NotNull Set<Section<?>> calcPredicateSections(String[] packageNames, Set<Section<?>> allPredicateSections) {
