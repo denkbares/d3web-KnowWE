@@ -20,13 +20,11 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,8 +43,8 @@ import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
+import static de.knowwe.core.action.RecompileAction.Mode.*;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
@@ -59,7 +57,7 @@ public class RecompileAction extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RecompileAction.class);
 
 	public enum Mode {
-		single, variant, all
+		single, variant, full, unspecified
 	}
 
 	private static final ExecutorService LOGGER_THREAD = Executors.newCachedThreadPool(runnable -> new Thread(runnable, "Recompile-Logger-Thread"));
@@ -74,31 +72,29 @@ public class RecompileAction extends AbstractAction {
 			return;
 		}
 
-		Mode mode = Mode.all;
+		Mode mode = unspecified;
 		try {
 			mode = Mode.valueOf(command);
 		}
 		catch (IllegalArgumentException e) {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
 		}
-		final String reason = "Recompile hotkey";
+		final String reason = "recompile hotkey";
 		switch (mode) {
-			case single -> recompile(List.of(article), reason, context.getUserName());
+			case single, unspecified -> recompile(List.of(article), single, reason, context.getUserName());
 			case variant -> recompileVariant(context, reason);
-			case all -> fullRecompile(context.getArticleManager(), reason, context.getUserName());
+			case full -> recompile(context.getArticleManager().getArticles(), full, reason, context.getUserName());
 		}
 	}
 
 	/**
 	 * Recompiles just the compilers for the currently selected variant (grouped compilers)
-	 *
-	 * @param reason the reason for the recompile
 	 */
 	public static void recompileVariant(UserActionContext context, String reason) {
 		List<GroupingCompiler> groupingCompilers = Compilers.getCompilers(context, context.getArticleManager(), GroupingCompiler.class);
 		if (groupingCompilers.isEmpty()) {
 			LOGGER.warn("No grouping compiler found for when trying to compile variant. Compiling current article instead...");
-			recompile(List.of(context.getArticle()), reason, context.getUserName());
+			recompile(List.of(context.getArticle()), single, reason, context.getUserName());
 		}
 		else {
 			GroupingCompiler variantCompiler = groupingCompilers.iterator().next();
@@ -107,30 +103,17 @@ public class RecompileAction extends AbstractAction {
 					.filter(c -> c instanceof PackageCompiler)
 					.map(c -> (PackageCompiler) c)
 					.map(p -> p.getCompileSection().getArticle()).toList();
-			recompile(compileArticles, reason, context.getUserName());
+			recompile(compileArticles, variant, reason, context.getUserName());
 		}
 	}
 
 	/**
 	 * Recompiles the given article, optionally including all compilers compiling the given article
 	 *
-	 * @param article the article to recompile
-	 */
-	public static void recompile(@NotNull Article article, @NotNull String reason) {
-		recompile(List.of(article), reason, null);
-	}
-
-	public static void fullRecompile(ArticleManager articleManager, @NotNull String reason, @Nullable String userName) {
-		recompile(articleManager.getArticles(), reason, userName);
-	}
-
-	/**
-	 * Recompiles the given article, optionally including all compilers compiling the given article
-	 *
 	 * @param articlesToRecompile the articles that should be recompiled
-	 * @param reason              optional reason why the recompile was requested
 	 */
-	public static void recompile(@NotNull Collection<Article> articlesToRecompile, @NotNull String reason, @Nullable String userName) {
+
+	public static void recompile(@NotNull Collection<Article> articlesToRecompile, @NotNull Mode mode, @NotNull String reason, @Nullable String userName) {
 		if (userName == null) userName = "SYSTEM";
 		if (articlesToRecompile.isEmpty()) return;
 		ArticleManager articleManager = articlesToRecompile.iterator().next().getArticleManager();
@@ -138,14 +121,9 @@ public class RecompileAction extends AbstractAction {
 		Stopwatch stopwatch = new Stopwatch();
 		articleManager.open();
 		try {
-			if (articlesToRecompile.size() == 1) {
-				LOGGER.info("Starting recompilation of article {}. Reason: {}. User: {}",
-						articlesToRecompile.iterator().next().getTitle(), reason, userName);
-			}
-			else {
-				LOGGER.info("Starting FULL recompilation of {}. Reason: {}. User: {}",
-						Strings.pluralOf(articlesToRecompile.size(), "article"), reason, userName);
-			}
+			LOGGER.info("Starting {} recompilation ({}). Reason: {}. User: {}",
+					mode.name(), Strings.pluralOf(articlesToRecompile.size(), "article"), reason, userName);
+			articleManager.getCompilerManager().setCompileMessage("Mode: " + mode.name() + ", reason: " + reason + ", user: " + userName);
 			if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 				articlesToRecompile.parallelStream()
 						.forEach(article -> defaultArticleManager.queueArticle(article.getTitle(), article.getText()));
@@ -171,48 +149,5 @@ public class RecompileAction extends AbstractAction {
 		finally {
 			articleManager.commit();
 		}
-		LOGGER_THREAD.submit(() -> {
-			try {
-				articleManager.getCompilerManager().awaitTermination();
-			}
-			catch (InterruptedException ignore) {
-			}
-			stopwatch.log(LOGGER, "Recompilation of " + Strings.pluralOf(articlesToRecompile.size(), "article") + " finished");
-		});
-	}
-
-	@NotNull
-	private static Stream<Article> getCompilerArticles(Article article) {
-		ArticleManager articleManager = article.getArticleManager();
-		if (articleManager == null) return Stream.of(article);
-		List<GroupingCompiler> groupingCompilers = Compilers.getCompilers(articleManager, GroupingCompiler.class);
-		Stream<Article> compileArticles = $(article).successor(DefaultMarkupType.class)
-				.map(s -> Compilers.getCompilers(s, PackageCompiler.class))
-				.flatMap(Collection::stream)
-				.distinct()
-				.flatMap(c -> getGroupedPackageCompilers(groupingCompilers, c))
-				.distinct()
-				.map(c -> c.getCompileSection().getArticle());
-		return Stream.concat(Stream.of(article), compileArticles).distinct();
-	}
-
-	@NotNull
-	private static Stream<PackageCompiler> getGroupedPackageCompilers(List<GroupingCompiler> groupingCompilers, PackageCompiler packageCompiler) {
-		List<Stream<PackageCompiler>> streams = new ArrayList<>();
-		streams.add(Stream.of(packageCompiler));
-		if (packageCompiler instanceof GroupingCompiler) {
-			streams.add(toPackageCompilers(((GroupingCompiler) packageCompiler).getChildCompilers().stream()));
-		}
-		for (GroupingCompiler groupingCompiler : groupingCompilers) {
-			if (groupingCompiler.getChildCompilers().contains(packageCompiler)) {
-				streams.add(toPackageCompilers(Stream.of(groupingCompiler)));
-				streams.add(toPackageCompilers(groupingCompiler.getChildCompilers().stream()));
-			}
-		}
-		return streams.stream().flatMap(Function.identity());
-	}
-
-	private static Stream<PackageCompiler> toPackageCompilers(Stream<de.knowwe.core.compile.Compiler> compilerStream) {
-		return compilerStream.filter(pc -> pc instanceof PackageCompiler).map(pc -> (PackageCompiler) pc);
 	}
 }

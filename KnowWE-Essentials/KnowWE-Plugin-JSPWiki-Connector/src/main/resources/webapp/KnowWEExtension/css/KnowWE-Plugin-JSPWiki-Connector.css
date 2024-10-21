@@ -1,3 +1,7 @@
+#compile-warning {
+	white-space: pre-wrap;
+}
+
 .onoffswitch {
 	position: relative;
 	width: 90px;

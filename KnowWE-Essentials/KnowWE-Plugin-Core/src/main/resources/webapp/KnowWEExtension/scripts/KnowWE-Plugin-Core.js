@@ -709,7 +709,7 @@ KNOWWE.core.plugin.recompile = function() {
       jq$(document).keyup(function(event) {
           let command = null;
           if (event.ctrlKey && event.altKey && event.shiftKey && (event.key === "R" || event.key === "¸")) {
-            command = "all";
+            command = "full";
             KNOWWE.notification.success("Full recompile", "Performing full recompilation of the current page and all compilers.");
           }
           else if (event.ctrlKey && event.altKey && (event.key === "r" || event.key === "®")) {
@@ -718,7 +718,7 @@ KNOWWE.core.plugin.recompile = function() {
           }
           else if (event.ctrlKey && event.metaKey && event.key === "r" || event.ctrlKey && event.altKey && event.keyCode === 52) {
             command = "variant";
-            KNOWWE.notification.success("Full variant recompile", "Recompiling the current page and currently selected variant.");
+            KNOWWE.notification.success("Variant recompile", "Recompiling the current page and currently selected variant.");
           }
           else {
             return;

@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -68,6 +69,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.plugin.PluginManager;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
@@ -75,14 +77,16 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.UpdateNotAllowedException;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleDeletedEvent;
-import de.knowwe.event.ArticleRefreshEvent;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
@@ -132,7 +136,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				File pageDir = null;
 				while ((line = in.readLine()) != null) {
 					if (!line.contains("#")
-							&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
+						&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
 						line = line.trim();
 						line = line.substring(line.lastIndexOf(" ") + 1);
 						pageDir = new File(line);
@@ -143,7 +147,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 				if (pageDir != null && pageDir.exists()) {
 					File coreDir = new File(KnowWEUtils.getApplicationRootPath()
-							+ "/WEB-INF/resources/core-pages");
+											+ "/WEB-INF/resources/core-pages");
 					File[] files = coreDir.listFiles();
 					if (files != null) {
 						for (File corePage : files) {
@@ -239,8 +243,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
 		}
 		if (context.getHttpRequest() != null
-				&& !isWorkflow(wikiContext)
-				&& context.getHttpRequest().getParameter("action") != null) {
+			&& !isWorkflow(wikiContext)
+			&& context.getHttpRequest().getParameter("action") != null) {
 			// we don't want to trigger our KnowWE compilation and render pipeline,
 			// if we are just executing some action (ajax from client)
 			return content;
@@ -280,7 +284,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				Article supportArticle = Environment.getInstance()
 						.getArticle(Environment.DEFAULT_WEB, title);
 				if (supportArticle != null
-						&& supportArticle.getRootSection().getText().equals(
+					&& supportArticle.getRootSection().getText().equals(
 						content)) {
 					RenderResult renderResult = new RenderResult(userContext);
 					render(userContext, supportArticle, renderResult);
@@ -312,7 +316,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		// we suggest a link to correct article name
 		if (existingArticle != null && !existingArticle.getTitle().equals(title)) {
 			return "The page \"" + title + "\" does not exist, did you mean \"["
-					+ existingArticle.getTitle() + "]\"?";
+				   + existingArticle.getTitle() + "]\"?";
 		}
 
 		try {
@@ -334,7 +338,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				long start = System.currentTimeMillis();
 				render(userContext, article, renderResult);
 				LOGGER.info("Rendered article '" + article.getTitle() + "' in "
-						+ (System.currentTimeMillis() - start) + "ms");
+							+ (System.currentTimeMillis() - start) + "ms");
 			}
 			stringRaw = renderResult.toStringRaw();
 			userContext.getRequest().setAttribute("renderresult" + title, stringRaw);
@@ -359,15 +363,26 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) throws InterruptedException {
-		if (!isSupportArticle(article.getTitle())
-				&& article.getArticleManager() != null
-				&& !article.getArticleManager().getCompilerManager().awaitTermination(300)) {
-			renderResult.appendHtmlElement("span", "Compilation still ongoing, please wait...\n" +
-							"You are currently viewing a preview of the page, compilation messages and parts of the " +
-							"content might still be missing!",
-					"class", "warning");
-			String awaitAction = "jq$.ajax('action/AwaitRecompilationAction', {cache: false}).done(function() { window.location.reload() });";
-			renderResult.appendHtmlElement("script", awaitAction);
+		ArticleManager articleManager = article.getArticleManager();
+		if (!isSupportArticle(article.getTitle()) && articleManager != null) {
+			CompilerManager compilerManager = articleManager.getCompilerManager();
+			if (!compilerManager.awaitTermination(300)) {
+				HtmlElement compileWarning = new Span().clazz("warning").attributes("id", "compile-warning");
+				compileWarning.children(new Span("Compilation still ongoing, please wait... " +
+												 "You are currently viewing a preview of the page, compilation messages and parts of the " +
+												 "content might still be missing!"));
+				String commitMessage = compilerManager.getCompileMessage();
+				if (Strings.isNotBlank(commitMessage)) {
+					compileWarning.children(new Span("\n" + commitMessage));
+				}
+				long started = new Date().getTime() - compilerManager.getLastCompilationStart().getTime();
+				compileWarning.children(
+						new Span("\nRunning since: "),
+						new Span(Stopwatch.getDisplay(started))
+								.attributes("id", "time-value")
+								.attributes("data-started-ms-ago", started + ""));
+				renderResult.append(compileWarning);
+			}
 		}
 		renderArticle(userContext, article, renderResult);
 	}
@@ -465,12 +480,12 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		String message;
 		if (e instanceof UpdateNotAllowedException) {
 			message = "Your request tries to change the content of the current article. "
-					+ "You are not authorized to do that.";
+					  + "You are not authorized to do that.";
 		}
 		else {
 			message = "An exception occurred while compiling and rendering this article, "
-					+ "try going back to the last working version of the article.\n\n"
-					+ ExceptionUtils.getStackTrace(e);
+					  + "try going back to the last working version of the article.\n\n"
+					  + ExceptionUtils.getStackTrace(e);
 		}
 		renderResult.appendHtmlElement("div", message, "style",
 				"white-space: pre; overflow: hidden");
@@ -595,7 +610,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			else {
 				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
 				String gitCommitRev = gitEvent.getGitCommitRev();
-				String pageFile = JSPUtils.mangleName(pageTitle)+".txt";
+				String pageFile = JSPUtils.mangleName(pageTitle) + ".txt";
 				int latestVersionNumber = getGitConnector().numberOfCommitsForFile(pageFile);
 				ArticleUpdateEvent.Version version = new ArticleUpdateEvent.Version(latestVersionNumber);
 				version.setCommitHash(gitCommitRev);
@@ -606,8 +621,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private GitConnector gitConnector = null;
+
 	private GitConnector getGitConnector() {
-		if(gitConnector==null){
+		if (gitConnector == null) {
 			String gitDir = Environment.getInstance()
 					.getWikiConnector()
 					.getWikiProperty(GitProviderProperties.JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR);
@@ -664,7 +680,6 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	private static boolean articleIsEmpty(String title) {
 		return false;
 	}
-
 
 	/**
 	 * Some managers are not available immediately, so register a bit later
@@ -724,9 +739,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 					// obviously the plugin is not available in current
 					// installation
 					LOGGER.warn("Found dependency to a css/js resource (" + resource +
-							") where the corresponding plugin is not available. " +
-							"This can also happen, if the plugin.xml has the wrong plugin id " +
-							"(id other than the name of module it is in).");
+								") where the corresponding plugin is not available. " +
+								"This can also happen, if the plugin.xml has the wrong plugin id " +
+								"(id other than the name of module it is in).");
 					continue;
 				}
 			}
@@ -770,7 +785,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 	public static boolean isRenderingPreview(UserContext user) {
 		return user != null
-				&& user.getRequest() != null
-				&& user.isRenderingPreview();
+			   && user.getRequest() != null
+			   && user.isRenderingPreview();
 	}
 }

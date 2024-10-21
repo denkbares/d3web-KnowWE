@@ -231,9 +231,9 @@ public class Environment {
 	public Article updateArticle(String title, String author, String content, boolean fullParse, HttpServletRequest httpRequest) throws InterruptedException,
 			UpdateNotAllowedException {
 
-		ArticleManager defaultArticleManager = getDefaultArticleManager();
+		ArticleManager articleManager = getDefaultArticleManager();
 		String originalText = "";
-		Article article = defaultArticleManager.getArticle(title);
+		Article article = articleManager.getArticle(title);
 		if (article != null) {
 			originalText = article.getRootSection().getText();
 		}
@@ -245,7 +245,7 @@ public class Environment {
 				throw new UpdateNotAllowedException();
 			}
 
-			CompilerManager compilerManager = defaultArticleManager.getCompilerManager();
+			CompilerManager compilerManager = articleManager.getCompilerManager();
 			if (compilerManager.isCompiling(title)) {
 				// it is possible, that compilation of this article was triggered independently of calling this
 				// method...
@@ -255,14 +255,15 @@ public class Environment {
 			int latestVersion = retrieveLatestVersionNumber(title);
 			event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
 			EventManager.getInstance().fireEvent(event);
-			defaultArticleManager.open();
+			articleManager.open();
 			try {
+				articleManager.getCompilerManager().setCompileMessage("Reason: saving page " + title + ", user: " + author);
 				// create article with the new content
 				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, cleanedContent);
 				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article, author));
 			}
 			finally {
-				defaultArticleManager.commit();
+				articleManager.commit();
 			}
 			compilerManager.awaitTermination();
 		}
