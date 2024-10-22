@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -78,7 +79,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 	protected Collection<Identifier> getIdentifiers(Section<?> section, Section<Term> termSection) {
 		return Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
 				.stream()
-				.map(c -> getTermIdentifier(c, termSection))
+				.flatMap(c -> getTermIdentifiers(c, termSection))
 				.filter(Objects::nonNull)
 				.map(CompositeEditToolProvider::matchCompatibilityForm)
 				.distinct()
@@ -86,9 +87,11 @@ public class CompositeEditToolProvider implements ToolProvider {
 				.collect(Collectors.toList());
 	}
 
-	public Identifier getTermIdentifier(TermCompiler compiler, Section<Term> termSection) {
+	protected Stream<Identifier> getTermIdentifiers(TermCompiler compiler, Section<Term> termSection) {
 		try {
-			return termSection.get().getTermIdentifier(compiler, termSection);
+			Collection<Identifier> identifiers = compiler.getTerminologyManager().getRegisteredIdentifiers(compiler, termSection);
+			Identifier termIdentifier = termSection.get().getTermIdentifier(compiler, termSection);
+			return Stream.concat(identifiers.stream(), Stream.of(termIdentifier)).distinct();
 		}
 		catch (ClassCastException e) { // in case the identifier can only be generated for certain term compilers
 			return null;
