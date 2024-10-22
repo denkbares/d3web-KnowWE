@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.collections.MinimizedHashSet;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -26,6 +28,7 @@ import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
@@ -45,6 +48,8 @@ public class TerminologyManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TerminologyManager.class);
 
 	private static final Set<Identifier> occupiedTerms = new HashSet<>();
+	private static final String REFERENCES_KEY = TerminologyManager.class.getName() + "#Identifiers";
+	private static final String DEFINITIONS_KEY = TerminologyManager.class.getName() + "#Definitions";
 
 	private final TermLogManager termLogManager;
 
@@ -110,8 +115,8 @@ public class TerminologyManager {
 				? (AbstractPackageCompiler) compiler : null;
 		if (occupiedTerms.contains(termIdentifier)) {
 			Message msg = Messages.error("The term '"
-					+ termIdentifier
-					+ "' is reserved by the system.");
+										 + termIdentifier
+										 + "' is reserved by the system.");
 			Messages.storeMessage(messageCompiler, termDefinition, this.getClass(), msg);
 			return;
 		}
@@ -123,9 +128,11 @@ public class TerminologyManager {
 				termLogManager.putLog(termIdentifier, termRefLog);
 			}
 			termRefLog.addTermDefinition(compiler, termDefinition, termClass, termIdentifier);
+			termDefinition.computeIfAbsent(compiler, DEFINITIONS_KEY, (c, s) -> new MinimizedHashSet<>())
+					.add(termIdentifier);
 		}
 
-		EventManager.getInstance().fireEvent(new TermDefinitionRegisteredEvent(compiler, termIdentifier, termClass));
+		EventManager.getInstance().fireEvent(new TermDefinitionRegisteredEvent<>(compiler, termIdentifier, termClass));
 		Messages.clearMessages(messageCompiler, termDefinition, this.getClass());
 	}
 
@@ -168,6 +175,8 @@ public class TerminologyManager {
 			termLogManager.putLog(termIdentifier, termLog);
 		}
 		termLog.addTermReference(compiler, termReference, termClass, termIdentifier);
+		termReference.computeIfAbsent(compiler, REFERENCES_KEY, (c, s) -> new MinimizedHashSet<>())
+				.add(termIdentifier);
 	}
 
 	/**
@@ -261,12 +270,13 @@ public class TerminologyManager {
 				boolean removedTermDefinition = termRefLog.removeTermDefinition(compiler, termDefinition,
 						termClass, termIdentifier);
 				//if(removedTermDefinition) {
-					EventManager.getInstance()
-							.fireEvent(new TermDefinitionUnregisteredEvent(compiler, termIdentifier, termClass));
+				EventManager.getInstance()
+						.fireEvent(new TermDefinitionUnregisteredEvent<>(compiler, termIdentifier, termClass));
 				//}
 			}
 		}
-
+		termDefinition.getObjectOrDefault(compiler, DEFINITIONS_KEY, new MinimizedHashSet<>())
+				.remove(termIdentifier);
 	}
 
 	/**
@@ -290,6 +300,8 @@ public class TerminologyManager {
 		if (refLog != null) {
 			refLog.removeTermReference(compiler, termReference, termClass, termIdentifier);
 		}
+		termReference.getObjectOrDefault(compiler, REFERENCES_KEY, new MinimizedHashSet<>())
+				.remove(termIdentifier);
 	}
 
 	/**
@@ -345,11 +357,22 @@ public class TerminologyManager {
 				.collect(Collectors.toSet());
 	}
 
+	public synchronized Collection<Identifier> getRegisteredIdentifiers(TermCompiler compiler, Section<? extends Term> termSection) {
+		Set<Identifier> definitions = termSection.getObjectOrDefault(compiler, DEFINITIONS_KEY, Set.of());
+		Set<Identifier> references = termSection.getObjectOrDefault(compiler, REFERENCES_KEY, Set.of());
+		if (definitions.isEmpty()) return List.copyOf(references);
+		if (references.isEmpty()) return List.copyOf(definitions);
+		HashSet<Identifier> identifiers = new HashSet<>();
+		identifiers.addAll(definitions);
+		identifiers.addAll(references);
+		return List.copyOf(identifiers);
+	}
+
 	private synchronized Collection<TermLog> getAllTermLogEntries(Class<?> termClass, boolean defined) {
 		Collection<TermLog> filteredLogEntries = new HashSet<>();
 		for (Entry<Identifier, TermLog> managerEntry : termLogManager.entrySet()) {
 			boolean include = checkDefinedState(defined, managerEntry)
-					&& checkTermClass(termClass, managerEntry);
+							  && checkTermClass(termClass, managerEntry);
 			if (include) {
 				filteredLogEntries.add(managerEntry.getValue());
 			}
@@ -363,8 +386,8 @@ public class TerminologyManager {
 
 	private boolean checkTermClass(Class<?> termClass, Entry<Identifier, TermLog> managerEntry) {
 		return termClass == null
-				|| (managerEntry.getValue().getTermClasses().size() == 1
-				&& termClass.isAssignableFrom(managerEntry.getValue().getTermClasses().iterator().next()));
+			   || (managerEntry.getValue().getTermClasses().size() == 1
+				   && termClass.isAssignableFrom(managerEntry.getValue().getTermClasses().iterator().next()));
 	}
 
 	/**
