@@ -376,8 +376,15 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 					compileWarning.children(new Span("\n" + commitMessage));
 				}
 				long started = new Date().getTime() - compilerManager.getLastCompilationStart().getTime();
+				String runningSince = "Running since: ";
+				if (Strings.isBlank(commitMessage) || !commitMessage.matches(".+\\w+$")) {
+					runningSince = "\n" + runningSince;
+				}
+				else  {
+					runningSince = ". " + runningSince;
+				}
 				compileWarning.children(
-						new Span("\nRunning since: "),
+						new Span(runningSince),
 						new Span(Stopwatch.getDisplay(started))
 								.attributes("id", "time-value")
 								.attributes("data-started-ms-ago", started + ""));
