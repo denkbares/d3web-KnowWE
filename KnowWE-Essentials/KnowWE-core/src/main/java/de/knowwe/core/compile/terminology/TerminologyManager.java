@@ -121,6 +121,7 @@ public class TerminologyManager {
 			return;
 		}
 
+		Set<Identifier> registeredDefinitions = termDefinition.computeIfAbsent(compiler, DEFINITIONS_KEY, (c, s) -> new MinimizedHashSet<>());
 		synchronized (this) {
 			TermLog termRefLog = termLogManager.getLog(termIdentifier);
 			if (termRefLog == null) {
@@ -128,8 +129,7 @@ public class TerminologyManager {
 				termLogManager.putLog(termIdentifier, termRefLog);
 			}
 			termRefLog.addTermDefinition(compiler, termDefinition, termClass, termIdentifier);
-			termDefinition.computeIfAbsent(compiler, DEFINITIONS_KEY, (c, s) -> new MinimizedHashSet<>())
-					.add(termIdentifier);
+			registeredDefinitions.add(termIdentifier);
 		}
 
 		EventManager.getInstance().fireEvent(new TermDefinitionRegisteredEvent<>(compiler, termIdentifier, termClass));
@@ -159,7 +159,7 @@ public class TerminologyManager {
 		return Collections.unmodifiableCollection(termIdentifiers);
 	}
 
-	public synchronized void registerTermReference(
+	public void registerTermReference(
 			@NotNull Compiler compiler,
 			@NotNull Section<?> termReference,
 			@NotNull Class<?> termClass,
@@ -169,14 +169,16 @@ public class TerminologyManager {
 		Objects.requireNonNull(termClass);
 		Objects.requireNonNull(termIdentifier);
 
-		TermLog termLog = termLogManager.getLog(termIdentifier);
-		if (termLog == null) {
-			termLog = new TermLog();
-			termLogManager.putLog(termIdentifier, termLog);
+		Set<Identifier> registeredReferences = termReference.computeIfAbsent(compiler, REFERENCES_KEY, (c, s) -> new MinimizedHashSet<>());
+		synchronized (this) {
+			TermLog termLog = termLogManager.getLog(termIdentifier);
+			if (termLog == null) {
+				termLog = new TermLog();
+				termLogManager.putLog(termIdentifier, termLog);
+			}
+			termLog.addTermReference(compiler, termReference, termClass, termIdentifier);
+			registeredReferences.add(termIdentifier);
 		}
-		termLog.addTermReference(compiler, termReference, termClass, termIdentifier);
-		termReference.computeIfAbsent(compiler, REFERENCES_KEY, (c, s) -> new MinimizedHashSet<>())
-				.add(termIdentifier);
 	}
 
 	/**
@@ -357,15 +359,17 @@ public class TerminologyManager {
 				.collect(Collectors.toSet());
 	}
 
-	public synchronized Collection<Identifier> getRegisteredIdentifiers(TermCompiler compiler, Section<? extends Term> termSection) {
+	public Collection<Identifier> getRegisteredIdentifiers(TermCompiler compiler, Section<? extends Term> termSection) {
 		Set<Identifier> definitions = termSection.getObjectOrDefault(compiler, DEFINITIONS_KEY, Set.of());
 		Set<Identifier> references = termSection.getObjectOrDefault(compiler, REFERENCES_KEY, Set.of());
-		if (definitions.isEmpty()) return List.copyOf(references);
-		if (references.isEmpty()) return List.copyOf(definitions);
-		HashSet<Identifier> identifiers = new HashSet<>();
-		identifiers.addAll(definitions);
-		identifiers.addAll(references);
-		return List.copyOf(identifiers);
+		synchronized (this) {
+			if (definitions.isEmpty()) return List.copyOf(references);
+			if (references.isEmpty()) return List.copyOf(definitions);
+			HashSet<Identifier> identifiers = new HashSet<>();
+			identifiers.addAll(definitions);
+			identifiers.addAll(references);
+			return List.copyOf(identifiers);
+		}
 	}
 
 	private synchronized Collection<TermLog> getAllTermLogEntries(Class<?> termClass, boolean defined) {
