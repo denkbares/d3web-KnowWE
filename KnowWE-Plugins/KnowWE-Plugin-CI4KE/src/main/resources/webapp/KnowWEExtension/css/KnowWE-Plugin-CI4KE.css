@@ -219,3 +219,26 @@ span.collapseCIMessage:hover, span.expandCIMessage:hover {
 	padding-right: 0.3em;
 	cursor: pointer;
 }
+
+.soft-tests-separator {
+	display: flex;
+	height: 30px;
+	padding-top: 5px;
+}
+
+.soft-tests-separator-line {
+	border-top: 1px solid #DDDDDD;
+	width: 100%;
+	margin-top: 12px;
+}
+
+.soft-tests-separator-line:first-of-type {
+	width: 48px;
+	margin-left: 5px;
+}
+
+.form-split-line-label {
+	color: var(--text-color-secondary);
+	padding: 0 10px;
+	white-space: nowrap;
+}

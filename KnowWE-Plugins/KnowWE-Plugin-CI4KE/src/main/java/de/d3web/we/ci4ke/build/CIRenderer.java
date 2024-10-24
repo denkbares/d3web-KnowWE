@@ -52,6 +52,7 @@ import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
 import de.d3web.we.ci4ke.test.ResultRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.Div;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
@@ -214,8 +215,24 @@ public class CIRenderer {
 					openMessageBlock(type, result);
 				}
 				// render the particular tests
+				List<TestResult> softTests = new ArrayList<>();
 				for (TestResult testResult : groupResults) {
+					if (testResult.isSoftTest()) {
+						softTests.add(testResult);
+						continue;
+					}
 					appendTestResult(context, testResult, result);
+				}
+				if (!softTests.isEmpty()) {
+					result.append(new Div().clazz("soft-tests-separator").children(
+									new Span("").clazz("soft-tests-separator-line"),
+									new Span("Soft Tests").clazz("form-split-line-label"),
+									new Span("").clazz("soft-tests-separator-line")
+							)
+					);
+				}
+				for (TestResult softTest : softTests) {
+					appendTestResult(context, softTest, result);
 				}
 				// close group if available
 				if (group != null) {
@@ -507,8 +524,13 @@ public class CIRenderer {
 	private void appendBuildHeadline(BuildResult build, RenderResult buffy) {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		String buildDate = dateFormat.format(build.getBuildDate());
-		buffy.appendHtml("<div class='ci-name'>").append(getCollapseExpandAll()).append("Build #").append(build.getBuildNumber())
-				.append(" (").append(buildDate).append(") ");
+		buffy.appendHtml("<div class='ci-name'>")
+				.append(getCollapseExpandAll())
+				.append("Build #")
+				.append(build.getBuildNumber())
+				.append(" (")
+				.append(buildDate)
+				.append(") ");
 
 		// get the build duration time
 		buffy.append(" in ");
