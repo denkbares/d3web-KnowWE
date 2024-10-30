@@ -2,6 +2,11 @@
 	display: inline-block;
 	position: relative;
 	padding-right: 42px;
+	max-width: 100%;
+}
+
+.wiki-table.scroll-parent {
+	overflow: auto;
 }
 
 .tablePopupIcon {

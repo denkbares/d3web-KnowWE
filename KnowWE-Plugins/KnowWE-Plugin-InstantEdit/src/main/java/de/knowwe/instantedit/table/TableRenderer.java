@@ -27,10 +27,10 @@ public final class TableRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult out) {
-		out.appendHtml("<div>");
 		out.appendHtml("<div class='tablePopupParent toolMenuParent' id='");
 		out.append(section.getID());
 		out.appendHtml("'>");
+		out.appendHtml("<div class='wiki-table scroll-parent'>");
 		out.append("\n");
 
 		for (Section<?> child : section.getChildren()) {
