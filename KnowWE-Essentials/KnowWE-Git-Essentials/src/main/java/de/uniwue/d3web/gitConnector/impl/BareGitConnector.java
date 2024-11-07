@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommand;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 import de.uniwue.d3web.gitConnector.UserData;
 
 public class BareGitConnector implements GitConnector {
@@ -111,7 +115,7 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public List<String> listChangedFilesForHash(String commitHash) {
-		String[] command = new String[] { "git", "show", "--no-commit-id", "--name-only","--pretty=format:\"\"", commitHash };
+		String[] command = new String[] { "git", "show", "--no-commit-id", "--name-only", "--pretty=format:\"\"", commitHash };
 		String result = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 		List<String> list = new ArrayList<>(Arrays.asList(result.split("\n")));
 		list.remove("");
@@ -507,9 +511,54 @@ public class BareGitConnector implements GitConnector {
 		}
 		String logOutput = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 
-		String currentBranch = currentBranch();
+		return currentBranch().equals(branch);
+	}
 
-		return currentBranch.equals(branch);
+	@Override
+	public boolean untrackPath(String path) {
+
+		//check if the file exists already
+		File file = Paths.get(getGitDirectory(), path).toFile();
+
+		if (!file.exists() || file.length() == 0) {
+			try {
+				//create the file
+				file.getParentFile().mkdirs();
+				Files.writeString(file.toPath(), "");
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		String[] command = new String[] { "git", "rm", "--cached", path };
+		String output = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+
+		if (output.startsWith("rm")) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
+		return false;
+	}
+
+	@Override
+	public boolean copyNotes(String commitHashFrom, String commitHashTo) {
+		return false;
+	}
+
+	@Override
+	public Map<String, String> retrieveNotesForCommit(String commitHash) {
+		return Map.of();
+	}
+
+	@Override
+	public GitStatusCommandResult status() {
+		GitStatusCommand gitStatusCommand = new GitStatusCommand(this.repositoryPath);
+		return gitStatusCommand.execute();
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {

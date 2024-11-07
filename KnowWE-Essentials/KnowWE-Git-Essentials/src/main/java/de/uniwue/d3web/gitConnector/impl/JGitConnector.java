@@ -48,6 +48,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.utils.Stopwatch;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 import de.uniwue.d3web.gitConnector.UserData;
 
 public class JGitConnector implements GitConnector {
@@ -171,6 +172,31 @@ public class JGitConnector implements GitConnector {
 
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean untrackPath(String path) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean copyNotes(String commitHashFrom, String commitHashTo) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public Map<String, String> retrieveNotesForCommit(String commitHash) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public GitStatusResultSuccess status() {
 		throw new NotImplementedException("TODO");
 	}
 

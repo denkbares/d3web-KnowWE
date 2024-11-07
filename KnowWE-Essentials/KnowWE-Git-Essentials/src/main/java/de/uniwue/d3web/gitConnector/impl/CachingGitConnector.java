@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 import de.uniwue.d3web.gitConnector.UserData;
 
 /**
@@ -357,5 +359,30 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
 		return this.delegate.switchToBranch(branch, createBranch);
+	}
+
+	@Override
+	public boolean untrackPath(String path) {
+		return this.delegate.untrackPath(path);
+	}
+
+	@Override
+	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
+		return this.delegate.addNoteToCommit(noteText, commitHash, namespace);
+	}
+
+	@Override
+	public boolean copyNotes(String commitHashFrom, String commitHashTo) {
+		return this.delegate.copyNotes(commitHashFrom, commitHashTo);
+	}
+
+	@Override
+	public Map<String, String> retrieveNotesForCommit(String commitHash) {
+		return this.delegate.retrieveNotesForCommit(commitHash);
+	}
+
+	@Override
+	public GitStatusCommandResult status() {
+		return this.delegate.status();
 	}
 }

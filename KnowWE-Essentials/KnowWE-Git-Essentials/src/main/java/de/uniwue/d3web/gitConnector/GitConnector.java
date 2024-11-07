@@ -3,11 +3,14 @@ package de.uniwue.d3web.gitConnector;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 public interface GitConnector {
 	Logger LOGGER = LoggerFactory.getLogger(GitConnector.class);
@@ -241,4 +244,33 @@ public interface GitConnector {
 	 * @return
 	 */
 	boolean switchToBranch(String branch, boolean createBranch);
+
+	/**
+	 * Execute a git rm --cached on the provided path
+	 * @param path
+	 * @return
+	 */
+	boolean untrackPath(String path);
+
+	boolean addNoteToCommit(String noteText, String commitHash,String namespace);
+
+	boolean copyNotes(String commitHashFrom, String commitHashTo);
+
+	Map<String,String> retrieveNotesForCommit(String commitHash);
+
+	/**
+	 * Retrieves
+	 * @param commitHash
+	 * @param namespace
+	 * @return
+	 */
+	default String retrieveNoteForCommitInNamespace(String commitHash, String namespace) {
+		return retrieveNotesForCommit(commitHash).get(namespace);
+	}
+
+	/**
+	 * Obtain the status of the current active branch
+	 * @return
+	 */
+	GitStatusCommandResult status();
 }

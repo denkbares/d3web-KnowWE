@@ -3,9 +3,12 @@ package de.uniwue.d3web.gitConnector.impl;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 import de.uniwue.d3web.gitConnector.UserData;
 
 /**
@@ -126,6 +129,46 @@ public class JGitBackedGitConnector implements GitConnector {
 			return this.bareGitConnector.switchToBranch(branch, createBranch);
 		}
 		return this.jgitConnector.switchToBranch(branch, createBranch);
+	}
+
+	@Override
+	public boolean untrackPath(String path) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.untrackPath(path);
+		}
+		return this.jgitConnector.untrackPath(path);
+	}
+
+	@Override
+	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.addNoteToCommit(noteText, commitHash, namespace);
+		};
+		return this.jgitConnector.addNoteToCommit(noteText, commitHash, namespace);
+	}
+
+	@Override
+	public boolean copyNotes(String commitHashFrom, String commitHashTo) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.copyNotes(commitHashFrom, commitHashTo);
+		}
+		return this.jgitConnector.copyNotes(commitHashFrom, commitHashTo);
+	}
+
+	@Override
+	public Map<String, String> retrieveNotesForCommit(String commitHash) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.retrieveNotesForCommit(commitHash);
+		}
+		return this.jgitConnector.retrieveNotesForCommit(commitHash);
+	}
+
+	@Override
+	public GitStatusCommandResult status() {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.status();
+		}
+		return this.jgitConnector.status();
 	}
 
 	@Override

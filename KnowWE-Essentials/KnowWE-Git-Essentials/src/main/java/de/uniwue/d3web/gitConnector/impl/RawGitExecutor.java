@@ -12,14 +12,24 @@ import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uniwue.d3web.gitConnector.impl.raw.RawGitCommand;
+
 /**
  * Do NEVER use this class outside of BareGitConnector! It is just meant to keep the BareGitConnector clean
  */
 public class RawGitExecutor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RawGitExecutor.class);
 
+	public static String executeRawGitCommand(RawGitCommand<?> rawCommand){
+		return executeGitCommandWithEnvironment(rawCommand.getCommand(), rawCommand.getRepositoryPath(),rawCommand.getEnvironmentParams());
+	}
+
 
 	public static String executeGitCommandWithEnvironment(String[] command, String repositoryPath, Map<String,String> environment) {
+		//ensure language is english
+		if(!environment.containsKey("LANG")){
+			environment.put("LANG", "en_US.UTF-8");
+		}
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		Process process = null;
@@ -50,6 +60,13 @@ public class RawGitExecutor {
 		String response = null;
 		try {
 			response = new String(responseStream.readAllBytes());
+
+			if(response.isEmpty()){
+				//append the error stream
+				String errorString = new String(process.getErrorStream().readAllBytes());
+				response+= errorString;
+
+			}
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -58,12 +75,14 @@ public class RawGitExecutor {
 			process.destroy();
 		}
 
+
+
 		stopWatch.stop();
 		LOGGER.info("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
 		return response;
 	}
 	public static String executeGitCommand(String[] command, String repositoryPath) {
-		return executeGitCommandWithEnvironment(command, repositoryPath, Collections.emptyMap());
+		return executeGitCommandWithEnvironment(command, repositoryPath, Map.of("LANG","en_US.UTF-8"));
 	}
 
 	public static String executeGitCommand(String command, String repositoryPath) {
