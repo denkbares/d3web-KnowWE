@@ -440,7 +440,7 @@
 		},
 
 		clearPersistence : function() {
-			simpleStorage.deleteKey("TreeTablePersistence-" + this.data("treetable").settings.article);
+			simpleStorage.deleteKey("TreeTablePersistence-" + this.data("treetable")?.settings?.article);
 		},
 
 		expandNode : function(id) {
