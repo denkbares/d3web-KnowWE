@@ -82,6 +82,7 @@ KNOWWE.core.plugin.pagination = function() {
         customTexts: [],
         selectedCustomTexts: [],
         selectedTexts: [],
+        datepicker: {active: false, from: "", to: ""},
         hidden: false
       };
     }
@@ -106,7 +107,7 @@ KNOWWE.core.plugin.pagination = function() {
   function isEmpty(columnState) {
     if (!columnState) return true;
     if (columnState.hidden) return false;
-    return columnState.selectAll && columnState.selectedTexts.length === 0 && columnState.selectedCustomTexts.length === 0;
+    return columnState.selectAll && columnState.selectedTexts.length === 0 && columnState.selectedCustomTexts.length === 0 && !columnState.datepicker.active;
   }
 
   function anyActiveFilter(filterState) {
@@ -177,7 +178,7 @@ KNOWWE.core.plugin.pagination = function() {
       theme: "tooltipster-knowwe pagination-filter-tooltipster",
       content: "Loading...",
       functionBefore: generateTooltip,
-      functionReady: initTooltip,
+      functionReady: initTooltip
     });
   }
 
@@ -217,9 +218,29 @@ KNOWWE.core.plugin.pagination = function() {
       } else {
         cancelFilter(sectionId);
       }
-      if ($tooltip && latestFilterTextQuery.length > 0) {
+      const filterCheckbox = document.getElementById("filter-checkbox");
+      if ($tooltip && (latestFilterTextQuery.length > 0 || filterCheckbox.checked)) {
+        const datepickerFromText = document.getElementById("datepickerFrom").value;
+        const datepickerToText = document.getElementById("datepickerTo").value;
         const checked = $tooltip.find(".pagination-filter-list input:checked");
-        if (checked.exists()) {
+        if (filterCheckbox.checked && (datepickerFromText.length > 0 && datepickerToText.length > 0)) {
+          const selectedFromDate = new Date(datepickerFromText);
+          const selectedToDate = new Date(datepickerToText);
+          selectedToDate.setDate(selectedToDate.getDate() + 1);
+          let paginationState = getPaginationState(sectionId);
+          const columnState = getColumnState(paginationState, columnName);
+          columnState.selectAll = false;
+          columnState.selectedTexts = [];
+          columnState.datepicker = {active: true, from: selectedFromDate, to: selectedToDate};
+          Array.from(document.querySelectorAll(".pagination-filter-list .query label"))
+            .map(label => label.innerText)
+            .filter(date => {
+              const parsedDate = new Date(date);
+              return parsedDate >= selectedFromDate && parsedDate <= selectedToDate;
+            })
+            .map(value => columnState.selectedTexts.push(value));
+          setPaginationState(sectionId, paginationState);
+        } else if (checked.exists()) {
           let paginationState = getPaginationState(sectionId);
           const columnState = getColumnState(paginationState, columnName);
           columnState.selectAll = false;
@@ -361,7 +382,26 @@ KNOWWE.core.plugin.pagination = function() {
       const isSelected = (text, array) => (selectAll && !array.includes(text)) || (!selectAll && array.includes(text));
       const encodeHTML = s => jq$("<div/>").text(s).html();
 
+      // check last element if it is a date so we are sure all values should be dates. First values can be "empty" so we have to check the last one
+      const isDate = !isNaN(Date.parse(filterTexts[filterTexts.length - 1][0]));
+      let datePicker = "";
+      if (isDate) {
+        const firstDate = filterTexts.map(array => new Date(array[0])).find(date => !isNaN(date));
+        let firstTimeStrippedDate = firstDate.toISOString().split("T")[0];
+        let lastTimeStrippedDate = new Date(filterTexts[filterTexts.length - 1][0]).toISOString().split("T")[0];
+        if (columnState.datepicker?.to) {
+          firstTimeStrippedDate = columnState.datepicker?.from.split("T")[0];
+          lastTimeStrippedDate = columnState.datepicker?.to.split("T")[0];
+        }
+        datePicker = "<div class='filter-datepicker'>" +
+          "<input type='checkbox' id='filter-checkbox' " + (!selectAll && columnState.datepicker?.active ? "checked" : "") + ">" +
+          "<span class='filter-datepicker-outer'><span class='filter-datepicker-span'><label for='datepickerFrom'>From:</label><input type='date' id='datepickerFrom' class='filter-datepicker-input' value='" + firstTimeStrippedDate + "'></span>\n" +
+          "<span class='filter-datepicker-span'><label for='datepickerTo'>To:</label><input type='date' id='datepickerTo' class='filter-datepicker-input' value='" + lastTimeStrippedDate + "'></span></span>" +
+          "</div>";
+      }
+
       return "<ul class='pagination-filter-list'>\n" +
+        datePicker +
         filterTexts.map((textsArray, i) => {
           let rendered = textsArray[0];
           let texts = textsArray.slice(1);
@@ -430,6 +470,8 @@ KNOWWE.core.plugin.pagination = function() {
         let paginationState = getPaginationState(sectionId);
         let columnState = getColumnState(paginationState, columnName);
         const texts = getFilterTexts($checkBox);
+        columnState.datepicker.active = false;
+        $tooltip.find("#filter-checkbox")?.attr("checked", false);
         if (this.checked && !columnState.selectAll || !this.checked && columnState.selectAll) {
           texts.forEach(text => {
             if (!columnState.selectedTexts.includes(text)) {
@@ -697,7 +739,7 @@ KNOWWE.core.plugin.pagination = function() {
           let columnName = getColumnName(jq$(checkbox).parents("li"));
           let columnFilterState = getColumnState(paginationState, columnName);
           columnFilterState.hidden = !checked;
-        })
+        });
         setPaginationState(sectionId, paginationState);
         updateButtonState($tooltip);
       });
@@ -717,7 +759,7 @@ KNOWWE.core.plugin.pagination = function() {
     // update the state of buttons
     const updateButtonState = $tooltip => {
       const $toggleBox = $tooltip.find(".toggle-box");
-      let $checkBoxes = $toggleBox.parents(".filter-parent").find(".pagination-filter-list input")
+      let $checkBoxes = $toggleBox.parents(".filter-parent").find(".pagination-filter-list input");
       let $checked = $checkBoxes.filter(":checked");
       let $notChecked = $checkBoxes.filter(":not(:checked)");
       if ($checked.length > 0 && $notChecked.length > 0) {
@@ -741,7 +783,7 @@ KNOWWE.core.plugin.pagination = function() {
           let checked = $checkbox.prop("checked");
           let visible = !$li.is(".hidden");
           columnState.hidden = !(checked && visible);
-        })
+        });
         setPaginationState(sectionId, paginationState);
       }
       KNOWWE.helper.observer.notify("filterChanged", {
