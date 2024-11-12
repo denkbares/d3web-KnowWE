@@ -31,6 +31,9 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
@@ -47,6 +50,8 @@ import de.knowwe.jspwiki.WikiFileProviderUtils;
  * @created 16.04.2012
  */
 public class DownloadWikiZIP extends AbstractAction {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadWikiZIP.class);
 
 	public static final String FINGERPRINT_ENTRY_PREFIX = "fingerprint/";
 
@@ -74,18 +79,12 @@ public class DownloadWikiZIP extends AbstractAction {
 		boolean fingerprint = Boolean.parseBoolean(context.getParameter(PARAM_FINGERPRINT, "false"));
 		boolean versions = Boolean.parseBoolean(context.getParameter(PARAM_VERSIONS, "false"));
 
-		OutputStream outs = context.getOutputStream();
-		ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs));
-		try {
-			zipDir(wikiFolder, zos, context, versions);
-			if (fingerprint) zipFingerprint(zos, context);
-			zos.close();
+		try (OutputStream outs = context.getOutputStream()) {
+			try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs))) {
+				zipDir(wikiFolder, zos, context, versions);
+				if (fingerprint) zipFingerprint(zos, context);
+			}
 		}
-		catch (Exception ioe) {
-			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(ioe));
-		}
-		outs.flush();
-		outs.close();
 	}
 
 	private void zipFingerprint(ZipOutputStream zos, UserActionContext context) throws IOException {
