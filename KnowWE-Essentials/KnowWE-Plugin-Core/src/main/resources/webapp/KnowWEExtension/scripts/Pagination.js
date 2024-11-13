@@ -453,7 +453,7 @@ KNOWWE.core.plugin.pagination = function() {
       $tooltip.find(".ok-button").prop("disabled", !isValidState(columnState));
     };
 
-    const isValidState = columnState => columnState.selectAll || columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0;
+    const isValidState = columnState => columnState.selectAll || columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0 || columnState.datepicker.active;
     const getFilterTexts = $checkBox => JSON.parse($checkBox.parent().find("div").text());
 
     // init events for filter check boxes
@@ -484,6 +484,16 @@ KNOWWE.core.plugin.pagination = function() {
             deleteFromArray(columnState.selectedCustomTexts, text);
           });
         }
+        paginationState.startRow = 1;
+        setPaginationState(sectionId, paginationState);
+        updateButtonState($tooltip);
+      });
+
+      $tooltip.find("#filter-checkbox")?.change(function() {
+        let paginationState = getPaginationState(sectionId);
+        let columnState = getColumnState(paginationState, columnName);
+        columnState.datepicker.active = this.checked;
+
         paginationState.startRow = 1;
         setPaginationState(sectionId, paginationState);
         updateButtonState($tooltip);
