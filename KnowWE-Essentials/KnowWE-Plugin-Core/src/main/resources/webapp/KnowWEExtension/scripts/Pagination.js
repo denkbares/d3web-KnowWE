@@ -219,11 +219,11 @@ KNOWWE.core.plugin.pagination = function() {
         cancelFilter(sectionId);
       }
       const filterCheckbox = document.getElementById("filter-checkbox");
-      if ($tooltip && (latestFilterTextQuery.length > 0 || filterCheckbox.checked)) {
-        const datepickerFromText = document.getElementById("datepickerFrom").value;
-        const datepickerToText = document.getElementById("datepickerTo").value;
+      if ($tooltip && (latestFilterTextQuery.length > 0 || filterCheckbox?.checked)) {
+        const datepickerFromText = document.getElementById("datepickerFrom")?.value;
+        const datepickerToText = document.getElementById("datepickerTo")?.value;
         const checked = $tooltip.find(".pagination-filter-list input:checked");
-        if (filterCheckbox.checked && (datepickerFromText.length > 0 && datepickerToText.length > 0)) {
+        if (filterCheckbox?.checked && (datepickerFromText.length > 0 && datepickerToText.length > 0)) {
           const selectedFromDate = new Date(datepickerFromText);
           const selectedToDate = new Date(datepickerToText);
           selectedToDate.setDate(selectedToDate.getDate() + 1);
