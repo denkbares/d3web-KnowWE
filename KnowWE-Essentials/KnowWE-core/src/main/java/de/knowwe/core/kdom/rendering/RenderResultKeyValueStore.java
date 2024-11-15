@@ -12,7 +12,7 @@ package de.knowwe.core.kdom.rendering;
  */
 public interface RenderResultKeyValueStore {
 
-	String getAttribute(String storeKey);
+	<T> T getAttribute(String storeKey);
 
-	void setAttribute(String storeKey, String maskKey);
+	void setAttribute(String storeKey, Object value);
 }

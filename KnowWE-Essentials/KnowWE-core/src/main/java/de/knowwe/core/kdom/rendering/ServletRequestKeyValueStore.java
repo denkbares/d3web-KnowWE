@@ -21,12 +21,13 @@ public class ServletRequestKeyValueStore implements RenderResultKeyValueStore {
 	}
 
 	@Override
-	public String getAttribute(String storeKey) {
-		return (String) request.getAttribute(storeKey);
+	public <T> T getAttribute(String storeKey) {
+		//noinspection unchecked
+		return (T) request.getAttribute(storeKey);
 	}
 
 	@Override
-	public void setAttribute(String storeKey, String maskKey) {
-		request.setAttribute(storeKey, maskKey);
+	public void setAttribute(String storeKey, Object object) {
+		request.setAttribute(storeKey, object);
 	}
 }

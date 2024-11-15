@@ -84,7 +84,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		if (section == null) {
 			context.sendError(HttpServletResponse.SC_NOT_FOUND,
 					"The referenced section was not found. " +
-							"Maybe the page content is outdated. Please reload.");
+					"Maybe the page content is outdated. Please reload.");
 		}
 		else if (!KnowWEUtils.canView(section, context)) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
@@ -189,7 +189,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		private final Cookie[] cookies;
 		private final Locale[] locales;
 		private final ReadOnlyHttpSession session;
-		private final Map<String, String> attributes = Collections.synchronizedMap(new HashMap<>());
+		private final Map<String, Object> attributes = Collections.synchronizedMap(new HashMap<>());
 
 		public AsyncActionContext(UserActionContext context) {
 			super(context.getActionName(), context.getPath(), context.getParameters(), null, null, context.getServletContext(), context.getManager());
@@ -219,13 +219,15 @@ public class ReRenderContentPartAction extends AbstractAction {
 		@Override
 		public RenderResultKeyValueStore getRenderResultKeyValueStore() {
 			return new RenderResultKeyValueStore() {
+
 				@Override
-				public String getAttribute(String storeKey) {
-					return attributes.get(storeKey);
+				public <T> T getAttribute(String storeKey) {
+					//noinspection unchecked
+					return (T) attributes.get(storeKey);
 				}
 
 				@Override
-				public void setAttribute(String storeKey, String maskKey) {
+				public void setAttribute(String storeKey, Object maskKey) {
 					attributes.put(storeKey, maskKey);
 				}
 			};
