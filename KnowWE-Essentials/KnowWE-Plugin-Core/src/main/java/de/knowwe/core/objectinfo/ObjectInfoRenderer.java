@@ -161,7 +161,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 			result.appendHtml("</div>");
 			result.appendHtml("<param class='" + clazz + "' sectionid='"
-					+ previewSection.getID() + "' />");
+							  + previewSection.getID() + "' />");
 		}
 	}
 
@@ -484,11 +484,11 @@ public class ObjectInfoRenderer implements Renderer {
 			return;
 		}
 
-		Collection<PackageCompiler> compilers = Compilers.getCompilers(previewSection, PackageCompiler.class);
-		String defaultCompilerClass = DefaultMarkupRenderer.getDefaultCompilerClass(previewSection, user, compilers);
+		String defaultCompilerClass = DefaultMarkupRenderer.getDefaultCompilerClass(previewSection, user);
 
 		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame" +
-						" type_").append(getNameForSection(user, previewSection)).append(defaultCompilerClass)
+						  " type_").append(getNameForSection(user, previewSection))
+				.appendHtml(defaultCompilerClass)
 				.appendHtml(" ").append(cssClass).appendHtml("'>");
 		result.appendHtml("<div class='objectinfo markupHeaderFrame headerMenu'>");
 		result.appendHtml("<div class='markupHeader'>");
@@ -614,7 +614,7 @@ public class ObjectInfoRenderer implements Renderer {
 			for (Result r : results.get(article)) {
 				Section<?> s = r.getSection();
 				if (s.getParent() != null
-						&& s.getParent().get().equals(article.getRootType())) {
+					&& s.getParent().get().equals(article.getRootType())) {
 					appropriateSections = true;
 					innerResult.appendHtml("<li>");
 					innerResult.appendHtml("<pre style=\"margin:1em -1em;\">");
@@ -727,7 +727,7 @@ public class ObjectInfoRenderer implements Renderer {
 			if (o == null || getClass() != o.getClass()) return false;
 			TypeGroup typeGroup = (TypeGroup) o;
 			return name.equals(typeGroup.name) &&
-					type.equals(typeGroup.type);
+				   type.equals(typeGroup.type);
 		}
 
 		@Override

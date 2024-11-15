@@ -218,7 +218,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			clazz += " singleLine";
 		}
 		out.appendHtml("<span class='" + clazz
-				+ "' style='white-space: pre-wrap;'>");
+					   + "' style='white-space: pre-wrap;'>");
 		String messageIcon = getMessageIcon(clazz);
 		if (messageIcon != null) {
 			out.appendHtml(messageIcon);
@@ -287,7 +287,10 @@ public class DefaultMarkupRenderer implements Renderer {
 	 * We create an additional warning in case this section has package compile scripts but no compiler compiling them
 	 */
 	private static void checkNotCompiledWarning(Section<?> rootSection, Collection<String> messages, @Nullable UserContext context) {
-		if (rootSection.getArticleManager() != null && rootSection.getArticleManager().getCompilerManager().isCompiling()) return;
+		if (rootSection.getArticleManager() != null
+			&& rootSection.getArticleManager().getCompilerManager().isCompiling()) {
+			return;
+		}
 		// if there is a package annotation, a message will be produced there, no need to produce another one
 		if (DefaultMarkupType.getAnnotation(rootSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) return;
 		if (context != null && context.isRenderingPreview()) return;
@@ -302,7 +305,7 @@ public class DefaultMarkupRenderer implements Renderer {
 						// check if the script manager has script for the type of this section or any sub type
 						// get all remaining managers for which there is currently no compiler
 						.filter(sm -> sm.canHaveScriptsForSubtree(rootSection.get())
-								&& Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
+									  && Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
 						.toList();
 
 		// check that the found unused compiled scripts belong to types of sections that are actually in the current sub-KDOM
@@ -316,7 +319,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				if (scriptManager.scripts(type).allMatch(ScriptManager.IgnoreNotCompiledSections::isIgnored)) continue;
 				// otherwise add the error message
 				messages.add("This section has " + compilerClass.getSimpleName() + " knowledge, "
-						+ "but does not belong to package compiled by one.");
+							 + "but does not belong to package compiled by one.");
 			}
 		}
 	}
@@ -348,8 +351,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		catch (Throwable e) {
 			content.delete(validLength, content.length());
 			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
-					+ "please contact your administrator.\n"
-					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
+											  + "please contact your administrator.\n"
+											  + Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
 			LOGGER.error("Exception while rendering content of " + section.get().getName(), e);
 		}
 
@@ -360,7 +363,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {
 		string.appendHtml("<span class='" + type.toString().toLowerCase()
-				+ "' style='white-space: pre-wrap;'>");
+						  + "' style='white-space: pre-wrap;'>");
 		String messageIcon = getMessageIcon(type.toString().toLowerCase());
 		if (messageIcon != null) {
 			string.appendHtml(messageIcon);
@@ -531,13 +534,11 @@ public class DefaultMarkupRenderer implements Renderer {
 										  RenderResult string) {
 
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(section, PackageCompiler.class);
-		String defaultCompilerClass = getDefaultCompilerClass(section, user, compilers);
 
 		String sectionID = section.getID();
 		string.appendHtmlTag("div",
 				"id", sectionID,
-				"class", "defaultMarkupFrame toolMenuParent type_" + section.get()
-						.getName() + defaultCompilerClass + (framed ? "" : " frameless") + (renderHeader ? "" : " headerless"),
+				"class", getClassNamesString(section, user),
 				"data-name", section.get().getName());
 		if (renderHeader) {
 			appendHeader(title, sectionID, tools, user, string);
@@ -559,9 +560,9 @@ public class DefaultMarkupRenderer implements Renderer {
 			style = " style='white-space: normal;'";
 		}
 		string.appendHtml("<div id=\"box_" + sectionID
-				+ "\" class='defaultMarkup'>");
+						  + "\" class='defaultMarkup'>");
 		string.appendHtml("<div id=\"content_" + sectionID
-				+ "\" class='markupText'" + style + ">");
+						  + "\" class='markupText'" + style + ">");
 
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
@@ -583,8 +584,15 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.appendHtml("</div>");
 	}
 
+	protected @NotNull String getClassNamesString(Section<?> section, UserContext user) {
+		String defaultCompilerClass = getDefaultCompilerClass(section, user);
+		return "defaultMarkupFrame toolMenuParent type_" + section.get()
+				.getName() + defaultCompilerClass + (framed ? "" : " frameless") + (renderHeader ? "" : " headerless");
+	}
+
 	@NotNull
-	public static String getDefaultCompilerClass(Section<?> section, UserContext user, Collection<PackageCompiler> compilers) {
+	public static String getDefaultCompilerClass(Section<?> section, UserContext user) {
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(section, PackageCompiler.class);
 		boolean isDefault = (compilers.isEmpty() && KnowWEUtils.getPackageManager(section)
 				.getPackageStatementsOfSection(section)
 				.isEmpty()) || Compilers.getCompilers(user.getArticleManager(), GroupingCompiler.class).isEmpty();
@@ -604,7 +612,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				? " headerToolbar"
 				: " headerMenu";
 		String openingDiv = "<div id='header_" + sectionID + "' class='markupHeaderFrame"
-				+ renderModerClass + "'>";
+							+ renderModerClass + "'>";
 
 		temp.appendHtml(openingDiv);
 
