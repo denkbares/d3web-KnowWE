@@ -400,6 +400,7 @@ table.list-sections td.list-sections-name {
 	white-space: pre-wrap;
 }
 
+span.list-sections-description,
 table.list-sections td.list-sections-failure-mode,
 table.list-sections td.list-sections-packages,
 table.list-sections td.list-sections-compilers,
