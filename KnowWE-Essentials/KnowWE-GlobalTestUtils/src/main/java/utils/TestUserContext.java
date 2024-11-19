@@ -45,7 +45,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.jspwiki.KnowWEPlugin;
 
 /**
- * 
+ *
  * @author volker_belli
  * @created 04.08.2011
  */
@@ -61,7 +61,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	private final Map<String, String> parameterMap = new HashMap<>();
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-	private final Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+	private final Writer writer = new NonClosingWriterWrapper(new OutputStreamWriter(out, StandardCharsets.UTF_8));
 	private final TestHttpSession session = new TestHttpSession();
 	private final TestHttpServletRequest request = new TestHttpServletRequest(session);
 	private final TestHttpServletResponse response = new TestHttpServletResponse();
