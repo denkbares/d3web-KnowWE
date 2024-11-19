@@ -34,7 +34,7 @@ public class PluggableAuthenticationManager implements AuthenticationManager {
 
 	@Override
 	public void initialize(Engine engine, Properties props) throws WikiException {
-		final var className = props.getProperty(KnowWEAuth.PROP_AUTHN_MANAGER);
+		final var className = props.getProperty(KnowWEAuth.PROP_AUTH_MANAGER);
 
 		if (className != null && !"".equals(className)) {
 			// Use the upstream-provided mapping and instantiation foo
