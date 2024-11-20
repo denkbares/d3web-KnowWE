@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.semanticcore.utils.RDFUtils;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
@@ -79,7 +80,14 @@ public class OntologyDownloadAction extends AbstractAction {
 
 		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 
-		RDFFormat syntax = Rio.getParserFormatForMIMEType(context.getParameter(PARAM_SYNTAX)).orElse(RDFFormat.RDFXML);
+		String syntaxValue = context.getParameter(PARAM_SYNTAX);
+		RDFFormat syntax;
+		if (RDFUtils.TURTLE_PRETTY.getDefaultMIMEType().equals(syntaxValue)) {
+			syntax = RDFUtils.TURTLE_PRETTY;
+		}
+		else {
+			syntax = Rio.getParserFormatForMIMEType(syntaxValue).orElse(RDFFormat.RDFXML);
+		}
 		String mimeType = syntax.getDefaultMIMEType() + "; charset=UTF-8";
 
 		String filename = context.getParameter(PARAM_FILENAME);

@@ -581,10 +581,6 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
 				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>denkbares-SemanticCore-Plugin-GraphDB-ClosedSource</artifactId>
-				</dependency>
 			</dependencies>
 		</profile>
 

@@ -8,7 +8,9 @@ import java.util.List;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParserRegistry;
+import org.eclipse.rdf4j.rio.RDFWriterRegistry;
 
+import com.denkbares.semanticcore.utils.RDFUtils;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
@@ -41,10 +43,14 @@ public class OntologyDownloadProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<Tool> tools = new LinkedList<>();
-		for (RDFFormat syntax : RDFParserRegistry.getInstance().getKeys()) {
+		for (RDFFormat syntax : RDFWriterRegistry.getInstance().getKeys()) {
 			if ("Blind ZIP".equals(syntax.getName())) continue;
 			Tool tool = getDownloadTool(section, syntax);
 			if (tool != null) tools.add(tool);
+			if (syntax == RDFFormat.TURTLE) {
+				// also add pretty turtle
+				tools.add(getDownloadTool(section, RDFUtils.TURTLE_PRETTY));
+			}
 		}
 		return tools.toArray(new Tool[0]);
 	}
@@ -83,12 +89,12 @@ public class OntologyDownloadProvider implements ToolProvider {
 		jsAction = "action/OntologyDownloadAction" +
 				"?" + identifierForThisOntology +
 				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + Strings.encodeURL(syntax.getDefaultMIMEType()) +
-				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + "." + extension + "" +
+				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + "." + extension +
 				"&amp;_=" + System.currentTimeMillis();
 		// assemble download tool
 		return new DefaultTool(
 				Icon.DOWNLOAD,
-				"Download " + syntax.getName().toUpperCase(),
+				"Download " + syntax.getName(),
 				"Download the entire ontology in " + syntax.getName() + " format for deployment.",
 				jsAction,
 				Tool.ActionType.HREF,

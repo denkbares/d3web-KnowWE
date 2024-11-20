@@ -63,7 +63,6 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
@@ -799,11 +798,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public IRI createLocalIRI(String name) {
 		return createIRI(this.lns + Strings.encodeURL(name));
-	}
-
-	@SuppressWarnings("deprecation")
-	public Statement createStatement(Resource subject, URI predicate, Value object) {
-		return getValueFactory().createStatement(subject, predicate, object);
 	}
 
 	public Statement createStatement(Resource subject, IRI predicate, Value object) {
