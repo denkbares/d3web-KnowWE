@@ -34,7 +34,7 @@
 		<konap.version>${project.version}</konap.version>
 		<ssp.version>${project.version}</ssp.version>
 		<mate.version>${project.version}</mate.version>
-		<slf4j.version>2.0.9</slf4j.version>
+		<slf4j.version>2.0.15</slf4j.version>
 		<log4j.version>2.22.0</log4j.version>
 		<jspwiki.version>2.12.3-SNAPSHOT</jspwiki.version>
 		<selenium.version>3.13.0</selenium.version>
@@ -47,7 +47,7 @@
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
 		<implementationVersion>${project.version}</implementationVersion>
-		<logback.version>1.5.8</logback.version>
+		<logback.version>1.5.12</logback.version>
 	</properties>
 
 	<modules>
