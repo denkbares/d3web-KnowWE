@@ -133,7 +133,7 @@ KNOWWE.editCommons = function () {
 			if (typeof async === "undefined") async = true;
 			_EC.showAjaxLoader();
 			let xhr = new XMLHttpRequest();
-			let url = KNOWWE.core.util.getURL(params);
+			let url = _KA.appendXSRFToken(KNOWWE.core.util.getURL(params));
 			xhr.open("POST", url, async);
 			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.onreadystatechange = function () {
