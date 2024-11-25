@@ -439,6 +439,10 @@
 			return this;
 		},
 
+		clearPersistence : function() {
+			simpleStorage.deleteKey("TreeTablePersistence-" + this.data("treetable")?.settings?.article);
+		},
+
 		expandNode : function(id) {
 			var node = this.data("treetable").tree[id];
 
@@ -567,7 +571,7 @@
 		var persistStore;
 
 
-		var storageString = simpleStorage.get("TreeTablePersistance-"+options.article);
+		var storageString = simpleStorage.get("TreeTablePersistence-"+options.article);
 		if (storageString != null)
 			persistStore = $.parseJSON(storageString);
 
@@ -605,7 +609,7 @@
 				var stop;
 			}
 			var storageString = JSON.stringify(persistStore);
-			simpleStorage.set("TreeTablePersistance-" + options.article, storageString);
+			simpleStorage.set("TreeTablePersistence-" + options.article, storageString);
 		}
 
 		//necessary because node ids change after a new build of the site

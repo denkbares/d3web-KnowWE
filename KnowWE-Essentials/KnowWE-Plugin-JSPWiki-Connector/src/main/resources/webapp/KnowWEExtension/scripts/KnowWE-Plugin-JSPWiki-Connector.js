@@ -93,7 +93,7 @@ KNOWWE.plugin.jspwikiConnector.enableEditButtons = function() {
   jq$("#actionsTop").find(".edit").parent().show();
   jq$("#edit").show();
   _IE.enableDefaultEditTool();
-  _EM.changeActionMenu();
+  if (typeof _EM !== 'undefined') _EM.changeActionMenu();
 };
 
 KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {

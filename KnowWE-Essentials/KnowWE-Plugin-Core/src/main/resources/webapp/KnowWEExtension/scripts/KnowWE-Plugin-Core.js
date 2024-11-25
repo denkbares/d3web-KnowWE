@@ -569,6 +569,9 @@ KNOWWE.tooltips.enrich = function(element) {
             try {
               const obj = jq$.parseJSON(json);
               if (jq$.isArray(obj)) html = obj[0];
+              else if (obj.html) {
+                html = obj.html;
+              }
             } catch (ignore) {
             }
             origin.tooltipster("update", html).tooltipster("reposition");

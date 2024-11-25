@@ -32,6 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
+<%@ page import="de.knowwe.core.utils.KnowWEUtils" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%
@@ -77,6 +78,8 @@
 
   /* startitem drives the pagination logic */
   /* startitem=-1:show all; startitem=0:show block 1-20; startitem=20:block 21-40 ... */
+
+  boolean allowPageDeletionForNonAdmin = KnowWEUtils.allowPageDeletionForNonAdmin(c.getName());
 %>
 <div class="page-content">
 
@@ -139,10 +142,10 @@
            class="form-group"
               id="deleteForm"
           method="post" accept-charset="<wiki:ContentEncoding />" >
-      <input class="btn btn-danger" type="submit" name="delete-all" id="delete-all"
+      <input class="btn btn-danger <%=allowPageDeletionForNonAdmin ? "hide" : ""%>" type="submit" name="delete-all" id="delete-all"
         data-modal="+ .modal"
             value="<fmt:message key='info.delete.submit'/>" />
-      <input class="btn btn-danger <%=c.hasAdminPermissions() ? "admin" : "noneAdmin"%>" type="submit" name="delete-admin" id="delete-admin"
+      <input class="btn btn-danger <%=c.hasAdminPermissions() || allowPageDeletionForNonAdmin ? "admin" : "noneAdmin"%>" type="submit" name="delete-admin" id="delete-admin"
              data-modal="+ .modal"
              value="Delete page (including its revision history)" />
       <div class="modal"><fmt:message key='info.confirmdelete'/></div>
