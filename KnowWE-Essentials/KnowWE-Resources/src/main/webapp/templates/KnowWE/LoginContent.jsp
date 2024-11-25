@@ -59,7 +59,7 @@
        class="wikiform"
     onsubmit="return Wiki.submitOnce(this);"
       method="post" accept-charset="<wiki:ContentEncoding />" >
-
+  <wiki:CsrfProtection/>
 <div class="center">
 
   <h3><fmt:message key="login.heading.login"><fmt:param><wiki:Variable var="applicationname" /></fmt:param></fmt:message></h3>
@@ -130,7 +130,7 @@
        class="wikiform"
     onsubmit="return Wiki.submitOnce(this);"
       method="post" accept-charset="<wiki:ContentEncoding />" >
-
+  <wiki:CsrfProtection/>
   <h3><fmt:message key="login.lostpw.heading" /></h3>
 
   <c:choose>

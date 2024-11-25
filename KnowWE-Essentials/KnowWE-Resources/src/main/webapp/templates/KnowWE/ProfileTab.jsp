@@ -42,7 +42,7 @@
        class="wikiform"
     onsubmit="return Wiki.submitOnce( this );"
       method="post" accept-charset="UTF-8">
-
+    <wiki:CsrfProtection/>
       <h3>
       <wiki:UserProfile property="exists"><fmt:message key="prefs.oldprofile"/></wiki:UserProfile>
       <wiki:UserProfile property="new"><fmt:message key="prefs.newprofile"/></wiki:UserProfile>

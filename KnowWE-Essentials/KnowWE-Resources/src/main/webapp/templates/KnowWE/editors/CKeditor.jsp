@@ -138,7 +138,7 @@
        class="editform wysiwyg"
           id="editform"
      enctype="application/x-www-form-urlencoded" >
-
+    <wiki:CsrfProtection/>
     <%-- Edit.jsp relies on these being found.  So be careful, if you make changes. --%>
   <input type="hidden" name="page" value="<wiki:Variable var='pagename' />" />
   <input type="hidden" name="action" value="save" />

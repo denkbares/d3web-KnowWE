@@ -41,6 +41,7 @@
         method="post"
        enctype="multipart/form-data" accept-charset="<wiki:ContentEncoding/>"
       onsubmit="return Wiki.submitUpload(this, '<%=progressId%>');" >
+    <wiki:CsrfProtection/>
     <table>
     <tr>
       <td colspan="2"><div class="formhelp"><fmt:message key="attach.add.info" /></div></td>
@@ -89,7 +90,7 @@
               id="deleteForm" style="display:none;"
           method="post" accept-charset="<wiki:ContentEncoding />"
         onsubmit="return(confirm('<fmt:message key="attach.deleteconfirm"/>') && Wiki.submitOnce(this) );" >
-
+      <wiki:CsrfProtection/>
       <input id="delete-all" name="delete-all" type="submit" value="Delete" />
 
     </form>

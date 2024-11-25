@@ -59,6 +59,7 @@ in your <code>jspwiki.properties</code> file.</div>
         <input type="hidden" name="tab-admin" value="core"/>
         <input type="hidden" name="tab-core" value="${ab.title}" />
         <input type="hidden" name="bean" value="${ab.id}" />
+          <wiki:CsrfProtection/>
         <%
          out.write( ab.doGet(ctx) );
          %>
@@ -90,6 +91,7 @@ in your <code>jspwiki.properties</code> file.</div>
       <form action="Admin.jsp" method="post" accept-charset="UTF-8">
          <input type="hidden" name="tab-admin" value="editors"/>
          <input type="hidden" name="tab-editors" value="${ab.title}" />
+          <wiki:CsrfProtection/>
          <%
          out.write( ab.doGet(ctx) );
          %>

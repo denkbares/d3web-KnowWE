@@ -105,6 +105,7 @@
     <form action="<wiki:Link format='url' jsp='Group.jsp'/>" 
               id="groupForm" 
           method="post" accept-charset="<wiki:ContentEncoding />" >
+      <wiki:CsrfProtection/>
       <div>
       <input type="hidden" name="group"   value="" />
       <input type="hidden" name="members" value="" />

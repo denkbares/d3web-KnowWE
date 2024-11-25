@@ -155,6 +155,7 @@
         method="POST" accept-charset="UTF-8">
       <input type="submit" name="ok" value="<fmt:message key="actions.deletegroup"/>" />
       <input type="hidden" name="group" value="${param.group}" />
+      <wiki:CsrfProtection/>
   </form>
   </wiki:Permission>
 

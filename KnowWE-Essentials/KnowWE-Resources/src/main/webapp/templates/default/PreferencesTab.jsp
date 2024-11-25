@@ -31,7 +31,7 @@
 <form action="<wiki:Link jsp='UserPreferences.jsp' format='url'><wiki:Param name='tab' value='prefs'/></wiki:Link>"
 	  id="preferences"  <%-- used by Prefs.js to set/reset the userpreferences cookie --%>
 	  method="post" accept-charset="<wiki:ContentEncoding />">
-
+	<wiki:CsrfProtection/>
 	<input type="hidden" name="redirect" value="${redirect}" />
 
 	<div class="form-group ">

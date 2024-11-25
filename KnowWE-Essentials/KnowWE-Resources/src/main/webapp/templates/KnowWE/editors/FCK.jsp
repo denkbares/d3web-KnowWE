@@ -110,6 +110,7 @@
       action="<wiki:CheckRequestContext context='edit'><wiki:EditLink format='url'/></wiki:CheckRequestContext><wiki:CheckRequestContext context='comment'><wiki:CommentLink format='url'/></wiki:CheckRequestContext>"
       name="editform" id="editform"
       enctype="application/x-www-form-urlencoded">
+    <wiki:CsrfProtection/>
     <p>
         <%-- Edit.jsp relies on these being found.  So be careful, if you make changes. --%>
         <input name="page" type="hidden" value="<wiki:Variable var="pagename"/>" />

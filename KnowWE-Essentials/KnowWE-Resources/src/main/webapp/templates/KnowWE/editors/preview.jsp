@@ -45,7 +45,7 @@
           id="editform"
     onsubmit="return Wiki.submitOnce( this );"
      enctype="application/x-www-form-urlencoded">
-
+    <wiki:CsrfProtection/>
   <p>
     <%-- Edit.jsp & Comment.jsp rely on these being found.  So be careful, if you make changes. --%>
     <input type="hidden" name="author" value="${author}" />
