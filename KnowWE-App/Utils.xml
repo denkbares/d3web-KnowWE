@@ -67,6 +67,7 @@
 		<copy todir="${basedir}/target/KnowWE-App-2025.1-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../Experimental/KnowWE-Plugins-Experimental/">
 				<include name="KnowWE-Plugin-d3web-TermBrowser/src/main/resources/webapp/" />
+				<include name="KnowWE-Plugin-Defi/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-DiaFlux-Review/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-OntoVis/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-LoadKnowledgeBase/src/main/resources/webapp/" />

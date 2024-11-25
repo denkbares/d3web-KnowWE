@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -61,13 +61,15 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 				.getLanguage() + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoStatus' value='" + overallStatus + "'>");
 		html.appendHtml("<div style='display:none' comment='The following infos can be edited by the user any time, "
-				+ "so it should only be used for superficial rendering/styling, not as a security check!'>");
+						+ "so it should only be used for superficial rendering/styling, not as a security check!'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoAdmin' value='" + KnowWEUtils.isAdmin(user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanWrite' value='" + KnowWEUtils.canWrite(article, user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanUpload' value='" + KnowWEUtils.canUpload(article, user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanView' value='" + KnowWEUtils.canView(article, user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanCreatePages' value='" + KnowWEUtils.canCreatePages(user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoTemplate' value='" + connector.getTemplate() + "'>");
+		String token = Environment.getInstance().getWikiConnector().getAntiCsrfToken(user);
+		html.appendHtml("<input type='hidden' id='knowWEInfoXSRF' value='" + token + "'>");
 		html.appendHtml("</div>");
 		if (KnowWEUtils.canView(article, user)) {
 			html.appendHtml("<div type='hidden' style='display:none' id='knowWEInfoAttachments'>");
@@ -87,5 +89,4 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 	public boolean isPre() {
 		return false;
 	}
-
 }

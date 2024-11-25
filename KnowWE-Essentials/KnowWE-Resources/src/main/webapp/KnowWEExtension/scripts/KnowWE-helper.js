@@ -620,6 +620,9 @@ KNOWWE.helper.ajax = function(options) {
    */
   function init() {
     oDefault = KNOWWE.helper.enrich(options, oDefault);
+    if (oDefault.method === 'POST') {
+      oDefault.url = KNOWWE.helper.ajax.appendXSRFToken(oDefault.url);
+    }
   }
 
   /**
@@ -730,6 +733,13 @@ KNOWWE.helper.ajax = function(options) {
     return http.responseText;
   }
 };
+
+KNOWWE.helper.ajax.appendXSRFToken = function(url) {
+  let separator = url.indexOf('?') === -1 ? "?" : "&";
+  let token = document.getElementById("knowWEInfoXSRF");
+  if (!token) return url;
+  return url + separator + "X-XSRF-TOKEN=" + token.value;
+}
 
 KNOWWE.helper.ajax.xhrExtractMessage = function(jqXHR) {
   if (jqXHR.responseJSON && jqXHR.responseJSON.message) {

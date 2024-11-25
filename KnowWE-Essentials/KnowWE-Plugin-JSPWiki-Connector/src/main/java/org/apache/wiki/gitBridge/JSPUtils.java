@@ -7,7 +7,7 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.util.TextUtil;
 import org.jetbrains.annotations.NotNull;
 
-import static org.apache.wiki.providers.CachingAttachmentProvider.DIR_EXTENSION;
+import static org.apache.wiki.providers.BasicAttachmentProvider.DIR_EXTENSION;
 
 public class JSPUtils {
 
