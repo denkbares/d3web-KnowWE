@@ -23,6 +23,7 @@ import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.cache.CachingManager;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.pages.DefaultPageManager;
 import org.apache.wiki.pages.PageManager;
@@ -243,6 +244,10 @@ public class MockedWiki {
 	public static MockedWiki fromProperties(Properties properties) throws WikiException, IOException {
 		WikiEngine engine = Mockito.mock(WikiEngine.class);
 		when(engine.getWikiProperties()).thenReturn(properties);
+
+		CachingManager cachingManager = Mockito.mock(CachingManager.class);
+		when(cachingManager.enabled(CachingManager.CACHE_PAGES)).thenReturn(Boolean.FALSE);
+		when(engine.getManager(CachingManager.class)).thenReturn(cachingManager);
 
 		PageManager pageManager = new DefaultPageManager(engine, properties);
 
