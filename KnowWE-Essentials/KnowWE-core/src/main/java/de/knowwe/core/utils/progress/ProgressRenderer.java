@@ -18,9 +18,6 @@ public class ProgressRenderer implements Renderer {
 		if (!LongOperationUtils.getLongOperations(section).isEmpty()) {
 			String id = section.getID();
 			result.appendHtml("<div id='progress_" + id + "' sectionId='" + id + "' class='long-op-progress-container'></div>");
-			result.appendHtml("<script>\n");
-			result.appendHtml("KNOWWE.core.plugin.progress.updateProgressBar('" + id + "');\n");
-			result.appendHtml("</script>");
 		}
 	}
 }
