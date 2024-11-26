@@ -49,6 +49,15 @@ BOOTSTRAP, IE compatibility / http://getbootstrap.com/getting-started/#support-i
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta id="template-info" data-template="default"/>
 
+<wiki:PageExists>
+  <meta name="author" content="<wiki:Author format='plain'/>">
+  <meta name="description" content="Page version <wiki:PageVersion />, last modified by <wiki:Author format='plain'/>, on <wiki:PageDate format='${prefs["DateFormat"]}'/>" />
+  <c:set var="keywords"><wiki:Variable var='keywords' default='' /></c:set>
+  <c:if test="${!empty keywords}">
+    <meta name="keywords" content="<wiki:Variable var='keywords' default='' />" /><%--seo keywords--%>
+  </c:if>
+</wiki:PageExists>
+
 
 <%-- Localized JS; must come before any css, to avoid blocking immediate execution --%>
 <%-- var LocalizedStrings= { "javascript.<xx>":"...", etc. } --%>
@@ -101,6 +110,7 @@ String.I18N.PREFIX = "javascript.";
 <meta name="wikiXHRCategories" content='<wiki:Link format="url" templatefile="../default/AJAXCategories.jsp" />' />
 <meta name="wikiXHRHtml2Markup" content='<wiki:Link format="url" jsp="XHRHtml2Markup.jsp" />' />
 <meta name="wikiXHRMarkup2Wysiwyg" content='<wiki:Link format="url" jsp="XHRMarkup2Wysiwyg.jsp" />' />
+<wiki:CsrfProtection format="meta" />
 
 <script type="text/javascript">//<![CDATA[
 <wiki:IncludeResources type="jsfunction"/>

@@ -48,6 +48,7 @@ BOOTSTRAP, IE compatibility / http://getbootstrap.com/getting-started/#support-i
 <meta http-equiv="x-ua-compatible" content="ie=edge"/>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta id="template-info" data-template="default"/>
+<wiki:CsrfProtection format="meta" />
 
 <%-- Localized JS; must come before any css, to avoid blocking immediate execution --%>
 <%-- var LocalizedStrings= { "javascript.<xx>":"...", etc. } --%>

@@ -81,6 +81,7 @@
 <meta name="wikiUserName" content='<wiki:UserName />' />
 <meta name="wikiTemplateUrl" content='<wiki:Link format="url" templatefile="" />' />
 <meta name="wikiApplicationName" content='<wiki:Variable var="ApplicationName" />' />
+<wiki:CsrfProtection format="meta" />
 
 <script type="text/javascript">//<![CDATA[
 /* Localized javascript strings: LocalizedStrings[] */
