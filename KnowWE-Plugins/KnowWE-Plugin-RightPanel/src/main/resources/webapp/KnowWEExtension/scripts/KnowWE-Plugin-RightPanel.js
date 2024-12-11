@@ -608,8 +608,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function handleResponse(data) {
-		const parsed = JSON.parse(data);
-		const expressionArrays = parsed.values;
+		const expressionArrays = data.values;
 		const oldEntries = watchlist.find(".watchlistentry");
 		jq$.each(expressionArrays, function (index, value) {
 			const newEntry = createNewEntry(watchesArray[index], value);
@@ -746,7 +745,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 			url: 'action/GetExpressionValueAction',
 			data: JSON.stringify(data),
 			cache: false,
-			contentType: 'application/json, UTF-8'
+			contentType: 'application/json; charset=UTF-8'
 		});
 	}
 
@@ -957,8 +956,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		watchesArray = simpleStorage.get(watchesStorageKey);
 		if (typeof watchesArray != 'undefined') {
 			getExpressionValue(watchesArray).success(function (data) {
-				const parsed = JSON.parse(data);
-				const expressionArrays = parsed.values;
+				const expressionArrays = data.values;
 				jq$.each(expressionArrays, function (index, value) {
 					const newEntry = createNewEntry(watchesArray[index], value);
 					watchlist.append(newEntry);

@@ -108,6 +108,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 				try {
 					response.put("html", renderResult);
 					response.put("status", KnowWEUtils.getOverallStatus(context));
+					context.setHeader("Content-Type", "application/json; charset=UTF-8");
 					response.write(context.getWriter());
 				}
 				catch (JSONException e) {

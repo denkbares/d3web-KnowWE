@@ -69,6 +69,7 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 				String id = requestObject.getString(ID);
 				responseObject.put("id", id);
 			}
+			context.setHeader("Content-Type", "application/json; charset=UTF-8");
 			responseObject.write(context.getWriter());
 		}
 		catch (JSONException | IOException e) {
