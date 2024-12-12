@@ -32,12 +32,14 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 import static de.knowwe.core.images.ImageMarkup.*;
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -55,6 +57,9 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class ImageRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
+
+		boolean belongsToVariant = DefaultMarkupRenderer.isInCurrentDefaultCompiler(section,user);
+
 		Set<String> validImageAttributes = Set.of("src", "width", "height", "alt", "class", "style", "id", "align");
 		Map<String, String> attributes = new HashMap<>();
 		List<Section<AnnotationType>> annotations = Sections.successors(section, AnnotationType.class);
@@ -91,15 +96,18 @@ public class ImageRenderer implements Renderer {
 			throw new RuntimeException(e);
 		}
 
-		buildFigureHtml(result, validImageAttributes, attributes);
+		buildFigureHtml(result, validImageAttributes, attributes, belongsToVariant);
 	}
 
 	private static void appendErrorMsg(RenderResult result, String message) {
 		result.append(new HtmlElement("span").attributes("class", "error").content(message));
 	}
 
-	private static void buildFigureHtml(RenderResult result, Set<String> validImageAttributes, Map<String, String> attributes) {
+	private static void buildFigureHtml(RenderResult result, Set<String> validImageAttributes, Map<String, String> attributes, boolean belongsToVariant) {
 		HtmlElement figureHtml = new HtmlElement("figure");
+		if (belongsToVariant) {
+			figureHtml.clazz("not-default-compiler");
+		}
 		String figureStyle = "";
 		String imgStyle = "";
 		HtmlElement imageHtml = new HtmlElement("img");
