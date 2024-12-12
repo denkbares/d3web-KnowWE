@@ -592,6 +592,11 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	@NotNull
 	public static String getDefaultCompilerClass(Section<?> section, UserContext user) {
+		boolean isDefault = isInCurrentDefaultCompiler(section, user);
+		return isDefault ? "" : " not-default-compiler";
+	}
+
+	public static boolean isInCurrentDefaultCompiler(Section<?> section, UserContext user) {
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(section, PackageCompiler.class);
 		boolean isDefault = (compilers.isEmpty() && KnowWEUtils.getPackageManager(section)
 				.getPackageStatementsOfSection(section)
@@ -599,7 +604,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		for (Compiler compiler : compilers) {
 			isDefault = isDefault || Compilers.isDefaultCompiler(user, compiler);
 		}
-		return isDefault ? "" : " not-default-compiler";
+		return isDefault;
 	}
 
 	protected void appendHeader(String title,
