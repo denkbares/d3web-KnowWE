@@ -182,6 +182,11 @@ public class ReRenderContentPartAction extends AbstractAction {
 		section.get().getRenderer().render(section, context, result);
 		String rawResult = Environment.getInstance().getWikiConnector()
 				.renderWikiSyntax(result.toStringRaw());
+		String unmasked = result.toString();
+		// cleanup jsp wiki render artifact due to html masking...
+		if (rawResult.startsWith("<p>") && rawResult.endsWith("</p>") && !unmasked.startsWith("<p>") && !unmasked.endsWith("</p>")) {
+			rawResult = rawResult.substring(3, rawResult.length() - 4);
+		}
 		return RenderResult.unmask(rawResult, result);
 	}
 
