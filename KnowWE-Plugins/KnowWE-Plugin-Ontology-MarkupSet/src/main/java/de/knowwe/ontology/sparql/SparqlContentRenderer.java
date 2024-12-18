@@ -19,6 +19,8 @@
  */
 package de.knowwe.ontology.sparql;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -30,12 +32,17 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.Div;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsyncPreviewRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolSet;
+import de.knowwe.tools.ToolUtils;
 
 import static de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode.HTML;
 
@@ -77,11 +84,25 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 			return;
 		}
 
+		ToolSet tools = ToolUtils.getTools(markupSection, user);
+		List<Tool> downloadTools = Arrays.stream(tools.getTools())
+				.filter(t -> t.getCategory().equals(Tool.CATEGORY_DOWNLOAD))
+				.toList();
+		if (!downloadTools.isEmpty()) {
+			HtmlElement div = new Div().clazz("download-tools");
+			for (Tool tool : downloadTools) {
+				div.children(new HtmlElement("button")
+						.clazz("download-tool")
+						.attributes("title", tool.getDescription())
+						.attributes(ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool))
+						.children(tool.getIcon().toHtmlElement()));
+			}
+			result.append(div);
+		}
 		/*
 		 * Show query text above of query result
 		 */
-		String showQueryFlag = DefaultMarkupType.getAnnotation(markupSection,
-				SparqlMarkupType.RENDER_QUERY);
+		String showQueryFlag = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.RENDER_QUERY);
 		if ("true".equalsIgnoreCase(showQueryFlag)) {
 			// we need an opening html element around all the content as for
 			// some reason the ajax insert only inserts one (the first) html
@@ -144,7 +165,8 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 			RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);
 			try {
 				String query = sparqlTypeSection.get().getSparqlQuery(sparqlTypeSection, user);
-				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, new Rdf2GoCore.Options().timeout(opts.getTimeout()));
+				boolean askResult = opts.getRdf2GoCore()
+						.sparqlAsk(query, new Rdf2GoCore.Options().timeout(opts.getTimeout()));
 				result.appendHtml("<div class='sparqlAsk' sparqlSectionId='" + opts.getId() + "'>");
 				if (opts.isBorder()) result.appendHtml("<div class='border'>");
 				result.append(Boolean.valueOf(askResult).toString());

@@ -120,6 +120,9 @@
 	margin-right: 10px;
 }
 
+.filter-tools button {
+	padding: 2px 8px;
+}
 
 #delete-admin.noneAdmin {
 	display: none;

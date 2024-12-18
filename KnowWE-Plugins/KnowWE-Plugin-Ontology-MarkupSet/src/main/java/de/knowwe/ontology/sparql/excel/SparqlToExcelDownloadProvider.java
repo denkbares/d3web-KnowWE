@@ -51,7 +51,7 @@ public class SparqlToExcelDownloadProvider implements ToolProvider {
 		// and provide both download and refresh as tools
 		Tool ExcelTool = getDownloadExcelTool(section);
 		Tool ExcelToolFiltered = getDownloadExcelToolFiltered(section);
-		return new Tool[] { ExcelTool, ExcelToolFiltered };
+		return new Tool[] { ExcelToolFiltered, ExcelTool };
 	}
 
 	protected Tool getDownloadExcelTool(Section<?> section) {
@@ -65,9 +65,9 @@ public class SparqlToExcelDownloadProvider implements ToolProvider {
 						  "'false'" +
 						  ")";
 		return new DefaultTool(
-				Icon.FILE_EXCEL,
+				Icon.DOWNLOAD_LINE,
 				title, description,
-				jsAction, Tool.CATEGORY_DOWNLOAD);
+				jsAction, Tool.ActionType.ONCLICK, Tool.CATEGORY_DOWNLOAD);
 	}
 
 	private static String generateFileName(Section<?> section) {
@@ -97,9 +97,9 @@ public class SparqlToExcelDownloadProvider implements ToolProvider {
 				"'true'" +
 				")";
 		return new DefaultTool(
-				Icon.FILE_EXCEL,
+				Icon.DOWNLOAD_BRACKET,
 				title, description,
-				jsAction, Tool.CATEGORY_DOWNLOAD);
+				jsAction, Tool.ActionType.ONCLICK, Tool.CATEGORY_DOWNLOAD);
 	}
 
 	protected boolean hasFilter(Map<String, Set<Pattern>> filter) {

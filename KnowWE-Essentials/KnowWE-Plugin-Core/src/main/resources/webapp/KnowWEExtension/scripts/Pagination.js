@@ -253,11 +253,8 @@ KNOWWE.core.plugin.pagination = function() {
           setPaginationState(sectionId, paginationState);
         }
       }
-      KNOWWE.helper.observer.notify("filterChanged", {
-        filteringActive: anyActiveFilter(getFilterState(getPaginationState(sectionId))),
-        sectionId: sectionId
-      });
       updateNode(sectionId);
+      notifyFilterChanged(sectionId);
     };
 
     const cancelFilter = sectionId => {
@@ -538,6 +535,13 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
+  function notifyFilterChanged(sectionId) {
+    KNOWWE.helper.observer.notify("filterChanged", {
+      filteringActive: anyActiveFilter(getFilterState(getPaginationState(sectionId))),
+      sectionId: sectionId
+    });
+  }
+
   function decoratePagination($paginationWrapper, rerenderIfFilterActive) {
 
     const sectionId = $paginationWrapper.attr("id");
@@ -577,10 +581,7 @@ KNOWWE.core.plugin.pagination = function() {
       filterState.active = !!this.checked;
       setPaginationState(sectionId, paginationState);
       updateNode(sectionId);
-      KNOWWE.helper.observer.notify("filterChanged", {
-        filteringActive: anyActiveFilter(filterState) && this.checked,
-        sectionId: sectionId
-      });
+      notifyFilterChanged(sectionId);
     });
     const clearFilter = $paginationWrapper.find(".clear-filter");
     const filterTools = $paginationWrapper.find(".filter-tools");
@@ -590,10 +591,7 @@ KNOWWE.core.plugin.pagination = function() {
       filterState.columns = {};
       setPaginationState(sectionId, paginationState);
       updateNode(sectionId);
-      KNOWWE.helper.observer.notify("filterChanged", {
-        filteringActive: anyActiveFilter(filterState),
-        sectionId: sectionId
-      });
+      notifyFilterChanged(sectionId);
     });
     if (!filterState.active) {
       filterTools.hide();
@@ -632,12 +630,7 @@ KNOWWE.core.plugin.pagination = function() {
     }
     //on first load
     if ((filterActivator.exists() && !filterActivator[0].checked) || !anyActiveFilter(filterState)) {
-      jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`).closest(".defaultMarkupFrame")
-        .find(".markupMenu .markupMenuItem")
-        // find tool that contains text "filtered"
-        .filter((_, elem) => jq$(elem).text().includes("filtered"))
-        .css("display", "none");
-
+      notifyFilterChanged(sectionId);
     }
   }
 
@@ -796,11 +789,8 @@ KNOWWE.core.plugin.pagination = function() {
         });
         setPaginationState(sectionId, paginationState);
       }
-      KNOWWE.helper.observer.notify("filterChanged", {
-        filteringActive: anyActiveFilter(getFilterState(paginationState)),
-        sectionId: sectionId
-      });
       updateNode(sectionId);
+      notifyFilterChanged(sectionId);
     };
 
 

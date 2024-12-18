@@ -85,11 +85,9 @@ KNOWWE.plugin.sparql.downloadExcel = function(id, paramFilename, actionClass, fi
 KNOWWE.plugin.sparql.initDownloadExcelTools = function() {
 
   KNOWWE.helper.observer.subscribe("filterChanged", function() {
-    KNOWWE.helper.observer.subscribe("filterChanged", function() {
-      jq$(`.ReRenderSectionMarker[sectionid="${(this.sectionId)}"]`).closest(".defaultMarkupFrame").find(".markupMenu .markupMenuItem")
-        .filter((_, elem) => jq$(elem).text().includes("filtered"))
-        .css("display", this.filteringActive ? "block" : "none");
-    });
+    let $elements = jq$(`.ReRenderSectionMarker[sectionid="${(this.sectionId)}"]`).closest(".defaultMarkupFrame").find(".markupMenu .markupMenuItem, button")
+      .filter((_, elem) => jq$(elem).find(".fa-arrow-down-to-bracket").exists());
+    $elements.css("display", this.filteringActive ? "block" : "none");
   });
 };
 

@@ -65,6 +65,8 @@ public class Icon {
 	public static final Icon SEARCH = new Icon("fa-type fa-magnifying-glass");
 	public static final Icon DELETE = new Icon("fa-type fa-circle-xmark");
 	public static final Icon DOWNLOAD = new Icon("fa-type fa-download");
+	public static final Icon DOWNLOAD_LINE = new Icon("fa-type fa-arrow-down-to-line");
+	public static final Icon DOWNLOAD_BRACKET = new Icon("fa-type fa-arrow-down-to-bracket");
 	public static final Icon UPLOAD = new Icon("fa-type fa-upload");
 	public static final Icon ATTACHMENT = new Icon("fa-type fa-paperclip");
 	public static final Icon IMPORT = new Icon("fa-type fa-upload");

@@ -20,6 +20,20 @@
 	color: grey;
 }
 
+.type_Sparql button {
+	border: 1px solid #2f4f4f;
+}
+
+.type_Sparql .download-tools {
+	display: inline-block;
+}
+
+.type_Sparql .download-tools .download-tool {
+	margin-right: 2px;
+	padding: 4px 8px 0;
+	border: none;
+}
+
 .sparqlTable .border .sparqltable td, .sparqlTable .border .sparqltable th {
 	border: 1px solid var(--border-color-table);
 }
