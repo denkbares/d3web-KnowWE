@@ -469,10 +469,12 @@ public class ListSectionsRenderer<T extends Type> {
 
 		page.appendHtmlTag("table", "class", "list-sections" + (headers.isEmpty() ? "" : " sticky-header"));
 		renderHeader(page);
+		page.append("\n");
 		int index = 0;
 		for (Section<T> section : sections) {
 			try {
 				renderLine(page, section, index);
+				page.append("\n");
 				index++;
 			}
 			catch (Throwable e) {
