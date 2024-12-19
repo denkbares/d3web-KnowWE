@@ -543,12 +543,12 @@ public class ListSectionsRenderer<T extends Type> {
 	private void renderLine(RenderResult page, Section<T> line, int index) {
 		RenderResult lineResult = new RenderResult(page);
 		if (index % 2 == 0) {
-			lineResult.appendHtml("<tr");
+			lineResult.appendHtml("<tr class='even-row");
 		}
 		else {
-			lineResult.appendHtml("<tr class=\"odd-row\"");
+			lineResult.appendHtml("<tr class='odd-row");
 		}
-		lineResult.appendHtml(greyoutFunction != null && greyoutFunction.apply(line) ? " class='greyed-out'>" : ">");
+		lineResult.appendHtml(greyoutFunction != null && greyoutFunction.apply(line) ? " greyed-out'>" : "'>");
 
 		// render tool columns for the section
 		for (Function<Section<T>, Collection<? extends Tool>> provider : tools) {
