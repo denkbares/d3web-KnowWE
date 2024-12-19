@@ -632,6 +632,44 @@ table.list-sections tr.highlighted {
 	white-space: pre;
 }
 
+.image-markup-wrapper .accordion-close .panel-heading::before {
+	font-family: "Font Awesome 6 Pro";
+	font-weight: 900;
+	content: "\f03e";
+	margin-right: 10px;
+	margin-left: 5px;
+}
+
+
+.image-markup-wrapper .accordion-close .panel-heading:not(.active):after {
+	content: "Click to show image";
+}
+
+.image-markup-wrapper .accordion-close .panel-heading.active::after {
+	content: "Click to hide image";
+}
+
+.image-markup-wrapper .accordion-close .panel-heading {
+	background-color: #eeeeee;
+	margin-bottom: 0px;
+	width: 16%;
+	outline: none;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+.image-markup-wrapper .accordion-close .panel {
+	border: none;
+	border-color: transparent;
+	box-shadow: none;
+}
+
+
+
 /* ################################################## */
 /* ------------Packaging Styles----------------- */
 /* ################################################## */

@@ -105,8 +105,9 @@ public class ImageRenderer implements Renderer {
 
 	private static void buildFigureHtml(RenderResult result, Set<String> validImageAttributes, Map<String, String> attributes, boolean belongsToVariant) {
 		HtmlElement figureHtml = new HtmlElement("figure");
-		if (belongsToVariant) {
-			figureHtml.clazz("not-default-compiler");
+		if (!belongsToVariant) {
+			result.appendHtmlTag("div", "class", "image-markup-wrapper");
+			result.append("%%accordion-close\n!\n");
 		}
 		String figureStyle = "";
 		String imgStyle = "";
@@ -137,6 +138,10 @@ public class ImageRenderer implements Renderer {
 		figureHtml.attributes("style", figureStyle);
 		imageHtml.attributes("style", imgStyle);
 		result.append(figureHtml);
+		if (!belongsToVariant) {
+			result.append("/%\n");
+			result.appendHtmlTag("div");
+		}
 	}
 
 	private static String setFigureSize(Map<String, String> attributes) {
