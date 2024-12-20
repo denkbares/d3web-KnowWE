@@ -6,7 +6,7 @@ jq$.originalAjax = jq$.ajax;
 // Override jq$.ajax
 jq$.ajax = function(url, options) {
   // If the first argument is a URL (string) and options (settings) are provided
-  if (typeof url === 'string') {
+  if (typeof url === 'string' && !url.startsWith("data:")) {
     // Append the parameter to the URL
     url = _KA.appendXSRFToken(url);
   }
