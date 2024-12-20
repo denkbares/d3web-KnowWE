@@ -276,14 +276,15 @@ KNOWWE.plugin.ci4ke = function() {
         response: {
           action: "none",
           fn: function() {
-            const message = JSON.parse(this.responseText).message;
-
-            if (message !== "Finished") {
-              setTimeout(function() {
-                new _KA(options).send();
-              }, 1000);
-            } else {
-              _CI.refreshCIDaemonBubble(dashboardName, onFinish);
+            if (this.status === 200) {
+              const message = JSON.parse(this.responseText).message;
+              if (message !== "Finished") {
+                setTimeout(function() {
+                  new _KA(options).send();
+                }, 1000);
+              } else {
+                _CI.refreshCIDaemonBubble(dashboardName, onFinish);
+              }
             }
           }
         },
