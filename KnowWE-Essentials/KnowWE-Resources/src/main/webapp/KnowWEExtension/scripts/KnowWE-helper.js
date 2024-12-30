@@ -632,7 +632,7 @@ KNOWWE.helper.ajax = function(options) {
    */
   function handleResponse() {
     if (http.readyState === 4) {
-      if (http.status === 200) {
+      if (http.status === 200 && http.responseURL.indexOf("/error/Forbidden.html") < 0) {
         var ids = oDefault.response.ids;
         var action = oDefault.response.action;
         var htmlText = http.responseText;

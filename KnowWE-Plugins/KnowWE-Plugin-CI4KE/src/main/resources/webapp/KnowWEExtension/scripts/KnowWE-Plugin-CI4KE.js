@@ -322,12 +322,14 @@ KNOWWE.plugin.ci4ke = function() {
         loader: true,
         response: {
           fn: function() {
-            jq$(".ci-header,.ci-daemon")
-              .find(".ci-state")
-              .filter("[dashboardName=\"" + dashboardName + "\"]")
-              .replaceWith(this.response);
-            if (onFinish) {
-              onFinish(dashboardName);
+            if (this.status === 200) {
+              jq$(".ci-header,.ci-daemon")
+                .find(".ci-state")
+                .filter("[dashboardName=\"" + dashboardName + "\"]")
+                .replaceWith(this.response);
+              if (onFinish) {
+                onFinish(dashboardName);
+              }
             }
           },
           onError: onErrorBehavior
