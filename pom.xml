@@ -635,11 +635,6 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>denkbares-SemanticCore-Plugin-Jena</artifactId>
-				<version>${denkbares.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 				<version>${knowwe.version}</version>
