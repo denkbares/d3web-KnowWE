@@ -737,8 +737,16 @@ KNOWWE.helper.ajax = function(options) {
 KNOWWE.helper.ajax.appendXSRFToken = function(url) {
   let separator = url.indexOf('?') === -1 ? "?" : "&";
   let token = document.getElementById("knowWEInfoXSRF");
-  if (!token) return url;
-  return url + separator + "X-XSRF-TOKEN=" + token.value;
+  if (token) {
+    return url + separator + "X-XSRF-TOKEN=" + token.value;
+  } else {
+    const meta = document.querySelector('head > meta[name="wikiCsrfProtection"]');
+    if (!meta) {
+      console.warn("XSRF-Token not found!");
+      return url;
+    }
+    return url + separator + "X-XSRF-TOKEN=" + meta.getAttribute("content");
+  }
 }
 
 KNOWWE.helper.ajax.xhrExtractMessage = function(jqXHR) {
