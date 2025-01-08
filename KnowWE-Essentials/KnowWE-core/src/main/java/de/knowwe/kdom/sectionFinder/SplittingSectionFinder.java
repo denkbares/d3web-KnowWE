@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -40,6 +41,7 @@ public class SplittingSectionFinder implements SectionFinder {
 
 	private final boolean includeSplitSymbol;
 	private final boolean includeEmptySections;
+	private final boolean trimIfNoSplit;
 	private final Pattern pattern;
 
 	/**
@@ -75,8 +77,13 @@ public class SplittingSectionFinder implements SectionFinder {
 	 * @param splitRegex           the regular expression to match the split symbols
 	 */
 	public SplittingSectionFinder(boolean includeSplitSymbol, boolean includeEmptySections, String splitRegex) {
+		this(includeSplitSymbol, includeEmptySections, false, splitRegex);
+	}
+
+	public SplittingSectionFinder(boolean includeSplitSymbol, boolean includeEmptySections, boolean trimIfNoSplit, String splitRegex) {
 		this.includeSplitSymbol = includeSplitSymbol;
 		this.includeEmptySections = includeEmptySections;
+		this.trimIfNoSplit = trimIfNoSplit;
 		this.pattern = Pattern.compile(splitRegex);
 	}
 
@@ -86,14 +93,21 @@ public class SplittingSectionFinder implements SectionFinder {
 		Matcher tagMatcher = pattern.matcher(text);
 		List<SectionFinderResult> resultRegex = new ArrayList<>();
 		int nextStart = 0;
+		boolean noMatch = true;
 		while (tagMatcher.find()) {
 			addSection(resultRegex, nextStart, includeSplitSymbol ? tagMatcher.end() : tagMatcher.start());
+			noMatch = false;
 			nextStart = tagMatcher.end();
 		}
 		// append section result after last split character / substring
 		// also adds the total text, if there is no match (!)
 		if (nextStart < text.length()) {
-			addSection(resultRegex, nextStart, text.length());
+			int end = text.length();
+			if (noMatch && trimIfNoSplit) {
+				while (nextStart < end && Strings.isWhitespace(text.charAt(nextStart))) nextStart++;
+				while (end >= nextStart && Strings.isWhitespace(text.charAt(end - 1))) end--;
+			}
+			addSection(resultRegex, nextStart, end);
 		}
 		return resultRegex;
 	}
