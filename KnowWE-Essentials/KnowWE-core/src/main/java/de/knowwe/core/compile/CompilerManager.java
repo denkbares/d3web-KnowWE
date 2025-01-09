@@ -69,7 +69,7 @@ public class CompilerManager implements EventListener {
 
 	private final PriorityList<Double, Compiler> compilers;
 	// just a fast cache for the contains() method
-	private final HashSet<Compiler> compilerCache;
+	private final Set<Compiler> compilerCache;
 	private final ArticleManager articleManager;
 
 	private Iterator<Group<Double, Compiler>> running = null;
@@ -85,7 +85,7 @@ public class CompilerManager implements EventListener {
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
-		this.compilerCache = new HashSet<>();
+		this.compilerCache = Collections.newSetFromMap(new ConcurrentHashMap<>());
 		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService(CompilerManager.class.getSimpleName());
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> onContextDestroyed());
@@ -613,9 +613,7 @@ public class CompilerManager implements EventListener {
 	}
 
 	public boolean contains(Compiler compiler) {
-		synchronized (lock) {
-			return compilerCache.contains(compiler);
-		}
+		return compilerCache.contains(compiler);
 	}
 
 	/**
