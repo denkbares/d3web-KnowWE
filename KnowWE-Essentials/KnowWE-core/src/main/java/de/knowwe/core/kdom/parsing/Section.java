@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiFunction;
 
 import org.jetbrains.annotations.NotNull;
@@ -62,6 +64,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Jochen
  */
 public final class Section<T extends Type> implements Comparable<Section<? extends Type>> {
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(Section.class);
 
 	/**
@@ -74,6 +77,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private List<Integer> lastPositions = null;
 
 	boolean isOrHasReusedSuccessor = false;
+
+	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 	Article article;
 
@@ -244,12 +249,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			Class<?> childTypeClass = child.get().getClass();
 			if (!Types.canHaveSuccessorOfType((AbstractType) type, childTypeClass)) {
 				LOGGER.error("Added section of type '"
-						+ childTypeClass.getSimpleName()
-						+ "' to parent section of type '"
-						+ type.getClass().getSimpleName()
-						+ "', but parent type does not expect this child type. "
-						+ "This has to be fixed, otherwise functionality based on a "
-						+ "well defined type tree will not work properly.");
+							 + childTypeClass.getSimpleName()
+							 + "' to parent section of type '"
+							 + type.getClass().getSimpleName()
+							 + "', but parent type does not expect this child type. "
+							 + "This has to be fixed, otherwise functionality based on a "
+							 + "well defined type tree will not work properly.");
 			}
 		}
 	}
@@ -642,7 +647,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			if (newArticle == null) return; // if there is a new version, try to salvage
 			Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
 			if (newSection != null
-					&& newSection.get().getClass().equals(section.get().getClass())) {
+				&& newSection.get().getClass().equals(section.get().getClass())) {
 				// to not add ids to completely different sections if the
 				// article changed a lot, we only generate section ids for the
 				// same type of sections that had ids in the old article
@@ -695,16 +700,22 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @created 16.02.2012
 	 */
 	@NotNull
-	public synchronized Map<Compiler, Object> getObjects(String key) {
-		if (store == null) return Collections.emptyMap();
-		Map<Compiler, Object> objects = new HashMap<>(store.size());
-		for (Map.Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
-			Compiler compiler = entry.getKey();
-			if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
-			Object object = entry.getValue().get(key);
-			if (object != null) objects.put(compiler, object);
+	public Map<Compiler, Object> getObjects(String key) {
+		lock.readLock().lock();
+		try {
+			if (store == null) return Collections.emptyMap();
+			Map<Compiler, Object> objects = new HashMap<>(store.size());
+			for (Map.Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
+				Compiler compiler = entry.getKey();
+				if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
+				Object object = entry.getValue().get(key);
+				if (object != null) objects.put(compiler, object);
+			}
+			return Collections.unmodifiableMap(objects);
 		}
-		return Collections.unmodifiableMap(objects);
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -715,9 +726,15 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param compiler the compiler to get the stored objects for, or null for compiler-independent stored objects
 	 */
 	@NotNull
-	public synchronized Map<String, Object> getObjects(Compiler compiler) {
-		Map<String, Object> store = getStoreForCompiler(compiler);
-		return (store == null) ? Collections.emptyMap() : Collections.unmodifiableMap(store);
+	public Map<String, Object> getObjects(Compiler compiler) {
+		lock.readLock().lock();
+		try {
+			Map<String, Object> store = getStoreForCompiler(compiler);
+			return (store == null) ? Collections.emptyMap() : Collections.unmodifiableMap(store);
+		}
+		finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -729,11 +746,15 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public <O> O getObject(@Nullable Compiler compiler, String key) {
 		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
-		Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
-		if (storeForArticle == null) return null;
-		synchronized (this) {
+		lock.readLock().lock();
+		try {
+			Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
+			if (storeForArticle == null) return null;
 			//noinspection unchecked
 			return (O) storeForArticle.get(key);
+		}
+		finally {
+			lock.readLock().unlock();
 		}
 	}
 
@@ -798,13 +819,19 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param object   the object to be stored
 	 * @created 08.07.2011
 	 */
-	public synchronized void storeObject(@Nullable Compiler compiler, String key, Object object) {
-		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
-		if (storeForCompiler == null) {
-			storeForCompiler = new HashMap<>(4);
-			putStoreForCompiler(compiler, storeForCompiler);
+	public void storeObject(@Nullable Compiler compiler, String key, Object object) {
+		lock.writeLock().lock();
+		try {
+			Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
+			if (storeForCompiler == null) {
+				storeForCompiler = new HashMap<>(4);
+				putStoreForCompiler(compiler, storeForCompiler);
+			}
+			storeForCompiler.put(key, object);
 		}
-		storeForCompiler.put(key, object);
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	/**
@@ -824,12 +851,16 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public <C extends Compiler, O> O computeIfAbsent(@Nullable C compiler, String key, BiFunction<@Nullable C, @NotNull Section<T>, @NotNull O> mappingFunction) {
 		O object = getObject(compiler, key);
 		if (object == null) {
-			synchronized (this) {
+			lock.writeLock().lock();
+			try {
 				object = getObject(compiler, key);
 				if (object == null) {
 					object = mappingFunction.apply(compiler, this);
 					storeObject(compiler, key, object);
 				}
+			}
+			finally {
+				lock.writeLock().unlock();
 			}
 		}
 		return object;
@@ -846,22 +877,25 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the removed object for the compiler and key, or null
 	 * @created 16.03.2014
 	 */
-	public synchronized <O> O removeObject(Compiler compiler, String key) {
-		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
-		if (storeForCompiler == null) return null;
-		Object removed = storeForCompiler.remove(key);
-		if (storeForCompiler.isEmpty()) store.remove(compiler);
-		if (store.isEmpty()) store = null;
-		//noinspection unchecked
-		return (O) removed;
+	public <O> O removeObject(Compiler compiler, String key) {
+		lock.writeLock().lock();
+		try {
+			Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
+			if (storeForCompiler == null) return null;
+			Object removed = storeForCompiler.remove(key);
+			if (storeForCompiler.isEmpty()) store.remove(compiler);
+			if (store.isEmpty()) store = null;
+			//noinspection unchecked
+			return (O) removed;
+		}
+		finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
-		if (store == null) return null; // we want this non blocking if null
-		synchronized (this) {
-			if (store == null) return null; // check again in synchronized block
-			return store.get(compiler);
-		}
+		if (store == null) return null;
+		return store.get(compiler);
 	}
 
 	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
