@@ -612,7 +612,7 @@ public class CompilerManager implements EventListener {
 		compiler.destroy();
 	}
 
-	public boolean contains(Compiler compiler) {
+	public boolean contains(@NotNull Compiler compiler) {
 		return compilerCache.contains(compiler);
 	}
 
