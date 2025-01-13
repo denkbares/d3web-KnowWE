@@ -292,8 +292,8 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void cherryPick(String branch, List<String> commitHashesToCherryPick) {
-		this.delegate.cherryPick(branch, commitHashesToCherryPick);
+	public String cherryPick(String branch, List<String> commitHashesToCherryPick) {
+		return this.delegate.cherryPick(branch, commitHashesToCherryPick);
 	}
 
 	@Override
@@ -362,6 +362,11 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
+		return this.delegate.createBranch(branchName, branchNameToBaseOn, switchToBranch);
+	}
+
+	@Override
 	public boolean untrackPath(String path) {
 		return this.delegate.untrackPath(path);
 	}
@@ -384,5 +389,10 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public GitStatusCommandResult status() {
 		return this.delegate.status();
+	}
+
+	@Override
+	public void abortCherryPick() {
+		this.delegate.abortCherryPick();
 	}
 }

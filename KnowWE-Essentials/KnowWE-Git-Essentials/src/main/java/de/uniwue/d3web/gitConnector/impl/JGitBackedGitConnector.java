@@ -34,8 +34,13 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void cherryPick(String branch, List<String> commitHashesToCherryPick) {
-		this.jgitConnector.cherryPick(branch, commitHashesToCherryPick);
+	public String cherryPick(String branch, List<String> commitHashesToCherryPick) {
+		if (bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.cherryPick(branch, commitHashesToCherryPick);
+		}
+		else {
+			return this.jgitConnector.cherryPick(branch, commitHashesToCherryPick);
+		}
 	}
 
 	@Override
@@ -66,7 +71,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitsBetween(commitHashFrom, commitHashTo);
 		}
 		return this.jgitConnector.commitsBetween(commitHashFrom, commitHashTo);
@@ -74,7 +79,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public List<String> commitsBetweenForFile(String commitHashFrom, String commitHashTo, String path) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitsBetweenForFile(commitHashFrom, commitHashTo, path);
 		}
 		return this.jgitConnector.commitsBetweenForFile(commitHashFrom, commitHashTo, path);
@@ -87,7 +92,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String commitForUser(UserData userData) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitForUser(userData);
 		}
 		return this.jgitConnector.commitForUser(userData);
@@ -95,9 +100,8 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String commitForUser(UserData userData, long timeStamp) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitForUser(userData, timeStamp);
-
 		}
 		return this.jgitConnector.commitForUser(userData, timeStamp);
 	}
@@ -132,6 +136,14 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.createBranch(branchName, branchNameToBaseOn, switchToBranch);
+		}
+		return this.jgitConnector.createBranch(branchName, branchNameToBaseOn, switchToBranch);
+	}
+
+	@Override
 	public boolean untrackPath(String path) {
 		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.untrackPath(path);
@@ -143,7 +155,8 @@ public class JGitBackedGitConnector implements GitConnector {
 	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
 		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.addNoteToCommit(noteText, commitHash, namespace);
-		};
+		}
+		;
 		return this.jgitConnector.addNoteToCommit(noteText, commitHash, namespace);
 	}
 
@@ -165,10 +178,20 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public GitStatusCommandResult status() {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.status();
 		}
 		return this.jgitConnector.status();
+	}
+
+	@Override
+	public void abortCherryPick() {
+		if (this.bareGitConnector.isGitInstalled) {
+			this.bareGitConnector.abortCherryPick();
+		}
+		else {
+			this.jgitConnector.abortCherryPick();
+		}
 	}
 
 	@Override
@@ -305,12 +328,12 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String deletePath(String pathToDelete, UserData userData, boolean cached) {
-		return this.jgitConnector.deletePath(pathToDelete, userData,cached);
+		return this.jgitConnector.deletePath(pathToDelete, userData, cached);
 	}
 
 	@Override
 	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.deletePaths(pathsToDelete, userData, cached);
 		}
 		return this.jgitConnector.deletePaths(pathsToDelete, userData, cached);
@@ -323,7 +346,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public void addPath(String path) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			this.bareGitConnector.addPath(path);
 			return;
 		}
@@ -332,7 +355,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public void addPaths(List<String> path) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			this.bareGitConnector.addPaths(path);
 			return;
 		}

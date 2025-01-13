@@ -143,7 +143,7 @@ public interface GitConnector {
 	 */
 	boolean executeCommitGraph();
 
-	void cherryPick(String branch, List<String> commitHashesToCherryPick);
+	String cherryPick(String branch, List<String> commitHashesToCherryPick);
 
 	/**
 	 * For a provided commithash, this lists all files that are touched in this commit
@@ -245,6 +245,8 @@ public interface GitConnector {
 	 */
 	boolean switchToBranch(String branch, boolean createBranch);
 
+
+	boolean createBranch(String branchName,String branchNameToBaseOn, boolean switchToBranch);
 	/**
 	 * Execute a git rm --cached on the provided path
 	 * @param path
@@ -273,4 +275,6 @@ public interface GitConnector {
 	 * @return
 	 */
 	GitStatusCommandResult status();
+
+	void abortCherryPick();
 }

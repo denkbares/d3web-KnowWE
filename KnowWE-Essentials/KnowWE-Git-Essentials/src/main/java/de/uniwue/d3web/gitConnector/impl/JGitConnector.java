@@ -88,7 +88,7 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void cherryPick(String branch, List<String> commitHashesToCherryPick) {
+	public String cherryPick(String branch, List<String> commitHashesToCherryPick) {
 		throw new NotImplementedException("TODO");
 	}
 
@@ -176,6 +176,11 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
 	public boolean untrackPath(String path) {
 		throw new NotImplementedException("TODO");
 	}
@@ -197,6 +202,11 @@ public class JGitConnector implements GitConnector {
 
 	@Override
 	public GitStatusResultSuccess status() {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public void abortCherryPick() {
 		throw new NotImplementedException("TODO");
 	}
 

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
@@ -109,8 +110,17 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void cherryPick(String branch, List<String> commitHashesToCherryPick) {
-		throw new NotImplementedException("TODO");
+	public String cherryPick(String branch, List<String> commitHashesToCherryPick) {
+		String hashes = commitHashesToCherryPick.stream().collect(Collectors.joining(" "));
+
+		String[] command = { "git", "cherry-pick", hashes, "--" };
+		String cherryPickResult = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+		if (cherryPickResult.contains("error: could not apply") || cherryPickResult.contains("CONFLICT")
+				|| cherryPickResult.contains("Automatic cherry-pick failed")) {
+			return cherryPickResult;
+		}
+		//an empty string signals success (OMG such great implementation!)
+		return "";
 	}
 
 	@Override
@@ -515,6 +525,23 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
+		String[] command = null;
+
+		command = new String[] { "git", "branch", branchName, branchNameToBaseOn };
+		String logOutput = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+
+		if (logOutput.isEmpty() && !switchToBranch) {
+			return true;
+		}
+
+		if (switchToBranch) {
+			return switchToBranch(branchName, false);
+		}
+		return false;
+	}
+
+	@Override
 	public boolean untrackPath(String path) {
 
 		//check if the file exists already
@@ -559,6 +586,11 @@ public class BareGitConnector implements GitConnector {
 	public GitStatusCommandResult status() {
 		GitStatusCommand gitStatusCommand = new GitStatusCommand(this.repositoryPath);
 		return gitStatusCommand.execute();
+	}
+
+	@Override
+	public void abortCherryPick() {
+		RawGitExecutor.executeGitCommand(new String[] { "git", "cherry-pick", "--abort" }, this.repositoryPath);
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {

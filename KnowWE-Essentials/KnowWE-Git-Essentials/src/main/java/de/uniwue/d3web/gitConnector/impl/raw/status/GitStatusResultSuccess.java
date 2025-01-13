@@ -6,11 +6,13 @@ import java.util.List;
 import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
 import de.uniwue.d3web.gitConnector.impl.raw.gitexceptions.GitCommandResultSuccess;
 
-public final class GitStatusResultSuccess implements GitCommandResultSuccess,GitStatusCommandResult {
+public final class GitStatusResultSuccess implements GitCommandResultSuccess, GitStatusCommandResult {
 
 	private final List<String> removedFiles;
 	private final List<String> conflictingFiles;
 	private final List<String> untrackedFiles;
+
+
 	private final List<String> changedFiles;
 
 	private final String errorMessage;
@@ -25,8 +27,33 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess,Git
 		this.output = output;
 	}
 
-	public boolean isClean(){
+	public boolean isClean() {
 		return removedFiles.isEmpty() && conflictingFiles.isEmpty() && untrackedFiles.isEmpty() && changedFiles.isEmpty();
+	}
+
+	public List<String> getChangedFiles() {
+		return new ArrayList<>(changedFiles);
+	}
+
+	public List<String> getUntrackedFiles() {
+		return new ArrayList<>(untrackedFiles);
+	}
+
+	public List<String> getConflictingFiles() {
+		return new ArrayList<>(conflictingFiles);
+	}
+
+	public List<String> getRemovedFiles() {
+		return new ArrayList<>(removedFiles);
+	}
+
+	public List<String> getAffectedFiles(){
+		ArrayList<String> affectedFiles = new ArrayList<>(changedFiles);
+
+		affectedFiles.addAll(untrackedFiles);
+		affectedFiles.addAll(conflictingFiles);
+		affectedFiles.addAll(removedFiles);
+		return affectedFiles;
 	}
 
 	public static GitStatusResultSuccess fromOutput(String output) {
@@ -37,13 +64,13 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess,Git
 		List<String> untrackedFiles = new ArrayList<>();
 
 		String[] lines = output.split("\n");
-		int lineIndex =0;
+		int lineIndex = 0;
 		for (String line : lines) {
 			if (line.matches(".*deleted:.*")) {
 				deletedFiles.add(line.replaceAll("deleted:", "").trim());
 			}
 			else if (line.matches(".*both added:.*") || line.matches(".*both modified:.*")) {
-				conflictingFiles.add(line.replaceAll("both modified:","").replaceAll("both added:","").trim());
+				conflictingFiles.add(line.replaceAll("both modified:", "").replaceAll("both added:", "").trim());
 			}
 			else if (line.matches(".*modified:.*")) {
 				modifiedFiles.add(line.replaceAll("modified:", "").trim());
@@ -54,7 +81,7 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess,Git
 
 			else if (line.matches(".*Untracked files:.*")) {
 				// Untracked files starten ab der 2-nächsten Zeile
-				int index = lineIndex+2;
+				int index = lineIndex + 2;
 
 				while ((index < lines.length) && lines[index].startsWith("\t")) {
 					untrackedFiles.add(lines[index].trim());
