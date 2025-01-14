@@ -21,6 +21,11 @@ public interface GitConnector {
 	List<String> commitHashesForFileSince(String file, Date date);
 
 	/**
+	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
+	 */
+	void destroy();
+
+	/**
 	 * Returns the specific hash of a given file in a specific version. Keep in mind that the first version is 1 instead of 0!
 	 * @param file
 	 * @param version
@@ -36,7 +41,7 @@ public interface GitConnector {
 	int numberOfCommitsForFile(String filePath);
 
 	/**
-	 *  Returns all commithashes that have an assigned date later than the specified date
+	 *  Returns all commit-hashes that have an assigned date later than the specified date
 	 * @param timeStamp
 	 * @return
 	 */

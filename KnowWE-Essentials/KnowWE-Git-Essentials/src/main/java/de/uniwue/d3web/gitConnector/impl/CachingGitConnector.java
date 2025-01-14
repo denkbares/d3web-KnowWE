@@ -31,6 +31,11 @@ public class CachingGitConnector implements GitConnector {
 		this.cache = new ConcurrentHashMap<>();
 	}
 
+	@Override
+	public void destroy() {
+		delegate.destroy();
+	}
+
 	/**
 	 * This is the most important method of this cache - it updates the cache for a given path.
 	 * This is done as follows:

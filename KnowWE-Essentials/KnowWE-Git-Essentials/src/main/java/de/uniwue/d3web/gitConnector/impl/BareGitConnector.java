@@ -222,6 +222,11 @@ public class BareGitConnector implements GitConnector {
 		return commitHashes;
 	}
 
+	@Override
+	public void destroy() {
+		// what to destroy? -> currently nothing
+	}
+
 	//TODO if version = -1then we may never know what the actual version is
 	@Override
 	public String commitHashForFileAndVersion(String file, int version) {
