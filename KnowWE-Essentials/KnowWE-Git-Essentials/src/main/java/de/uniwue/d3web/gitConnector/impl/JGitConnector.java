@@ -266,6 +266,11 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public void destroy() {
+		org.eclipse.jgit.nls.NLS.clear();
+	}
+
+	@Override
 	public String commitHashForFileAndVersion(String file, int version) {
 		//version is assumed to start at 1
 		int versionIndex = version - 1;

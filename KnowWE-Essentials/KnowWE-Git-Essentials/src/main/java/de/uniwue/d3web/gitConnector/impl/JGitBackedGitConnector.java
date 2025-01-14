@@ -211,6 +211,12 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public void destroy() {
+		this.bareGitConnector.destroy();
+		this.jgitConnector.destroy();
+	}
+
+	@Override
 	public String commitHashForFileAndVersion(String file, int version) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashForFileAndVersion(file, version);
