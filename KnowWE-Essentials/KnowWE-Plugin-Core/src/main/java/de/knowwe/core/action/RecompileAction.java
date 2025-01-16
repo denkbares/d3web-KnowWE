@@ -37,6 +37,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.PackageCompiler;
@@ -98,13 +99,35 @@ public class RecompileAction extends AbstractAction {
 		}
 		else {
 			GroupingCompiler variantCompiler = groupingCompilers.iterator().next();
-			List<Article> compileArticles = Stream.concat(Stream.of(variantCompiler), variantCompiler.getChildCompilers()
-							.stream())
-					.filter(c -> c instanceof PackageCompiler)
-					.map(c -> (PackageCompiler) c)
-					.map(p -> p.getCompileSection().getArticle()).toList();
-			recompile(compileArticles, variant, reason, context.getUserName());
+			recompileVariant(context, reason, variantCompiler);
 		}
+	}
+
+	/**
+	 * Recompiles just the compilers of the given group compiler
+	 */
+	public static void recompileVariant(UserActionContext context, String reason, Compiler variantCompiler) {
+		Stream<Compiler> compilerStream;
+		if (variantCompiler instanceof GroupingCompiler groupingCompiler) {
+			compilerStream = streamCompilers(groupingCompiler);
+		}
+		else {
+			compilerStream = Compilers.getCompilers(variantCompiler.getCompilerManager()
+							.getArticleManager(), GroupingCompiler.class)
+					.stream()
+					.filter(g -> g.getChildCompilers().contains(variantCompiler))
+					.findFirst().map(RecompileAction::streamCompilers).orElse(Stream.of(variantCompiler));
+		}
+
+		List<Article> compileArticles = compilerStream
+				.filter(c -> c instanceof PackageCompiler)
+				.map(c -> (PackageCompiler) c)
+				.map(p -> p.getCompileSection().getArticle()).toList();
+		recompile(compileArticles, variant, reason, context.getUserName());
+	}
+
+	private static @NotNull Stream<Compiler> streamCompilers(GroupingCompiler groupingCompiler) {
+		return Stream.concat(Stream.of(groupingCompiler), groupingCompiler.getChildCompilers().stream());
 	}
 
 	/**
@@ -123,7 +146,8 @@ public class RecompileAction extends AbstractAction {
 		try {
 			LOGGER.info("Starting {} recompilation ({}). Reason: {}. User: {}",
 					mode.name(), Strings.pluralOf(articlesToRecompile.size(), "article"), reason, userName);
-			articleManager.getCompilerManager().setCompileMessage("Mode: " + mode.name() + ", reason: " + reason + ", user: " + userName);
+			articleManager.getCompilerManager()
+					.setCompileMessage("Mode: " + mode.name() + ", reason: " + reason + ", user: " + userName);
 			if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 				articlesToRecompile.parallelStream()
 						.forEach(article -> defaultArticleManager.queueArticle(article.getTitle(), article.getText()));

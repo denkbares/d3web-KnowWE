@@ -51,7 +51,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		if (Boolean.parseBoolean(context.getParameter(PARAM_FULL_COMPILE, "false"))) {
 			if (compiler.isIncrementalBuild()) {
-				RecompileAction.recompileVariant(context, "Knowledge base download");
+				RecompileAction.recompileVariant(context, "Knowledge base download", compiler);
 				Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 				compiler = getCompiler(context);
 				if (compiler == null) failUnexpected(context, "Compile no longer available after recompile");

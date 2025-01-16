@@ -27,6 +27,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.RecompileAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -67,12 +68,12 @@ public class OntologyDownloadAction extends AbstractAction {
 			return;
 		}
 
-		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
+		Compilers.awaitTermination(compiler.getCompilerManager());
 		if (Boolean.parseBoolean(context.getParameter(PARAM_FULL_COMPILE, "false"))) {
-			Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
+			Compilers.awaitTermination(compiler.getCompilerManager());
 			if (compiler.isIncrementalBuild()) {
-				RecompileAction.recompileVariant(context, "Ontology download");
-				Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
+				RecompileAction.recompileVariant(context, "Ontology download", compiler);
+				Compilers.awaitTermination(compiler.getCompilerManager());
 				compiler = getCompiler(context);
 				if (compiler == null) failUnexpected(context, "Compile no longer available after recompile");
 			}
