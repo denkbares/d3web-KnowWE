@@ -30,7 +30,7 @@ KNOWWE.plugin.ci4ke = function() {
         KNOWWE.notification.error(
           null,
           "Server appears to be offline.",
-          status
+          "offline"
         );
         break;
       case 409:
