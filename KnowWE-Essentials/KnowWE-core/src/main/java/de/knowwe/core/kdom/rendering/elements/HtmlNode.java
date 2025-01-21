@@ -16,8 +16,8 @@ public class HtmlNode extends HtmlElement {
 
 	private final String innerHtml;
 
-	public HtmlNode(String textContent) {
-		this.innerHtml = textContent;
+	public HtmlNode(String innerHtml) {
+		this.innerHtml = innerHtml;
 	}
 
 	@Override
