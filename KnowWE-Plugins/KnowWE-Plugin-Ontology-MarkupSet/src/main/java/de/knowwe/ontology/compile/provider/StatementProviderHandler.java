@@ -16,6 +16,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.turtle.TurtleMarkup;
+import de.knowwe.rdf2go.ClassAndSectionSource;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -35,7 +36,7 @@ public class StatementProviderHandler<Z extends Type> extends OntologyHandler<Z>
 		for (Section<StatementProvider> statementSection : Sections.successors(section, StatementProvider.class)) {
 			//noinspection unchecked
 			StatementProviderResult result = statementSection.get().getStatementsSafe(compiler, statementSection);
-			compiler.getRdf2GoCore().addStatements(section, result.getStatements());
+			compiler.getRdf2GoCore().addStatements(new ClassAndSectionSource(section, getClass()), result.getStatements());
 			messages.addAll(result.getMessages());
 		}
 		return messages;
@@ -43,6 +44,6 @@ public class StatementProviderHandler<Z extends Type> extends OntologyHandler<Z>
 
 	@Override
 	public void destroy(OntologyCompiler compiler, Section<Z> section) {
-		compiler.getRdf2GoCore().removeStatements(section);
+		compiler.getRdf2GoCore().removeStatements(new ClassAndSectionSource(section, getClass()));
 	}
 }
