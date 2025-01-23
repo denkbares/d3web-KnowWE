@@ -256,6 +256,7 @@ KNOWWE.core.plugin.progress = function() {
               KNOWWE.tooltips.enrich(bar);
               refresh |= running;
             }
+            KNOWWE.helper.observer.notify("contentChange");
             if (refresh) {
               window.setTimeout(function() {
                 KNOWWE.core.plugin.progress.updateProgressBar(sectionId);
