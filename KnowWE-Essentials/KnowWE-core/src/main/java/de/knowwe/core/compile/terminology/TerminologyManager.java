@@ -276,9 +276,9 @@ public class TerminologyManager {
 						.fireEvent(new TermDefinitionUnregisteredEvent<>(compiler, termIdentifier, termClass));
 				//}
 			}
+			termDefinition.getObjectOrDefault(compiler, DEFINITIONS_KEY, new MinimizedHashSet<>())
+					.remove(termIdentifier);
 		}
-		termDefinition.getObjectOrDefault(compiler, DEFINITIONS_KEY, new MinimizedHashSet<>())
-				.remove(termIdentifier);
 	}
 
 	/**
