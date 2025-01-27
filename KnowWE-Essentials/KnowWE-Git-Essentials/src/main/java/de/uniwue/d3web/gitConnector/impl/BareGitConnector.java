@@ -28,6 +28,13 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommand;
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommand;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommand;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandSuccess;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommand;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
@@ -110,7 +117,7 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String cherryPick(String branch, List<String> commitHashesToCherryPick) {
+	public String cherryPick( List<String> commitHashesToCherryPick) {
 		String hashes = commitHashesToCherryPick.stream().collect(Collectors.joining(" "));
 
 		String[] command = { "git", "cherry-pick", hashes, "--" };
@@ -203,6 +210,24 @@ public class BareGitConnector implements GitConnector {
 
 		String[] command = null;
 		command = new String[] { "git", "log", "--format=%H", file };
+
+		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
+
+		List<String> commitHashes = new ArrayList<>();
+		for (String line : logOutput.split("\n")) {
+			String commitHash = line.replaceAll("\"", "").trim();
+			if (!commitHash.isEmpty()) {
+				commitHashes.add(commitHash);
+			}
+		}
+		Collections.reverse(commitHashes);
+		return commitHashes;
+	}
+
+	@Override
+	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+		String[] command = null;
+		command = new String[] { "git", "log",branchName, "--format=%H", file };
 
 		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 
@@ -413,7 +438,18 @@ public class BareGitConnector implements GitConnector {
 
 		addPath(changedPath);
 
-		String[] commitCommand = new String[] { "git", "commit", "-m", userData.message };
+		String authorName = userData.user;
+		if(authorName==null){
+			authorName = "Unknown User";
+		}
+		String authorEmail =userData.email;
+		if(authorEmail==null){
+			authorEmail = "unknown@unknown.com";
+		}
+
+		String[] commitCommand = new String[] {
+				"git", "commit", "--author=" + authorName + " <" + authorEmail + ">", "-m", userData.message
+    };
 		//and commit
 
 		String commitResult = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
@@ -422,8 +458,8 @@ public class BareGitConnector implements GitConnector {
 			LOGGER.error("Could not commit path: " + changedPath);
 			return null;
 		}
-
-		return null;
+		List<String> commitHashes = commitHashesForFile(changedPath);
+		return commitHashes.get(commitHashes.size()-1);
 	}
 
 	@Override
@@ -515,6 +551,7 @@ public class BareGitConnector implements GitConnector {
 		return commitHashes;
 	}
 
+
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
 		String[] command = null;
@@ -598,6 +635,24 @@ public class BareGitConnector implements GitConnector {
 		RawGitExecutor.executeGitCommand(new String[] { "git", "cherry-pick", "--abort" }, this.repositoryPath);
 	}
 
+	@Override
+	public GitMergeCommandResult mergeBranchToCurrentBranch(String branchName) {
+		GitMergeCommand gitMergeCommand = new GitMergeCommand(this.repositoryPath, branchName);
+		return gitMergeCommand.execute();
+	}
+
+	@Override
+	public PushCommandResult pushToOrigin(String userName,String passwordOrToken) {
+		PushCommand pushCommand = new PushCommand(this.repositoryPath,userName,passwordOrToken);
+		return pushCommand.execute();
+	}
+
+	@Override
+	public ResetCommandResult resetToHEAD() {
+		ResetCommand command = new ResetCommand(this.repositoryPath);
+		return command.execute();
+	}
+
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {
 		LOGGER.info("Init BareGitConnector at path: " + repositoryPath);
 		File file = new File(repositoryPath);
@@ -626,4 +681,5 @@ public class BareGitConnector implements GitConnector {
 
 		throw new IllegalArgumentException("Could not create repository: " + result);
 	}
+
 }

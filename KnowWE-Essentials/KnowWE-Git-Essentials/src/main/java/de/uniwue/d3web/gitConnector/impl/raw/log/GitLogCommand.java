@@ -1,8 +1,6 @@
 package de.uniwue.d3web.gitConnector.impl.raw.log;
 
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;

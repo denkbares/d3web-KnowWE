@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jgit.api.MergeResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
@@ -21,6 +25,14 @@ public interface GitConnector {
 	 * @return
 	 */
 	List<String> commitHashesForFile(String file);
+
+	/**
+	 * Same as above, but you can also specify the branch where the command gets triggered in
+	 * @param file
+	 * @return
+	 */
+	List<String> commitHashesForFileInBranch(String file,String branchName);
+
 	List<String> commitHashesForFileSince(String file, Date date);
 
 	/**
@@ -148,7 +160,7 @@ public interface GitConnector {
 	 */
 	boolean executeCommitGraph();
 
-	String cherryPick(String branch, List<String> commitHashesToCherryPick);
+	String cherryPick( List<String> commitHashesToCherryPick);
 
 	/**
 	 * For a provided commithash, this lists all files that are touched in this commit
@@ -176,7 +188,7 @@ public interface GitConnector {
 	 * Returnt he current active branch. Throws Illegalstate if this command fails
 	 * @return
 	 */
-	String currentBranch();
+	String currentBranch() throws IllegalStateException;
 
 	/**
 	 * Return the current head of the current branch
@@ -282,4 +294,10 @@ public interface GitConnector {
 	GitStatusCommandResult status();
 
 	void abortCherryPick();
+
+	GitMergeCommandResult mergeBranchToCurrentBranch(String branchName);
+
+	PushCommandResult pushToOrigin(String userName,String passwordOrToken);
+
+	ResetCommandResult resetToHEAD();
 }
