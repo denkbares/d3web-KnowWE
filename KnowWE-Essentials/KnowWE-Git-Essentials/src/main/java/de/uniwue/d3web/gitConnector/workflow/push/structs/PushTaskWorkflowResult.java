@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.workflow.GitWorkflowResult;
 import de.uniwue.d3web.gitConnector.workflow.result.DefaultGitWorkflowResultStage;
+import de.uniwue.d3web.gitConnector.workflow.result.GitWorkflowResult2;
 
 public class PushTaskWorkflowResult implements GitWorkflowResult {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PushTaskWorkflowResult.class);
 
 	private List<DefaultGitWorkflowResultStage> initialCleanResults;
 	private List<DefaultGitWorkflowResultStage> featureBranchResults;
@@ -84,6 +89,7 @@ public class PushTaskWorkflowResult implements GitWorkflowResult {
 	}
 
 	private List<DefaultGitWorkflowResultStage> addToAccordingList(List<DefaultGitWorkflowResultStage> accordingList, String message, boolean result) {
+		LOGGER.info(message);
 		if (accordingList == null) {
 			accordingList = new ArrayList<>();
 		}

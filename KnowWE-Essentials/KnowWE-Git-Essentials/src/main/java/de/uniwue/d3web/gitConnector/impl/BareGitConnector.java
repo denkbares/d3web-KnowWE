@@ -117,7 +117,7 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String cherryPick( List<String> commitHashesToCherryPick) {
+	public String cherryPick(List<String> commitHashesToCherryPick) {
 		String hashes = commitHashesToCherryPick.stream().collect(Collectors.joining(" "));
 
 		String[] command = { "git", "cherry-pick", hashes, "--" };
@@ -227,7 +227,7 @@ public class BareGitConnector implements GitConnector {
 	@Override
 	public List<String> commitHashesForFileInBranch(String file, String branchName) {
 		String[] command = null;
-		command = new String[] { "git", "log",branchName, "--format=%H", file };
+		command = new String[] { "git", "log", branchName, "--format=%H", file };
 
 		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 
@@ -434,32 +434,42 @@ public class BareGitConnector implements GitConnector {
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {
 		//TODO this needs the author/email to be set!
-		String changedPath = Paths.get(this.repositoryPath).relativize(pathToPut).toString();
+		String changedPath = null;
+		try {
+			Path repository = Paths.get(repositoryPath).toRealPath(); // Resolves symlinks
+			Path target = pathToPut.toRealPath();         // Resolves symlinks
+			changedPath = repository.relativize(target).toString();
+		}
+		catch (IOException e) {
+
+			changedPath = Paths.get(this.repositoryPath).relativize(pathToPut).toString();
+		}
 
 		addPath(changedPath);
 
 		String authorName = userData.user;
-		if(authorName==null){
+		if (authorName == null) {
 			authorName = "Unknown User";
 		}
-		String authorEmail =userData.email;
-		if(authorEmail==null){
+		String authorEmail = userData.email;
+		if (authorEmail == null) {
 			authorEmail = "unknown@unknown.com";
 		}
 
 		String[] commitCommand = new String[] {
 				"git", "commit", "--author=" + authorName + " <" + authorEmail + ">", "-m", userData.message
-    };
+		};
 		//and commit
 
 		String commitResult = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
 
 		if (!commitResult.contains("1 file changed")) {
 			LOGGER.error("Could not commit path: " + changedPath);
+			LOGGER.info(commitResult);
 			return null;
 		}
 		List<String> commitHashes = commitHashesForFile(changedPath);
-		return commitHashes.get(commitHashes.size()-1);
+		return commitHashes.get(commitHashes.size() - 1);
 	}
 
 	@Override
@@ -467,6 +477,7 @@ public class BareGitConnector implements GitConnector {
 		String addResult = RawGitExecutor.executeGitCommand("git add " + path, this.repositoryPath);
 		if (!addResult.isEmpty()) {
 			LOGGER.error("Could not add path: " + path);
+			LOGGER.info(addResult);
 		}
 	}
 
@@ -476,6 +487,7 @@ public class BareGitConnector implements GitConnector {
 		String addResult = RawGitExecutor.executeGitCommand("git add " + joinedPaths, this.repositoryPath);
 		if (!addResult.isEmpty()) {
 			LOGGER.error("Could not add paths: " + paths);
+			LOGGER.info(addResult);
 		}
 	}
 
@@ -550,7 +562,6 @@ public class BareGitConnector implements GitConnector {
 		Collections.reverse(commitHashes);
 		return commitHashes;
 	}
-
 
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
@@ -642,8 +653,8 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public PushCommandResult pushToOrigin(String userName,String passwordOrToken) {
-		PushCommand pushCommand = new PushCommand(this.repositoryPath,userName,passwordOrToken);
+	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
+		PushCommand pushCommand = new PushCommand(this.repositoryPath, userName, passwordOrToken);
 		return pushCommand.execute();
 	}
 
@@ -681,5 +692,4 @@ public class BareGitConnector implements GitConnector {
 
 		throw new IllegalArgumentException("Could not create repository: " + result);
 	}
-
 }

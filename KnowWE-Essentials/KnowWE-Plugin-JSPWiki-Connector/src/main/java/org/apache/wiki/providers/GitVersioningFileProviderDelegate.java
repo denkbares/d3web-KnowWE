@@ -417,7 +417,26 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			userName = userProfile.getFullname();
 			email = userProfile.getEmail();
 		}
+
+		//what we can do is to assume the author is an email (due to SSO this is not uncommon and expected) and try to parse the data from there
+		if(userName.contains("@")){
+			userName = author.split("@")[0];
+			if(userName.contains(".")){
+				String firstname = userName.split("\\.")[0];
+				String lastName = userName.split("\\.")[1];
+				userName = capitalize(firstname) + " " + capitalize(lastName);
+			}
+			email = author;
+		}
+
 		return new UserData(userName, email, comment);
+	}
+
+	private  String capitalize(String name) {
+		if (name == null || name.isEmpty()) {
+			return name;
+		}
+		return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 	}
 
 	@Override
