@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -118,10 +119,17 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public String cherryPick(List<String> commitHashesToCherryPick) {
+		if(commitHashesToCherryPick.isEmpty())
+			return "";
 		String hashes = commitHashesToCherryPick.stream().collect(Collectors.joining(" "));
+		UserData userdata = userDataFor(commitHashesToCherryPick.get(0));
+
+		Map<String, String> environment = new HashMap<>();
+		environment.put("GIT_COMMITTER_NAME", userdata.user);
+		environment.put("GIT_COMMITTER_EMAIL", userdata.email);
 
 		String[] command = { "git", "cherry-pick", hashes, "--" };
-		String cherryPickResult = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+		String cherryPickResult = RawGitExecutor.executeGitCommandWithEnvironment(command, this.repositoryPath,environment);
 		if (cherryPickResult.contains("error: could not apply") || cherryPickResult.contains("CONFLICT")
 				|| cherryPickResult.contains("Automatic cherry-pick failed")) {
 			return cherryPickResult;
@@ -433,7 +441,6 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {
-		//TODO this needs the author/email to be set!
 		String changedPath = null;
 		try {
 			Path repository = Paths.get(repositoryPath).toRealPath(); // Resolves symlinks
@@ -460,8 +467,12 @@ public class BareGitConnector implements GitConnector {
 				"git", "commit", "--author=" + authorName + " <" + authorEmail + ">", "-m", userData.message
 		};
 		//and commit
+		// Ensure committer identity is set
+		Map<String, String> environment = new HashMap<>();
+		environment.put("GIT_COMMITTER_NAME", authorName);
+		environment.put("GIT_COMMITTER_EMAIL", authorEmail);
 
-		String commitResult = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		String commitResult = RawGitExecutor.executeGitCommandWithEnvironment(commitCommand, this.repositoryPath,environment);
 
 		if (!commitResult.contains("1 file changed")) {
 			LOGGER.error("Could not commit path: " + changedPath);
