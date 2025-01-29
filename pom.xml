@@ -23,7 +23,7 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>2025.1-SNAPSHOT</version>
+	<version>2025.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 

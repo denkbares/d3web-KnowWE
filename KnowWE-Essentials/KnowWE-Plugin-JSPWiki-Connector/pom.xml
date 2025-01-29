@@ -25,7 +25,7 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2025.1-SNAPSHOT</version>
+		<version>2025.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Git-Essentials</artifactId>
-			<version>2025.1-SNAPSHOT</version>
+			<version>2025.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
