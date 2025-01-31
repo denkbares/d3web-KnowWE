@@ -25,14 +25,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -54,7 +53,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
-import de.knowwe.tools.AsynchronousActionTool;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -69,6 +67,7 @@ import de.knowwe.util.Icon;
 public class AdministrationToolProvider extends AbstractAction implements ToolProvider {
 
 	public static final String THREAD_DUMP = "thread-dump";
+	public static final String THREAD_DUMP_JCMD = "thread-dump-jcmd";
 	public static final String LOGS_RECENT = "logs-recent";
 	public static final String LOGS_ALL = "logs-all";
 
@@ -96,15 +95,21 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 						js,
 						Tool.CATEGORY_LAST);
 			}
-			DefaultTool threadDumpTool = new DefaultTool(Icon.COPY_TO_CLIPBOARD,
-					"Copy thread dump to clipboard",
-					"Create thread dump and copy it to the clipboard",
-					AsynchronousActionTool.buildJsAction(getClass(), section,
-							"jq$('#" + section.getID() + "').copyToClipboard(response);"
-									+ "KNOWWE.editCommons.hideAjaxLoader();"
-									+ "KNOWWE.notification.success(null, 'Copied thread dump to clipboard', 'thread-dump.copy', 3000);",
-							Map.of("type", THREAD_DUMP)),
-					Tool.ActionType.ONCLICK, Tool.CATEGORY_EDIT);
+			DefaultTool threadDumpTool = new DefaultTool(
+					Icon.FILE_TEXT,
+					"Download thread dump",
+					"Generate and download a thread dump",
+					"window.location='action/AdministrationToolProvider?type=" + THREAD_DUMP + "'",
+					Tool.CATEGORY_DOWNLOAD
+			);
+
+			DefaultTool threadDumpJcmdTool = new DefaultTool(
+					Icon.FILE_TEXT,
+					"Download thread dump (jcmd)",
+					"Generate and download a thread dump using jcmd",
+					"window.location='action/AdministrationToolProvider?type=" + THREAD_DUMP_JCMD + "'",
+					Tool.CATEGORY_DOWNLOAD
+			);
 
 			DefaultTool downloadRecent = new DefaultTool(
 					Icon.FILE_TEXT,
@@ -120,7 +125,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					"window.location='action/AdministrationToolProvider" +
 							"?type=" + LOGS_ALL + "'",
 					Tool.CATEGORY_DOWNLOAD);
-			return new Tool[] { readOnlyTool, threadDumpTool, downloadRecent, downloadAll };
+			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll };
 		}
 		else {
 			return null;
@@ -142,9 +147,10 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 
 		String type = context.getParameter("type");
 		if (THREAD_DUMP.equals(type)) {
-			Writer writer = context.getWriter();
-			writer.append(KnowWEUtils.getThreadDump());
-			writer.close();
+			downloadThreadDump(context, KnowWEUtils.getThreadDump(), "Thread-Dump");
+		}
+		else if (THREAD_DUMP_JCMD.equals(type)) {
+			downloadThreadDump(context, KnowWEUtils.getThreadDumpViaJcmd(), "JDMC-Thread-Dump");
 		}
 		else if (LOGS_RECENT.equals(type)) {
 			List<File> logFiles = getLogFilePaths();
@@ -156,6 +162,18 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 		}
 		else {
 			failUnexpected(context, "Unknown tool type: " + type);
+		}
+	}
+
+	private void downloadThreadDump(UserActionContext context, String threadDump, String fileName) throws IOException {
+		fileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + "-" + fileName + "-" + Environment.getInstance().getWikiConnector().getApplicationName() + ".txt";
+
+		context.setContentType(Action.BINARY);
+		context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+		try (OutputStream out = context.getOutputStream()) {
+			out.write(threadDump.getBytes(StandardCharsets.UTF_8));
+			out.flush();
 		}
 	}
 

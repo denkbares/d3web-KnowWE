@@ -19,10 +19,12 @@
 
 package de.knowwe.core.utils;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -1446,6 +1448,20 @@ public class KnowWEUtils {
 		}
 		catch (Throwable e) {
 			return "Unable to generate thread dump due to exception: " + e.getClass() + ": " + e.getMessage();
+		}
+	}
+
+	public static String getThreadDumpViaJcmd() {
+		try {
+			Process process = new ProcessBuilder("jcmd", Long.toString(ProcessHandle.current().pid()), "Thread.print", "-l")
+					.redirectErrorStream(true)
+					.start();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+				return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+			}
+		}
+		catch (IOException e) {
+			return "Unable to generate thread dump via jcmd: " + e.getClass() + ": " + e.getMessage();
 		}
 	}
 
