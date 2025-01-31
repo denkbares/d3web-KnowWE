@@ -1,14 +1,10 @@
 package org.apache.wiki.structs;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
-import org.apache.wiki.providers.GitVersioningUtils;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.jetbrains.annotations.NotNull;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
@@ -64,21 +60,6 @@ public class WikiPageProxy extends WikiPage {
 		return super.getAuthor();
 	}
 
-	@NotNull
-	public static WikiPage fromCommit(PageIdentifier pageIdentifier, final RevCommit revCommit, Engine engine, Repository repository) {
-		final WikiPage page = new WikiPage(engine, pageIdentifier.pageName());
-		page.setAuthor(revCommit.getCommitterIdent().getName());
-		page.setLastModified(new Date(1000L * revCommit.getCommitTime()));
-		page.setVersion(pageIdentifier.version());
-		try {
-			page.setSize(GitVersioningUtils.getObjectSize(revCommit, pageIdentifier, repository));
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		page.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
-		return page;
-	}
 
 	@NotNull
 	public static WikiPage fromUserData(String pageName, int version, UserData userData, long fileSize, Date commitTime, Engine engine) {

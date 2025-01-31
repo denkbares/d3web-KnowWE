@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.jgit.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +76,7 @@ public class OntologyBridge {
 	 * @param section the section to get the bridged ontology for
 	 * @return the ontology compiler bridged for the given section
 	 */
-	@Nullable
+	@NotNull
 	public static OntologyCompiler getOntology(Section<?> section) {
 		final D3webCompiler compiler = D3webUtils.getCompiler(section);
 		if (compiler == null) return null;

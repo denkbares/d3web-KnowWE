@@ -70,6 +70,8 @@ import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 /**
  * This Git delegate does the actual work on the underlying Git repository, albeit it does not check any file lock
@@ -185,7 +187,38 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		return false;
 	}
 
+	/**
+	 * Might be a life saver, if something was added to gitignore but not untracked via git, then this will prevent any further damages
+	 * @param path
+	 */
+	private void checkToUntrackIgnoredFiles(String path) {
+		//1. check if the path is indeed untracked
+		GitStatusCommandResult status = this.gitConnector.status();
+		if(status instanceof GitStatusResultSuccess result){
+			if(result.getChangedFiles().contains(path)){
+				//we untrack
+				boolean untrackSuccess = this.gitConnector.untrackPath(path);
+				if(untrackSuccess){
+					//this means we will probably have to sneak in a commit!
+
+					//check if the file (and only the file) is in staging and marked as delete
+					status = this.gitConnector.status();
+					if(status instanceof GitStatusResultSuccess innerResult){
+						if(innerResult.getRemovedFiles().contains(path) && innerResult.getAffectedFiles().size()==1){
+							this.gitConnector.commitForUser(new UserData("admin","admin@denkbares.com","Untrack: " + path));
+							LOGGER.info("Untracked already ignored file: " +path);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private void putPageTextGit(Page page, boolean addFile, File changedFile) throws ProviderException {
+		if(this.gitConnector.isIgnored(changedFile.getName())){
+			//there is no point in adding this via git, this is most likely the result of an addition to the .gitignore without a subsequent untracking
+			checkToUntrackIgnoredFiles(changedFile.getPath());
+		}
 		File file = super.findPage(page.getName());
 		page.setSize(file.length());
 
@@ -398,6 +431,8 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		if (!delete) {
 			LOGGER.warn("Failed to delete page (on filesystem): " + page.getName());
 		}
+
+		//TODO what happens with ignored files
 
 		String comment = gitCommentStrategy.getComment(page, "removed page");
 		String commitHash = this.gitConnector.deletePath(file.getName(), getUserData(page.getAuthor(), comment), false);
