@@ -333,6 +333,11 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String currentHEADOfBranch(String branchName) {
+		return this.delegate.currentHEADOfBranch(branchName);
+	}
+
+	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
 		return this.delegate.commitsBetween(commitHashFrom, commitHashTo);
 	}

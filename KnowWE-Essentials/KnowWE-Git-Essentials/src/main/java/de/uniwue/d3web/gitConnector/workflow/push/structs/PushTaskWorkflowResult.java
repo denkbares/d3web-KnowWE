@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.workflow.GitWorkflowResult;
 import de.uniwue.d3web.gitConnector.workflow.result.DefaultGitWorkflowResultStage;
-import de.uniwue.d3web.gitConnector.workflow.result.GitWorkflowResult2;
 
 public class PushTaskWorkflowResult implements GitWorkflowResult {
 

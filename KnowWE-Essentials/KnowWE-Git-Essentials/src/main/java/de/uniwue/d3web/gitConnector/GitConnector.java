@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jgit.api.MergeResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,6 @@ import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 public interface GitConnector {
 	Logger LOGGER = LoggerFactory.getLogger(GitConnector.class);
@@ -195,6 +193,12 @@ public interface GitConnector {
 	 * @return
 	 */
 	String currentHEAD();
+
+	/**
+	 * Return the current head of the specified branch
+	 * @return
+	 */
+	String currentHEADOfBranch(String branchName);
 
 	/**
 	 * Obtain all commithashes between the provided commitHashFrom and commitHashTo. The list is sorted in the way git stores these commits.

@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeResultSuccess;
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeResultUnknownResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandSuccess;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
@@ -19,9 +23,14 @@ import de.uniwue.d3web.gitConnector.workflow.push.structs.PushTaskWorkflowResult
 
 /**
  * Gets triggered when a task is to be committed
+ * <p>
+ * Still cannot commit if dependencies between tasks are present AND if individual commits contain ignored files (this
+ * sucks)
+ * TODO: still doesnt feature that it can a) ignore complete commits that only comprise ignored files and b) can undtrack ignored commits
  */
 public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(PushTaskWorkflow.class);
 	private final GitConnector gitConnector;
 	//access for a remote git!
 	private final String username;
@@ -80,6 +89,7 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 		//and finally we push to origin
 		PushCommandResult pushCommandResult = gitConnector.pushToOrigin(this.username, this.passwordOrToken);
 		if (pushCommandResult instanceof PushCommandSuccess) {
+			this.gitWorkflowResult.addPushResults("Push to origin was successful!", true);
 			//just reset to working branch but we are done!
 			resetToWorkingBranch(workingBranch, "master");
 		}
@@ -91,20 +101,23 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 			resetToWorkingBranch(workingBranch, "master");
 		}
 
-		//TODO semaphores => handled in workcontext git tool i think, which is still rather bad!
-
+		LOGGER.info(gitWorkflowResult.printWorkflowResult());
 		return gitWorkflowResult;
 	}
 
 	private GitMergeCommandResult mergeToMaster(String branchName) {
+		//TODO we can yet again check for ignored files that have been auto generated in the meanwhile and get rid of them
 		boolean success = gitConnector.switchToBranch("master", false);
 		//TODO error handling here is pretty bad still
 		if (!success) {
 			this.gitWorkflowResult.addMergeResults("Unable to switch to master, reason currently unknown ", false);
 		}
 
+
 		GitMergeCommandResult mergeResult = null;
 		if (success) {
+			//verify that master is clean so that a merge is actually a feasible option
+			//get rid of any ignored files TODO
 			mergeResult = gitConnector.mergeBranchToCurrentBranch(branchName);
 		}
 
@@ -197,13 +210,39 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 	/**
 	 * Examining a commit is not an easy task! We check for all files and see if our master branch has all necessary
 	 * commits so that this commit can indeed get cherry-picked without risk (it might work otherwise but this would be
-	 * risky!)
+	 * risky!). This method does also adjust the commits in our task, aka it has some built-in smartness in order to repair "broken" tasks.
+	 *
+	 * 1) It drops, commits that are empty or only contain ignored files
+	 * 2) It checks if locked files have commits in git that are not in our task, this might happen due to a manifold of ways, e.g. due to command line intervention.
+	 * 	  We can repair such cases always if the missing commits are not part of another task (this would be very very bad and has to be repaired manually anyway)
 	 *
 	 * @param commit a commit hash for the underlying git repository
 	 */
 	private void examineCommitForCherryPickReadiness(String commit) {
 		//for every file in the commit (usually its 1 file!)
 		List<String> changedFiles = gitConnector.listChangedFilesForHash(commit);
+
+		//there are some checks we can perform before we even attempt any cherry-pick checks
+
+		//1. are all files of this commit ignore (that means we dont want this commit among our commits)
+		//2. if there are no changed files, we dont cherry-pick empty commits as well
+		boolean allIgnored = changedFiles.stream().allMatch(file -> gitConnector.isIgnored(file));
+		if(allIgnored || changedFiles.isEmpty()){
+			//remove the commit and we are done
+			this.task.commits.remove(commit);
+			return;
+		}
+
+		//3. if some files are ignored (but not all) we are in a very bad state...
+		if(changedFiles.stream().anyMatch(file -> gitConnector.isIgnored(file))){
+			for(String path : changedFiles){
+				if(gitConnector.isIgnored(path)){
+					this.gitWorkflowResult.addCherryPickReadinessResults("The commit: "+commit + " contains the file: " + path + " but this file is ignored, so there is no way we can reliably assert that a cherry pick will work! Ending up in this state means it went wrong somewhere else!", false);
+				}
+			}
+		}
+
+
 		for (String changedFile : changedFiles) {
 			//get the commits of that file in master
 			List<String> masterCommitsForFile = gitConnector.commitHashesForFileInBranch(changedFile, "master");

@@ -73,6 +73,11 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String currentHEADOfBranch(String branchName) {
+		return this.bareGitConnector.currentHEADOfBranch(branchName);
+	}
+
+	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
 		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitsBetween(commitHashFrom, commitHashTo);

@@ -138,6 +138,21 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String currentHEADOfBranch(String branchName) {
+		try {
+			ObjectId resolve = repository.resolve("refs/heads/" + branchName);
+
+			if (resolve != null) {
+				return resolve.getName();
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return null;
+	}
+
+	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
 		throw new NotImplementedException("TODO");
 	}
@@ -235,13 +250,12 @@ public class JGitConnector implements GitConnector {
 		}
 		//TODO pretty inconsice
 		catch (GitAPIException e) {
-			if(e.getMessage().contains("UnresolvedAddressException")){
+			if (e.getMessage().contains("UnresolvedAddressException")) {
 				return new PushCommandUnresolvedAddress(e.getMessage());
 			}
 			return new PushCommandUnknownResult();
 		}
 		return new PushCommandSuccess();
-
 	}
 
 	@Override
