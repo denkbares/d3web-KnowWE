@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wiki.WikiContext;
+import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Context;
 import org.apache.wiki.api.core.Engine;
@@ -86,6 +87,7 @@ import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.ArticleDeletedEvent;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.AttachmentDeletedEvent;
@@ -199,6 +201,13 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			Environment.initInstance(new JSPWikiConnector(getEngine()));
 			// MultiSearchEngine.getInstance().addProvider(
 			// new JSPWikiSearchConnector());
+		}
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		if (wikiConnector instanceof JSPWikiConnector jspWikiConnector) {
+			Engine engine = jspWikiConnector.getEngine();
+			if (engine instanceof WikiEngine wikiEngine) {
+				wikiEngine.updateTemplateDir();
+			}
 		}
 	}
 
@@ -380,7 +389,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				if (Strings.isBlank(commitMessage) || !commitMessage.matches(".+\\w+$")) {
 					runningSince = "\n" + runningSince;
 				}
-				else  {
+				else {
 					runningSince = ". " + runningSince;
 				}
 				compileWarning.children(
