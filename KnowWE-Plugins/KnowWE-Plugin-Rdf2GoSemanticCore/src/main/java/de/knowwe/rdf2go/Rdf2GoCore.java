@@ -129,6 +129,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private final SparqlCache sparqlCache = new SparqlCache(this);
 
+	private final ThreadPoolExecutor sparqlThreadPool;
 	private final ThreadPoolExecutor threadPool;
 
 	private final RepositoryConfig ruleSet;
@@ -205,8 +206,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		final long coreId = Rdf2GoCore.coreId.incrementAndGet();
 		String coreNameAndId = coreName.replaceAll("\\s+", "-") + "-" + coreId;
 		this.name = applicationName + "-" + coreNameAndId;
-		this.threadPool = createThreadPool(
+		this.sparqlThreadPool = createThreadPool(
 				getMaxSparqlThreadCount(reasoning), coreNameAndId + "-Rdf2Go-Thread", true);
+		this.threadPool = createThreadPool(
+				Runtime.getRuntime().availableProcessors(), coreNameAndId + "-Rdf2Go-IO-Thread", true);
 
 		RepositoryConfig finalReasoning = reasoning;
 		try {
@@ -1382,9 +1385,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			try {
 				SparqlCallable callable = newSparqlCallable(query, type, Long.MAX_VALUE, true, preparedAsk, preparedSelect, bindings);
 				AtomicReference<Object> result = new AtomicReference<>();
-				runInThread(() -> {
-					result.set(callable.call());
-				});
+				runInThread(() -> result.set(callable.call()), sparqlThreadPool);
 				if (stopwatch.getTime() > 10) {
 					String usedQuery = query == null
 							? preparedSelect == null
@@ -1424,7 +1425,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, true, preparedAsk, preparedSelect, bindings);
 					sparqlTask = new SparqlTask(callable, options.priority);
 					this.sparqlCache.put(query, sparqlTask);
-					threadPool.execute(sparqlTask);
+					sparqlThreadPool.execute(sparqlTask);
 				}
 			}
 		}
@@ -1432,11 +1433,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			// otherwise execute sparql query with no caches
 			SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, false, preparedAsk, preparedSelect, bindings);
 			sparqlTask = new SparqlTask(callable, options.priority);
-			final int currentQueueSize = threadPool.getQueue().size();
+			final int currentQueueSize = sparqlThreadPool.getQueue().size();
 			if (currentQueueSize > 5) {
 				LOGGER.info("Queuing new SPARQL query (" + name + "), current queue length: " + currentQueueSize);
 			}
-			threadPool.execute(sparqlTask);
+			sparqlThreadPool.execute(sparqlTask);
 		}
 		String timeOutMessage = "SPARQL query timed out or was cancelled after ";
 		try {
@@ -1694,6 +1695,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 				this.semanticCore.close();
 				this.threadPool.shutdownNow();
+				this.sparqlThreadPool.shutdownNow();
 			}
 			finally {
 				coreUsageLock.writeLock().unlock();
@@ -1707,6 +1709,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					this.isShutdown = true;
 					EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 					this.threadPool.shutdown();
+					this.sparqlThreadPool.shutdown();
 					this.statementCache.clear(); // free memory even if there are still references
 
 					this.semanticCore.release();
@@ -1745,8 +1748,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	private void runInThread(Runnable runnable) {
+		runInThread(runnable, threadPool);
+	}
+
+	private static void runInThread(Runnable runnable, ThreadPoolExecutor threadPoolExecutor) {
 		PriorityTask future = new PriorityTask(runnable, 0);
-		threadPool.execute(future);
+		threadPoolExecutor.execute(future);
 		try {
 			future.get();
 		}
