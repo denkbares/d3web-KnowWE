@@ -932,7 +932,7 @@
 })(jQuery);
 
 jQuery.fn.insertAt = function(index, element) {
-  const lastIndex = this.children().size();
+  const lastIndex = this.children().length;
   if (index < 0) {
     index = Math.max(0, lastIndex + 1 + index)
   }
