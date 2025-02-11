@@ -573,7 +573,7 @@
 
 		var storageString = simpleStorage.get("TreeTablePersistence-"+options.article);
 		if (storageString != null)
-			persistStore = $.parseJSON(storageString);
+			persistStore = JSON.parse(storageString);
 
 		if (persistStore == null) {
 			persistStore = {

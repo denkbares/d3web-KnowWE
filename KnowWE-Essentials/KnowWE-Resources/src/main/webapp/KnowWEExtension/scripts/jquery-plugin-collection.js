@@ -183,7 +183,7 @@
         type: 'post',
         cache: false,
         data: data
-      }).success(function(data, status, jqXHR) {
+      }).done(function(data, status, jqXHR) {
         if (!data || (data.trim && data.trim() === "")) {
           if (showGlobalProcessingState()) {
             KNOWWE.core.util.updateProcessingState(-1);

@@ -410,7 +410,7 @@ const _CI = KNOWWE.plugin.ci4ke;
  * ci-deamon is rendered in the page (happens if someone opens a page with a
  * dashboard where currently a build is running).
  */
-jq$(window).ready(function() {
+jq$(function() {
 
   // trigger dashboard progress update
   jq$(".ci-header").find(".ci-state").each(function() {

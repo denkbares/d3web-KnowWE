@@ -355,7 +355,7 @@ DenkbaresSkin.addFavoriteToggle = function() {
 };
 
 
-jq$(document).ready(function() {
+jq$(function() {
 	DenkbaresSkin.addFavoriteToggle();
 	DenkbaresSkin.cleanTrail();
 	//DenkbaresSkin.initPageScroll();

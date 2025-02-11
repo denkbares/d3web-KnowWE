@@ -295,7 +295,7 @@ KNOWWE.plugin.instantEdit = function() {
  */
 var _IE = KNOWWE.plugin.instantEdit;
 
-jq$(document).ready(function() {
+jq$(function() {
   _EC.executeIfPrivileged(_IE.enableDefaultEditTool, _IE.disableDefaultEditTool);
 });
 

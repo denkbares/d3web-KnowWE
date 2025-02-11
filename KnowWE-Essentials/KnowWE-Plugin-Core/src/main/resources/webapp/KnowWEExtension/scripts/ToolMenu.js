@@ -281,7 +281,7 @@ ToolMenu.prototype.adjustSingletonMenus = function($parent) {
 
 const _TM = new ToolMenu();
 
-jq$(window).ready(function() {
+jq$(function() {
   _TM.animateDefaultMarkupMenu();
   _TM.decorateToolMenus();
 });

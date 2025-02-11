@@ -344,7 +344,7 @@ KNOWWE.plugin.quicki = function() {
         cache: false,
         async: false, // wait for the result to avoid popup-flickering
         data: {"SectionID": sectionId(event), "ObjectID": qid}
-      }).success(function(response) {
+      }).done(function(response) {
         console.info("QuickInterviewGetChoiceAvailability: ", response);
         if (!response) return;
         for (let option of select.options) {
@@ -858,7 +858,7 @@ KNOWWE.plugin.quicki = function() {
  */
 (function init() {
   if (KNOWWE.helper.loadCheck(["Wiki.jsp"])) {
-    jq$(window).ready(function() {
+    jq$(function() {
       KNOWWE.plugin.quicki.initialize();
       KNOWWE.helper.observer.subscribe("update", function() {
         var quickiId = null;

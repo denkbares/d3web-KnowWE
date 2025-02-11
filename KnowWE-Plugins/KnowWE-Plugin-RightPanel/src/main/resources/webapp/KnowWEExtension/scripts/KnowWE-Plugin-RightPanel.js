@@ -557,7 +557,7 @@ KNOWWE.core.plugin.rightPanel.custom = function () {
 			async: true,
 			data: {},
 			type: 'post'
-		}).success(function (r) {
+		}).done(function (r) {
 			customContent.append(r);
 			jq$(document).trigger("rightPanelReady");
 		}).error(
@@ -622,7 +622,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function updateWatches() {
-		getExpressionValue(watchesArray).success(function (data) {
+		getExpressionValue(watchesArray).done(function (data) {
 			updateOldWatchesList(data);
 		});
 
@@ -769,7 +769,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 					url: 'action/CompletionAction',
 					cache: false,
 					data: data
-				}).success(function (data) {
+				}).done(function (data) {
 					callback(eval(data));
 				});
 			});
@@ -915,7 +915,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		}
 		updateCookies();
 
-		getExpressionValue(watchesArray).success(function (data) {
+		getExpressionValue(watchesArray).done(function (data) {
 			updateOldWatchesList(data);
 		});
 	}
@@ -955,7 +955,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	function loadWatchesFromCookies() {
 		watchesArray = simpleStorage.get(watchesStorageKey);
 		if (typeof watchesArray != 'undefined') {
-			getExpressionValue(watchesArray).success(function (data) {
+			getExpressionValue(watchesArray).done(function (data) {
 				const expressionArrays = data.values;
 				jq$.each(expressionArrays, function (index, value) {
 					const newEntry = createNewEntry(watchesArray[index], value);

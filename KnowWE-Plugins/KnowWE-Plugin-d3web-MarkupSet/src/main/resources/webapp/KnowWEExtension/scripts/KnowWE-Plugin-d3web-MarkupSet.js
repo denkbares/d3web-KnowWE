@@ -3,7 +3,7 @@ KNOWWE.plugin = KNOWWE.plugin || {}
 KNOWWE.plugin.abstractionTable = {}
 KNOWWE.plugin.propertyTable = {}
 
-jq$(document).ready(function () {
+jq$(function () {
 	// used to highlight CompositeCondition borders when hovering, see MarkupSet
 	jq$('.CompositeCondition, .BracedCondition').mouseover(function (e) {
 		e.stopPropagation();

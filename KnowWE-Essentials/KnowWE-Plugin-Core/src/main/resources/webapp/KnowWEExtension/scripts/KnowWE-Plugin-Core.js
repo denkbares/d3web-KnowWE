@@ -566,13 +566,18 @@ KNOWWE.tooltips.enrich = function(element) {
             if (_EC.isBlank(html)) {
               html = "No tooltip available";
             }
-            try {
-              const obj = jq$.parseJSON(json);
-              if (jq$.isArray(obj)) html = obj[0];
-              else if (obj.html) {
-                html = obj.html;
+            if (jq$.isPlainObject(json)) {
+              html = json.html;
+            } else {
+              try {
+                const obj = JSON.parse(json);
+                if (jq$.isArray(obj)) html = obj[0];
+                else if (obj.html) {
+                  html = obj.html;
+                }
+              } catch (ignore) {
+                console.log("Invalid JSON when fetching tooltip: " + json)
               }
-            } catch (ignore) {
             }
             origin.tooltipster("update", html).tooltipster("reposition");
           },
@@ -714,16 +719,13 @@ KNOWWE.core.plugin.recompile = function() {
           if (event.ctrlKey && event.altKey && event.shiftKey && (event.key === "R" || event.key === "¸")) {
             command = "full";
             KNOWWE.notification.success("Full recompile", "Performing full recompilation of the current page and all compilers.");
-          }
-          else if (event.ctrlKey && event.altKey && (event.key === "r" || event.key === "®")) {
+          } else if (event.ctrlKey && event.altKey && (event.key === "r" || event.key === "®")) {
             command = "single";
             KNOWWE.notification.success("Recompile", "Recompiling the current page.");
-          }
-          else if (event.ctrlKey && event.metaKey && event.key === "r" || event.ctrlKey && event.altKey && event.keyCode === 52) {
+          } else if (event.ctrlKey && event.metaKey && event.key === "r" || event.ctrlKey && event.altKey && event.keyCode === 52) {
             command = "variant";
             KNOWWE.notification.success("Variant recompile", "Recompiling the current page and currently selected variant.");
-          }
-          else {
+          } else {
             return;
           }
 
@@ -736,7 +738,7 @@ KNOWWE.core.plugin.recompile = function() {
               command: command,
               title: KNOWWE.helper.getPagename()
             }
-          }).success(function() {
+          }).always(function() {
             // just refresh, server will wait for compilation to finish before rendering
             window.location.reload();
           });
@@ -940,7 +942,7 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
   KNOWWE.core.plugin.stickyTableHeaders.init();
 });
 
-jq$(document).ready(function() {
+jq$(function() {
   KNOWWE.core.plugin.switchCompiler.init();
   KNOWWE.core.plugin.stickyTableHeaders.init();
   KNOWWE.plugin.listSection.initListSectionFilter();

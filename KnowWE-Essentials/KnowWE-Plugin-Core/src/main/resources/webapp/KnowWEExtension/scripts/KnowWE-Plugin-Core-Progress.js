@@ -275,4 +275,4 @@ KNOWWE.core.plugin.progress = function() {
 
 KNOWWE.helper.observer.subscribe("afterRerender", KNOWWE.core.plugin.progress.updateProgressBars);
 
-jq$(window).ready(KNOWWE.core.plugin.progress.updateProgressBars);
+jq$(KNOWWE.core.plugin.progress.updateProgressBars);

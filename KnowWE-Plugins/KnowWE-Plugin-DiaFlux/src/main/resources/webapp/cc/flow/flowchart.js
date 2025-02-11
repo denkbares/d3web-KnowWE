@@ -572,7 +572,7 @@ if (typeof KNOWWE != "undefined") {
 }
 
 if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-  jq$(document).ready(function(){
+  jq$(function(){
     jq$('.flowchartContainer').each(function() {
       let $container = jq$(this);
       Flowchart.loadFlowchart($container.attr("sectionid"), $container.attr("id"));

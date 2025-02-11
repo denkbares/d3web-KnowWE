@@ -864,7 +864,7 @@ const _KU = KNOWWE.core.util;
           }
         });
       };
-      jq$(document).ready(function() {
+      jq$(function() {
         ieInputCompatibility(jq$(document));
       });
       KNOWWE.helper.observer.subscribe("afterRerender", function() {

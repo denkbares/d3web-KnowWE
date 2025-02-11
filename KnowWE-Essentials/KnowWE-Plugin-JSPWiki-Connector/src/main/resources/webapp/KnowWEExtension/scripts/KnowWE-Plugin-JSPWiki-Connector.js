@@ -113,7 +113,7 @@ KNOWWE.plugin.jspwikiConnector.setPageFilter = function(filterCheckBox, filterTy
   table.rerender({reason: "pagination"});
 };
 
-jq$(document).ready(function() {
+jq$(function() {
   if (KNOWWE.helper.loadCheck(["Wiki.jsp"])) {
     _EC.executeIfPrivileged(KNOWWE.plugin.jspwikiConnector.enableEditButtons, KNOWWE.plugin.jspwikiConnector.disableEditButtons);
   }

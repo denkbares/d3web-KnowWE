@@ -356,7 +356,7 @@ KNOWWE.plugin.compositeEditTool = function() {
           url: "action/CompositeEditCompletionAction",
           cache: false,
           data: data
-        }).success(function(data) {
+        }).done(function(data) {
           callback(eval(data));
         });
       });

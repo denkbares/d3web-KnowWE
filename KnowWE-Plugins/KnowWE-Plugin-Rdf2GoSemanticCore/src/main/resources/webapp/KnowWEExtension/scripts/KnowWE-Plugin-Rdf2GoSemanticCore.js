@@ -18,14 +18,14 @@ KNOWWE.plugin.sparql.retry = function(id) {
 		type : 'post',
 		cache : false,
 		data : {SectionID : id}
-	}).success(function(data) {
+	}).done(function(data) {
 		jq$('#' + id).rerender();
 	});
 };
 
 (function init() {
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-		jq$(window).ready(function() {
+		jq$(function() {
 			var ns = KNOWWE.plugin.semantic;
 			for (var i in ns) {
 				if (ns[i].init) {
@@ -83,7 +83,7 @@ KNOWWE.plugin.sparql.retry = function(id) {
 			})
 		}
 
-		jq$(document).ready(initTreeFunc);
+		jq$(initTreeFunc);
 		KNOWWE.helper.observer.subscribe('afterRerender', initTreeFunc);
 	}
 }());

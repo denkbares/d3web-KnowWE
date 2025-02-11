@@ -11,7 +11,7 @@ KNOWWE.plugin.ontovis.retry = function(id) {
 		type : 'post',
 		cache : false,
 		data : {SectionID : id}
-	}).success(function(data) {
+	}).done(function(data) {
 		jq$('#' + id).rerender();
 	});
 };

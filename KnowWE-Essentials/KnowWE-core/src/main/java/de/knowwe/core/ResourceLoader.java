@@ -169,7 +169,7 @@ public class ResourceLoader {
 		addFirst("react-dom.production.min.js", Type.script);
 		addFirst("react.production.min.js", Type.script);
 		addFirst("jquery-ui.min.js", Type.script);
-		addFirst("jquery-2.1.0.min.js", Type.script);
+		addFirst("jquery-3.7.1.min.js", Type.script);
 	}
 
 	public void replaceResource(String resourceBefore, String resourceAfter, Type type) {

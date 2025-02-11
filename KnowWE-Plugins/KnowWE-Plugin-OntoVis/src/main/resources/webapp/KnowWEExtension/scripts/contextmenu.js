@@ -109,7 +109,7 @@ KNOWWE.plugin.visualization = {
 						location.reload();
 					} else {
 						// find old code block and replace with new one
-						var jsonObject = jq$.parseJSON(this.response);
+						var jsonObject = JSON.parse(this.response);
 						var replaceContent = jsonObject['html'];
 
 						var markupBlockOld = jq$('#' + sectionID);

@@ -253,7 +253,7 @@ DenkbaresSkin.scrollTop = function () {
 	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
-jq$(document).ready(function () {
+jq$(function () {
 	DenkbaresSkin.cleanTrail();
 	DenkbaresSkin.lastPageWidth = jq$(window).width();
 
