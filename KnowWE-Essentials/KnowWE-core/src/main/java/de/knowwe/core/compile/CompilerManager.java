@@ -430,7 +430,7 @@ public class CompilerManager implements EventListener {
 		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid log spam
 			message += "\n####################\n" +
 					   "\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n" +
-					   KnowWEUtils.getThreadDump() +
+					   KnowWEUtils.getThreadDumpViaJcmd() +
 					   "Thread-Dump-End!\n####################";
 			this.lastThreadDumpThrown = this.compilationCount;
 		}

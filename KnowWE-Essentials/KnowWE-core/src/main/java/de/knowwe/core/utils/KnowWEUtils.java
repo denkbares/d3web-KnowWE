@@ -1461,7 +1461,8 @@ public class KnowWEUtils {
 			}
 		}
 		catch (IOException e) {
-			return "Unable to generate thread dump via jcmd: " + e.getClass() + ": " + e.getMessage();
+			LOGGER.warn("Unable to generate thread dump via jcmd: {}: {}", e.getClass(), e.getMessage());
+			return getThreadDump(); // fallback
 		}
 	}
 
