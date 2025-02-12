@@ -233,7 +233,7 @@
 	border: 1px solid var(--border-color-default) !important;
 }
 
-.no-close .ui-dialog-titlebar-close {
+.ui-dialog:has(> #compositeEdit) .ui-dialog-titlebar-close {
 	display: none !important;
 }
 

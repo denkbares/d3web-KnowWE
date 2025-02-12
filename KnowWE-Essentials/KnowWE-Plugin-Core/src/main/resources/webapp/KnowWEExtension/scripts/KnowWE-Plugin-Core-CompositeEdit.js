@@ -722,7 +722,6 @@ KNOWWE.plugin.compositeEditTool = function() {
                 jq$("body").trigger("OpenCompositeEdit");
               },
               closeOnEscape: false,
-              dialogClass: "no-close",
               height: (jq$(window).height() * .9),
               width: jq$(document).width() * .6,
               title: parsed.header,
