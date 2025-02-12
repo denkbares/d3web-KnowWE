@@ -560,7 +560,7 @@ KNOWWE.core.plugin.rightPanel.custom = function () {
 		}).done(function (r) {
 			customContent.append(r);
 			jq$(document).trigger("rightPanelReady");
-		}).error(
+		}).fail(
 			_IE.onErrorBehavior
 		);
 
