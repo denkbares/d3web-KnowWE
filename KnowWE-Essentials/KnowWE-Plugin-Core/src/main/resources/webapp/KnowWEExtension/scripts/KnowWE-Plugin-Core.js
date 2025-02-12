@@ -624,7 +624,7 @@ KNOWWE.kdomtreetable.revealRenderKDOMTable = function(id) {
   const treetable = jq$(".renderKDOMTable.wikitable.treetable").not(".floatThead-table");
   const markedtitle = treetable.find("td[style=\"color: var(--color-blue-highlight);\"]");
   if (typeof markedtitle != "undefined" || markedtitle != null) {
-    for (let i = 0; i < markedtitle.size(); i++) {
+    for (let i = 0; i < markedtitle.length; i++) {
       jq$(markedtitle[i]).removeAttr("style");
     }
   }
