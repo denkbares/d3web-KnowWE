@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -48,6 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.utils.Stopwatch;
+
+import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
 
 import static org.apache.wiki.api.providers.AttachmentProvider.PROP_STORAGEDIR;
 import static org.apache.wiki.providers.AbstractFileProvider.FILE_EXT;
@@ -94,7 +99,6 @@ public class JspGitBridge {
 		this.commitCount = new AtomicLong();
 	}
 
-
 	private String getFilesystemPath() {
 		return filesystemPath;
 	}
@@ -128,7 +132,6 @@ public class JspGitBridge {
 		}
 	}
 
-
 	private Repository initGitRepository(File gitDir, File pageDir, String remoteURL) throws IOException {
 		if (!RepositoryCache.FileKey.isGitRepository(gitDir, FS.DETECTED)) {
 			if (!"".equals(remoteURL)) {
@@ -142,7 +145,6 @@ public class JspGitBridge {
 			return initFromFilesystem(gitDir, true);
 		}
 	}
-
 
 	public static List<RevCommit> reverseToList(Iterable<RevCommit> revCommits) {
 		Stopwatch watch = new Stopwatch();
@@ -196,6 +198,42 @@ public class JspGitBridge {
 		RenameDetector rd = new RenameDetector(repository);
 		rd.addAll(diffs);
 		return rd.compute();
+	}
+
+	public static Set<String> getDiffEntriesJGit(String oldCommitId,String newCommitId,String repopath) {
+		JGitBackedGitConnector gitConnector = JGitBackedGitConnector.fromPath(repopath);
+		List<String> strings = gitConnector.commitsBetween(oldCommitId, newCommitId);
+		List<String> list = strings.stream().flatMap(it -> gitConnector.listChangedFilesForHash(it).stream()).toList();
+		return new HashSet<String>(list);
+	}
+
+	public static void main(String[] args) throws Exception {
+
+		String path = "/Users/mkrug/Konap/Wiki_VM_release";
+
+		Repository repository = new FileRepositoryBuilder()
+				.setGitDir(new File(path, ".git"))
+				.build();
+
+		String oldCommitId = "7e63fc8a18e5dcad488edfefcf5df7021f7e7029";
+		String newCommitId = "abccc1e317aa9cec9acb9db5d468baab8ec031b8";
+
+		getDiffEntriesJGit(oldCommitId, newCommitId, path);
+
+		ObjectId oldCommit = getTreeId(repository,repository.resolve(oldCommitId));
+		ObjectId newCommit = getTreeId(repository,repository.resolve(newCommitId));
+
+		List<DiffEntry> diffEntries = JspGitBridge.getDiffEntries(oldCommit, newCommit, repository);
+
+		System.out.println(diffEntries.size());
+		int a = 2;
+	}
+
+	private static ObjectId getTreeId(Repository repository, ObjectId commitId) throws IOException {
+		try (RevWalk revWalk = new RevWalk(repository)) {
+			RevCommit commit = revWalk.parseCommit(commitId);
+			return commit.getTree().getId(); // Extract the tree object ID
+		}
 	}
 
 	@NotNull
@@ -278,9 +316,9 @@ public class JspGitBridge {
 		//check whether maintencance branch is already existing
 		Git git = new Git(this.repository);
 		try {
-			String defaultBranchName = properties.getProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH,null);
+			String defaultBranchName = properties.getProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH, null);
 			//do nothing if it is not set
-			if(defaultBranchName==null){
+			if (defaultBranchName == null) {
 				return;
 			}
 			List<Ref> branchRefs = git.branchList().call();
@@ -408,9 +446,6 @@ public class JspGitBridge {
 		return this.repository;
 	}
 
-
-
-
 	public void assignAuthor(Page page) {
 
 		try {
@@ -458,8 +493,6 @@ public class JspGitBridge {
 		return null;
 	}
 
-
-
 	public void periodicalGitGC() {
 		final long l = this.commitCount.incrementAndGet();
 		if (l % 2000 == 0) {
@@ -473,7 +506,7 @@ public class JspGitBridge {
 		}
 	}
 
-	private void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
+	private void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive) {
 		LOGGER.info("Start git gc");
 		if (windowsGitHack) {
 			doBinaryGC(repository.getDirectory(), prune);
@@ -489,7 +522,7 @@ public class JspGitBridge {
 			sw.start();
 			LOGGER.info("binary gc start");
 			ProcessBuilder pb = new ProcessBuilder();
-			pb.inheritIO().command("git", "gc", prune?"--prune=now":"").directory(pageDir);
+			pb.inheritIO().command("git", "gc", prune ? "--prune=now" : "").directory(pageDir);
 			Process git_gc = pb.start();
 			git_gc.waitFor(2, TimeUnit.MINUTES);
 			sw.stop();
@@ -511,13 +544,13 @@ public class JspGitBridge {
 			LOGGER.info("Beginn Git gc");
 			GarbageCollectCommand gc = git.gc()
 					.setAggressive(aggressive);
-			if(prune)
+			if (prune) {
 				gc.setExpire(null);
+			}
 			final Properties gcRes = gc.call();
 			for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
 				LOGGER.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
 			}
-
 		}
 		catch (final GitAPIException e) {
 			LOGGER.warn("Git gc not successful: " + e.getMessage());
