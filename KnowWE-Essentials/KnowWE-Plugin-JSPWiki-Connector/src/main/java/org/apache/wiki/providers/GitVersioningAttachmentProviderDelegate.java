@@ -151,8 +151,6 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			return;
 		}
 
-		//TODO adding by default should never hurt
-//		boolean add = !newFile.exists() && !isIgnored;
 
 		copyOnFilesystem(att, data, newFile);
 		boolean isIgnored = this.gitConnector.isIgnored(getPath(att));
