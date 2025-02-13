@@ -158,7 +158,9 @@ public class BareGitConnector implements GitConnector {
 	public String currentBranch() {
 		String currentBranch = RawGitExecutor.executeGitCommand("git branch --show-current", this.repositoryPath);
 		if (currentBranch == null || currentBranch.isEmpty()) {
-			throw new IllegalStateException("Can not access the current branch");
+			LOGGER.warn("Unable to get current branch ...");
+			return null;
+//			throw new IllegalStateException("Can not access the current branch");
 		}
 		return currentBranch.trim();
 	}

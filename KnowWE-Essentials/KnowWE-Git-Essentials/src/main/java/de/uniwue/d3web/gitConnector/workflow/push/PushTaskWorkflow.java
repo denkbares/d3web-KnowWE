@@ -11,7 +11,6 @@ import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeResultSuccess;
-import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeResultUnknownResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandSuccess;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;

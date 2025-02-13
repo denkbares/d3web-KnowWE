@@ -243,7 +243,9 @@ public class JGitConnector implements GitConnector {
 	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
 		PushCommand push = git.push();
 		//check if we have credentials
-		push = push.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken));
+		if (userName != null && passwordOrToken != null) {
+			push = push.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken));
+		}
 
 		try {
 			Iterable<PushResult> origin = push.setRemote("origin").setPushAll().call();
