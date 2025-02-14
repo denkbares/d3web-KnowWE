@@ -17,7 +17,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -28,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.AttachmentType;
+import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.basicType.URLType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -73,7 +73,9 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION);
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->.*"));
-		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->.*"));
+		PlainText regexType = new PlainText();
+		regexType.setRenderer((section, user, result) -> result.appendJSPWikiMarkup(section.getText()));
+		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->.*")).addContentType(regexType);
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setRenderer((section, user, result) -> {
 			result.append(section.getText());
