@@ -63,7 +63,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitsBetween(commitHashFrom, commitHashTo);
 		}
 		return this.jgitConnector.commitsBetween(commitHashFrom, commitHashTo);
@@ -71,7 +71,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public List<String> commitsBetweenForFile(String commitHashFrom, String commitHashTo, String path) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitsBetweenForFile(commitHashFrom, commitHashTo, path);
 		}
 		return this.jgitConnector.commitsBetweenForFile(commitHashFrom, commitHashTo, path);
@@ -84,7 +84,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String commitForUser(UserData userData) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitForUser(userData);
 		}
 		return this.jgitConnector.commitForUser(userData);
@@ -92,9 +92,8 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String commitForUser(UserData userData, long timeStamp) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitForUser(userData, timeStamp);
-
 		}
 		return this.jgitConnector.commitForUser(userData, timeStamp);
 	}
@@ -126,6 +125,45 @@ public class JGitBackedGitConnector implements GitConnector {
 			return this.bareGitConnector.switchToBranch(branch, createBranch);
 		}
 		return this.jgitConnector.switchToBranch(branch, createBranch);
+	}
+
+	@Override
+	public boolean switchToTag(String tagName) {
+		return this.bareGitConnector.switchToTag(tagName);
+	}
+
+	@Override
+	public boolean pushAll() {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.pushAll();
+		}
+		return this.jgitConnector.pushAll();
+	}
+
+	@Override
+	public boolean pushBranch(String branch) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.pushBranch(branch);
+		}
+		return this.jgitConnector.pushBranch(branch);
+	}
+
+	@Override
+	public boolean pullCurrent(boolean rebase) {
+		return this.jgitConnector.pullCurrent(rebase);
+	}
+
+	@Override
+	public String repoName() {
+		return this.jgitConnector.repoName();
+	}
+
+	@Override
+	public boolean setUpstreamBranch(String branch) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.setUpstreamBranch(branch);
+		}
+		return this.jgitConnector.setUpstreamBranch( branch);
 	}
 
 	@Override
@@ -268,12 +306,12 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String deletePath(String pathToDelete, UserData userData, boolean cached) {
-		return this.jgitConnector.deletePath(pathToDelete, userData,cached);
+		return this.jgitConnector.deletePath(pathToDelete, userData, cached);
 	}
 
 	@Override
 	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.deletePaths(pathsToDelete, userData, cached);
 		}
 		return this.jgitConnector.deletePaths(pathsToDelete, userData, cached);
@@ -286,7 +324,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public void addPath(String path) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			this.bareGitConnector.addPath(path);
 			return;
 		}
@@ -295,7 +333,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public void addPaths(List<String> path) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			this.bareGitConnector.addPaths(path);
 			return;
 		}

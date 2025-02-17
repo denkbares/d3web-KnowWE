@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
@@ -23,11 +24,23 @@ import org.eclipse.jgit.api.CleanCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.PullCommand;
+import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.RebaseCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.RefNotAdvertisedException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.errors.StopWalkException;
 import org.eclipse.jgit.ignore.IgnoreNode;
@@ -35,8 +48,11 @@ import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
+import org.eclipse.jgit.merge.ContentMergeStrategy;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
@@ -52,6 +68,7 @@ import de.uniwue.d3web.gitConnector.UserData;
 
 public class JGitConnector implements GitConnector {
 
+	public static final String REFS_HEADS = "refs/heads/";
 	private final Repository repository;
 	private final Git git;
 	private IgnoreNode ignoreNode;
@@ -161,7 +178,21 @@ public class JGitConnector implements GitConnector {
 
 	@Override
 	public List<String> listBranches() {
-		throw new NotImplementedException("TODO");
+		ListBranchCommand listBranchCommand = git.branchList();
+		try {
+			List<Ref> refs = listBranchCommand.call();
+			refs.stream().forEach(ref -> {
+				if(!ref.getName().startsWith(REFS_HEADS)) {
+					throw new IllegalStateException("Unexpected ref name: " +ref.getName());
+				}
+			});
+			return refs.stream().map(ref -> ref.getName().substring(REFS_HEADS.length())).toList();
+		}
+		catch (GitAPIException e) {
+			LOGGER.error("jgit API exception", e);
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	@Override
@@ -171,6 +202,95 @@ public class JGitConnector implements GitConnector {
 
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
+		boolean existsAlready = this.listBranches().contains(branch);
+		try {
+			if (existsAlready) {
+				CheckoutCommand checkoutCommand = git.checkout()
+						.setName(REFS_HEADS + branch);
+				Ref ref = checkoutCommand.call();
+				return ref.getName().equals(branch);
+			}
+			else {
+				if (createBranch) {
+					// Erstelle einen neuen Branch
+
+					git.branchCreate().setName(branch).call();
+					// Wechsle zu dem neuen Branch
+					git.checkout().setName(branch).call();
+					return true;
+				}
+				else {
+					// does not exist and we may not create it
+					return false;
+				}
+			}
+		} catch (GitAPIException e) {
+			LOGGER.error("jgit API exception (Maybe the repo is still empty -> some file required!", e);
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	@Override
+	public boolean switchToTag(String tagName) {
+		return switchToBranch(tagName, false);
+	}
+
+	@Override
+	public boolean pushAll() {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean pushBranch(String branch) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean pullCurrent(boolean rebase) {
+		PullCommand pull = git.pull()
+				.setRemote("origin")
+				.setRemoteBranchName(currentBranch())
+				.setStrategy(MergeStrategy.RESOLVE)
+				.setRebase(true);
+		PullResult pullResult = null;
+		try {
+			pullResult = pull.call();
+		}
+		catch (JGitInternalException ie) {
+			LOGGER.error("internal jgit error", ie);
+			try {
+				switch (repository.getRepositoryState()) {
+					case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
+							.setOperation(RebaseCommand.Operation.ABORT)
+							.call();
+				}
+				pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
+			}
+			catch (Exception e) {
+				LOGGER.error("internal jgit error", ie);
+			}
+		}
+		catch (GitAPIException e) {
+			LOGGER.error("jgit API exception", e);
+			throw new RuntimeException(e);
+		}
+		return pullResult != null && pullResult.isSuccessful();
+	}
+
+	@Override
+	public String repoName() {
+		Set<String> remoteNames = this.repository.getRemoteNames();
+		if (remoteNames.size() == 1) {
+			return remoteNames.iterator().next();
+		}
+		else {
+			throw new NotImplementedException("There are multiple remote names!");
+		}
+	}
+
+	@Override
+	public boolean setUpstreamBranch(String branch) {
 		throw new NotImplementedException("TODO");
 	}
 

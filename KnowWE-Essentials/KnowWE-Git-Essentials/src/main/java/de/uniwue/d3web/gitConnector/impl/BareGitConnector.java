@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -28,11 +29,13 @@ import com.denkbares.strings.Strings;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 
-public class BareGitConnector implements GitConnector {
+public final class BareGitConnector implements GitConnector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BareGitConnector.class);
+
 	public final String repositoryPath;
 	public final boolean isGitInstalled;
+
 
 	private BareGitConnector(String repositoryPath) {
 		this.repositoryPath = repositoryPath;
@@ -265,7 +268,7 @@ public class BareGitConnector implements GitConnector {
 		String sinceDate = dateFormat.format(timeStamp);
 
 		String[] command = { "git", "log", "--format=%H", "--since=" + sinceDate };
-		String response = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
+		String response = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath), StandardCharsets.UTF_8);
 
 		List<String> commitHashes = new ArrayList<>();
 
@@ -280,8 +283,9 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public boolean isClean() {
-		//TODO
-		return false;
+		String[] command = { "git", "status"};
+		String response = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath), StandardCharsets.UTF_8);
+		return !response.contains("Changes");
 	}
 
 	@Override
@@ -363,7 +367,12 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public String commitPathsForUser(String message, String author, String email, Set<String> paths) {
-		throw new NotImplementedException("So far not implemented - use the JGit version");
+		if(Strings.isBlank(message)) {
+			// empty messages do not work in git -> commit command is ignored with -m but empty message string
+			message = NO_COMMENT;
+		}
+		String[] commitCommand = new String[] { "git", "commit", Strings.concat(" ", paths), "-m", message };
+		return RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
 	}
 
 	@Override
@@ -470,6 +479,7 @@ public class BareGitConnector implements GitConnector {
 		}
 		String[] gitCommand = { "git", "branch" };
 		String branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+		if(Strings.isBlank(branchResult)) return Collections.emptyList();
 
 		List<String> branches = new ArrayList<>();
 		for (String branch : branchResult.split("\n")) {
@@ -503,18 +513,68 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
+		List<String> branches = listBranches();
+		boolean existing = false;
+		if(branches.contains(branch)) {
+			existing = true;
+		}
 		String[] command = null;
-		if (createBranch) {
-			command = new String[] { "git", "checkout", "-b", branch };
-		}
-		else {
+		if(existing) {
 			command = new String[] { "git", "checkout", branch };
+		} else {
+			if (createBranch) {
+				command = new String[] { "git", "checkout", "-b", branch };
+			} else {
+				// damn: no branch and we may not create it :(
+				return false;
+			}
 		}
+
 		String logOutput = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 
 		String currentBranch = currentBranch();
 
 		return currentBranch.equals(branch);
+	}
+
+	@Override
+	public boolean switchToTag(String tagName) {
+		return switchToBranch(tagName, false);
+	}
+
+	@Override
+	public boolean pushAll() {
+		String[] commitCommand = new String[] { "git", "push"};
+		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		// todo: why do we not get any feedback here?
+		return true;
+	}
+
+
+	@Override
+	public boolean pushBranch(String branch) {
+		String[] commitCommand = new String[] { "git", "push", "origin", branch};
+		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		// todo: why do we not get any feedback here?
+		return true;
+	}
+
+	@Override
+	public boolean pullCurrent(boolean rebase) {
+		throw new NotImplementedException("Not implemented yet.");
+	}
+
+	@Override
+	public String repoName() {
+		throw new NotImplementedException("Not implemented yet.");
+	}
+
+	@Override
+	public boolean setUpstreamBranch(String branch) {
+		//git branch --set-upstream-to=origin/main
+		String[] commitCommand = new String[] { "git", "branch", "--set-upstream-to=origin/"+branch};
+		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		return result.contains("set up to track");
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {

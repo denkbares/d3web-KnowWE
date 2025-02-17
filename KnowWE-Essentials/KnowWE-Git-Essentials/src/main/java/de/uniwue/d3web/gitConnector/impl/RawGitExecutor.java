@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,25 @@ public class RawGitExecutor {
 	}
 	public static String executeGitCommand(String[] command, String repositoryPath) {
 		return executeGitCommandWithEnvironment(command, repositoryPath, Collections.emptyMap());
+	}
+
+	public static void initGitAndSetOriginRepo(String wikiPath, String remoteOriginRelativeFolder) {
+		executeGitCommand("git init", wikiPath);
+		executeGitCommand("git remote add origin ../"+remoteOriginRelativeFolder, wikiPath);
+	}
+
+	public static @NotNull String clearAndMakeWikiPath(String wikiPath) {
+		File wikiDirA = new File(wikiPath);
+		//noinspection ResultOfMethodCallIgnored
+		try {
+			FileUtils.deleteDirectory(wikiDirA);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		assert(!wikiDirA.exists());
+		wikiDirA.mkdirs();
+		return wikiPath;
 	}
 
 	public static String executeGitCommand(String command, String repositoryPath) {

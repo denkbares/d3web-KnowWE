@@ -8,9 +8,14 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * Allows to perform actions on the git repository.
+ */
 public interface GitConnector {
 	Logger LOGGER = LoggerFactory.getLogger(GitConnector.class);
+
+	String DEFAULT_BRANCH = "main";
+	String NO_COMMENT = "<no comment>";
 
 	/**
 	 * For a specified path (relative to the repository), returns a list of all long commithashes. The first entry of the returning list is the oldest version and the last entry is the latest version
@@ -81,7 +86,7 @@ public interface GitConnector {
 	boolean versionExists(String path, int version);
 
 	/**
-	 * Obtain the userdata for a given commithash
+	 * Obtain the userdata for a given commit-hash
 	 * @param commitHash
 	 * @return
 	 */
@@ -246,4 +251,50 @@ public interface GitConnector {
 	 * @return
 	 */
 	boolean switchToBranch(String branch, boolean createBranch);
+
+	/**
+	 * Switches on the current branch to the specified tag (if existing)
+	 *
+	 * @param tagName tag to be switched
+	 * @return
+	 */
+	boolean switchToTag(String tagName);
+
+	/**
+	 * Pushes all commit to origin.
+	 *
+	 * @return true if push was successful
+	 */
+	boolean pushAll();
+
+	/**
+	 * Pushes the given branch to origin.
+	 *
+	 * @param branch the branch to be pushed
+	 * @return true if push was successful
+	 */
+	boolean pushBranch(String branch);
+
+	/**
+	 * Pulls with rebase mode if specified
+	 *
+	 * @param rebase rebase mode
+	 * @return true if successful
+	 */
+	boolean pullCurrent(boolean rebase);
+
+	/**
+	 * returns the name of the repository.
+	 *
+	 * @return repo name
+	 */
+	String repoName();
+
+	/**
+	 * Sets the upstream branch for the current branch
+	 *
+	 * @param branch branch on origin that the current branch is connected to
+	 * @return true if successful
+	 */
+	boolean setUpstreamBranch(String branch);
 }

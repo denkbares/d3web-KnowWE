@@ -363,4 +363,34 @@ public class CachingGitConnector implements GitConnector {
 	public boolean switchToBranch(String branch, boolean createBranch) {
 		return this.delegate.switchToBranch(branch, createBranch);
 	}
+
+	@Override
+	public boolean switchToTag(String tagName) {
+		return this.delegate.switchToTag(tagName);
+	}
+
+	@Override
+	public boolean pushAll() {
+		return this.delegate.pushAll();
+	}
+
+	@Override
+	public boolean pushBranch(String branch) {
+		return this.delegate.pushBranch(branch);
+	}
+
+	@Override
+	public boolean pullCurrent(boolean rebase) {
+		return this.delegate.pullCurrent(rebase);
+	}
+
+	@Override
+	public String repoName() {
+		return this.delegate.repoName();
+	}
+
+	@Override
+	public boolean setUpstreamBranch(String branch) {
+		return delegate.setUpstreamBranch(branch);
+	}
 }
