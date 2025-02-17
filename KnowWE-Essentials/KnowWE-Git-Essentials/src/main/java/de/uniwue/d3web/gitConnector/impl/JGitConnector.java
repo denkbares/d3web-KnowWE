@@ -341,6 +341,12 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean gitInstalledAndReady() {
+		// should always be able to run
+		return true;
+	}
+
+	@Override
 	public void destroy() {
 		org.eclipse.jgit.nls.NLS.clear();
 	}

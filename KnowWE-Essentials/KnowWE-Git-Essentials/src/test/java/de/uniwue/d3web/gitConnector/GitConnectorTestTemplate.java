@@ -21,7 +21,7 @@ import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
 
 import static de.uniwue.d3web.gitConnector.impl.RawGitExecutor.clearAndMakeWikiPath;
 import static de.uniwue.d3web.gitConnector.impl.RawGitExecutor.initGitAndSetOriginRepo;
-
+import static org.junit.Assume.assumeTrue;
 
 public class GitConnectorTestTemplate {
 
@@ -48,6 +48,8 @@ public class GitConnectorTestTemplate {
 
 
 	public void setUp() throws IOException {
+
+		assumeTrue(gitConnector.gitInstalledAndReady()) ;
 
 		String wikiPathA = clearAndMakeWikiPath(WIKI_PATH);
 		String originPath = clearAndMakeWikiPath(TARGET_ORIGIN_Repo);

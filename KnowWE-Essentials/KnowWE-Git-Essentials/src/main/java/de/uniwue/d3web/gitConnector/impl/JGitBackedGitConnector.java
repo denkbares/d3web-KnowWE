@@ -183,6 +183,11 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean gitInstalledAndReady() {
+		return bareGitConnector.gitInstalledAndReady() && jgitConnector.gitInstalledAndReady();
+	}
+
+	@Override
 	public void destroy() {
 		this.bareGitConnector.destroy();
 		this.jgitConnector.destroy();

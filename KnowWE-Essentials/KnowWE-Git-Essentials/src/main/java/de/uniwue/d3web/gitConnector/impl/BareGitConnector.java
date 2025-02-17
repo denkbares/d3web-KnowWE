@@ -35,7 +35,8 @@ public final class BareGitConnector implements GitConnector {
 
 	public final String repositoryPath;
 	public final boolean isGitInstalled;
-
+	public static final int MIN_SUPPORTED_VERSION_MAJOR = 2;
+	public static final int MIN_SUPPORTED_VERSION_MINOR = 39;
 
 	private BareGitConnector(String repositoryPath) {
 		this.repositoryPath = repositoryPath;
@@ -223,6 +224,23 @@ public final class BareGitConnector implements GitConnector {
 		}
 		Collections.reverse(commitHashes);
 		return commitHashes;
+	}
+
+	@Override
+	public boolean gitInstalledAndReady() {
+		String result = RawGitExecutor.executeGitCommand("git --version", repositoryPath);
+		String gitVersion = "git version";
+		if(! result.startsWith(gitVersion)) {
+			return false;
+		}
+		String[] resultTokens = result.split(" ");
+		String versionString = resultTokens[2];
+		String[] versionFragments = versionString.split("\\.");
+		int majorVersion = Integer.parseInt(versionFragments[0]);
+		int minorVersion = Integer.parseInt(versionFragments[1]);
+		//int fixVersion = Integer.parseInt(versionFragments[2]);
+		if(majorVersion < MIN_SUPPORTED_VERSION_MAJOR || minorVersion < MIN_SUPPORTED_VERSION_MINOR) return false; // to old
+		return true;
 	}
 
 	@Override

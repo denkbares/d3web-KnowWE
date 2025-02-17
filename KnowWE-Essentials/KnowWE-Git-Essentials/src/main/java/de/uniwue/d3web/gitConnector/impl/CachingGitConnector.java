@@ -137,6 +137,11 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean gitInstalledAndReady() {
+		return delegate.gitInstalledAndReady();
+	}
+
+	@Override
 	public String commitHashForFileAndVersion(String file, int version) {
 		this.updateCacheForPath(file);
 

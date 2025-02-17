@@ -26,6 +26,13 @@ public interface GitConnector {
 	List<String> commitHashesForFileSince(String file, Date date);
 
 	/**
+	 * Checks if git is ready to go in the current runtime environment
+	 *
+	 * @return true if git is ready to go
+	 */
+	boolean gitInstalledAndReady();
+
+	/**
 	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
 	 */
 	void destroy();
