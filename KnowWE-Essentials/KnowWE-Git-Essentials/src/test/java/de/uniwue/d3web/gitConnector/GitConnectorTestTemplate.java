@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
@@ -50,7 +49,6 @@ public class GitConnectorTestTemplate {
 
 	public void setUp() throws IOException {
 
-		//noinspection ResultOfMethodCallIgnored
 		String wikiPathA = clearAndMakeWikiPath(WIKI_PATH);
 		String originPath = clearAndMakeWikiPath(TARGET_ORIGIN_Repo);
 
