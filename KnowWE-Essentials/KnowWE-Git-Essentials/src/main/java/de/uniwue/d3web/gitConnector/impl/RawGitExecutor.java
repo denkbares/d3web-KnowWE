@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uniwue.d3web.gitConnector.GitConnector;
+
 /**
  * Do NEVER use this class outside of BareGitConnector! It is just meant to keep the BareGitConnector clean
  */
@@ -69,7 +71,7 @@ public class RawGitExecutor {
 	}
 
 	public static void initGitAndSetOriginRepo(String wikiPath, String remoteOriginRelativeFolder) {
-		executeGitCommand("git init", wikiPath);
+		executeGitCommand("git init --initial-branch="+ GitConnector.DEFAULT_BRANCH, wikiPath);
 		executeGitCommand("git remote add origin ../"+remoteOriginRelativeFolder, wikiPath);
 	}
 
