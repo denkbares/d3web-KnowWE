@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang.time.StopWatch;
@@ -78,7 +77,7 @@ public class RawGitExecutor {
 
 
 		stopWatch.stop();
-		LOGGER.info("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
+		LOGGER.debug("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
 		return response;
 	}
 	public static String executeGitCommand(String[] command, String repositoryPath) {
@@ -122,7 +121,7 @@ public class RawGitExecutor {
 		}
 
 		if (exitCode == 0) {
-			LOGGER.info("Successfully execute: " + processBuilder.command() + " in " + (System.currentTimeMillis() - time) + "ms");
+			LOGGER.debug("Successfully execute: " + processBuilder.command() + " in " + (System.currentTimeMillis() - time) + "ms");
 //			System.out.println("Command executed successfully");
 		}
 		else {
