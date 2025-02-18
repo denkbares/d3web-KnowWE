@@ -2,7 +2,11 @@ package de.uniwue.d3web.gitConnector.scripts
 
 import de.uniwue.d3web.gitConnector.UserData
 import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector
+import de.uniwue.d3web.gitConnector.impl.RawGitExecutor
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess
+import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.deleteIfExists
 
 object UpdateIgnoredFilesScript {
 
@@ -11,8 +15,29 @@ object UpdateIgnoredFilesScript {
 
         val numBranches = connector.listBranches().size
 
-        connector.listBranches().forEachIndexed { index,branchName ->
+        connector.listBranches().forEachIndexed { index, branchName ->
             println("branchName: $branchName ($index of $numBranches)")
+
+            if (branchName.startsWith("Task") || branchName.startsWith("jochen")) {
+                val executeGitCommand = RawGitExecutor.executeGitCommand("git branch -d $branchName", pathToGit)
+                println("Deleted branch $branchName")
+                println("Result: $executeGitCommand")
+                return@forEachIndexed
+            }
+
+            connector.status().let { status ->
+                when (status) {
+                    is GitStatusResultSuccess -> {
+                        val files = status.affectedFiles
+                        if (files.size == 1 && "KONAP+sp+Configit+Bridge-att" in files.first()) {
+                            Path.of(pathToGit, "KONAP+sp+Configit+Bridge-att/history.csv").deleteIfExists()
+                        }
+                    }
+
+                    else -> throw IllegalArgumentException("Unknown status")
+                }
+            }
+
             val swapSuccessful = connector.switchToBranch(branchName, false)
             if (!swapSuccessful) {
                 throw IllegalStateException("Couldn't swap branch $branchName")
@@ -52,7 +77,7 @@ object UpdateIgnoredFilesScript {
 }
 
 fun main() {
-    val pathToGit = "/Users/mkrug/Konap/konap_wiki_clean/Wiki_VM"
+    val pathToGit = "/Users/mkrug/Konap/Wikis/Wiki_KM"
 
 
     val ignoreContent = """
@@ -120,7 +145,8 @@ fun main() {
         "KONAP+sp+Configit+Bridge-att/Sattelpritsche_VM_GM_SP_Var_ProfiBasis.vof",
         "KONAP+sp+Configit+Bridge-att/Sattelpritsche.vof",
         //other
-        ".DS_Store"
+        ".DS_Store",
+        "KONAP+sp+Configit+Bridge-att/history.csv"
     )
 
     UpdateIgnoredFilesScript.execute(pathToGit, ignoreContent, listToUntrack)
