@@ -264,7 +264,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	public Page getPageInfo(final String pageName, final int version) {
 		PageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.getFilesystemPath(), pageName, version);
 
-		LOGGER.info("Get page for : " + pageIdentifier + " and version: " + pageIdentifier.version());
+		LOGGER.debug("Get page for : " + pageIdentifier + " and version: " + pageIdentifier.version());
 
 		if (!pageIdentifier.exists()) {
 			return null;
