@@ -1383,7 +1383,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			try {
-				SparqlCallable callable = newSparqlCallable(query, type, Long.MAX_VALUE, true, preparedAsk, preparedSelect, bindings);
+				SparqlCallable callable = newSparqlCallable(query, type, 1000 * 60 * 2 /* 2 min*/, true, preparedAsk, preparedSelect, bindings);
 				AtomicReference<Object> result = new AtomicReference<>();
 				runInThread(() -> result.set(callable.call()), sparqlThreadPool);
 				if (stopwatch.getTime() > 10) {
@@ -1439,7 +1439,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			}
 			sparqlThreadPool.execute(sparqlTask);
 		}
-		String timeOutMessage = "SPARQL query timed out or was cancelled after ";
 		try {
 			long maxTimeOut = options.timeoutMillis * 2;
 			if (options.timeoutMillis > 0 && maxTimeOut < 0) {
@@ -1452,8 +1451,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			}
 			return result;
 		}
-		catch (CancellationException | InterruptedException | TimeoutException e) {
-			throw new RuntimeException(timeOutMessage + Stopwatch.getDisplay(sparqlTask.getRunDuration()), e);
+		catch (CancellationException | InterruptedException | TimeoutException cause) {
+			throw new RuntimeException(getTimeOutOrCancelMessage(sparqlTask.getRunDuration()), cause);
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
@@ -1461,7 +1460,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				cause = e;
 			}
 			if (cause instanceof ThreadDeath || cause instanceof QueryInterruptedException) {
-				throw new RuntimeException(timeOutMessage + Stopwatch.getDisplay(sparqlTask.getRunDuration()), cause);
+				throw new RuntimeException(getTimeOutOrCancelMessage(sparqlTask.getRunDuration()), cause);
 			}
 			else if (cause instanceof RuntimeException) {
 				if (!(cause.getCause() instanceof QueryInterruptedException)) {
@@ -1474,6 +1473,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				throw new RuntimeException(cause);
 			}
 		}
+	}
+
+	private static @NotNull String getTimeOutOrCancelMessage(long runDuration) {
+		return runDuration == 0 ? "SPARQL query was cancelled" : "SPARQL query timed out or was cancelled after " + Stopwatch.getDisplay(runDuration);
 	}
 
 	@NotNull
