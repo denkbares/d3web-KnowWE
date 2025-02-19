@@ -306,9 +306,11 @@ public final class BareGitConnector implements GitConnector {
 		String[] command = { "git", "status" };
 		String response = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath), StandardCharsets.UTF_8);
 		// we do not know the language (and cannot set the language, as not every git installation comes with the language package)
-		boolean clean = !response.contains("Changes") && !response.contains("Änderungen, die nicht zum Commit vorgemerkt sind");
-		LOGGER.info("isClean: git status result is: " + clean + "("+ response+")");
-		return clean;
+		String[] dirtyKeyWords = {"new file", "modified", "deleted" , "untracked"};
+		boolean isDirty = Arrays.stream(dirtyKeyWords).toList().stream().anyMatch(key -> response.contains(key));
+		boolean isClean = !isDirty;
+		LOGGER.info("isClean: git status result is: " + isClean + "("+ response+")");
+		return isClean;
 	}
 
 	@Override
