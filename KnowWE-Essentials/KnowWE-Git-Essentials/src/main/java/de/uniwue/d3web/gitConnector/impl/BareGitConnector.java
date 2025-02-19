@@ -494,17 +494,20 @@ public final class BareGitConnector implements GitConnector {
 	@Override
 	public List<String> listBranches(boolean includeRemoteBranches) {
 		if (!this.isGitInstalled) {
+			LOGGER.error("Git not ready. Return empty list." );
 			return Collections.emptyList();
 		}
-		String branchResult = null;
+		String branchResult;
 		if(includeRemoteBranches) {
 			String[] gitCommandFetch = { "git", "fetch"};
 			String fetchResult = RawGitExecutor.executeGitCommand(gitCommandFetch, this.repositoryPath);
 			String[] gitCommand = { "git", "branch" , "-r"};
 			branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+			LOGGER.info("branch result remote branches: " +branchResult);
 		} else {
 			String[] gitCommand = { "git", "branch" };
 			branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+			LOGGER.info("branch result local branches: " +branchResult);
 		}
 		if(Strings.isBlank(branchResult)) return Collections.emptyList();
 
