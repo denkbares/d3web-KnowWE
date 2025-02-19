@@ -104,11 +104,11 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> listBranches() {
+	public List<String> listBranches(boolean includeRemoteBranches) {
 		if (this.bareGitConnector.isGitInstalled) {
-			return this.bareGitConnector.listBranches();
+			return this.bareGitConnector.listBranches(includeRemoteBranches);
 		}
-		return this.jgitConnector.listBranches();
+		return this.jgitConnector.listBranches(includeRemoteBranches);
 	}
 
 	@Override

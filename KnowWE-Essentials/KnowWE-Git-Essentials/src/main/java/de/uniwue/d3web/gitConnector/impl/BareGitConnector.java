@@ -303,8 +303,8 @@ public final class BareGitConnector implements GitConnector {
 	public boolean isClean() {
 		String[] command = { "git", "status"};
 		String response = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath), StandardCharsets.UTF_8);
-		LOGGER.info("Result of git status: "+response);
-		return !response.contains("Changes");
+		// we do not know the language (and cannot set the language, as not every git installation comes with the language package)
+		return ! (response.contains("Changes not staged for commit") || response.contains("Änderungen, die nicht zum Commit vorgemerkt sind"));
 	}
 
 	@Override
@@ -492,12 +492,20 @@ public final class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> listBranches() {
+	public List<String> listBranches(boolean includeRemoteBranches) {
 		if (!this.isGitInstalled) {
 			return Collections.emptyList();
 		}
-		String[] gitCommand = { "git", "branch" };
-		String branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+		String branchResult = null;
+		if(includeRemoteBranches) {
+			String[] gitCommandFetch = { "git", "fetch"};
+			String fetchResult = RawGitExecutor.executeGitCommand(gitCommandFetch, this.repositoryPath);
+			String[] gitCommand = { "git", "branch" , "-r"};
+			branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+		} else {
+			String[] gitCommand = { "git", "branch" };
+			branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+		}
 		if(Strings.isBlank(branchResult)) return Collections.emptyList();
 
 		List<String> branches = new ArrayList<>();
@@ -532,28 +540,34 @@ public final class BareGitConnector implements GitConnector {
 
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
-		List<String> branches = listBranches();
-		boolean existing = false;
-		if(branches.contains(branch)) {
-			existing = true;
-		}
+		List<String> localBranches = listBranches(false);
+		boolean existingLocally = localBranches.contains(branch);
 		String[] command = null;
-		if(existing) {
+		if(existingLocally) {
 			command = new String[] { "git", "checkout", branch };
 		} else {
-			if (createBranch) {
-				command = new String[] { "git", "checkout", "-b", branch };
+			List<String> remoteBranches = listBranches(true);
+			if(remoteBranches.contains("origin/"+branch)) {
+				// existing remote
+				command = new String[] { "git", "switch", branch };
 			} else {
-				// damn: no branch and we may not create it :(
-				return false;
+				if (createBranch) {
+					command = new String[] { "git", "checkout", "-b", branch };
+				} else {
+					// damn: no branch and we may not create it :(
+					return false;
+				}
 			}
 		}
 
-		String logOutput = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 
+		String result = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 		String currentBranch = currentBranch();
-
-		return currentBranch.equals(branch);
+		boolean success = currentBranch.equals(branch);
+		if(!success) {
+			LOGGER.error("could not switch branch with command: "+command + " -> Result: "+result);
+		}
+		return success;
 	}
 
 	@Override
@@ -580,7 +594,12 @@ public final class BareGitConnector implements GitConnector {
 
 	@Override
 	public boolean pullCurrent(boolean rebase) {
-		throw new NotImplementedException("Not implemented yet.");
+		String[] commitCommand = new String[] { "git", "pull"};
+		if(rebase) {
+			commitCommand = new String[] { "git", "pull", "--rebase"};
+		}
+		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		return result.isBlank() || result.startsWith("Already up to date.");
 	}
 
 	@Override

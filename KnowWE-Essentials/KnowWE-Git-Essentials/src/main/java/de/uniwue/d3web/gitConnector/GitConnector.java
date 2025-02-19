@@ -243,7 +243,7 @@ public interface GitConnector {
 	/**
 	 * List all branches of this repository
 	 */
-	 List<String> listBranches();
+	 List<String> listBranches(boolean includeRemoteBranches);
 
 	/**
 	 * Lists all commit hashes for a given branch

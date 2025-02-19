@@ -9,7 +9,8 @@ import de.uniwue.d3web.gitConnector.GitConnector;
 public interface GitServerConnector {
 
 	/**
-	 * Returns a GitConnector for the  main wiki folder connected to the specified repo.
+	 * Returns a GitConnector connected to the specified repo.
+	 * If folder.equals(repoName), then the behavior is equal to  {@link GitServerConnector#getGitConnector(String folder)}
 	 *
 	 * @param repoName name of the desired repo
 	 * @param folder local folder path for the local repo

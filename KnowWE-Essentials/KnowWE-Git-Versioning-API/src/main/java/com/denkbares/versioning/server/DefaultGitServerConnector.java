@@ -35,12 +35,10 @@ public class DefaultGitServerConnector implements GitServerConnector {
 
 	@Override
 	public GitConnector getOrInitGitConnectorTo(String folder, String repoName) {
-		GitConnector gitConnector = getGitConnector(folder);
-		// TODO: consider sub-wikis; those may not be deleted!
-		String gitDirectory = gitConnector.getGitDirectory();
+		String gitDirectory = getGitConnector(folder).getGitDirectory();
 		String folderName = gitDirectory.substring(gitDirectory.lastIndexOf(File.separator)+1);
 		if (!folderName.equals(repoName)) {
-			// we want another repo than initialized
+			// we want another repo than currently initialized
 			InitCommand init = Git.init();
 			File gitDir = new File(folder);
 			init.setGitDir(gitDir);

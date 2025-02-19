@@ -28,19 +28,19 @@ public class GitConnectorListBranchesTest extends GitConnectorTestTemplate {
 		setUp();
 
 		// for some reason git only list branches after the first commit has been made: before -> 0
-		List<String> branches0 = gitConnector.listBranches();
+		List<String> branches0 = gitConnector.listBranches(false);
 		assertEquals(0, branches0.size());
 
 		writeAndAddContentFile();
 		gitConnector.commitPathsForUser("", "", "", Collections.singleton(FILE));
-		List<String> branches1 = gitConnector.listBranches();
+		List<String> branches1 = gitConnector.listBranches(false);
 		assertEquals(1, branches1.size());
 		assertTrue(branches1.contains(GitConnector.DEFAULT_BRANCH));
 
 		String otherBranch = "otherBranch";
 		gitConnector.switchToBranch(otherBranch, true);
 
-		List<String> branches2 = gitConnector.listBranches();
+		List<String> branches2 = gitConnector.listBranches(false);
 		assertEquals(2, branches2.size());
 		assertTrue(branches2.contains(GitConnector.DEFAULT_BRANCH));
 		assertTrue(branches2.contains(otherBranch));

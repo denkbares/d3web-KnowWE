@@ -72,7 +72,7 @@ public class RawGitExecutor {
 
 	public static void initGitAndSetOriginRepo(String wikiPath, String remoteOriginRelativeFolder) {
 		executeGitCommand("git init --initial-branch="+ GitConnector.DEFAULT_BRANCH, wikiPath);
-		executeGitCommand("git remote add origin ../"+remoteOriginRelativeFolder, wikiPath);
+		executeGitCommand("git remote add origin ../../origin/"+remoteOriginRelativeFolder, wikiPath);
 	}
 
 	public static @NotNull String clearAndMakeWikiPath(String wikiPath) {
@@ -91,6 +91,7 @@ public class RawGitExecutor {
 
 	public static String executeGitCommand(String command, String repositoryPath) {
 		String[] split = command.split(" ");
+		System.out.println(command+ " ("+repositoryPath+")");
 		return RawGitExecutor.executeGitCommand(split, repositoryPath);
 	}
 

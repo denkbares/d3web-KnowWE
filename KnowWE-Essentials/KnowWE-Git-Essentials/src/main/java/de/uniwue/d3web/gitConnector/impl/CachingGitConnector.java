@@ -355,8 +355,8 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> listBranches() {
-		return this.delegate.listBranches();
+	public List<String> listBranches(boolean includeRemoteBranches) {
+		return this.delegate.listBranches(includeRemoteBranches);
 	}
 
 	@Override

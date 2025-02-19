@@ -168,7 +168,7 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> listBranches() {
+	public List<String> listBranches(boolean includeRemoteBranches) {
 		ListBranchCommand listBranchCommand = git.branchList();
 		try {
 			List<Ref> refs = listBranchCommand.call();
@@ -193,7 +193,7 @@ public class JGitConnector implements GitConnector {
 
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
-		boolean existsAlready = this.listBranches().contains(branch);
+		boolean existsAlready = this.listBranches(createBranch).contains(branch);
 		try {
 			if (existsAlready) {
 				CheckoutCommand checkoutCommand = git.checkout()
@@ -219,7 +219,6 @@ public class JGitConnector implements GitConnector {
 			LOGGER.error("jgit API exception (Maybe the repo is still empty -> some file required!", e);
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	@Override
