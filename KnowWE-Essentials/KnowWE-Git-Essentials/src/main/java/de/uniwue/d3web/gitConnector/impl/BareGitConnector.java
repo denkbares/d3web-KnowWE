@@ -303,6 +303,7 @@ public final class BareGitConnector implements GitConnector {
 	public boolean isClean() {
 		String[] command = { "git", "status"};
 		String response = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath), StandardCharsets.UTF_8);
+		LOGGER.info("Result of git status: "+response);
 		return !response.contains("Changes");
 	}
 
