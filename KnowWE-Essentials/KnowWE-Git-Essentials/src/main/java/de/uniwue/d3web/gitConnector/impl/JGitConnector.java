@@ -270,13 +270,7 @@ public class JGitConnector implements GitConnector {
 
 	@Override
 	public String repoName() {
-		Set<String> remoteNames = this.repository.getRemoteNames();
-		if (remoteNames.size() == 1) {
-			return remoteNames.iterator().next();
-		}
-		else {
-			throw new NotImplementedException("There are multiple remote names!");
-		}
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override

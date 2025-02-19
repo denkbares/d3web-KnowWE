@@ -155,7 +155,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String repoName() {
-		return this.jgitConnector.repoName();
+		return this.bareGitConnector.repoName();
 	}
 
 	@Override
