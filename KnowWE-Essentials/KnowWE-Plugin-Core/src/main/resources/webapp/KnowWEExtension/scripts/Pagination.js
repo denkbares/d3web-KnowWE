@@ -549,6 +549,7 @@ KNOWWE.core.plugin.pagination = function() {
     const $table = $paginationWrapper.find("table");
     if (!$table.exists()) {
       $paginationWrapper.find(".knowwe-paginationToolbar").remove();
+      $paginationWrapper.find(".download-tools").remove();
       return;
     }
 
