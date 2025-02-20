@@ -36,20 +36,32 @@ public class DefaultGitServerConnector implements GitServerConnector {
 	}
 
 	@Override
-	public GitConnector getOrInitGitConnectorTo(@NotNull String folder, @NotNull String repoName, @Nullable String branch) {
-		GitConnector oldGitConnector = getGitConnector(folder);
-		String gitDirectory = oldGitConnector.getGitDirectory();
-		//String folderName = gitDirectory.substring(gitDirectory.lastIndexOf(File.separator)+1);
+	public GitConnector getOrInitGitConnectorTo(@NotNull String pullTargetFolder, @NotNull String repoName, @Nullable String branch) {
+		File gitDir = new File(pullTargetFolder);
+
+		if (!gitDir.exists()) {
+			// we want to pull a new repo into a new folder
+			cloneRepo(repoName, branch, gitDir);
+		}
+		else {
+			boolean success = switchFolderToOtherRepoAndBranch(pullTargetFolder, repoName, branch);
+			if (!success) return null;
+		}
+		return getGitConnector(pullTargetFolder);
+	}
+
+	private boolean switchFolderToOtherRepoAndBranch(@NotNull String pullTargetFolder, @NotNull String repoName, @Nullable String branch) {
+		GitConnector oldGitConnector = getGitConnector(pullTargetFolder);
 		if (!oldGitConnector.repoName().equals(repoName)) {
 			// we want another repo than currently initialized
 
 			if (!oldGitConnector.isClean()) {
 				LOGGER.info("Can not switch Repo as old local repo is not clean");
-				return null;
+				return false;
 			}
 
 			// delete old repo
-			File gitDir = new File(folder);
+			File gitDir = new File(pullTargetFolder);
 			try {
 				FileUtils.deleteDirectory(gitDir);
 			}
@@ -58,20 +70,26 @@ public class DefaultGitServerConnector implements GitServerConnector {
 				throw new RuntimeException(e);
 			}
 
-			// initialize/clone new git connected to other repo
-			String cloneBranch = (branch != null && !branch.isBlank()) ? branch : GitConnector.DEFAULT_BRANCH;
-			try (Git result = Git.cloneRepository()
-					.setURI(new File("").getAbsolutePath() + gitRemoteURL + repoName)
-					.setBranch(cloneBranch)
-					.setDirectory(gitDir)
-					.call()) {
-				// Note: the call() returns an opened repository already which needs to be closed to avoid file handle leaks!
-			}
-			catch (GitAPIException e) {
-				LOGGER.error("Git clone failed for repo url:" + gitRemoteURL);
-				throw new RuntimeException(e);
-			}
+			cloneRepo(repoName, branch, gitDir);
+		} else {
+			// this is a weird case that does a normal pull on the existing repo
 		}
-		return getGitConnector(folder);
+		return true;
+	}
+
+	private void cloneRepo(@NotNull String repoName, @Nullable String branch, File gitDir) {
+		// initialize/clone new git connected to other repo
+		String cloneBranch = (branch != null && !branch.isBlank()) ? branch : GitConnector.DEFAULT_BRANCH;
+		try (Git result = Git.cloneRepository()
+				.setURI(new File("").getAbsolutePath() + gitRemoteURL + repoName)
+				.setBranch(cloneBranch)
+				.setDirectory(gitDir)
+				.call()) {
+			// Note: the call() returns an opened repository already which needs to be closed to avoid file handle leaks!
+		}
+		catch (GitAPIException e) {
+			LOGGER.error("Git clone failed for repo url:" + gitRemoteURL);
+			throw new RuntimeException(e);
+		}
 	}
 }
