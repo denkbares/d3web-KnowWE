@@ -8,13 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.uniwue.d3web.gitConnector.GitConnector;
 
 /**
  * Do NEVER use this class outside of BareGitConnector! It is just meant to keep the BareGitConnector clean
@@ -26,7 +22,7 @@ public class RawGitExecutor {
 	public static String executeGitCommandWithEnvironment(String[] command, String repositoryPath, Map<String,String> environment) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
-		Process process = null;
+		Process process;
 
 		String[] environmentArray = new String[environment.size()];
 		int index=0;
@@ -45,15 +41,22 @@ public class RawGitExecutor {
 		InputStream responseStream = process.getInputStream();
 
 		try {
-			int exitVal = process.waitFor();
+			process.waitFor();
 		}
 		catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 
-		String response = null;
+		String response;
 		try {
 			response = new String(responseStream.readAllBytes());
+
+			if(response.isEmpty()){
+				//append the error stream
+				String errorString = new String(process.getErrorStream().readAllBytes());
+				response+= errorString;
+
+			}
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -67,39 +70,19 @@ public class RawGitExecutor {
 		LOGGER.info("Response was: "+response);
 		return response;
 	}
-	public static String executeGitCommand(String[] command, String repositoryPath) {
+	static String executeGitCommand(String[] command, String repositoryPath) {
 		return executeGitCommandWithEnvironment(command, repositoryPath, Collections.emptyMap());
-	}
-
-	public static void initGitAndSetOriginRepo(String wikiPath, String remoteOriginRelativeFolder) {
-		executeGitCommand("git init --initial-branch="+ GitConnector.DEFAULT_BRANCH, wikiPath);
-		executeGitCommand("git remote add origin ../../origin/"+remoteOriginRelativeFolder, wikiPath);
-	}
-
-	public static @NotNull String clearAndMakeWikiPath(String wikiPath) {
-		File wikiDirA = new File(wikiPath);
-		//noinspection ResultOfMethodCallIgnored
-		try {
-			FileUtils.deleteDirectory(wikiDirA);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		assert(!wikiDirA.exists());
-		wikiDirA.mkdirs();
-		return wikiPath;
 	}
 
 	public static String executeGitCommand(String command, String repositoryPath) {
 		String[] split = command.split(" ");
-		System.out.println(command+ " ("+repositoryPath+")");
 		return RawGitExecutor.executeGitCommand(split, repositoryPath);
 	}
 
 	public static byte[] executeGitCommandWithTempFile(String[] command, String repositoryPath) {
 
 		//TODO maybe it is slow to create temp files on linux?
-		File outputFile = null;
+		File outputFile;
 		try {
 			outputFile = File.createTempFile("git-log-output", ".txt");
 		}
@@ -113,7 +96,7 @@ public class RawGitExecutor {
 		processBuilder.redirectOutput(outputFile);
 
 		Process process = null;
-		int exitCode = 0;
+		int exitCode;
 		try {
 			process = processBuilder.start();
 			exitCode = process.waitFor();
@@ -129,13 +112,12 @@ public class RawGitExecutor {
 
 		if (exitCode == 0) {
 			LOGGER.info("Successfully execute: " + processBuilder.command() + " in " + (System.currentTimeMillis() - time) + "ms");
-//			System.out.println("Command executed successfully");
 		}
 		else {
 			LOGGER.error("Failed to execute command with exit code: " + (exitCode) + " for command: " + Arrays.toString(command));
 		}
 
-		byte[] response = null;
+		byte[] response;
 		try {
 			response = Files.readAllBytes(outputFile.toPath());
 		}

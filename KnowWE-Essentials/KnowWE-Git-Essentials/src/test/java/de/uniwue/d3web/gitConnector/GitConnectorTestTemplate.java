@@ -19,8 +19,8 @@ import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
 import de.uniwue.d3web.gitConnector.impl.JGitConnector;
 import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
 
-import static de.uniwue.d3web.gitConnector.impl.RawGitExecutor.clearAndMakeWikiPath;
-import static de.uniwue.d3web.gitConnector.impl.RawGitExecutor.initGitAndSetOriginRepo;
+import static de.uniwue.d3web.gitConnector.GitTestUtils.clearAndMakeWikiPath;
+import static de.uniwue.d3web.gitConnector.GitTestUtils.initGitAndSetOriginRepo;
 import static org.junit.Assume.assumeTrue;
 
 public class GitConnectorTestTemplate {
