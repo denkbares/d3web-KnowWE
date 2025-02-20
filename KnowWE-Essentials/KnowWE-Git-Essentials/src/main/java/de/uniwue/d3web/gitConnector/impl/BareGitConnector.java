@@ -609,8 +609,8 @@ public final class BareGitConnector implements GitConnector {
 		if (rebase) {
 			commitCommand = new String[] { "git", "pull", "--rebase" };
 		}
-		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
-		return result.isBlank() || result.startsWith("Already up to date.");
+		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath).trim();
+		return result.isBlank() || result.startsWith("Already up to date.") || result.startsWith("Bereits aktuell.");
 	}
 
 	@Override

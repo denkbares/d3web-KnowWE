@@ -22,7 +22,7 @@ public class RawGitExecutor {
 	public static String executeGitCommandWithEnvironment(String[] command, String repositoryPath, Map<String,String> environment) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
-		Process process;
+		Process process = null;
 
 		String[] environmentArray = new String[environment.size()];
 		int index=0;
@@ -41,22 +41,15 @@ public class RawGitExecutor {
 		InputStream responseStream = process.getInputStream();
 
 		try {
-			process.waitFor();
+			int exitVal = process.waitFor();
 		}
 		catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 
-		String response;
+		String response = null;
 		try {
 			response = new String(responseStream.readAllBytes());
-
-			if(response.isEmpty()){
-				//append the error stream
-				String errorString = new String(process.getErrorStream().readAllBytes());
-				response+= errorString;
-
-			}
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -70,19 +63,20 @@ public class RawGitExecutor {
 		LOGGER.info("Response was: "+response);
 		return response;
 	}
-	static String executeGitCommand(String[] command, String repositoryPath) {
+	public static String executeGitCommand(String[] command, String repositoryPath) {
 		return executeGitCommandWithEnvironment(command, repositoryPath, Collections.emptyMap());
 	}
 
 	public static String executeGitCommand(String command, String repositoryPath) {
 		String[] split = command.split(" ");
+		System.out.println(command+ " ("+repositoryPath+")");
 		return RawGitExecutor.executeGitCommand(split, repositoryPath);
 	}
 
 	public static byte[] executeGitCommandWithTempFile(String[] command, String repositoryPath) {
 
 		//TODO maybe it is slow to create temp files on linux?
-		File outputFile;
+		File outputFile = null;
 		try {
 			outputFile = File.createTempFile("git-log-output", ".txt");
 		}
@@ -96,7 +90,7 @@ public class RawGitExecutor {
 		processBuilder.redirectOutput(outputFile);
 
 		Process process = null;
-		int exitCode;
+		int exitCode = 0;
 		try {
 			process = processBuilder.start();
 			exitCode = process.waitFor();
@@ -112,12 +106,13 @@ public class RawGitExecutor {
 
 		if (exitCode == 0) {
 			LOGGER.info("Successfully execute: " + processBuilder.command() + " in " + (System.currentTimeMillis() - time) + "ms");
+//			System.out.println("Command executed successfully");
 		}
 		else {
 			LOGGER.error("Failed to execute command with exit code: " + (exitCode) + " for command: " + Arrays.toString(command));
 		}
 
-		byte[] response;
+		byte[] response = null;
 		try {
 			response = Files.readAllBytes(outputFile.toPath());
 		}
