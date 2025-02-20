@@ -12,17 +12,28 @@ import org.slf4j.LoggerFactory;
  * Allows to perform actions on the git repository.
  */
 public interface GitConnector {
+
 	Logger LOGGER = LoggerFactory.getLogger(GitConnector.class);
 
 	String DEFAULT_BRANCH = "main";
 	String NO_COMMENT = "<no comment>";
 
 	/**
-	 * For a specified path (relative to the repository), returns a list of all long commithashes. The first entry of the returning list is the oldest version and the last entry is the latest version
-	 * @param file
-	 * @return
+	 * For a specified path (relative to the repository), returns a list of all long commit hashes.
+	 * The first entry of the returning list is the oldest version and the last entry is the latest version
+	 * @param file file
+	 * @return list of commit hashes
 	 */
 	List<String> commitHashesForFile(String file);
+
+
+	/**
+	 * For a specified path (relative to the repository), returns a list of all long commit hashes since a certain specified point in time.
+	 * The first entry of the returning list is the oldest version and the last entry is the latest version
+	 * @param file file
+	 * @param date since date
+	 * @return list of all commit hashes of the file since date
+	 */
 	List<String> commitHashesForFileSince(String file, Date date);
 
 	/**
@@ -39,104 +50,134 @@ public interface GitConnector {
 
 	/**
 	 * Returns the specific hash of a given file in a specific version. Keep in mind that the first version is 1 instead of 0!
-	 * @param file
-	 * @param version
+	 * @param file file
+	 * @param version version
 	 * @return the commit-hash for a file and a given version, null if it cannot be found.
 	 */
 	String commitHashForFileAndVersion(String file, int version);
 
 	/**
 	 * Returns the number of commits that were made onto a specific file, or 0 it none were made!
-	 * @param filePath
-	 * @return
+	 * @param filePath file path
+	 * @return number of commits for the file, 0 if none exist
 	 */
 	int numberOfCommitsForFile(String filePath);
 
 	/**
 	 *  Returns all commit-hashes that have an assigned date later than the specified date
-	 * @param timeStamp
-	 * @return
+	 * @param timeStamp time stamp
+	 * @return all commit hashed that have assigned date later than time stamp
 	 */
 	List<String> getCommitsSince(Date timeStamp);
 
+	/**
+	 * A repo folder is clean when neither untracked nor uncommitted files exist.
+	 *
+	 * @return true iff clean
+	 */
 	boolean isClean();
 
 	/**
 	 * Get bytes for a file (specified by its relative path, starting from git root) in a specific version
-	 * @param path
-	 * @param version
+	 * @param path path
+	 * @param version version
 	 * @return a bytearray of the content or null if the version could not be found!
 	 */
 	byte[] getBytesForPath(String path, int version);
 
 	/**
 	 * Gets the bytes for a given commit of a certain path
-	 * @param commitHash
-	 * @return
+	 * @param commitHash commitHash
+	 * @return bytes
 	 */
 	byte[] getBytesForCommit(String commitHash,String path);
 
 	/**
 	 * Obtains the size of the file in the provided hash in bytes or -1 if the file was not found in the respective commit
-	 * @param commitHash
-	 * @param path
-	 * @return
+	 * @param commitHash commitHash
+	 * @param path path
+	 * @return file size in bytes
 	 */
-	long getFilesizeForCommit(String commitHash,String path);
+	long getFilesizeForCommit(String commitHash, String path);
 
 	/**
 	 * Checks whether there is a file (provided by the path) in the given version
-	 * @param path
-	 * @param version
-	 * @return
+	 * @param path path
+	 * @param version version
+	 * @return true iff version exists
 	 */
 	boolean versionExists(String path, int version);
 
 	/**
 	 * Obtain the userdata for a given commit-hash
-	 * @param commitHash
-	 * @return
+	 * @param commitHash commitHash
+	 * @return user data
 	 */
 	UserData userDataFor(String commitHash);
 
 	/**
 	 * In Seconds since 1970
-	 * @param commitHash
-	 * @return
+	 * @param commitHash commitHash
+	 * @return commit timestamp in seconds since 1970
 	 */
 	long commitTimeFor(String commitHash);
 
-
-
+	/**
+	 * Commits the collections of files for the given user, mail and message.
+	 * If no message is passed, an empty default message has to be generated.
+	 *
+	 * @param message message
+	 * @param author author
+	 * @param email email
+	 * @param paths paths of files to be committed
+	 * @return commit hash
+	 */
+	// TODO: BareGitConnector returns the complete command line response !
 	String commitPathsForUser(String message, String author, String email, Set<String> paths);
 
 	/**
+	 *
 	 * This essentially handles the git operation AFTER a file was moved, that is "from" does no longer exist and "to" is the new location of the file
-	 * Returns the commithash of the underlying commit
+	 * Returns the commit hash of the underlying commit
+	 * @param from from path
+	 * @param to to path
+	 * @param user user
+	 * @param email mail
+	 * @param message message
+	 * @return commit hash of the move commit
 	 */
 	String moveFile(Path from, Path to, String user, String email, String message);
 
 	/**
-	 * Deletes the path by creating a commit based on the provided userdata! Returns the according commithash
-	 * @param pathToDelete
-	 * @param userData
+	 * Deletes the path by creating a commit based on the provided userdata! Returns the according commit hash
+	 * @param pathToDelete path of file to be deleted
+	 * @param cached if true, the file is only removed from index, but still exists, otherwise it's gone
+	 * @param userData user data
+	 * @return commit hash
 	 */
 	String deletePath(String pathToDelete, UserData userData, boolean cached);
 
+	/**
+	 * Deletes the paths by creating a commit based on the provided userdata! Returns the according commit hash
+	 *
+	 * @param pathsToDelete paths of files to be deleted
+	 * @param userData user
+	 * @param cached if true, the file is only removed from index, but still exists, otherwise it's gone
+	 * @return commit hash
+	 */
 	String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached);
 
 	/**
 	 * Use this method to add a given path to a commit and commit it. Does not push! The path will be relativized onto the repository.
-	 * @param pathToPut
-	 * @param userData
+	 * @param pathToPut path to put
+	 * @param userData user
 	 * @return commitHash of the performed commit, or null if the commit fails
 	 */
 	String changePath(Path pathToPut, UserData userData);
 
 	/**
 	 * Performs a git add <path>
-	 * @param path
-	 * @return
+	 * @param path file to be added
 	 */
 	void addPath(String path);
 
@@ -144,20 +185,21 @@ public interface GitConnector {
 
 	void rollbackPaths(Set<String> pathsToRollback);
 
+	void cherryPick(String branch, List<String> commitHashesToCherryPick);
+
 	/**
 	 * Performs git garbage collection, which is thought to speed up subsequent git calls. Use with caution as this is slow!
-	 * @param aggressive
-	 * @param prune
+	 * @param aggressive aggressive gc mode
+	 * @param prune prune flag
 	 */
 	void performGC(boolean aggressive, boolean prune);
 
 	/**
 	 * Similar to GC() this is meant to speed up subsequent git calls. Use only if you know what it does
-	 * @return
+	 * @return true iff successful
 	 */
 	boolean executeCommitGraph();
 
-	void cherryPick(String branch, List<String> commitHashesToCherryPick);
 
 	/**
 	 * For a provided commithash, this lists all files that are touched in this commit

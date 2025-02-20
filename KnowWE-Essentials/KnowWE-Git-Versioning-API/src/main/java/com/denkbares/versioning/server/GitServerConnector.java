@@ -4,6 +4,9 @@
 
 package com.denkbares.versioning.server;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import de.uniwue.d3web.gitConnector.GitConnector;
 
 public interface GitServerConnector {
@@ -16,7 +19,20 @@ public interface GitServerConnector {
 	 * @param folder local folder path for the local repo
 	 * @return main GitConnector
 	 */
-	GitConnector getOrInitGitConnectorTo(String folder, String repoName) ;
+	default GitConnector getOrInitGitConnectorTo(@NotNull String folder, @NotNull String repoName) {
+		return getOrInitGitConnectorTo(folder, repoName, null);
+	}
+
+	/**
+	 * Returns a GitConnector connected to the specified repo.
+	 * If folder.equals(repoName), then the behavior is equal to  {@link GitServerConnector#getGitConnector(String folder)}
+	 *
+	 * @param repoName name of the desired repo
+	 * @param folder local folder path for the local repo
+	 * @param branch the desired branch
+	 * @return main GitConnector
+	 */
+	GitConnector getOrInitGitConnectorTo(@NotNull String folder, @NotNull String repoName, @Nullable String branch) ;
 
 	/**
 	 * Returns a GitConnector for the git repo currently living in the specified folder
@@ -24,5 +40,7 @@ public interface GitServerConnector {
 	 * @param folder
 	 * @return GitConnector
 	 */
-	GitConnector getGitConnector(String folder) ;
+	GitConnector getGitConnector(@NotNull String folder) ;
+
+
 }
