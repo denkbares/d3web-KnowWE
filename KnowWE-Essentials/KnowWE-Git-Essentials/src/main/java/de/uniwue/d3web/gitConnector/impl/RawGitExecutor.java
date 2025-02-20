@@ -64,6 +64,7 @@ public class RawGitExecutor {
 
 		stopWatch.stop();
 		LOGGER.info("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
+		LOGGER.info("Response was: "+response);
 		return response;
 	}
 	public static String executeGitCommand(String[] command, String repositoryPath) {
