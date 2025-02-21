@@ -3,10 +3,16 @@ package de.uniwue.d3web.gitConnector;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 
 /**
  * Allows to perform actions on the git repository.
@@ -26,6 +32,12 @@ public interface GitConnector {
 	 */
 	List<String> commitHashesForFile(String file);
 
+	/**
+	 * Same as above, but you can also specify the branch where the command gets triggered in
+	 * @param file
+	 * @return
+	 */
+	List<String> commitHashesForFileInBranch(String file,String branchName);
 
 	/**
 	 * For a specified path (relative to the repository), returns a list of all long commit hashes since a certain specified point in time.
@@ -185,7 +197,7 @@ public interface GitConnector {
 
 	void rollbackPaths(Set<String> pathsToRollback);
 
-	void cherryPick(String branch, List<String> commitHashesToCherryPick);
+	String cherryPick( List<String> commitHashesToCherryPick);
 
 	/**
 	 * Performs git garbage collection, which is thought to speed up subsequent git calls. Use with caution as this is slow!
@@ -227,13 +239,21 @@ public interface GitConnector {
 	 * Returnt he current active branch. Throws Illegalstate if this command fails
 	 * @return
 	 */
-	String currentBranch();
+	String currentBranch() throws IllegalStateException;
 
 	/**
 	 * Return the current head of the current branch
 	 * @return
 	 */
 	String currentHEAD();
+
+	/**
+	 * Return the current head of the specified branch
+	 *
+	 * @return
+	 */
+	String currentHEADOfBranch(String branchName);
+
 
 	/**
 	 * Obtain all commithashes between the provided commitHashFrom and commitHashTo. The list is sorted in the way git stores these commits.
@@ -301,6 +321,9 @@ public interface GitConnector {
 	 */
 	boolean switchToBranch(String branch, boolean createBranch);
 
+
+	boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch);
+
 	/**
 	 * Switches on the current branch to the specified tag (if existing)
 	 *
@@ -308,6 +331,32 @@ public interface GitConnector {
 	 * @return
 	 */
 	boolean switchToTag(String tagName);
+
+	/**
+	 * Execute a git rm --cached on the provided path
+	 *
+	 * @param path
+	 * @return
+	 */
+	boolean untrackPath(String path);
+
+	boolean addNoteToCommit(String noteText, String commitHash, String namespace);
+
+	boolean copyNotes(String commitHashFrom, String commitHashTo);
+
+	Map<String, String> retrieveNotesForCommit(String commitHash);
+
+	/**
+	 * Retrieves
+	 *
+	 * @param commitHash
+	 * @param namespace
+	 * @return
+	 */
+	default String retrieveNoteForCommitInNamespace(String commitHash, String namespace) {
+		return retrieveNotesForCommit(commitHash).get(namespace);
+	}
+
 
 	/**
 	 * Pushes all commit to origin.
@@ -333,11 +382,19 @@ public interface GitConnector {
 	boolean pullCurrent(boolean rebase);
 
 	/**
+	 * Obtain the status of the current active branch
+	 *
+	 * @return
+	 */
+	GitStatusCommandResult status();
+	/**
 	 * returns the name of the repository.
 	 *
 	 * @return repo name
 	 */
 	String repoName();
+
+	void abortCherryPick();
 
 	/**
 	 * Sets the upstream branch for the current branch
@@ -346,4 +403,10 @@ public interface GitConnector {
 	 * @return true if successful
 	 */
 	boolean setUpstreamBranch(String branch);
+
+	GitMergeCommandResult mergeBranchToCurrentBranch(String branchName);
+
+	PushCommandResult pushToOrigin(String userName, String passwordOrToken);
+
+	ResetCommandResult resetToHEAD();
 }
