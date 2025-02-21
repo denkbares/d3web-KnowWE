@@ -462,7 +462,7 @@ public final class BareGitConnector implements GitConnector {
 			environment.put("GIT_COMMITTER_NAME", author);
 		}
 		String[] commitCommand = new String[] { "git", "commit", "--author=" + author + " <" + email + ">", "-m", message , "--", Strings.concat(" ", paths), };
-		return RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		return RawGitExecutor.executeGitCommandWithEnvironment(commitCommand, this.repositoryPath, environment);
 	}
 
 	@Override
