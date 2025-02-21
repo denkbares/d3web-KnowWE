@@ -34,7 +34,7 @@ public class GitConnectorIsCleanTest extends GitConnectorTestTemplate{
 		assertFalse(gitConnector.isClean());
 
 		// then we commit the file
-		gitConnector.commitPathsForUser("huhu", "", "", Collections.singleton(FILE));
+		gitConnector.commitPathsForUser("huhu", "markus merged", "m@merged.com", Collections.singleton(FILE));
 
 		// should be clean again
 		assertTrue(gitConnector.isClean());

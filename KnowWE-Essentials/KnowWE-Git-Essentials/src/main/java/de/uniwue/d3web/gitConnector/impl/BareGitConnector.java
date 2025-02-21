@@ -453,7 +453,15 @@ public final class BareGitConnector implements GitConnector {
 			// empty messages do not work in git -> commit command is ignored with -m but empty message string
 			message = NO_COMMENT;
 		}
-		String[] commitCommand = new String[] { "git", "commit",  "-m", message , "--", Strings.concat(" ", paths), };
+
+		Map<String, String> environment = new HashMap<>();
+		if (email != null && !email.isEmpty()) {
+			environment.put("GIT_COMMITTER_EMAIL", email);
+		}
+		if (author != null && !author.isEmpty()) {
+			environment.put("GIT_COMMITTER_NAME", author);
+		}
+		String[] commitCommand = new String[] { "git", "commit", "--author=" + author + " <" + email + ">", "-m", message , "--", Strings.concat(" ", paths), };
 		return RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
 	}
 

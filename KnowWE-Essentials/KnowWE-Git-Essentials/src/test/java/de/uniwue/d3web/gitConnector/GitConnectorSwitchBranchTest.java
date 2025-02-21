@@ -28,7 +28,7 @@ public class GitConnectorSwitchBranchTest extends GitConnectorTestTemplate {
 
 		// we need an initial commit before we can switch a branch
 		writeAndAddContentFile();
-		gitConnector.commitPathsForUser("huhu", "", "", Collections.singleton(FILE));
+		gitConnector.commitPathsForUser("huhu", "markus merged", "m@merged.com", Collections.singleton(FILE));
 
 		gitConnector.switchToBranch(otherBranch, true);
 		assertEquals(otherBranch, gitConnector.currentBranch());

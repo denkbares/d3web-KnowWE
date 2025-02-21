@@ -32,7 +32,7 @@ public class GitConnectorListBranchesTest extends GitConnectorTestTemplate {
 		assertEquals(0, branches0.size());
 
 		writeAndAddContentFile();
-		gitConnector.commitPathsForUser("", "", "", Collections.singleton(FILE));
+		gitConnector.commitPathsForUser("", "markus merged", "m@merged.com", Collections.singleton(FILE));
 		List<String> branches1 = gitConnector.listBranches(false);
 		assertEquals(1, branches1.size());
 		assertTrue(branches1.contains(GitConnector.DEFAULT_BRANCH));
