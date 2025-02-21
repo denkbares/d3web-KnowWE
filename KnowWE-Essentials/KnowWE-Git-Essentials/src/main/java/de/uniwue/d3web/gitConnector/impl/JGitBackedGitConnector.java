@@ -3,10 +3,15 @@ package de.uniwue.d3web.gitConnector.impl;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 
 /**
  * This implementation is a mix between a bare git implementation and JGIt implementation. We use bare git only if the
@@ -31,8 +36,13 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void cherryPick(String branch, List<String> commitHashesToCherryPick) {
-		this.jgitConnector.cherryPick(branch, commitHashesToCherryPick);
+	public String cherryPick( List<String> commitHashesToCherryPick) {
+		if (bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.cherryPick( commitHashesToCherryPick);
+		}
+		else {
+			return this.jgitConnector.cherryPick( commitHashesToCherryPick);
+		}
 	}
 
 	@Override
@@ -60,6 +70,12 @@ public class JGitBackedGitConnector implements GitConnector {
 	public String currentHEAD() {
 		return this.bareGitConnector.currentHEAD();
 	}
+
+	@Override
+	public String currentHEADOfBranch(String branchName) {
+		return this.bareGitConnector.currentHEADOfBranch(branchName);
+	}
+
 
 	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
@@ -167,12 +183,101 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.createBranch(branchName, branchNameToBaseOn, switchToBranch);
+		}
+		return this.jgitConnector.createBranch(branchName, branchNameToBaseOn, switchToBranch);
+	}
+
+	@Override
+	public boolean untrackPath(String path) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.untrackPath(path);
+		}
+		return this.jgitConnector.untrackPath(path);
+	}
+
+	@Override
+	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.addNoteToCommit(noteText, commitHash, namespace);
+		}
+		;
+		return this.jgitConnector.addNoteToCommit(noteText, commitHash, namespace);
+	}
+
+	@Override
+	public boolean copyNotes(String commitHashFrom, String commitHashTo) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.copyNotes(commitHashFrom, commitHashTo);
+		}
+		return this.jgitConnector.copyNotes(commitHashFrom, commitHashTo);
+	}
+
+	@Override
+	public Map<String, String> retrieveNotesForCommit(String commitHash) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.retrieveNotesForCommit(commitHash);
+		}
+		return this.jgitConnector.retrieveNotesForCommit(commitHash);
+	}
+
+	@Override
+	public GitStatusCommandResult status() {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.status();
+		}
+		return this.jgitConnector.status();
+	}
+
+	@Override
+	public void abortCherryPick() {
+		if (this.bareGitConnector.isGitInstalled) {
+			this.bareGitConnector.abortCherryPick();
+		}
+		else {
+			this.jgitConnector.abortCherryPick();
+		}
+	}
+
+	@Override
+	public GitMergeCommandResult mergeBranchToCurrentBranch(String branchName) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.mergeBranchToCurrentBranch(branchName);
+		}
+		return this.jgitConnector.mergeBranchToCurrentBranch(branchName);
+	}
+
+	@Override
+	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
+		return this.jgitConnector.pushToOrigin(userName,passwordOrToken);
+	}
+
+	@Override
+	public ResetCommandResult resetToHEAD() {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.resetToHEAD();
+		}
+		return this.jgitConnector.resetToHEAD();
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFile(file);
 		}
 		return this.jgitConnector.commitHashesForFile(file);
 	}
+
+	@Override
+	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+		if (bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.commitHashesForFileInBranch(file, branchName);
+		}
+		return this.jgitConnector.commitHashesForFileInBranch(file, branchName);
+	}
+
 
 	@Override
 	public List<String> commitHashesForFileSince(String file, Date date) {
@@ -324,8 +429,12 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.changePath(pathToPut, userData);
+		}
 		return this.jgitConnector.changePath(pathToPut, userData);
 	}
+
 
 	@Override
 	public void addPath(String path) {

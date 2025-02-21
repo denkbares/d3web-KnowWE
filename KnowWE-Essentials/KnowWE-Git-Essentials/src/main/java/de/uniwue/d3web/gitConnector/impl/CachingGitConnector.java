@@ -11,6 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 
 /**
  * Basicly a wrapper around a GitConnector that also manages a cache. Its best understood with an example:
@@ -66,6 +70,7 @@ public class CachingGitConnector implements GitConnector {
 		if (headCache.equals(headGit)) {
 			return;
 		}
+		//TODO what happens during a reset, this should yeet entries from the cache
 
 		// loop over the files in all commits between these 2 heads and collect all files to invalidate
 		Set<String> changedFiles = new HashSet<>();
@@ -128,6 +133,12 @@ public class CachingGitConnector implements GitConnector {
 	public List<String> commitHashesForFile(String file) {
 		this.updateCacheForPath(file);
 		return this.getCurrentCache().get(file);
+	}
+
+	@Override
+	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+		this.updateCacheForPath(file);
+		return this.delegate.commitHashesForFileInBranch(file,branchName);
 	}
 
 	@Override
@@ -300,9 +311,10 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void cherryPick(String branch, List<String> commitHashesToCherryPick) {
-		this.delegate.cherryPick(branch, commitHashesToCherryPick);
+	public String cherryPick( List<String> commitHashesToCherryPick) {
+		return this.delegate.cherryPick( commitHashesToCherryPick);
 	}
+
 
 	@Override
 	public List<String> listChangedFilesForHash(String commitHash) {
@@ -322,6 +334,11 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public String currentHEAD() {
 		return this.delegate.currentHEAD();
+	}
+
+	@Override
+	public String currentHEADOfBranch(String branchName) {
+		return this.delegate.currentHEADOfBranch(branchName);
 	}
 
 	@Override
@@ -397,5 +414,58 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public boolean setUpstreamBranch(String branch) {
 		return delegate.setUpstreamBranch(branch);
+	}
+
+	@Override
+	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
+		return this.delegate.createBranch(branchName, branchNameToBaseOn, switchToBranch);
+	}
+
+	@Override
+	public boolean untrackPath(String path) {
+		return this.delegate.untrackPath(path);
+	}
+
+	@Override
+	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
+		return this.delegate.addNoteToCommit(noteText, commitHash, namespace);
+	}
+
+	@Override
+	public boolean copyNotes(String commitHashFrom, String commitHashTo) {
+		return this.delegate.copyNotes(commitHashFrom, commitHashTo);
+	}
+
+	@Override
+	public Map<String, String> retrieveNotesForCommit(String commitHash) {
+		return this.delegate.retrieveNotesForCommit(commitHash);
+	}
+
+	@Override
+	public GitStatusCommandResult status() {
+		return this.delegate.status();
+	}
+
+	@Override
+	public void abortCherryPick() {
+		this.delegate.abortCherryPick();
+	}
+
+	@Override
+	public GitMergeCommandResult mergeBranchToCurrentBranch(String branchName) {
+		return this.delegate.mergeBranchToCurrentBranch(branchName);
+	}
+
+	@Override
+	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
+		return delegate.pushToOrigin(userName,passwordOrToken);
+	}
+
+	@Override
+	public ResetCommandResult resetToHEAD() {
+		ResetCommandResult resetCommandResult = this.delegate.resetToHEAD();
+		//update cache
+		this.updateCache();
+		return null;
 	}
 }

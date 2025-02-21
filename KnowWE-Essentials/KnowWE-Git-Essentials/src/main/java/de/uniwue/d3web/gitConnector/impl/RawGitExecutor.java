@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.uniwue.d3web.gitConnector.impl.raw.RawGitCommand;
 
 /**
  * Do NEVER use this class outside of BareGitConnector! It is just meant to keep the BareGitConnector clean
@@ -18,8 +19,16 @@ import org.slf4j.LoggerFactory;
 public class RawGitExecutor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RawGitExecutor.class);
 
+	public static String executeRawGitCommand(RawGitCommand<?> rawCommand){
+		return executeGitCommandWithEnvironment(rawCommand.getCommand(), rawCommand.getRepositoryPath(),rawCommand.getEnvironmentParams());
+	}
+
 
 	public static String executeGitCommandWithEnvironment(String[] command, String repositoryPath, Map<String,String> environment) {
+		//ensure language is english
+		if(!environment.containsKey("LANG")){
+			environment.put("LANG", "en_US.UTF-8");
+		}
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		Process process = null;
@@ -50,6 +59,13 @@ public class RawGitExecutor {
 		String response = null;
 		try {
 			response = new String(responseStream.readAllBytes());
+
+			if(response.isEmpty()){
+				//append the error stream
+				String errorString = new String(process.getErrorStream().readAllBytes());
+				response+= errorString;
+
+			}
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -58,18 +74,18 @@ public class RawGitExecutor {
 			process.destroy();
 		}
 
+
+
 		stopWatch.stop();
-		LOGGER.info("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
-		LOGGER.info("Response was: "+response);
+		LOGGER.debug("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
 		return response;
 	}
 	public static String executeGitCommand(String[] command, String repositoryPath) {
-		return executeGitCommandWithEnvironment(command, repositoryPath, Collections.emptyMap());
+		return executeGitCommandWithEnvironment(command, repositoryPath, Map.of("LANG","en_US.UTF-8"));
 	}
 
 	public static String executeGitCommand(String command, String repositoryPath) {
 		String[] split = command.split(" ");
-		System.out.println(command+ " ("+repositoryPath+")");
 		return RawGitExecutor.executeGitCommand(split, repositoryPath);
 	}
 
@@ -105,7 +121,7 @@ public class RawGitExecutor {
 		}
 
 		if (exitCode == 0) {
-			LOGGER.info("Successfully execute: " + processBuilder.command() + " in " + (System.currentTimeMillis() - time) + "ms");
+			LOGGER.debug("Successfully execute: " + processBuilder.command() + " in " + (System.currentTimeMillis() - time) + "ms");
 //			System.out.println("Command executed successfully");
 		}
 		else {

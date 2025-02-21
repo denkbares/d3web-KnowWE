@@ -26,6 +26,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RebaseCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.RmCommand;
@@ -48,6 +49,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
@@ -56,6 +59,13 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.utils.Stopwatch;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandSuccess;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandUnknownResult;
+import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandUnresolvedAddress;
+import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 public class JGitConnector implements GitConnector {
 
@@ -95,7 +105,7 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void cherryPick(String branch, List<String> commitHashesToCherryPick) {
+	public String cherryPick( List<String> commitHashesToCherryPick) {
 		throw new NotImplementedException("TODO");
 	}
 
@@ -134,6 +144,22 @@ public class JGitConnector implements GitConnector {
 		}
 		return head.getName();
 	}
+
+	@Override
+	public String currentHEADOfBranch(String branchName) {
+		try {
+			ObjectId resolve = repository.resolve(REFS_HEADS + branchName);
+
+			if (resolve != null) {
+				return resolve.getName();
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return null;
+	}
+
 
 	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
@@ -279,6 +305,72 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean untrackPath(String path) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean addNoteToCommit(String noteText, String commitHash, String namespace) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean copyNotes(String commitHashFrom, String commitHashTo) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public Map<String, String> retrieveNotesForCommit(String commitHash) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public GitStatusResultSuccess status() {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public void abortCherryPick() {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public GitMergeCommandResult mergeBranchToCurrentBranch(String branchName) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
+		PushCommand push = git.push();
+		//check if we have credentials
+		if (userName != null && passwordOrToken != null) {
+			push = push.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken));
+		}
+
+		try {
+			Iterable<PushResult> origin = push.setRemote("origin").setPushAll().call();
+		}
+		//TODO pretty inconsice
+		catch (GitAPIException e) {
+			if (e.getMessage().contains("UnresolvedAddressException")) {
+				return new PushCommandUnresolvedAddress(e.getMessage());
+			}
+			return new PushCommandUnknownResult();
+		}
+		return new PushCommandSuccess();
+	}
+
+	@Override
+	public ResetCommandResult resetToHEAD() {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		long time = System.currentTimeMillis();
 		Iterable<RevCommit> commitIterable = null;
@@ -301,6 +393,11 @@ public class JGitConnector implements GitConnector {
 
 		LOGGER.info("Obtaining commits for " + file + " in " + (System.currentTimeMillis() - time) + " ms");
 		return list;
+	}
+
+	@Override
+	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
