@@ -15,9 +15,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public class GitConnectorIsCleanTest extends GitConnectorTestTemplate{
+public class GitConnectorIsCleanTest extends GitConnectorTestTemplate {
 
-	public GitConnectorIsCleanTest(GitConnector connector) throws IOException {
+	public GitConnectorIsCleanTest(GitConnector connector) {
 		this.gitConnector = connector;
 	}
 

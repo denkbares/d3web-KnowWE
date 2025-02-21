@@ -24,6 +24,8 @@ public interface GitConnector {
 	String DEFAULT_BRANCH = "main";
 	String NO_COMMENT = "<no comment>";
 
+
+
 	/**
 	 * For a specified path (relative to the repository), returns a list of all long commit hashes.
 	 * The first entry of the returning list is the oldest version and the last entry is the latest version

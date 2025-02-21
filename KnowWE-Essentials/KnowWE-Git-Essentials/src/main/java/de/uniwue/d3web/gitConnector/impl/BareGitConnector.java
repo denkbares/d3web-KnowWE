@@ -55,11 +55,22 @@ public final class BareGitConnector implements GitConnector {
 		this.isGitInstalled = this.gitInstalled();
 	}
 
+	@Override
+	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
+		String joinedPaths = String.join(" ", pathsToDelete);
+		String prefix = cached ? "git rm --cached " : "git rm -f ";
+		String rmResult = RawGitExecutor.executeGitCommand(prefix + joinedPaths, this.repositoryPath);
+		if (!Arrays.stream(rmResult.split("\n")).allMatch(line -> line.startsWith("rm"))) {
+			LOGGER.error("Could not delete paths: " + pathsToDelete);
+		}
+		return null;
+	}
+
 	/**
 	 * Decides whether a local git installation is available on the machine. Do not call this method ever, use the field
 	 *
 	 * @return Whether git is installed on the local machine
-	 * @gitInstalled instead.
+	 *  gitInstalled instead.
 	 */
 	private boolean gitInstalled() {
 		String[] command = { "git", "--version" };
@@ -480,16 +491,7 @@ public final class BareGitConnector implements GitConnector {
 		throw new NotImplementedException("So far not implemented - use the JGit version");
 	}
 
-	@Override
-	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
-		String joinedPaths = String.join(" ", pathsToDelete);
-		String prefix = cached ? "git rm --cached " : "git rm ";
-		String rmResult = RawGitExecutor.executeGitCommand(prefix + joinedPaths, this.repositoryPath);
-		if (!Arrays.stream(rmResult.split("\n")).allMatch(line -> line.startsWith("rm"))) {
-			LOGGER.error("Could not delete paths: " + pathsToDelete);
-		}
-		return null;
-	}
+
 
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {

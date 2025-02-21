@@ -8,13 +8,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.ProviderException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
@@ -79,6 +82,54 @@ public class JGitConnector implements GitConnector {
 		this.ignoreNode = initIgnoreNode(repository.getDirectory().getParentFile());
 		this.git = new Git(repository);
 	}
+
+
+	@Override
+	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
+		try {
+			Collection<String> deleteFiles = new HashSet<>(pathsToDelete);
+
+			// Erstellt den JGit RmCommand
+			RmCommand rmCommand = git.rm();
+
+			// Status des Repositories abrufen
+			Status status = git.status().call();
+
+			// filter for untracked files
+			Set<String> untracked = status.getUntracked();
+			deleteFiles.removeAll(untracked);
+
+
+			// Fügt alle Dateien zur Löschung hinzu
+			for (String path : deleteFiles) {
+				rmCommand.addFilepattern(path);
+			}
+
+			if(deleteFiles.isEmpty()) {
+				return "<no untracked files to delete>";
+			}
+
+			// Falls 'cached' true ist, wird die Datei nur aus dem Index entfernt, nicht aus dem Arbeitsverzeichnis
+			if (cached) {
+				rmCommand.setCached(true);
+			}
+
+			// Führt den Löschbefehl aus
+			rmCommand.call();
+
+			// Erstelle einen Commit mit den Änderungen
+			CommitCommand commit = git.commit()
+					.setMessage("Deleted paths: " + String.join(", ", pathsToDelete))
+					.setAuthor(userData.user, userData.email);
+
+			// Commit durchführen und Commit-Hash zurückgeben
+			return commit.call().getId().getName();
+
+		} catch (GitAPIException e) {
+			throw new RuntimeException("Failed to delete paths: " + pathsToDelete, e);
+		}
+	}
+
 
 	@NotNull
 	private IgnoreNode initIgnoreNode(File pageDir) {
@@ -774,6 +825,8 @@ public class JGitConnector implements GitConnector {
 		return commitHash;
 	}
 
+
+
 	@Override
 	public String deletePath(String path, UserData userData, boolean cached) {
 
@@ -814,10 +867,6 @@ public class JGitConnector implements GitConnector {
 		return commitHash;
 	}
 
-	@Override
-	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
-		throw new NotImplementedException("TODO");
-	}
 
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {

@@ -140,7 +140,7 @@ public class RawGitExecutor {
 		finally {
 			outputFile.delete();
 		}
-		LOGGER.info("Response: " +response);
+		LOGGER.info("Response: " + response);
 		return response;
 	}
 }
