@@ -78,6 +78,7 @@ public class RawGitExecutor {
 
 		stopWatch.stop();
 		LOGGER.debug("Executed command: " + Arrays.toString(command) + " in " + stopWatch.getTime());
+		LOGGER.info("Response: " +response);
 		return response;
 	}
 	public static String executeGitCommand(String[] command, String repositoryPath) {
@@ -139,6 +140,7 @@ public class RawGitExecutor {
 		finally {
 			outputFile.delete();
 		}
+		LOGGER.info("Response: " +response);
 		return response;
 	}
 }
