@@ -5,7 +5,6 @@
 package de.uniwue.d3web.gitConnector;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,7 @@ public class GitConnectorIsCleanTest extends GitConnectorTestTemplate {
 
 	@Test
 	public void testIsClean() throws IOException {
-		setUp();
+		setUp(false);
 		// should be clean at the beginning
 		assertTrue(gitConnector.isClean());
 
@@ -34,10 +33,12 @@ public class GitConnectorIsCleanTest extends GitConnectorTestTemplate {
 		assertFalse(gitConnector.isClean());
 
 		// then we commit the file
-		gitConnector.commitPathsForUser("huhu", "markus merged", "m@merged.com", Collections.singleton(FILE));
+		commit();
 
 		// should be clean again
 		assertTrue(gitConnector.isClean());
 
 	}
+
+
 }

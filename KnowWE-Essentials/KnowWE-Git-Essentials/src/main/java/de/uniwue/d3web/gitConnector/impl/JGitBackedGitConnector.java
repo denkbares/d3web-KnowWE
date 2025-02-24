@@ -224,6 +224,22 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public boolean pushAll(String userName, String passwordOrToken) {
+		if(jgitConnector.gitInstalledAndReady()) {
+			return this.jgitConnector.pushAll(userName, passwordOrToken);
+		}
+		return this.bareGitConnector.pushAll(userName, passwordOrToken);
+	}
+
+	@Override
+	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
+		if(jgitConnector.gitInstalledAndReady()) {
+			return this.jgitConnector.pushBranch(branch, userName, passwordOrToken);
+		}
+		return this.bareGitConnector.pushBranch(branch, userName, passwordOrToken);
+	}
+
+	@Override
 	public GitStatusCommandResult status() {
 		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.status();
@@ -260,6 +276,14 @@ public class JGitBackedGitConnector implements GitConnector {
 			return this.bareGitConnector.resetToHEAD();
 		}
 		return this.jgitConnector.resetToHEAD();
+	}
+
+	@Override
+	public FileStatus getStatus(String file) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.getStatus(file);
+		}
+		return this.jgitConnector.getStatus(file);
 	}
 
 	@Override

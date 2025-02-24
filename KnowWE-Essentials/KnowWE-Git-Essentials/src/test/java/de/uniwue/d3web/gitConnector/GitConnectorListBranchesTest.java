@@ -25,7 +25,7 @@ public class GitConnectorListBranchesTest extends GitConnectorTestTemplate {
 
 	@Test
 	public void testListBranches() throws IOException {
-		setUp();
+		setUp(false);
 
 		// for some reason git only list branches after the first commit has been made: before -> 0
 		List<String> branches0 = gitConnector.listBranches(false);

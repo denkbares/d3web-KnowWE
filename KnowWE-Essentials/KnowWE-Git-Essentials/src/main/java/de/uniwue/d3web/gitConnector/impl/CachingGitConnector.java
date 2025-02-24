@@ -130,6 +130,11 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
+	public FileStatus getStatus(String file) {
+		return this.delegate.getStatus(file);
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		this.updateCacheForPath(file);
 		return this.getCurrentCache().get(file);
@@ -439,6 +444,16 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public Map<String, String> retrieveNotesForCommit(String commitHash) {
 		return this.delegate.retrieveNotesForCommit(commitHash);
+	}
+
+	@Override
+	public boolean pushAll(String userName, String passwordOrToken) {
+		return delegate.pushAll(userName, passwordOrToken);
+	}
+
+	@Override
+	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
+		return delegate.pushBranch(branch, userName, passwordOrToken);
 	}
 
 	@Override

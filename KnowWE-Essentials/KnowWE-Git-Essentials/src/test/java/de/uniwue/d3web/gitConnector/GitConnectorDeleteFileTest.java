@@ -4,21 +4,15 @@
 
 package de.uniwue.d3web.gitConnector;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
@@ -29,7 +23,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 
 	@Test
 	public void testDeleteAdded() throws IOException {
-		setUp();
+		setUp(false);
 		// should be clean at the beginning
 		assertTrue(gitConnector.isClean());
 
@@ -39,36 +33,76 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		gitConnector.deletePaths(List.of(FILE), new UserData("huhu", "", ""), false );
+		delete(false);
 
 		assertFalse(CONTENT_FILE.exists());
 		assertTrue(gitConnector.isClean());
 
+	}
+
+	@Test
+	public void testDeleteAddedCached() throws IOException {
+		setUp(true);
+		// should be clean at the beginning
+		assertTrue(gitConnector.isClean());
+
+		// we add some file
+		writeAndAddContentFile();
+
+		assertTrue(CONTENT_FILE.exists());
+
+		// then we delete the file
+		delete(true);
+
+		assertTrue(CONTENT_FILE.exists());
+		assertFalse(gitConnector.isClean());
+		GitConnector.FileStatus status = gitConnector.getStatus(FILE);
+		assertEquals(GitConnector.FileStatus.Untracked, status);
 	}
 
 	@Test
 	public void testDeleteCommited() throws IOException {
-		setUp();
+		setUp(false);
 		// should be clean at the beginning
 		assertTrue(gitConnector.isClean());
 
 		// we add some file
 		writeAndAddContentFile();
-		gitConnector.commitPathsForUser("huhu", "", "", Collections.singleton(FILE));
+		commit();
 
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		gitConnector.deletePaths(List.of(FILE), new UserData("huhu", "", ""), false );
-
+		delete(false);
 
 		assertFalse(CONTENT_FILE.exists());
 
 	}
 
 	@Test
+	public void testDeleteCommitedCached() throws IOException {
+		setUp(false);
+		// should be clean at the beginning
+		assertTrue(gitConnector.isClean());
+
+		// we add some file
+		writeAndAddContentFile();
+		commit();
+
+		assertTrue(CONTENT_FILE.exists());
+
+		// then we delete the file
+		delete(true);
+
+		assertTrue(CONTENT_FILE.exists());
+
+	}
+
+
+
+	@Test
 	public void testDeleteUntracked() throws IOException {
-		setUp();
+		setUp(false);
 		// should be clean at the beginning
 		assertTrue(gitConnector.isClean());
 
@@ -78,7 +112,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		gitConnector.deletePaths(List.of(FILE), new UserData("huhu", "", ""), false );
+		delete(false);
 
 		assertTrue(CONTENT_FILE.exists());
 

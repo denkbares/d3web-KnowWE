@@ -25,6 +25,26 @@ public interface GitConnector {
 	String NO_COMMENT = "<no comment>";
 
 
+	/**
+	 * In a git repo, one file is either committed, staged (added) or untracked.
+	 * Or it does not exist in the first place.
+	 */
+	enum FileStatus {
+		Committed_Clean, // file is committed and not changed since
+		Committed_Modified, // file is committed but changed after last commit
+		Committed_Deleted, // file is committed but file has just been deleted
+		Staged,	// file was added but not yet committed
+		Untracked,	// file has not been added to git-vcs
+		NotExisting // requested file does not exist on the file system
+	}
+
+	/**
+	 * Returns the status of a given file
+	 *
+	 * @param file file
+	 * @return status of the file in the current repo
+	 */
+	FileStatus getStatus(String file);
 
 	/**
 	 * For a specified path (relative to the repository), returns a list of all long commit hashes.
@@ -170,6 +190,7 @@ public interface GitConnector {
 	 * @return commit hash
 	 */
 	String deletePath(String pathToDelete, UserData userData, boolean cached);
+
 
 	/**
 	 * Deletes the paths by creating a commit based on the provided userdata! Returns the according commit hash
@@ -359,13 +380,12 @@ public interface GitConnector {
 		return retrieveNotesForCommit(commitHash).get(namespace);
 	}
 
-
 	/**
 	 * Pushes all commit to origin.
 	 *
 	 * @return true if push was successful
 	 */
-	boolean pushAll();
+	boolean pushAll(String userName, String passwordOrToken);
 
 	/**
 	 * Pushes the given branch to origin.
@@ -373,7 +393,18 @@ public interface GitConnector {
 	 * @param branch the branch to be pushed
 	 * @return true if push was successful
 	 */
-	boolean pushBranch(String branch);
+	boolean pushBranch(String branch, String userName, String passwordOrToken);
+
+
+
+	default boolean pushAll() {
+		return pushAll("", "");
+	}
+
+
+	default boolean pushBranch(String branch) {
+		return pushBranch(branch, "", "");
+	}
 
 	/**
 	 * Pulls with rebase mode if specified

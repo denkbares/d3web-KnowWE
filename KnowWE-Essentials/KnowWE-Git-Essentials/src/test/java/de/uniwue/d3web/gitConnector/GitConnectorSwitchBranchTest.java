@@ -22,7 +22,7 @@ public class GitConnectorSwitchBranchTest extends GitConnectorTestTemplate {
 
 	@Test
 	public void testSwitchBranch() throws IOException {
-		setUp();
+		setUp(false);
 		assertEquals("main", gitConnector.currentBranch());
 		String otherBranch = "myBranch";
 

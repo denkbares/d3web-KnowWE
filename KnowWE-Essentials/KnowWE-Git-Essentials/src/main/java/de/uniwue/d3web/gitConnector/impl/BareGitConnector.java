@@ -55,6 +55,50 @@ public final class BareGitConnector implements GitConnector {
 		this.isGitInstalled = this.gitInstalled();
 	}
 
+
+	@Override
+	public FileStatus getStatus(String file) {
+		String[] statusCommand = new String[]{"git", "status", "--porcelain", file};
+		String result = RawGitExecutor.executeGitCommand(statusCommand, this.repositoryPath).trim();
+
+		if (result.isEmpty()) {
+			File localFile = new File(repositoryPath+File.separator+file);
+			if(!localFile.exists()) {
+				return FileStatus.NotExisting;
+			}
+		}
+		// TODO: wie sind die Stati eigentlich definiert???  committed und dann wieder geändert -> staged oder committed oder modified ???
+		List<String> untrackedPrefixes = Arrays.asList("??");
+		List<String> stagedPrefixes = Arrays.asList("A ", "M ", "D ");
+		List<String> committedPrefixes = Arrays.asList(" M", " D");
+
+		if(result.isBlank()) {
+			// this the normal case : file is existing but not listed by git statuss
+			return FileStatus.Committed_Clean;
+		}
+		String statusCode = result.substring(0, 1);
+		if (statusCode.equals("?")) return FileStatus.Untracked;
+		if (statusCode.trim().equals("A")) return FileStatus.Staged;
+		if (statusCode.trim().equals("D")) return FileStatus.Committed_Deleted;
+		if (statusCode.trim().equals("M")) return FileStatus.Committed_Modified;
+
+		return FileStatus.NotExisting;
+	}
+
+	@Override
+	public boolean pushAll() {
+		String[] commitCommand = new String[] { "git", "push" };
+		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		return true;
+	}
+
+	@Override
+	public boolean pushBranch(String branch) {
+		String[] commitCommand = new String[] { "git", "push", "origin", branch };
+		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		return true;
+	}
+
 	@Override
 	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
 		String joinedPaths = String.join(" ", pathsToDelete);
@@ -237,6 +281,7 @@ public final class BareGitConnector implements GitConnector {
 		Collections.reverse(commitHashes);
 		return commitHashes;
 	}
+
 
 	@Override
 	public List<String> commitHashesForFile(String file) {
@@ -694,21 +739,7 @@ public final class BareGitConnector implements GitConnector {
 		return switchToBranch(tagName, false);
 	}
 
-	@Override
-	public boolean pushAll() {
-		String[] commitCommand = new String[] { "git", "push" };
-		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
-		// todo: why do we not get any feedback here?
-		return true;
-	}
 
-	@Override
-	public boolean pushBranch(String branch) {
-		String[] commitCommand = new String[] { "git", "push", "origin", branch };
-		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
-		// todo: why do we not get any feedback here?
-		return true;
-	}
 
 	@Override
 	public boolean pullCurrent(boolean rebase) {
@@ -792,6 +823,18 @@ public final class BareGitConnector implements GitConnector {
 	@Override
 	public Map<String, String> retrieveNotesForCommit(String commitHash) {
 		return Map.of();
+	}
+
+	@Override
+	public boolean pushAll(String userName, String passwordOrToken) {
+		// TODO: should use authorization!
+		return pushAll();
+	}
+
+	@Override
+	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
+		// TODO: should use authorization!
+		return pushBranch(branch);
 	}
 
 	@Override

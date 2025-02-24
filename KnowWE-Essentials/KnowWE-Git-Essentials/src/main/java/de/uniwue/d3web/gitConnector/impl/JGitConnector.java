@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
@@ -83,53 +82,127 @@ public class JGitConnector implements GitConnector {
 		this.git = new Git(repository);
 	}
 
+	@Override
+	public FileStatus getStatus(String file) {
+
+		File localFile = new File(repository.getWorkTree()+File.separator+file);
+		boolean fileExists = localFile.exists();
+
+		Status status;
+		try {
+			status = git.status().call();
+		}
+		catch (GitAPIException e) {
+			throw new RuntimeException(e);
+		}
+
+		// filter for untracked files
+		Set<String> untracked = status.getUntracked();
+		Set<String> added = status.getAdded();
+		Set<String> changed = status.getChanged();
+		Set<String> modified = status.getModified();
+		Set<String> removed = status.getRemoved();
+		Set<String> missing = status.getMissing();
+
+
+		if (added.contains(file)) {
+			return FileStatus.Staged;
+		}
+		if (changed.contains(file)) {
+			return null;
+		}
+		if (modified.contains(file)) {
+			return FileStatus.Committed_Modified;
+		}
+		if (removed.contains(file)) {
+			return FileStatus.Committed_Deleted;
+		}
+		if (missing.contains(file)) {
+			return FileStatus.Committed_Deleted;
+		}
+		if (untracked.contains(file)) {
+			return FileStatus.Untracked;
+		}
+
+		// this is the normal case, file is existing, but not listed in git status
+		if(fileExists) {
+			return FileStatus.Committed_Clean;
+		} else {
+			return FileStatus.NotExisting;
+		}
+
+	}
+
+	@Override
+	public boolean pushAll(String userName, String passwordOrToken) {
+		try {
+			LOGGER.info("Pushing all branches to remote...");
+			git.push()
+					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken))
+					.setPushAll()
+					.call();
+			return true;
+		}
+		catch (GitAPIException e) {
+			LOGGER.error("Error pushing all branches to remote", e);
+			return false;
+		}
+	}
+
+	@Override
+	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
+		try {
+			LOGGER.info("Pushing branch: {} to remote...", branch);
+			git.push()
+					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken))
+					.setRemote("origin")
+					.add(branch)
+					.call();
+			return true;
+		}
+		catch (GitAPIException e) {
+			LOGGER.error("Error pushing branch {} to remote", branch, e);
+			return false;
+		}
+	}
 
 	@Override
 	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
 		try {
 			Collection<String> deleteFiles = new HashSet<>(pathsToDelete);
 
-			// Erstellt den JGit RmCommand
 			RmCommand rmCommand = git.rm();
 
-			// Status des Repositories abrufen
 			Status status = git.status().call();
 
 			// filter for untracked files
 			Set<String> untracked = status.getUntracked();
 			deleteFiles.removeAll(untracked);
 
-
-			// Fügt alle Dateien zur Löschung hinzu
 			for (String path : deleteFiles) {
 				rmCommand.addFilepattern(path);
 			}
 
-			if(deleteFiles.isEmpty()) {
+			if (deleteFiles.isEmpty()) {
 				return "<no untracked files to delete>";
 			}
 
-			// Falls 'cached' true ist, wird die Datei nur aus dem Index entfernt, nicht aus dem Arbeitsverzeichnis
 			if (cached) {
 				rmCommand.setCached(true);
 			}
 
-			// Führt den Löschbefehl aus
 			rmCommand.call();
 
-			// Erstelle einen Commit mit den Änderungen
 			CommitCommand commit = git.commit()
 					.setMessage("Deleted paths: " + String.join(", ", pathsToDelete))
 					.setAuthor(userData.user, userData.email);
 
-			// Commit durchführen und Commit-Hash zurückgeben
 			return commit.call().getId().getName();
-
-		} catch (GitAPIException e) {
+		}
+		catch (GitAPIException e) {
 			throw new RuntimeException("Failed to delete paths: " + pathsToDelete, e);
 		}
 	}
-
 
 	@NotNull
 	private IgnoreNode initIgnoreNode(File pageDir) {
@@ -156,7 +229,7 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String cherryPick( List<String> commitHashesToCherryPick) {
+	public String cherryPick(List<String> commitHashesToCherryPick) {
 		throw new NotImplementedException("TODO");
 	}
 
@@ -211,7 +284,6 @@ public class JGitConnector implements GitConnector {
 		return null;
 	}
 
-
 	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
 		throw new NotImplementedException("TODO");
@@ -250,8 +322,8 @@ public class JGitConnector implements GitConnector {
 		try {
 			List<Ref> refs = listBranchCommand.call();
 			refs.stream().forEach(ref -> {
-				if(!ref.getName().startsWith(REFS_HEADS)) {
-					throw new IllegalStateException("Unexpected ref name: " +ref.getName());
+				if (!ref.getName().startsWith(REFS_HEADS)) {
+					throw new IllegalStateException("Unexpected ref name: " + ref.getName());
 				}
 			});
 			return refs.stream().map(ref -> ref.getName().substring(REFS_HEADS.length())).toList();
@@ -260,7 +332,6 @@ public class JGitConnector implements GitConnector {
 			LOGGER.error("jgit API exception", e);
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	@Override
@@ -292,7 +363,8 @@ public class JGitConnector implements GitConnector {
 					return false;
 				}
 			}
-		} catch (GitAPIException e) {
+		}
+		catch (GitAPIException e) {
 			LOGGER.error("jgit API exception (Maybe the repo is still empty -> some file required!", e);
 			throw new RuntimeException(e);
 		}
@@ -301,16 +373,6 @@ public class JGitConnector implements GitConnector {
 	@Override
 	public boolean switchToTag(String tagName) {
 		return switchToBranch(tagName, false);
-	}
-
-	@Override
-	public boolean pushAll() {
-		throw new NotImplementedException("TODO");
-	}
-
-	@Override
-	public boolean pushBranch(String branch) {
-		throw new NotImplementedException("TODO");
 	}
 
 	@Override
@@ -825,8 +887,6 @@ public class JGitConnector implements GitConnector {
 		return commitHash;
 	}
 
-
-
 	@Override
 	public String deletePath(String path, UserData userData, boolean cached) {
 
@@ -866,7 +926,6 @@ public class JGitConnector implements GitConnector {
 		}
 		return commitHash;
 	}
-
 
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {
@@ -939,7 +998,8 @@ public class JGitConnector implements GitConnector {
 	private final int RETRY = 2;
 	private final int DELAY = 100;
 
-	public <V> V retryGitOperation(Callable<V> callable, Class<? extends Throwable> t, String message) throws Exception {
+	public <V> V retryGitOperation(Callable<V> callable, Class<? extends Throwable> t, String message) throws
+			Exception {
 		int counter = 0;
 
 		JGitInternalException internalException = null;

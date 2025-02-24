@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -47,7 +48,7 @@ public class GitConnectorTestTemplate {
 	}
 
 
-	public void setUp() throws IOException {
+	public void setUp(boolean doInitialCommit) throws IOException {
 
 		assumeTrue(gitConnector.gitInstalledAndReady()) ;
 
@@ -60,11 +61,58 @@ public class GitConnectorTestTemplate {
 		initGitAndSetOriginRepo(wikiPathA, REPO);
 
 
+		if(doInitialCommit) {
+			String initFile = "InitContent.txt";
+			writeAndAddContentFile(initFile);
+			commit(initFile);
+			gitConnector.pushAll();
+			assumeTrue(gitConnector.isClean());
+		}
 
 	}
 
-	void writeAndAddContentFile() throws IOException {
-		FileUtils.write(CONTENT_FILE, "CONTENT", Charset.defaultCharset());
+	protected void delete(boolean cached) {
+		gitConnector.deletePaths(List.of(FILE), new UserData("huhu", "", ""), cached );
+	}
+
+	protected void commit(String file) {
+		gitConnector.commitPathsForUser("huhu", "markus merged", "m@merged.com", Collections.singleton(file));
+	}
+
+	protected void commit() {
+		commit(FILE);
+	}
+
+	protected void writeAndAddContentFile(String file) throws IOException {
+		writeAndAddContentFile(file, "CONTENT");
+	}
+
+	protected void writeAndAddContentFile(String file, String content) throws IOException {
+		write(file, content);
+		add(file);
+	}
+
+	protected void add() {
 		gitConnector.addPath(FILE);
+	}
+
+	protected void add(String file) {
+		gitConnector.addPath(file);
+	}
+
+	protected static void write(String file, String content) throws IOException {
+		FileUtils.write(new File(WIKI_PATH, file), content, Charset.defaultCharset());
+	}
+
+	protected static void delete() throws IOException {
+		FileUtils.delete(new File(WIKI_PATH, FILE));
+	}
+
+	protected static void write() throws IOException {
+		FileUtils.write(new File(WIKI_PATH, FILE), "CONTENT", Charset.defaultCharset());
+	}
+
+	void writeAndAddContentFile() throws IOException {
+		writeAndAddContentFile(FILE, "CONTENT");
 	}
 }
