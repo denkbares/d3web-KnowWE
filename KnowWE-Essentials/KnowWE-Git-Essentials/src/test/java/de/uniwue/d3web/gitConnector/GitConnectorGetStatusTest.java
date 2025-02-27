@@ -44,7 +44,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 		assertTrue(gitConnector.isClean());
 
 		writeAndAddContentFile();
-		commit();
+		gitCommit();
 		assertEquals(GitConnector.FileStatus.Committed_Clean, gitConnector.getStatus(FILE));
 	}
 

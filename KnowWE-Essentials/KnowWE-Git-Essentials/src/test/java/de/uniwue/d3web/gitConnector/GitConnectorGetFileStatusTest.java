@@ -32,11 +32,11 @@ public class GitConnectorGetFileStatusTest extends GitConnectorTestTemplate {
 		// we add some file
 		write();
 		assertEquals(GitConnector.FileStatus.Untracked, gitConnector.getStatus(FILE));
-		add();
+		gitAdd();
 
 		assertEquals(GitConnector.FileStatus.Staged, gitConnector.getStatus(FILE));
 
-		commit();
+		gitCommit();
 
 		assertEquals(GitConnector.FileStatus.Committed_Clean, gitConnector.getStatus(FILE));
 
@@ -45,8 +45,7 @@ public class GitConnectorGetFileStatusTest extends GitConnectorTestTemplate {
 
 		assertEquals(GitConnector.FileStatus.Committed_Modified, gitConnector.getStatus(FILE));
 
-		//gitConnector.deletePaths(List.of(FILE), new UserData("huhu", "", ""), false );
-		delete();
+		gitDelete();
 
 		assertEquals(GitConnector.FileStatus.Committed_Deleted, gitConnector.getStatus(FILE));
 

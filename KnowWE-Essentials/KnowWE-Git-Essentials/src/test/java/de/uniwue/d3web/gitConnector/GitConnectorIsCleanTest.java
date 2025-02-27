@@ -33,7 +33,7 @@ public class GitConnectorIsCleanTest extends GitConnectorTestTemplate {
 		assertFalse(gitConnector.isClean());
 
 		// then we commit the file
-		commit();
+		gitCommit();
 
 		// should be clean again
 		assertTrue(gitConnector.isClean());

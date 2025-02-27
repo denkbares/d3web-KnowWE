@@ -24,16 +24,21 @@ import static de.uniwue.d3web.gitConnector.GitTestUtils.clearAndMakeWikiPath;
 import static de.uniwue.d3web.gitConnector.GitTestUtils.initGitAndSetOriginRepo;
 import static org.junit.Assume.assumeTrue;
 
+/**
+ * Provides a lot of helpful stuff to create tests for the GitConnectors including
+ * this parameterization, instantiating all existing GitConnector implementations
+ * to run every test on each of them.
+ */
 public class GitConnectorTestTemplate {
 
-	public static final String TARGET = "target";
-	public static final String TARGET_ORIGIN = TARGET+"/origin/";
-	public static final String REPO = "Repo1";
-	public static final String TARGET_ORIGIN_Repo = TARGET_ORIGIN + REPO;
-	public static final String WIKI_1 = "Wiki1";
-	public static final String WIKI_PATH = TARGET + "/" + WIKI_1;
 	public static final String FILE = "Foo.txt";
-	public static final File CONTENT_FILE = new File(WIKI_PATH, FILE);
+	private static final String TARGET = "target";
+	private static final String TARGET_ORIGIN = TARGET+"/origin/";
+	private static final String REPO = "Repo1";
+	private static final String TARGET_ORIGIN_Repo = TARGET_ORIGIN + REPO;
+	private static final String WIKI_1 = "Wiki1";
+	private static final String WIKI_PATH = TARGET + "/" + WIKI_1;
+	static final File CONTENT_FILE = new File(WIKI_PATH, FILE);
 
 	protected  GitConnector gitConnector;
 
@@ -64,48 +69,48 @@ public class GitConnectorTestTemplate {
 		if(doInitialCommit) {
 			String initFile = "InitContent.txt";
 			writeAndAddContentFile(initFile);
-			commit(initFile);
+			gitCommit(initFile);
 			gitConnector.pushAll();
 			assumeTrue(gitConnector.isClean());
 		}
 
 	}
 
-	protected void delete(boolean cached) {
+	void gitDelete(boolean cached) {
 		gitConnector.deletePaths(List.of(FILE), new UserData("huhu", "", ""), cached );
 	}
 
-	protected void commit(String file) {
+	static void gitDelete() throws IOException {
+		FileUtils.delete(new File(WIKI_PATH, FILE));
+	}
+
+	private void gitCommit(String file) {
 		gitConnector.commitPathsForUser("huhu", "markus merged", "m@merged.com", Collections.singleton(file));
 	}
 
-	protected void commit() {
-		commit(FILE);
+	void gitCommit() {
+		gitCommit(FILE);
 	}
 
-	protected void writeAndAddContentFile(String file) throws IOException {
+	private void writeAndAddContentFile(String file) throws IOException {
 		writeAndAddContentFile(file, "CONTENT");
 	}
 
-	protected void writeAndAddContentFile(String file, String content) throws IOException {
+	private void writeAndAddContentFile(String file, String content) throws IOException {
 		write(file, content);
-		add(file);
+		gitAdd(file);
 	}
 
-	protected void add() {
+	void gitAdd() {
 		gitConnector.addPath(FILE);
 	}
 
-	protected void add(String file) {
+	private void gitAdd(String file) {
 		gitConnector.addPath(file);
 	}
 
 	protected static void write(String file, String content) throws IOException {
 		FileUtils.write(new File(WIKI_PATH, file), content, Charset.defaultCharset());
-	}
-
-	protected static void delete() throws IOException {
-		FileUtils.delete(new File(WIKI_PATH, FILE));
 	}
 
 	protected static void write() throws IOException {

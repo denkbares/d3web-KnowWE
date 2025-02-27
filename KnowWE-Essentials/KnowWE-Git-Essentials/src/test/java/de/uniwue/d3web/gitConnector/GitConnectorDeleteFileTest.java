@@ -33,7 +33,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		delete(false);
+		gitDelete(false);
 
 		assertFalse(CONTENT_FILE.exists());
 		assertTrue(gitConnector.isClean());
@@ -52,7 +52,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		delete(true);
+		gitDelete(true);
 
 		assertTrue(CONTENT_FILE.exists());
 		assertFalse(gitConnector.isClean());
@@ -68,12 +68,12 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 
 		// we add some file
 		writeAndAddContentFile();
-		commit();
+		gitCommit();
 
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		delete(false);
+		gitDelete(false);
 
 		assertFalse(CONTENT_FILE.exists());
 
@@ -87,12 +87,12 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 
 		// we add some file
 		writeAndAddContentFile();
-		commit();
+		gitCommit();
 
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		delete(true);
+		gitDelete(true);
 
 		assertTrue(CONTENT_FILE.exists());
 
@@ -112,7 +112,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 		assertTrue(CONTENT_FILE.exists());
 
 		// then we delete the file
-		delete(false);
+		gitDelete(false);
 
 		assertTrue(CONTENT_FILE.exists());
 

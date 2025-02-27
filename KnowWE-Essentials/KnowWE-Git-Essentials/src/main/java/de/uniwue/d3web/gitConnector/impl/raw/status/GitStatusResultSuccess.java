@@ -11,16 +11,16 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess, Gi
 	private final List<String> removedFiles;
 	private final List<String> conflictingFiles;
 	private final List<String> untrackedFiles;
-
-
 	private final List<String> changedFiles;
+	private final List<String> newFiles;
 
 	private final String errorMessage;
 	private final String output;
 
-	public GitStatusResultSuccess(List<String> removedFiles, List<String> conflictingFiles, List<String> untrackedFiles, List<String> changedFiles, String errorMessage, String output) {
+	public GitStatusResultSuccess(List<String> removedFiles, List<String> conflictingFiles, List<String> untrackedFiles, List<String> changedFiles, List<String> newFiles, String errorMessage, String output) {
 		this.removedFiles = removedFiles;
 		this.conflictingFiles = conflictingFiles;
+		this.newFiles = newFiles;
 		this.errorMessage = errorMessage;
 		this.untrackedFiles = untrackedFiles;
 		this.changedFiles = changedFiles;
@@ -33,6 +33,10 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess, Gi
 
 	public List<String> getChangedFiles() {
 		return new ArrayList<>(changedFiles);
+	}
+
+	public List<String> getNewFiles() {
+		return newFiles;
 	}
 
 	public List<String> getUntrackedFiles() {
@@ -62,6 +66,7 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess, Gi
 		List<String> conflictingFiles = new ArrayList<>();
 		List<String> modifiedFiles = new ArrayList<>();
 		List<String> untrackedFiles = new ArrayList<>();
+		List<String> newFiles = new ArrayList<>();
 
 		String[] lines = output.split("\n");
 		int lineIndex = 0;
@@ -78,6 +83,9 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess, Gi
 			else if (line.matches(".*changed:.*")) {
 				modifiedFiles.add(line.replaceAll("changed:", "").trim());
 			}
+			else if (line.matches(".*new file:.*")) {
+				newFiles.add(line.replaceAll("new file:", "").trim());
+			}
 
 			else if (line.matches(".*Untracked files:.*")) {
 				// Untracked files starten ab der 2-nächsten Zeile
@@ -91,7 +99,7 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess, Gi
 			lineIndex++;
 		}
 
-		return new GitStatusResultSuccess(deletedFiles, conflictingFiles, untrackedFiles, modifiedFiles, output, output);
+		return new GitStatusResultSuccess(deletedFiles, conflictingFiles, untrackedFiles, modifiedFiles, newFiles, output, output);
 	}
 
 	public static void main(String[] args) {
