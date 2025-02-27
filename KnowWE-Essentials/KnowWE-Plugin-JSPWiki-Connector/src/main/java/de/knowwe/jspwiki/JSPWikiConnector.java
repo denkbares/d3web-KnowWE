@@ -296,7 +296,15 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getApplicationRootPath() {
-		return getServletContext().getRealPath("").replaceAll("/+$", "");
+		ServletContext servletContext = getServletContext();
+		String realPath = servletContext.getRealPath("");
+		String rootPath;
+		if(realPath != null) {
+			return realPath.replaceAll("/+$", "");
+		} else {
+			return new File("").getAbsolutePath();
+		}
+
 	}
 
 	@Override
