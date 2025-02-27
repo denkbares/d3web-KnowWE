@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.diff.GitDiffEntry;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
@@ -120,11 +121,11 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> listBranches() {
+	public List<String> listBranches(boolean includeRemoteBranches) {
 		if (this.bareGitConnector.isGitInstalled) {
-			return this.bareGitConnector.listBranches();
+			return this.bareGitConnector.listBranches(includeRemoteBranches);
 		}
-		return this.jgitConnector.listBranches();
+		return this.jgitConnector.listBranches(includeRemoteBranches);
 	}
 
 	@Override
@@ -141,6 +142,45 @@ public class JGitBackedGitConnector implements GitConnector {
 			return this.bareGitConnector.switchToBranch(branch, createBranch);
 		}
 		return this.jgitConnector.switchToBranch(branch, createBranch);
+	}
+
+	@Override
+	public boolean switchToTag(String tagName) {
+		return this.bareGitConnector.switchToTag(tagName);
+	}
+
+	@Override
+	public boolean pushAll() {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.pushAll();
+		}
+		return this.jgitConnector.pushAll();
+	}
+
+	@Override
+	public boolean pushBranch(String branch) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.pushBranch(branch);
+		}
+		return this.jgitConnector.pushBranch(branch);
+	}
+
+	@Override
+	public boolean pullCurrent(boolean rebase) {
+		return this.jgitConnector.pullCurrent(rebase);
+	}
+
+	@Override
+	public String repoName() {
+		return this.bareGitConnector.repoName();
+	}
+
+	@Override
+	public boolean setUpstreamBranch(String branch) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.setUpstreamBranch(branch);
+		}
+		return this.jgitConnector.setUpstreamBranch( branch);
 	}
 
 	@Override
@@ -224,6 +264,14 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public List<GitDiffEntry> diff(String oldCommit, String newCommit, boolean useRenameDetection) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.diff(oldCommit, newCommit, useRenameDetection);
+		}
+		return this.jgitConnector.diff(oldCommit, newCommit, useRenameDetection);
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFile(file);
@@ -252,6 +300,12 @@ public class JGitBackedGitConnector implements GitConnector {
 		this.bareGitConnector.destroy();
 		this.jgitConnector.destroy();
 	}
+
+	@Override
+	public boolean gitInstalledAndReady() {
+		return bareGitConnector.gitInstalledAndReady() && jgitConnector.gitInstalledAndReady();
+	}
+
 
 	@Override
 	public String commitHashForFileAndVersion(String file, int version) {

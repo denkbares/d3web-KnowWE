@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.diff.GitDiffEntry;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
@@ -148,6 +149,12 @@ public class CachingGitConnector implements GitConnector {
 		//TODO it is weird, but i currently can not do this efficiently with this implementation of the cache!
 		return this.delegate.commitHashesForFileSince(file, date);
 	}
+
+	@Override
+	public boolean gitInstalledAndReady() {
+		return delegate.gitInstalledAndReady();
+	}
+
 
 	@Override
 	public String commitHashForFileAndVersion(String file, int version) {
@@ -368,8 +375,8 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> listBranches() {
-		return this.delegate.listBranches();
+	public List<String> listBranches(boolean includeRemoteBranches) {
+		return this.delegate.listBranches(includeRemoteBranches);
 	}
 
 	@Override
@@ -380,6 +387,36 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public boolean switchToBranch(String branch, boolean createBranch) {
 		return this.delegate.switchToBranch(branch, createBranch);
+	}
+
+	@Override
+	public boolean switchToTag(String tagName) {
+		return this.delegate.switchToTag(tagName);
+	}
+
+	@Override
+	public boolean pushAll() {
+		return this.delegate.pushAll();
+	}
+
+	@Override
+	public boolean pushBranch(String branch) {
+		return this.delegate.pushBranch(branch);
+	}
+
+	@Override
+	public boolean pullCurrent(boolean rebase) {
+		return this.delegate.pullCurrent(rebase);
+	}
+
+	@Override
+	public String repoName() {
+		return this.delegate.repoName();
+	}
+
+	@Override
+	public boolean setUpstreamBranch(String branch) {
+		return delegate.setUpstreamBranch(branch);
 	}
 
 	@Override
@@ -433,5 +470,10 @@ public class CachingGitConnector implements GitConnector {
 		//update cache
 		this.updateCache();
 		return null;
+	}
+
+	@Override
+	public List<GitDiffEntry> diff(String oldCommit, String newCommit, boolean useRenameDetection) {
+		return this.delegate.diff(oldCommit, newCommit, useRenameDetection);
 	}
 }

@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uniwue.d3web.gitConnector.impl.raw.diff.GitDiffEntry;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
@@ -17,8 +19,13 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 public interface GitConnector {
 	Logger LOGGER = LoggerFactory.getLogger(GitConnector.class);
 
+	String DEFAULT_BRANCH = "main";
+	String NO_COMMENT = "<no comment>";
+
 	/**
-	 * For a specified path (relative to the repository), returns a list of all long commithashes. The first entry of the returning list is the oldest version and the last entry is the latest version
+	 * For a specified path (relative to the repository), returns a list of all long commithashes. The first entry of
+	 * the returning list is the oldest version and the last entry is the latest version
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -26,12 +33,29 @@ public interface GitConnector {
 
 	/**
 	 * Same as above, but you can also specify the branch where the command gets triggered in
+	 *
 	 * @param file
 	 * @return
 	 */
-	List<String> commitHashesForFileInBranch(String file,String branchName);
+	List<String> commitHashesForFileInBranch(String file, String branchName);
 
+	/**
+	 * For a specified path (relative to the repository), returns a list of all long commit hashes since a certain
+	 * specified point in time.
+	 * The first entry of the returning list is the oldest version and the last entry is the latest version
+	 *
+	 * @param file file
+	 * @param date since date
+	 * @return list of all commit hashes of the file since date
+	 */
 	List<String> commitHashesForFileSince(String file, Date date);
+
+	/**
+	 * Checks if git is ready to go in the current runtime environment
+	 *
+	 * @return true if git is ready to go
+	 */
+	boolean gitInstalledAndReady();
 
 	/**
 	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
@@ -39,7 +63,9 @@ public interface GitConnector {
 	void destroy();
 
 	/**
-	 * Returns the specific hash of a given file in a specific version. Keep in mind that the first version is 1 instead of 0!
+	 * Returns the specific hash of a given file in a specific version. Keep in mind that the first version is 1 instead
+	 * of 0!
+	 *
 	 * @param file
 	 * @param version
 	 * @return the commit-hash for a file and a given version, null if it cannot be found.
@@ -48,13 +74,15 @@ public interface GitConnector {
 
 	/**
 	 * Returns the number of commits that were made onto a specific file, or 0 it none were made!
+	 *
 	 * @param filePath
 	 * @return
 	 */
 	int numberOfCommitsForFile(String filePath);
 
 	/**
-	 *  Returns all commit-hashes that have an assigned date later than the specified date
+	 * Returns all commit-hashes that have an assigned date later than the specified date
+	 *
 	 * @param timeStamp
 	 * @return
 	 */
@@ -64,6 +92,7 @@ public interface GitConnector {
 
 	/**
 	 * Get bytes for a file (specified by its relative path, starting from git root) in a specific version
+	 *
 	 * @param path
 	 * @param version
 	 * @return a bytearray of the content or null if the version could not be found!
@@ -72,21 +101,25 @@ public interface GitConnector {
 
 	/**
 	 * Gets the bytes for a given commit of a certain path
+	 *
 	 * @param commitHash
 	 * @return
 	 */
-	byte[] getBytesForCommit(String commitHash,String path);
+	byte[] getBytesForCommit(String commitHash, String path);
 
 	/**
-	 * Obtains the size of the file in the provided hash in bytes or -1 if the file was not found in the respective commit
+	 * Obtains the size of the file in the provided hash in bytes or -1 if the file was not found in the respective
+	 * commit
+	 *
 	 * @param commitHash
 	 * @param path
 	 * @return
 	 */
-	long getFilesizeForCommit(String commitHash,String path);
+	long getFilesizeForCommit(String commitHash, String path);
 
 	/**
 	 * Checks whether there is a file (provided by the path) in the given version
+	 *
 	 * @param path
 	 * @param version
 	 * @return
@@ -95,6 +128,7 @@ public interface GitConnector {
 
 	/**
 	 * Obtain the userdata for a given commithash
+	 *
 	 * @param commitHash
 	 * @return
 	 */
@@ -102,23 +136,32 @@ public interface GitConnector {
 
 	/**
 	 * In Seconds since 1970
+	 *
 	 * @param commitHash
 	 * @return
 	 */
 	long commitTimeFor(String commitHash);
 
-
-
+	// TODO: BareGitConnector returns the complete command line response !
 	String commitPathsForUser(String message, String author, String email, Set<String> paths);
 
 	/**
-	 * This essentially handles the git operation AFTER a file was moved, that is "from" does no longer exist and "to" is the new location of the file
-	 * Returns the commithash of the underlying commit
+	 * This essentially handles the git operation AFTER a file was moved, that is "from" does no longer exist and "to"
+	 * is the new location of the file
+	 * Returns the commit hash of the underlying commit
+	 *
+	 * @param from    from path
+	 * @param to      to path
+	 * @param user    user
+	 * @param email   mail
+	 * @param message message
+	 * @return commit hash of the move commit
 	 */
 	String moveFile(Path from, Path to, String user, String email, String message);
 
 	/**
 	 * Deletes the path by creating a commit based on the provided userdata! Returns the according commithash
+	 *
 	 * @param pathToDelete
 	 * @param userData
 	 */
@@ -127,7 +170,9 @@ public interface GitConnector {
 	String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached);
 
 	/**
-	 * Use this method to add a given path to a commit and commit it. Does not push! The path will be relativized onto the repository.
+	 * Use this method to add a given path to a commit and commit it. Does not push! The path will be relativized onto
+	 * the repository.
+	 *
 	 * @param pathToPut
 	 * @param userData
 	 * @return commitHash of the performed commit, or null if the commit fails
@@ -136,6 +181,7 @@ public interface GitConnector {
 
 	/**
 	 * Performs a git add <path>
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -146,7 +192,9 @@ public interface GitConnector {
 	void rollbackPaths(Set<String> pathsToRollback);
 
 	/**
-	 * Performs git garbage collection, which is thought to speed up subsequent git calls. Use with caution as this is slow!
+	 * Performs git garbage collection, which is thought to speed up subsequent git calls. Use with caution as this is
+	 * slow!
+	 *
 	 * @param aggressive
 	 * @param prune
 	 */
@@ -154,19 +202,20 @@ public interface GitConnector {
 
 	/**
 	 * Similar to GC() this is meant to speed up subsequent git calls. Use only if you know what it does
+	 *
 	 * @return
 	 */
 	boolean executeCommitGraph();
 
-	String cherryPick( List<String> commitHashesToCherryPick);
+	String cherryPick(List<String> commitHashesToCherryPick);
 
 	/**
 	 * For a provided commithash, this lists all files that are touched in this commit
+	 *
 	 * @param commitHash
 	 * @return
 	 */
 	List<String> listChangedFilesForHash(String commitHash);
-
 
 	default String getTextForPath(String pathToTxt, int version) {
 		if (!pathToTxt.endsWith(".txt")) {
@@ -178,31 +227,38 @@ public interface GitConnector {
 
 	/**
 	 * Obtain the directory in which the .git folder is located
+	 *
 	 * @return
 	 */
 	String getGitDirectory();
 
 	/**
 	 * Returnt he current active branch. Throws Illegalstate if this command fails
+	 *
 	 * @return
 	 */
 	String currentBranch() throws IllegalStateException;
 
 	/**
 	 * Return the current head of the current branch
+	 *
 	 * @return
 	 */
 	String currentHEAD();
 
 	/**
 	 * Return the current head of the specified branch
+	 *
 	 * @return
 	 */
 	String currentHEADOfBranch(String branchName);
 
 	/**
-	 * Obtain all commithashes between the provided commitHashFrom and commitHashTo. The list is sorted in the way git stores these commits.
-	 * The returned list does not contain the from hash, but it does contain commitHashTo (its the last element so drop that one if you do not need it)
+	 * Obtain all commithashes between the provided commitHashFrom and commitHashTo. The list is sorted in the way git
+	 * stores these commits.
+	 * The returned list does not contain the from hash, but it does contain commitHashTo (its the last element so drop
+	 * that one if you do not need it)
+	 *
 	 * @param commitHashFrom
 	 * @param commitHashTo
 	 * @return
@@ -212,6 +268,7 @@ public interface GitConnector {
 
 	/**
 	 * Same as commitsBetween, but the returnes commitHashes are only those that changed the file specified by "path"
+	 *
 	 * @param commitHashFrom
 	 * @param commitHashTo
 	 * @param path
@@ -221,6 +278,7 @@ public interface GitConnector {
 
 	/**
 	 * Checks whether a given path is ignored!
+	 *
 	 * @param path
 	 * @return
 	 */
@@ -235,14 +293,18 @@ public interface GitConnector {
 	String commitForUser(UserData userData);
 
 	/**
-	 * Performs a commit operation on the underlying git using the provided userData - returns the commit hash. You can specify a timestamp.
+	 * Performs a commit operation on the underlying git using the provided userData - returns the commit hash. You can
+	 * specify a timestamp.
 	 * The timestamp has to be specified as a Git timestamp which corresponds to "System.currentTimeMillis()/1000".
+	 *
 	 * @param userData
 	 * @return
 	 */
 	String commitForUser(UserData userData, long timeStamp);
+
 	/**
 	 * Returns whether this repository has any remote origins assigned!
+	 *
 	 * @return
 	 */
 	boolean isRemoteRepository();
@@ -250,39 +312,51 @@ public interface GitConnector {
 	/**
 	 * List all branches of this repository
 	 */
-	 List<String> listBranches();
+	List<String> listBranches(boolean includeRemoteBranches);
 
 	/**
 	 * Lists all commit hashes for a given branch
+	 *
 	 * @return
 	 */
 	List<String> listCommitsForBranch(String branchName);
 
 	/**
 	 * switches to the specified branch and creates the branch if necessary. Returns true if successful
+	 *
 	 * @param branch
 	 * @param createBranch
 	 * @return
 	 */
 	boolean switchToBranch(String branch, boolean createBranch);
 
+	boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch);
 
-	boolean createBranch(String branchName,String branchNameToBaseOn, boolean switchToBranch);
+	/**
+	 * Switches on the current branch to the specified tag (if existing)
+	 *
+	 * @param tagName tag to be switched
+	 * @return
+	 */
+	boolean switchToTag(String tagName);
+
 	/**
 	 * Execute a git rm --cached on the provided path
+	 *
 	 * @param path
 	 * @return
 	 */
 	boolean untrackPath(String path);
 
-	boolean addNoteToCommit(String noteText, String commitHash,String namespace);
+	boolean addNoteToCommit(String noteText, String commitHash, String namespace);
 
 	boolean copyNotes(String commitHashFrom, String commitHashTo);
 
-	Map<String,String> retrieveNotesForCommit(String commitHash);
+	Map<String, String> retrieveNotesForCommit(String commitHash);
 
 	/**
 	 * Retrieves
+	 *
 	 * @param commitHash
 	 * @param namespace
 	 * @return
@@ -292,16 +366,56 @@ public interface GitConnector {
 	}
 
 	/**
+	 * Pushes all commit to origin.
+	 *
+	 * @return true if push was successful
+	 */
+	boolean pushAll();
+
+	/**
+	 * Pushes the given branch to origin.
+	 *
+	 * @param branch the branch to be pushed
+	 * @return true if push was successful
+	 */
+	boolean pushBranch(String branch);
+
+	/**
 	 * Obtain the status of the current active branch
+	 *
 	 * @return
 	 */
 	GitStatusCommandResult status();
 
+	/**
+	 * Pulls with rebase mode if specified
+	 *
+	 * @param rebase rebase mode
+	 * @return true if successful
+	 */
+	boolean pullCurrent(boolean rebase);
 	void abortCherryPick();
+
+	/**
+	 * returns the name of the repository.
+	 *
+	 * @return repo name
+	 */
+	String repoName();
+
+	/**
+	 * Sets the upstream branch for the current branch
+	 *
+	 * @param branch branch on origin that the current branch is connected to
+	 * @return true if successful
+	 */
+	boolean setUpstreamBranch(String branch);
 
 	GitMergeCommandResult mergeBranchToCurrentBranch(String branchName);
 
-	PushCommandResult pushToOrigin(String userName,String passwordOrToken);
+	PushCommandResult pushToOrigin(String userName, String passwordOrToken);
 
 	ResetCommandResult resetToHEAD();
+
+	List<GitDiffEntry> diff(String oldCommit, String newCommit, boolean useRenameDetection);
 }

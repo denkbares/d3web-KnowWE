@@ -13,9 +13,9 @@ object UpdateIgnoredFilesScript {
     fun execute(pathToGit: String, gitIgnoreContent: String, pathsToIgnore: List<String>) {
         val connector = JGitBackedGitConnector.fromPath(pathToGit)
 
-        val numBranches = connector.listBranches().size
+        val numBranches = connector.listBranches(false).size
 
-        connector.listBranches().forEachIndexed { index, branchName ->
+        connector.listBranches(false).forEachIndexed { index, branchName ->
             println("branchName: $branchName ($index of $numBranches)")
 
             if (branchName.startsWith("Task") || branchName.startsWith("jochen")) {
