@@ -357,8 +357,8 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getServletPath() {
-		// TODO Auto-generated method stub
-		return null;
+		// return some reasonable servlet context path
+		return "KnowWE";
 	}
 
 	@Override
