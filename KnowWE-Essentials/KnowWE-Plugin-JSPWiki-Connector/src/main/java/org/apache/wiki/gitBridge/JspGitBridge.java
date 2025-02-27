@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -53,6 +51,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 
 import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.diff.GitDiffEntry;
 
 import static org.apache.wiki.api.providers.AttachmentProvider.PROP_STORAGEDIR;
 import static org.apache.wiki.providers.AbstractFileProvider.FILE_EXT;
@@ -200,32 +199,20 @@ public class JspGitBridge {
 		return rd.compute();
 	}
 
-	public static Set<String> getDiffEntriesJGit(String oldCommitId,String newCommitId,String repopath) {
+	public static List<GitDiffEntry> getDiffEntriesGitConnector(String oldCommitId, String newCommitId, String repopath) {
 		JGitBackedGitConnector gitConnector = JGitBackedGitConnector.fromPath(repopath);
-		List<String> strings = gitConnector.commitsBetween(oldCommitId, newCommitId);
-		List<String> list = strings.stream().flatMap(it -> gitConnector.listChangedFilesForHash(it).stream()).toList();
-		return new HashSet<String>(list);
+		return gitConnector.diff(oldCommitId, newCommitId,true);
 	}
 
 	public static void main(String[] args) throws Exception {
 
-		String path = "/Users/mkrug/Konap/Wiki_VM_release";
+		String path = "/Users/mkrug/Konap/Wikis/Wiki_VM_release";
 
-		Repository repository = new FileRepositoryBuilder()
-				.setGitDir(new File(path, ".git"))
-				.build();
+		JGitBackedGitConnector gitConnector = JGitBackedGitConnector.fromPath(path);
+		List<String> strings = gitConnector.commitsBetween("0045882277804f4d695284b5cc9b8c609c917b33", "e879149aa2365095294ebf82965e233eadff53d2");
 
-		String oldCommitId = "7e63fc8a18e5dcad488edfefcf5df7021f7e7029";
-		String newCommitId = "abccc1e317aa9cec9acb9db5d468baab8ec031b8";
+		List<GitDiffEntry> diffEntriesGitConnector = getDiffEntriesGitConnector("0045882277804f4d695284b5cc9b8c609c917b33", "e879149aa2365095294ebf82965e233eadff53d2", path);
 
-		getDiffEntriesJGit(oldCommitId, newCommitId, path);
-
-		ObjectId oldCommit = getTreeId(repository,repository.resolve(oldCommitId));
-		ObjectId newCommit = getTreeId(repository,repository.resolve(newCommitId));
-
-		List<DiffEntry> diffEntries = JspGitBridge.getDiffEntries(oldCommit, newCommit, repository);
-
-		System.out.println(diffEntries.size());
 		int a = 2;
 	}
 
