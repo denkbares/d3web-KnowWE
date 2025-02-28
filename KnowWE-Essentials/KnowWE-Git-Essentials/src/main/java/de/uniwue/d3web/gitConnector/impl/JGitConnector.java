@@ -83,7 +83,31 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public FileStatus getStatus(String file) {
+	public boolean unstage(@NotNull String file) {
+		try {
+			git.reset().addPath(file).call();
+			return true;
+		} catch (GitAPIException e) {
+			LOGGER.error("Error unstaging file: {}", file, e);
+			return false;
+		}
+	}
+
+
+	@Override
+	public boolean resetFile(String file) {
+		try {
+			git.checkout().addPath(file).call();
+			return true;
+		} catch (GitAPIException e) {
+			LOGGER.error("Fehler beim Zurücksetzen der Datei: {}", file, e);
+			return false;
+		}
+	}
+
+
+	@Override
+	public FileStatus getStatus(@NotNull String file) {
 
 		File localFile = new File(repository.getWorkTree()+File.separator+file);
 		boolean fileExists = localFile.exists();
@@ -483,8 +507,9 @@ public class JGitConnector implements GitConnector {
 		throw new NotImplementedException("TODO");
 	}
 
+
 	@Override
-	public List<String> commitHashesForFile(String file) {
+	public List<String> commitHashesForFile(@NotNull String file) {
 		long time = System.currentTimeMillis();
 		Iterable<RevCommit> commitIterable = null;
 		try {
@@ -509,12 +534,12 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+	public List<String> commitHashesForFileInBranch(@NotNull String file, String branchName) {
 		throw new NotImplementedException("TODO");
 	}
 
 	@Override
-	public List<String> commitHashesForFileSince(String file, Date date) {
+	public List<String> commitHashesForFileSince(@NotNull String file, @NotNull Date date) {
 		Iterable<RevCommit> commits;
 		RevFilter filter = new RevFilter() {
 			@Override

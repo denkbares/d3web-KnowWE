@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
@@ -36,12 +38,12 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String cherryPick( List<String> commitHashesToCherryPick) {
+	public String cherryPick(List<String> commitHashesToCherryPick) {
 		if (bareGitConnector.isGitInstalled) {
-			return this.bareGitConnector.cherryPick( commitHashesToCherryPick);
+			return this.bareGitConnector.cherryPick(commitHashesToCherryPick);
 		}
 		else {
-			return this.jgitConnector.cherryPick( commitHashesToCherryPick);
+			return this.jgitConnector.cherryPick(commitHashesToCherryPick);
 		}
 	}
 
@@ -75,7 +77,6 @@ public class JGitBackedGitConnector implements GitConnector {
 	public String currentHEADOfBranch(String branchName) {
 		return this.bareGitConnector.currentHEADOfBranch(branchName);
 	}
-
 
 	@Override
 	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
@@ -179,7 +180,7 @@ public class JGitBackedGitConnector implements GitConnector {
 		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.setUpstreamBranch(branch);
 		}
-		return this.jgitConnector.setUpstreamBranch( branch);
+		return this.jgitConnector.setUpstreamBranch(branch);
 	}
 
 	@Override
@@ -225,7 +226,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public boolean pushAll(String userName, String passwordOrToken) {
-		if(jgitConnector.gitInstalledAndReady()) {
+		if (jgitConnector.gitInstalledAndReady()) {
 			return this.jgitConnector.pushAll(userName, passwordOrToken);
 		}
 		return this.bareGitConnector.pushAll(userName, passwordOrToken);
@@ -233,7 +234,7 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
-		if(jgitConnector.gitInstalledAndReady()) {
+		if (jgitConnector.gitInstalledAndReady()) {
 			return this.jgitConnector.pushBranch(branch, userName, passwordOrToken);
 		}
 		return this.bareGitConnector.pushBranch(branch, userName, passwordOrToken);
@@ -267,27 +268,43 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
-		return this.jgitConnector.pushToOrigin(userName,passwordOrToken);
+		return this.jgitConnector.pushToOrigin(userName, passwordOrToken);
 	}
 
 	@Override
 	public ResetCommandResult resetToHEAD() {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.resetToHEAD();
 		}
 		return this.jgitConnector.resetToHEAD();
 	}
 
 	@Override
-	public FileStatus getStatus(String file) {
-		if(this.bareGitConnector.isGitInstalled) {
+	public boolean resetFile(String file) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.resetFile(file);
+		}
+		return this.jgitConnector.resetFile(file);
+	}
+
+	@Override
+	public boolean unstage(@NotNull String file) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.unstage(file);
+		}
+		return this.jgitConnector.unstage(file);
+	}
+
+	@Override
+	public FileStatus getStatus(@NotNull String file) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.getStatus(file);
 		}
 		return this.jgitConnector.getStatus(file);
 	}
 
 	@Override
-	public List<String> commitHashesForFile(String file) {
+	public List<String> commitHashesForFile(@NotNull String file) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFile(file);
 		}
@@ -295,16 +312,15 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+	public List<String> commitHashesForFileInBranch(@NotNull String file, String branchName) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFileInBranch(file, branchName);
 		}
 		return this.jgitConnector.commitHashesForFileInBranch(file, branchName);
 	}
 
-
 	@Override
-	public List<String> commitHashesForFileSince(String file, Date date) {
+	public List<String> commitHashesForFileSince(@NotNull String file, @NotNull Date date) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFileSince(file, date);
 		}
@@ -453,12 +469,11 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {
-		if(this.bareGitConnector.isGitInstalled) {
+		if (this.bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.changePath(pathToPut, userData);
 		}
 		return this.jgitConnector.changePath(pathToPut, userData);
 	}
-
 
 	@Override
 	public void addPath(String path) {

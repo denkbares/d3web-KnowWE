@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +39,21 @@ public interface GitConnector {
 		NotExisting // requested file does not exist on the file system
 	}
 
+	/***
+	 * Removes the file from stage (reverse 'git add')
+	 *
+	 * @param file file to be unstaged
+	 * @return true iff it was unstaged
+	 */
+	boolean unstage(@NotNull String file);
+
 	/**
 	 * Returns the status of a given file
 	 *
 	 * @param file file
 	 * @return status of the file in the current repo
 	 */
-	FileStatus getStatus(String file);
+	FileStatus getStatus(@NotNull String file);
 
 	/**
 	 * For a specified path (relative to the repository), returns a list of all long commit hashes.
@@ -52,14 +61,15 @@ public interface GitConnector {
 	 * @param file file
 	 * @return list of commit hashes
 	 */
-	List<String> commitHashesForFile(String file);
+	List<String> commitHashesForFile(@NotNull String file);
 
 	/**
 	 * Same as above, but you can also specify the branch where the command gets triggered in
-	 * @param file
-	 * @return
+	 * @param file file
+	 * @param branchName branch name
+	 * @return commit hashes
 	 */
-	List<String> commitHashesForFileInBranch(String file,String branchName);
+	List<String> commitHashesForFileInBranch(@NotNull String file, String branchName);
 
 	/**
 	 * For a specified path (relative to the repository), returns a list of all long commit hashes since a certain specified point in time.
@@ -68,7 +78,7 @@ public interface GitConnector {
 	 * @param date since date
 	 * @return list of all commit hashes of the file since date
 	 */
-	List<String> commitHashesForFileSince(String file, Date date);
+	List<String> commitHashesForFileSince(@NotNull String file, @NotNull Date date);
 
 	/**
 	 * Checks if git is ready to go in the current runtime environment
@@ -442,4 +452,12 @@ public interface GitConnector {
 	PushCommandResult pushToOrigin(String userName, String passwordOrToken);
 
 	ResetCommandResult resetToHEAD();
+
+	/**
+	 * Resets a modified (or deleted) file to the last committed state.
+	 *
+	 * @param file file to be reset
+	 * @return true iff reset was successful
+	 */
+	boolean resetFile(String file);
 }

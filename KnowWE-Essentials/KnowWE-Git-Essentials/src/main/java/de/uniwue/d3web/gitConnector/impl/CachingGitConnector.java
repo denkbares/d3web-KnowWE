@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
@@ -130,24 +132,31 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
-	public FileStatus getStatus(String file) {
+	public boolean unstage(@NotNull String file) {
+		boolean result = this.delegate.unstage(file);
+		this.updateCacheForPath(file);
+		return result;
+	}
+
+	@Override
+	public FileStatus getStatus(@NotNull String file) {
 		return this.delegate.getStatus(file);
 	}
 
 	@Override
-	public List<String> commitHashesForFile(String file) {
+	public List<String> commitHashesForFile(@NotNull String file) {
 		this.updateCacheForPath(file);
 		return this.getCurrentCache().get(file);
 	}
 
 	@Override
-	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+	public List<String> commitHashesForFileInBranch(@NotNull String file, String branchName) {
 		this.updateCacheForPath(file);
 		return this.delegate.commitHashesForFileInBranch(file,branchName);
 	}
 
 	@Override
-	public List<String> commitHashesForFileSince(String file, Date date) {
+	public List<String> commitHashesForFileSince(@NotNull String file, @NotNull Date date) {
 		//TODO it is weird, but i currently can not do this efficiently with this implementation of the cache!
 		return this.delegate.commitHashesForFileSince(file, date);
 	}
@@ -481,6 +490,13 @@ public class CachingGitConnector implements GitConnector {
 		ResetCommandResult resetCommandResult = this.delegate.resetToHEAD();
 		//update cache
 		this.updateCache();
-		return null;
+		return resetCommandResult;
+	}
+
+	@Override
+	public boolean resetFile(String file) {
+		boolean result =  delegate.resetFile(file);
+		this.updateCacheForPath(file);
+		return result;
 	}
 }

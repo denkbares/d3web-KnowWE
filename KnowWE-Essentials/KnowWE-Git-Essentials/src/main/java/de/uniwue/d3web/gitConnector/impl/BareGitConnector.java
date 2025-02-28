@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,24 +57,57 @@ public final class BareGitConnector implements GitConnector {
 		this.isGitInstalled = this.gitInstalled();
 	}
 
+	@Override
+	public boolean unstage(@NotNull String file) {
+		try {
+			String command = "git restore --staged " + file;
+			String result = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+
+			if (result.contains("error")) {
+				LOGGER.error("Error unstaging file: {}", file);
+				return false;
+			}
+			return true;
+		}
+		catch (Exception e) {
+			LOGGER.error("Error unstaging file: {}", file, e);
+			return false;
+		}
+	}
 
 	@Override
-	public FileStatus getStatus(String file) {
-		String[] statusCommand = new String[]{"git", "status", "--porcelain", file};
+	public boolean resetFile(String file) {
+		try {
+			String command = "git checkout -- " + file;
+			String result = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+
+			if (result.contains("error")) {
+				LOGGER.error("Fehler beim Zurücksetzen der Datei: {}", file);
+				return false;
+			}
+			return true;
+		}
+		catch (Exception e) {
+			LOGGER.error("Exception beim Zurücksetzen der Datei: {}", file, e);
+			return false;
+		}
+	}
+
+
+
+	@Override
+	public FileStatus getStatus(@NotNull String file) {
+		String[] statusCommand = new String[] { "git", "status", "--porcelain", file };
 		String result = RawGitExecutor.executeGitCommand(statusCommand, this.repositoryPath).trim();
 
 		if (result.isEmpty()) {
-			File localFile = new File(repositoryPath+File.separator+file);
-			if(!localFile.exists()) {
+			File localFile = new File(repositoryPath + File.separator + file);
+			if (!localFile.exists()) {
 				return FileStatus.NotExisting;
 			}
 		}
-		// TODO: wie sind die Stati eigentlich definiert???  committed und dann wieder geändert -> staged oder committed oder modified ???
-		List<String> untrackedPrefixes = Arrays.asList("??");
-		List<String> stagedPrefixes = Arrays.asList("A ", "M ", "D ");
-		List<String> committedPrefixes = Arrays.asList(" M", " D");
 
-		if(result.isBlank()) {
+		if (result.isBlank()) {
 			// this the normal case : file is existing but not listed by git statuss
 			return FileStatus.Committed_Clean;
 		}
@@ -114,7 +149,7 @@ public final class BareGitConnector implements GitConnector {
 	 * Decides whether a local git installation is available on the machine. Do not call this method ever, use the field
 	 *
 	 * @return Whether git is installed on the local machine
-	 *  gitInstalled instead.
+	 * gitInstalled instead.
 	 */
 	private boolean gitInstalled() {
 		String[] command = { "git", "--version" };
@@ -234,7 +269,7 @@ public final class BareGitConnector implements GitConnector {
 	@Override
 	public String currentHEADOfBranch(String branchName) {
 		String head = RawGitExecutor.executeGitCommand("git rev-parse " + branchName, this.repositoryPath);
-		if(head != null || !head.isEmpty()) {
+		if (head != null || !head.isEmpty()) {
 			head = head.trim();
 		}
 		return head;
@@ -282,9 +317,8 @@ public final class BareGitConnector implements GitConnector {
 		return commitHashes;
 	}
 
-
 	@Override
-	public List<String> commitHashesForFile(String file) {
+	public List<String> commitHashesForFile(@NotNull String file) {
 
 		String[] command = null;
 		command = new String[] { "git", "log", "--format=%H", file };
@@ -303,7 +337,7 @@ public final class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+	public List<String> commitHashesForFileInBranch(@NotNull String file, String branchName) {
 		String[] command = null;
 		command = new String[] { "git", "log", branchName, "--format=%H", file };
 
@@ -321,7 +355,7 @@ public final class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public List<String> commitHashesForFileSince(String file, Date date) {
+	public List<String> commitHashesForFileSince(@NotNull String file, @NotNull Date date) {
 
 		long epochTime = date.getTime() / 1000L;
 		String[] command = new String[] { "git", "log", "--format=%H", "--since=@" + epochTime, file };
@@ -419,10 +453,10 @@ public final class BareGitConnector implements GitConnector {
 		String[] command = { "git", "status" };
 		String response = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 		// we do not know the language (and cannot set the language, as not every git installation comes with the language package)
-		String[] dirtyKeyWords = {"new file", "modified", "deleted" , "untracked"};
+		String[] dirtyKeyWords = { "new file", "modified", "deleted", "untracked" };
 		boolean isDirty = Arrays.stream(dirtyKeyWords).toList().stream().anyMatch(key -> response.contains(key));
 		boolean isClean = !isDirty;
-		LOGGER.info("isClean: git status result is: " + isClean + "("+ response+")");
+		LOGGER.info("isClean: git status result is: " + isClean + "(" + response + ")");
 		return isClean;
 	}
 
@@ -517,7 +551,7 @@ public final class BareGitConnector implements GitConnector {
 		if (author != null && !author.isEmpty()) {
 			environment.put("GIT_COMMITTER_NAME", author);
 		}
-		String[] commitCommand = new String[] { "git", "commit", "--author=" + author + " <" + email + ">", "-m", message , "--", Strings.concat(" ", paths), };
+		String[] commitCommand = new String[] { "git", "commit", "--author=" + author + " <" + email + ">", "-m", message, "--", Strings.concat(" ", paths), };
 		return RawGitExecutor.executeGitCommandWithEnvironment(commitCommand, this.repositoryPath, environment);
 	}
 
@@ -535,8 +569,6 @@ public final class BareGitConnector implements GitConnector {
 	public String deletePath(String pathToDelete, UserData userData, boolean cached) {
 		throw new NotImplementedException("So far not implemented - use the JGit version");
 	}
-
-
 
 	@Override
 	public String changePath(Path pathToPut, UserData userData) {
@@ -739,8 +771,6 @@ public final class BareGitConnector implements GitConnector {
 		return switchToBranch(tagName, false);
 	}
 
-
-
 	@Override
 	public boolean pullCurrent(boolean rebase) {
 		String[] commitCommand = new String[] { "git", "pull" };
@@ -765,7 +795,6 @@ public final class BareGitConnector implements GitConnector {
 		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
 		return result.contains("set up to track");
 	}
-
 
 	@Override
 	public boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch) {
@@ -801,7 +830,7 @@ public final class BareGitConnector implements GitConnector {
 			}
 		}
 
-		String[] command = new String[] { "git", "rm", "--cached","-f", path };
+		String[] command = new String[] { "git", "rm", "--cached", "-f", path };
 		String output = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 
 		if (output.startsWith("rm")) {
@@ -865,7 +894,6 @@ public final class BareGitConnector implements GitConnector {
 		ResetCommand command = new ResetCommand(this.repositoryPath);
 		return command.execute();
 	}
-
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {
 		LOGGER.info("Init BareGitConnector at path: " + repositoryPath);
