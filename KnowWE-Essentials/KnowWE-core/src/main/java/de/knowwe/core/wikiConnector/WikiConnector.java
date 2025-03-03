@@ -53,6 +53,15 @@ import de.knowwe.core.user.UserContext;
 public interface WikiConnector {
 
 	/**
+	 * Reads to entire content new from the file system. May take a while.
+	 * Scenario: External component has modified wiki contents in batch style
+	 * without using the normal wiki-save-process.
+	 *
+	 * @return true if re-initialization was successful
+	 */
+	boolean reinitializeWikiContent();
+
+	/**
 	 * Returns the list with all available versions of the wiki page with the given title, starting with the most
 	 * recent.
 	 *

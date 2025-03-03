@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -145,6 +146,11 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public boolean hasRollbackPageProvider() {
 		return false;
+	}
+
+	@Override
+	public boolean reinitializeWikiContent() {
+		throw new NotImplementedException("Not yet implemented.");
 	}
 
 	@Override

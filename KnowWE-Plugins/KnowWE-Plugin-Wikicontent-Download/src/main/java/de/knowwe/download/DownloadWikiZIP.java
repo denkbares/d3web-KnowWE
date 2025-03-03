@@ -16,7 +16,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.wikicontentdownload;
+package de.knowwe.download;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

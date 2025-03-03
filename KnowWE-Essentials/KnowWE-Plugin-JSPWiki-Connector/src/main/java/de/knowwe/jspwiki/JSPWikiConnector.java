@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -48,16 +49,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.wiki.WikiContext;
+import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.WikiSession;
 import org.apache.wiki.api.core.Command;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.core.Session;
+import org.apache.wiki.api.exceptions.FilterException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.exceptions.WikiException;
+import org.apache.wiki.api.filters.PageFilter;
 import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
+import org.apache.wiki.api.spi.Wiki;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.auth.AuthorizationManager;
@@ -71,7 +76,12 @@ import org.apache.wiki.auth.permissions.PermissionFactory;
 import org.apache.wiki.auth.permissions.WikiPermission;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.cache.CachingManager;
+import org.apache.wiki.cache.EhcacheCachingManager;
 import org.apache.wiki.content.PageRenamer;
+import org.apache.wiki.event.WikiEngineEvent;
+import org.apache.wiki.event.WikiEventManager;
+import org.apache.wiki.filters.FilterManager;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.pages.PageLock;
 import org.apache.wiki.pages.PageManager;
@@ -102,6 +112,8 @@ import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
+
+import static org.apache.wiki.cache.CachingManager.*;
 
 /**
  * For code documentation look at the WikiConnector interface definition
@@ -288,7 +300,6 @@ public class JSPWikiConnector implements WikiConnector {
 	public UserManager getUserManager() {
 		return engine.getManager(UserManager.class);
 	}
-
 
 	public GroupManager getGroupManager() {
 		return engine.getManager(GroupManager.class);
@@ -589,6 +600,82 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public boolean reinitializeWikiContent() {
+		boolean successFullyClearedCaches = clearCaches();
+		if (!successFullyClearedCaches) return false;
+
+		boolean successfullyReinitializedSearchManager = reinitSearchManager();
+		if (!successfullyReinitializedSearchManager) return false;
+
+		boolean successfullyReinitializedReferenceManager = reinitReferenceManager();
+		if (!successfullyReinitializedReferenceManager) return false;
+
+		List<FilterManager> filterManagers = engine.getManagers(FilterManager.class);
+		FilterManager filterManager = filterManagers.get(0);
+		List<PageFilter> filterList = filterManager.getFilterList();
+		Optional<KnowWEPlugin> first = filterList.stream().filter(filter -> filter instanceof KnowWEPlugin).map(filter -> (KnowWEPlugin)filter).findFirst();
+		if(!first.isPresent()) {
+			LOGGER.error("KnowWEPlugin not found!");
+			return false;
+		}
+		WikiEventManager.fireEvent(engine, new WikiEngineEvent(engine, WikiEngineEvent.INITIALIZED));
+
+		return true;
+	}
+
+	private boolean reinitReferenceManager() {
+		try {
+			if (engine instanceof WikiEngine wikiEngine) {
+				wikiEngine.initReferenceManager(true);
+			}
+			else {
+				LOGGER.error("Unkown wiki engine: " + engine);
+				return false;
+			}
+		}
+		catch (WikiException e) {
+			LOGGER.error("Failed to re-initialize ReferenceManager - " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	private boolean reinitSearchManager() {
+		List<SearchManager> searchManagers = engine.getManagers(SearchManager.class);
+		SearchManager searchManager = searchManagers.get(0);
+		try {
+			searchManager.initialize(engine, engine.getWikiProperties());
+		}
+		catch (FilterException e) {
+			LOGGER.error("Failed to re-initialize searchManager: " + searchManager + " - " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	private boolean clearCaches() {
+		List<CachingManager> managers = engine.getManagers(CachingManager.class);
+		CachingManager cachingManager = managers.get(0);
+		if (cachingManager instanceof EhcacheCachingManager ehManager) {
+			List<String> cacheNames = List.of(CACHE_ATTACHMENTS, CACHE_ATTACHMENTS_COLLECTION, CACHE_ATTACHMENTS_DYNAMIC, CACHE_PAGES, CACHE_PAGES_TEXT, CACHE_PAGES_HISTORY, CACHE_DOCUMENTS);
+			cacheNames.forEach(cache -> cachingManager.shutdown());
+			ReferenceManager referenceManager = getReferenceManager();
+			try {
+				ehManager.initialize(engine, engine.getWikiProperties());
+
+			}
+			catch (WikiException e) {
+				LOGGER.error("Unknown CachingManager: " + cachingManager + " : " + e.getMessage());
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) {
 		List<Page> versionHistory = getPageManager().getVersionHistory(title);
 		if (versionHistory == null) return Collections.emptyList();
@@ -681,7 +768,6 @@ public class JSPWikiConnector implements WikiConnector {
 	public boolean hasRollbackPageProvider() {
 		return getRealPageProvider() instanceof GitVersioningFileProvider;
 	}
-
 
 	/**
 	 * Checks if the current page has an access lock. If TRUE no user other then the lock owner can edit the page. If
@@ -803,7 +889,7 @@ public class JSPWikiConnector implements WikiConnector {
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
 			throw new IOException("Unable to delete zip entry (" + path
-								  + ") in zip attachment. Try to delete attachment instead.");
+					+ ") in zip attachment. Try to delete attachment instead.");
 		}
 		try {
 			boolean wasLocked = isArticleLocked(title);
@@ -1037,5 +1123,4 @@ public class JSPWikiConnector implements WikiConnector {
 	public String getAntiCsrfToken(UserContext context) {
 		return WikiSession.getWikiSession(getEngine(), context.getRequest()).antiCsrfToken();
 	}
-
 }
