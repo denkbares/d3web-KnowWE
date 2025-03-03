@@ -62,7 +62,6 @@ import org.apache.wiki.api.exceptions.WikiException;
 import org.apache.wiki.api.filters.PageFilter;
 import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
-import org.apache.wiki.api.spi.Wiki;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.auth.AuthorizationManager;
@@ -82,13 +81,13 @@ import org.apache.wiki.content.PageRenamer;
 import org.apache.wiki.event.WikiEngineEvent;
 import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.filters.FilterManager;
-import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.pages.PageLock;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.GitVersioningFileProvider;
+import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.references.ReferenceManager;
 import org.apache.wiki.render.RenderingManager;
 import org.apache.wiki.search.SearchManager;
@@ -626,7 +625,7 @@ public class JSPWikiConnector implements WikiConnector {
 	private boolean reinitReferenceManager() {
 		try {
 			if (engine instanceof WikiEngine wikiEngine) {
-				wikiEngine.initReferenceManager(true);
+				wikiEngine.initReferenceManager();
 			}
 			else {
 				LOGGER.error("Unkown wiki engine: " + engine);
