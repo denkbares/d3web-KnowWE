@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +28,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 /**
  * Action that allows to replace the entire wiki content (!!!) by the content of a zip attachment.
  * USE WITH CAUTION! - it will override the current wiki content completely.
+ * UI level should assert with the user, that he/she is really willing to clear the current content.
  */
 public class DeployWikicontentZIPAction extends AbstractAction {
 
@@ -56,7 +59,6 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		File wikiFolderFile = new File(savePath);
 		assert wikiFolderFile.exists();
 
-
 		// make temp copy of zip attachment (otherwise it will be deleted)
 		File zipFileAttachment = attachment.asFile();
 		Path tempDirectory = Files.createTempDirectory("_wikiZipTmpDir");
@@ -64,15 +66,28 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		File copiedZipFile = new File(tempDirectory.toFile(), zipFileAttachment.getName());
 		assert copiedZipFile.exists();
 
-		// clean wiki content folder
-		FileUtils.deleteDirectory(wikiFolderFile);
-		wikiFolderFile.mkdirs();
+		try (ZipFile zf = new ZipFile(copiedZipFile)) {
+			Enumeration<? extends ZipEntry> entries = zf.entries();
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				int kompressionMethod = entry.getMethod();
+				System.out.println("Methode: " + kompressionMethod);
+			}
+		}
+
+		// extract new wiki content to tmp folder
+		File tempDirectoryZipUnpacked = Files.createTempDirectory("_wikiZipUnpackedTmpDir").toFile();
+		boolean unpacked = unpack(copiedZipFile, tempDirectoryZipUnpacked);
 
 		// clear wiki content folder
-		boolean contentOverridden = overrideWikiContent(copiedZipFile, wikiFolderFile);
+		if (unpacked) {
+			FileUtils.deleteDirectory(wikiFolderFile);
+			wikiFolderFile.mkdirs();
+			copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
+		}
 
 		// tell WikiConnector that content has changed on the file system
-		if (contentOverridden) {
+		if (unpacked) {
 			boolean reinitIsSuccess = Environment.getInstance().getWikiConnector().reinitializeWikiContent();
 			if (!reinitIsSuccess) {
 				// TODO: should we recover the old wiki content in this case???
@@ -80,7 +95,9 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 			}
 			else {
 				// success
-				context.getResponse().getWriter().println("Wiki content overridden to file: "+attachment.getFileName()+"\n Please use the browser back-button and reload page to access updated wiki content.");
+				context.getResponse()
+						.getWriter()
+						.println("Wiki content overridden to file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
 			}
 		}
 		else {
@@ -88,46 +105,71 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		}
 	}
 
-	private boolean overrideWikiContent(@NotNull File zipFile, File wikiFolderFile) {
-		LOGGER.info("Updating wiki content from " + zipFile);
-		try {
-			URL url = zipFile.toURI().toURL();
-			URLConnection urlConnection = url.openConnection();
-			urlConnection.connect();
-			InputStream inputStream = urlConnection.getInputStream();
-			try (ZipInputStream zis = new ZipInputStream(inputStream)) {
-				ZipEntry zipEntry;
-				while ((zipEntry = zis.getNextEntry()) != null) {
-					String zipEntryFilePath = zipEntry.getName();
-					String filePathWithoutZipFilename = zipEntryFilePath.substring(zipEntryFilePath.indexOf('/') + 1);
-					File newFile = new File(wikiFolderFile, filePathWithoutZipFilename);
+	private static void copyContentFromTo(File source, File target) throws IOException {
+		if (!source.exists() || !source.isDirectory()) {
+			throw new IllegalArgumentException("Source needs to be an existing folder! But was: "+source);
+		}
 
-					String canonicalDestDir = wikiFolderFile.getCanonicalPath();
-					String canonicalNewFile = newFile.getCanonicalPath();
-					if (!canonicalNewFile.startsWith(canonicalDestDir + File.separator)) {
-						throw new IOException("Unsichere ZIP-Datei: " + zipEntry.getName());
-					}
+		if (!target.exists()) {
+			target.mkdirs(); // Falls nötig, Zielordner erstellen
+		}
 
-					if (zipEntry.isDirectory()) {
-						newFile.mkdirs();
+
+		/*
+			We want to cope with both ways
+			a) the wiki folder has been compressed as zip file
+			b) only the content of the wiki folder was compressed into a zip file
+			Hence we check whether we need to move the source folder one level further inside
+		 */
+		File[] subFiles = source.listFiles();
+		List<File> filesCleaned = Arrays.stream(subFiles)
+				.filter(f -> !f.getName().endsWith("_MACOSX"))
+				.toList();
+		if(filesCleaned.size() == 1 && filesCleaned.get(0).isDirectory()) {
+			// this is the actual wiki content folder to become the source
+			source = filesCleaned.get(0);
+		}
+
+		for (File file : Objects.requireNonNull(source.listFiles())) {
+			FileUtils.copyToDirectory(file, target);
+		}
+	}
+
+	private boolean unpack(@NotNull File file, File wikiFolderFile) {
+		LOGGER.info("Updating wiki content from " + file);
+		try (ZipFile zipFile = new ZipFile(file.getPath())) {
+
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				Path entryDestination = Paths.get(wikiFolderFile.getPath(), entry.getName()).normalize();
+
+				// Sicherheitsprüfung, um Path Traversal Angriffe zu verhindern
+				if (!entryDestination.startsWith(Paths.get(wikiFolderFile.getPath()))) {
+					throw new IOException("Unsichere ZIP-Datei: " + entry.getName());
+				}
+
+				File newFile = entryDestination.toFile();
+
+				if (entry.isDirectory()) {
+					newFile.mkdirs();
+					continue;
+				}
+
+				newFile.getParentFile().mkdirs();
+
+				try (InputStream is = zipFile.getInputStream(entry);
+					 FileOutputStream fos = new FileOutputStream(newFile)) {
+					byte[] buffer = new byte[4096];
+					int len;
+					while ((len = is.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
 					}
-					else {
-						newFile.getParentFile().mkdirs();
-						try (FileOutputStream fos = new FileOutputStream(newFile)) {
-							byte[] buffer = new byte[4096];
-							int len;
-							while ((len = zis.read(buffer)) > 0) {
-								fos.write(buffer, 0, len);
-							}
-						}
-					}
-					zis.closeEntry();
 				}
 			}
-			inputStream.close();
 		}
 		catch (IOException e) {
-			LOGGER.error("Error updating wiki content from " + zipFile + ": " + e.getMessage());
+			LOGGER.error("Error updating wiki content from " + file + ": " + e.getMessage());
 			return false;
 		}
 		return true;
