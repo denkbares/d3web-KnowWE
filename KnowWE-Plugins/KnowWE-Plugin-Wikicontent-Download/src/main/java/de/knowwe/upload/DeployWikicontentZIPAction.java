@@ -66,15 +66,6 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		File copiedZipFile = new File(tempDirectory.toFile(), zipFileAttachment.getName());
 		assert copiedZipFile.exists();
 
-		try (ZipFile zf = new ZipFile(copiedZipFile)) {
-			Enumeration<? extends ZipEntry> entries = zf.entries();
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = entries.nextElement();
-				int kompressionMethod = entry.getMethod();
-				System.out.println("Methode: " + kompressionMethod);
-			}
-		}
-
 		// extract new wiki content to tmp folder
 		File tempDirectoryZipUnpacked = Files.createTempDirectory("_wikiZipUnpackedTmpDir").toFile();
 		boolean unpacked = unpack(copiedZipFile, tempDirectoryZipUnpacked);
@@ -90,7 +81,6 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		if (unpacked) {
 			boolean reinitIsSuccess = Environment.getInstance().getWikiConnector().reinitializeWikiContent();
 			if (!reinitIsSuccess) {
-				// TODO: should we recover the old wiki content in this case???
 				context.sendError(500, "Error on re-initialization of new wiki content");
 			}
 			else {
@@ -107,13 +97,12 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 
 	private static void copyContentFromTo(File source, File target) throws IOException {
 		if (!source.exists() || !source.isDirectory()) {
-			throw new IllegalArgumentException("Source needs to be an existing folder! But was: "+source);
+			throw new IllegalArgumentException("Source needs to be an existing folder! But was: " + source);
 		}
 
 		if (!target.exists()) {
-			target.mkdirs(); // Falls nötig, Zielordner erstellen
+			target.mkdirs(); // create folder if necessary
 		}
-
 
 		/*
 			We want to cope with both ways
@@ -122,10 +111,13 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 			Hence we check whether we need to move the source folder one level further inside
 		 */
 		File[] subFiles = source.listFiles();
+		if (subFiles == null) {
+			throw new IllegalArgumentException("Source needs to be a valid folder: " + source);
+		}
 		List<File> filesCleaned = Arrays.stream(subFiles)
 				.filter(f -> !f.getName().endsWith("_MACOSX"))
 				.toList();
-		if(filesCleaned.size() == 1 && filesCleaned.get(0).isDirectory()) {
+		if (filesCleaned.size() == 1 && filesCleaned.get(0).isDirectory()) {
 			// this is the actual wiki content folder to become the source
 			source = filesCleaned.get(0);
 		}
