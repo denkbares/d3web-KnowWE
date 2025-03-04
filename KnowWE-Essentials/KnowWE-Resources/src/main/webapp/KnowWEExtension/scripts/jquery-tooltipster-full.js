@@ -1,5 +1,10 @@
 /*
 
+This is the non-minified version of tooltipster as it is used in KnowWE. You can use this for debugging and for
+reference. This file is not used directly though, so changes to it will not have any effect. You would have to use this
+code to jquery-tooltipster.js to test and change it, and the copy it back here. The jquery-tooltipster.js file should
+then get the minified version of the code.
+
 Tooltipster 3.3.0 | 2014-11-08
 A rockin' custom tooltip jQuery plugin
 
@@ -22,6 +27,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       contentCloning: true,
       debug: true,
       delay: 200,
+      edgeMargin: 20,
       minWidth: 0,
       maxWidth: null,
       functionInit: function(origin, content) {},
@@ -851,7 +857,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           offsetY = parseInt(self.options.offsetY),
           offsetX = parseInt(self.options.offsetX),
           // this is the arrow position that will eventually be used. It may differ from the position option if the tooltip cannot be displayed in this position
-          practicalPosition = self.options.position;
+          practicalPosition = self.options.position,
+          edgeMargin = self.options.edgeMargin;
 
         // a function to detect if the tooltip is going off the screen horizontally. If so, reposition the crap out of it!
         function dontGoOffScreenX() {
@@ -859,15 +866,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           var windowLeft = $(window).scrollLeft();
 
           // if the tooltip goes off the left side of the screen, line it up with the left side of the window
-          if((myLeft - windowLeft) < 0) {
-            arrowReposition = myLeft - windowLeft;
-            myLeft = windowLeft;
+          if((myLeft - windowLeft - edgeMargin) < 0) {
+            arrowReposition = myLeft - windowLeft + edgeMargin;
+            myLeft = windowLeft + edgeMargin;
           }
 
           // if the tooltip goes off the right of the screen, line it up with the right side of the window
-          if (((myLeft + tooltipWidth) - windowLeft) > windowWidth) {
-            arrowReposition = myLeft - ((windowWidth + windowLeft) - tooltipWidth);
-            myLeft = (windowWidth + windowLeft) - tooltipWidth;
+          if (((myLeft + tooltipWidth) - windowLeft) > windowWidth - edgeMargin) {
+            arrowReposition = myLeft - ((windowWidth + windowLeft) - (tooltipWidth + edgeMargin));
+            myLeft = (windowWidth + windowLeft) - (tooltipWidth + edgeMargin);
           }
         }
 
@@ -992,7 +999,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           }
 
           // if the tooltip was going off the page and had to re-adjust, we need to update the arrow's position
-          if (!arrowReposition) {
+          if (!arrowReposition) {defaults
             arrowReposition = '';
           }
           else if (arrowReposition == 'left') {
