@@ -536,6 +536,7 @@ KNOWWE.tooltips.enrich = function(element) {
     let trigger = $this.attr("trigger") || "hover";
     $this.tooltipster({
       position: "top-left",
+      edgeMargin: 15,
       interactive: true,
       multiple: true,
       delay: delay,
