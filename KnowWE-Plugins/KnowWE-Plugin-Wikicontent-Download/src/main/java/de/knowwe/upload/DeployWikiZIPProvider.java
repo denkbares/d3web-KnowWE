@@ -40,7 +40,7 @@ public class DeployWikiZIPProvider implements ToolProvider {
 	}
 
 	private static @NotNull List<WikiAttachment> getWikiAttachments(String articleName) {
-		List<WikiAttachment> attachmentsZips = new ArrayList<>();
+		List<WikiAttachment> attachmentsZips;
 		try {
 			List<WikiAttachment> attachments = Environment.getInstance()
 					.getWikiConnector()
