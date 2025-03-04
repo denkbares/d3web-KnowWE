@@ -58,10 +58,13 @@ public class DeployWikiZIPProvider implements ToolProvider {
 	}
 
 	private Tool createTool(WikiAttachment wikiAttachment, Section<?> section) {
-		String jsAction = "window.location='action/DeployWikicontentZIPAction" +
-				"?" + Attributes.ATTACHMENT_NAME + "=" + wikiAttachment.getFileName() +
-				"&amp;" + Attributes.TOPIC + "=" + section.getTitle() +
-				"'";
+		String message = "ACHTUNG: Sie sind dabei den aktuellen Wiki-Inhalt mit dem Inhalt der Datei "+wikiAttachment.getFileName()+" zu überschreiben. Der aktuelle Wikiinhalt geht dabei vollständig verloren. Nutzen Sie ggf. erst den Download-Knopf um den aktuellen Stand zu sichern. \n" +
+				"Möchten Sie fortfahren und den Inhalt überschreiben?";
+		String jsAction = "const userConfirmed = confirm('"+message+"');" +
+				"if (userConfirmed) {" +
+				"	window.location = 'action/"+DeployWikicontentZIPAction.class.getSimpleName()+"?" + Attributes.ATTACHMENT_NAME + "=" + wikiAttachment.getFileName() + "&amp;" + Attributes.TOPIC + "=" + section.getTitle() + "'; " +
+				"}";
+
 		return new DefaultTool(
 				Icon.BOLT,
 				"Deploy " + wikiAttachment.getFileName(),

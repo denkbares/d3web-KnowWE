@@ -87,7 +87,7 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 				// success
 				context.getResponse()
 						.getWriter()
-						.println("Wiki content overridden to file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
+						.println("Wiki content has been overridden to content of file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
 			}
 		}
 		else {
