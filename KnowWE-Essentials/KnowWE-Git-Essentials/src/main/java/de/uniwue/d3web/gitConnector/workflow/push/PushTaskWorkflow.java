@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeResultSuccess;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
@@ -367,7 +367,7 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 	}
 
 	private void verifyCleanStatus() {
-		GitStatusCommandResult status = gitConnector.status();
+		GitStatusCommandResult status = gitConnector.status().get();
 		if (status instanceof GitStatusResultSuccess success) {
 			if (success.isClean()) {
 				gitWorkflowResult.addInitialCleanResult("Git repository is clean, continue push of task", true);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.raw.RawGitCommand;
 
 public class GitGCCommand implements RawGitCommand<GitGCCommandResult> {

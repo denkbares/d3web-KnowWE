@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.raw.RawGitCommand;
 import de.uniwue.d3web.gitConnector.impl.raw.struct.Commit;
 

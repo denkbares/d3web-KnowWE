@@ -68,8 +68,8 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
-import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
-import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
+import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
+import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
 /**
  * This Git delegate does the actual work on the underlying Git repository, albeit it does not check any file lock

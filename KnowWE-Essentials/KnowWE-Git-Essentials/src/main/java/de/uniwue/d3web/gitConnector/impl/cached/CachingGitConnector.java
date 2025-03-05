@@ -1,4 +1,8 @@
-package de.uniwue.d3web.gitConnector.impl;
+/*
+ * Copyright (C) 2025 denkbares GmbH. All rights reserved.
+ */
+
+package de.uniwue.d3web.gitConnector.impl.cached;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,11 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
+import de.uniwue.d3web.gitConnector.impl.GCFactory;
+import de.uniwue.d3web.gitConnector.impl.GitConnectorParent;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 
 /**
  * Basicly a wrapper around a GitConnector that also manages a cache. Its best understood with an example:
@@ -26,15 +33,30 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
  * As it is impossible to sneak commits into the history (or at least would be pretty much the same as hijacking), this
  * cache never has to be invalidated,
  */
-public class CachingGitConnector implements GitConnector {
+public class CachingGitConnector extends GitConnectorParent {
 
 	//the key is a branch name
 	private final Map<String, GitHashCash> cache;
 	private final GitConnector delegate;
-
 	public CachingGitConnector(GitConnector delegate) {
 		this.delegate = delegate;
 		this.cache = new ConcurrentHashMap<>();
+	}
+
+	@Override
+	protected @NotNull GCFactory getGcFactory() {
+		return new CachingGCFactory(this);
+	}
+
+	private class CachingGCFactory extends GCDelegateParentFactory {
+		public CachingGCFactory(GitConnector gitConnector) {
+			super(gitConnector);
+		}
+
+		@Override
+		public GitConnectorStatus createStatus() {
+			return new CachedGCStatus(() -> delegate.status());
+		}
 	}
 
 	@Override
@@ -138,10 +160,6 @@ public class CachingGitConnector implements GitConnector {
 		return result;
 	}
 
-	@Override
-	public FileStatus getStatus(@NotNull String file) {
-		return this.delegate.getStatus(file);
-	}
 
 	@Override
 	public List<String> commitHashesForFile(@NotNull String file) {
@@ -463,11 +481,6 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
 		return delegate.pushBranch(branch, userName, passwordOrToken);
-	}
-
-	@Override
-	public GitStatusCommandResult status() {
-		return this.delegate.status();
 	}
 
 	@Override

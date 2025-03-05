@@ -6,19 +6,11 @@ package de.uniwue.d3web.gitConnector;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
-import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 
 public class GitTestUtils {
 	public static @NotNull String clearAndMakeWikiPath(String wikiPath) {

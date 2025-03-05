@@ -3,7 +3,7 @@ package de.uniwue.d3web.gitConnector.impl.raw.status;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
+import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
 import de.uniwue.d3web.gitConnector.impl.raw.gitexceptions.GitCommandResultSuccess;
 
 public final class GitStatusResultSuccess implements GitCommandResultSuccess, GitStatusCommandResult {
@@ -105,6 +105,6 @@ public final class GitStatusResultSuccess implements GitCommandResultSuccess, Gi
 	public static void main(String[] args) {
 		BareGitConnector connector = BareGitConnector.fromPath("/Users/mkrug/Konap/testWiki3");
 
-		GitStatusCommandResult status = connector.status();
+		GitStatusCommandResult status = connector.status().get();
 	}
 }

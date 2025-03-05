@@ -2,14 +2,16 @@ package de.uniwue.d3web.gitConnector.impl.raw.status;
 
 import java.util.Map;
 
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
+import org.jetbrains.annotations.NotNull;
+
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.raw.RawGitCommand;
 
 public class GitStatusCommand  implements RawGitCommand<GitStatusCommandResult> {
 
 	private final String repositoryPath;
 
-	public GitStatusCommand(String repositoryPath) {
+	public GitStatusCommand(@NotNull String repositoryPath) {
 		this.repositoryPath = repositoryPath;
 	}
 

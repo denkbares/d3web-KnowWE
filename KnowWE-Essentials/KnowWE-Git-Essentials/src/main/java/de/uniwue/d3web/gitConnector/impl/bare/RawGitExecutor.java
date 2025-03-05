@@ -1,4 +1,8 @@
-package de.uniwue.d3web.gitConnector.impl;
+/*
+ * Copyright (C) 2025 denkbares GmbH. All rights reserved.
+ */
+
+package de.uniwue.d3web.gitConnector.impl.bare;
 
 import java.io.File;
 import java.io.IOException;

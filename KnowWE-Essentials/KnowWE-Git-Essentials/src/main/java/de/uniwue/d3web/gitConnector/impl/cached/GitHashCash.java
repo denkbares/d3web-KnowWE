@@ -1,4 +1,8 @@
-package de.uniwue.d3web.gitConnector.impl;
+/*
+ * Copyright (C) 2025 denkbares GmbH. All rights reserved.
+ */
+
+package de.uniwue.d3web.gitConnector.impl.cached;
 
 import java.util.Collections;
 import java.util.List;

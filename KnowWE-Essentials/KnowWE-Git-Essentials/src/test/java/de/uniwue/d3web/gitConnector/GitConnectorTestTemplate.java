@@ -14,11 +14,11 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.runners.Parameterized;
 
-import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
-import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
-import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
-import de.uniwue.d3web.gitConnector.impl.JGitConnector;
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
+import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
+import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
+import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
+import de.uniwue.d3web.gitConnector.impl.jgit.JGitConnector;
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 
 import static de.uniwue.d3web.gitConnector.GitTestUtils.clearAndMakeWikiPath;
 import static de.uniwue.d3web.gitConnector.GitTestUtils.initGitAndSetOriginRepo;

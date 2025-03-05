@@ -25,19 +25,19 @@ public interface GitConnector {
 	String DEFAULT_BRANCH = "main";
 	String NO_COMMENT = "<no comment>";
 
+	GitConnectorCommit commit();
 
-	/**
-	 * In a git repo, one file is either committed, staged (added) or untracked.
-	 * Or it does not exist in the first place.
-	 */
-	enum FileStatus {
-		Committed_Clean, // file is committed and not changed since
-		Committed_Modified, // file is committed but changed after last commit
-		Committed_Deleted, // file is committed but file has just been deleted
-		Staged,	// file was added but not yet committed
-		Untracked,	// file has not been added to git-vcs
-		NotExisting // requested file does not exist on the file system
-	}
+	GitConnectorStatus status();
+
+	GitConnectorLog log();
+
+	GitConnectorBranch branches();
+
+	GitConnectorPull pull();
+
+	GitConnectorPush push();
+
+	GitConnectorRollback rollback();
 
 	/***
 	 * Removes the file from stage (reverse 'git add')
@@ -53,7 +53,9 @@ public interface GitConnector {
 	 * @param file file
 	 * @return status of the file in the current repo
 	 */
-	FileStatus getStatus(@NotNull String file);
+	// TODO: remove
+	@Deprecated
+	//GitConnectorStatus.FileStatus getStatus(@NotNull String file);
 
 	/**
 	 * For a specified path (relative to the repository), returns a list of all long commit hashes.
@@ -81,18 +83,6 @@ public interface GitConnector {
 	List<String> commitHashesForFileSince(@NotNull String file, @NotNull Date date);
 
 	/**
-	 * Checks if git is ready to go in the current runtime environment
-	 *
-	 * @return true if git is ready to go
-	 */
-	boolean gitInstalledAndReady();
-
-	/**
-	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
-	 */
-	void destroy();
-
-	/**
 	 * Returns the specific hash of a given file in a specific version. Keep in mind that the first version is 1 instead of 0!
 	 * @param file file
 	 * @param version version
@@ -108,11 +98,41 @@ public interface GitConnector {
 	int numberOfCommitsForFile(String filePath);
 
 	/**
+	 * Gets the bytes for a given commit of a certain path
+	 * @param commitHash commitHash
+	 * @return bytes
+	 */
+	byte[] getBytesForCommit(String commitHash,String path);
+
+	/**
+	 * Obtains the size of the file in the provided hash in bytes or -1 if the file was not found in the respective commit
+	 * @param commitHash commitHash
+	 * @param path path
+	 * @return file size in bytes
+	 */
+	long getFilesizeForCommit(String commitHash, String path);
+
+
+	/**
 	 *  Returns all commit-hashes that have an assigned date later than the specified date
 	 * @param timeStamp time stamp
 	 * @return all commit hashed that have assigned date later than time stamp
 	 */
 	List<String> getCommitsSince(Date timeStamp);
+
+
+	/**
+	 * Checks if git is ready to go in the current runtime environment
+	 *
+	 * @return true if git is ready to go
+	 */
+	boolean gitInstalledAndReady();
+
+	/**
+	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
+	 */
+	void destroy();
+
 
 	/**
 	 * A repo folder is clean when neither untracked nor uncommitted files exist.
@@ -129,20 +149,6 @@ public interface GitConnector {
 	 */
 	byte[] getBytesForPath(String path, int version);
 
-	/**
-	 * Gets the bytes for a given commit of a certain path
-	 * @param commitHash commitHash
-	 * @return bytes
-	 */
-	byte[] getBytesForCommit(String commitHash,String path);
-
-	/**
-	 * Obtains the size of the file in the provided hash in bytes or -1 if the file was not found in the respective commit
-	 * @param commitHash commitHash
-	 * @param path path
-	 * @return file size in bytes
-	 */
-	long getFilesizeForCommit(String commitHash, String path);
 
 	/**
 	 * Checks whether there is a file (provided by the path) in the given version
@@ -429,7 +435,9 @@ public interface GitConnector {
 	 *
 	 * @return
 	 */
-	GitStatusCommandResult status();
+	// TODO: remove -> moved to GitConnectorStatus
+	@Deprecated
+	//GitStatusCommandResult getStatus();
 	/**
 	 * returns the name of the repository.
 	 *

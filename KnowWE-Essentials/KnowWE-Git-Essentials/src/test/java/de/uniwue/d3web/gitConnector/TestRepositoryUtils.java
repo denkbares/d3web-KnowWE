@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import com.denkbares.utils.Files;
-import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
-import de.uniwue.d3web.gitConnector.impl.JGitConnector;
+import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
+import de.uniwue.d3web.gitConnector.impl.jgit.JGitConnector;
 
 public class TestRepositoryUtils {
 

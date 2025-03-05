@@ -1,4 +1,8 @@
-package de.uniwue.d3web.gitConnector.impl;
+/*
+ * Copyright (C) 2025 denkbares GmbH. All rights reserved.
+ */
+
+package de.uniwue.d3web.gitConnector.impl.mixed;
 
 import java.nio.file.Path;
 import java.util.Date;
@@ -9,7 +13,20 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorBranch;
+import de.uniwue.d3web.gitConnector.GitConnectorCommit;
+import de.uniwue.d3web.gitConnector.GitConnectorLog;
+import de.uniwue.d3web.gitConnector.GitConnectorPull;
+import de.uniwue.d3web.gitConnector.GitConnectorPush;
+import de.uniwue.d3web.gitConnector.GitConnectorRollback;
+import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
+import de.uniwue.d3web.gitConnector.impl.GCFactory;
+import de.uniwue.d3web.gitConnector.impl.GitConnectorParent;
+import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
+import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
+import de.uniwue.d3web.gitConnector.impl.jgit.JGitConnector;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
@@ -20,13 +37,33 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
  * according JGit implementation is much slower (trust me on this one, there are orders of magnitude sometimes).
  * In essence all it does is to delegate between these two implementations in order to obtain a performant GitConnector
  */
-public class JGitBackedGitConnector implements GitConnector {
+public class JGitBackedGitConnector extends GitConnectorParent {
 	private final BareGitConnector bareGitConnector;
 	private final JGitConnector jgitConnector;
 
 	public JGitBackedGitConnector(BareGitConnector bareGitConnector, JGitConnector jGitConnector) {
 		this.bareGitConnector = bareGitConnector;
 		this.jgitConnector = jGitConnector;
+	}
+
+	@Override
+	protected @NotNull GCFactory getGcFactory() {
+		return new BackedGCFactory(this);
+	}
+
+	public BareGitConnector getBareGitConnector() {
+		return bareGitConnector;
+	}
+
+	private class BackedGCFactory extends GCDelegateParentFactory {
+		public BackedGCFactory(GitConnector gitConnector) {
+			super(gitConnector);
+		}
+
+		@Override
+		public GitConnectorStatus createStatus() {
+			return new BackedGCStatus(() -> getBareGitConnector().status());
+		}
 	}
 
 	@Override
@@ -240,12 +277,12 @@ public class JGitBackedGitConnector implements GitConnector {
 		return this.bareGitConnector.pushBranch(branch, userName, passwordOrToken);
 	}
 
-	@Override
-	public GitStatusCommandResult status() {
+
+	public GitStatusCommandResult getStatus() {
 		if (this.bareGitConnector.isGitInstalled) {
-			return this.bareGitConnector.status();
+			return this.bareGitConnector.status().get();
 		}
-		return this.jgitConnector.status();
+		return this.jgitConnector.status().get();
 	}
 
 	@Override
@@ -287,6 +324,8 @@ public class JGitBackedGitConnector implements GitConnector {
 		return this.jgitConnector.resetFile(file);
 	}
 
+
+
 	@Override
 	public boolean unstage(@NotNull String file) {
 		if (this.bareGitConnector.isGitInstalled) {
@@ -295,13 +334,6 @@ public class JGitBackedGitConnector implements GitConnector {
 		return this.jgitConnector.unstage(file);
 	}
 
-	@Override
-	public FileStatus getStatus(@NotNull String file) {
-		if (this.bareGitConnector.isGitInstalled) {
-			return this.bareGitConnector.getStatus(file);
-		}
-		return this.jgitConnector.getStatus(file);
-	}
 
 	@Override
 	public List<String> commitHashesForFile(@NotNull String file) {

@@ -2,7 +2,7 @@ package de.uniwue.d3web.gitConnector.impl.raw.merge;
 
 import java.util.Map;
 
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor;
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.raw.RawGitCommand;
 
 public class GitMergeCommand implements RawGitCommand<GitMergeCommandResult> {

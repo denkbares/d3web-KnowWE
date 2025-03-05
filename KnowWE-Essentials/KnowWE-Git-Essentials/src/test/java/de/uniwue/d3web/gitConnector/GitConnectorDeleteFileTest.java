@@ -56,8 +56,8 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 
 		assertTrue(CONTENT_FILE.exists());
 		assertFalse(gitConnector.isClean());
-		GitConnector.FileStatus status = gitConnector.getStatus(FILE);
-		assertEquals(GitConnector.FileStatus.Untracked, status);
+		GitConnectorStatus.FileStatus status = gitConnector.status().ofFile(FILE);
+		assertEquals(GitConnectorStatus.FileStatus.Untracked, status);
 	}
 
 	@Test

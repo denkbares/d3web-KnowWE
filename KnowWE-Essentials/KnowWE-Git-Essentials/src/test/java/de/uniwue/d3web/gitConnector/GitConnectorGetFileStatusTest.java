@@ -27,27 +27,27 @@ public class GitConnectorGetFileStatusTest extends GitConnectorTestTemplate {
 		// should be clean at the beginning
 		assertTrue(gitConnector.isClean());
 
-		assertEquals(GitConnector.FileStatus.NotExisting, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.NotExisting, gitConnector.status().ofFile(FILE));
 
 		// we add some file
 		write();
-		assertEquals(GitConnector.FileStatus.Untracked, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.Untracked, gitConnector.status().ofFile(FILE));
 		gitAdd();
 
-		assertEquals(GitConnector.FileStatus.Staged, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.Staged, gitConnector.status().ofFile(FILE));
 
 		gitCommit();
 
-		assertEquals(GitConnector.FileStatus.Committed_Clean, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.Committed_Clean, gitConnector.status().ofFile(FILE));
 
 
 		FileUtils.write(CONTENT_FILE, "CONTENT2", Charset.defaultCharset());
 
-		assertEquals(GitConnector.FileStatus.Committed_Modified, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.Committed_Modified, gitConnector.status().ofFile(FILE));
 
 		gitDelete();
 
-		assertEquals(GitConnector.FileStatus.Committed_Deleted, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.Committed_Deleted, gitConnector.status().ofFile(FILE));
 
 
 	}

@@ -96,7 +96,7 @@ import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
+import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
 import static de.knowwe.core.ResourceLoader.Type.*;
 

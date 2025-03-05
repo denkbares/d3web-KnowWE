@@ -25,7 +25,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 		assertTrue(gitConnector.isClean());
 
 		write();
-		assertEquals(GitConnector.FileStatus.Untracked, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.Untracked, gitConnector.status().ofFile(FILE));
 	}
 
 	@Test
@@ -35,7 +35,8 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 
 		writeAndAddContentFile();
 		gitConnector.addPath(FILE);
-		assertEquals(GitConnector.FileStatus.Staged, gitConnector.getStatus(FILE));
+		GitConnectorStatus status = gitConnector.status();
+		assertEquals(GitConnectorStatus.FileStatus.Staged, status.ofFile(FILE));
 	}
 
 	@Test
@@ -45,7 +46,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 
 		writeAndAddContentFile();
 		gitCommit();
-		assertEquals(GitConnector.FileStatus.Committed_Clean, gitConnector.getStatus(FILE));
+		assertEquals(GitConnectorStatus.FileStatus.Committed_Clean, gitConnector.status().ofFile(FILE));
 	}
 
 	@Test
@@ -53,7 +54,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 		setUp(false);
 		assertTrue(gitConnector.isClean());
 
-		assertEquals(GitConnector.FileStatus.NotExisting, gitConnector.getStatus("NonExistentFile.txt"));
+		assertEquals(GitConnectorStatus.FileStatus.NotExisting, gitConnector.status().ofFile("NonExistentFile.txt"));
 	}
 }
 

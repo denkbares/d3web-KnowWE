@@ -17,8 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.denkbares.utils.Files;
-import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
-import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
+import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
+import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
 
 import static org.junit.Assert.assertEquals;
 

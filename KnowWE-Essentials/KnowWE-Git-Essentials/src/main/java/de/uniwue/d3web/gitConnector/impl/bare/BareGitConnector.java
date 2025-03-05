@@ -1,4 +1,8 @@
-package de.uniwue.d3web.gitConnector.impl;
+/*
+ * Copyright (C) 2025 denkbares GmbH. All rights reserved.
+ */
+
+package de.uniwue.d3web.gitConnector.impl.bare;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,36 +29,60 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
+import de.uniwue.d3web.gitConnector.impl.GCFactory;
+import de.uniwue.d3web.gitConnector.impl.GitConnectorParent;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommand;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommand;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommand;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommand;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 
-public final class BareGitConnector implements GitConnector {
+public final class BareGitConnector extends GitConnectorParent {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BareGitConnector.class);
+
+
 
 	public final String repositoryPath;
 	public final boolean isGitInstalled;
 	public static final int MIN_SUPPORTED_VERSION_MAJOR = 2;
 	public static final int MIN_SUPPORTED_VERSION_MINOR = 39;
 
-	private BareGitConnector(String repositoryPath) {
-		this.repositoryPath = repositoryPath;
 
+	public BareGitConnector(String repositoryPath) {
+		super();
+		this.repositoryPath = repositoryPath;
 		this.isGitInstalled = this.gitInstalled();
+	}
+
+	@Override
+	protected @NotNull GCFactory getGcFactory() {
+		return new BareGCFactory(this);
+	}
+
+	private class BareGCFactory extends GCDelegateParentFactory {
+		public BareGCFactory(GitConnector gitConnector) {
+			super(gitConnector);
+		}
+
+		@Override
+		public GitConnectorStatus createStatus() {
+			return new BareGCStatus(() -> getRepositoryPath());
+		}
+	}
+
+	private String getRepositoryPath() {
+		return repositoryPath;
 	}
 
 	@Override
@@ -93,32 +121,6 @@ public final class BareGitConnector implements GitConnector {
 		}
 	}
 
-
-
-	@Override
-	public FileStatus getStatus(@NotNull String file) {
-		String[] statusCommand = new String[] { "git", "status", "--porcelain", file };
-		String result = RawGitExecutor.executeGitCommand(statusCommand, this.repositoryPath).trim();
-
-		if (result.isEmpty()) {
-			File localFile = new File(repositoryPath + File.separator + file);
-			if (!localFile.exists()) {
-				return FileStatus.NotExisting;
-			}
-		}
-
-		if (result.isBlank()) {
-			// this the normal case : file is existing but not listed by git statuss
-			return FileStatus.Committed_Clean;
-		}
-		String statusCode = result.substring(0, 1);
-		if (statusCode.equals("?")) return FileStatus.Untracked;
-		if (statusCode.trim().equals("A")) return FileStatus.Staged;
-		if (statusCode.trim().equals("D")) return FileStatus.Committed_Deleted;
-		if (statusCode.trim().equals("M")) return FileStatus.Committed_Modified;
-
-		return FileStatus.NotExisting;
-	}
 
 	@Override
 	public boolean pushAll() {
@@ -866,12 +868,13 @@ public final class BareGitConnector implements GitConnector {
 		return pushBranch(branch);
 	}
 
+	/*
 	@Override
-	public GitStatusCommandResult status() {
+	public GitStatusCommandResult getStatus() {
 		GitStatusCommand gitStatusCommand = new GitStatusCommand(this.repositoryPath);
 		return gitStatusCommand.execute();
 	}
-
+*/
 	@Override
 	public void abortCherryPick() {
 		RawGitExecutor.executeGitCommand(new String[] { "git", "cherry-pick", "--abort" }, this.repositoryPath);
@@ -923,4 +926,6 @@ public final class BareGitConnector implements GitConnector {
 
 		throw new IllegalArgumentException("Could not create repository: " + result);
 	}
+
+
 }

@@ -1,8 +1,8 @@
 package de.uniwue.d3web.gitConnector.scripts
 
 import de.uniwue.d3web.gitConnector.UserData
-import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector
-import de.uniwue.d3web.gitConnector.impl.RawGitExecutor
+import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector
+import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -25,7 +25,7 @@ object UpdateIgnoredFilesScript {
                 return@forEachIndexed
             }
 
-            connector.status().let { status ->
+            connector.status().get().let { status ->
                 when (status) {
                     is GitStatusResultSuccess -> {
                         val files = status.affectedFiles

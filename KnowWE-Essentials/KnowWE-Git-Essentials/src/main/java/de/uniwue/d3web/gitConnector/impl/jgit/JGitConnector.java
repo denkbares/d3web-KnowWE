@@ -1,4 +1,8 @@
-package de.uniwue.d3web.gitConnector.impl;
+/*
+ * Copyright (C) 2025 denkbares GmbH. All rights reserved.
+ */
+
+package de.uniwue.d3web.gitConnector.impl.jgit;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,16 +64,19 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.utils.Stopwatch;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
+import de.uniwue.d3web.gitConnector.impl.GCFactory;
+import de.uniwue.d3web.gitConnector.impl.GitConnectorParent;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandSuccess;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandUnknownResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandUnresolvedAddress;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
-public class JGitConnector implements GitConnector {
+public class JGitConnector extends GitConnectorParent {
 
 	public static final String REFS_HEADS = "refs/heads/";
 	private final Repository repository;
@@ -83,78 +90,51 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	protected @NotNull GCFactory getGcFactory() {
+		return new JGCFactory(this);
+	}
+
+	private class JGCFactory extends GCDelegateParentFactory {
+		public JGCFactory(GitConnector gitConnector) {
+			super(gitConnector);
+		}
+
+		@Override
+		public GitConnectorStatus createStatus() {
+			return new JGitGCStatus(() -> getGit(), () -> getRepository());
+		}
+	}
+
+	Repository getRepository() {
+		return repository;
+	}
+
+	Git getGit() {
+		return git;
+	}
+
+	@Override
 	public boolean unstage(@NotNull String file) {
 		try {
 			git.reset().addPath(file).call();
 			return true;
-		} catch (GitAPIException e) {
+		}
+		catch (GitAPIException e) {
 			LOGGER.error("Error unstaging file: {}", file, e);
 			return false;
 		}
 	}
-
 
 	@Override
 	public boolean resetFile(String file) {
 		try {
 			git.checkout().addPath(file).call();
 			return true;
-		} catch (GitAPIException e) {
+		}
+		catch (GitAPIException e) {
 			LOGGER.error("Fehler beim Zurücksetzen der Datei: {}", file, e);
 			return false;
 		}
-	}
-
-
-	@Override
-	public FileStatus getStatus(@NotNull String file) {
-
-		File localFile = new File(repository.getWorkTree()+File.separator+file);
-		boolean fileExists = localFile.exists();
-
-		Status status;
-		try {
-			status = git.status().call();
-		}
-		catch (GitAPIException e) {
-			throw new RuntimeException(e);
-		}
-
-		// filter for untracked files
-		Set<String> untracked = status.getUntracked();
-		Set<String> added = status.getAdded();
-		Set<String> changed = status.getChanged();
-		Set<String> modified = status.getModified();
-		Set<String> removed = status.getRemoved();
-		Set<String> missing = status.getMissing();
-
-
-		if (added.contains(file)) {
-			return FileStatus.Staged;
-		}
-		if (changed.contains(file)) {
-			return null;
-		}
-		if (modified.contains(file)) {
-			return FileStatus.Committed_Modified;
-		}
-		if (removed.contains(file)) {
-			return FileStatus.Committed_Deleted;
-		}
-		if (missing.contains(file)) {
-			return FileStatus.Committed_Deleted;
-		}
-		if (untracked.contains(file)) {
-			return FileStatus.Untracked;
-		}
-
-		// this is the normal case, file is existing, but not listed in git status
-		if(fileExists) {
-			return FileStatus.Committed_Clean;
-		} else {
-			return FileStatus.NotExisting;
-		}
-
 	}
 
 	@Override
@@ -467,11 +447,6 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public GitStatusResultSuccess status() {
-		throw new NotImplementedException("TODO");
-	}
-
-	@Override
 	public void abortCherryPick() {
 		throw new NotImplementedException("TODO");
 	}
@@ -506,7 +481,6 @@ public class JGitConnector implements GitConnector {
 	public ResetCommandResult resetToHEAD() {
 		throw new NotImplementedException("TODO");
 	}
-
 
 	@Override
 	public List<String> commitHashesForFile(@NotNull String file) {
