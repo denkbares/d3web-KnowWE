@@ -1,7 +1,6 @@
 package de.knowwe.upload;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +62,7 @@ public class DeployWikiZIPProvider implements ToolProvider {
 				"Möchten Sie fortfahren und den Inhalt überschreiben?";
 		String jsAction = "const userConfirmed = confirm('"+message+"');" +
 				"if (userConfirmed) {" +
-				"	window.location = 'action/"+DeployWikicontentZIPAction.class.getSimpleName()+"?" + Attributes.ATTACHMENT_NAME + "=" + wikiAttachment.getFileName() + "&amp;" + Attributes.TOPIC + "=" + section.getTitle() + "'; " +
+				"	window.location = 'action/"+ DeployWikiContentZIPAction.class.getSimpleName()+"?" + Attributes.ATTACHMENT_NAME + "=" + wikiAttachment.getFileName() + "&amp;" + Attributes.TOPIC + "=" + section.getTitle() + "'; " +
 				"}";
 
 		return new DefaultTool(

@@ -33,9 +33,9 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeployWikicontentZIPAction">
-		<parameter id="class" value="de.knowwe.upload.DeployWikicontentZIPAction" />
-		<parameter id="name" value="DeployWikicontentZIPAction" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeployWikiContentZIPAction">
+		<parameter id="class" value="de.knowwe.upload.DeployWikiContentZIPAction" />
+		<parameter id="name" value="DeployWikiContentZIPAction" />
 		<parameter id="description"
 				   value="Action to deploy a wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />

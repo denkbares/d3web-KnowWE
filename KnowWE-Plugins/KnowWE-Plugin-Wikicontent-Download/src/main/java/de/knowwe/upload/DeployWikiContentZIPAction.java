@@ -26,15 +26,16 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
  * Action that allows to replace the entire wiki content (!!!) by the content of a zip attachment.
  * USE WITH CAUTION! - it will override the current wiki content completely.
  * UI level should assert with the user, that he/she is really willing to clear the current content.
  */
-public class DeployWikicontentZIPAction extends AbstractAction {
+public class DeployWikiContentZIPAction extends AbstractAction {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DeployWikicontentZIPAction.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeployWikiContentZIPAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -77,7 +78,8 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 
 	private void makeFileSystemReplaceOperation(WikiAttachment attachment) throws IOException {
 		// wiki content folder
-		String savePath = Environment.getInstance().getWikiConnector().getSavePath();
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		String savePath = wikiConnector.getSavePath();
 		File wikiFolderFile = new File(savePath);
 		assert wikiFolderFile.exists();
 
@@ -92,21 +94,40 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		File tempDirectoryZipUnpacked = Files.createTempDirectory("_wikiZipUnpackedTmpDir").toFile();
 		unpack(copiedZipFile, tempDirectoryZipUnpacked);
 
+
+
+
 		// clear wiki content folder
 		cleanDirectoryExcept(wikiFolderFile, List.of("userdatabase.xml", "groupdatabase.xml"));
 		copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
 	}
 
-	private static void cleanDirectoryExcept(File directory, Collection<String> keepFileNames) throws IOException {
-		if (directory == null || !directory.exists() || !directory.isDirectory()) {
-			throw new IllegalArgumentException("Folder not existing: " + directory);
+	private static void cleanDirectoryExcept(File wikiFolder, Collection<String> keepFileNames) throws IOException {
+		if (wikiFolder == null || !wikiFolder.exists() || !wikiFolder.isDirectory()) {
+			throw new IllegalArgumentException("Folder not existing: " + wikiFolder);
 		}
+		// check for retain userdatabase.xml and groupdatabase.xml
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		File userdatabaseFile = getFile(wikiConnector.getWikiProperty("jspwiki.xmlUserDatabaseFile"));
+		File groupdatabaseFile = getFile(wikiConnector.getWikiProperty("jspwiki.xmlGroupDatabaseFile"));
 
-		for (File file : Objects.requireNonNull(directory.listFiles())) {
-			if (!keepFileNames.contains(file.getName())) {
+		for (File file : Objects.requireNonNull(wikiFolder.listFiles())) {
+			if (! (file.equals(userdatabaseFile) || file.equals(groupdatabaseFile))) {
 				FileUtils.forceDelete(file);
 			}
 		}
+	}
+
+	private static File getFile(String userDatabasePath) {
+		File userdatabaseFile = null;
+		if(userDatabasePath != null) {
+			userdatabaseFile = new File(userDatabasePath);
+		}
+		return userdatabaseFile;
+	}
+
+	private static boolean isNotUserdatabase() {
+		return false;
 	}
 
 	private static void copyContentFromTo(File source, File target) throws IOException {
