@@ -149,7 +149,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean reinitializeWikiContent() {
+	public boolean reinitializeWikiEngine() {
 		throw new NotImplementedException("Not yet implemented.");
 	}
 

@@ -12,6 +12,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -74,6 +75,6 @@ public class DeployWikiZIPProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return !getWikiAttachments(section.getTitle()).isEmpty();
+		return KnowWEUtils.isAdmin(userContext) && !getWikiAttachments(section.getTitle()).isEmpty();
 	}
 }

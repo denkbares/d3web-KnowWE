@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -154,6 +153,23 @@ public class DefaultArticleManager implements ArticleManager {
 			commit();
 		}
 		return article;
+	}
+
+	@Override
+	public void removeAllArticles() {
+		Collection<Article> allArticles = getArticles();
+
+		// we clear all articles and compile
+		open();
+		try {
+			allArticles.forEach(article -> {
+				registerArticle(article.getTitle(), "");
+				deleteAfterCompile.add(article.getTitle().toLowerCase());
+			});
+		}
+		finally {
+			commit();
+		}
 	}
 
 	/**
@@ -287,8 +303,11 @@ public class DefaultArticleManager implements ArticleManager {
 				originalArticleMap.clear();
 				synchronized (deleteAfterCompile) {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
-						Article removed = articleMap.remove(iterator.next());
-						removed.destroy(null);
+						String next = iterator.next();
+						Article removed = articleMap.remove(next);
+						if(removed != null) {
+							removed.destroy(null);
+						}
 						iterator.remove();
 					}
 				}

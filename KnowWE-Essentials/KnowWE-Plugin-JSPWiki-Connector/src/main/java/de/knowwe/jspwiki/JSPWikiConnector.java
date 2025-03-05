@@ -30,18 +30,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import javax.mail.MessagingException;
@@ -59,7 +60,6 @@ import org.apache.wiki.api.core.Session;
 import org.apache.wiki.api.exceptions.FilterException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.exceptions.WikiException;
-import org.apache.wiki.api.filters.PageFilter;
 import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.attachment.Attachment;
@@ -80,7 +80,6 @@ import org.apache.wiki.cache.EhcacheCachingManager;
 import org.apache.wiki.content.PageRenamer;
 import org.apache.wiki.event.WikiEngineEvent;
 import org.apache.wiki.event.WikiEventManager;
-import org.apache.wiki.filters.FilterManager;
 import org.apache.wiki.pages.PageLock;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.preferences.Preferences;
@@ -102,7 +101,12 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -463,14 +467,19 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 		if (zipEntryAttachments == null) {
 			zipEntryAttachments = new ArrayList<>();
-
-			InputStream attachmentStream = attachmentManager.getAttachmentStream(attachment);
-			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
-			for (ZipEntry e; (e = zipStream.getNextEntry()) != null; ) {
-				zipEntryAttachments.add(new JSPWikiZipAttachment(e.getName(), attachment,
-						attachmentManager));
+			WikiAttachment att = KnowWEUtils.getAttachment(attachment.getParentName(), attachment.getFileName());
+			File attachmentFile = att.asFile();
+			if(!attachmentFile.exists()) {
+				throw new IllegalStateException("Attachment file not found: "+attachmentFile.getAbsolutePath());
 			}
-			zipStream.close();
+			try (ZipFile zipFile = new ZipFile(attachmentFile.getPath())) {
+				Enumeration<? extends ZipEntry> entries = zipFile.entries();
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					zipEntryAttachments.add(new JSPWikiZipAttachment(entry.getName(), attachment,
+							attachmentManager));
+				}
+			}
 			if (!zipEntryAttachments.isEmpty()) {
 				zipAttachmentCache.put(attachment.getName(), zipEntryAttachments);
 			}
@@ -599,27 +608,20 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean reinitializeWikiContent() {
-		boolean successFullyClearedCaches = clearCaches();
-		if (!successFullyClearedCaches) return false;
-
-		boolean successfullyReinitializedSearchManager = reinitSearchManager();
-		if (!successfullyReinitializedSearchManager) return false;
-
-		boolean successfullyReinitializedReferenceManager = reinitReferenceManager();
-		if (!successfullyReinitializedReferenceManager) return false;
-
-		List<FilterManager> filterManagers = engine.getManagers(FilterManager.class);
-		FilterManager filterManager = filterManagers.get(0);
-		List<PageFilter> filterList = filterManager.getFilterList();
-		Optional<KnowWEPlugin> first = filterList.stream().filter(filter -> filter instanceof KnowWEPlugin).map(filter -> (KnowWEPlugin)filter).findFirst();
-		if(!first.isPresent()) {
-			LOGGER.error("KnowWEPlugin not found!");
-			return false;
+	public void reinitializeWikiEngine() {
+		try {
+			clearJSPWikiCaches();
+			reinitSearchManager();
+			reinitReferenceManager();
 		}
+		catch (WikiException e) {
+			throw new RuntimeException(e);
+		}
+
+
+
 		WikiEventManager.fireEvent(engine, new WikiEngineEvent(engine, WikiEngineEvent.INITIALIZED));
 
-		return true;
 	}
 
 	private boolean reinitReferenceManager() {
@@ -639,39 +641,21 @@ public class JSPWikiConnector implements WikiConnector {
 		return true;
 	}
 
-	private boolean reinitSearchManager() {
-		List<SearchManager> searchManagers = engine.getManagers(SearchManager.class);
-		SearchManager searchManager = searchManagers.get(0);
-		try {
-			searchManager.initialize(engine, engine.getWikiProperties());
-		}
-		catch (FilterException e) {
-			LOGGER.error("Failed to re-initialize searchManager: " + searchManager + " - " + e.getMessage());
-			return false;
-		}
-		return true;
+	private void reinitSearchManager() throws FilterException {
+		SearchManager searchManager = engine.getManager(SearchManager.class);
+		searchManager.initialize(engine, engine.getWikiProperties());
 	}
 
-	private boolean clearCaches() {
+	private void clearJSPWikiCaches() throws WikiException {
 		List<CachingManager> managers = engine.getManagers(CachingManager.class);
 		CachingManager cachingManager = managers.get(0);
 		if (cachingManager instanceof EhcacheCachingManager ehManager) {
 			List<String> cacheNames = List.of(CACHE_ATTACHMENTS, CACHE_ATTACHMENTS_COLLECTION, CACHE_ATTACHMENTS_DYNAMIC, CACHE_PAGES, CACHE_PAGES_TEXT, CACHE_PAGES_HISTORY, CACHE_DOCUMENTS);
 			cacheNames.forEach(cache -> cachingManager.shutdown());
 			ReferenceManager referenceManager = getReferenceManager();
-			try {
 				ehManager.initialize(engine, engine.getWikiProperties());
 
-			}
-			catch (WikiException e) {
-				LOGGER.error("Unknown CachingManager: " + cachingManager + " : " + e.getMessage());
-				return false;
-			}
 		}
-		else {
-			return false;
-		}
-		return true;
 	}
 
 	@Override

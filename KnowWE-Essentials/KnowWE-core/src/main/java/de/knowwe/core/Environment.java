@@ -27,6 +27,7 @@ import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.DeInitEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitEvent;
+import de.knowwe.event.WikiContentReplacedEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 import de.knowwe.tools.ToolUtils;
@@ -205,6 +206,41 @@ public class Environment {
 		compilerManager.addCompiler(10000, new PackageUnregistrationCompiler(packageRegistrationCompiler));
 	}
 
+	/**
+	 * Given that all the wiki content has changed for some reason,
+	 * this resets all content incl. the wiki engine and recompiles.
+	 *
+	 * @return true if reinitialization was successful
+	 */
+	public void reinitializeForNewWikiContent() throws IOException {
+		EventManager.getInstance().fireEvent(new WikiContentReplacedEvent());
+
+		articleManager().removeAllArticles();
+
+		awaitCompileTermination();
+
+		getWikiConnector().reinitializeWikiEngine();
+	}
+
+	private void awaitCompileTermination() {
+		try {
+			articleManager().getCompilerManager().awaitTermination();
+		}
+		catch (InterruptedException e) {
+			LOGGER.error("Compilation interrupted: "+e.getMessage());
+			throw new RuntimeException(e);
+		}
+	}
+
+
+
+	private ArticleManager articleManager() {
+		return Environment.getInstance()
+				.getArticleManager(Environment.DEFAULT_WEB);
+	}
+
+
+
 	public RootType getRootType() {
 		return rootType;
 	}
@@ -257,7 +293,8 @@ public class Environment {
 			EventManager.getInstance().fireEvent(event);
 			articleManager.open();
 			try {
-				articleManager.getCompilerManager().setCompileMessage("Reason: saving page " + title + ", user: " + author);
+				articleManager.getCompilerManager()
+						.setCompileMessage("Reason: saving page " + title + ", user: " + author);
 				// create article with the new content
 				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, cleanedContent);
 				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article, author));
@@ -275,7 +312,7 @@ public class Environment {
 			List<WikiPageInfo> articleHistory = Environment.getInstance()
 					.getWikiConnector()
 					.getArticleHistory(title);
-			if(articleHistory == null || articleHistory.isEmpty()) {
+			if (articleHistory == null || articleHistory.isEmpty()) {
 				LOGGER.warn("Error occurred when retrieving wiki page history from WikiConnector: History is empty");
 				return -1;
 			}

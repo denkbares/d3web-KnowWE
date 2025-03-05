@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
@@ -36,6 +38,10 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		if(!KnowWEUtils.isAdmin(context)) {
+			context.sendError(403, "Only for Admins available ");
+			return;
+		}
 		String attachmentName = context.getParameter(Attributes.ATTACHMENT_NAME);
 		if (attachmentName == null || attachmentName.isBlank()) {
 			context.sendError(404, "Mandatory parameter not found: " + Attributes.ATTACHMENT_NAME);
@@ -54,6 +60,28 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 			return;
 		}
 
+		boolean successfullyUnpackedAndReplaced = makeFileSystemReplaceOperation(attachment);
+
+
+		// tell WikiConnector that content has changed on the file system
+		if (successfullyUnpackedAndReplaced) {
+			boolean reinitIsSuccess = Environment.getInstance().reinitializeForNewWikiContent();;
+			if (!reinitIsSuccess) {
+				context.sendError(500, "Error on re-initialization of new wiki content");
+			}
+			else {
+				// success
+				context.getResponse()
+						.getWriter()
+						.println("Wiki content has been overridden to content of file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
+			}
+		}
+		else {
+			context.sendError(500, "Could not override wiki content on file system. Contact Your administrator.");
+		}
+	}
+
+	private boolean makeFileSystemReplaceOperation(WikiAttachment attachment) throws IOException {
 		// wiki content folder
 		String savePath = Environment.getInstance().getWikiConnector().getSavePath();
 		File wikiFolderFile = new File(savePath);
@@ -72,27 +100,23 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 
 		// clear wiki content folder
 		if (unpacked) {
-			FileUtils.deleteDirectory(wikiFolderFile);
-			wikiFolderFile.mkdirs();
+			cleanDirectoryExcept(wikiFolderFile, List.of("userdatabase.xml", "groupdatabase.xml"));
 			copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
 		}
+		return unpacked;
+	}
 
-		// tell WikiConnector that content has changed on the file system
-		if (unpacked) {
-			boolean reinitIsSuccess = Environment.getInstance().getWikiConnector().reinitializeWikiContent();
-			if (!reinitIsSuccess) {
-				context.sendError(500, "Error on re-initialization of new wiki content");
-			}
-			else {
-				// success
-				context.getResponse()
-						.getWriter()
-						.println("Wiki content has been overridden to content of file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
+	private static void cleanDirectoryExcept(File directory, Collection<String> keepFileNames) throws IOException {
+		if (directory == null || !directory.exists() || !directory.isDirectory()) {
+			throw new IllegalArgumentException("Folder not existing: "+directory);
+		}
+
+		for (File file : Objects.requireNonNull(directory.listFiles())) {
+			if (! keepFileNames.contains(file.getName())) {
+				FileUtils.forceDelete(file);
 			}
 		}
-		else {
-			context.sendError(500, "Could not override wiki content on file system. Contact Your administrator.");
-		}
+
 	}
 
 	private static void copyContentFromTo(File source, File target) throws IOException {

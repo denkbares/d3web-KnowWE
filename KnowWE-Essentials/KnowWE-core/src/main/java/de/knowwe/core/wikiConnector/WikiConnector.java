@@ -59,7 +59,7 @@ public interface WikiConnector {
 	 *
 	 * @return true if re-initialization was successful
 	 */
-	boolean reinitializeWikiContent();
+	void reinitializeWikiEngine() throws IOException;
 
 	/**
 	 * Returns the list with all available versions of the wiki page with the given title, starting with the most

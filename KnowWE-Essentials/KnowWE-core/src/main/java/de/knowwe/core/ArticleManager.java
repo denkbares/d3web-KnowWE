@@ -62,6 +62,11 @@ public interface ArticleManager {
 	void deleteArticle(String title);
 
 	/**
+	 * De-compiles and removes all articles. ArticleManager is empty afterward.
+	 */
+	void removeAllArticles();
+
+	/**
 	 * Provides an immutable snapshot of the internal queue of registered/queued, but not yet compiled articles. If
 	 * there currently is no open registration frame, the list will always be empty.
 	 *
