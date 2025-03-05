@@ -800,7 +800,7 @@ KNOWWE.core.plugin.pagination = function() {
   // generate html for tooltip content
   function getTooltipContent(getFilterList) {
     return jq$("<div class='filter-parent'><label for='filter-input'>Filter:</label><input id='filter-input'>" +
-      "<div class='filter-input-indicator-parent'><i class='filter-input-indicator fa-solid fa-spinner fa-spin-pulse'/></div>\n" +
+      "<div class='filter-input-indicator-parent'><i class='filter-input-indicator fa-solid fa-spinner fa-spin-pulse'></i></div>\n" +
       "<div class='toggle-box-parent'><input class='toggle-box' id='toggle-checkbox' type='checkbox'><label for='toggle-checkbox'>All</label></div>" +
       getFilterList() +
       "<div class='close-buttons'>" +
