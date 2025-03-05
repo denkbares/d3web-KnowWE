@@ -61,6 +61,7 @@ import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
+import de.knowwe.event.WikiContentReplacedEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuildManager implements EventListener {
@@ -335,6 +336,7 @@ public class CIBuildManager implements EventListener {
 		List<Class<? extends Event>> events = new ArrayList<>(1);
 		events.add(CompilationStartEvent.class);
 		events.add(CIDashboardPriorityOverrideEvent.class);
+		events.add(WikiContentReplacedEvent.class);
 		return events;
 	}
 
@@ -349,6 +351,10 @@ public class CIBuildManager implements EventListener {
 		}
 		else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {
 			priorityOverride.put(prioEvent.getDashboard().getDashboardName(), prioEvent.getPriority());
+		}
+		else if (event instanceof WikiContentReplacedEvent) {
+			// wiki content has been replaced; re-initialization with compile follows; hence we can shut down
+			CI_BUILD_EXECUTOR.shutdownNow();
 		}
 	}
 }

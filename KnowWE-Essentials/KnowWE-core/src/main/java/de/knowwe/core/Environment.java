@@ -54,7 +54,7 @@ import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
  * @author Jochen
  */
 
-public class Environment {
+public final class Environment {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 
 	/**
@@ -63,7 +63,7 @@ public class Environment {
 	private static boolean initialized = false;
 
 	/**
-	 * Stores additional renderer if renderer are plugged via the plugin framework The renderer plugged with highest
+	 * Stores additional renderer if renderer are plugged via the plugin framework The renderer plugged with the highest
 	 * priority _might_ decided to look up in this list and call other renderer.
 	 */
 	private final Map<Type, List<Renderer>> additionalRenderer = new HashMap<>();
@@ -210,7 +210,6 @@ public class Environment {
 	 * Given that all the wiki content has changed for some reason,
 	 * this resets all content incl. the wiki engine and recompiles.
 	 *
-	 * @return true if reinitialization was successful
 	 */
 	public void reinitializeForNewWikiContent() throws IOException {
 		EventManager.getInstance().fireEvent(new WikiContentReplacedEvent());
@@ -227,7 +226,8 @@ public class Environment {
 			articleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
-			LOGGER.error("Compilation interrupted: "+e.getMessage());
+			String message = "Compilation interrupted: " + e.getMessage();
+			LOGGER.error(message);
 			throw new RuntimeException(e);
 		}
 	}

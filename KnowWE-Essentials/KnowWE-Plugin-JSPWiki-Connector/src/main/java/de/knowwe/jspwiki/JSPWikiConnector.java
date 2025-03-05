@@ -313,12 +313,12 @@ public class JSPWikiConnector implements WikiConnector {
 		ServletContext servletContext = getServletContext();
 		String realPath = servletContext.getRealPath("");
 		String rootPath;
-		if(realPath != null) {
+		if (realPath != null) {
 			return realPath.replaceAll("/+$", "");
-		} else {
+		}
+		else {
 			return new File("").getAbsolutePath();
 		}
-
 	}
 
 	@Override
@@ -469,8 +469,8 @@ public class JSPWikiConnector implements WikiConnector {
 			zipEntryAttachments = new ArrayList<>();
 			WikiAttachment att = KnowWEUtils.getAttachment(attachment.getParentName(), attachment.getFileName());
 			File attachmentFile = att.asFile();
-			if(!attachmentFile.exists()) {
-				throw new IllegalStateException("Attachment file not found: "+attachmentFile.getAbsolutePath());
+			if (!attachmentFile.exists()) {
+				throw new IllegalStateException("Attachment file not found: " + attachmentFile.getAbsolutePath());
 			}
 			try (ZipFile zipFile = new ZipFile(attachmentFile.getPath())) {
 				Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -608,42 +608,31 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public void reinitializeWikiEngine() {
+	public void reinitializeWikiEngine() throws IOException {
 		try {
 			clearJSPWikiCaches();
 			reinitSearchManager();
 			reinitReferenceManager();
 		}
-		catch (WikiException e) {
-			throw new RuntimeException(e);
+		catch (Exception e) {
+			throw new IOException(e);
 		}
-
-
 
 		WikiEventManager.fireEvent(engine, new WikiEngineEvent(engine, WikiEngineEvent.INITIALIZED));
-
 	}
 
-	private boolean reinitReferenceManager() {
-		try {
-			if (engine instanceof WikiEngine wikiEngine) {
-				wikiEngine.initReferenceManager();
-			}
-			else {
-				LOGGER.error("Unkown wiki engine: " + engine);
-				return false;
-			}
+	private void reinitReferenceManager() throws WikiException {
+		if (engine instanceof WikiEngine wikiEngine) {
+			wikiEngine.initReferenceManager();
+		} else {
+			String message = "Unknown wiki engine: " + engine;
+			LOGGER.error(message);
+			throw new IllegalStateException(message);
 		}
-		catch (WikiException e) {
-			LOGGER.error("Failed to re-initialize ReferenceManager - " + e.getMessage());
-			return false;
-		}
-		return true;
 	}
 
 	private void reinitSearchManager() throws FilterException {
-		SearchManager searchManager = engine.getManager(SearchManager.class);
-		searchManager.initialize(engine, engine.getWikiProperties());
+		engine.getManager(SearchManager.class).initialize(engine, engine.getWikiProperties());
 	}
 
 	private void clearJSPWikiCaches() throws WikiException {
@@ -653,8 +642,7 @@ public class JSPWikiConnector implements WikiConnector {
 			List<String> cacheNames = List.of(CACHE_ATTACHMENTS, CACHE_ATTACHMENTS_COLLECTION, CACHE_ATTACHMENTS_DYNAMIC, CACHE_PAGES, CACHE_PAGES_TEXT, CACHE_PAGES_HISTORY, CACHE_DOCUMENTS);
 			cacheNames.forEach(cache -> cachingManager.shutdown());
 			ReferenceManager referenceManager = getReferenceManager();
-				ehManager.initialize(engine, engine.getWikiProperties());
-
+			ehManager.initialize(engine, engine.getWikiProperties());
 		}
 	}
 

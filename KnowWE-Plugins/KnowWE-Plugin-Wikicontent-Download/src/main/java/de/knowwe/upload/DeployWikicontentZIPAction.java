@@ -38,7 +38,7 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		if(!KnowWEUtils.isAdmin(context)) {
+		if (!KnowWEUtils.isAdmin(context)) {
 			context.sendError(403, "Only for Admins available ");
 			return;
 		}
@@ -60,28 +60,22 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 			return;
 		}
 
-		boolean successfullyUnpackedAndReplaced = makeFileSystemReplaceOperation(attachment);
+		try {
+			makeFileSystemReplaceOperation(attachment);
 
-
-		// tell WikiConnector that content has changed on the file system
-		if (successfullyUnpackedAndReplaced) {
-			boolean reinitIsSuccess = Environment.getInstance().reinitializeForNewWikiContent();;
-			if (!reinitIsSuccess) {
-				context.sendError(500, "Error on re-initialization of new wiki content");
-			}
-			else {
-				// success
-				context.getResponse()
-						.getWriter()
-						.println("Wiki content has been overridden to content of file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
-			}
+			// tell WikiConnector that content has changed on the file system
+			Environment.getInstance().reinitializeForNewWikiContent();
 		}
-		else {
-			context.sendError(500, "Could not override wiki content on file system. Contact Your administrator.");
+		catch (IOException e) {
+			context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
 		}
+		// success
+		context.getResponse()
+				.getWriter()
+				.println("Wiki content has been overridden to content of file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
 	}
 
-	private boolean makeFileSystemReplaceOperation(WikiAttachment attachment) throws IOException {
+	private void makeFileSystemReplaceOperation(WikiAttachment attachment) throws IOException {
 		// wiki content folder
 		String savePath = Environment.getInstance().getWikiConnector().getSavePath();
 		File wikiFolderFile = new File(savePath);
@@ -96,27 +90,23 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 
 		// extract new wiki content to tmp folder
 		File tempDirectoryZipUnpacked = Files.createTempDirectory("_wikiZipUnpackedTmpDir").toFile();
-		boolean unpacked = unpack(copiedZipFile, tempDirectoryZipUnpacked);
+		unpack(copiedZipFile, tempDirectoryZipUnpacked);
 
 		// clear wiki content folder
-		if (unpacked) {
-			cleanDirectoryExcept(wikiFolderFile, List.of("userdatabase.xml", "groupdatabase.xml"));
-			copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
-		}
-		return unpacked;
+		cleanDirectoryExcept(wikiFolderFile, List.of("userdatabase.xml", "groupdatabase.xml"));
+		copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
 	}
 
 	private static void cleanDirectoryExcept(File directory, Collection<String> keepFileNames) throws IOException {
 		if (directory == null || !directory.exists() || !directory.isDirectory()) {
-			throw new IllegalArgumentException("Folder not existing: "+directory);
+			throw new IllegalArgumentException("Folder not existing: " + directory);
 		}
 
 		for (File file : Objects.requireNonNull(directory.listFiles())) {
-			if (! keepFileNames.contains(file.getName())) {
+			if (!keepFileNames.contains(file.getName())) {
 				FileUtils.forceDelete(file);
 			}
 		}
-
 	}
 
 	private static void copyContentFromTo(File source, File target) throws IOException {
@@ -151,7 +141,7 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		}
 	}
 
-	private boolean unpack(@NotNull File file, File wikiFolderFile) {
+	private void unpack(@NotNull File file, File wikiFolderFile) throws IOException {
 		LOGGER.info("Updating wiki content from " + file);
 		try (ZipFile zipFile = new ZipFile(file.getPath())) {
 
@@ -159,10 +149,8 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
 				Path entryDestination = Paths.get(wikiFolderFile.getPath(), entry.getName()).normalize();
-
-				// Sicherheitsprüfung, um Path Traversal Angriffe zu verhindern
 				if (!entryDestination.startsWith(Paths.get(wikiFolderFile.getPath()))) {
-					throw new IOException("Unsichere ZIP-Datei: " + entry.getName());
+					throw new IOException("Unsafe ZIP-File: " + entry.getName());
 				}
 
 				File newFile = entryDestination.toFile();
@@ -186,8 +174,7 @@ public class DeployWikicontentZIPAction extends AbstractAction {
 		}
 		catch (IOException e) {
 			LOGGER.error("Error updating wiki content from " + file + ": " + e.getMessage());
-			return false;
+			throw e;
 		}
-		return true;
 	}
 }
