@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorPull;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
@@ -37,25 +38,35 @@ public class CachingGitConnector extends GitConnectorParent {
 
 	//the key is a branch name
 	private final Map<String, GitHashCash> cache;
+
 	private final GitConnector delegate;
+
 	public CachingGitConnector(GitConnector delegate) {
 		this.delegate = delegate;
 		this.cache = new ConcurrentHashMap<>();
 	}
-
 	@Override
 	protected @NotNull GCFactory getGcFactory() {
 		return new CachingGCFactory(this);
 	}
 
+	public GitConnector getDelegate() {
+		return delegate;
+	}
 	private class CachingGCFactory extends GCDelegateParentFactory {
-		public CachingGCFactory(GitConnector gitConnector) {
+
+		CachingGCFactory(GitConnector gitConnector) {
 			super(gitConnector);
 		}
 
 		@Override
 		public GitConnectorStatus createStatus() {
-			return new CachedGCStatus(() -> delegate.status());
+			return new CachedGCStatus(() -> getDelegate().status());
+		}
+
+		@Override
+		public GitConnectorPull createPull() {
+			return new CachedGCPull(() -> getDelegate().pull());
 		}
 	}
 
@@ -431,11 +442,6 @@ public class CachingGitConnector extends GitConnectorParent {
 	@Override
 	public boolean pushBranch(String branch) {
 		return this.delegate.pushBranch(branch);
-	}
-
-	@Override
-	public boolean pullCurrent(boolean rebase) {
-		return this.delegate.pullCurrent(rebase);
 	}
 
 	@Override

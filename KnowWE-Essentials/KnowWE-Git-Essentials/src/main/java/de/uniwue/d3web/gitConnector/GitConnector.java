@@ -423,22 +423,6 @@ public interface GitConnector {
 	}
 
 	/**
-	 * Pulls with rebase mode if specified
-	 *
-	 * @param rebase rebase mode
-	 * @return true if successful
-	 */
-	boolean pullCurrent(boolean rebase);
-
-	/**
-	 * Obtain the status of the current active branch
-	 *
-	 * @return
-	 */
-	// TODO: remove -> moved to GitConnectorStatus
-	@Deprecated
-	//GitStatusCommandResult getStatus();
-	/**
 	 * returns the name of the repository.
 	 *
 	 * @return repo name

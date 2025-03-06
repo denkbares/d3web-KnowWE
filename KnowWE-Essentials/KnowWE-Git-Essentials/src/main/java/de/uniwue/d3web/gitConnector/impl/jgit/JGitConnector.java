@@ -64,6 +64,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.utils.Stopwatch;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorPull;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
@@ -101,15 +102,20 @@ public class JGitConnector extends GitConnectorParent {
 
 		@Override
 		public GitConnectorStatus createStatus() {
-			return new JGitGCStatus(() -> getGit(), () -> getRepository());
+			return new JGitGCStatus(JGitConnector.this::getGit, JGitConnector.this::getRepository);
+		}
+
+		@Override
+		public GitConnectorPull createPull() {
+			return new JGitGCPull(JGitConnector.this::getGit, JGitConnector.this::getRepository);
 		}
 	}
 
-	Repository getRepository() {
+	private Repository getRepository() {
 		return repository;
 	}
 
-	Git getGit() {
+	private Git getGit() {
 		return git;
 	}
 
@@ -377,38 +383,6 @@ public class JGitConnector extends GitConnectorParent {
 	@Override
 	public boolean switchToTag(String tagName) {
 		return switchToBranch(tagName, false);
-	}
-
-	@Override
-	public boolean pullCurrent(boolean rebase) {
-		PullCommand pull = git.pull()
-				.setRemote("origin")
-				.setRemoteBranchName(currentBranch())
-				.setStrategy(MergeStrategy.RESOLVE)
-				.setRebase(true);
-		PullResult pullResult = null;
-		try {
-			pullResult = pull.call();
-		}
-		catch (JGitInternalException ie) {
-			LOGGER.error("internal jgit error", ie);
-			try {
-				switch (repository.getRepositoryState()) {
-					case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
-							.setOperation(RebaseCommand.Operation.ABORT)
-							.call();
-				}
-				pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
-			}
-			catch (Exception e) {
-				LOGGER.error("internal jgit error", ie);
-			}
-		}
-		catch (GitAPIException e) {
-			LOGGER.error("jgit API exception", e);
-			throw new RuntimeException(e);
-		}
-		return pullResult != null && pullResult.isSuccessful();
 	}
 
 	@Override

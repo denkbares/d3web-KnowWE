@@ -39,6 +39,7 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
  */
 public class JGitBackedGitConnector extends GitConnectorParent {
 	private final BareGitConnector bareGitConnector;
+
 	private final JGitConnector jgitConnector;
 
 	public JGitBackedGitConnector(BareGitConnector bareGitConnector, JGitConnector jGitConnector) {
@@ -55,6 +56,12 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		return bareGitConnector;
 	}
 
+	public JGitConnector getJGitConnector() {
+		return jgitConnector;
+	}
+
+
+
 	private class BackedGCFactory extends GCDelegateParentFactory {
 		public BackedGCFactory(GitConnector gitConnector) {
 			super(gitConnector);
@@ -63,6 +70,11 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		@Override
 		public GitConnectorStatus createStatus() {
 			return new BackedGCStatus(() -> getBareGitConnector().status());
+		}
+
+		@Override
+		public GitConnectorPull createPull() {
+			return new BackedGCPull(() -> getJGitConnector().pull());
 		}
 	}
 
@@ -202,10 +214,6 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		return this.jgitConnector.pushBranch(branch);
 	}
 
-	@Override
-	public boolean pullCurrent(boolean rebase) {
-		return this.jgitConnector.pullCurrent(rebase);
-	}
 
 	@Override
 	public String repoName() {

@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorPull;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
@@ -78,6 +79,11 @@ public final class BareGitConnector extends GitConnectorParent {
 		@Override
 		public GitConnectorStatus createStatus() {
 			return new BareGCStatus(() -> getRepositoryPath());
+		}
+
+		@Override
+		public GitConnectorPull createPull() {
+			return new BareGCPull(() -> getRepositoryPath());
 		}
 	}
 
@@ -774,20 +780,9 @@ public final class BareGitConnector extends GitConnectorParent {
 	}
 
 	@Override
-	public boolean pullCurrent(boolean rebase) {
-		String[] commitCommand = new String[] { "git", "pull" };
-		if (rebase) {
-			commitCommand = new String[] { "git", "pull", "--rebase" };
-		}
-		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath).trim();
-		return result.isBlank() || result.startsWith("Already up to date.") || result.startsWith("Bereits aktuell.");
-	}
-
-	@Override
 	public String repoName() {
 		String url = RawGitExecutor.executeGitCommand("git remote get-url origin", this.repositoryPath);
-		String lastPart = url.substring(url.lastIndexOf("/") + 1).trim();
-		return lastPart;
+		return url.substring(url.lastIndexOf("/") + 1).trim();
 	}
 
 	@Override

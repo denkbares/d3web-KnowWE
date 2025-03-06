@@ -31,7 +31,7 @@ public class GCDelegateParentFactory implements GCFactory {
 
 	@Override
 	public GitConnectorPull createPull() {
-		return new GCPullDelegateParent(parentGitConnector);
+		throw new NotImplementedException();
 	}
 
 	@Override
