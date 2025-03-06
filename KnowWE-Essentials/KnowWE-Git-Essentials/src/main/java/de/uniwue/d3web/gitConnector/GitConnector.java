@@ -39,6 +39,33 @@ public interface GitConnector {
 
 	GitConnectorRollback rollback();
 
+	GitConnectorRepo repo();
+
+	String cherryPick( List<String> commitHashesToCherryPick);
+
+
+	void abortCherryPick();
+
+	/**
+	 * Checks if git is ready to go in the current runtime environment
+	 *
+	 * @return true if git is ready to go
+	 */
+	boolean gitInstalledAndReady();
+
+	/**
+	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
+	 */
+	void destroy();
+
+	/**
+	 * Checks whether a given path is ignored!
+	 * @param path
+	 * @return
+	 */
+	boolean isIgnored(String path);
+
+
 	/***
 	 * Removes the file from stage (reverse 'git add')
 	 *
@@ -129,18 +156,6 @@ public interface GitConnector {
 	// TODO: remove
 	List<String> getCommitsSince(Date timeStamp);
 
-
-	/**
-	 * Checks if git is ready to go in the current runtime environment
-	 *
-	 * @return true if git is ready to go
-	 */
-	boolean gitInstalledAndReady();
-
-	/**
-	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
-	 */
-	void destroy();
 
 
 
@@ -252,19 +267,20 @@ public interface GitConnector {
 	// TODO: remove
 	void rollbackPaths(Set<String> pathsToRollback);
 
-	String cherryPick( List<String> commitHashesToCherryPick);
 
 	/**
 	 * Performs git garbage collection, which is thought to speed up subsequent git calls. Use with caution as this is slow!
 	 * @param aggressive aggressive gc mode
 	 * @param prune prune flag
 	 */
+	// TODO : remove (Repo)
 	void performGC(boolean aggressive, boolean prune);
 
 	/**
 	 * Similar to GC() this is meant to speed up subsequent git calls. Use only if you know what it does
 	 * @return true iff successful
 	 */
+	// TODO : remove (Repo)
 	boolean executeCommitGraph();
 
 
@@ -290,6 +306,7 @@ public interface GitConnector {
 	 * Obtain the directory in which the .git folder is located
 	 * @return
 	 */
+	// TODO : remove (Repo)
 	String getGitDirectory();
 
 	/**
@@ -335,12 +352,6 @@ public interface GitConnector {
 	// TODO :remove
 	List<String> commitsBetweenForFile(String commitHashFrom, String commitHashTo, String path);
 
-	/**
-	 * Checks whether a given path is ignored!
-	 * @param path
-	 * @return
-	 */
-	boolean isIgnored(String path);
 
 	/**
 	 * Performs a commit operation on the underlying git using the provided userData - returns the commit hash.
@@ -359,10 +370,12 @@ public interface GitConnector {
 	 */
 	// TODO
 	String commitForUser(UserData userData, long timeStamp);
+
 	/**
 	 * Returns whether this repository has any remote origins assigned!
 	 * @return
 	 */
+	// TODO : remove (Repo)
 	boolean isRemoteRepository();
 
 	/**
@@ -457,15 +470,14 @@ public interface GitConnector {
 	}
 
 
-
 	/**
 	 * returns the name of the repository.
 	 *
 	 * @return repo name
 	 */
+	// TODO : remove (Repo)
 	String repoName();
 
-	void abortCherryPick();
 
 	/**
 	 * Sets the upstream branch for the current branch

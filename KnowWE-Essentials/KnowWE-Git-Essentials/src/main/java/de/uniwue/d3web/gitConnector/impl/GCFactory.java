@@ -9,6 +9,7 @@ import de.uniwue.d3web.gitConnector.GitConnectorCommit;
 import de.uniwue.d3web.gitConnector.GitConnectorLog;
 import de.uniwue.d3web.gitConnector.GitConnectorPull;
 import de.uniwue.d3web.gitConnector.GitConnectorPush;
+import de.uniwue.d3web.gitConnector.GitConnectorRepo;
 import de.uniwue.d3web.gitConnector.GitConnectorRollback;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 
@@ -27,4 +28,6 @@ public interface GCFactory {
 	GitConnectorCommit createCommit();
 
 	GitConnectorBranch createBranch();
+
+	GitConnectorRepo createRepo();
 }

@@ -12,18 +12,20 @@ import de.uniwue.d3web.gitConnector.GitConnectorCommit;
 import de.uniwue.d3web.gitConnector.GitConnectorLog;
 import de.uniwue.d3web.gitConnector.GitConnectorPull;
 import de.uniwue.d3web.gitConnector.GitConnectorPush;
+import de.uniwue.d3web.gitConnector.GitConnectorRepo;
 import de.uniwue.d3web.gitConnector.GitConnectorRollback;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 
 public abstract class GitConnectorParent implements GitConnector {
 
-	protected  GitConnectorStatus statusGC;
-	protected  GitConnectorPull pullGC;
-	protected  GitConnectorPush pushGC;
-	protected  GitConnectorLog logGC;
-	protected  GitConnectorBranch branchGC;
-	protected  GitConnectorRollback rollbackGC;
-	protected  GitConnectorCommit commitGC;
+	private final GitConnectorStatus statusGC;
+	private final GitConnectorPull pullGC;
+	private final GitConnectorPush pushGC;
+	private final GitConnectorLog logGC;
+	private final GitConnectorBranch branchGC;
+	private final GitConnectorRollback rollbackGC;
+	private final GitConnectorCommit commitGC;
+	private final GitConnectorRepo repoGC;
 
 	public GitConnectorParent() {
 		GCFactory gcFactory = getGcFactory();
@@ -34,6 +36,7 @@ public abstract class GitConnectorParent implements GitConnector {
 		this.branchGC = gcFactory.createBranch();
 		this.rollbackGC = gcFactory.createRollback();
 		this.commitGC = gcFactory.createCommit();
+		this.repoGC = gcFactory.createRepo();
 	}
 
 	protected @NotNull GCFactory getGcFactory() {
@@ -70,9 +73,13 @@ public abstract class GitConnectorParent implements GitConnector {
 		return pushGC;
 	}
 
-
 	@Override
 	public GitConnectorRollback rollback() {
 		return rollbackGC;
+	}
+
+	@Override
+	public GitConnectorRepo repo() {
+		return repoGC;
 	}
 }

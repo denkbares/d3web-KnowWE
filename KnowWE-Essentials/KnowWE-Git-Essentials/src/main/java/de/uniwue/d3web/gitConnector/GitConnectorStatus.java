@@ -18,7 +18,7 @@ public interface GitConnectorStatus {
 		Committed_Clean, // file is committed and not changed since
 		Committed_Modified, // file is committed but changed after last commit
 		Committed_Deleted, // file is committed but file has just been deleted
-		Staged,	// file was added but not yet committed
+		Staged,	// file was added but not yet committed // TODO: check if this is properly implemented: Staged vs. Committed_Modified?
 		Untracked,	// file has not been added to git-vcs
 		NotExisting // requested file does not exist on the file system
 	}

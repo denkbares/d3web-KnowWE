@@ -156,7 +156,7 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 
 		if (!this.gitWorkflowResult.initialCleanSuccessful()) {
 			//this is super bad all we can do now is a reset and hope that one goes through
-			ResetCommandResult resetCommandResult = this.gitConnector.resetToHEAD();
+			ResetCommandResult resetCommandResult = this.gitConnector.rollback().resetToHEAD();
 			if (resetCommandResult instanceof ResetCommandSuccess) {
 				this.gitWorkflowResult.addResetResult("Successfully reset to HEAD", true);
 			}

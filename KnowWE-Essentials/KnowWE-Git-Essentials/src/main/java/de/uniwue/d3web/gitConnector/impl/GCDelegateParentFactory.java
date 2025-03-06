@@ -12,6 +12,7 @@ import de.uniwue.d3web.gitConnector.GitConnectorCommit;
 import de.uniwue.d3web.gitConnector.GitConnectorLog;
 import de.uniwue.d3web.gitConnector.GitConnectorPull;
 import de.uniwue.d3web.gitConnector.GitConnectorPush;
+import de.uniwue.d3web.gitConnector.GitConnectorRepo;
 import de.uniwue.d3web.gitConnector.GitConnectorRollback;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 
@@ -57,5 +58,10 @@ public class GCDelegateParentFactory implements GCFactory {
 	@Override
 	public GitConnectorBranch createBranch() {
 		return new GCBranchDelegateParent(parentGitConnector);
+	}
+
+	@Override
+	public GitConnectorRepo createRepo() {
+		return new GCRepoDelegateParent(parentGitConnector);
 	}
 }
