@@ -162,6 +162,7 @@ public class CIBuildManager implements EventListener {
 				synchronized (ciBuildQueue) {
 					CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
 					if (ciBuildFuture != null && ciBuildFuture.ciBuildCallable == this) {
+						LOGGER.info("Removing CI-Tasks of Dashboard: "+ciBuildFuture.ciBuildCallable);
 						ciBuildQueue.remove(dashboard);
 					}
 				}
@@ -354,7 +355,8 @@ public class CIBuildManager implements EventListener {
 		}
 		else if (event instanceof WikiContentReplacedEvent) {
 			// wiki content has been replaced; re-initialization with compile follows; hence we can shut down
-			CI_BUILD_EXECUTOR.shutdownNow();
+			shutDownNow();
+
 		}
 	}
 }
