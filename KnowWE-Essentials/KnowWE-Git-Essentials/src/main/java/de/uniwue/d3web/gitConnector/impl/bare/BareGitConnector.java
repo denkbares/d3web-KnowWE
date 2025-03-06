@@ -456,17 +456,7 @@ public final class BareGitConnector extends GitConnectorParent {
 		return commitHashes;
 	}
 
-	@Override
-	public boolean isClean() {
-		String[] command = { "git", "status" };
-		String response = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
-		// we do not know the language (and cannot set the language, as not every git installation comes with the language package)
-		String[] dirtyKeyWords = { "new file", "modified", "deleted", "untracked" };
-		boolean isDirty = Arrays.stream(dirtyKeyWords).toList().stream().anyMatch(key -> response.contains(key));
-		boolean isClean = !isDirty;
-		LOGGER.info("isClean: git status result is: " + isClean + "(" + response + ")");
-		return isClean;
-	}
+
 
 	@Override
 	public byte[] getBytesForPath(String path, int version) {

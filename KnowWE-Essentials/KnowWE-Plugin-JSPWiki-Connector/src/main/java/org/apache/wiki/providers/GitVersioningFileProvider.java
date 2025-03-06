@@ -361,7 +361,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 
 
 	public boolean isClean() {
-		return this.delegate.getGitConnector().isClean();
+		return this.delegate.getGitConnector().status().isClean();
 	}
 
 	public String getRemoteToken() {

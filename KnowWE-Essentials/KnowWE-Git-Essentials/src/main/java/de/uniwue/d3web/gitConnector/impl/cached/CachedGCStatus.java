@@ -11,12 +11,12 @@ import org.jetbrains.annotations.NotNull;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 
-public class CachedGCStatus implements GitConnectorStatus {
+class CachedGCStatus implements GitConnectorStatus {
 
-	GitConnectorStatus delegate;
-	Supplier<GitConnectorStatus> delegateS;
+	private GitConnectorStatus delegate;
+	private final Supplier<GitConnectorStatus> delegateS;
 
-	public CachedGCStatus(Supplier<GitConnectorStatus> delegate) {
+	CachedGCStatus(Supplier<GitConnectorStatus> delegate) {
 		this.delegateS = delegate;
 	}
 
@@ -30,5 +30,11 @@ public class CachedGCStatus implements GitConnectorStatus {
 	public GitStatusCommandResult get() {
 		if(delegate == null) delegate = delegateS.get();
 		return delegate.get();
+	}
+
+	@Override
+	public boolean isClean() {
+		if(delegate == null) delegate = delegateS.get();
+		return this.delegate.isClean();
 	}
 }

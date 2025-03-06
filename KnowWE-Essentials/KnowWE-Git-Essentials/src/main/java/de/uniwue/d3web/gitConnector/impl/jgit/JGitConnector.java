@@ -613,16 +613,6 @@ public class JGitConnector extends GitConnectorParent {
 		return new ArrayList<>();
 	}
 
-	@Override
-	public boolean isClean() {
-		try {
-			Status call = new Git(this.repository).status().call();
-			return call.isClean();
-		}
-		catch (GitAPIException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	@Override
 	public byte[] getBytesForPath(String path, int version) {

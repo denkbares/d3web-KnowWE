@@ -39,5 +39,11 @@ public interface GitConnectorStatus {
 	 */
 	GitStatusCommandResult get();
 
+	/**
+	 * A repo folder is clean when neither untracked nor uncommitted files exist.
+	 *
+	 * @return true iff clean
+	 */
+	boolean isClean();
 
 }

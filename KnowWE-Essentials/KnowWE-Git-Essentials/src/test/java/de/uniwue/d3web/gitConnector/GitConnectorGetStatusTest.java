@@ -22,7 +22,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 	@Test
 	public void testGetStatusUntracked() throws IOException {
 		setUp(false);
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		write();
 		assertEquals(GitConnectorStatus.FileStatus.Untracked, gitConnector.status().ofFile(FILE));
@@ -31,7 +31,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 	@Test
 	public void testGetStatusStaged() throws IOException {
 		setUp(false);
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		writeAndAddContentFile();
 		gitConnector.addPath(FILE);
@@ -42,7 +42,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 	@Test
 	public void testGetStatusCommitted() throws IOException {
 		setUp(false);
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		writeAndAddContentFile();
 		gitCommit();
@@ -52,7 +52,7 @@ public class GitConnectorGetStatusTest extends GitConnectorTestTemplate {
 	@Test
 	public void testGetStatusNotExisting() throws IOException {
 		setUp(false);
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		assertEquals(GitConnectorStatus.FileStatus.NotExisting, gitConnector.status().ofFile("NonExistentFile.txt"));
 	}

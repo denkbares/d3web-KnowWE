@@ -55,7 +55,7 @@ public class DefaultGitServerConnector implements GitServerConnector {
 		if (!oldGitConnector.repoName().equals(repoName)) {
 			// we want another repo than currently initialized
 
-			if (!oldGitConnector.isClean()) {
+			if (!oldGitConnector.status().isClean()) {
 				LOGGER.info("Can not switch Repo as old local repo is not clean");
 				return false;
 			}

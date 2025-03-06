@@ -86,4 +86,17 @@ class JGitGCStatus implements GitConnectorStatus {
 	public GitStatusCommandResult get() {
 		throw new NotImplementedException("TODO");
 	}
+
+	@Override
+	public boolean isClean() {
+		if(git == null) git = gitS.get();
+		if(repository == null) repository = repositoryS.get();
+		try {
+			Status call = new Git(this.repository).status().call();
+			return call.isClean();
+		}
+		catch (GitAPIException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -25,7 +25,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 	public void testDeleteAdded() throws IOException {
 		setUp(false);
 		// should be clean at the beginning
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		// we add some file
 		writeAndAddContentFile();
@@ -36,7 +36,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 		gitDelete(false);
 
 		assertFalse(CONTENT_FILE.exists());
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 	}
 
@@ -44,7 +44,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 	public void testDeleteAddedCached() throws IOException {
 		setUp(true);
 		// should be clean at the beginning
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		// we add some file
 		writeAndAddContentFile();
@@ -55,7 +55,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 		gitDelete(true);
 
 		assertTrue(CONTENT_FILE.exists());
-		assertFalse(gitConnector.isClean());
+		assertFalse(gitConnector.status().isClean());
 		GitConnectorStatus.FileStatus status = gitConnector.status().ofFile(FILE);
 		assertEquals(GitConnectorStatus.FileStatus.Untracked, status);
 	}
@@ -64,7 +64,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 	public void testDeleteCommited() throws IOException {
 		setUp(false);
 		// should be clean at the beginning
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		// we add some file
 		writeAndAddContentFile();
@@ -83,7 +83,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 	public void testDeleteCommitedCached() throws IOException {
 		setUp(false);
 		// should be clean at the beginning
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		// we add some file
 		writeAndAddContentFile();
@@ -104,7 +104,7 @@ public class GitConnectorDeleteFileTest extends GitConnectorTestTemplate {
 	public void testDeleteUntracked() throws IOException {
 		setUp(false);
 		// should be clean at the beginning
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		// we add some file
 		FileUtils.write(CONTENT_FILE, "CONTENT", Charset.defaultCharset());

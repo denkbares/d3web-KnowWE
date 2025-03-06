@@ -403,11 +403,6 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		return this.jgitConnector.getCommitsSince(timeStamp);
 	}
 
-	@Override
-	public boolean isClean() {
-		//just use JGit as it has always been fast
-		return this.jgitConnector.isClean();
-	}
 
 	@Override
 	public byte[] getBytesForPath(String path, int version) {

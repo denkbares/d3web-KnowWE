@@ -31,4 +31,12 @@ class BackedGCStatus implements GitConnectorStatus {
 		if(delegate == null) delegate = supplier.get();
 		return delegate.get();
 	}
+
+	@Override
+	public boolean isClean() {
+		if(delegate == null) delegate = supplier.get();
+		//just use JGit as it has always been fast
+		return this.delegate.isClean();
+	}
+
 }

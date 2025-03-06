@@ -71,7 +71,7 @@ public class GitConnectorTestTemplate {
 			writeAndAddContentFile(initFile);
 			gitCommit(initFile);
 			gitConnector.pushAll();
-			assumeTrue(gitConnector.isClean());
+			assumeTrue(gitConnector.status().isClean());
 		}
 
 	}

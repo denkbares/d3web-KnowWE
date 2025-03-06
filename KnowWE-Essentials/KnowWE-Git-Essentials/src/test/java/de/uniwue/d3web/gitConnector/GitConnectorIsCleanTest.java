@@ -24,19 +24,19 @@ public class GitConnectorIsCleanTest extends GitConnectorTestTemplate {
 	public void testIsClean() throws IOException {
 		setUp(false);
 		// should be clean at the beginning
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		// we add some file
 		writeAndAddContentFile();
 
 		// then it should not be clean anymore
-		assertFalse(gitConnector.isClean());
+		assertFalse(gitConnector.status().isClean());
 
 		// then we commit the file
 		gitCommit();
 
 		// should be clean again
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 	}
 

@@ -5,15 +5,21 @@
 package de.uniwue.d3web.gitConnector.impl.bare;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommand;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 
 class BareGCStatus implements GitConnectorStatus {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BareGCStatus.class);
+
 
 	private String repositoryPath;
 	private final Supplier<String> repositoryPathS;
@@ -53,5 +59,18 @@ class BareGCStatus implements GitConnectorStatus {
 		if(repositoryPath == null) repositoryPath = repositoryPathS.get();
 		GitStatusCommand gitStatusCommand = new GitStatusCommand(this.repositoryPath);
 		return gitStatusCommand.execute();
+	}
+
+	@Override
+	public boolean isClean() {
+		if(repositoryPath == null) repositoryPath = repositoryPathS.get();
+		String[] command = { "git", "status" };
+		String response = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+		// we do not know the language (and cannot set the language, as not every git installation comes with the language package)
+		String[] dirtyKeyWords = { "new file", "modified", "deleted", "untracked" };
+		boolean isDirty = Arrays.stream(dirtyKeyWords).toList().stream().anyMatch(key -> response.contains(key));
+		boolean isClean = !isDirty;
+		LOGGER.info("isClean: git status result is: " + isClean + "(" + response + ")");
+		return isClean;
 	}
 }

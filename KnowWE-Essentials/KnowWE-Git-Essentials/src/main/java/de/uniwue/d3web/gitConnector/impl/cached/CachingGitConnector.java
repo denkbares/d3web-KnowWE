@@ -258,10 +258,7 @@ public class CachingGitConnector extends GitConnectorParent {
 		return version > 0 && version <= commitHashes.size();
 	}
 
-	@Override
-	public boolean isClean() {
-		return this.delegate.isClean();
-	}
+
 
 	@Override
 	public byte[] getBytesForCommit(String commitHash, String path) {

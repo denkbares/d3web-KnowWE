@@ -25,7 +25,7 @@ public class GitConnectorGetFileStatusTest extends GitConnectorTestTemplate {
 	public void testCycle() throws IOException {
 		setUp(false);
 		// should be clean at the beginning
-		assertTrue(gitConnector.isClean());
+		assertTrue(gitConnector.status().isClean());
 
 		assertEquals(GitConnectorStatus.FileStatus.NotExisting, gitConnector.status().ofFile(FILE));
 

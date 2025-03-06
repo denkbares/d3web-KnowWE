@@ -45,6 +45,7 @@ public interface GitConnector {
 	 * @param file file to be unstaged
 	 * @return true iff it was unstaged
 	 */
+	// TODO: remove
 	boolean unstage(@NotNull String file);
 
 	/**
@@ -54,7 +55,7 @@ public interface GitConnector {
 	 * @return status of the file in the current repo
 	 */
 	// TODO: remove
-	@Deprecated
+	//@Deprecated
 	//GitConnectorStatus.FileStatus getStatus(@NotNull String file);
 
 	/**
@@ -63,6 +64,7 @@ public interface GitConnector {
 	 * @param file file
 	 * @return list of commit hashes
 	 */
+	// TODO: remove
 	List<String> commitHashesForFile(@NotNull String file);
 
 	/**
@@ -71,6 +73,7 @@ public interface GitConnector {
 	 * @param branchName branch name
 	 * @return commit hashes
 	 */
+	// TODO: remove
 	List<String> commitHashesForFileInBranch(@NotNull String file, String branchName);
 
 	/**
@@ -80,6 +83,7 @@ public interface GitConnector {
 	 * @param date since date
 	 * @return list of all commit hashes of the file since date
 	 */
+	// TODO: remove
 	List<String> commitHashesForFileSince(@NotNull String file, @NotNull Date date);
 
 	/**
@@ -88,6 +92,7 @@ public interface GitConnector {
 	 * @param version version
 	 * @return the commit-hash for a file and a given version, null if it cannot be found.
 	 */
+	// TODO: remove
 	String commitHashForFileAndVersion(String file, int version);
 
 	/**
@@ -95,6 +100,7 @@ public interface GitConnector {
 	 * @param filePath file path
 	 * @return number of commits for the file, 0 if none exist
 	 */
+	// TODO: remove
 	int numberOfCommitsForFile(String filePath);
 
 	/**
@@ -102,6 +108,7 @@ public interface GitConnector {
 	 * @param commitHash commitHash
 	 * @return bytes
 	 */
+	// TODO: remove
 	byte[] getBytesForCommit(String commitHash,String path);
 
 	/**
@@ -110,6 +117,7 @@ public interface GitConnector {
 	 * @param path path
 	 * @return file size in bytes
 	 */
+	// TODO: remove
 	long getFilesizeForCommit(String commitHash, String path);
 
 
@@ -118,6 +126,7 @@ public interface GitConnector {
 	 * @param timeStamp time stamp
 	 * @return all commit hashed that have assigned date later than time stamp
 	 */
+	// TODO: remove
 	List<String> getCommitsSince(Date timeStamp);
 
 
@@ -134,12 +143,7 @@ public interface GitConnector {
 	void destroy();
 
 
-	/**
-	 * A repo folder is clean when neither untracked nor uncommitted files exist.
-	 *
-	 * @return true iff clean
-	 */
-	boolean isClean();
+
 
 	/**
 	 * Get bytes for a file (specified by its relative path, starting from git root) in a specific version
@@ -147,6 +151,7 @@ public interface GitConnector {
 	 * @param version version
 	 * @return a bytearray of the content or null if the version could not be found!
 	 */
+	// TODO: remove
 	byte[] getBytesForPath(String path, int version);
 
 
@@ -156,6 +161,7 @@ public interface GitConnector {
 	 * @param version version
 	 * @return true iff version exists
 	 */
+	// TODO: remove
 	boolean versionExists(String path, int version);
 
 	/**
@@ -163,6 +169,7 @@ public interface GitConnector {
 	 * @param commitHash commitHash
 	 * @return user data
 	 */
+	// TODO: remove
 	UserData userDataFor(String commitHash);
 
 	/**
@@ -170,6 +177,7 @@ public interface GitConnector {
 	 * @param commitHash commitHash
 	 * @return commit timestamp in seconds since 1970
 	 */
+	// TODO: remove
 	long commitTimeFor(String commitHash);
 
 	/**
@@ -182,6 +190,7 @@ public interface GitConnector {
 	 * @param paths paths of files to be committed
 	 * @return commit hash
 	 */
+	// TODO: remove
 	// TODO: BareGitConnector returns the complete command line response !
 	String commitPathsForUser(String message, String author, String email, Set<String> paths);
 
@@ -196,6 +205,7 @@ public interface GitConnector {
 	 * @param message message
 	 * @return commit hash of the move commit
 	 */
+	// TODO: remove
 	String moveFile(Path from, Path to, String user, String email, String message);
 
 	/**
@@ -205,6 +215,7 @@ public interface GitConnector {
 	 * @param userData user data
 	 * @return commit hash
 	 */
+	// TODO: remove
 	String deletePath(String pathToDelete, UserData userData, boolean cached);
 
 
@@ -216,6 +227,7 @@ public interface GitConnector {
 	 * @param cached if true, the file is only removed from index, but still exists, otherwise it's gone
 	 * @return commit hash
 	 */
+	// TODO: remove
 	String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached);
 
 	/**
@@ -224,16 +236,20 @@ public interface GitConnector {
 	 * @param userData user
 	 * @return commitHash of the performed commit, or null if the commit fails
 	 */
+	// TODO: remove
 	String changePath(Path pathToPut, UserData userData);
 
 	/**
 	 * Performs a git add <path>
 	 * @param path file to be added
 	 */
+	// TODO : remove
 	void addPath(String path);
 
+	// TODO : remove
 	void addPaths(List<String> path);
 
+	// TODO: remove
 	void rollbackPaths(Set<String> pathsToRollback);
 
 	String cherryPick( List<String> commitHashesToCherryPick);
@@ -257,9 +273,11 @@ public interface GitConnector {
 	 * @param commitHash
 	 * @return
 	 */
+	// TODO : remove
 	List<String> listChangedFilesForHash(String commitHash);
 
 
+	// TODO: remove
 	default String getTextForPath(String pathToTxt, int version) {
 		if (!pathToTxt.endsWith(".txt")) {
 			LOGGER.warn("Request text for a file that isnt a txt");
@@ -278,12 +296,14 @@ public interface GitConnector {
 	 * Returnt he current active branch. Throws Illegalstate if this command fails
 	 * @return
 	 */
+	// TODO: remove
 	String currentBranch() throws IllegalStateException;
 
 	/**
 	 * Return the current head of the current branch
 	 * @return
 	 */
+	// TODO : remove
 	String currentHEAD();
 
 	/**
@@ -291,6 +311,7 @@ public interface GitConnector {
 	 *
 	 * @return
 	 */
+	// TODO: remove
 	String currentHEADOfBranch(String branchName);
 
 
@@ -301,7 +322,7 @@ public interface GitConnector {
 	 * @param commitHashTo
 	 * @return
 	 */
-
+	// TODO : remove
 	List<String> commitsBetween(String commitHashFrom, String commitHashTo);
 
 	/**
@@ -311,6 +332,7 @@ public interface GitConnector {
 	 * @param path
 	 * @return
 	 */
+	// TODO :remove
 	List<String> commitsBetweenForFile(String commitHashFrom, String commitHashTo, String path);
 
 	/**
@@ -326,6 +348,7 @@ public interface GitConnector {
 	 * @param userData
 	 * @return
 	 */
+	// TODO : remove
 	String commitForUser(UserData userData);
 
 	/**
@@ -334,6 +357,7 @@ public interface GitConnector {
 	 * @param userData
 	 * @return
 	 */
+	// TODO
 	String commitForUser(UserData userData, long timeStamp);
 	/**
 	 * Returns whether this repository has any remote origins assigned!
@@ -344,12 +368,14 @@ public interface GitConnector {
 	/**
 	 * List all branches of this repository
 	 */
+	// TODO: remove
 	 List<String> listBranches(boolean includeRemoteBranches);
 
 	/**
 	 * Lists all commit hashes for a given branch
 	 * @return
 	 */
+	// TODO : remove
 	List<String> listCommitsForBranch(String branchName);
 
 	/**
@@ -358,9 +384,10 @@ public interface GitConnector {
 	 * @param createBranch
 	 * @return
 	 */
+	// TODO: remove
 	boolean switchToBranch(String branch, boolean createBranch);
 
-
+	// TODO: remove
 	boolean createBranch(String branchName, String branchNameToBaseOn, boolean switchToBranch);
 
 	/**
@@ -377,12 +404,16 @@ public interface GitConnector {
 	 * @param path
 	 * @return
 	 */
+	// TODO
 	boolean untrackPath(String path);
 
+	// TODO : remove
 	boolean addNoteToCommit(String noteText, String commitHash, String namespace);
 
+	// TODO: remove
 	boolean copyNotes(String commitHashFrom, String commitHashTo);
 
+	// TODO :remove
 	Map<String, String> retrieveNotesForCommit(String commitHash);
 
 	/**
@@ -392,6 +423,7 @@ public interface GitConnector {
 	 * @param namespace
 	 * @return
 	 */
+	// TODO : remove
 	default String retrieveNoteForCommitInNamespace(String commitHash, String namespace) {
 		return retrieveNotesForCommit(commitHash).get(namespace);
 	}
@@ -401,6 +433,7 @@ public interface GitConnector {
 	 *
 	 * @return true if push was successful
 	 */
+	// TODO: remove
 	boolean pushAll(String userName, String passwordOrToken);
 
 	/**
@@ -409,18 +442,21 @@ public interface GitConnector {
 	 * @param branch the branch to be pushed
 	 * @return true if push was successful
 	 */
+	// TODO : remove
 	boolean pushBranch(String branch, String userName, String passwordOrToken);
 
+	// TODO: remove
+	default boolean pushBranch(String branch) {
+		return pushBranch(branch, "", "");
+	}
 
 
+	// TODO : remove
 	default boolean pushAll() {
 		return pushAll("", "");
 	}
 
 
-	default boolean pushBranch(String branch) {
-		return pushBranch(branch, "", "");
-	}
 
 	/**
 	 * returns the name of the repository.
@@ -437,12 +473,16 @@ public interface GitConnector {
 	 * @param branch branch on origin that the current branch is connected to
 	 * @return true if successful
 	 */
+	// TODO: remove
 	boolean setUpstreamBranch(String branch);
 
+	// TODO : remove
 	GitMergeCommandResult mergeBranchToCurrentBranch(String branchName);
 
+	// TODO: remove
 	PushCommandResult pushToOrigin(String userName, String passwordOrToken);
 
+	// TODO: remove
 	ResetCommandResult resetToHEAD();
 
 	/**
@@ -451,5 +491,6 @@ public interface GitConnector {
 	 * @param file file to be reset
 	 * @return true iff reset was successful
 	 */
+	// TODO: remove
 	boolean resetFile(String file);
 }
