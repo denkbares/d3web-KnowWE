@@ -33,8 +33,7 @@ class JGitGCStatus implements GitConnectorStatus {
 
 	@Override
 	public FileStatus ofFile(@NotNull String file) {
-		if(git == null) git = gitS.get();
-		if(repository == null) repository = repositoryS.get();
+		init();
 		File localFile = new File(repository.getWorkTree() + File.separator + file);
 		boolean fileExists = localFile.exists();
 
@@ -82,6 +81,11 @@ class JGitGCStatus implements GitConnectorStatus {
 		}
 	}
 
+	private void init() {
+		if(git == null) git = gitS.get();
+		if(repository == null) repository = repositoryS.get();
+	}
+
 	@Override
 	public GitStatusCommandResult get() {
 		throw new NotImplementedException("TODO");
@@ -89,8 +93,7 @@ class JGitGCStatus implements GitConnectorStatus {
 
 	@Override
 	public boolean isClean() {
-		if(git == null) git = gitS.get();
-		if(repository == null) repository = repositoryS.get();
+		init();
 		try {
 			Status call = new Git(this.repository).status().call();
 			return call.isClean();

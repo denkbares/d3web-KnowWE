@@ -20,7 +20,7 @@ public class GCBranchDelegateParent implements GitConnectorBranch {
 
 	@Override
 	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
-		return parentGitConnector.pushBranch(branch, userName, passwordOrToken);
+		return parentGitConnector.push().pushBranch(branch, userName, passwordOrToken);
 	}
 
 	@Override

@@ -18,7 +18,7 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 /**
  * Allows to perform actions on the git repository.
  */
-public interface GitConnector {
+public interface GitConnector  extends GitConnectorInstallation{
 
 	Logger LOGGER = LoggerFactory.getLogger(GitConnector.class);
 
@@ -46,12 +46,6 @@ public interface GitConnector {
 
 	void abortCherryPick();
 
-	/**
-	 * Checks if git is ready to go in the current runtime environment
-	 *
-	 * @return true if git is ready to go
-	 */
-	boolean gitInstalledAndReady();
 
 	/**
 	 * Is called when the application is shut down. It shall clean up and destroy the git connection and caches.
@@ -441,33 +435,7 @@ public interface GitConnector {
 		return retrieveNotesForCommit(commitHash).get(namespace);
 	}
 
-	/**
-	 * Pushes all commit to origin.
-	 *
-	 * @return true if push was successful
-	 */
-	// TODO: remove
-	boolean pushAll(String userName, String passwordOrToken);
 
-	/**
-	 * Pushes the given branch to origin.
-	 *
-	 * @param branch the branch to be pushed
-	 * @return true if push was successful
-	 */
-	// TODO : remove
-	boolean pushBranch(String branch, String userName, String passwordOrToken);
-
-	// TODO: remove
-	default boolean pushBranch(String branch) {
-		return pushBranch(branch, "", "");
-	}
-
-
-	// TODO : remove
-	default boolean pushAll() {
-		return pushAll("", "");
-	}
 
 
 	/**
@@ -490,9 +458,6 @@ public interface GitConnector {
 
 	// TODO : remove
 	GitMergeCommandResult mergeBranchToCurrentBranch(String branchName);
-
-	// TODO: remove
-	PushCommandResult pushToOrigin(String userName, String passwordOrToken);
 
 	// TODO: remove
 	ResetCommandResult resetToHEAD();

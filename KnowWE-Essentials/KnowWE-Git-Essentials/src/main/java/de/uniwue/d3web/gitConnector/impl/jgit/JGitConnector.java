@@ -30,10 +30,6 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.PullCommand;
-import org.eclipse.jgit.api.PullResult;
-import org.eclipse.jgit.api.PushCommand;
-import org.eclipse.jgit.api.RebaseCommand;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
@@ -49,14 +45,10 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
-import org.eclipse.jgit.merge.ContentMergeStrategy;
-import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.FS;
@@ -65,16 +57,13 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.utils.Stopwatch;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitConnectorPull;
+import de.uniwue.d3web.gitConnector.GitConnectorPush;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
 import de.uniwue.d3web.gitConnector.impl.GCFactory;
 import de.uniwue.d3web.gitConnector.impl.GitConnectorParent;
 import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandSuccess;
-import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandUnknownResult;
-import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandUnresolvedAddress;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
 
 public class JGitConnector extends GitConnectorParent {
@@ -108,6 +97,11 @@ public class JGitConnector extends GitConnectorParent {
 		@Override
 		public GitConnectorPull createPull() {
 			return new JGitGCPull(JGitConnector.this::getGit, JGitConnector.this::getRepository);
+		}
+
+		@Override
+		public GitConnectorPush createPush() {
+			return new JGitGCPush(JGitConnector.this::getGit, JGitConnector.this::getRepository);
 		}
 	}
 
@@ -143,38 +137,7 @@ public class JGitConnector extends GitConnectorParent {
 		}
 	}
 
-	@Override
-	public boolean pushAll(String userName, String passwordOrToken) {
-		try {
-			LOGGER.info("Pushing all branches to remote...");
-			git.push()
-					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken))
-					.setPushAll()
-					.call();
-			return true;
-		}
-		catch (GitAPIException e) {
-			LOGGER.error("Error pushing all branches to remote", e);
-			return false;
-		}
-	}
 
-	@Override
-	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
-		try {
-			LOGGER.info("Pushing branch: {} to remote...", branch);
-			git.push()
-					.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken))
-					.setRemote("origin")
-					.add(branch)
-					.call();
-			return true;
-		}
-		catch (GitAPIException e) {
-			LOGGER.error("Error pushing branch {} to remote", branch, e);
-			return false;
-		}
-	}
 
 	@Override
 	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
@@ -430,26 +393,7 @@ public class JGitConnector extends GitConnectorParent {
 		throw new NotImplementedException("TODO");
 	}
 
-	@Override
-	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
-		PushCommand push = git.push();
-		//check if we have credentials
-		if (userName != null && passwordOrToken != null) {
-			push = push.setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, passwordOrToken));
-		}
 
-		try {
-			Iterable<PushResult> origin = push.setRemote("origin").setPushAll().call();
-		}
-		//TODO pretty inconsice
-		catch (GitAPIException e) {
-			if (e.getMessage().contains("UnresolvedAddressException")) {
-				return new PushCommandUnresolvedAddress(e.getMessage());
-			}
-			return new PushCommandUnknownResult();
-		}
-		return new PushCommandSuccess();
-	}
 
 	@Override
 	public ResetCommandResult resetToHEAD() {

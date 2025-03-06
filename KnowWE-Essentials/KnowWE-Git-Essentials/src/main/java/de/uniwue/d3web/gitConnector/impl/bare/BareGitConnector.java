@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitConnectorPull;
+import de.uniwue.d3web.gitConnector.GitConnectorPush;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
@@ -51,7 +52,6 @@ import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
 public final class BareGitConnector extends GitConnectorParent {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BareGitConnector.class);
-
 
 
 	public final String repositoryPath;
@@ -84,6 +84,11 @@ public final class BareGitConnector extends GitConnectorParent {
 		@Override
 		public GitConnectorPull createPull() {
 			return new BareGCPull(() -> getRepositoryPath());
+		}
+
+		@Override
+		public GitConnectorPush createPush() {
+			return new BareGCPush(() -> getRepositoryPath());
 		}
 	}
 
@@ -128,19 +133,7 @@ public final class BareGitConnector extends GitConnectorParent {
 	}
 
 
-	@Override
-	public boolean pushAll() {
-		String[] commitCommand = new String[] { "git", "push" };
-		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
-		return true;
-	}
 
-	@Override
-	public boolean pushBranch(String branch) {
-		String[] commitCommand = new String[] { "git", "push", "origin", branch };
-		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
-		return true;
-	}
 
 	@Override
 	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
@@ -841,17 +834,7 @@ public final class BareGitConnector extends GitConnectorParent {
 		return Map.of();
 	}
 
-	@Override
-	public boolean pushAll(String userName, String passwordOrToken) {
-		// TODO: should use authorization!
-		return pushAll();
-	}
 
-	@Override
-	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
-		// TODO: should use authorization!
-		return pushBranch(branch);
-	}
 
 	/*
 	@Override
@@ -871,11 +854,7 @@ public final class BareGitConnector extends GitConnectorParent {
 		return gitMergeCommand.execute();
 	}
 
-	@Override
-	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
-		PushCommand pushCommand = new PushCommand(this.repositoryPath, userName, passwordOrToken);
-		return pushCommand.execute();
-	}
+
 
 	@Override
 	public ResetCommandResult resetToHEAD() {

@@ -70,11 +70,17 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		@Override
 		public GitConnectorStatus createStatus() {
 			return new BackedGCStatus(() -> getBareGitConnector().status());
+			///return new BackedGCStatus(() -> getJGitConnector().status());
 		}
 
 		@Override
 		public GitConnectorPull createPull() {
 			return new BackedGCPull(() -> getJGitConnector().pull());
+		}
+
+		@Override
+		public GitConnectorPush createPush() {
+			return new BackedGCPush(() -> getJGitConnector(), () -> getBareGitConnector());
 		}
 	}
 
@@ -198,21 +204,6 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		return this.bareGitConnector.switchToTag(tagName);
 	}
 
-	@Override
-	public boolean pushAll() {
-		if (this.bareGitConnector.isGitInstalled) {
-			return this.bareGitConnector.pushAll();
-		}
-		return this.jgitConnector.pushAll();
-	}
-
-	@Override
-	public boolean pushBranch(String branch) {
-		if (this.bareGitConnector.isGitInstalled) {
-			return this.bareGitConnector.pushBranch(branch);
-		}
-		return this.jgitConnector.pushBranch(branch);
-	}
 
 
 	@Override
@@ -269,21 +260,7 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		return this.jgitConnector.retrieveNotesForCommit(commitHash);
 	}
 
-	@Override
-	public boolean pushAll(String userName, String passwordOrToken) {
-		if (jgitConnector.gitInstalledAndReady()) {
-			return this.jgitConnector.pushAll(userName, passwordOrToken);
-		}
-		return this.bareGitConnector.pushAll(userName, passwordOrToken);
-	}
 
-	@Override
-	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
-		if (jgitConnector.gitInstalledAndReady()) {
-			return this.jgitConnector.pushBranch(branch, userName, passwordOrToken);
-		}
-		return this.bareGitConnector.pushBranch(branch, userName, passwordOrToken);
-	}
 
 
 	public GitStatusCommandResult getStatus() {
@@ -311,10 +288,7 @@ public class JGitBackedGitConnector extends GitConnectorParent {
 		return this.jgitConnector.mergeBranchToCurrentBranch(branchName);
 	}
 
-	@Override
-	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
-		return this.jgitConnector.pushToOrigin(userName, passwordOrToken);
-	}
+
 
 	@Override
 	public ResetCommandResult resetToHEAD() {

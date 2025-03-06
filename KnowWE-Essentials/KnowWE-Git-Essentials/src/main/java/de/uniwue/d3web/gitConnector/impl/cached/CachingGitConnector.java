@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitConnectorPull;
+import de.uniwue.d3web.gitConnector.GitConnectorPush;
 import de.uniwue.d3web.gitConnector.GitConnectorStatus;
 import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.GCDelegateParentFactory;
@@ -67,6 +68,11 @@ public class CachingGitConnector extends GitConnectorParent {
 		@Override
 		public GitConnectorPull createPull() {
 			return new CachedGCPull(() -> getDelegate().pull());
+		}
+
+		@Override
+		public GitConnectorPush createPush() {
+			return new CachedGCPush(() -> getDelegate().push());
 		}
 	}
 
@@ -431,15 +437,6 @@ public class CachingGitConnector extends GitConnectorParent {
 		return this.delegate.switchToTag(tagName);
 	}
 
-	@Override
-	public boolean pushAll() {
-		return this.delegate.pushAll();
-	}
-
-	@Override
-	public boolean pushBranch(String branch) {
-		return this.delegate.pushBranch(branch);
-	}
 
 	@Override
 	public String repoName() {
@@ -476,15 +473,7 @@ public class CachingGitConnector extends GitConnectorParent {
 		return this.delegate.retrieveNotesForCommit(commitHash);
 	}
 
-	@Override
-	public boolean pushAll(String userName, String passwordOrToken) {
-		return delegate.pushAll(userName, passwordOrToken);
-	}
 
-	@Override
-	public boolean pushBranch(String branch, String userName, String passwordOrToken) {
-		return delegate.pushBranch(branch, userName, passwordOrToken);
-	}
 
 	@Override
 	public void abortCherryPick() {
@@ -496,10 +485,6 @@ public class CachingGitConnector extends GitConnectorParent {
 		return this.delegate.mergeBranchToCurrentBranch(branchName);
 	}
 
-	@Override
-	public PushCommandResult pushToOrigin(String userName, String passwordOrToken) {
-		return delegate.pushToOrigin(userName,passwordOrToken);
-	}
 
 	@Override
 	public ResetCommandResult resetToHEAD() {

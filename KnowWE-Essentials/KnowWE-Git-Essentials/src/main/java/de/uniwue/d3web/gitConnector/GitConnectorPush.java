@@ -6,7 +6,7 @@ package de.uniwue.d3web.gitConnector;
 
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 
-public interface GitConnectorPush {
+public interface GitConnectorPush extends GitConnectorInstallation {
 
 	/**
 	 * Pushes all commit to origin.

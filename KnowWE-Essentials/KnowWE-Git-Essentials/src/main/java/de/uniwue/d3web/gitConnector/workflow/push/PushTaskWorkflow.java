@@ -86,7 +86,7 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 		}
 
 		//and finally we push to origin
-		PushCommandResult pushCommandResult = gitConnector.pushToOrigin(this.username, this.passwordOrToken);
+		PushCommandResult pushCommandResult = gitConnector.push().pushToOrigin(this.username, this.passwordOrToken);
 		if (pushCommandResult instanceof PushCommandSuccess) {
 			this.gitWorkflowResult.addPushResults("Push to origin was successful!", true);
 			//just reset to working branch but we are done!

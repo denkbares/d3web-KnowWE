@@ -70,7 +70,7 @@ public class GitConnectorTestTemplate {
 			String initFile = "InitContent.txt";
 			writeAndAddContentFile(initFile);
 			gitCommit(initFile);
-			gitConnector.pushAll();
+			gitConnector.push().pushAll();
 			assumeTrue(gitConnector.status().isClean());
 		}
 
