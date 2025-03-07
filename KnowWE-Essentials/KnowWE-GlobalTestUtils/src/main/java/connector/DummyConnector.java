@@ -431,6 +431,17 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public List<String> getAllSubWikiFolders() {
+		return List.of("");
+	}
+
+	@Override
+	public String getUserMail(UserContext user) {
+		warn("The used WikiConnector does not support mail addresses");
+		return "";
+	}
+
+	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNote) {
 		Environment environment = Environment.getInstance();
 		// create article with the new content

@@ -773,6 +773,7 @@ public final class BareGitConnector extends GitConnectorParent {
 		//git branch --set-upstream-to=origin/main
 		String[] commitCommand = new String[] { "git", "branch", "--set-upstream-to=origin/" + branch };
 		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		// TODO: we MUST return information about the case "no commit on branch yet"
 		return result.contains("set up to track");
 	}
 

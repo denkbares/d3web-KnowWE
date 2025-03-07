@@ -23,6 +23,8 @@ public interface GitServerConnector {
 		return getOrInitGitConnectorTo(folder, repoName, null);
 	}
 
+	public String getGitRemoteURL() ;
+
 	/**
 	 * Returns a GitConnector connected to the specified repo.
 	 * If folder.equals(repoName), then the behavior is equal to  {@link GitServerConnector#getGitConnector(String folder)}

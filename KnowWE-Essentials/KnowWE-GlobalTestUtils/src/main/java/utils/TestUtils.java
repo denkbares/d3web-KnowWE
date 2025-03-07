@@ -178,5 +178,10 @@ public class TestUtils {
 		public String getUserName() {
 			return "Test";
 		}
+
+		@Override
+		public String getMailAddress() {
+			return "tester@denkbares.com";
+		}
 	}
 }

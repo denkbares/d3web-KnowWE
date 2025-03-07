@@ -103,11 +103,13 @@ import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -624,7 +626,8 @@ public class JSPWikiConnector implements WikiConnector {
 	private void reinitReferenceManager() throws WikiException {
 		if (engine instanceof WikiEngine wikiEngine) {
 			wikiEngine.initReferenceManager();
-		} else {
+		}
+		else {
 			String message = "Unknown wiki engine: " + engine;
 			LOGGER.error(message);
 			throw new IllegalStateException(message);
@@ -988,6 +991,25 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 
 		return false;
+	}
+
+	@Override
+	public List<String> getAllSubWikiFolders() {
+		return null;
+	}
+
+	@Override
+	public String getUserMail(UserContext user) {
+		// TODO : find some way to retrieve the mail address from the userdatabase.xml - Seems to be very hard task :(
+		if(user instanceof ActionContext actionContext) {
+			// not working either
+			AuthenticationManager manager = actionContext.getManager();
+			return manager.getMailAddress();
+		}
+		else{
+			LOGGER.error("Failed to obtain user profile for user: " + user);
+			return null;
+		}
 	}
 
 	@Override
