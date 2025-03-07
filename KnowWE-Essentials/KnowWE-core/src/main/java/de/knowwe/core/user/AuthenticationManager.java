@@ -56,4 +56,11 @@ public interface AuthenticationManager {
 	 */
 	String getUserName();
 
+	/**
+	 * Returns mail address of the current user
+	 *
+	 * @return  mail address of the current user
+	 */
+	String getMailAddress();
+
 }

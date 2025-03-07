@@ -23,7 +23,9 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.wiki.api.core.Context;
+import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.WikiSecurityException;
+import org.apache.wiki.auth.user.UserProfile;
 
 import de.knowwe.core.user.AuthenticationManager;
 
@@ -73,5 +75,12 @@ public class JSPAuthenticationManager implements AuthenticationManager {
 	@Override
 	public String getUserName() {
 		return context.getWikiSession().getUserPrincipal().getName();
+	}
+
+	@Override
+	public String getMailAddress() {
+		UserManager manager = context.getEngine().getManager(UserManager.class);
+		UserProfile userProfile = manager.getUserProfile(context.getWikiSession());
+		return userProfile.getEmail();
 	}
 }

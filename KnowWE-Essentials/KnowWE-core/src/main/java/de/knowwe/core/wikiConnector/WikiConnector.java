@@ -482,6 +482,22 @@ public interface WikiConnector {
 	boolean userIsMemberOfGroup(String groupname, HttpServletRequest request);
 
 	/**
+	 * Returns the list of all sub wiki currently active in the running wiki instance.
+	 * If the non-sub-wiki mode is used, 'List.of("")' is returned referring directly to the save path.
+	 *
+	 * @return list of sub-wiki folders
+	 */
+	List<String> getAllSubWikiFolders();
+
+	/**
+	 * Returns the mail address of this user (if some is registered).
+	 *
+	 * @param user user
+	 * @return mail address
+	 */
+	String getUserMail(UserContext user);
+
+	/**
 	 * Saves the article (persistently) into the connected wiki
 	 *
 	 * @param title   the title of the article to save

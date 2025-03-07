@@ -23,6 +23,7 @@ public class DefaultGitServerConnector implements GitServerConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultGitServerConnector.class);
 
 	private final String repoManagementServerURL;
+
 	private final String gitRemoteURL;
 
 	public DefaultGitServerConnector(String repoManagementServerURL, String gitRemoteURL) {
@@ -48,6 +49,10 @@ public class DefaultGitServerConnector implements GitServerConnector {
 			if (!success) return null;
 		}
 		return getGitConnector(pullTargetFolder);
+	}
+
+	public String getGitRemoteURL() {
+		return gitRemoteURL;
 	}
 
 	private boolean switchFolderToOtherRepoAndBranch(@NotNull String pullTargetFolder, @NotNull String repoName, @Nullable String branch) {

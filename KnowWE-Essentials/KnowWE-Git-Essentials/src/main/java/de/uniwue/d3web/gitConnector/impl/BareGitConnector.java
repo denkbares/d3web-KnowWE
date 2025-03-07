@@ -124,6 +124,7 @@ public final class BareGitConnector implements GitConnector {
 	public boolean pushAll() {
 		String[] commitCommand = new String[] { "git", "push" };
 		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		// TODO: read result !
 		return true;
 	}
 
@@ -793,6 +794,7 @@ public final class BareGitConnector implements GitConnector {
 		//git branch --set-upstream-to=origin/main
 		String[] commitCommand = new String[] { "git", "branch", "--set-upstream-to=origin/" + branch };
 		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		// TODO: we MUST return information about the case "no commit on branch yet"
 		return result.contains("set up to track");
 	}
 
