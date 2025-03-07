@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 
 public class GitHashCash {
@@ -21,8 +22,7 @@ public class GitHashCash {
 	private ConcurrentHashMap<String, Long> timestampCache;
 
 	//and a map for commithash to filesizes of commit
-	private ConcurrentHashMap<String, Map<String,Long>> filesizesCache;
-
+	private ConcurrentHashMap<String, Map<String, Long>> filesizesCache;
 
 	public GitHashCash() {
 		this.cacheMap = new ConcurrentHashMap<>();
@@ -31,18 +31,18 @@ public class GitHashCash {
 		this.filesizesCache = new ConcurrentHashMap<>();
 	}
 
-	public List<String> get(String key) {
-		if(cacheMap.containsKey(key)){
-			return cacheMap.get(key);
+	public List<String> getCommitHashesForPath(String path) {
+		if (cacheMap.containsKey(path)) {
+			return cacheMap.get(path);
 		}
 		return Collections.emptyList();
 	}
 
-	public void put(String key, List<String> value) {
-		if(value==null || value.isEmpty()){
-			throw new IllegalStateException("Tried to cache an empty list for key: " + key);
+	public void putHashesForPath(String path, List<String> value) {
+		if (value == null || value.isEmpty()) {
+			throw new IllegalStateException("Tried to cache an empty list for key: " + path);
 		}
-		cacheMap.put(key, value);
+		cacheMap.put(path, value);
 	}
 
 	public boolean contains(String key) {
@@ -61,32 +61,32 @@ public class GitHashCash {
 		this.cacheMap.remove(file);
 	}
 
-	public boolean hasUserDataFor(String commitHash){
+	public boolean hasUserDataFor(String commitHash) {
 		return this.userDataCache.containsKey(commitHash);
 	}
 
-	public void putUserDataFor(String commitHash, UserData userData){
+	public void putUserDataFor(String commitHash, UserData userData) {
 		this.userDataCache.put(commitHash, userData);
 	}
 
-	public UserData getUserDataFor(String commitHash){
+	public UserData getUserDataFor(String commitHash) {
 		return this.userDataCache.get(commitHash);
 	}
 
-	public boolean hasTimestampFor(String commitHash){
+	public boolean hasTimestampFor(String commitHash) {
 		return this.timestampCache.containsKey(commitHash);
 	}
 
-	public void putTimestampFor(String commitHash, Long value){
+	public void putTimestampFor(String commitHash, Long value) {
 		this.timestampCache.put(commitHash, value);
 	}
 
-	public Long getTimestampFor(String commitHash){
+	public Long getTimestampFor(String commitHash) {
 		return this.timestampCache.get(commitHash);
 	}
 
-	public boolean hasFilesizeFor(String commitHash,String path){
-		if(this.filesizesCache.containsKey(commitHash)){
+	public boolean hasFilesizeFor(String commitHash, String path) {
+		if (this.filesizesCache.containsKey(commitHash)) {
 			Map<String, Long> stringLongMap = this.filesizesCache.get(commitHash);
 			return stringLongMap.containsKey(path);
 		}
@@ -94,20 +94,33 @@ public class GitHashCash {
 		return false;
 	}
 
-	public void putFilesizeFor(String commitHash, String path,Long value){
-		if(this.filesizesCache.containsKey(commitHash)){
+	public void putFilesizeFor(String commitHash, String path, Long value) {
+		if (this.filesizesCache.containsKey(commitHash)) {
 			Map<String, Long> stringLongMap = this.filesizesCache.get(commitHash);
-			stringLongMap.put(path,value);
+			stringLongMap.put(path, value);
 		}
-		else{
+		else {
 			ConcurrentHashMap<String, Long> stringLongConcurrentHashMap = new ConcurrentHashMap<>();
-			stringLongConcurrentHashMap.put(path,value);
-			this.filesizesCache.put(commitHash,stringLongConcurrentHashMap);
+			stringLongConcurrentHashMap.put(path, value);
+			this.filesizesCache.put(commitHash, stringLongConcurrentHashMap);
 		}
 	}
 
 	//unsafe, use with hasFilesizeFor!!
-	public Long getFilesizeFor(String commitHash,String path){
+	public Long getFilesizeFor(String commitHash, String path) {
 		return this.filesizesCache.get(commitHash).get(path);
+	}
+
+	//invalidate any entries that resemble that commit
+	public void invalidateCommit(String commit, GitConnector gitConnector) {
+		filesizesCache.remove(commit);
+		timestampCache.remove(commit);
+		userDataCache.remove(commit);
+
+		for (String file : gitConnector.listChangedFilesForHash(commit)) {
+			if (this.cacheMap.containsKey(file)) {
+				this.cacheMap.get(file).remove(commit);
+			}
+		}
 	}
 }

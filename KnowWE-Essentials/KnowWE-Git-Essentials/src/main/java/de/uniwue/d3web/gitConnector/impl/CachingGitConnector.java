@@ -15,7 +15,6 @@ import de.uniwue.d3web.gitConnector.impl.raw.merge.GitMergeCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.push.PushCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.reset.ResetCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 import de.uniwue.d3web.gitConnector.UserData;
 
 /**
@@ -54,7 +53,7 @@ public class CachingGitConnector implements GitConnector {
 	 * We obtain all files from these hashes and mark them as "dirty" (basicly this means we drop them from the cache
 	 * -at this)
 	 */
-	private void updateCache() {
+	private String updateCache() {
 		//access cache for current branch
 		GitHashCash currentCache = getCurrentCache();
 
@@ -65,36 +64,55 @@ public class CachingGitConnector implements GitConnector {
 		if (headCache == null) {
 			//this means we do not have any entries yet, and therefore there is no need to invalidate!
 			currentCache.setHEAD(headGit);
-			return;
+			return currentCache.getHEAD();
 		}
 
 		//nothing to do
 		if (headCache.equals(headGit)) {
-			return;
+			return currentCache.getHEAD();
 		}
 
 		//TODO what happens during a reset, this should yeet entries from the cache
 
 		// loop over the files in all commits between these 2 heads and collect all files to invalidate
 		Set<String> changedFiles = new HashSet<>();
-		for (String commit : this.commitsBetween(headCache, headGit)) {
-			changedFiles.addAll(this.listChangedFilesForHash(commit));
-		}
+		List<String> commitsBetween = this.commitsBetween(headCache, headGit);
 
-		//invalidate the files
-		for (String file : changedFiles) {
-			if (currentCache.contains(file)) {
-				updateCachForPathByCommitsBetween(file, currentCache);
+		//this can happen if we someone called "git reset"
+		if(commitsBetween.isEmpty()) {
+			List<String> commitsBetweenReverse = this.commitsBetween(headGit,headCache);
+			if(commitsBetweenReverse.isEmpty()) {
+				LOGGER.error("Unable to find any commits... this smells bad");
+			}
+			//for every  commit we have to remove the hash associated to it
+			for(String commit : commitsBetweenReverse) {
+				currentCache.invalidateCommit(commit,this.delegate);
+			}
+
+		}
+		//this just updates the cache
+		else{
+			for (String commit : commitsBetween) {
+				changedFiles.addAll(this.listChangedFilesForHash(commit));
+			}
+
+			//invalidate the files
+			for (String file : changedFiles) {
+				if (currentCache.contains(file)) {
+					updateCacheForPathByCommitsBetween(file, currentCache,headGit);
+				}
 			}
 		}
 
 		//and update the head
 		currentCache.setHEAD(headGit);
+
+		return currentCache.getHEAD();
 	}
 
 	private void updateCacheForPath(String path) {
-		//we update our cache so that we can assure our HEADs are matching the git
-		this.updateCache();
+		//we update our cache so that we can assure our HEADs are matching the git, so after this line headGit ==headCache
+		String headCache =this.updateCache();
 
 		//then obtain: we combine the currently stored history with potential new commits
 		GitHashCash currentCache = getCurrentCache();
@@ -103,23 +121,31 @@ public class CachingGitConnector implements GitConnector {
 			//slow call...
 			List<String> hashes = this.delegate.commitHashesForFile(path);
 			if (!hashes.isEmpty()) {
-				currentCache.put(path, hashes);
+				currentCache.putHashesForPath(path, hashes);
 			}
 		}
 		else {
 			//path is in the cache so we only update in between!
-			updateCachForPathByCommitsBetween(path, currentCache);
+			updateCacheForPathByCommitsBetween(path, currentCache,headCache);
 		}
 	}
 
-	private void updateCachForPathByCommitsBetween(String path, GitHashCash currentCache) {
-		List<String> cachedHashes = currentCache.get(path);
-		String headCache = cachedHashes.get(cachedHashes.size() - 1);
+	private void updateCacheForPathByCommitsBetween(String path, GitHashCash currentCache,String headGit) {
+		//head of branch
+		//when cache was updated last
+		String headCache = currentCache.getHEAD();
 
+		if(headGit.equals(headCache)) {
+			//nothing to do
+			return;
+		}
+
+		List<String> cachedHashes = currentCache.getCommitHashesForPath(path);
+		String headCacheForPath = cachedHashes.get(cachedHashes.size() - 1);
 		List<String> updatedHistory = new ArrayList<>(cachedHashes);
-		updatedHistory.addAll(this.delegate.commitsBetweenForFile(headCache, this.currentHEAD(), path));
+		updatedHistory.addAll(this.delegate.commitsBetweenForFile(headCacheForPath, headGit, path));
 		if (!updatedHistory.isEmpty()) {
-			currentCache.put(path, updatedHistory);
+			currentCache.putHashesForPath(path, updatedHistory);
 		}
 	}
 
@@ -135,7 +161,7 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public List<String> commitHashesForFile(String file) {
 		this.updateCacheForPath(file);
-		return this.getCurrentCache().get(file);
+		return this.getCurrentCache().getCommitHashesForPath(file);
 	}
 
 	@Override
@@ -160,7 +186,7 @@ public class CachingGitConnector implements GitConnector {
 	public String commitHashForFileAndVersion(String file, int version) {
 		this.updateCacheForPath(file);
 
-		List<String> strings = getCurrentCache().get(file);
+		List<String> strings = getCurrentCache().getCommitHashesForPath(file);
 		if(strings == null) {
 			return null;
 		}
@@ -193,7 +219,7 @@ public class CachingGitConnector implements GitConnector {
 			return 0;
 		}
 
-		return this.getCurrentCache().get(filePath).size();
+		return this.getCurrentCache().getCommitHashesForPath(filePath).size();
 	}
 
 	@Override
@@ -215,7 +241,7 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public boolean versionExists(String path, int version) {
 		updateCacheForPath(path);
-		List<String> commitHashes = this.getCurrentCache().get(path);
+		List<String> commitHashes = this.getCurrentCache().getCommitHashesForPath(path);
 		return version > 0 && version <= commitHashes.size();
 	}
 
