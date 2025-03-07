@@ -995,25 +995,14 @@ public class JGitConnector extends GitConnectorParent {
 	}
 
 	private static @NotNull Repository createNewRepository(String path) {
-		Repository repository;
 		try {
-			repository = FileRepositoryBuilder.create(new File(path, ".git"));
-
-			if (!repository.getObjectDatabase().exists()) {
-				// Create the repository if it does not exist
-				try (Git git = new Git(repository)) {
-					git.init().call();
-				}
-				catch (GitAPIException e) {
-					throw new RuntimeException(e);
-				}
+			try (Git git = Git.init().setDirectory(new File(path)).call()) {
+				return git.getRepository();
 			}
-			repository.create();
 		}
-		catch (IOException e) {
+		catch (GitAPIException e) {
 			LOGGER.error("Unable to create repository");
-			throw new IllegalArgumentException("Unable to create repository ...");
+			throw new RuntimeException("Unable to create repository", e);
 		}
-		return repository;
 	}
 }
