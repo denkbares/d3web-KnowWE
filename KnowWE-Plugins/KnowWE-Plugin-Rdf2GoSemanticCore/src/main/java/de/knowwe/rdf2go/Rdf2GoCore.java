@@ -141,6 +141,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private final Object statementMutex = new Object();
 	private final Object namespaceMutex = new Object();
+	private volatile boolean imported = false;
 
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value is the full namespace, e.g. rdf and
@@ -1031,6 +1032,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			try {
 				if (isShutdown()) return;
 				this.semanticCore.addData(in, syntax);
+				this.imported = true;
 			}
 			finally {
 				coreUsageLock.readLock().unlock();
@@ -1049,6 +1051,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			try {
 				if (isShutdown()) return;
 				this.semanticCore.addData(in);
+				this.imported = true;
 			}
 			finally {
 				coreUsageLock.readLock().unlock();
@@ -1682,7 +1685,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public boolean isEmpty() {
 		synchronized (this.statementMutex) {
-			return this.statementCache.isEmpty();
+			return this.statementCache.isEmpty() && !imported;
 		}
 	}
 
