@@ -193,7 +193,16 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			updateReferences(wp, content);
 			wp.setAuthor(author);
-			getPageManager().putPageText(wp, content);
+
+			/*
+			 * This post data normalization is what JSPWiki also does on normal page saves.
+			 * Then jspwiki makes an async process initialed via the saveText()-Method.
+			 * As we need/must not have the async process step, we just make the normalization here
+			 * and call putPageText() directly.
+			 */
+			final String proposedText = TextUtil.normalizePostData( content );
+
+			getPageManager().putPageText(wp, proposedText);
 			reindex(title);
 		}
 		catch (ProviderException e) {
@@ -575,7 +584,8 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public int getVersion(String title) {
-		return getPageManager().getPage(title).getVersion();
+		Page page = getPageManager().getPage(title);
+		return page.getVersion();
 	}
 
 	@Override
