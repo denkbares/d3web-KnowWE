@@ -232,7 +232,9 @@ public final class Environment {
 		}
 	}
 
-
+	public ArticleManager getArticleManager() {
+		return articleManager();
+	}
 
 	private ArticleManager articleManager() {
 		return Environment.getInstance()

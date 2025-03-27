@@ -160,14 +160,22 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Map<String, String[]> getParameterMap() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptyMap();
 	}
 
 	@Override
 	public Enumeration<String> getParameterNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Enumeration<String>() {
+			@Override
+			public boolean hasMoreElements() {
+				return false;
+			}
+
+			@Override
+			public String nextElement() {
+				return null;
+			}
+		};
 	}
 
 	@Override

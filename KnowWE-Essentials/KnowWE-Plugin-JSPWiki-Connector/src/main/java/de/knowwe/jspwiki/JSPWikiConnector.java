@@ -101,13 +101,8 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
-import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.CompilerManager;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
@@ -635,7 +630,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	private void reinitReferenceManager() throws WikiException {
 		if (engine instanceof WikiEngine wikiEngine) {
-			wikiEngine.initReferenceManager();
+			wikiEngine.initReferenceManager(true);
 		}
 		else {
 			String message = "Unknown wiki engine: " + engine;
@@ -649,13 +644,24 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	private void clearJSPWikiCaches() throws WikiException {
-		List<CachingManager> managers = engine.getManagers(CachingManager.class);
-		CachingManager cachingManager = managers.get(0);
+
+		// we clear the ehcache
+		CachingManager cachingManager = engine.getManager(CachingManager.class);
 		if (cachingManager instanceof EhcacheCachingManager ehManager) {
 			List<String> cacheNames = List.of(CACHE_ATTACHMENTS, CACHE_ATTACHMENTS_COLLECTION, CACHE_ATTACHMENTS_DYNAMIC, CACHE_PAGES, CACHE_PAGES_TEXT, CACHE_PAGES_HISTORY, CACHE_DOCUMENTS);
 			cacheNames.forEach(cache -> cachingManager.shutdown());
-			ReferenceManager referenceManager = getReferenceManager();
 			ehManager.initialize(engine, engine.getWikiProperties());
+		}
+
+		// we re-initialize the CachingPageProvider
+		PageManager pageManager = engine.getManager(PageManager.class);
+		PageProvider provider = pageManager.getProvider();
+		try {
+			provider.initialize(engine, engine.getWikiProperties());
+		}
+		catch (IOException e) {
+			LOGGER.error("Error on re-initializing CachingPageProvider.");
+			throw new RuntimeException(e);
 		}
 	}
 

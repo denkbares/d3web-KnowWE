@@ -40,7 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.wiki.event.WikiEngineEvent;
+import org.apache.wiki.event.WikiEventManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -150,7 +151,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public void reinitializeWikiEngine() {
-		throw new NotImplementedException("Not yet implemented.");
+		WikiEventManager.fireEvent(this, new WikiEngineEvent(this, WikiEngineEvent.INITIALIZED));
 	}
 
 	@Override
