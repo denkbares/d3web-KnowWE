@@ -269,6 +269,11 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-Git-Essentials</artifactId>
+				<version>2025.2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${logback.version}</version>
@@ -592,7 +597,7 @@
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Git-Essentials</artifactId>
+				<artifactId>denkbares-Git-Essentials</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>

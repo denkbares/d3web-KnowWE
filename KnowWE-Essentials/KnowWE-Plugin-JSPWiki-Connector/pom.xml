@@ -121,8 +121,8 @@
 			<artifactId>logback-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Git-Essentials</artifactId>
+			<groupId>com.denkbares</groupId>
+			<artifactId>denkbares-Git-Essentials</artifactId>
 			<version>2025.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

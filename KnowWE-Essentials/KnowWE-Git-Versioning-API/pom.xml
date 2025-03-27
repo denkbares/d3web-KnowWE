@@ -21,8 +21,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-Git-Essentials</artifactId>
+			<groupId>com.denkbares</groupId>
+			<artifactId>denkbares-Git-Essentials</artifactId>
 		</dependency>
 	</dependencies>
 
