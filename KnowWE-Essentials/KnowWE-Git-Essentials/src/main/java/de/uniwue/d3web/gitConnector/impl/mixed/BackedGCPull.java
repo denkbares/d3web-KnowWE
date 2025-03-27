@@ -18,8 +18,8 @@ public class BackedGCPull implements GitConnectorPull {
 	}
 
 	@Override
-	public boolean call(boolean rebase) {
+	public boolean call(boolean rebase, String origin) {
 		if(delegate == null) delegate = supplier.get();
-		return delegate.call(rebase);
+		return delegate.call(rebase, origin);
 	}
 }

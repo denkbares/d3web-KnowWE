@@ -33,7 +33,8 @@ public class GitConnectorTestTemplate {
 
 	public static final String FILE = "Foo.txt";
 	private static final String TARGET = "target";
-	private static final String TARGET_ORIGIN = TARGET+"/origin/";
+	public static final String ORIGIN_PATH_RELATIVE_TO_TARGET = "origin";
+	private static final String TARGET_ORIGIN = TARGET+ "/" + ORIGIN_PATH_RELATIVE_TO_TARGET + "/";
 	private static final String REPO = "Repo1";
 	private static final String TARGET_ORIGIN_Repo = TARGET_ORIGIN + REPO;
 	private static final String WIKI_1 = "Wiki1";
@@ -56,9 +57,10 @@ public class GitConnectorTestTemplate {
 	public void setUp(boolean doInitialCommit) throws IOException {
 
 		assumeTrue(gitConnector.gitInstalledAndReady()) ;
-
-		String wikiPathA = clearAndMakeWikiPath(WIKI_PATH);
-		String originPath = clearAndMakeWikiPath(TARGET_ORIGIN_Repo);
+		String wikiPathA = WIKI_PATH;
+		clearAndMakeWikiPath(wikiPathA);
+		String originPath = TARGET_ORIGIN_Repo;
+		clearAndMakeWikiPath(originPath);
 
 		// prepare 'remote' bare repo
 		RawGitExecutor.executeGitCommand("git init --bare", originPath);

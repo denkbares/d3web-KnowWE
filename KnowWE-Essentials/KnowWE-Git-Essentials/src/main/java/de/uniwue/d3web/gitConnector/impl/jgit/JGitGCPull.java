@@ -39,11 +39,11 @@ public class JGitGCPull implements GitConnectorPull {
 	}
 
 	@Override
-	public boolean call(boolean rebase) {
+	public boolean call(boolean rebase, String origin) {
 		if (git == null) git = gitS.get();
 		if (repository == null) repository = repositoryS.get();
 		PullCommand pull = git.pull()
-				.setRemote("origin")
+				.setRemote(origin)
 				.setRemoteBranchName(currentBranch())
 				.setStrategy(MergeStrategy.RESOLVE)
 				.setRebase(true);

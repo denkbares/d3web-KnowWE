@@ -19,8 +19,8 @@ public class CachedGCPull implements GitConnectorPull {
 	}
 
 	@Override
-	public boolean call(boolean rebase) {
+	public boolean call(boolean rebase, String origin) {
 		if(delegate == null) delegate = delegateS.get();
-		return delegate.call(rebase);
+		return delegate.call(rebase, origin);
 	}
 }

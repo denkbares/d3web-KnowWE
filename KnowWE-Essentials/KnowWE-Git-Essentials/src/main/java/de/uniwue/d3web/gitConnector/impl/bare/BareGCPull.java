@@ -18,7 +18,7 @@ public class BareGCPull implements GitConnectorPull {
 	}
 
 	@Override
-	public boolean call(boolean rebase) {
+	public boolean call(boolean rebase, String origin) {
 		if(repositoryPath == null) repositoryPath = repositoryPathS.get();
 		String[] commitCommand = new String[] { "git", "pull" };
 		if (rebase) {

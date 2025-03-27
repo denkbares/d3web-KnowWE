@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 
 public class GitTestUtils {
-	public static @NotNull String clearAndMakeWikiPath(String wikiPath) {
+	public static @NotNull void clearAndMakeWikiPath(String wikiPath) {
 		File wikiDirA = new File(wikiPath);
 		//noinspection ResultOfMethodCallIgnored
 		try {
@@ -24,7 +24,6 @@ public class GitTestUtils {
 		}
 		assert (!wikiDirA.exists());
 		wikiDirA.mkdirs();
-		return wikiPath;
 	}
 
 	public static void initGitAndSetOriginRepo(String localPath, String remoteOriginRelativeFolder) {

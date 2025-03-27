@@ -12,6 +12,10 @@ public interface GitConnectorPull {
 	 * @param rebase rebase mode
 	 * @return true if successful
 	 */
-	boolean call(boolean rebase);
+	default boolean call(boolean rebase) {
+		return call(rebase, "origin");
+	}
+
+	boolean call(boolean rebase, String origin);
 
 }
