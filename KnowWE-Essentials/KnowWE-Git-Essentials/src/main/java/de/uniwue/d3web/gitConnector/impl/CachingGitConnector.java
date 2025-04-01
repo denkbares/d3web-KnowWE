@@ -166,6 +166,7 @@ public class CachingGitConnector implements GitConnector {
 
 	@Override
 	public List<String> commitHashesForFileInBranch(String file, String branchName) {
+		//TODO the cache should work in those situations as well..
 		this.updateCacheForPath(file);
 		return this.delegate.commitHashesForFileInBranch(file,branchName);
 	}
@@ -187,7 +188,7 @@ public class CachingGitConnector implements GitConnector {
 		this.updateCacheForPath(file);
 
 		List<String> strings = getCurrentCache().getCommitHashesForPath(file);
-		if(strings == null) {
+		if(strings == null || strings.isEmpty()) {
 			return null;
 		}
 
@@ -501,5 +502,15 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public List<GitDiffEntry> diff(String oldCommit, String newCommit, boolean useRenameDetection) {
 		return this.delegate.diff(oldCommit, newCommit, useRenameDetection);
+	}
+
+	@Override
+	public String commitEquivalentOnBranch(String commit, String onBranch) {
+		return this.delegate.commitEquivalentOnBranch(commit, onBranch);
+	}
+
+	@Override
+	public boolean deleteBranch(String featureBranchname) {
+		return this.delegate.deleteBranch(featureBranchname);
 	}
 }

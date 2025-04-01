@@ -376,6 +376,16 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String commitEquivalentOnBranch(String commit, String onBranch) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public boolean deleteBranch(String featureBranchname) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		long time = System.currentTimeMillis();
 		Iterable<RevCommit> commitIterable = null;

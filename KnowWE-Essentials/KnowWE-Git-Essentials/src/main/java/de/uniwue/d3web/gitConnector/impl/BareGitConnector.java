@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,7 +53,6 @@ public class BareGitConnector implements GitConnector {
 
 	public static final int MIN_SUPPORTED_VERSION_MAJOR = 2;
 	public static final int MIN_SUPPORTED_VERSION_MINOR = 39;
-
 
 	private BareGitConnector(String repositoryPath) {
 		this.repositoryPath = repositoryPath;
@@ -138,8 +138,8 @@ public class BareGitConnector implements GitConnector {
 
 		String[] command = { "git", "cherry-pick", hashes, "--" };
 		String cherryPickResult = RawGitExecutor.executeGitCommandWithEnvironment(command, this.repositoryPath, environment);
-		if (cherryPickResult.contains("error: could not apply") || cherryPickResult.contains("CONFLICT")
-				|| cherryPickResult.contains("Automatic cherry-pick failed")) {
+		if (cherryPickResult.contains("error:") || cherryPickResult.contains("CONFLICT")
+				|| cherryPickResult.contains("Automatic cherry-pick failed") || cherryPickResult.contains("all conflicts fixed:")) {
 			return cherryPickResult;
 		}
 		//an empty string signals success (OMG such great implementation!)
@@ -184,7 +184,7 @@ public class BareGitConnector implements GitConnector {
 	@Override
 	public String currentHEADOfBranch(String branchName) {
 		String head = RawGitExecutor.executeGitCommand("git rev-parse " + branchName, this.repositoryPath);
-		if(head != null || !head.isEmpty()) {
+		if (head != null || !head.isEmpty()) {
 			head = head.trim();
 		}
 		return head;
@@ -196,7 +196,7 @@ public class BareGitConnector implements GitConnector {
 			return Collections.emptyList();
 		}
 
-		String commitHashes = new String(RawGitExecutor.executeGitCommandWithTempFile(new String[]{"git" , "log" ,"--pretty=format:\"%H\"" , commitHashFrom + ".." + commitHashTo}, this.repositoryPath));
+		String commitHashes = new String(RawGitExecutor.executeGitCommandWithTempFile(new String[] { "git", "log", "--pretty=format:\"%H\"", commitHashFrom + ".." + commitHashTo }, this.repositoryPath));
 		List<String> hashesBetween = new ArrayList<>();
 		for (String line : commitHashes.split("\n")) {
 			if (line.trim().isEmpty()) {
@@ -255,7 +255,7 @@ public class BareGitConnector implements GitConnector {
 	@Override
 	public List<String> commitHashesForFileInBranch(String file, String branchName) {
 		String[] command = null;
-		command = new String[] { "git", "log", branchName, "--format=%H", file };
+		command = new String[] { "git", "log", branchName, "--format=%H", "--", file };
 
 		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 
@@ -369,10 +369,10 @@ public class BareGitConnector implements GitConnector {
 		String[] command = { "git", "status" };
 		String response = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 		// we do not know the language (and cannot set the language, as not every git installation comes with the language package)
-		String[] dirtyKeyWords = {"new file", "modified", "deleted" , "untracked"};
+		String[] dirtyKeyWords = { "new file", "modified", "deleted", "untracked" };
 		boolean isDirty = Arrays.stream(dirtyKeyWords).toList().stream().anyMatch(key -> response.contains(key));
 		boolean isClean = !isDirty;
-		LOGGER.info("isClean: git status result is: " + isClean + "("+ response+")");
+		LOGGER.info("isClean: git status result is: " + isClean + "(" + response + ")");
 		return isClean;
 	}
 
@@ -429,6 +429,10 @@ public class BareGitConnector implements GitConnector {
 	public long commitTimeFor(String commitHash) {
 		String[] command = { "git", "show", "--no-patch", "--format='%at'", commitHash };
 		String result = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
+
+		if (result.contains("bad object") || result.contains("unknown revision")) {
+			return -1;
+		}
 		return Long.parseLong(result.split("\n")[0].replaceAll("'", ""));
 	}
 
@@ -467,8 +471,32 @@ public class BareGitConnector implements GitConnector {
 		if (author != null && !author.isEmpty()) {
 			environment.put("GIT_COMMITTER_NAME", author);
 		}
-		String[] commitCommand = new String[] { "git", "commit", "--author=" + author + " <" + email + ">", "-m", message , "--", Strings.concat(" ", paths), };
-		return RawGitExecutor.executeGitCommandWithEnvironment(commitCommand, this.repositoryPath,environment);
+		//verify that the provided paths were all added to the staging area otherwise this will fail
+		GitStatusCommandResult status = status();
+		if (status instanceof GitStatusResultSuccess success) {
+			for (String path : paths) {
+				if (success.getChangedFiles().contains(path) ||success.getRemovedFiles().contains(path) ||success.getUntrackedFiles().contains(path)) {
+					addPath(path);
+				}
+			}
+		}
+		List<String> commands = new ArrayList<>();
+		commands.add("git");
+		commands.add("commit");
+		commands.add("--author=" + author + " <" + email + ">");
+		commands.add("-m");
+		commands.add(message);
+		commands.add("--");
+		commands.addAll(paths);
+
+		String[] commitCommand = commands.toArray(new String[0]);
+		String result = RawGitExecutor.executeGitCommandWithEnvironment(commitCommand, this.repositoryPath, environment);
+
+		if (!result.contains(message)) {
+			throw new IllegalStateException("Commit failed! for command: " + Arrays.toString(commitCommand) + "obtained result: \n" + result);
+		}
+
+		return currentHEAD();
 	}
 
 	@Override
@@ -596,7 +624,7 @@ public class BareGitConnector implements GitConnector {
 		environment.put("GIT_AUTHOR_DATE", String.valueOf(timeStamp));
 		environment.put("GIT_COMMITTER_DATE", String.valueOf(timeStamp));
 
-		String[] gitCommand = { "git","commit", "--author=" + userData.user + " <" + userData.email + ">", "-m", userData.message };
+		String[] gitCommand = { "git", "commit", "--author=" + userData.user + " <" + userData.email + ">", "-m", userData.message };
 		String commitResult = RawGitExecutor.executeGitCommandWithEnvironment(gitCommand, this.repositoryPath, environment);
 		if (!commitResult.contains(userData.message)) {
 			throw new IllegalStateException("Commit failed! for command: " + Arrays.toString(gitCommand) + "obtained result: \n" + commitResult);
@@ -620,14 +648,14 @@ public class BareGitConnector implements GitConnector {
 		if (includeRemoteBranches) {
 			String[] gitCommandFetch = { "git", "fetch" };
 			String fetchResult = RawGitExecutor.executeGitCommand(gitCommandFetch, this.repositoryPath);
-			String[] gitCommand = { "git", "branch", "-r" };
-			branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
-			LOGGER.info("branch result remote branches: " + branchResult);
+			String[] gitCommand = { "git", "--no-pager", "branch", "-r" };
+			branchResult = new String(RawGitExecutor.executeGitCommandWithTempFile(gitCommand, this.repositoryPath));
+			LOGGER.trace("branch result remote branches: " + branchResult);
 		}
 		else {
-			String[] gitCommand = { "git", "branch" };
-			branchResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
-			LOGGER.info("branch result local branches: " + branchResult);
+			String[] gitCommand = { "git", "--no-pager", "branch" };
+			branchResult = new String(RawGitExecutor.executeGitCommandWithTempFile(gitCommand, this.repositoryPath));
+			LOGGER.trace("branch result local branches: " + branchResult);
 		}
 		if (Strings.isBlank(branchResult)) return Collections.emptyList();
 
@@ -703,6 +731,9 @@ public class BareGitConnector implements GitConnector {
 	public boolean pushAll() {
 		String[] commitCommand = new String[] { "git", "push" };
 		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+		if (result.toLowerCase().contains("fatal")) {
+			return false;
+		}
 		// todo: why do we not get any feedback here?
 		return true;
 	}
@@ -711,6 +742,10 @@ public class BareGitConnector implements GitConnector {
 	public boolean pushBranch(String branch) {
 		String[] commitCommand = new String[] { "git", "push", "origin", branch };
 		String result = RawGitExecutor.executeGitCommand(commitCommand, this.repositoryPath);
+
+		if (result.toLowerCase().contains("fatal")) {
+			return false;
+		}
 		// todo: why do we not get any feedback here?
 		return true;
 	}
@@ -774,7 +809,7 @@ public class BareGitConnector implements GitConnector {
 			}
 		}
 
-		String[] command = new String[] { "git", "rm", "--cached","-f", path };
+		String[] command = new String[] { "git", "rm", "--cached", "-f", path };
 		String output = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 
 		if (output.startsWith("rm")) {
@@ -830,23 +865,120 @@ public class BareGitConnector implements GitConnector {
 	@Override
 	public List<GitDiffEntry> diff(String oldCommit, String newCommit, boolean useRenameDetection) {
 		String[] command = null;
-		if(useRenameDetection){
-			command = new String[]{"git","--no-pager","diff","-M","--name-status",oldCommit,newCommit };
+		if (useRenameDetection) {
+			command = new String[] { "git", "--no-pager", "diff", "-M", "--name-status", oldCommit, newCommit };
 		}
-		else{
+		else {
 			//no M
-			command = new String[]{"git","--no-pager","diff","--name-status",oldCommit,newCommit };
+			command = new String[] { "git", "--no-pager", "diff", "--name-status", oldCommit, newCommit };
 		}
 
 		String diffResult = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 		//parse it
 		List<GitDiffEntry> diffEntries = new ArrayList<>();
-		for(String line : diffResult.split("\n")){
+		for (String line : diffResult.split("\n")) {
 			String modifier = line.split("\t")[0];
 			String path = line.split("\t")[1];
-			diffEntries.add(new GitDiffEntry(DiffStatus.fromAbbreviation(modifier),path));
+			diffEntries.add(new GitDiffEntry(DiffStatus.fromAbbreviation(modifier), path));
 		}
 		return diffEntries;
+	}
+
+	/**
+	 * Kind tricky method, checks whether a differnet branch has a commit that appears to be the one thats sepcified
+	 * It first checks whether that commit is contained exactly, then by timestamp, then by content, SLOW!!!
+	 *
+	 * @param commit
+	 * @param onBranch
+	 * @return
+	 */
+	@Override
+	public String commitEquivalentOnBranch(String commit, String onBranch) {
+
+		List<String> commitsOnBranch = this.listCommitsForBranch(onBranch);
+		//easiest case, the commit is simply on the branch
+		if (commitsOnBranch.contains(commit)) {
+			return commit;
+		}
+
+		//now more tricky, we align by timestamp
+		long timeStampCommit = commitTimeFor(commit);
+		if (timeStampCommit == -1) {
+			return null;
+		}
+		List<String> commitEquivalents = new ArrayList<>();
+		for (String file : listChangedFilesForHash(commit)) {
+			List<String> commitsForFileOnBranch = commitHashesForFileInBranch(file, onBranch);
+
+			for (int i = commitsForFileOnBranch.size() - 1; i >= 0; i--) {
+				String commitToCompare = commitsForFileOnBranch.get(i);
+				long timeStampCompare = commitTimeFor(commitToCompare);
+				if (timeStampCompare == -1) {
+					continue;
+				}
+				if (timeStampCompare == timeStampCommit) {
+					commitEquivalents.add(commitToCompare);
+					//dont for this file
+					break;
+				}
+			}
+		}
+		//we found exactly 1 equivalent commit => return it
+		if (!commitEquivalents.isEmpty() && new HashSet<>(commitEquivalents).size() == 1) {
+			return commitEquivalents.get(0);
+		}
+
+		if (new HashSet<>(commitEquivalents).size() > 1) {
+			LOGGER.warn("Found multiple equivalents for commit: " + commit + "in these: " + commitEquivalents);
+			return null;
+		}
+
+		//if we reach this point here it will be slow.... we can now only align by content
+		for (String file : listChangedFilesForHash(commit)) {
+			List<String> commitsForFileOnBranch = commitHashesForFileInBranch(file, onBranch);
+
+			//now we need to check if any commit has no diff to the loop-commit
+			for (int i = commitsForFileOnBranch.size() - 1; i >= 0; i--) {
+				String commitToCompare = commitsForFileOnBranch.get(i);
+				String result = new String(RawGitExecutor.executeGitCommandWithTempFile(new String[] { "git", "diff", commitToCompare, commit, "--", file }, getGitDirectory()));
+				if (result.equalsIgnoreCase("")) {
+					commitEquivalents.add(commitToCompare);
+					break;
+				}
+			}
+		}
+
+		if (commitEquivalents.isEmpty()) {
+			return null;
+		}
+
+		if (new HashSet<>(commitEquivalents).size() > 1) {
+			LOGGER.warn("Found multiple equivalents for commit: " + commit + "in these: " + commitEquivalents);
+			return null;
+		}
+
+		return commitEquivalents.get(0);
+	}
+
+	@Override
+	public boolean deleteBranch(String branchName) {
+		if (branchName == null) {
+			LOGGER.warn("Unable to delete branch null, however im returning true as nothing bad is about to happen");
+			return true;
+		}
+		//unable to delete branch if we are sitting on it
+		if (branchName.equals(currentBranch())) {
+			LOGGER.warn("tried to delete branch, however we are currently sitting on it!");
+			return false;
+		}
+
+		String result = RawGitExecutor.executeGitCommand("git branch -D " + branchName, repositoryPath);
+
+		if (result.startsWith("Deleted branch")) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {

@@ -59,6 +59,15 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 			return gitWorkflowResult;
 		}
 
+		//we push maintenance
+		boolean success = gitConnector.pushBranch("maintenance");
+		if (!success) {
+			gitWorkflowResult.addPushResults("Pushing to maintenance failed, i am continuing the push nevertheless to create all merges", false);
+		}
+		else{
+			gitWorkflowResult.addPushResults("Pushing to maintenance successful", true);
+		}
+
 		//once we know the git is clean, we can examine the commits to be added on master to get to know what our chances are, the wrapped list is required to prevent concurrent modification
 		for (String commit : new ArrayList<>(task.commits)) {
 			examineCommitForCherryPickReadiness(commit);
@@ -111,7 +120,6 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 		if (!success) {
 			this.gitWorkflowResult.addMergeResults("Unable to switch to master, reason currently unknown ", false);
 		}
-
 
 		GitMergeCommandResult mergeResult = null;
 		if (success) {
@@ -209,11 +217,14 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 	/**
 	 * Examining a commit is not an easy task! We check for all files and see if our master branch has all necessary
 	 * commits so that this commit can indeed get cherry-picked without risk (it might work otherwise but this would be
-	 * risky!). This method does also adjust the commits in our task, aka it has some built-in smartness in order to repair "broken" tasks.
-	 *
+	 * risky!). This method does also adjust the commits in our task, aka it has some built-in smartness in order to
+	 * repair "broken" tasks.
+	 * <p>
 	 * 1) It drops, commits that are empty or only contain ignored files
-	 * 2) It checks if locked files have commits in git that are not in our task, this might happen due to a manifold of ways, e.g. due to command line intervention.
-	 * 	  We can repair such cases always if the missing commits are not part of another task (this would be very very bad and has to be repaired manually anyway)
+	 * 2) It checks if locked files have commits in git that are not in our task, this might happen due to a manifold of
+	 * ways, e.g. due to command line intervention.
+	 * We can repair such cases always if the missing commits are not part of another task (this would be very very bad
+	 * and has to be repaired manually anyway)
 	 *
 	 * @param commit a commit hash for the underlying git repository
 	 */
@@ -226,21 +237,20 @@ public class PushTaskWorkflow implements GitWorkflow<PushTaskWorkflowResult> {
 		//1. are all files of this commit ignore (that means we dont want this commit among our commits)
 		//2. if there are no changed files, we dont cherry-pick empty commits as well
 		boolean allIgnored = changedFiles.stream().allMatch(file -> gitConnector.isIgnored(file));
-		if(allIgnored || changedFiles.isEmpty()){
+		if (allIgnored || changedFiles.isEmpty()) {
 			//remove the commit and we are done
 			this.task.commits.remove(commit);
 			return;
 		}
 
 		//3. if some files are ignored (but not all) we are in a very bad state...
-		if(changedFiles.stream().anyMatch(file -> gitConnector.isIgnored(file))){
-			for(String path : changedFiles){
-				if(gitConnector.isIgnored(path)){
-					this.gitWorkflowResult.addCherryPickReadinessResults("The commit: "+commit + " contains the file: " + path + " but this file is ignored, so there is no way we can reliably assert that a cherry pick will work! Ending up in this state means it went wrong somewhere else!", false);
+		if (changedFiles.stream().anyMatch(file -> gitConnector.isIgnored(file))) {
+			for (String path : changedFiles) {
+				if (gitConnector.isIgnored(path)) {
+					this.gitWorkflowResult.addCherryPickReadinessResults("The commit: " + commit + " contains the file: " + path + " but this file is ignored, so there is no way we can reliably assert that a cherry pick will work! Ending up in this state means it went wrong somewhere else!", false);
 				}
 			}
 		}
-
 
 		for (String changedFile : changedFiles) {
 			//get the commits of that file in master

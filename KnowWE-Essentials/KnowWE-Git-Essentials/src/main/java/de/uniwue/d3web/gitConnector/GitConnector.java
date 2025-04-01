@@ -134,11 +134,12 @@ public interface GitConnector {
 	 */
 	UserData userDataFor(String commitHash);
 
+
 	/**
 	 * In Seconds since 1970
 	 *
 	 * @param commitHash
-	 * @return
+	 * @return commit time in seconds since 1970 or -1 if the hash is not part of this repository
 	 */
 	long commitTimeFor(String commitHash);
 
@@ -394,6 +395,7 @@ public interface GitConnector {
 	 * @return true if successful
 	 */
 	boolean pullCurrent(boolean rebase);
+
 	void abortCherryPick();
 
 	/**
@@ -418,4 +420,16 @@ public interface GitConnector {
 	ResetCommandResult resetToHEAD();
 
 	List<GitDiffEntry> diff(String oldCommit, String newCommit, boolean useRenameDetection);
+
+	/**
+	 * finds the commit that is equivalent than the provided commit on the other, specified branch. This method is not
+	 * only slow but might not even guarantee 100% correctness!
+	 *
+	 * @param commit
+	 * @param onBranch
+	 * @return
+	 */
+	String commitEquivalentOnBranch(String commit, String onBranch);
+
+	boolean deleteBranch(String featureBranchname);
 }

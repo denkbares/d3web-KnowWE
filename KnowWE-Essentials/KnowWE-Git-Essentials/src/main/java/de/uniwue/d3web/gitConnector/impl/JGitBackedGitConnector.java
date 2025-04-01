@@ -272,6 +272,22 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String commitEquivalentOnBranch(String commit, String onBranch) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.commitEquivalentOnBranch(commit, onBranch);
+		}
+		return this.jgitConnector.commitEquivalentOnBranch(commit, onBranch);
+	}
+
+	@Override
+	public boolean deleteBranch(String featureBranchname) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.deleteBranch(featureBranchname);
+		}
+		return this.jgitConnector.deleteBranch(featureBranchname);
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFile(file);
@@ -410,6 +426,9 @@ public class JGitBackedGitConnector implements GitConnector {
 
 	@Override
 	public String commitPathsForUser(String message, String author, String email, Set<String> paths) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.commitPathsForUser(message, author, email, paths);
+		}
 		return this.jgitConnector.commitPathsForUser(message, author, email, paths);
 	}
 
