@@ -201,13 +201,13 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		if (this.openCommits.containsKey(page.getAuthor())) {
 			if (addFile) {
-				this.gitConnector.addPath(changedFile.getName());
+				this.gitConnector.commit().addPath(changedFile.getName());
 			}
 			this.openCommits.get(page.getAuthor()).add(changedFile.getName());
 		}
 		else {
 			UserData userdata = getUserData(page.getAuthor(), comment);
-			String commitHash = this.gitConnector.changePath(changedFile.toPath(), userdata);
+			String commitHash = this.gitConnector.commit().changePath(changedFile.toPath(), userdata);
 			fireWikiEvent(GitVersioningWikiEvent.UPDATE, page.getAuthor(), List.of(page.getName()), commitHash);
 		}
 	}
@@ -400,7 +400,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 
 		String comment = gitCommentStrategy.getComment(page, "removed page");
-		String commitHash = this.gitConnector.deletePath(file.getName(), getUserData(page.getAuthor(), comment), false);
+		String commitHash = this.gitConnector.commit().deletePath(file.getName(), getUserData(page.getAuthor(), comment), false);
 
 		String author = page.getAuthor();
 		if (this.openCommits.containsKey(author)) {
@@ -449,7 +449,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		else {
 			String comment = gitCommentStrategy.getComment(from, "renamed page " + from + " to " + to);
 			UserData userData = getUserData(author, comment);
-			String commitHash = this.gitConnector.moveFile(fromFile.toPath(), toFile.toPath(), userData.user, userData.email, userData.message);
+			String commitHash = this.gitConnector.commit().moveFile(fromFile.toPath(), toFile.toPath(), userData.user, userData.email, userData.message);
 			fireWikiEvent(GitVersioningWikiEvent.MOVED, author, List.of(to), commitHash);
 		}
 	}
@@ -507,7 +507,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			email = userProfile.getEmail();
 		}
 
-		String commitHash = this.gitConnector.commitPathsForUser(comment, username, email, this.openCommits.get(user));
+		String commitHash = this.gitConnector.commit().commitPathsForUser(comment, username, email, this.openCommits.get(user));
 		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, this.openCommits.get(user), commitHash);
 
 		this.openCommits.remove(user);

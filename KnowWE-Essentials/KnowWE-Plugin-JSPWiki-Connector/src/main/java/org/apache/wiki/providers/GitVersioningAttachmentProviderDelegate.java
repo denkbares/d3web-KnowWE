@@ -138,7 +138,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			//create dir
 			attDir.mkdirs();
 			//add dir (TODO idk this is an empty directory - i think this doesnt even have an effect)
-			this.gitConnector.addPath(attDir.getName());
+			this.gitConnector.commit().addPath(attDir.getName());
 		}
 		File newFile = findAttachmentFile(att);
 
@@ -155,7 +155,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 		copyOnFilesystem(att, data, newFile);
 
-		gitConnector.addPath(getPath(att));
+		gitConnector.commit().addPath(getPath(att));
 
 		att.setSize(newFile.length());
 
@@ -416,7 +416,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			UserData userData = this.gitVersioningFileProvider.getDelegate()
 					.getUserData(att.getAuthor(), getMessage(att));
 			//TODO commit only filepath?
-			String commitHash = this.gitConnector.commitForUser(userData);
+			String commitHash = this.gitConnector.commit().commitForUser(userData);
 			WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
 					att.getAuthor(),
 					att.getParentName() + "/" + att.getFileName(),
@@ -490,11 +490,11 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 		//remove old files
 		UserData userData = this.gitVersioningFileProvider.getDelegate().getUserData(oldParent.getAuthor(), comment);
-		this.gitConnector.deletePaths(oldPaths, userData, true);
+		this.gitConnector.commit().deletePaths(oldPaths, userData, true);
 		//add new files
-		this.gitConnector.addPaths(newPaths);
+		this.gitConnector.commit().addPaths(newPaths);
 		//and perform the commit TODO only the pages specified?
-		String commitHash = this.gitConnector.commitForUser(userData);
+		String commitHash = this.gitConnector.commit().commitForUser(userData);
 
 		//notify wiki
 		WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
@@ -538,7 +538,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		if (this.gitConnector.isIgnored(getPath(att))) {
 			return;
 		}
-		this.gitConnector.deletePath(getPath(att), this.gitVersioningFileProvider.getDelegate()
+		this.gitConnector.commit().deletePath(getPath(att), this.gitVersioningFileProvider.getDelegate()
 				.getUserData(att.getAuthor(), getMessage(att)), false);
 	}
 }
