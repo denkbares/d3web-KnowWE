@@ -106,7 +106,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 		this.remoteUsername = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_REMOTE_USERNAME, null);
 		this.remoteToken = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_REMOTE_TOKEN, null);
 
-		this.remoteRepo = this.getGitConnector().isRemoteRepository();
+		this.remoteRepo = this.getGitConnector().repo().isRemoteRepository();
 
 		if (autoUpdateEnabled && remoteRepo) {
 			scheduler.initialize(engine, this);
@@ -333,7 +333,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 	}
 
 	public String getFilesystemPath() {
-		return this.delegate.getGitConnector().getGitDirectory();
+		return this.delegate.getGitConnector().repo().getGitDirectory();
 	}
 
 	public void pauseAutoUpdate() {

@@ -121,7 +121,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		setGitCommentStrategy(properties);
 
 		// we run the command to build up the commit graph. It considerably accelerates the reading of the commit history (e. g. git log)
-		this.gitConnector.executeCommitGraph();
+		this.gitConnector.repo().executeCommitGraph();
 	}
 
 	private void setGitCommentStrategy(Properties properties) {
@@ -260,11 +260,11 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		final Map<String, Page> resultingPages = new HashMap<>();
 
-		final File wikipagedir = new File(this.gitConnector.getGitDirectory());
+		final File wikipagedir = new File(this.gitConnector.repo().getGitDirectory());
 		final File[] wikipages = wikipagedir.listFiles(new WikiFileFilter());
 
 		if (wikipages == null) {
-			LOGGER.error("Wikipages directory '" + this.gitConnector.getGitDirectory() + "' does not exist! Please check " + PROP_PAGEDIR + " in jspwiki.properties.");
+			LOGGER.error("Wikipages directory '" + this.gitConnector.repo().getGitDirectory() + "' does not exist! Please check " + PROP_PAGEDIR + " in jspwiki.properties.");
 			throw new InternalWikiException("Page directory does not exist");
 		}
 		for (final File file : wikipages) {
@@ -536,7 +536,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			refreshCache(pm, JSPUtils.unmangleName(path).replaceAll(FILE_EXT, ""));
 		}
 
-		this.gitConnector.rollbackPaths(paths);
+		this.gitConnector.rollback().rollbackPaths(paths);
 		this.openCommits.remove(user);
 	}
 
@@ -559,7 +559,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	}
 
 	public String getFilesystemPath() {
-		return this.gitConnector.getGitDirectory();
+		return this.gitConnector.repo().getGitDirectory();
 	}
 
 	GitCommentStrategy getGitCommentStrategy() {

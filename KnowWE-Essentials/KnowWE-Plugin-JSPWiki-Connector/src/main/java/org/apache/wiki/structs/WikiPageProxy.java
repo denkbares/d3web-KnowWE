@@ -50,7 +50,7 @@ public class WikiPageProxy extends WikiPage {
 			return author;
 		}
 
-		PageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.gitConnector.getGitDirectory(), this.getName(), -1);
+		PageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.gitConnector.repo().getGitDirectory(), this.getName(), -1);
 		List<String> commitHashes = this.gitConnector.commitHashesForFile(pageIdentifier.fileName());
 		if (commitHashes == null || commitHashes.isEmpty()) {
 			return null;

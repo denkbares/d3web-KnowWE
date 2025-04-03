@@ -57,7 +57,7 @@ public class DefaultGitServerConnector implements GitServerConnector {
 
 	private boolean switchFolderToOtherRepoAndBranch(@NotNull String pullTargetFolder, @NotNull String repoName, @Nullable String branch) {
 		GitConnector oldGitConnector = getGitConnector(pullTargetFolder);
-		if (!oldGitConnector.repoName().equals(repoName)) {
+		if (!oldGitConnector.repo().repoName().equals(repoName)) {
 			// we want another repo than currently initialized
 
 			if (!oldGitConnector.status().isClean()) {
