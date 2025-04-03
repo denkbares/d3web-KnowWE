@@ -628,7 +628,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
 				String gitCommitRev = gitEvent.getGitCommitRev();
 				String pageFile = JSPUtils.mangleName(pageTitle) + ".txt";
-				int latestVersionNumber = getGitConnector().numberOfCommitsForFile(pageFile);
+				int latestVersionNumber = getGitConnector().log().numberOfCommitsForFile(pageFile);
 				ArticleUpdateEvent.Version version = new ArticleUpdateEvent.Version(latestVersionNumber);
 				version.setCommitHash(gitCommitRev);
 				articleUpdateEvent.setVersion(version);

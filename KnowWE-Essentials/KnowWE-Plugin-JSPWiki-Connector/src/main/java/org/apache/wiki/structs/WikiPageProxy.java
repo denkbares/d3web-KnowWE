@@ -51,11 +51,11 @@ public class WikiPageProxy extends WikiPage {
 		}
 
 		PageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.gitConnector.repo().getGitDirectory(), this.getName(), -1);
-		List<String> commitHashes = this.gitConnector.commitHashesForFile(pageIdentifier.fileName());
+		List<String> commitHashes = this.gitConnector.log().commitHashesForFile(pageIdentifier.fileName());
 		if (commitHashes == null || commitHashes.isEmpty()) {
 			return null;
 		}
-		UserData userData = this.gitConnector.userDataFor(commitHashes.get(commitHashes.size() - 1));
+		UserData userData = this.gitConnector.log().userDataFor(commitHashes.get(commitHashes.size() - 1));
 		super.setAuthor(userData.user);
 		//Note: this is a workaround, if i would determine the version in the corresponding method the code would end up to slow..
 		if (this.getVersion() == -1) {

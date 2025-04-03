@@ -237,7 +237,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			return null;
 		}
 
-		String commitHash = this.gitConnector.commitHashForFileAndVersion(pageIdentifier.fileName(), pageIdentifier.version());
+		String commitHash = this.gitConnector.log().commitHashForFileAndVersion(pageIdentifier.fileName(), pageIdentifier.version());
 		if (commitHash == null) {
 			//check if there is an open commit with that page => if so we can safely fetch from disk
 			if(this.openCommits.values().stream().flatMap(it -> it.stream()).anyMatch(it -> it.equals(pageIdentifier.fileName()))){
@@ -249,7 +249,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 		int realVersion = pageIdentifier.version();
 		if (pageIdentifier.version() == LATEST_VERSION) {
-			realVersion = this.gitConnector.numberOfCommitsForFile(pageIdentifier.fileName());
+			realVersion = this.gitConnector.log().numberOfCommitsForFile(pageIdentifier.fileName());
 		}
 		return createWikiPageFromCommitHash(pageIdentifier, commitHash, realVersion);
 	}
@@ -311,7 +311,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		List<Page> pageVersions = new ArrayList<>();
 		if (page != null && page.exists()) {
 
-			List<String> commitHashes = this.gitConnector.commitHashesForFile(pageIdentifier.fileName());
+			List<String> commitHashes = this.gitConnector.log().commitHashesForFile(pageIdentifier.fileName());
 			int version = 1;
 			for (String commitHash : commitHashes) {
 				WikiPage wikiPage = createWikiPageFromCommitHash(pageIdentifier, commitHash, version);
@@ -330,9 +330,9 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	private @NotNull WikiPage createWikiPageFromCommitHash(PageIdentifier pageIdentifier, String commitHash, int version) {
 		//mark page as to be refreshed TODO why???
 		this.refreshCacheList.add(pageIdentifier.pageName());
-		UserData userData = this.gitConnector.userDataFor(commitHash);
-		long filesize = this.gitConnector.getFilesizeForCommit(commitHash, pageIdentifier.fileName());
-		long timeInSeconds = this.gitConnector.commitTimeFor(commitHash);
+		UserData userData = this.gitConnector.log().userDataFor(commitHash);
+		long filesize = this.gitConnector.log().getFilesizeForCommit(commitHash, pageIdentifier.fileName());
+		long timeInSeconds = this.gitConnector.log().commitTimeFor(commitHash);
 		Date date = Date.from(Instant.ofEpochSecond(timeInSeconds));
 		return WikiPageProxy.fromUserData(pageIdentifier.pageName(), version, userData, filesize, date, this.engine);
 	}
@@ -360,7 +360,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 		//else we read from git, slower but what can we do
 		else {
-			return this.gitConnector.getTextForPath(pageIdentifier.fileName(), pageIdentifier.version());
+			return this.gitConnector.log().getTextForPath(pageIdentifier.fileName(), pageIdentifier.version());
 		}
 	}
 
@@ -389,8 +389,8 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		final File file = findPage(page.getName());
 
 		if (page.getAuthor() == null) {
-			String commitHash = this.gitConnector.commitHashForFileAndVersion(file.getName(), page.getVersion());
-			UserData userData = this.gitConnector.userDataFor(commitHash);
+			String commitHash = this.gitConnector.log().commitHashForFileAndVersion(file.getName(), page.getVersion());
+			UserData userData = this.gitConnector.log().userDataFor(commitHash);
 			page.setAuthor(userData.user);
 		}
 

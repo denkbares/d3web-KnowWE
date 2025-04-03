@@ -223,7 +223,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 	private InputStream getAttachmentDataFromGit(Attachment att, int version) {
 		String path = getPath(att);
-		byte[] bytesForPath = this.gitConnector.getBytesForPath(path, version);
+		byte[] bytesForPath = this.gitConnector.log().getBytesForPath(path, version);
 		return new ByteArrayInputStream(bytesForPath);
 	}
 
@@ -264,7 +264,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 		//for every attachments thats currently still available, check the timestamp of its latest commit
 		for (Attachment att : attachmentsFromFilesystem) {
-			List<String> commitHashes = this.gitConnector.commitHashesForFileSince(getPath(att), timestamp);
+			List<String> commitHashes = this.gitConnector.log().commitHashesForFileSince(getPath(att), timestamp);
 			if (!commitHashes.isEmpty()) {
 				String lastCommit = commitHashes.get(commitHashes.size() - 1);
 				setAttachmentDataFromCommit(att, lastCommit);
@@ -276,8 +276,8 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 	}
 
 	private void setAttachmentDataFromCommit(Attachment att, String commit) {
-		long epochTimeInSeconds = this.gitConnector.commitTimeFor(commit);
-		UserData userData = this.gitConnector.userDataFor(commit);
+		long epochTimeInSeconds = this.gitConnector.log().commitTimeFor(commit);
+		UserData userData = this.gitConnector.log().userDataFor(commit);
 
 		att.setAttribute(Attachment.CHANGENOTE, userData.message);
 		att.setAuthor(userData.user);
@@ -314,7 +314,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			int realversion = version;
 			String hash = null;
 			if (realversion == LATEST_VERSION) {
-				List<String> commitHashes = this.gitConnector.commitHashesForFile(attPath);
+				List<String> commitHashes = this.gitConnector.log().commitHashesForFile(attPath);
 				//if there are no commits, we can still use the information from the filesystem
 				if(commitHashes.isEmpty()){
 					att.setVersion(1);
@@ -327,7 +327,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 				hash = commitHashes.get(commitHashes.size() - 1);
 			}
 			else {
-				hash = this.gitConnector.commitHashForFileAndVersion(attPath, realversion);
+				hash = this.gitConnector.log().commitHashForFileAndVersion(attPath, realversion);
 			}
 
 			return fillAttachmentMetadata(att, realversion, hash);
@@ -337,7 +337,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 	@NotNull
 	private Attachment fillAttachmentMetadata(Attachment att, int version, String commitHash) {
-		UserData userData = this.gitConnector.userDataFor(commitHash);
+		UserData userData = this.gitConnector.log().userDataFor(commitHash);
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			Attachment attVersion = new org.apache.wiki.attachment.Attachment(engine, att.getParentName(), att.getFileName());
@@ -345,10 +345,10 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			attVersion.setAuthor(userData.user);
 			attVersion.setVersion(version);
 			attVersion.setAttribute(WikiPage.CHANGENOTE, userData.message);
-			long filesizeForCommit = this.gitConnector.getFilesizeForCommit(commitHash, getPath(att));
+			long filesizeForCommit = this.gitConnector.log().getFilesizeForCommit(commitHash, getPath(att));
 			attVersion.setSize(filesizeForCommit);
 
-			long timeInSeconds = this.gitConnector.commitTimeFor(commitHash);
+			long timeInSeconds = this.gitConnector.log().commitTimeFor(commitHash);
 			Date date = Date.from(Instant.ofEpochSecond(timeInSeconds));
 			attVersion.setLastModified(date);
 			return attVersion;
@@ -376,7 +376,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 		List<Attachment> ret = new ArrayList<>();
 		int version = 1;
-		for (String commitHash : this.gitConnector.commitHashesForFile(getPath(att))) {
+		for (String commitHash : this.gitConnector.log().commitHashesForFile(getPath(att))) {
 			Attachment attVersion = fillAttachmentMetadata(att, version, commitHash);
 			ret.add(attVersion);
 			version++;
