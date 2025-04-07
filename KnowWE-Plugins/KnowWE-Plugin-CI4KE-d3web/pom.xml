@@ -23,7 +23,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2025.2-SNAPSHOT</version>
+		<version>2025.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>KnowWE-Plugin-CI4KE-d3web</artifactId>
 	<description>KnowWE-Plugin that provides CITestModules for d3web</description>

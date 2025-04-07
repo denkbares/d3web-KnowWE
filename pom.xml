@@ -23,7 +23,7 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>2025.2-SNAPSHOT</version>
+	<version>2025.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 
@@ -271,7 +271,7 @@
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>denkbares-Git-Essentials</artifactId>
-				<version>2025.2-SNAPSHOT</version>
+				<version>2025.3-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>

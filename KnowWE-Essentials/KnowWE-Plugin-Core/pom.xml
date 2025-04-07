@@ -23,7 +23,7 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2025.2-SNAPSHOT</version>
+		<version>2025.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-Core</artifactId>
