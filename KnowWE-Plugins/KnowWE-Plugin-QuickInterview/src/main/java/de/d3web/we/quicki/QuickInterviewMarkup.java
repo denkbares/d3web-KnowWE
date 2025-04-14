@@ -41,6 +41,9 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
+import static de.knowwe.core.ResourceLoader.Type.script;
+import static de.knowwe.core.ResourceLoader.Type.stylesheet;
+
 /**
  * @author Benedikt Kaemmerer
  * @created 28.07.2012
@@ -90,8 +93,8 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public QuickInterviewMarkup(DefaultMarkup markup) {
 		super(markup);
-		ResourceLoader.getInstance().add("quickiNeutral.css");
-		ResourceLoader.getInstance().add("quicki.js");
+		ResourceLoader.getInstance().add("quickiNeutral.css", stylesheet, ResourceLoader.getJarVersion(QuickInterviewMarkup.class));
+		ResourceLoader.getInstance().add("quicki.js", script, ResourceLoader.getJarVersion(QuickInterviewMarkup.class));
 		this.setRenderer(new QuickInterviewMarkupRenderer());
 		this.addCompileScript(new MasterAnnotationWarningHandler());
 	}

@@ -348,7 +348,7 @@ public class Plugins {
 	 * Initializes the Javascript files
 	 */
 	public static void initJS() {
-		PriorityList<Double, String> files = new PriorityList<>(5.0);
+		PriorityList<Double, Pair<String, String>> files = new PriorityList<>(5.0);
 		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler), files);
 		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -361,8 +361,8 @@ public class Plugins {
 				EXTENDED_POINT_Renderer), files);
 		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction), files);
-		for (String s : files) {
-			ResourceLoader.getInstance().add(s, ResourceLoader.Type.script);
+		for (Pair<String, String> s : files) {
+			ResourceLoader.getInstance().add(s.getA(), ResourceLoader.Type.script, s.getB());
 		}
 	}
 
@@ -370,7 +370,7 @@ public class Plugins {
 	 * Initializes the Javascript module files
 	 */
 	public static void initJsModules() {
-		PriorityList<Double, String> files = new PriorityList<>(5.0);
+		PriorityList<Double, Pair<String, String>> files = new PriorityList<>(5.0);
 		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler), files);
 		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -383,13 +383,13 @@ public class Plugins {
 				EXTENDED_POINT_Renderer), files);
 		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction), files);
-		for (String s : files) {
-			ResourceLoader.getInstance().add(s, ResourceLoader.Type.module);
+		for (Pair<String, String> s : files) {
+			ResourceLoader.getInstance().add(s.getA(), ResourceLoader.Type.module, s.getB());
 		}
 	}
 
 	public static void initCSS() {
-		PriorityList<Double, String> files = new PriorityList<>(5.0);
+		PriorityList<Double, Pair<String, String>> files = new PriorityList<>(5.0);
 		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_PageAppendHandler), files);
 		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -402,62 +402,65 @@ public class Plugins {
 				EXTENDED_POINT_Renderer), files);
 		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction), files);
-		for (String s : files) {
-			ResourceLoader.getInstance().addFirst(s, ResourceLoader.Type.stylesheet);
+		for (Pair<String, String> s : files) {
+			ResourceLoader.getInstance().addFirst(s.getA(), ResourceLoader.Type.stylesheet, s.getB());
 		}
 	}
 
 	public static void initResources(Extension[] extensions) {
-		PriorityList<Double, String> cssFiles = new PriorityList<>(5.0);
+		PriorityList<Double, Pair<String, String>> cssFiles = new PriorityList<>(5.0);
 		addCSS(extensions, cssFiles);
-		for (String s : cssFiles) {
-			ResourceLoader.getInstance().addFirst(s, ResourceLoader.Type.stylesheet);
+		for (Pair<String, String> s : cssFiles) {
+			ResourceLoader.getInstance().addFirst(s.getA(), ResourceLoader.Type.stylesheet, s.getB());
 		}
-		PriorityList<Double, String> jsFiles = new PriorityList<>(5.0);
+		PriorityList<Double, Pair<String, String>> jsFiles = new PriorityList<>(5.0);
 		addScripts(extensions, jsFiles);
-		for (String filename : jsFiles) {
-			ResourceLoader.getInstance().add(filename, ResourceLoader.Type.script);
+		for (Pair<String, String> filename : jsFiles) {
+			ResourceLoader.getInstance().add(filename.getA(), ResourceLoader.Type.script, filename.getB());
 		}
 	}
 
-	private static void addScripts(Extension[] extensions, PriorityList<Double, String> filesCollector) {
+	private static void addScripts(Extension[] extensions, PriorityList<Double, Pair<String, String>> filesCollector) {
+		addParameter(extensions, filesCollector, "script");
+	}
+
+	private static void addParameter(Extension[] extensions, PriorityList<Double, Pair<String, String>> filesCollector, String parameterName) {
 		for (Extension e : extensions) {
 			double priority = e.getPriority();
-			List<String> scripts = e.getParameters("script");
+			List<String> scripts = e.getParameters(parameterName);
+			String version = getVersion(e);
 			if (scripts != null) {
-				for (String s : scripts) {
-					if (!filesCollector.contains(s)) {
-						filesCollector.add(priority, s);
+				for (String script : scripts) {
+					Pair<String, String> scriptWithVersionPair = new Pair<>(script, version);
+					if (!filesCollector.contains(scriptWithVersionPair)) {
+						filesCollector.add(priority, scriptWithVersionPair);
 					}
 				}
 			}
 		}
 	}
 
-	private static void addModules(Extension[] extensions, PriorityList<Double, String> filesCollector) {
-		for (Extension e : extensions) {
-			double priority = e.getPriority();
-			List<String> scripts = e.getParameters("module");
-			if (scripts != null) {
-				for (String s : scripts) {
-					if (!filesCollector.contains(s)) {
-						filesCollector.add(priority, s);
-					}
-				}
+	private static String getVersion(Extension extension) {
+		String version = extension.getVersion();
+		if ("1.0".equals(version) || version == null) { // probably not a maintained version (1.0 is the default), so get jar modified date as version instead
+			Class<?> instanceClass;
+			try {
+				instanceClass = extension.getInstanceClass();
+			} catch (Throwable e) {
+				LOGGER.warn("Could not get extension class for extension {}", extension.getName());
+				instanceClass = Plugins.class;
 			}
+			version = ResourceLoader.getJarVersion(instanceClass);
 		}
+		return version;
 	}
 
-	private static void addCSS(Extension[] extensions, PriorityList<Double, String> filesCollector) {
-		for (Extension e : extensions) {
-			double priority = e.getPriority();
-			List<String> scripts = e.getParameters("css");
-			if (scripts != null) {
-				for (String s : scripts) {
-					filesCollector.add(priority, s);
-				}
-			}
-		}
+	private static void addModules(Extension[] extensions, PriorityList<Double, Pair<String, String>> filesCollector) {
+		addParameter(extensions, filesCollector, "module");
+	}
+
+	private static void addCSS(Extension[] extensions, PriorityList<Double, Pair<String, String>> filesCollector) {
+		addParameter(extensions, filesCollector, "css");
 	}
 
 	/**

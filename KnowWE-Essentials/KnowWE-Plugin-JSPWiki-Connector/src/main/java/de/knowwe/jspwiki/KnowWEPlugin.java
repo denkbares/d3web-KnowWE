@@ -66,6 +66,7 @@ import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.GitProviderProperties;
 import org.apache.wiki.providers.SubWikiUtils;
 import org.apache.wiki.ui.TemplateManager;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -723,11 +724,15 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		List<String> types = new ArrayList<>();
 		for (String resource : css) {
 			if (ctx == null || !ctx.toString().contains(resource)) {
-				cssToAdd.add(stylesheet.getPath(resource));
+				cssToAdd.add(stylesheet.getPath(resource) + toVersionParameter(loader.getVersion(resource)));
 				types.add(stylesheet.name());
 			}
 		}
 		TemplateManager.addResourceRequests(wikiContext, types, cssToAdd);
+	}
+
+	private static String toVersionParameter(@NotNull String version) {
+		return "?version=" + version;
 	}
 
 	private static void addResourceToTemplateManager(Context wikiContext, Object ctx, List<String> scriptIncludes,
@@ -764,7 +769,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			}
 			if (ctx == null || !ctx.toString().contains(resource)) {
 				types.add(type.name());
-				resourcePaths.add(type.getPath(resource));
+				resourcePaths.add(type.getPath(resource) + toVersionParameter(ResourceLoader.getInstance().getVersion(resource)));
 			}
 		}
 		TemplateManager.addResourceRequests(wikiContext, types, resourcePaths);

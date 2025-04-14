@@ -3,9 +3,15 @@
  */
 package de.knowwe.core;
 
-import java.util.LinkedList;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +30,7 @@ import com.denkbares.utils.Files;
  */
 public class ResourceLoader {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLoader.class);
+	private static final Map<Class<?>, String> jarVersions = new ConcurrentHashMap<>();
 
 	public enum Type {
 		/**
@@ -98,17 +105,22 @@ public class ResourceLoader {
 	/**
 	 * Stores the registered script files.
 	 */
-	private final List<String> scripts = new LinkedList<>();
+	private final List<String> scripts = new ArrayList<>();
 
 	/**
 	 * Stores the registered module files.
 	 */
-	private final List<String> module = new LinkedList<>();
+	private final List<String> module = new ArrayList<>();
 
 	/**
 	 * Stores the registered CSS files.
 	 */
-	private final List<String> stylesheets = new LinkedList<>();
+	private final List<String> stylesheets = new ArrayList<>();
+
+	/**
+	 * Store a version of each resource
+	 */
+	private final Map<String, String> versions = new HashMap<>();
 
 	/**
 	 * Instance of the Loader. The loader is implemented as a Singleton.
@@ -125,6 +137,11 @@ public class ResourceLoader {
 			instance = new ResourceLoader();
 		}
 		return instance;
+	}
+
+	@NotNull
+	public String getVersion(String resource) {
+		return versions.getOrDefault(resource, getJarVersion());
 	}
 
 	/**
@@ -194,7 +211,7 @@ public class ResourceLoader {
 	 * @param file The resource file that should be added
 	 */
 	public void add(String file) {
-		add(file, Type.detect(file));
+		add(file, Type.detect(file), getJarVersion());
 	}
 
 	/**
@@ -207,12 +224,31 @@ public class ResourceLoader {
 	 * @param type the type of the file
 	 */
 	public void add(String file, Type type) {
+		add(file, type, getJarVersion());
+	}
+
+	/**
+	 * Adds a resource file to the loader.
+	 * <p/>
+	 * Note: Only the file name has to be added. The ResourceLoader knows the default resource file
+	 * location.
+	 *
+	 * @param file The resource file that should be added.
+	 * @param type the type of the file
+	 * @param version a version string for the file (for browser caching)
+	 */
+	public void add(String file, Type type, String version) {
 		List<String> list = this.getList(type);
 
 		if (!list.contains(file)) {
 			checkFileType(file, type);
 			list.add(file);
+			versions.put(file, version);
 		}
+	}
+
+	private void addFirst(String file, Type type) {
+		addFirst(file, type, getJarVersion());
 	}
 
 	/**
@@ -221,19 +257,20 @@ public class ResourceLoader {
 	 *
 	 * @param file The resource file that should be added.
 	 */
-	public void addFirst(String file, Type type) {
+	public void addFirst(String file, Type type, String version) {
 		List<String> list = this.getList(type);
 		checkFileType(file, type);
 
 		// add as first element
 		list.remove(file);
 		list.add(0, file);
+		versions.put(file, version);
 	}
 
 	private void checkFileType(String file, Type type) {
 		if (!type.isValid(file)) {
 			LOGGER.warn("The specified file '" + file + "' " +
-					"does not seem to match the requested type " + type.name());
+						"does not seem to match the requested type " + type.name());
 		}
 	}
 
@@ -258,7 +295,7 @@ public class ResourceLoader {
 	/**
 	 * Returns the module files the loader knows.
 	 *
-	 * @return String of module files.
+	 * @return a list of module files.
 	 */
 	public List<String> getModuleIncludes() {
 		return this.module;
@@ -279,5 +316,33 @@ public class ResourceLoader {
 			case stylesheet -> this.stylesheets;
 			case module -> this.module;
 		};
+	}
+
+	private static String getJarVersion() {
+		return getJarVersion(ResourceLoader.class);
+	}
+
+	@NotNull
+	public static String getJarVersion(Class<?> clazz) {
+		return jarVersions.computeIfAbsent(clazz, k -> {
+			String jarVersion = null;
+			try {
+				URL classUrl = clazz.getResource(clazz.getSimpleName() + ".class");
+				if (classUrl != null) {
+					URLConnection connection = classUrl.openConnection();
+					long lastModified = connection.getLastModified();
+					if (lastModified > 0) {
+						jarVersion = String.valueOf(lastModified);
+					}
+				}
+			}
+			catch (IOException e) {
+				LoggerFactory.getLogger(clazz).warn("Couldn't get jar version, using current date", e);
+			}
+			if (jarVersion == null) {
+				jarVersion = String.valueOf(System.currentTimeMillis());
+			}
+			return jarVersion;
+		});
 	}
 }

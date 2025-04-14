@@ -29,6 +29,9 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractTagHandler;
 import de.knowwe.core.user.UserContext;
 
+import static de.knowwe.core.ResourceLoader.Type.script;
+import static de.knowwe.core.ResourceLoader.Type.stylesheet;
+
 public class QuickInterviewTagHandler extends AbstractTagHandler {
 
 	/**
@@ -38,8 +41,8 @@ public class QuickInterviewTagHandler extends AbstractTagHandler {
 	 */
 	public QuickInterviewTagHandler() {
 		super("quickInterview");
-		ResourceLoader.getInstance().add("quickiNeutral.css");
-		ResourceLoader.getInstance().add("quicki.js");
+		ResourceLoader.getInstance().add("quickiNeutral.css", stylesheet, ResourceLoader.getJarVersion(QuickInterviewTagHandler.class));
+		ResourceLoader.getInstance().add("quicki.js", script, ResourceLoader.getJarVersion(QuickInterviewTagHandler.class));
 
 	}
 
