@@ -323,13 +323,4 @@
 		<parameter id="scope" value="CompositeCondition"/>
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="TableCellRenderer">
-		<parameter id="class" value="de.knowwe.d3web.scoreTable.renderer.TableCellRenderer"/>
-		<parameter id="name" value="TableCellRenderer"/>
-		<parameter id="description" value="TableCellRenderer"/>
-		<parameter id="version" value="1.0"/>
-		<parameter id="priority" value="4"/>
-		<parameter id="scope" value="CondCell"/>
-	</extension>
-
 </plugin>
