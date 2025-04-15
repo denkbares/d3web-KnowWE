@@ -114,16 +114,6 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-			id="ReadOnlyActionCheckbox">
-		<parameter id="class"
-				value="de.knowwe.jspwiki.ReadOnlyActionCheckbox" />
-		<parameter id="name" value="ReadOnlyActionCheckbox" />
-		<parameter id="description" value="Action ReadOnlyActionCheckbox" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
         id="ReadOnlyAction">
         <parameter id="class"
             value="de.knowwe.jspwiki.readOnly.ReadOnlyAction" />
