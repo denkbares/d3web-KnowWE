@@ -26,6 +26,9 @@ import de.knowwe.core.action.UserActionContext;
 public class DownloadFileAction extends AbstractAction {
 
 	private static final Set<File> allowedDirectories = new HashSet<>();
+	public static final String KEY_FILE = "file";
+	public static final String KEY_DELETE = "delete";
+	public static final String KEY_DOWNLOAD_FILENAME = "name";
 	private static File defaultTempDirectory = null;
 
 	/**
@@ -50,22 +53,33 @@ public class DownloadFileAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String fileParameter = context.getParameter("file");
+		String fileParameter = context.getParameter(KEY_FILE);
+		String deleteParameter = context.getParameter(KEY_DELETE);
 		String filePath = Strings.decodeURL(fileParameter);
-		String nameParameter = context.getParameter("name");
-		String name = Strings.decodeURL(nameParameter);
+		String nameParameter = context.getParameter(KEY_DOWNLOAD_FILENAME);
+		String downloadFilename = Strings.decodeURL(nameParameter);
 
 		File file = new File(filePath);
 		checkAllowed(file);
+		if (downloadFilename == null) {
+			downloadFilename = file.getName();
+		}
 
+		writeFileToDownloadStream(context, file, downloadFilename, !"false".equalsIgnoreCase(deleteParameter));
+	}
+
+	public static void writeFileToDownloadStream(UserActionContext context, File file, String downloadFilename, boolean deleteAfterStream) throws IOException {
 		try (InputStream in = new FileInputStream(file); OutputStream out = context.getOutputStream()) {
 			context.setContentType(BINARY);
-			context.setHeader("Content-Disposition", "attachment;filename=\"" + name + "\"");
+			context.setHeader("Content-Disposition", "attachment;filename=\"" + downloadFilename + "\"");
 			Streams.stream(in, out);
 		}
 		finally {
-			file.delete();
-			file.deleteOnExit();
+			if (deleteAfterStream) {
+				//noinspection ResultOfMethodCallIgnored
+				file.delete();
+				file.deleteOnExit();
+			}
 		}
 	}
 

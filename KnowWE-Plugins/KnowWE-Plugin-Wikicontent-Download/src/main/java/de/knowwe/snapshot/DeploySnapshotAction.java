@@ -1,4 +1,4 @@
-package de.knowwe.upload;
+package de.knowwe.snapshot;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,15 +27,21 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.download.TmpFileDownloadToolProvider;
+
+import static de.knowwe.snapshot.CreateSnapshotAction.createAndStoreWikiContentSnapshot;
+import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 
 /**
  * Action that allows to replace the entire wiki content (!!!) by the content of a zip attachment.
- * USE WITH CAUTION! - it will override the current wiki content completely.
  * UI level should assert with the user, that he/she is really willing to clear the current content.
+ * The current wiki content will be backup-ed in the tmp-file-folder.
  */
-public class DeployWikiContentZIPAction extends AbstractAction {
+public class DeploySnapshotAction extends AbstractAction {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DeployWikiContentZIPAction.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeploySnapshotAction.class);
+
+	public static final String KEY_DEPLOY_FILENAME = "deploy_file";
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -43,9 +49,9 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 			context.sendError(403, "Only for Admins available ");
 			return;
 		}
-		String attachmentName = context.getParameter(Attributes.ATTACHMENT_NAME);
-		if (attachmentName == null || attachmentName.isBlank()) {
-			context.sendError(404, "Mandatory parameter not found: " + Attributes.ATTACHMENT_NAME);
+		String deployFilename = context.getParameter(KEY_DEPLOY_FILENAME);
+		if (deployFilename == null || deployFilename.isBlank()) {
+			context.sendError(404, "Mandatory parameter not found: " + KEY_DEPLOY_FILENAME);
 			return;
 		}
 		String title = context.getParameter(Attributes.TOPIC);
@@ -53,16 +59,41 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 			context.sendError(404, "Mandatory parameter not found: " + Attributes.TOPIC);
 			return;
 		}
+
+		// try to find a corresponding attachment
 		WikiAttachment attachment = Environment.getInstance()
 				.getWikiConnector()
-				.getAttachment(title + "/" + attachmentName);
-		if (attachment == null) {
-			context.sendError(404, "Specified attachment not found: " + attachmentName);
+				.getAttachment(title + "/" + deployFilename);
+
+		// try to find a corresponding temp repo folder file
+		File repoSnapshot = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), deployFilename);
+
+		if (attachment == null && !repoSnapshot.exists()) {
+			context.sendError(404, "Specified deploy snapshot file not found: " + deployFilename);
 			return;
 		}
 
+		if (attachment != null && repoSnapshot.exists()) {
+			context.sendError(404, "Specified deploy snapshot file: " + deployFilename + " is ambiguous as it exists as tmp repo file AND as attachment. Delete either one or the other and then try again.");
+			return;
+		}
+
+		// we force a snapshot as safety BACKUP mechanism against data loss
+		createAndStoreWikiContentSnapshot(context, "Autosave" + SNAPSHOT);
+
+		File deployFile = null;
+
+		if (attachment != null) {
+			// we deploy from an attachment
+			deployFile = attachment.asFile();
+		}
+		else {
+			// we deploy from a repo snapshot
+			deployFile = repoSnapshot;
+		}
+
 		try {
-			makeFileSystemReplaceOperation(attachment);
+			makeFileSystemReplaceOperation(deployFile);
 
 			// tell WikiConnector that content has changed on the file system
 			Environment.getInstance().reinitializeForNewWikiContent();
@@ -70,13 +101,14 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 		catch (IOException e) {
 			context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
 		}
+
 		// success
 		context.getResponse()
 				.getWriter()
-				.println("Wiki content has been overridden to content of file: " + attachment.getFileName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
+				.println("Wiki content has been overridden to content of file: " + deployFile.getName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
 	}
 
-	private void makeFileSystemReplaceOperation(WikiAttachment attachment) throws IOException {
+	private void makeFileSystemReplaceOperation(File deployFile) throws IOException {
 		// wiki content folder
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String savePath = wikiConnector.getSavePath();
@@ -84,21 +116,17 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 		assert wikiFolderFile.exists();
 
 		// make temp copy of zip attachment (otherwise it will be deleted)
-		File zipFileAttachment = attachment.asFile();
 		Path tempDirectory = Files.createTempDirectory("_wikiZipTmpDir");
-		FileUtils.copyFile(zipFileAttachment, new File(tempDirectory.toFile() + File.separator + zipFileAttachment.getName()));
-		File copiedZipFile = new File(tempDirectory.toFile(), zipFileAttachment.getName());
+		FileUtils.copyFile(deployFile, new File(tempDirectory.toFile() + File.separator + deployFile.getName()));
+		File copiedZipFile = new File(tempDirectory.toFile(), deployFile.getName());
 		assert copiedZipFile.exists();
 
 		// extract new wiki content to tmp folder
 		File tempDirectoryZipUnpacked = Files.createTempDirectory("_wikiZipUnpackedTmpDir").toFile();
 		unpack(copiedZipFile, tempDirectoryZipUnpacked);
 
-
-
-
 		// clear wiki content folder
-		cleanDirectoryExcept(wikiFolderFile, List.of("userdatabase.xml", "groupdatabase.xml"));
+		cleanDirectoryExcept(wikiFolderFile, List.of(".git"));
 		copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
 	}
 
@@ -112,7 +140,8 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 		File groupdatabaseFile = getFile(wikiConnector.getWikiProperty("jspwiki.xmlGroupDatabaseFile"));
 
 		for (File file : Objects.requireNonNull(wikiFolder.listFiles())) {
-			if (! (file.equals(userdatabaseFile) || file.equals(groupdatabaseFile))) {
+			if (!(file.equals(userdatabaseFile) || file.equals(groupdatabaseFile) || keepFileNames.stream()
+					.anyMatch(keepFileName -> file.getName().equals(keepFileName)))) {
 				FileUtils.forceDelete(file);
 			}
 		}
@@ -120,14 +149,10 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 
 	private static File getFile(String userDatabasePath) {
 		File userdatabaseFile = null;
-		if(userDatabasePath != null) {
+		if (userDatabasePath != null) {
 			userdatabaseFile = new File(userDatabasePath);
 		}
 		return userdatabaseFile;
-	}
-
-	private static boolean isNotUserdatabase() {
-		return false;
 	}
 
 	private static void copyContentFromTo(File source, File target) throws IOException {
@@ -136,6 +161,7 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 		}
 
 		if (!target.exists()) {
+			//noinspection ResultOfMethodCallIgnored
 			target.mkdirs(); // create folder if necessary
 		}
 
@@ -177,10 +203,12 @@ public class DeployWikiContentZIPAction extends AbstractAction {
 				File newFile = entryDestination.toFile();
 
 				if (entry.isDirectory()) {
+					//noinspection ResultOfMethodCallIgnored
 					newFile.mkdirs();
 					continue;
 				}
 
+				//noinspection ResultOfMethodCallIgnored
 				newFile.getParentFile().mkdirs();
 
 				try (InputStream is = zipFile.getInputStream(entry);

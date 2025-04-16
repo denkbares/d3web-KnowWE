@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -31,6 +33,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +52,9 @@ import de.knowwe.jspwiki.WikiFileProviderUtils;
  * @author Johanna Latt
  * @created 16.04.2012
  */
-public class DownloadWikiZIP extends AbstractAction {
+public class DownloadWikiZIPAction extends AbstractAction {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadWikiZIP.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadWikiZIPAction.class);
 
 	public static final String FINGERPRINT_ENTRY_PREFIX = "fingerprint/";
 
@@ -68,11 +71,9 @@ public class DownloadWikiZIP extends AbstractAction {
 			return;
 		}
 
-		JSPWikiConnector con = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		String wikiProperty = Objects.requireNonNull(con.getWikiProperty("var.basedir"));
-		File wikiFolder = new File(wikiProperty);
+		String filename = getWikiContentZipFilename(getWikiFolder().getName());
 
-		String filename = wikiFolder.getName() + ".zip";
+		//String filename = wikiFolder.getName() + ".zip";
 		context.setContentType(BINARY);
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 
@@ -80,14 +81,29 @@ public class DownloadWikiZIP extends AbstractAction {
 		boolean versions = Boolean.parseBoolean(context.getParameter(PARAM_VERSIONS, "false"));
 
 		try (OutputStream outs = context.getOutputStream()) {
-			try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs))) {
-				zipDir(wikiFolder, zos, context, versions);
-				if (fingerprint) zipFingerprint(zos, context);
-			}
+			writeWikiContentZipStreamToOutputStream(context, outs, versions, fingerprint);
 		}
 	}
 
-	private void zipFingerprint(ZipOutputStream zos, UserActionContext context) throws IOException {
+	public static @NotNull String getWikiContentZipFilename(String prefix) {
+		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"));
+		return prefix + "_"+getWikiFolder().getName()+"_"+timestamp+".zip";
+	}
+
+	public static @NotNull File getWikiFolder() {
+		JSPWikiConnector con = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+		String wikiProperty = Objects.requireNonNull(con.getWikiProperty("var.basedir"));
+		return new File(wikiProperty);
+	}
+
+	public static void writeWikiContentZipStreamToOutputStream(UserActionContext context, OutputStream outs, boolean versions, boolean fingerprint) throws IOException {
+		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs))) {
+			zipDir(getWikiFolder(), zos, context, versions);
+			if (fingerprint) zipFingerprint(zos, context);
+		}
+	}
+
+	private static void zipFingerprint(ZipOutputStream zos, UserActionContext context) throws IOException {
 		File tempDir = Files.createTempDir();
 		try {
 			ArticleManager manager = Environment.getInstance().getArticleManager(
@@ -115,11 +131,11 @@ public class DownloadWikiZIP extends AbstractAction {
 	 * @param wikiRootFolder the folder to be zipped
 	 * @created 21.04.2012
 	 */
-	private void zipDir(File wikiRootFolder, ZipOutputStream zos, UserActionContext context, boolean includeOld) throws IOException {
+	private static void zipDir(File wikiRootFolder, ZipOutputStream zos, UserActionContext context, boolean includeOld) throws IOException {
 		zipDir(wikiRootFolder, wikiRootFolder, zos, context, 0, includeOld);
 	}
 
-	private void zipDir(File wikiRootFolder, File file, ZipOutputStream zos, UserActionContext context, int level, boolean includeOld) throws IOException {
+	private static void zipDir(File wikiRootFolder, File file, ZipOutputStream zos, UserActionContext context, int level, boolean includeOld) throws IOException {
 
 		// ignore all files if they belong to an article
 		// we have no read access for
@@ -144,7 +160,7 @@ public class DownloadWikiZIP extends AbstractAction {
 		}
 	}
 
-	private void addZipEntry(File file, String relativePath, ZipOutputStream zos) throws IOException {
+	private static void addZipEntry(File file, String relativePath, ZipOutputStream zos) throws IOException {
 		// if we reached here, the File object wiki was not
 		// a directory
 		FileInputStream fis = new FileInputStream(file);
@@ -158,7 +174,7 @@ public class DownloadWikiZIP extends AbstractAction {
 		fis.close();
 	}
 
-	private boolean checkRights(Article article, UserActionContext context) {
+	private static boolean checkRights(Article article, UserActionContext context) {
 		JSPWikiConnector con = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		return con.userCanViewArticle(article.getTitle(), context.getRequest());
 	}
@@ -172,7 +188,7 @@ public class DownloadWikiZIP extends AbstractAction {
 	 * @return if the file is a hidden file
 	 * @created 29.04.2012
 	 */
-	private boolean isHidden(File file) {
+	private static boolean isHidden(File file) {
 		return file.getName().matches("\\.[\\p{L}\\d]*");
 	}
 }

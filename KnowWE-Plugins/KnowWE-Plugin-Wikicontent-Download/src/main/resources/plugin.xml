@@ -24,8 +24,45 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DeleteSnapshotToolProvider">
+		<parameter id="class" value="de.knowwe.snapshot.DeleteSnapshotToolProvider" />
+		<parameter id="name" value="DeleteSnapshotToolProvider" />
+		<parameter id="description" value="Offers a delete button to delete a snapshot from the wiki tmp file repo." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Administration" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CreateSnapshotToolProvider">
+		<parameter id="class" value="de.knowwe.snapshot.CreateSnapshotToolProvider" />
+		<parameter id="name" value="CreateSnapshotToolProvider" />
+		<parameter id="description"
+				   value="Offers a create snapshot button to create a snapshot from the wiki content state in the file repo." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Administration" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CreateSnapshotAction">
+		<parameter id="class" value="de.knowwe.snapshot.CreateSnapshotAction" />
+		<parameter id="name" value="CreateSnapshotAction" />
+		<parameter id="description" value="Action to create a wiki content snapshot in the tmp-repo-folder." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TmpFileDownloadToolProvider">
+		<parameter id="class" value="de.knowwe.download.TmpFileDownloadToolProvider" />
+		<parameter id="name" value="TmpFileDownloadToolProvider" />
+		<parameter id="description" value="Offers a download button to download file from the wiki tmp file repo." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Administration" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DeployWikiZIPProvider">
-		<parameter id="class" value="de.knowwe.upload.DeployWikiZIPProvider" />
+		<parameter id="class" value="de.knowwe.snapshot.DeploySnapshotProvider" />
 		<parameter id="name" value="DeployWikiZIPProvider" />
 		<parameter id="description" value="Offers a button to deploy a wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />
@@ -34,16 +71,15 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeployWikiContentZIPAction">
-		<parameter id="class" value="de.knowwe.upload.DeployWikiContentZIPAction" />
+		<parameter id="class" value="de.knowwe.snapshot.DeploySnapshotAction" />
 		<parameter id="name" value="DeployWikiContentZIPAction" />
-		<parameter id="description"
-				   value="Action to deploy a wiki content zip file into the wiki." />
+		<parameter id="description" value="Action to deploy a wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DownloadWikiZIP">
-		<parameter id="class" value="de.knowwe.download.DownloadWikiZIP" />
+		<parameter id="class" value="de.knowwe.download.DownloadWikiZIPAction" />
 		<parameter id="name" value="DownloadWikiZIP" />
 		<parameter id="description"
 				   value="Downloads a specific d3web knowledge base archive of a named wiki article." />
