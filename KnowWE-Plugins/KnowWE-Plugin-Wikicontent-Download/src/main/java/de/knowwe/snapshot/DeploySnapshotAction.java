@@ -17,6 +17,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 /**
  * Action that allows to replace the entire wiki content (!!!) by the content of a zip attachment.
  * UI level should assert with the user, that he/she is really willing to clear the current content.
- * The current wiki content will be backup-ed in the tmp-file-folder.
+ * The current wiki content will be backup-ed as autosave snapshot in the tmp-file-folder.
  */
 public class DeploySnapshotAction extends AbstractAction {
 
@@ -68,47 +69,49 @@ public class DeploySnapshotAction extends AbstractAction {
 		// try to find a corresponding temp repo folder file
 		File repoSnapshot = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), deployFilename);
 
+		// if neither is present, sent error
 		if (attachment == null && !repoSnapshot.exists()) {
 			context.sendError(404, "Specified deploy snapshot file not found: " + deployFilename);
 			return;
 		}
 
+		// if both are present, sent also error and ask for disambiguation
 		if (attachment != null && repoSnapshot.exists()) {
 			context.sendError(404, "Specified deploy snapshot file: " + deployFilename + " is ambiguous as it exists as tmp repo file AND as attachment. Delete either one or the other and then try again.");
 			return;
 		}
 
 		// we force a snapshot as safety BACKUP mechanism against data loss
-		createAndStoreWikiContentSnapshot(context, "Autosave" + SNAPSHOT);
+		String createdSnapshotFile = createAndStoreWikiContentSnapshot(context, "Autosave" + SNAPSHOT);
 
-		File deployFile = null;
+		if (createdSnapshotFile != null) {
+			File deployFile;
+			if (attachment != null) {
+				// we deploy from an attachment
+				deployFile = attachment.asFile();
+			} else {
+				// we deploy from a repo snapshot
+				deployFile = repoSnapshot;
+			}
 
-		if (attachment != null) {
-			// we deploy from an attachment
-			deployFile = attachment.asFile();
+			try {
+				makeFileSystemReplaceOperation(deployFile);
+
+				// tell WikiConnector that content has changed on the file system
+				Environment.getInstance().reinitializeForNewWikiContent();
+			}
+			catch (IOException e) {
+				context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
+			}
+
+			// success
+			context.getResponse()
+					.getWriter()
+					.println("Wiki content has been overridden to content of file: " + deployFile.getName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
 		}
-		else {
-			// we deploy from a repo snapshot
-			deployFile = repoSnapshot;
-		}
-
-		try {
-			makeFileSystemReplaceOperation(deployFile);
-
-			// tell WikiConnector that content has changed on the file system
-			Environment.getInstance().reinitializeForNewWikiContent();
-		}
-		catch (IOException e) {
-			context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
-		}
-
-		// success
-		context.getResponse()
-				.getWriter()
-				.println("Wiki content has been overridden to content of file: " + deployFile.getName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
 	}
 
-	private void makeFileSystemReplaceOperation(File deployFile) throws IOException {
+	private void makeFileSystemReplaceOperation(@NotNull File deployFile) throws IOException {
 		// wiki content folder
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String savePath = wikiConnector.getSavePath();
@@ -130,8 +133,8 @@ public class DeploySnapshotAction extends AbstractAction {
 		copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
 	}
 
-	private static void cleanDirectoryExcept(File wikiFolder, Collection<String> keepFileNames) throws IOException {
-		if (wikiFolder == null || !wikiFolder.exists() || !wikiFolder.isDirectory()) {
+	private static void cleanDirectoryExcept(@NotNull File wikiFolder, @NotNull Collection<String> keepFileNames) throws IOException {
+		if (!wikiFolder.exists() || !wikiFolder.isDirectory()) {
 			throw new IllegalArgumentException("Folder not existing: " + wikiFolder);
 		}
 		// check for retain userdatabase.xml and groupdatabase.xml
@@ -147,7 +150,7 @@ public class DeploySnapshotAction extends AbstractAction {
 		}
 	}
 
-	private static File getFile(String userDatabasePath) {
+	private static @Nullable File getFile(@Nullable String userDatabasePath) {
 		File userdatabaseFile = null;
 		if (userDatabasePath != null) {
 			userdatabaseFile = new File(userDatabasePath);
@@ -188,7 +191,7 @@ public class DeploySnapshotAction extends AbstractAction {
 		}
 	}
 
-	private void unpack(@NotNull File file, File wikiFolderFile) throws IOException {
+	private void unpack(@NotNull File file, @NotNull File wikiFolderFile) throws IOException {
 		LOGGER.info("Updating wiki content from " + file);
 		try (ZipFile zipFile = new ZipFile(file.getPath())) {
 

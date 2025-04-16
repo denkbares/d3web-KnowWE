@@ -1,8 +1,5 @@
 package de.knowwe.snapshot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -10,9 +7,11 @@ import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
+/**
+ * ToolProvider that provides a button that creates a snapshot of the current wiki content as a zip file.
+ * The file will instantly be downloaded and additionally be stored in the tmp file folder for later use.
+ */
 public class CreateSnapshotToolProvider implements ToolProvider {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(CreateSnapshotToolProvider.class);
 
 	public static final String SNAPSHOT = "Snapshot";
 

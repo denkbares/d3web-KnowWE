@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -32,8 +32,6 @@ import de.knowwe.util.Icon;
  */
 public class WikiZIPDownloadProvider implements ToolProvider {
 
-	public static final String PARAM_FILENAME = "filename";
-
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return userContext.userIsAdmin();
@@ -46,12 +44,12 @@ public class WikiZIPDownloadProvider implements ToolProvider {
 			return new Tool[0];
 		}
 		return new Tool[] {
-				getDownloadTool(section, userContext, false),
-				getDownloadTool(section, userContext, true)
+				getDownloadTool(section, false),
+				getDownloadTool(section, true)
 		};
 	}
 
-	protected Tool getDownloadTool(Section<?> section, UserContext userContext, boolean fingerprint) {
+	protected Tool getDownloadTool(Section<?> section, boolean fingerprint) {
 		// tool to provide download capability
 		String jsAction = "window.location='action/DownloadWikiZIP" +
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
@@ -69,5 +67,4 @@ public class WikiZIPDownloadProvider implements ToolProvider {
 						: "Download the entire Wiki as a Zip-File.",
 				jsAction, Tool.CATEGORY_DOWNLOAD);
 	}
-
 }

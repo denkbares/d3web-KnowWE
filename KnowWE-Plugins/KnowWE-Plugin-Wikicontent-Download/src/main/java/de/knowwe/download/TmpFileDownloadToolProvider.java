@@ -3,6 +3,7 @@ package de.knowwe.download;
 import java.io.File;
 import java.io.IOException;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class TmpFileDownloadToolProvider implements ToolProvider {
 	}
 
 	@Override
-	public Tool[] getTools(Section<?> section, UserContext userContext) {
+	public Tool[] getTools(@NotNull Section<?> section, @NotNull UserContext userContext) {
 		File[] files = getRepoFiles();
 		if(files == null) return new Tool[0];
 		Tool[] tools = new Tool[files.length];
@@ -57,7 +58,7 @@ public class TmpFileDownloadToolProvider implements ToolProvider {
 		return tools;
 	}
 
-	private Tool createDownloadTool(File file, UserContext userContext) {
+	private Tool createDownloadTool(@NotNull File file, @NotNull UserContext userContext) {
 		String jsAction = DefaultTool.createServerAction(userContext, "DownloadFileAction", KEY_FILE, file.getAbsolutePath(), KEY_DELETE, "false");
 		return new DefaultTool(
 				Icon.FILE_ZIP,
@@ -67,14 +68,13 @@ public class TmpFileDownloadToolProvider implements ToolProvider {
 	}
 
 	@Override
-	public boolean hasTools(Section<?> section, UserContext userContext) {
+	public boolean hasTools(@NotNull Section<?> section, @NotNull UserContext userContext) {
 		if(!userContext.userIsAdmin()) return false;
 		File[] files = getRepoFiles();
 		return files != null && files.length > 0;
 	}
 
 	public static File @Nullable [] getRepoFiles() {
-		File tmpFileFolder = getTmpFileFolder();
-		return tmpFileFolder.listFiles();
+		return getTmpFileFolder().listFiles();
 	}
 }
