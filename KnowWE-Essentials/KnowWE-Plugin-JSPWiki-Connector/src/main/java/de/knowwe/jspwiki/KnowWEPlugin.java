@@ -757,10 +757,12 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				if (!found) {
 					// obviously the plugin is not available in current
 					// installation
-					LOGGER.warn("Found dependency to a css/js resource (" + resource +
+					LOGGER.error("Found dependency to a css/js resource (" + resource +
 							") where the corresponding plugin is not available. " +
 							"This can also happen, if the plugin.xml has the wrong plugin id " +
-							"(id other than the name of module it is in).");
+							"(id other than the name of module it is in)." +
+							"This can also happen if your js-file reference in the extension as script fails the naming convention."
+							);
 					continue;
 				}
 			}
