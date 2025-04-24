@@ -16,6 +16,7 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 import static de.knowwe.download.TmpFileDownloadToolProvider.getRepoFiles;
+import static de.knowwe.snapshot.CreateSnapshotToolProvider.AUTOSAVE_SNAPSHOT;
 import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 import static de.knowwe.snapshot.DeployAttachmentSnapshotAction.KEY_DEPLOY_FILENAME;
 
@@ -45,7 +46,7 @@ public class DeployRepoSnapshotProvider implements ToolProvider {
 		File[] files = getRepoFiles();
 		if (files == null) return Collections.emptyList();
 		return Arrays.stream(files)
-				.filter(file -> file.getName().startsWith(SNAPSHOT))
+				.filter(file -> file.getName().startsWith(SNAPSHOT) || file.getName().startsWith(AUTOSAVE_SNAPSHOT))
 				.collect(Collectors.toList());
 	}
 

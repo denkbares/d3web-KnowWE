@@ -14,6 +14,7 @@ import de.knowwe.util.Icon;
 public class CreateSnapshotToolProvider implements ToolProvider {
 
 	public static final String SNAPSHOT = "Snapshot";
+	public static final String AUTOSAVE_SNAPSHOT = "AutosaveSnapshot";
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {

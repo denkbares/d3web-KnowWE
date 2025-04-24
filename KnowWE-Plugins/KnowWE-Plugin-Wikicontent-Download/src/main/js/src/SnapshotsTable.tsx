@@ -18,25 +18,27 @@ export default function SnapshotsTable() {
             <tr>
                 <th>Name</th>
                 {/*<th>Date</th>*/}
-                <th>Action</th>
+                {KNOWWE.core.util.isAdmin() === "true"
+                    ? (<th>Action</th>)
+                    : ''}
             </tr>
             </thead>
             <tbody>
             {error && (
                 <tr>
-                    <td colSpan={5}>{error.message}</td>
+                    <td colSpan={2}>{error.message}</td>
                 </tr>
             )}
             {!snapshots && !error && (
                 <tr>
-                    <td colSpan={5}>
+                    <td colSpan={2}>
                         <div className={"versioning-spinner"} />
                     </td>
                 </tr>
             )}
             {!error && snapshots && snapshots.length === 0 && (
                 <tr>
-                    <td colSpan={5}>No Snapshots yet.</td>
+                    <td colSpan={2}>No Snapshots yet.</td>
                 </tr>
             )}
             {!error &&
@@ -44,13 +46,15 @@ export default function SnapshotsTable() {
                 snapshots.length > 0 &&
                 snapshots.map(snapshot => (
                     <tr>
-                        <td title={snapshot.path}>{snapshot.name}</td>
-                        <td>
-                            {snapshot.type === "ATTACHMENT"
-                                ? <SnapshotPanelAttachmentButtons snapshot={snapshot} />
-                                : <SnapshotPanelTmpFileButtons snapshot={snapshot} />
-                            }
-                        </td>
+                        <td title={snapshot.name + ".zip"}>{snapshot.name}</td>
+                        {KNOWWE.core.util.isAdmin() === "true"
+                            ? (<td>
+                                {snapshot.type === "ATTACHMENT"
+                                    ? <SnapshotPanelAttachmentButtons snapshot={snapshot} />
+                                    : <SnapshotPanelTmpFileButtons snapshot={snapshot} />
+                                }
+                            </td>)
+                            : ''}
                     </tr>
                 ))}
             </tbody>

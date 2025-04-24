@@ -21,7 +21,9 @@ package de.knowwe.snapshot;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -45,7 +47,7 @@ public class ListSnapshotsAction extends SnapshotAction {
 				DeployAttachmentSnapshotProvider.getWikiAttachmentSnapshots()
 		);
 		var attachments = Stream.concat(tmpSnapshots.stream(), attachmentsSnapshots.stream())
-				.sorted(Comparator.comparing(snapshot -> snapshot.name))
+				.sorted(Comparator.comparing(snapshot -> snapshot.date))
 				.toList();
 		writeJson(context, attachments);
 	}
@@ -56,6 +58,7 @@ public class ListSnapshotsAction extends SnapshotAction {
 				file.getPath(), // absolute path
 				file.getParent(),
 				file.getName().replace(".zip", ""),
+				file.lastModified(),
 				SnapshotType.TMP_FILE
 			)
 		).toList();
@@ -67,6 +70,7 @@ public class ListSnapshotsAction extends SnapshotAction {
 				attachment.getPath(), // relative path
 				attachment.getParentName(),
 				attachment.getFileName().replace(".zip", ""),
+				attachment.getDate().getTime(),
 				SnapshotType.ATTACHMENT
 			)
 		).toList();
@@ -76,6 +80,7 @@ public class ListSnapshotsAction extends SnapshotAction {
 		String path,
 		String parent,
 		String name,
+		long date,
 		SnapshotType type
 	){}
 
