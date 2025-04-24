@@ -70,9 +70,9 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeployWikiContentZIPAction">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeploySnapshotAction">
 		<parameter id="class" value="de.knowwe.snapshot.DeploySnapshotAction" />
-		<parameter id="name" value="DeployWikiContentZIPAction" />
+		<parameter id="name" value="DeploySnapshotAction" />
 		<parameter id="description" value="Action to deploy a wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
