@@ -19,51 +19,15 @@
 
 package de.knowwe.snapshot;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Objects;
 import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.wiki.providers.SubWikiUtils;
-
-import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.wikiConnector.WikiConnector;
-import de.uniwue.d3web.gitConnector.UserData;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.wiki.providers.SubWikiUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import static de.knowwe.snapshot.CreateSnapshotAction.createAndStoreWikiContentSnapshot;
-import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
-
-//import com.denkbares.strings.Strings;
-//import com.denkbares.versioning.server.Version;
-//import de.knowwe.core.Environment;
-//import de.knowwe.core.action.AbstractAction;
-//import de.knowwe.core.action.UserActionContext;
-//import de.knowwe.core.utils.KnowWEUtils;
-//import de.knowwe.versioning.git.serverConnector.KnowWEGitServerConnector;
-//import de.knowwe.versioning.git.serverConnectr.KnowWEGitServerConnectorFactory;
-//import de.uniwue.d3web.gitConnector.UserData;
 
 /**
  * Abstract super action for versioning actions. It prepares some input parameters

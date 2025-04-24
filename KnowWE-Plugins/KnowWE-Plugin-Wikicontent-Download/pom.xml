@@ -58,5 +58,9 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-TestCases</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
 	</dependencies>
 </project>
