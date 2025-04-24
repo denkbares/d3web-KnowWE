@@ -19,6 +19,19 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.2</version> <!-- oder neuer -->
+				<configuration>
+					<useModulePath>false</useModulePath>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.denkbares</groupId>
@@ -30,6 +43,51 @@
 			<artifactId>jspwiki-multiwiki</artifactId>
 			<version>2.12.4-SNAPSHOT</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.jspwiki</groupId>
+			<artifactId>jspwiki-multiwiki</artifactId>
+			<type>test-jar</type>
+			<version>2.12.4-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.jspwiki</groupId>
+			<artifactId>jspwiki-knowwe-main</artifactId>
+			<type>test-jar</type>
+			<version>2.12.4-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.11.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- JUnit Vintage Engine, um JUnit 4 Tests weiterhin auszuführen, falls nötig -->
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<version>5.10.3</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.stripes</groupId>
+			<artifactId>stripes</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>
