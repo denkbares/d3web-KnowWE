@@ -4,6 +4,7 @@
 
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
 	</requires>
 
 	<runtime>
@@ -61,8 +62,8 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DeployWikiZIPProvider">
-		<parameter id="class" value="de.knowwe.snapshot.DeploySnapshotProvider" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DeployRepoSnapshotProvider">
+		<parameter id="class" value="de.knowwe.snapshot.DeployRepoSnapshotProvider" />
 		<parameter id="name" value="DeployWikiZIPProvider" />
 		<parameter id="description" value="Offers a button to deploy a wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />
@@ -70,10 +71,27 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeploySnapshotAction">
-		<parameter id="class" value="de.knowwe.snapshot.DeploySnapshotAction" />
-		<parameter id="name" value="DeploySnapshotAction" />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DeployAttachmentSnapshotProvider">
+		<parameter id="class" value="de.knowwe.snapshot.DeployAttachmentSnapshotProvider" />
+		<parameter id="name" value="DeployAttachmentSnapshotProvider" />
+		<parameter id="description" value="Offers a button to deploy an attachment as a wiki content zip file into the wiki." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="Administration" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeployRepoSnapshotAction">
+		<parameter id="class" value="de.knowwe.snapshot.DeployRepoSnapshotAction" />
+		<parameter id="name" value="DeployRepoSnapshotAction" />
 		<parameter id="description" value="Action to deploy a wiki content zip file into the wiki." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeployAttachmentSnapshotAction">
+		<parameter id="class" value="de.knowwe.snapshot.DeployAttachmentSnapshotAction" />
+		<parameter id="name" value="DeployAttachmentSnapshotAction" />
+		<parameter id="description" value="Action to deploy an attached wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

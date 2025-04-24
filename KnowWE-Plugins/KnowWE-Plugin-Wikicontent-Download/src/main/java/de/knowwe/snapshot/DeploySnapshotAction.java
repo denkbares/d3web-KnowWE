@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2025 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
 package de.knowwe.snapshot;
 
 import java.io.File;
@@ -21,95 +40,51 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
-import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
-import de.knowwe.download.TmpFileDownloadToolProvider;
 
 import static de.knowwe.snapshot.CreateSnapshotAction.createAndStoreWikiContentSnapshot;
 import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 
-/**
- * Action that allows to replace the entire wiki content (!!!) by the content of a zip attachment.
- * UI level should assert with the user, that he/she is really willing to clear the current content.
- * The current wiki content will be backup-ed as autosave snapshot in the tmp-file-folder.
- */
-public class DeploySnapshotAction extends AbstractAction {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DeploySnapshotAction.class);
+public abstract class DeploySnapshotAction extends SnapshotAction {
 
 	public static final String KEY_DEPLOY_FILENAME = "deploy_file";
 
-	@Override
-	public void execute(UserActionContext context) throws IOException {
-		if (!KnowWEUtils.isAdmin(context)) {
-			context.sendError(403, "Only for Admins available ");
-			return;
-		}
-		String deployFilename = context.getParameter(KEY_DEPLOY_FILENAME);
-		if (deployFilename == null || deployFilename.isBlank()) {
-			context.sendError(404, "Mandatory parameter not found: " + KEY_DEPLOY_FILENAME);
-			return;
-		}
-		String title = context.getParameter(Attributes.TOPIC);
-		if (title == null || title.isBlank()) {
-			context.sendError(404, "Mandatory parameter not found: " + Attributes.TOPIC);
-			return;
-		}
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeploySnapshotAction.class);
 
-		// try to find a corresponding attachment
-		WikiAttachment attachment = Environment.getInstance()
-				.getWikiConnector()
-				.getAttachment(title + "/" + deployFilename);
-
-		// try to find a corresponding temp repo folder file
-		File repoSnapshot = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), deployFilename);
-
-		// if neither is present, sent error
-		if (attachment == null && !repoSnapshot.exists()) {
-			context.sendError(404, "Specified deploy snapshot file not found: " + deployFilename);
-			return;
-		}
-
-		// if both are present, sent also error and ask for disambiguation
-		if (attachment != null && repoSnapshot.exists()) {
-			context.sendError(404, "Specified deploy snapshot file: " + deployFilename + " is ambiguous as it exists as tmp repo file AND as attachment. Delete either one or the other and then try again.");
-			return;
-		}
-
+	public void reinitializeWikiContent(UserActionContext context, File snapshot) throws IOException {
 		// we force a snapshot as safety BACKUP mechanism against data loss
+		try {
+			createBackup(context);
+		} catch (IOException e) {
+			context.sendError(500, e.getMessage());
+		}
+
+		try {
+			makeFileSystemReplaceOperation(snapshot);
+
+			// tell WikiConnector that content has changed on the file system
+			Environment.getInstance().reinitializeForNewWikiContent();
+		}
+		catch (IOException e) {
+			context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
+		}
+
+		// success
+		context.getResponse()
+				.getWriter()
+				.println("Wiki content has been overridden to content of file: " + snapshot.getName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
+	}
+
+	private void createBackup(UserActionContext context) throws IOException {
 		String createdSnapshotFile = createAndStoreWikiContentSnapshot(context, "Autosave" + SNAPSHOT);
 
-		if (createdSnapshotFile != null) {
-			File deployFile;
-			if (attachment != null) {
-				// we deploy from an attachment
-				deployFile = attachment.asFile();
-			} else {
-				// we deploy from a repo snapshot
-				deployFile = repoSnapshot;
-			}
-
-			try {
-				makeFileSystemReplaceOperation(deployFile);
-
-				// tell WikiConnector that content has changed on the file system
-				Environment.getInstance().reinitializeForNewWikiContent();
-			}
-			catch (IOException e) {
-				context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
-			}
-
-			// success
-			context.getResponse()
-					.getWriter()
-					.println("Wiki content has been overridden to content of file: " + deployFile.getName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
+		if (createdSnapshotFile == null) {
+			throw new IOException("Failed to create a backup");
 		}
 	}
+
 
 	private void makeFileSystemReplaceOperation(@NotNull File deployFile) throws IOException {
 		// wiki content folder
@@ -229,4 +204,5 @@ public class DeploySnapshotAction extends AbstractAction {
 			throw e;
 		}
 	}
+
 }

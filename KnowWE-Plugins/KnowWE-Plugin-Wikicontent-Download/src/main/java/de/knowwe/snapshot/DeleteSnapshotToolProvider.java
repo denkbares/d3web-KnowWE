@@ -14,7 +14,7 @@ import de.knowwe.util.Icon;
 
 import static de.knowwe.core.utils.progress.DownloadFileAction.*;
 import static de.knowwe.download.TmpFileDownloadToolProvider.getRepoFiles;
-import static de.knowwe.snapshot.DeploySnapshotProvider.getSnapshotFilesFromTmpRepo;
+import static de.knowwe.snapshot.DeployRepoSnapshotProvider.getSnapshotFilesFromTmpRepo;
 
 /**
  * Creates a Delete button for each snapshot that triggers a deletion AND download of the snapshot.
