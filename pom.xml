@@ -49,6 +49,7 @@
 		<implementationVersion>${project.version}</implementationVersion>
 		<logback.version>1.5.12</logback.version>
 		<jackson.version>2.18.2</jackson.version>
+		<stripes.version>1.7.0-async-beta</stripes.version>
 	</properties>
 
 	<modules>
@@ -269,9 +270,14 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>net.sourceforge.stripes</groupId>
+				<artifactId>stripes</artifactId>
+				<version>${stripes.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>denkbares-Git-Essentials</artifactId>
-				<version>2025.3-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
@@ -1063,6 +1069,11 @@
 				<groupId>com.fasterxml.jackson.dataformat</groupId>
 				<artifactId>jackson-dataformat-cbor</artifactId>
 				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.stripes</groupId>
+				<artifactId>stripes</artifactId>
+				<version>${stripes.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
