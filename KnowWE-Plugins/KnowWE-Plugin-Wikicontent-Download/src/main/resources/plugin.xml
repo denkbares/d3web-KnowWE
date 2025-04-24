@@ -16,6 +16,24 @@
 		</library>
 	</runtime>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SnapshotControlPanelMarkup">
+		<parameter id="class" value="de.knowwe.snapshot.markup.SnapshotControlPanelMarkup" />
+		<parameter id="name" value="SnapshotControlPanelMarkup" />
+		<parameter id="description" value="Responsible for managing all snapshots of the wiki." />
+		<parameter id="version" value="1" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-WikiZIPDownload.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ListSnapshotsAction">
+		<parameter id="class" value="de.knowwe.snapshot.ListSnapshotsAction" />
+		<parameter id="name" value="ListSnapshotsAction" />
+		<parameter id="description" value="Lists all available snapshots of the wiki." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="WikiZIPDownloadProvider">
 		<parameter id="class" value="de.knowwe.download.WikiZIPDownloadProvider" />
 		<parameter id="name" value="WikiZIPDownloadProvider" />
