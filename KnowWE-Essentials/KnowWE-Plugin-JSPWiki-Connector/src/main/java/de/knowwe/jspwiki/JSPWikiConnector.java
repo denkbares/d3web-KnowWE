@@ -1130,6 +1130,10 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getAntiCsrfToken(UserContext context) {
-		return WikiSession.getWikiSession(getEngine(), context.getRequest()).antiCsrfToken();
+		return getWikiSession(context).antiCsrfToken();
+	}
+
+	public Session getWikiSession(UserContext context) {
+		return WikiSession.getWikiSession(getEngine(), context.getRequest());
 	}
 }
