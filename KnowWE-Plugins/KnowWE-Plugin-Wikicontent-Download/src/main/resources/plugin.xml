@@ -92,7 +92,8 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DeployAttachmentSnapshotProvider">
 		<parameter id="class" value="de.knowwe.snapshot.DeployAttachmentSnapshotProvider" />
 		<parameter id="name" value="DeployAttachmentSnapshotProvider" />
-		<parameter id="description" value="Offers a button to deploy an attachment as a wiki content zip file into the wiki." />
+		<parameter id="description"
+				   value="Offers a button to deploy an attachment as a wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="Administration" />
@@ -119,6 +120,14 @@
 		<parameter id="name" value="DownloadWikiZIP" />
 		<parameter id="description"
 				   value="Downloads a specific d3web knowledge base archive of a named wiki article." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="UploadSnapshotAction">
+		<parameter id="class" value="de.knowwe.snapshot.UploadSnapshotAction" />
+		<parameter id="name" value="UploadSnapshotAction" />
+		<parameter id="description" value="Action to upload a wiki content zip file into the wiki." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

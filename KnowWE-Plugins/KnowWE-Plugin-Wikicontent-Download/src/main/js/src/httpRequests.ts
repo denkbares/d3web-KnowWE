@@ -22,7 +22,7 @@ import {downloadFile} from "./utils.ts";
 export async function createSnapshot() {
     KNOWWE.editCommons.showAjaxLoader();
     const response = await fetch(
-        `action/CreateSnapshotAction`
+        `action/CreateSnapshotAction`,
     );
     KNOWWE.editCommons.hideAjaxLoader();
 
@@ -37,8 +37,8 @@ export async function createSnapshot() {
 
 export async function deploySnapshot(
     name: string,
-    type : SnapshotType,
-    pageName?: string
+    type: SnapshotType,
+    pageName?: string,
 ) {
 
     KNOWWE.editCommons.showAjaxLoader();
@@ -46,11 +46,11 @@ export async function deploySnapshot(
     let response;
     if (type === "ATTACHMENT") {
         response = await fetch(
-            `action/DeployAttachmentSnapshotAction?deploy_file=${name}&KWiki_Topic=${pageName}`
+            `action/DeployAttachmentSnapshotAction?deploy_file=${name}&KWiki_Topic=${pageName}`,
         );
     } else {
         response = await fetch(
-            `action/DeployRepoSnapshotAction?deploy_file=${name}`
+            `action/DeployRepoSnapshotAction?deploy_file=${name}`,
         );
     }
 
@@ -66,12 +66,12 @@ export async function deploySnapshot(
 
 export async function downloadSnapshot(
     path: string,
-    name: string
+    name: string,
 ) {
 
     KNOWWE.editCommons.showAjaxLoader();
     const response = await fetch(
-        `action/DownloadFileAction?file=${path}&delete=false`
+        `action/DownloadFileAction?file=${path}&delete=false`,
     );
     await downloadFile(await response.blob(), name + ".zip");
     KNOWWE.editCommons.hideAjaxLoader();
@@ -83,14 +83,37 @@ export async function downloadSnapshot(
 
 }
 
+export async function uploadSnapshot(
+    file: any,
+) {
+
+    KNOWWE.editCommons.showAjaxLoader();
+
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch(`action/UploadSnapshotAction?X-XSRF-TOKEN=${Wiki.CsrfProtection}`, {
+            method: "POST",
+            body: formData,
+        },
+    );
+
+    KNOWWE.editCommons.hideAjaxLoader();
+
+    if (response.status !== 200) {
+        const result = (await response.json()) as KnowWEError;
+        throw new Error(result.message);
+    }
+
+}
+
 export async function deleteSnapshot(
     path: string,
-    name: string
+    name: string,
 ) {
 
     KNOWWE.editCommons.showAjaxLoader();
     const response = await fetch(
-        `action/DownloadFileAction?file=${path}&delete=true`
+        `action/DownloadFileAction?file=${path}&delete=true`,
     );
     await downloadFile(await response.blob(), name + ".zip");
     KNOWWE.editCommons.hideAjaxLoader();

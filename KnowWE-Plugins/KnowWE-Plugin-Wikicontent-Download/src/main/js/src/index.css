@@ -1,126 +1,160 @@
 .snapshots-panel {
-    display: inline-block;
-    border-radius: 0.75rem;
-    border: 1px solid #000000;
-    padding: 1rem 1rem;
-    min-width: 35rem;
+	display: inline-block;
+	padding: 1rem 1rem;
+	min-width: 35rem;
 }
 
 .snapshots-panel h3 {
-    padding: 0;
-    margin: 0;
+	padding: 0;
+	margin: 0;
+}
+
+.snapshots-panel h5 {
+	font-size: 1.05rem;
+	font-weight: 600;
+	margin: 0;
+}
+
+.snapshots-panel .buttons {
+	margin-bottom: 1rem;
+}
+
+.snapshots-panel .snapshots-table .buttons {
+	display: flex;
+	flex-direction: row;
+}
+
+.snapshots-panel .snapshots-table {
+	margin: 0.75rem 0;
+}
+
+.snapshots-panel .upload-button {
+	display: inline-block;
+	position: relative;
+	margin: 2px 2px 0;
+}
+
+.snapshots-panel input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	font-size: 0; /* this is on purpose */
+	cursor: pointer;
 }
 
 .popup-content {
-    margin: auto;
-    background: #fff;
-    width: 50%;
-    padding: 5px;
-    border: 1px solid #d7d7d7;
+	margin: auto;
+	background: #fff;
+	width: 50%;
+	padding: 5px;
+	border: 1px solid #d7d7d7;
 }
 
 [role="tooltip"].popup-content {
-    width: 200px;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
-    border-radius: 5px;
+	width: 200px;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
+	border-radius: 5px;
 }
 
 .popup-overlay {
-    background: rgba(0, 0, 0, 0.5);
+	background: rgba(0, 0, 0, 0.5);
 }
 
 [data-popup="tooltip"].popup-overlay {
-    background: transparent;
+	background: transparent;
 }
 
 .snapshots-popup-content {
-    width: auto;
-    max-width: 640px;
-    padding: 0;
-    border-radius: 0.125rem;
+	width: auto;
+	max-width: 640px;
+	padding: 0;
+	border-radius: 0.125rem;
 
-    header {
-        margin: 0;
-        padding: 0.5rem 1rem;
-        font-weight: bold;
-        color: var(--text-color-default-head);
-        background-color: var(--bg-color-table-th-highlighted);
-    }
+	header {
+		margin: 0;
+		padding: 0.5rem 1rem;
+		font-weight: bold;
+		color: var(--text-color-default-head);
+		background-color: var(--bg-color-table-th-highlighted);
+	}
 
-    main {
-        padding: 1rem 2rem 0.5rem 2rem;
-    }
+	main {
+		padding: 1rem 2rem 0.5rem 2rem;
+	}
 
-    form {
-        display: flex;
-        flex-direction: column;
-        font-size: 0.9rem;
-    }
+	form {
+		display: flex;
+		flex-direction: column;
+		font-size: 0.9rem;
+	}
 
-    footer {
-        margin-top: 1rem;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        gap: 0.5rem;
-    }
+	footer {
+		margin-top: 1rem;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: 0.5rem;
+	}
 
-    button {
-        font-size: 0.9rem;
-    }
+	button {
+		font-size: 0.9rem;
+	}
 
-    button[disabled] {
-        color: #808080;
-    }
+	button[disabled] {
+		color: #808080;
+	}
 
-    .btn-danger {
-        color: var(--text-color-error);
-    }
+	.btn-danger {
+		color: var(--text-color-error);
+	}
 
-    ul {
-        margin: 0;
-    }
+	ul {
+		margin: 0;
+	}
 
-    input {
-        margin-left: 0.5rem;
-    }
+	input {
+		margin-left: 0.5rem;
+	}
 }
 
 .snapshots-table {
-    border: 1px solid #ddd;
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
 
-    td {
-        text-align: left;
-        padding: 8px;
-        border: 1px solid #000000;
-    }
+	td {
+		text-align: left;
+		padding: 8px;
+		border: 1px solid #000000;
+	}
 
-    th {
-        border: 1px solid #000000;
-    }
+	th {
+		border: 1px solid #000000;
+	}
 
-    th:last-child {
-        width: 1px;
-        white-space: nowrap;
-    }
+	th:last-child {
+		width: 1px;
+		white-space: nowrap;
+	}
 
-    td:last-child {
-        text-align: center;
-        cursor: pointer;
-    }
+	td:last-child {
+		text-align: center;
+		cursor: pointer;
+	}
 
-    thead tr:first-child {
-        background-color: #bbbbbb;
-    }
+	thead tr:first-child {
+		background-color: #bbbbbb;
+	}
 
-    tbody tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
+	tbody tr:nth-child(even) {
+		background-color: #f2f2f2;
+	}
 
-    button {
-        padding: 0.125rem 0.5rem;
-    }
+	button {
+		padding: 0.125rem 0.5rem;
+	}
 }
