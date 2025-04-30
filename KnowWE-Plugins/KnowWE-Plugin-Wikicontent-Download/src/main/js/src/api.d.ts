@@ -21,6 +21,7 @@ declare global {
         name: string;
         parent: string;
         path: string;
+        size: number;
         type: SnapshotType;
     };
 

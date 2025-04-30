@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {receiveJson} from "./utils.ts";
 import deploySnapshotPopUp from "./DeploySnapshotPopUp.tsx";
 import deleteSnapshotPopUp from "./DeleteSnapshotPopUp.tsx";
+import {receiveJson} from "./utils.ts";
 import {downloadSnapshot} from "./httpRequests.ts";
 
 export default function SnapshotsTable() {
+
     const [snapshots, setSnapshots] = useState<SnapshotDTO[] | undefined>();
     const [error, setError] = useState<Error | undefined>();
 
@@ -12,39 +13,53 @@ export default function SnapshotsTable() {
         fetch("action/ListSnapshotsAction").then(receiveJson).then(setSnapshots).catch(setError);
     }, []);
 
+    if (error) {
+        return (
+            <div><p>{error.message}</p></div>
+        );
+    }
+
     return (
-        <table className={"snapshots-table"} style={{marginTop: "1rem"}}>
+        <div>
+            {!snapshots && (
+                <div>
+                    <div className={"versioning-spinner"} />
+                </div>
+            )}
+            {snapshots && snapshots.length === 0 && (
+                <p>No Snapshots yet.</p>
+            )}
+            {snapshots && snapshots.length > 0 && (
+                <div>
+                    <SnapshotsPartialTable snapshots={snapshots}
+                                           filter={(snapshot: SnapshotDTO) => !snapshot.name.startsWith("AutosaveSnapshot")} />
+                    <h5>Autosaves</h5>
+                    <SnapshotsPartialTable snapshots={snapshots}
+                                           filter={(snapshot: SnapshotDTO) => snapshot.name.startsWith("AutosaveSnapshot")} />
+                </div>
+            )}
+        </div>
+    );
+}
+
+function SnapshotsPartialTable({snapshots, filter}: {
+    snapshots: SnapshotDTO[],
+    filter?: (snapshot: SnapshotDTO) => boolean
+}) {
+    return (
+        <table className={"snapshots-table"}>
             <thead>
             <tr>
                 <th>Name</th>
-                {/*<th>Date</th>*/}
                 {KNOWWE.core.util.isAdmin() === "true"
                     ? (<th>Action</th>)
-                    : ''}
+                    : ""}
             </tr>
             </thead>
             <tbody>
-            {error && (
-                <tr>
-                    <td colSpan={2}>{error.message}</td>
-                </tr>
-            )}
-            {!snapshots && !error && (
-                <tr>
-                    <td colSpan={2}>
-                        <div className={"versioning-spinner"} />
-                    </td>
-                </tr>
-            )}
-            {!error && snapshots && snapshots.length === 0 && (
-                <tr>
-                    <td colSpan={2}>No Snapshots yet.</td>
-                </tr>
-            )}
-            {!error &&
-                snapshots &&
+            {
                 snapshots.length > 0 &&
-                snapshots.map(snapshot => (
+                snapshots.filter(s => filter ? filter(s) : s).map(snapshot => (
                     <tr>
                         <td title={snapshot.name + ".zip"}>{snapshot.name}</td>
                         {KNOWWE.core.util.isAdmin() === "true"
@@ -54,7 +69,7 @@ export default function SnapshotsTable() {
                                     : <SnapshotPanelTmpFileButtons snapshot={snapshot} />
                                 }
                             </td>)
-                            : ''}
+                            : ""}
                     </tr>
                 ))}
             </tbody>
@@ -92,6 +107,7 @@ function SnapshotPanelAttachmentButtons({snapshot}: {snapshot: SnapshotDTO}) {
 }
 
 function SnapshotPanelTmpFileButtons({snapshot}: {snapshot: SnapshotDTO}) {
+    const size = (snapshot.size / (1024 * 1024)).toFixed(2);
     return (
         <div style={{display: "flex", flexDirection: "row"}}>
             <button
@@ -107,18 +123,22 @@ function SnapshotPanelTmpFileButtons({snapshot}: {snapshot: SnapshotDTO}) {
             >
                 Deploy
             </button>
-                <button
-                    className={"btn btn-default"}
-                    title="Download this snapshot"
-                    onClick={() =>
-                        downloadSnapshot(snapshot.path, snapshot.name)
-                    }
-                >
-                    Download
-                </button>
             <button
                 className={"btn btn-default"}
-                title="Delete this snapshot from the wiki permanently"
+                title={`Download this snapshot (${size} MB)`}
+                onClick={() =>
+                    downloadSnapshot(snapshot.path, snapshot.name)
+                }
+            >
+                Download
+            </button>
+            <button
+                className={"btn btn-default"}
+                title={`Delete
+                this snapshot from the wiki permanently (
+                ${size}
+                MB
+                )`}
                 onClick={() =>
                     deleteSnapshotPopUp({
                         snapshotPath: snapshot.path,

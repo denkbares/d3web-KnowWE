@@ -54,39 +54,42 @@ public class ListSnapshotsAction extends SnapshotAction {
 
 	private List<SnapshotDTO> transformTmpSnapshots(List<File> files) {
 		return files.stream().map(file ->
-			new SnapshotDTO(
-				file.getPath(), // absolute path
-				file.getParent(),
-				file.getName().replace(".zip", ""),
-				file.lastModified(),
-				SnapshotType.TMP_FILE
-			)
+				new SnapshotDTO(
+						file.getPath(), // absolute path
+						file.getParent(),
+						file.getName().replace(".zip", ""),
+						file.lastModified(),
+						file.length(),
+						SnapshotType.TMP_FILE
+				)
 		).toList();
 	}
 
 	private List<SnapshotDTO> transformAttachmentSnapshots(List<WikiAttachment> attachments) {
 		return attachments.stream().map(attachment ->
-			new SnapshotDTO(
-				attachment.getPath(), // relative path
-				attachment.getParentName(),
-				attachment.getFileName().replace(".zip", ""),
-				attachment.getDate().getTime(),
-				SnapshotType.ATTACHMENT
-			)
+				new SnapshotDTO(
+						attachment.getPath(), // relative path
+						attachment.getParentName(),
+						attachment.getFileName().replace(".zip", ""),
+						attachment.getDate().getTime(),
+						attachment.getSize(),
+						SnapshotType.ATTACHMENT
+				)
 		).toList();
 	}
 
 	private record SnapshotDTO(
-		String path,
-		String parent,
-		String name,
-		long date,
-		SnapshotType type
-	){}
+			String path,
+			String parent,
+			String name,
+			long date,
+			long size,
+			SnapshotType type
+	) {
+	}
 
 	private enum SnapshotType {
 		ATTACHMENT,
 		TMP_FILE
 	}
-
 }
