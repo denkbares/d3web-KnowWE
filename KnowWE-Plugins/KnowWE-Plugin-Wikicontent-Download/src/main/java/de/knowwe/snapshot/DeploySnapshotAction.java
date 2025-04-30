@@ -1,22 +1,3 @@
-/*
- * Copyright (C) 2025 denkbares GmbH, Germany
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
- */
-
 package de.knowwe.snapshot;
 
 import java.io.File;
@@ -42,22 +23,53 @@ import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.download.TmpFileDownloadToolProvider;
 
 import static de.knowwe.snapshot.CreateSnapshotAction.createAndStoreWikiContentSnapshot;
 import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 
-public abstract class DeploySnapshotAction extends SnapshotAction {
+/**
+ * Action that allows to replace the entire wiki content (!!!) by the content of a zip attachment.
+ * UI level should assert with the user, that he/she is really willing to clear the current content.
+ * The current wiki content will be backup-ed as autosave snapshot in the tmp-file-folder.
+ */
+public class DeploySnapshotAction extends SnapshotAction {
 
 	public static final String KEY_DEPLOY_FILENAME = "deploy_file";
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(DeploySnapshotAction.class);
 
-	public void reinitializeWikiContent(UserActionContext context, File snapshot) throws IOException {
+	@Override
+	public void execute(UserActionContext context) throws IOException {
+		if (!KnowWEUtils.isAdmin(context)) {
+			context.sendError(403, "Only for Admins available ");
+			return;
+		}
+		String deployFilename = context.getParameter(KEY_DEPLOY_FILENAME);
+		if (deployFilename == null || deployFilename.isBlank()) {
+			context.sendError(404, "Mandatory parameter not found: " + KEY_DEPLOY_FILENAME);
+			return;
+		}
+
+		// try to find a corresponding temp repo folder file
+		File repoSnapshot = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), deployFilename);
+
+		// if not present, sent error
+		if (!repoSnapshot.exists()) {
+			context.sendError(404, "Specified deploy snapshot file not found: " + deployFilename);
+			return;
+		}
+
+		reinitializeWikiContent(context, repoSnapshot);
+	}
+
+	private void reinitializeWikiContent(UserActionContext context, File snapshot) throws IOException {
 		// we force a snapshot as safety BACKUP mechanism against data loss
 		try {
 			createBackup(context);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			context.sendError(500, e.getMessage());
 		}
 
@@ -84,7 +96,6 @@ public abstract class DeploySnapshotAction extends SnapshotAction {
 			throw new IOException("Failed to create a backup");
 		}
 	}
-
 
 	private void makeFileSystemReplaceOperation(@NotNull File deployFile) throws IOException {
 		// wiki content folder
@@ -204,5 +215,4 @@ public abstract class DeploySnapshotAction extends SnapshotAction {
 			throw e;
 		}
 	}
-
 }

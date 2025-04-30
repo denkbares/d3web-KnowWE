@@ -22,12 +22,7 @@ declare global {
         parent: string;
         path: string;
         size: number;
-        type: SnapshotType;
     };
-
-    type SnapshotType =
-        | "ATTACHMENT"
-        | "TMP_FILE";
 }
 
 export {};

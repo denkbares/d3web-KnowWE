@@ -10,11 +10,9 @@ export default function mountPublishChangesPopUp(props: DeploySnapshotPopupProps
 
 type DeploySnapshotPopupProps = {
     snapshotName: string;
-    snapshotPageName: string;
-    snapshotType: SnapshotType;
 };
 
-function DeploySnapshotPopUp({snapshotName, snapshotPageName, snapshotType, unmount}: PopUpProps & DeploySnapshotPopupProps) {
+function DeploySnapshotPopUp({snapshotName, unmount}: PopUpProps & DeploySnapshotPopupProps) {
 
     return (
         <Popup position="center center" open={true} onClose={unmount} className={"snapshots-popup"}>
@@ -25,9 +23,7 @@ function DeploySnapshotPopUp({snapshotName, snapshotPageName, snapshotType, unmo
                         Are you sure you want to deploy <b>{snapshotName}</b>?
                     </div>
                     <footer>
-                        <button className=""
-                                onClick={wrapFormSubmission(() => deploySnapshot(snapshotName + ".zip", snapshotType, snapshotPageName))}
-                        >
+                        <button onClick={wrapFormSubmission(() => deploySnapshot(snapshotName + ".zip"))}>
                             Deploy
                         </button>
                         <button onClick={unmount}>Cancel</button>

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -18,13 +19,13 @@ import de.knowwe.util.Icon;
 import static de.knowwe.download.TmpFileDownloadToolProvider.getRepoFiles;
 import static de.knowwe.snapshot.CreateSnapshotToolProvider.AUTOSAVE_SNAPSHOT;
 import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
-import static de.knowwe.snapshot.DeployAttachmentSnapshotAction.KEY_DEPLOY_FILENAME;
+import static de.knowwe.snapshot.DeploySnapshotAction.KEY_DEPLOY_FILENAME;
 
 /**
  * ToolProvider that for each ZIP Attachment provides a button to deploy the zip content as the new wiki content.
  * CAUTION: CURRENT CONTENT WILL BE OVERRIDDEN ! (but will be stored as an autosave snapshot in the tmp file folder)
  */
-public class DeployRepoSnapshotProvider implements ToolProvider {
+public class DeploySnapshotProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(@NotNull Section<?> section, UserContext userContext) {
@@ -56,7 +57,7 @@ public class DeployRepoSnapshotProvider implements ToolProvider {
 				"Möchten Sie fortfahren und den Inhalt überschreiben?";
 		String jsAction = "const userConfirmed = confirm('" + message + "');" +
 				"if (userConfirmed) {" +
-				"	window.location = 'action/" + DeployRepoSnapshotAction.class.getSimpleName() + "?" + KEY_DEPLOY_FILENAME + "=" + filename + "'; " +
+				"	window.location = 'action/" + DeploySnapshotAction.class.getSimpleName() + "?" + KEY_DEPLOY_FILENAME + "=" + filename + "'; " +
 				"}";
 
 		return new DefaultTool(

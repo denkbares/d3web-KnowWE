@@ -37,22 +37,13 @@ export async function createSnapshot() {
 
 export async function deploySnapshot(
     name: string,
-    type: SnapshotType,
-    pageName?: string,
 ) {
 
     KNOWWE.editCommons.showAjaxLoader();
 
-    let response;
-    if (type === "ATTACHMENT") {
-        response = await fetch(
-            `action/DeployAttachmentSnapshotAction?deploy_file=${name}&KWiki_Topic=${pageName}`,
-        );
-    } else {
-        response = await fetch(
-            `action/DeployRepoSnapshotAction?deploy_file=${name}`,
-        );
-    }
+    let response = await fetch(
+        `action/DeploySnapshotAction?deploy_file=${name}`,
+    );
 
     KNOWWE.editCommons.hideAjaxLoader();
 

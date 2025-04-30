@@ -14,7 +14,7 @@ import de.knowwe.util.Icon;
 
 import static de.knowwe.core.utils.progress.DownloadFileAction.*;
 import static de.knowwe.download.TmpFileDownloadToolProvider.getRepoFiles;
-import static de.knowwe.snapshot.DeployRepoSnapshotProvider.getSnapshotFilesFromTmpRepo;
+import static de.knowwe.snapshot.DeploySnapshotProvider.getSnapshotFilesFromTmpRepo;
 
 /**
  * Creates a Delete button for each snapshot that triggers a deletion AND download of the snapshot.
@@ -39,7 +39,7 @@ public class DeleteSnapshotToolProvider implements ToolProvider {
 	}
 
 	private Tool createDeleteTool(@NotNull File file, @NotNull UserContext userContext) {
-		String jsAction = DefaultTool.createServerAction(userContext, "DownloadFileAction", KEY_FILE, file.getAbsolutePath(), KEY_DELETE, "true", KEY_DOWNLOAD_FILENAME, "Deleted"+file.getName());
+		String jsAction = DefaultTool.createServerAction(userContext, "DownloadFileAction", KEY_FILE, file.getAbsolutePath(), KEY_DELETE, "true", KEY_DOWNLOAD_FILENAME, "Deleted" + file.getName());
 		return new DefaultTool(
 				Icon.FILE_ZIP,
 				"Delete " + file.getName(),

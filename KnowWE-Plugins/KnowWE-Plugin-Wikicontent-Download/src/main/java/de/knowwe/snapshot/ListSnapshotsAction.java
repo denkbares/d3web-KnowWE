@@ -21,16 +21,10 @@ package de.knowwe.snapshot;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
-
-import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
  * Retrieves a list of all created snapshots.
@@ -40,16 +34,11 @@ public class ListSnapshotsAction extends SnapshotAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		var tmpSnapshots = transformTmpSnapshots(
-				DeployRepoSnapshotProvider.getSnapshotFilesFromTmpRepo()
-		);
-		var attachmentsSnapshots = transformAttachmentSnapshots(
-				DeployAttachmentSnapshotProvider.getWikiAttachmentSnapshots()
-		);
-		var attachments = Stream.concat(tmpSnapshots.stream(), attachmentsSnapshots.stream())
+		var snapshots = transformTmpSnapshots(DeploySnapshotProvider.getSnapshotFilesFromTmpRepo())
+				.stream()
 				.sorted(Comparator.comparing(snapshot -> snapshot.date))
 				.toList();
-		writeJson(context, attachments);
+		writeJson(context, snapshots);
 	}
 
 	private List<SnapshotDTO> transformTmpSnapshots(List<File> files) {
@@ -59,21 +48,7 @@ public class ListSnapshotsAction extends SnapshotAction {
 						file.getParent(),
 						file.getName().replace(".zip", ""),
 						file.lastModified(),
-						file.length(),
-						SnapshotType.TMP_FILE
-				)
-		).toList();
-	}
-
-	private List<SnapshotDTO> transformAttachmentSnapshots(List<WikiAttachment> attachments) {
-		return attachments.stream().map(attachment ->
-				new SnapshotDTO(
-						attachment.getPath(), // relative path
-						attachment.getParentName(),
-						attachment.getFileName().replace(".zip", ""),
-						attachment.getDate().getTime(),
-						attachment.getSize(),
-						SnapshotType.ATTACHMENT
+						file.length()
 				)
 		).toList();
 	}
@@ -83,13 +58,7 @@ public class ListSnapshotsAction extends SnapshotAction {
 			String parent,
 			String name,
 			long date,
-			long size,
-			SnapshotType type
+			long size
 	) {
-	}
-
-	private enum SnapshotType {
-		ATTACHMENT,
-		TMP_FILE
 	}
 }

@@ -64,10 +64,7 @@ function SnapshotsPartialTable({snapshots, filter}: {
                         <td title={snapshot.name + ".zip"}>{snapshot.name}</td>
                         {KNOWWE.core.util.isAdmin() === "true"
                             ? (<td>
-                                {snapshot.type === "ATTACHMENT"
-                                    ? <SnapshotPanelAttachmentButtons snapshot={snapshot} />
-                                    : <SnapshotPanelTmpFileButtons snapshot={snapshot} />
-                                }
+                                <SnapshotPanelButtons snapshot={snapshot} />
                             </td>)
                             : ""}
                     </tr>
@@ -77,36 +74,7 @@ function SnapshotsPartialTable({snapshots, filter}: {
     );
 }
 
-function SnapshotPanelAttachmentButtons({snapshot}: {snapshot: SnapshotDTO}) {
-    return (
-        <div style={{display: "flex", flexDirection: "row"}}>
-            <button
-                className={"btn btn-default"}
-                title="Deploy this snapshot to the wiki"
-                onClick={() =>
-                    deploySnapshotPopUp({
-                        snapshotName: snapshot.name,
-                        snapshotType: snapshot.type,
-                        snapshotPageName: snapshot.parent,
-                    })
-                }
-            >
-                Deploy
-            </button>
-            <a href={"Upload.jsp?page=" + snapshot.parent}>
-                <button
-                    className={"btn btn-default"}
-                    title="Open a list of all attachments for this page"
-
-                >
-                    Open
-                </button>
-            </a>
-        </div>
-    );
-}
-
-function SnapshotPanelTmpFileButtons({snapshot}: {snapshot: SnapshotDTO}) {
+function SnapshotPanelButtons({snapshot}: {snapshot: SnapshotDTO}) {
     const size = (snapshot.size / (1024 * 1024)).toFixed(2);
     return (
         <div style={{display: "flex", flexDirection: "row"}}>
@@ -116,8 +84,6 @@ function SnapshotPanelTmpFileButtons({snapshot}: {snapshot: SnapshotDTO}) {
                 onClick={() =>
                     deploySnapshotPopUp({
                         snapshotName: snapshot.name,
-                        snapshotType: snapshot.type,
-                        snapshotPageName: snapshot.parent,
                     })
                 }
             >
