@@ -51,6 +51,7 @@
 	width: 50%;
 	padding: 5px;
 	border: 1px solid #d7d7d7;
+	word-break: break-word;
 }
 
 [role="tooltip"].popup-content {

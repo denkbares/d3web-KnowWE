@@ -67,10 +67,11 @@ public class DeploySnapshotAction extends SnapshotAction {
 	private void reinitializeWikiContent(UserActionContext context, File snapshot) throws IOException {
 		// we force a snapshot as safety BACKUP mechanism against data loss
 		try {
-			createBackup(context);
+			createAndStoreWikiContentSnapshot(context, "Autosave" + SNAPSHOT);
 		}
 		catch (IOException e) {
 			context.sendError(500, e.getMessage());
+			return;
 		}
 
 		try {
@@ -81,20 +82,13 @@ public class DeploySnapshotAction extends SnapshotAction {
 		}
 		catch (IOException e) {
 			context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
+			return;
 		}
 
 		// success
 		context.getResponse()
 				.getWriter()
 				.println("Wiki content has been overridden to content of file: " + snapshot.getName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
-	}
-
-	private void createBackup(UserActionContext context) throws IOException {
-		String createdSnapshotFile = createAndStoreWikiContentSnapshot(context, "Autosave" + SNAPSHOT);
-
-		if (createdSnapshotFile == null) {
-			throw new IOException("Failed to create a backup");
-		}
 	}
 
 	private void makeFileSystemReplaceOperation(@NotNull File deployFile) throws IOException {

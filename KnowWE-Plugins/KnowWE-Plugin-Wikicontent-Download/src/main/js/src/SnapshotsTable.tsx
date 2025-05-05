@@ -100,11 +100,7 @@ function SnapshotPanelButtons({snapshot}: {snapshot: SnapshotDTO}) {
             </button>
             <button
                 className={"btn btn-default"}
-                title={`Delete
-                this snapshot from the wiki permanently (
-                ${size}
-                MB
-                )`}
+                title={"Delete this snapshot from the wiki permanently (" + size + " MB)"}
                 onClick={() =>
                     deleteSnapshotPopUp({
                         snapshotPath: snapshot.path,

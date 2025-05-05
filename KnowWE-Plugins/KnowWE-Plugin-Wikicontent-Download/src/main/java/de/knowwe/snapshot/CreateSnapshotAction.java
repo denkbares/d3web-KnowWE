@@ -30,24 +30,25 @@ public class CreateSnapshotAction extends AbstractAction {
 			context.sendError(403, "Only for Admins available ");
 			return;
 		}
-		String createdFileName = createAndStoreWikiContentSnapshot(context, SNAPSHOT);
-		if(createdFileName != null) {
+		try {
+			String createdFileName = createAndStoreWikiContentSnapshot(context, SNAPSHOT);
 			DownloadFileAction.writeFileToDownloadStream(context, new File(TmpFileDownloadToolProvider.getTmpFileFolder(), createdFileName), createdFileName, false);
+		}
+		catch (IOException e) {
+			context.sendError(500, e.getMessage());
 		}
 	}
 
-	public static @Nullable String createAndStoreWikiContentSnapshot(@NotNull UserActionContext context, @NotNull String prefix) throws IOException {
+	public static String createAndStoreWikiContentSnapshot(@NotNull UserActionContext context, @NotNull String prefix) throws IOException {
 		context.getParameters().put(PARAM_VERSIONS, "true");
 		File tmpFileFolder = TmpFileDownloadToolProvider.getTmpFileFolder();
 		String wikiContentZipFilename = DownloadWikiZIPAction.getWikiContentZipFilename(prefix);
 		File newFileInTmpFolder = new File(tmpFileFolder, wikiContentZipFilename);
 		if (newFileInTmpFolder.exists()) {
-			context.sendError(500, "Snapshot file already exists. : " + newFileInTmpFolder.getAbsolutePath() + " Will not override.");
-			return null;
+			throw new IOException("Snapshot file already exists. : " + newFileInTmpFolder.getAbsolutePath() + " Will not override.");
 		}
 		if (!newFileInTmpFolder.getParentFile().exists() && newFileInTmpFolder.getParentFile().canWrite()) {
-			context.sendError(500, "Cannot write Snapshot file: " + newFileInTmpFolder.getAbsolutePath() + " (No write access to folder or file system error. Contact you administrator.)");
-			return null;
+			throw new IOException("Cannot write Snapshot file: " + newFileInTmpFolder.getAbsolutePath() + " (No write access to folder or file system error. Contact you administrator.)");
 		}
 		OutputStream out = new FileOutputStream(newFileInTmpFolder);
 		DownloadWikiZIPAction.writeWikiContentZipStreamToOutputStream(context, out, true, false);

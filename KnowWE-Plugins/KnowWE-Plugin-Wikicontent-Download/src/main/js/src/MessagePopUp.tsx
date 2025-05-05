@@ -42,7 +42,7 @@ type MessagePopUpProps = {
 
 function MessagePopUp({title, message, onClose}: MessagePopUpProps) {
     return (
-        <Popup position="center center" open={true} onClose={onClose} className={"versioning-popup"}>
+        <Popup position="center center" open={true} onClose={onClose} className={"snapshot-popup"}>
             <header>{title}</header>
 
             <main>{message}</main>
