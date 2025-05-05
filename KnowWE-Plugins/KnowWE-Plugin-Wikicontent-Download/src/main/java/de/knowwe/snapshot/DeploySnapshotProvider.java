@@ -47,7 +47,7 @@ public class DeploySnapshotProvider implements ToolProvider {
 		File[] files = getRepoFiles();
 		if (files == null) return Collections.emptyList();
 		return Arrays.stream(files)
-				.filter(file -> file.getName().startsWith(SNAPSHOT) || file.getName().startsWith(AUTOSAVE_SNAPSHOT))
+				.filter(file -> file.getName().toLowerCase().endsWith(".zip"))
 				.collect(Collectors.toList());
 	}
 

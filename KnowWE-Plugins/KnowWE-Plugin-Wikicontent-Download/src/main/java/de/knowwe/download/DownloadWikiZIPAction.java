@@ -86,8 +86,8 @@ public class DownloadWikiZIPAction extends AbstractAction {
 	}
 
 	public static @NotNull String getWikiContentZipFilename(String prefix) {
-		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"));
-		return prefix + "_"+getWikiFolder().getName()+"_"+timestamp+".zip";
+		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+		return prefix + "_" + getWikiFolder().getName() + "_" + timestamp + ".zip";
 	}
 
 	public static @NotNull File getWikiFolder() {
