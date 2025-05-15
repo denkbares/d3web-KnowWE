@@ -26,14 +26,6 @@
 		<parameter id="script" value="KnowWE-Plugin-WikiZIPDownload.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ListSnapshotsAction">
-		<parameter id="class" value="de.knowwe.snapshot.ListSnapshotsAction" />
-		<parameter id="name" value="ListSnapshotsAction" />
-		<parameter id="description" value="Lists all available snapshots of the wiki." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="WikiZIPDownloadProvider">
 		<parameter id="class" value="de.knowwe.download.WikiZIPDownloadProvider" />
 		<parameter id="name" value="WikiZIPDownloadProvider" />
@@ -62,15 +54,6 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CreateSnapshotAction">
-		<parameter id="class" value="de.knowwe.snapshot.CreateSnapshotAction" />
-		<parameter id="name" value="CreateSnapshotAction" />
-		<parameter id="description" value="Action to create a wiki content snapshot in the tmp-repo-folder." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TmpFileDownloadToolProvider">
 		<parameter id="class" value="de.knowwe.download.TmpFileDownloadToolProvider" />
 		<parameter id="name" value="TmpFileDownloadToolProvider" />
@@ -89,6 +72,22 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ListSnapshotsAction">
+		<parameter id="class" value="de.knowwe.snapshot.ListSnapshotsAction" />
+		<parameter id="name" value="ListSnapshotsAction" />
+		<parameter id="description" value="Lists all available snapshots of the wiki." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CreateSnapshotAction">
+		<parameter id="class" value="de.knowwe.snapshot.CreateSnapshotAction" />
+		<parameter id="name" value="CreateSnapshotAction" />
+		<parameter id="description" value="Action to create a wiki content snapshot in the tmp-repo-folder." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeploySnapshotAction">
 		<parameter id="class" value="de.knowwe.snapshot.DeploySnapshotAction" />
 		<parameter id="name" value="DeploySnapshotAction" />
@@ -97,11 +96,11 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<!-- @TODO Class Namen ändern / vereinheitlichen ? -->
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DownloadWikiZIP">
 		<parameter id="class" value="de.knowwe.download.DownloadWikiZIPAction" />
 		<parameter id="name" value="DownloadWikiZIP" />
-		<parameter id="description"
-				   value="Downloads a specific d3web knowledge base archive of a named wiki article." />
+		<parameter id="description" value="Downloads a specific wiki and optionally delete it." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

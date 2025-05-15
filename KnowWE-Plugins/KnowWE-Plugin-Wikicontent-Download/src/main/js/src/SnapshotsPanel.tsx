@@ -2,7 +2,7 @@ import React, {ChangeEvent} from "react";
 import {createRoot} from "react-dom/client";
 import {createSnapshot, uploadSnapshot} from "./httpRequests.ts";
 import SnapshotsTable from "./SnapshotsTable.tsx";
-import mountMessagePopUp from "./MessagePopUp.tsx";
+import {mountMessagePopUp} from "./utils.ts";
 
 export default function mountPanel(container: HTMLElement) {
     const root = createRoot(container);
@@ -20,7 +20,10 @@ function SnapshotsPanel() {
                             Create Snapshot
                         </button>
                         <div className="upload-button">
-                            <label className="btn btn-default">Upload Snapshot</label>
+                            <label className="btn btn-default">
+                                <i className="fa-solid fa-arrow-up-from-bracket"></i>
+                                Upload Snapshot
+                            </label>
                             <input type="file" name="file" onChange={handleUpload} />
                         </div>
                     </div>
