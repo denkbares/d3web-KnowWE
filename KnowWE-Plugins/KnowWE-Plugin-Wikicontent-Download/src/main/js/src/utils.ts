@@ -1,10 +1,6 @@
 import {createRoot, Root} from "react-dom/client";
-import mountMessagePopUp from "./MessagePopUp.tsx";
 import React from "react";
-
-export type PopUpProps = {
-    unmount: () => void;
-};
+import {mountPopup} from "./Popup.tsx";
 
 export function mountRoot(): [Root, () => void] {
     const container = document.createElement("div");
@@ -29,6 +25,13 @@ export function wrapFormSubmission(callable: CallableFunction) {
             });
         }
     };
+}
+
+export function mountMessagePopUp({title, message}: {title: string, message: string}) {
+    mountPopup({
+        title: title,
+        message: message,
+    });
 }
 
 export async function receiveJson(response: Response): Promise<any> {
