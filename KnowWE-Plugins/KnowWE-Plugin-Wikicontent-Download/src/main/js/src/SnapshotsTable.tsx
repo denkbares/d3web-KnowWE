@@ -24,8 +24,8 @@ export default function SnapshotsTable() {
         );
     }
 
-    const snapshotsWithoutAutosaves = snapshots?.filter((snapshot: SnapshotDTO) => !snapshot.name.startsWith("AutosaveSnapshot"));
-    const autosaveSnapshots = snapshots?.filter((snapshot: SnapshotDTO) => snapshot.name.startsWith("AutosaveSnapshot"));
+    const snapshotsWithoutAutosaves = snapshots?.filter((snapshot: SnapshotDTO) => !snapshot.name.includes("AutosaveSnapshot"));
+    const autosaveSnapshots = snapshots?.filter((snapshot: SnapshotDTO) => snapshot.name.includes("AutosaveSnapshot"));
 
     const [currentContextMenu, setCurrentContextMenu] = useState<string>("");
 

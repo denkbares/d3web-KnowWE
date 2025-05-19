@@ -59,6 +59,11 @@ public class UploadSnapshotAction extends AbstractAction {
 				boolean hasZipMimeType = List.of("application/zip", "application/x-zip-compressed")
 						.contains(file.getContentType().toLowerCase());
 				if (!hasZipExtension || !hasZipMimeType) throw new RuntimeException("File has an invalid format");
+
+				if (file.getName().toLowerCase().contains("autosavesnapshot")) {
+					throw new RuntimeException("'AutosaveSnapshot' can not be part of your filename. Try to use a more descriptive filename");
+				}
+
 				// store file
 				try {
 					String filePath =

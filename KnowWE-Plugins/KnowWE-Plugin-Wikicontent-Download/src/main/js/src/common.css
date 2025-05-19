@@ -56,6 +56,11 @@
 		background-color: #000;
 	}
 
+	.btn-unavailable {
+		color: #fff;
+		background-color: #828282;
+	}
+
 	.btn-danger {
 		background-color: var(--text-color-error);
 	}
