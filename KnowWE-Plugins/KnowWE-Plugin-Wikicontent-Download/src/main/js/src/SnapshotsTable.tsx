@@ -147,7 +147,7 @@ function deleteSnapshotPopUp(props: {snapshotPath: string, snapshotName: string}
         button: {
             label: "Delete Snapshot",
             type: "Danger",
-            action: () => wrapFormSubmission(() => deleteSnapshot(props.snapshotPath, props.snapshotName)),
+            action: wrapFormSubmission(() => deleteSnapshot(props.snapshotPath, props.snapshotName)),
         },
     });
 }
@@ -159,7 +159,7 @@ function deploySnapshotPopUp(snapshotName: string) {
         button: {
             label: "Deploy Snapshot",
             type: "Primary",
-            action: () => wrapFormSubmission(() => deploySnapshot(snapshotName + ".zip")),
+            action: wrapFormSubmission(() => deploySnapshot(snapshotName + ".zip")),
         },
     });
 }

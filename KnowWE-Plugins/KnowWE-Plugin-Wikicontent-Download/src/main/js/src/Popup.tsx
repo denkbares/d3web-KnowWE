@@ -29,13 +29,13 @@ export function mountPopup(props: PopupProps) {
 export type PopupProps = {
     title: string;
     message: React.ReactNode | string;
-    button?: ButtonProps
-    secondaryButtons?: ButtonProps[]
+    button?: ButtonProps;
+    secondaryButtons?: ButtonProps[];
 };
 
 export type ButtonProps = {
     label: string;
-    action: () => void;
+    action: (event: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
     type: "Primary" | "Danger" | "Secondary";
 }
 
@@ -61,12 +61,11 @@ function Popup({title, message, button, secondaryButtons, unmount}: PopupProps &
 
             <footer>
                 {button && <button className={"btn " + convertTypeToClassName(button.type)}
-                                   onClick={() => button.action}>{button.label}</button>}
+                                   onClick={button.action}>{button.label}</button>}
                 {secondaryButtons && secondaryButtons.map(button =>
                     <button className={"btn " + convertTypeToClassName(button.type)}
-                            onClick={() => button.action}>{button.label}</button>,
+                            onClick={button.action}>{button.label}</button>,
                 )}
-                {/*<button className={"btn btn-default"} onClick={onClose}>Close</button>*/}
             </footer>
         </ReactPopup>
     );

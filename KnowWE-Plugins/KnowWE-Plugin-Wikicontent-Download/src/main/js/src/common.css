@@ -26,7 +26,20 @@
 		margin: 0;
 	}
 
-	ul {
+	input {
+		border: none;
+		background: transparent;
+	}
+
+	input::placeholder {
+		color: #adadad;
+	}
+
+	a, a:hover {
+		color: black;
+	}
+
+	ul, ol {
 		list-style: none;
 		padding: 0;
 	}
@@ -35,7 +48,7 @@
 		padding: 0.35rem 0.9rem;
 		font-weight: 500;
 		font-size: 1.0rem;
-		transition: background-color 0.15s ease-in;
+		transition: background-color 0.1s;
 	}
 
 	.btn-default {
