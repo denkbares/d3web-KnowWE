@@ -229,9 +229,9 @@ public class PackageManager {// implements EventListener {
 	}
 
 	public String getPackageStatementsOfSectionAsString(Section<?> section) {
-		return getPackageStatementsOfSection(section)
-				.stream()
-				.map(p -> Strings.containsWhitespace(p) ? "(" + p + ")" : p)
+		Set<String> packageStatementsOfSection = getPackageStatementsOfSection(section);
+		return packageStatementsOfSection.stream()
+				.map(p -> packageStatementsOfSection.size() > 1 && Strings.containsWhitespace(p) ? "(" + p + ")" : p)
 				.collect(Collectors.joining(" OR "));
 	}
 
@@ -494,7 +494,6 @@ public class PackageManager {// implements EventListener {
 		//noinspection unchecked
 		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
-
 
 	public void registerPackageCompileSection(Section<? extends DefaultMarkupPackageCompileType> section) {
 
