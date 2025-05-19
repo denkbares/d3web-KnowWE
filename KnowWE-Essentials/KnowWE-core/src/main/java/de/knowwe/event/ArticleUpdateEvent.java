@@ -1,5 +1,7 @@
 package de.knowwe.event;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.events.Event;
 
 /**
@@ -22,12 +24,12 @@ public class ArticleUpdateEvent implements Event {
 	 * @param username author of the update
 	 */
 
-	public ArticleUpdateEvent(String title, String username) {
+	public ArticleUpdateEvent(String title, @NotNull String username) {
 		this.username = username;
 		this.title = title;
 	}
 
-	public String getUsername() {
+	public @NotNull String getUsername() {
 		return username;
 	}
 
