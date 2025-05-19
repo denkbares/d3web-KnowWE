@@ -48,6 +48,8 @@ import de.knowwe.fingerprint.Fingerprint;
 import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.WikiFileProviderUtils;
 
+import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
+
 /**
  * @author Johanna Latt
  * @created 16.04.2012
@@ -71,7 +73,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 			return;
 		}
 
-		String filename = getWikiContentZipFilename(getWikiFolder().getName());
+		String filename = getWikiContentZipFilename(SNAPSHOT);
 
 		//String filename = wikiFolder.getName() + ".zip";
 		context.setContentType(BINARY);
@@ -87,7 +89,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 
 	public static @NotNull String getWikiContentZipFilename(String prefix) {
 		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-		return prefix + "_" + getWikiFolder().getName() + "_" + timestamp + ".zip";
+		return timestamp + "_" + prefix + "_" + getWikiFolder().getName() + ".zip";
 	}
 
 	public static @NotNull File getWikiFolder() {
