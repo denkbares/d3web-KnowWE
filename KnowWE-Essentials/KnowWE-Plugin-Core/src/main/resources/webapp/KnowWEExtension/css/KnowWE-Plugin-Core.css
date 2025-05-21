@@ -640,7 +640,6 @@ table.list-sections tr.highlighted {
 	margin-left: 5px;
 }
 
-
 .image-markup-wrapper .accordion-close .panel-heading:not(.active):after {
 	content: "Click to show image";
 }
@@ -668,6 +667,28 @@ table.list-sections tr.highlighted {
 	box-shadow: none;
 }
 
+.recompile-buttons {
+	margin-left: -8px;
+	padding-left: 0;
+}
+
+.recompile-buttons .recompile-buttons-tooltip {
+	visibility: hidden;
+	background-color: lightgray;
+	color: #173A64FF;
+	text-align: center;
+	padding: 5px 5px;
+	border-radius: 6px;
+
+	position: absolute;
+	z-index: 1;
+	right: 105%;
+	margin-top: -5px;
+}
+
+.recompile-buttons:hover .recompile-buttons-tooltip {
+	visibility: visible;
+}
 
 
 /* ################################################## */

@@ -733,44 +733,76 @@ KNOWWE.core.plugin.recompile = function() {
           event.preventDefault();
           event.stopPropagation();
 
-          jq$.ajax({
-            url: "action/RecompileAction",
-            data: {
-              command: command,
-              title: KNOWWE.helper.getPagename()
-            }
-          }).always(function() {
-            // just refresh, server will wait for compilation to finish before rendering
-            window.location.reload();
-          });
+          KNOWWE.core.plugin.recompileButtons.recompile(command);
         }
       );
     }
   };
 }();
 
+KNOWWE.core.plugin.recompileButtons = function() {
+
+  return {
+    init: function() {
+      if (!jq$(".navigation").exists()) return;
+
+      let pullRight = jq$(".navigation").children(".nav.nav-pills.pull-right").first();
+      let recompileButtons = new Element("li", {
+        "id": "recompileButtons"
+      });
+      let link = new Element("a", {
+        "id": "recompileDropdown",
+        "href": "#"
+      });
+      let list = new Element("ul", {
+        "id": "recompileButtonsList",
+        "class": "dropdown-menu pull-right"
+      });
+
+
+      link.innerHTML = "<i class=\"fa-solid fa-rotate-right\"></i>" + "<span>" + "Recompile" + "</span>" +
+        "<span class=\"caret\"></span>";
+
+      let single = "single";
+      let variant = "variant";
+      let full = "full";
+
+      let singleTooltip = "Recompile current page";
+      let variantTooltip = "Recompile all pages of selected variant";
+      let fullTooltip = "Recompile all pages of the wiki (all variants)";
+
+      list.innerHTML =
+        "<li><a onclick=\"KNOWWE.core.plugin.recompileButtons.recompile('" + single + "')\"><span class=\"" + "recompile-buttons" + "\">" + "Page" + "<span class =\"" + "recompile-buttons-tooltip" + "\">" + singleTooltip + "</span> </span></a></li>" +
+        "<li><a onclick=\"KNOWWE.core.plugin.recompileButtons.recompile('" + variant + "')\"><span class=\"" + "recompile-buttons" + "\">" + variant.substring(0,1).toUpperCase() + variant.substring(1,variant.length) + "<span class =\"" + "recompile-buttons-tooltip" + "\">" + variantTooltip + "</span> </span></a></li>" +
+        "<li><a onclick=\"KNOWWE.core.plugin.recompileButtons.recompile('" + full + "')\"><span class=\"" + "recompile-buttons" + "\">" + full.substring(0,1).toUpperCase() + full.substring(1,full.length) + "<span class =\"" + "recompile-buttons-tooltip" + "\">" + fullTooltip + "</span> </span></a></li>";
+
+      KNOWWE.core.plugin.switchCompiler.addHoverAction(recompileButtons);
+      recompileButtons.append(list);
+      recompileButtons.appendChild(link);
+      pullRight.prepend(recompileButtons);
+
+
+    },
+
+
+    recompile: function(command) {
+      jq$.ajax({
+        url: "action/RecompileAction",
+        data: {
+          command: command,
+          title: KNOWWE.helper.getPagename()
+        }
+      }).always(function() {
+        // just refresh, server will wait for compilation to finish before rendering
+        window.location.reload();
+      });
+    }
+
+  };
+}();
 
 KNOWWE.core.plugin.switchCompiler = function() {
 
-  function addHoverAction(compilerSwitch) {
-    jq$(compilerSwitch).hover(function(event) {
-      var parent = jq$(this);
-      parent.addClass("open");
-      if (parent.find("input").length > 0) {
-        parent.find("input:first").focus();
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
-    }, function(event) {
-      var parent = jq$(this);
-      if (parent.hasClass("open")) {
-        parent.removeClass("open");
-      }
-      event.preventDefault();
-      event.stopPropagation();
-    });
-  }
 
   let defaultCompilerPrefixKey = "default-compiler";
 
@@ -827,7 +859,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
 
             if (compilers.length > 1) {
               // only add dropdown to select
-              addHoverAction(compilerSwitch);
+              KNOWWE.core.plugin.switchCompiler.addHoverAction(compilerSwitch);
               list.innerHTML = getCompilerListContent(compilers, defaultCompiler);
               compilerSwitch.append(list);
             }
@@ -852,7 +884,28 @@ KNOWWE.core.plugin.switchCompiler = function() {
           window.location.reload();
         }
       });
-    }
+    },
+
+    addHoverAction: function(compilerSwitch) {
+    jq$(compilerSwitch).hover(function(event) {
+      var parent = jq$(this);
+      parent.addClass("open");
+      if (parent.find("input").length > 0) {
+        parent.find("input:first").focus();
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    }, function(event) {
+      var parent = jq$(this);
+      if (parent.hasClass("open")) {
+        parent.removeClass("open");
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    });
+  }
+
   };
 }();
 
@@ -948,4 +1001,5 @@ jq$(function() {
   KNOWWE.core.plugin.stickyTableHeaders.init();
   KNOWWE.plugin.listSection.initListSectionFilter();
   KNOWWE.plugin.listFilter.initAutoCompletion();
+  KNOWWE.core.plugin.recompileButtons.init();
 });

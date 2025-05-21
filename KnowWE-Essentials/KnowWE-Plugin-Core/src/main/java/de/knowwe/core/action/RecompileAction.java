@@ -80,7 +80,7 @@ public class RecompileAction extends AbstractAction {
 		catch (IllegalArgumentException e) {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
 		}
-		final String reason = "recompile hotkey";
+		final String reason = "manual recompile";
 		switch (mode) {
 			case single, unspecified -> recompile(List.of(article), single, reason, context.getUserName());
 			case variant -> recompileVariant(context, reason);
