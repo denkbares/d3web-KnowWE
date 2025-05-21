@@ -21,6 +21,7 @@ package de.knowwe.util;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.denkbares.strings.Strings;
@@ -385,5 +386,17 @@ public class Icon {
 
 	public void setOverlayIcons(List<Icon> overlayIcons) {
 		this.overlayIcons = overlayIcons;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) return false;
+		Icon icon = (Icon) o;
+		return Objects.equals(overlayIcons, icon.overlayIcons) && Objects.equals(cssClass, icon.cssClass) && Objects.equals(style, icon.style) && Objects.equals(title, icon.title) && Objects.equals(id, icon.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(overlayIcons, cssClass, style, title, id);
 	}
 }
