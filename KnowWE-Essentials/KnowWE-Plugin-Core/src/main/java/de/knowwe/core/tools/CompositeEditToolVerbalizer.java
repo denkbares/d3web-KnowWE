@@ -37,6 +37,6 @@ public interface CompositeEditToolVerbalizer extends Type {
 	}
 
 	default String getCompositeEditToolText(TermCompiler compiler, Identifier identifier) {
-		return CompositeEditToolProvider.SHOW_INFO + " (" + identifier.toPrettyPrint() + ")";
+		return CompositeEditToolProvider.createToolText(identifier.toPrettyPrint());
 	}
 }

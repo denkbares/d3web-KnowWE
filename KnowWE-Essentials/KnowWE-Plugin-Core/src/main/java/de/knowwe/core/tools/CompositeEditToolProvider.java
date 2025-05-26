@@ -49,6 +49,10 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 	public static final String SHOW_INFO = "Show Info";
 
+	public static String createToolText(String elementName) {
+		return SHOW_INFO + ": " + elementName;
+	}
+
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		if (hasTools(section, userContext)) {
@@ -72,7 +76,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 	@NotNull
 	protected String getToolText(Identifier identifier) {
-		return CompositeEditToolProvider.SHOW_INFO + " (" + identifier.toPrettyPrint() + ")";
+		return CompositeEditToolProvider.createToolText(identifier.toPrettyPrint());
 	}
 
 	@NotNull
