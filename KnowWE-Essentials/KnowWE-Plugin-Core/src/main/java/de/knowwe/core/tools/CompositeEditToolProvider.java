@@ -21,14 +21,14 @@ package de.knowwe.core.tools;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
@@ -55,14 +55,14 @@ public class CompositeEditToolProvider implements ToolProvider {
 			Section<Term> termSection = Sections.cast(section, Term.class);
 
 			List<Tool> tools = new ArrayList<>();
-			Collection<Identifier> identifiers = getIdentifiers(section, termSection);
+			@NotNull Collection<Pair<Identifier, String>> identifiers = getIdentifiers(section, termSection);
 
-			for (Identifier identifier : identifiers) {
+			for (Pair<Identifier, String> pair : identifiers) {
 				if (identifiers.size() > 1) {
-					tools.add(getCompositeEditTool(section, getToolText(identifier), identifier));
+					tools.add(getCompositeEditTool(section, pair.getB(), pair.getA()));
 				}
 				else {
-					tools.add(getCompositeEditTool(section, identifier));
+					tools.add(getCompositeEditTool(section, pair.getA()));
 				}
 			}
 			return tools.toArray(new Tool[0]);
@@ -76,25 +76,45 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	@NotNull
-	protected Collection<Identifier> getIdentifiers(Section<?> section, Section<Term> termSection) {
+	protected Collection<Pair<Identifier, String>> getIdentifiers(Section<?> section, Section<Term> termSection) {
 		return Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
 				.stream()
-				.flatMap(c -> getTermIdentifiers(c, termSection))
-				.filter(Objects::nonNull)
-				.map(CompositeEditToolProvider::matchCompatibilityForm)
+				.flatMap(c -> getTermIdentifiers(c, termSection)
+						.filter(i -> showToolForIdentifier(c, i))
+						.map(i -> new Pair<>(i, getToolTextFromTermDefinition(c, i))))
 				.distinct()
-				.sorted()
+				.sorted(Comparator.comparing(Pair::getB))
 				.collect(Collectors.toList());
+	}
+
+	private static boolean showToolForIdentifier(TermCompiler c, Identifier i) {
+		return c.getTerminologyManager()
+				.getTermDefiningSections(i)
+				.stream()
+				.filter(s -> s.get() instanceof CompositeEditToolVerbalizer)
+				.map(s -> Sections.cast(s, CompositeEditToolVerbalizer.class))
+				.allMatch(s -> s.get().showToolForIdentifier(c, i));
+	}
+
+	private @NotNull String getToolTextFromTermDefinition(TermCompiler c, Identifier i) {
+		return c.getTerminologyManager()
+				.getTermDefiningSections(i)
+				.stream()
+				.filter(s -> s.get() instanceof CompositeEditToolVerbalizer)
+				.map(s -> Sections.cast(s, CompositeEditToolVerbalizer.class))
+				.map(s -> s.get().getCompositeEditToolText(c, i))
+				.findFirst().orElse(getToolText(i));
 	}
 
 	protected Stream<Identifier> getTermIdentifiers(TermCompiler compiler, Section<Term> termSection) {
 		try {
-			Collection<Identifier> identifiers = compiler.getTerminologyManager().getRegisteredIdentifiers(compiler, termSection);
+			Collection<Identifier> identifiers = compiler.getTerminologyManager()
+					.getRegisteredIdentifiers(compiler, termSection);
 			Identifier termIdentifier = termSection.get().getTermIdentifier(compiler, termSection);
 			return Stream.concat(identifiers.stream(), Stream.of(termIdentifier)).distinct();
 		}
 		catch (ClassCastException e) { // in case the identifier can only be generated for certain term compilers
-			return null;
+			return Stream.empty();
 		}
 	}
 
@@ -118,19 +138,10 @@ public class CompositeEditToolProvider implements ToolProvider {
 		return new CompositeEditTool(text, identifier);
 	}
 
-	/**
-	 * This method is still missplaced, these issues should be handled in OntologyMarkupSet
-	 */
-	public static Identifier matchCompatibilityForm(Identifier termIdentifier) {
-		return (termIdentifier.countPathElements() == 2 && termIdentifier.getPathElementAt(0).isEmpty())
-				? new Identifier(termIdentifier.isCaseSensitive(), "lns", termIdentifier.getLastPathElement())
-				: termIdentifier;
-	}
-
 	public static String createCompositeEditModeAction(Identifier termIdentifier) {
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
 		return "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
-				+ TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
+			   + TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
 	}
 
 	public static class CompositeEditTool extends DefaultTool {
