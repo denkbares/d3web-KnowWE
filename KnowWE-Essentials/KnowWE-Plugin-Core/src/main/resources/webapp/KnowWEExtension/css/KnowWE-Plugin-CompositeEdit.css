@@ -259,3 +259,7 @@ Only if the second selector matches (to select all non-nested preview titles), t
 .objectInfoPanel .previewTitle:not(.objectInfoPanel .objectInfoPanel .previewTitle) {
 	display: block;
 }
+
+.dehighlighted-text {
+	opacity: .6;
+}

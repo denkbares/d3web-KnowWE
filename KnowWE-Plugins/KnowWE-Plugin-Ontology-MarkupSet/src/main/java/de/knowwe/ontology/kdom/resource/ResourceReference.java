@@ -70,7 +70,7 @@ public class ResourceReference extends SimpleReference implements CompositeEditT
 	@Override
 	public String getCompositeEditToolText(TermCompiler compiler, Identifier identifier) {
 		if (identifier.countPathElements() == 2) {
-			return CompositeEditToolProvider.createToolText(identifier.getPathElementAt(0) + ":" + identifier.getPathElementAt(1));
+			return CompositeEditToolProvider.createToolText(identifier.getPathElementAt(0) + ":" + identifier.getPathElementAt(1)) + " <span class='dehighlighted-text'>(URI)</span>";
 		}
 		else {
 			return CompositeEditToolProvider.createToolText(identifier.toPrettyPrint());

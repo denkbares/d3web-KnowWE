@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -50,7 +51,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 	public static final String SHOW_INFO = "Show Info";
 
 	public static String createToolText(String elementName) {
-		return SHOW_INFO + ": " + elementName;
+		return SHOW_INFO + ": " + Strings.unquote(elementName);
 	}
 
 	@Override
@@ -92,8 +93,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	private static boolean showToolForIdentifier(TermCompiler c, Identifier i) {
-		return c.getTerminologyManager()
-				.getTermDefiningSections(i)
+		return getRegistrations(c, i)
 				.stream()
 				.filter(s -> s.get() instanceof CompositeEditToolVerbalizer)
 				.map(s -> Sections.cast(s, CompositeEditToolVerbalizer.class))
@@ -101,13 +101,27 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	private @NotNull String getToolTextFromTermDefinition(TermCompiler c, Identifier i) {
-		return c.getTerminologyManager()
-				.getTermDefiningSections(i)
+		Collection<Section<?>> registrations = getRegistrations(c, i);
+		List<Section<CompositeEditToolVerbalizer>> verbalizers = registrations
 				.stream()
 				.filter(s -> s.get() instanceof CompositeEditToolVerbalizer)
 				.map(s -> Sections.cast(s, CompositeEditToolVerbalizer.class))
+				.toList();
+		List<String> texts = verbalizers
+				.stream()
 				.map(s -> s.get().getCompositeEditToolText(c, i))
-				.findFirst().orElse(getToolText(i));
+				.toList();
+		return texts.stream()
+				.findFirst()
+				.orElse(getToolText(i));
+	}
+
+	private static Collection<Section<?>> getRegistrations(TermCompiler c, Identifier i) {
+		Collection<Section<?>> registrations = c.getTerminologyManager().getTermDefiningSections(i);
+		if (registrations.isEmpty()) {
+			registrations = c.getTerminologyManager().getTermReferenceSections(i);
+		}
+		return registrations;
 	}
 
 	protected Stream<Identifier> getTermIdentifiers(TermCompiler compiler, Section<Term> termSection) {

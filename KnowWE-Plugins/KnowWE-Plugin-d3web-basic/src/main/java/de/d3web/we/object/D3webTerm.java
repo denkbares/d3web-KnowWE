@@ -21,11 +21,17 @@ package de.d3web.we.object;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
+import de.d3web.core.knowledge.TerminologyManager;
+import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
+import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.tools.CompositeEditToolProvider;
+import de.knowwe.core.tools.CompositeEditToolVerbalizer;
 
 /**
  * Common section type for d3web terms
@@ -33,7 +39,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 06.02.2012
  */
-public interface D3webTerm<TermObject extends NamedObject> extends Term {
+public interface D3webTerm<TermObject extends NamedObject> extends Term, CompositeEditToolVerbalizer {
 
 	@Nullable
 	TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section);
@@ -41,5 +47,33 @@ public interface D3webTerm<TermObject extends NamedObject> extends Term {
 	@Override
 	default Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return new Identifier(true, getTermName(section));
+	}
+
+	@Override
+	default String getCompositeEditToolText(TermCompiler compiler, Identifier identifier) {
+		String type = "";
+		if (compiler instanceof D3webCompiler) {
+			NamedObject object = getTerminologyObject((D3webCompiler) compiler, identifier);
+			if (object != null) {
+				type = " <span class='dehighlighted-text'>(" + object.getClass().getSimpleName() + ")</span>";
+			}
+		}
+		return CompositeEditToolProvider.createToolText(identifier.getLastPathElement() + type);
+	}
+
+	@Nullable
+	private static NamedObject getTerminologyObject(D3webCompiler compiler, Identifier identifier) {
+		TerminologyManager manager = compiler.getKnowledgeBase().getManager();
+		if (identifier.countPathElements() == 1) {
+			return manager
+					.search(identifier.getLastPathElement());
+		}
+		else if (identifier.countPathElements() == 2) {
+			TerminologyObject object = manager.search(identifier.getPathElementAt(0));
+			if (object instanceof QuestionChoice questionChoice) {
+				return KnowledgeBaseUtils.findChoice(questionChoice, identifier.getLastPathElement());
+			}
+		}
+		return null;
 	}
 }
