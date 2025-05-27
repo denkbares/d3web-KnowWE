@@ -61,8 +61,13 @@ public interface D3webTerm<TermObject extends NamedObject> extends Term, Composi
 		return CompositeEditToolProvider.createToolText(identifier.getLastPathElement() + type);
 	}
 
+	@Override
+	default boolean showToolForIdentifier(TermCompiler compiler, Identifier identifier) {
+		return getTerminologyObject((D3webCompiler) compiler, identifier) != null;
+	}
+
 	@Nullable
-	private static NamedObject getTerminologyObject(D3webCompiler compiler, Identifier identifier) {
+	private NamedObject getTerminologyObject(D3webCompiler compiler, Identifier identifier) {
 		TerminologyManager manager = compiler.getKnowledgeBase().getManager();
 		if (identifier.countPathElements() == 1) {
 			return manager
