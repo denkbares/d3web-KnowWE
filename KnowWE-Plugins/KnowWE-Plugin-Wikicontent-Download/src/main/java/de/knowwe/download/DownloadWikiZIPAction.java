@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.utils.Files;
+import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -81,10 +82,12 @@ public class DownloadWikiZIPAction extends AbstractAction {
 
 		boolean fingerprint = Boolean.parseBoolean(context.getParameter(PARAM_FINGERPRINT, "false"));
 		boolean versions = Boolean.parseBoolean(context.getParameter(PARAM_VERSIONS, "false"));
-
+		LOGGER.info("Preparing wiki content download: " + filename + ", versions: " + versions + ", fingerprint: " + fingerprint);
+		Stopwatch stopwatch = new Stopwatch();
 		try (OutputStream outs = context.getOutputStream()) {
 			writeWikiContentZipStreamToOutputStream(context, outs, versions, fingerprint);
 		}
+		stopwatch.log(LOGGER, "Finished writing wiki content to output stream: " + filename);
 	}
 
 	public static @NotNull String getWikiContentZipFilename(String prefix) {
