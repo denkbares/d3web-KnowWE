@@ -577,7 +577,7 @@ KNOWWE.tooltips.enrich = function(element) {
                   html = obj.html;
                 }
               } catch (ignore) {
-                console.log("Invalid JSON when fetching tooltip: " + json)
+                console.log("Invalid JSON when fetching tooltip: " + json);
               }
             }
             origin.tooltipster("update", html).tooltipster("reposition");
@@ -759,9 +759,7 @@ KNOWWE.core.plugin.recompileButtons = function() {
         "class": "dropdown-menu pull-right"
       });
 
-
-      link.innerHTML = "<i class=\"fa-solid fa-rotate-right\"></i>" + "<span>" + "Recompile" + "</span>" +
-        "<span class=\"caret\"></span>";
+      link.innerHTML = `<i class="fa-solid fa-rotate-right"></i><span>Recompile</span><span class="caret"></span>`;
 
       let single = "single";
       let variant = "variant";
@@ -772,9 +770,9 @@ KNOWWE.core.plugin.recompileButtons = function() {
       let fullTooltip = "Recompile all pages of the wiki (all variants)";
 
       list.innerHTML =
-        "<li><a onclick=\"KNOWWE.core.plugin.recompileButtons.recompile('" + single + "')\"><span class=\"" + "recompile-buttons" + "\">" + "Page" + "<span class =\"" + "recompile-buttons-tooltip" + "\">" + singleTooltip + "</span> </span></a></li>" +
-        "<li><a onclick=\"KNOWWE.core.plugin.recompileButtons.recompile('" + variant + "')\"><span class=\"" + "recompile-buttons" + "\">" + variant.substring(0,1).toUpperCase() + variant.substring(1,variant.length) + "<span class =\"" + "recompile-buttons-tooltip" + "\">" + variantTooltip + "</span> </span></a></li>" +
-        "<li><a onclick=\"KNOWWE.core.plugin.recompileButtons.recompile('" + full + "')\"><span class=\"" + "recompile-buttons" + "\">" + full.substring(0,1).toUpperCase() + full.substring(1,full.length) + "<span class =\"" + "recompile-buttons-tooltip" + "\">" + fullTooltip + "</span> </span></a></li>";
+        `<li><a onclick="KNOWWE.core.plugin.recompileButtons.recompile('${single}')"><span class="recompile-buttons">Page<span class ="recompile-buttons-tooltip">${singleTooltip}</span> </span></a></li>` +
+        `<li><a onclick="KNOWWE.core.plugin.recompileButtons.recompile('${variant}')"><span class="recompile-buttons">${variant.substring(0, 1).toUpperCase()}${variant.substring(1, variant.length)}<span class ="recompile-buttons-tooltip">${variantTooltip}</span> </span></a></li>` +
+        `<li><a onclick="KNOWWE.core.plugin.recompileButtons.recompile('${full}')"><span class="recompile-buttons">${full.substring(0, 1).toUpperCase()}${full.substring(1, full.length)}<span class ="recompile-buttons-tooltip">${fullTooltip}</span> </span></a></li>`;
 
       KNOWWE.core.plugin.switchCompiler.addHoverAction(recompileButtons);
       recompileButtons.append(list);
@@ -808,12 +806,13 @@ KNOWWE.core.plugin.switchCompiler = function() {
 
   function getCompilerListContent(compilers, defaultCompiler) {
     let listInnerText = "";
-    for (compiler of compilers) {
+    for (let compiler of compilers) {
       let icon = "fa-regular fa-circle";
       if (compiler === defaultCompiler) {
         icon = "fa-regular fa-circle-dot";
       }
-      listInnerText = listInnerText + "<li><a onclick=\"KNOWWE.core.plugin.switchCompiler.setDefaultCompiler('" + compiler + "')\"><span class=\"" + icon + "\" style=\"padding-right: 5px\"></span><span>" + compiler + "</span></a></li>";
+      let action = `KNOWWE.core.plugin.switchCompiler.setDefaultCompiler('${compiler}')`;
+      listInnerText = `${listInnerText}<li><a onclick="${action}"><span class="${icon}" style="padding-right: 5px"></span><span>${compiler}</span></a></li>`;
     }
     return listInnerText;
   }
@@ -851,9 +850,9 @@ KNOWWE.core.plugin.switchCompiler = function() {
           }
           if (storedDefaultCompiler === defaultCompiler) {
             // If the default compiler of the client and server (for the user) are the same, add the compiler switch.
-            let linkContent = "<span class=\"fa-regular fa-microchip\"></span>" + "<span>" + defaultCompiler + "</span>";
+            let linkContent = `<span class="fa-regular fa-microchip"></span><span>${defaultCompiler}</span>`;
             if (compilers.length > 1) {
-              linkContent = linkContent + "<span class=\"caret\"></span>";
+              linkContent = `${linkContent}<span class="caret"></span>`;
             }
             link.innerHTML = linkContent;
 
@@ -871,6 +870,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
             // This case should only happen after a restart of the server and the first page is rendered twice.
             KNOWWE.core.plugin.switchCompiler.setDefaultCompiler(storedDefaultCompiler);
           }
+          KNOWWE.core.plugin.recompileButtons.init();
         }
       });
     },
@@ -887,24 +887,24 @@ KNOWWE.core.plugin.switchCompiler = function() {
     },
 
     addHoverAction: function(compilerSwitch) {
-    jq$(compilerSwitch).hover(function(event) {
-      var parent = jq$(this);
-      parent.addClass("open");
-      if (parent.find("input").length > 0) {
-        parent.find("input:first").focus();
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
-    }, function(event) {
-      var parent = jq$(this);
-      if (parent.hasClass("open")) {
-        parent.removeClass("open");
-      }
-      event.preventDefault();
-      event.stopPropagation();
-    });
-  }
+      jq$(compilerSwitch).hover(function(event) {
+        var parent = jq$(this);
+        parent.addClass("open");
+        if (parent.find("input").length > 0) {
+          parent.find("input:first").focus();
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }, function(event) {
+        var parent = jq$(this);
+        if (parent.hasClass("open")) {
+          parent.removeClass("open");
+        }
+        event.preventDefault();
+        event.stopPropagation();
+      });
+    }
 
   };
 }();
@@ -1001,5 +1001,4 @@ jq$(function() {
   KNOWWE.core.plugin.stickyTableHeaders.init();
   KNOWWE.plugin.listSection.initListSectionFilter();
   KNOWWE.plugin.listFilter.initAutoCompletion();
-  KNOWWE.core.plugin.recompileButtons.init();
 });
