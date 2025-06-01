@@ -438,48 +438,48 @@ public interface WikiConnector {
 	 * Checks whether a user is allowed edit a given article.
 	 *
 	 * @param title   the title of the article to check
-	 * @param request the request of the user to check for
+	 * @param context the request of the user to check for
 	 */
-	boolean userCanEditArticle(String title, HttpServletRequest request);
+	boolean userCanEditArticle(String title, UserContext context);
 
 	/**
 	 * Checks whether a user is allowed to upload attachments to a given article.
 	 *
 	 * @param title   the title of the article to check
-	 * @param request the request of the user to check for
+	 * @param context the request of the user to check for
 	 */
-	boolean userCanUploadAttachment(String title, HttpServletRequest request);
+	boolean userCanUploadAttachment(String title, UserContext context);
 
 	/**
 	 * Checks whether a user is allowed view a given article
 	 *
 	 * @param title   the title of the article to check
-	 * @param request the request of the user
+	 * @param context the request of the user
 	 */
-	boolean userCanViewArticle(String title, HttpServletRequest request);
+	boolean userCanViewArticle(String title, UserContext context);
 
 	/**
 	 * Checks whether a user is allowed delete a given article
 	 *
 	 * @param title   the title of the article to check
-	 * @param request the request of the user
+	 * @param context the request of the user
 	 */
-	boolean userCanDeleteArticle(String title, HttpServletRequest request);
+	boolean userCanDeleteArticle(String title, UserContext context);
 
 	/**
 	 * Checks whether a user is allowed delete a given article
 	 *
-	 * @param request the request of the user
+	 * @param context the request of the user
 	 */
-	boolean userCanCreateArticles(HttpServletRequest request);
+	boolean userCanCreateArticles(UserContext context);
 
 	/**
 	 * Checks whether the user is member of a given group.
 	 *
 	 * @param groupname the name of the group to check
-	 * @param request   the request of the user to check
+	 * @param context   the request of the user to check
 	 */
-	boolean userIsMemberOfGroup(String groupname, HttpServletRequest request);
+	boolean userIsMemberOfGroup(String groupname, UserContext context);
 
 	/**
 	 * Returns the list of all sub wiki currently active in the running wiki instance.

@@ -58,7 +58,7 @@ public class InstantEditEnableAction extends AbstractAction {
 		}
 
 		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title,
-				context.getRequest())) {
+				context)) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}

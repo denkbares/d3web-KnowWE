@@ -18,6 +18,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.progress.DownloadFileAction;
 import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.testcases.ProviderTriple;
@@ -115,9 +116,7 @@ public class DownloadCaseAction extends AbstractAction {
 	}
 
 	private boolean userCanView(UserActionContext context, Section<?> section) {
-		return Environment.getInstance().getWikiConnector().userCanViewArticle(
-				section.getTitle(),
-				context.getRequest());
+		return KnowWEUtils.canView(section, context);
 	}
 
 	private ProviderTriple getSelectedTestCaseTriple(Section<?> section, UserActionContext context) {

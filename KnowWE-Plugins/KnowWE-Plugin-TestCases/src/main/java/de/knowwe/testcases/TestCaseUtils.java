@@ -64,6 +64,7 @@ import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.table.KnowWEConditionCheck;
@@ -141,8 +142,7 @@ public class TestCaseUtils {
 		List<ProviderTriple> testCaseProviders = getTestCaseProviders(section);
 		List<ProviderTriple> filtered = new ArrayList<>();
 		for (ProviderTriple triple : testCaseProviders) {
-			boolean userCanViewCase = Environment.getInstance().getWikiConnector().userCanViewArticle(
-					triple.getB().getTitle(), context.getRequest());
+			boolean userCanViewCase = KnowWEUtils.canView(section, context);
 			if (userCanViewCase) {
 				filtered.add(triple);
 			}

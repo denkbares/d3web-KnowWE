@@ -396,37 +396,37 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean userCanEditArticle(String articlename, HttpServletRequest r) {
+	public boolean userCanEditArticle(String articlename, UserContext r) {
 		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
-	public boolean userCanUploadAttachment(String title, HttpServletRequest request) {
+	public boolean userCanUploadAttachment(String title, UserContext context) {
 		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
-	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
+	public boolean userCanViewArticle(String articlename, UserContext r) {
 		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
-	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
+	public boolean userCanDeleteArticle(String title, UserContext context) {
 		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
-	public boolean userCanCreateArticles(HttpServletRequest request) {
+	public boolean userCanCreateArticles(UserContext context) {
 		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
-	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest r) {
+	public boolean userIsMemberOfGroup(String groupname, UserContext r) {
 		warn("The used WikiConnector does not support user groups");
 		return false;
 	}

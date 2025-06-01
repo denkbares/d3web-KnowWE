@@ -67,7 +67,7 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 	private boolean userCanEditArticle(UserActionContext context, Article article) {
 		return Environment.getInstance()
 				.getWikiConnector()
-				.userCanEditArticle(article.getTitle(), context.getRequest());
+				.userCanEditArticle(article.getTitle(), context);
 	}
 
 	protected void appendReplacements(UserActionContext context, RenamingCommand renamingCommand, Map<Article, Map<String, String>> nodesMapByArticle) {

@@ -1656,7 +1656,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		}
 		if (!Environment.getInstance()
 				.getWikiConnector()
-				.userCanEditArticle(article.getTitle(), context.getRequest())) {
+				.userCanEditArticle(article.getTitle(), context)) {
 			forbiddenArticles.add(article.getTitle());
 			return true;
 		}

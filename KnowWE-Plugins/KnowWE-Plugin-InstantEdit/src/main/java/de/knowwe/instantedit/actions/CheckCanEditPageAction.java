@@ -19,7 +19,7 @@ public class CheckCanEditPageAction extends AbstractAction {
 		response.put(CAN_EDIT, false); // default
 
 		if (Environment.getInstance().getArticle(context.getWeb(), topic) != null) {
-			if (Environment.getInstance().getWikiConnector().userCanEditArticle(topic, context.getRequest())) {
+			if (Environment.getInstance().getWikiConnector().userCanEditArticle(topic, context)) {
 				response.put(CAN_EDIT, true);
 			}
 		}

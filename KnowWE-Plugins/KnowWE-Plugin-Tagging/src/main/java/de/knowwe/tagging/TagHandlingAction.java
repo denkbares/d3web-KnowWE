@@ -55,7 +55,7 @@ public class TagHandlingAction extends AbstractAction {
 			return "error! null topic";
 		}
 		boolean b = Environment.getInstance().getWikiConnector().userCanEditArticle(topic,
-				context.getRequest());
+				context);
 
 		if (b == false) {
 			return "Your are not allowed to edit page";

@@ -45,6 +45,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.fingerprint.Fingerprint;
 import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.WikiFileProviderUtils;
@@ -180,8 +181,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 	}
 
 	private static boolean checkRights(Article article, UserActionContext context) {
-		JSPWikiConnector con = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		return con.userCanViewArticle(article.getTitle(), context.getRequest());
+		return KnowWEUtils.canView(article, context);
 	}
 
 	/**

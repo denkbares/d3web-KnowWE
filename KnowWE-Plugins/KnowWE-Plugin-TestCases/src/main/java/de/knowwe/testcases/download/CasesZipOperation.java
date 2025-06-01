@@ -42,6 +42,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
 import de.knowwe.core.utils.progress.LongOperationUtils;
@@ -175,9 +176,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 	}
 
 	private boolean userCanView(UserActionContext context, Section<?> section) {
-		return Environment.getInstance().getWikiConnector().userCanViewArticle(
-				section.getTitle(),
-				context.getRequest());
+		return KnowWEUtils.canView(section, context);
 	}
 
 	@Override

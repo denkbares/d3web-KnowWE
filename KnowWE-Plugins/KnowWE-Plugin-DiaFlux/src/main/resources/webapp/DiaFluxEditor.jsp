@@ -75,7 +75,7 @@
 	}
 
 	WikiConnector connector = Environment.getInstance().getWikiConnector();
-	boolean canEditPage = connector.userCanEditArticle(topic, context.getRequest());
+	boolean canEditPage = connector.userCanEditArticle(topic, context);
 
 	if (!canEditPage) {
 		out.println("<h3>Do not have the permission to edit article: '" + topic + "'.</h3>");

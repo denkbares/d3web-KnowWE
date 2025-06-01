@@ -48,6 +48,7 @@ import java.util.zip.ZipInputStream;
 import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;
@@ -195,7 +196,7 @@ public class JSPWikiConnector implements WikiConnector {
 			 * As we need/must not have the async process step, we just make the normalization here
 			 * and call putPageText() directly.
 			 */
-			final String proposedText = TextUtil.normalizePostData( content );
+			final String proposedText = TextUtil.normalizePostData(content);
 
 			getPageManager().putPageText(wp, proposedText);
 			reindex(title);
@@ -937,40 +938,40 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean userCanEditArticle(String title, HttpServletRequest request) {
+	public boolean userCanEditArticle(String title, UserContext context) {
 		if (KnowWEUtils.isAttachmentArticle(title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
-		return checkPagePermission(title, request, "edit");
+		return checkPagePermission(title, context, "edit");
 	}
 
 	@Override
-	public boolean userCanUploadAttachment(String title, HttpServletRequest request) {
+	public boolean userCanUploadAttachment(String title, UserContext context) {
 		if (KnowWEUtils.isAttachmentArticle(title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
-		return checkPagePermission(title, request, "upload");
+		return checkPagePermission(title, context, "upload");
 	}
 
 	@Override
-	public boolean userCanViewArticle(String title, HttpServletRequest request) {
-		return checkPagePermission(title, request, "view");
+	public boolean userCanViewArticle(String title, UserContext context) {
+		return checkPagePermission(title, context, "view");
 	}
 
 	@Override
-	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
+	public boolean userCanDeleteArticle(String title, UserContext context) {
 		if (KnowWEUtils.isAttachmentArticle(title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
-		return checkPagePermission(title, request, "delete");
+		return checkPagePermission(title, context, "delete");
 	}
 
 	@Override
-	public boolean userCanCreateArticles(HttpServletRequest request) {
+	public boolean userCanCreateArticles(UserContext context) {
 		if (ReadOnlyManager.isReadOnly()) return false;
-		return checkWikiPermission(request, "createPages");
+		return checkWikiPermission(context, "createPages");
 	}
 
-	private boolean checkPagePermission(String title, HttpServletRequest request, String permission) {
+	private boolean checkPagePermission(String title, UserContext context, String permission) {
 		WikiPage page = new WikiPage(getEngine(), title);
-		Session wikiSession = WikiSession.getWikiSession(getEngine(), request);
+		Session wikiSession = getWikiSession(getEngine(), context);
 
 		PagePermission pp = PermissionFactory.getPagePermission(page, permission);
 		try {
@@ -983,22 +984,34 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
+	public static Session getWikiSession(final Engine engine, final UserContext context) {
+		HttpSession session = context.getSession();
+		if (session == null) {
+			LOGGER.debug("Looking up WikiSession for NULL HttpRequest: returning guestSession()");
+			return WikiSession.guestSession(engine);
+		}
+
+		// Look for a WikiSession associated with the user's Http Session and create one if it isn't there yet.
+		final SessionMonitor monitor = SessionMonitor.getInstance(engine);
+		return monitor.find(session);
+	}
+
 	public AuthorizationManager getAuthorizationManager() {
 		return getEngine().getManager(AuthorizationManager.class);
 	}
 
-	private boolean checkWikiPermission(HttpServletRequest request, String permissionsCSV) {
+	private boolean checkWikiPermission(UserContext context, String permissionsCSV) {
 		WikiPermission wikiPermission = new WikiPermission(getEngine().getApplicationName(), permissionsCSV);
-		Session wikiSession = WikiSession.getWikiSession(getEngine(), request);
+		Session wikiSession = getWikiSession(getEngine(), context);
 		return getAuthorizationManager().checkPermission(wikiSession, wikiPermission);
 	}
 
 	@Override
-	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest request) {
+	public boolean userIsMemberOfGroup(String groupname, UserContext userContext) {
 
 		// which article is not relevant
 		String articleName = "Main";
-		WikiContext context = new WikiContext(getEngine(), request, getPageManager().getPage(articleName));
+		WikiContext context = new WikiContext(getEngine(), userContext.getRequest(), getPageManager().getPage(articleName));
 
 		Principal[] principals = context.getWikiSession().getRoles();
 
@@ -1017,12 +1030,12 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String getUserMail(UserContext user) {
 		// TODO : find some way to retrieve the mail address from the userdatabase.xml - Seems to be very hard task :(
-		if(user instanceof ActionContext actionContext) {
+		if (user instanceof ActionContext actionContext) {
 			// not working either
 			AuthenticationManager manager = actionContext.getManager();
 			return manager.getMailAddress();
 		}
-		else{
+		else {
 			LOGGER.error("Failed to obtain user profile for user: " + user);
 			return null;
 		}

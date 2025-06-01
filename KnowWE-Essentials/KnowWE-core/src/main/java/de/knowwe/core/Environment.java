@@ -20,6 +20,7 @@ import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
@@ -266,7 +267,7 @@ public final class Environment {
 		configureLogging();
 	}
 
-	public Article updateArticle(String title, String author, String content, boolean fullParse, HttpServletRequest httpRequest) throws InterruptedException,
+	public Article updateArticle(String title, String author, String content, boolean fullParse, UserContext context) throws InterruptedException,
 			UpdateNotAllowedException {
 
 		ArticleManager articleManager = getDefaultArticleManager();
@@ -279,7 +280,7 @@ public final class Environment {
 		String cleanedContent = Article.cleanupText(content);
 		boolean contentChange = !originalText.equals(cleanedContent);
 		if (contentChange || fullParse) {
-			if (contentChange && !Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
+			if (contentChange && !Environment.getInstance().getWikiConnector().userCanEditArticle(title, context)) {
 				throw new UpdateNotAllowedException();
 			}
 

@@ -426,9 +426,10 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		boolean fullParse = isFullParse(httpRequest);
 		if (fullParse) httpRequest.setAttribute(FULL_PARSE_FIRED, true);
 
+		JSPWikiUserContext context = new JSPWikiUserContext(wikiContext, UserContextUtil.getParameters(httpRequest));
 		return Environment.getInstance()
 				.updateArticle(wikiContext.getRealPage().getName(), wikiContext.getCurrentUser()
-						.getName(), content, fullParse, httpRequest);
+						.getName(), content, fullParse, context);
 	}
 
 	private static boolean isFullParse(HttpServletRequest httpRequest) {

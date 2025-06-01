@@ -38,7 +38,7 @@ public class RestoreAction extends AbstractAction {
 		// restore old version
 		String title = context.getTitle();
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		if (!wikiConnector.userCanEditArticle(title, context.getRequest())) {
+		if (!wikiConnector.userCanEditArticle(title, context)) {
 			context.sendError(403, "You are not allowed to change version of this article.");
 			return;
 		}

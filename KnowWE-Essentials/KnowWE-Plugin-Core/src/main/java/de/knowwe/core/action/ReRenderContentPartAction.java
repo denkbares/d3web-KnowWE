@@ -241,6 +241,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 	private static class ReadOnlyHttpSession implements HttpSession {
 		private final Map<String, Object> attributes = new ConcurrentHashMap<>();
+		private final String id;
 
 		public ReadOnlyHttpSession(HttpSession session) {
 			Iterator<String> iterator = session.getAttributeNames().asIterator();
@@ -248,6 +249,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 				String attributeName = iterator.next();
 				attributes.put(attributeName, session.getAttribute(attributeName));
 			}
+			this.id = session.getId();
 		}
 
 		@Override
@@ -267,7 +269,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		@Override
 		public String getId() {
-			throw new UnsupportedOperationException();
+			return id;
 		}
 
 		@Override

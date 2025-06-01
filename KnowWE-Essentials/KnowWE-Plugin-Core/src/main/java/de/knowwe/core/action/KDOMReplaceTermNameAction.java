@@ -65,7 +65,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		// Check for user access
 		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(name,
-				context.getRequest())) {
+				context)) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}

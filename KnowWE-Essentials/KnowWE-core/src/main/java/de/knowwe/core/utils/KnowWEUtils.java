@@ -379,7 +379,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canCreatePages(final UserContext context) {
-		return Environment.getInstance().getWikiConnector().userCanCreateArticles(context.getRequest());
+		return Environment.getInstance().getWikiConnector().userCanCreateArticles(context);
 	}
 
 	/**
@@ -395,7 +395,7 @@ public class KnowWEUtils {
 		// try nine times with catching unexpected exception from AuthorizationManager
 		for (int i = 0; i < 9; i++) {
 			try {
-				return connector.userCanViewArticle(article.getTitle(), context.getRequest());
+				return connector.userCanViewArticle(article.getTitle(), context);
 			}
 			catch (final ConcurrentModificationException e) {
 				// do nothing a few times, because we have no influence here
@@ -404,7 +404,7 @@ public class KnowWEUtils {
 		}
 		// finally, if not passed successfully,
 		// try last time throwing the exception
-		return connector.userCanViewArticle(article.getTitle(), context.getRequest());
+		return connector.userCanViewArticle(article.getTitle(), context);
 	}
 
 	/**
@@ -475,7 +475,7 @@ public class KnowWEUtils {
 	 */
 	public static boolean canWrite(final String articleTitle, final UserContext user) {
 		return Environment.getInstance().getWikiConnector().userCanEditArticle(
-				articleTitle, user.getRequest());
+				articleTitle, user);
 	}
 
 	/**
@@ -488,7 +488,7 @@ public class KnowWEUtils {
 	 */
 	public static boolean canWrite(final Article article, final UserContext user) {
 		return Environment.getInstance().getWikiConnector().userCanEditArticle(
-				article.getTitle(), user.getRequest());
+				article.getTitle(), user);
 	}
 
 	/**
@@ -501,7 +501,7 @@ public class KnowWEUtils {
 	 */
 	public static boolean canUpload(final Article article, final UserContext user) {
 		return Environment.getInstance().getWikiConnector().userCanUploadAttachment(
-				article.getTitle(), user.getRequest());
+				article.getTitle(), user);
 	}
 
 	/**
@@ -559,7 +559,7 @@ public class KnowWEUtils {
 	public static boolean isInGroup(final String groupName, final UserContext user) {
 		return Environment.getInstance()
 				.getWikiConnector()
-				.userIsMemberOfGroup(groupName, user.getRequest());
+				.userIsMemberOfGroup(groupName, user);
 	}
 
 	/**

@@ -45,7 +45,7 @@ public class CreateObjectHomePageAction extends AbstractAction {
 		// We assume that the user is privileged to create a new article if
 		// he is allowed to edit the current article
 		if (Environment.getInstance().getWikiConnector().userCanEditArticle(currentArticle,
-				context.getRequest())) {
+				context)) {
 
 			// Article doesn't exist -> create it!
 			if (objectName != null
