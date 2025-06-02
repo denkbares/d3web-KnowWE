@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -226,16 +225,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		if (lns == null) {
-			String baseUrl;
-			try {
-				baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
-				new URL(baseUrl); // check if we have a valid url or just context root
-			}
-			catch (Exception e) {
-				LOGGER.warn("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
-				baseUrl = "http://localhost:8080/KnowWE/";
-			}
-			lns = baseUrl + "Wiki.jsp?page=";
+			lns = Rdf2GoUtils.getLocalNamespace();
 		}
 		this.lns = lns;
 		this.ruleSet = reasoning;
@@ -247,6 +237,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		LOGGER.info("Rdf2GoCore '" + coreName + "' initialized");
 	}
+
 
 	public String getName() {
 		return name;

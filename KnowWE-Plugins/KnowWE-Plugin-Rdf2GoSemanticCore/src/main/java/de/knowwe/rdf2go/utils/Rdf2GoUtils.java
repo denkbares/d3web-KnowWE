@@ -21,6 +21,7 @@ package de.knowwe.rdf2go.utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +47,7 @@ import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -64,6 +66,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.strings.Text;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -80,11 +83,32 @@ public class Rdf2GoUtils {
 
 	private static final SimpleDateFormat PRIVATE_XSD_DATE_TIME_FORMAT = getXsdDateTimeFormat();
 
+	private static final String staticLns = generateLocalNamespace();
+
 	/**
 	 * We might want to move the value factory into the semantic core or even the underlying repository or sail, because
 	 * here in the Rdf2GoCore, we cannot control all the value generation.
 	 */
 	private static final OptimizedMemValueFactory valueFactory = new OptimizedMemValueFactory();
+
+	public static @NotNull String getLocalNamespace() {
+		return staticLns;
+	}
+
+	private static @NotNull String generateLocalNamespace() {
+		String lns;
+		String baseUrl;
+		try {
+			baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+			new URL(baseUrl); // check if we have a valid url or just context root
+		}
+		catch (Exception e) {
+			LOGGER.warn("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
+			baseUrl = "http://localhost:8080/KnowWE/";
+		}
+		lns = baseUrl + "Wiki.jsp?page=";
+		return lns;
+	}
 
 	public static String getReadableQuery(String query, SparqlType type) {
 		query = query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
@@ -174,12 +198,13 @@ public class Rdf2GoUtils {
 		return resultCollection;
 	}
 
-	private static final String SPARQL_LABEL = "<%1$s> rdfs:label ?rdfsLabel .\n" +
-			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel . }\n" +
-			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#altLabel> ?altLabel . }\n" +
-			"BIND ( IF ( BOUND (?prefLabel), ?prefLabel, \n" +
-			"     \t\tIF ( BOUND (?altLabel), ?altLabel, ?rdfsLabel ) )\n" +
-			"     \t AS ?label ) .";
+	private static final String SPARQL_LABEL = """
+			<%1$s> rdfs:label ?rdfsLabel .
+			OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel . }
+			OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#altLabel> ?altLabel . }
+			BIND ( IF ( BOUND (?prefLabel), ?prefLabel,\s
+			     \t\tIF ( BOUND (?altLabel), ?altLabel, ?rdfsLabel ) )
+			     \t AS ?label ) .""";
 
 	/**
 	 * Returns a rdfs:label of the given concept in the given language, if existing.
@@ -605,11 +630,11 @@ public class Rdf2GoUtils {
 	}
 
 	public static org.eclipse.rdf4j.model.Literal createDoubleLiteral(Rdf2GoCore core, double d) {
-		return core.createDatatypeLiteral(getDoubleAsString(d), XMLSchema.DOUBLE);
+		return core.createDatatypeLiteral(getDoubleAsString(d), XSD.DOUBLE);
 	}
 
 	public static org.eclipse.rdf4j.model.Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
-		return core.createDatatypeLiteral(createDateTimeString(date), XMLSchema.DATETIME);
+		return core.createDatatypeLiteral(createDateTimeString(date), XSD.DATETIME);
 	}
 
 	@NotNull
