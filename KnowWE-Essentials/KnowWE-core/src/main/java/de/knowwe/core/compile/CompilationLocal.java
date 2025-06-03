@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
@@ -96,6 +97,26 @@ public final class CompilationLocal<E> {
 	}
 
 	/**
+	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. It will
+	 * only be stored in the cache if the provided condition of the boolean supplier is true. Use this
+	 * method, if the object is dependent on a section. The section, together with the cacheKey, will be used to store
+	 * the object in the cache. The object is available/valid during the given compilers current compile phase and, in
+	 * case of an incremental compiler, also during destroy phase of the next compilation. It will be cleared, as soon
+	 * as the compiler is removed/destroyed or the compiler start the compile phase of the next compilation.
+	 * Use method {@link #removeCache(Compiler, Section, Object)} to remove the cached object even sooner.
+	 *
+	 * @param compiler the compiler the cache refers to
+	 * @param section  the section by which the supplier/result is cached
+	 * @param cacheKey the object by which the supplier/result is cached
+	 * @param supplier the supplier generating the object to be cached
+	 * @param <L>      the type of the object to be generated
+	 * @return a cached or newly generated instance of the object provided by the supplier
+	 */
+	public static <L> L getCachedIf(@NotNull Compiler compiler, @NotNull Section<?> section, @NotNull Object cacheKey, @NotNull Supplier<L> supplier, @NotNull BooleanSupplier condition) {
+		return getCachedIf(compiler, new Pair<>(section, cacheKey), supplier, condition);
+	}
+
+	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
 	 * is available/valid during the given compilers current compile phase and, in case of an incremental compiler,
 	 * also during destroy phase of the next compilation. It will be cleared, as soon as the compiler is
@@ -112,6 +133,32 @@ public final class CompilationLocal<E> {
 		//noinspection unchecked
 		return (L) compilerCache.computeIfAbsent(compiler, cm -> new ConcurrentHashMap<>())
 				.computeIfAbsent(cacheKey, ck -> new CompilationLocal<>(supplier)).get();
+	}
+
+	/**
+	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. It will
+	 * only be stored in the cache if the provided condition of the boolean supplier is true. The object is
+	 * available/valid during the given compilers current compile phase and, in case of an incremental compiler,
+	 * also during destroy phase of the next compilation. It will be cleared, as soon as the compiler is
+	 * removed/destroyed or the compiler start the compile phase of the next compilation.
+	 * Use method {@link #removeCache(Compiler, Object)} to remove the cached object even sooner.
+	 *
+	 * @param compiler  the compiler the cache refers to
+	 * @param cacheKey  the object by which the supplier/result is cached
+	 * @param supplier  the supplier generating the object to be cached
+	 * @param condition the condition when the object provided by the supplier should be stored in the cache
+	 * @param <L>       the type of the object to be generated
+	 * @return a cached or newly generated instance of the object provided by the supplier
+	 */
+	public static <L> L getCachedIf(@NotNull Compiler compiler, @NotNull Object cacheKey, @NotNull Supplier<L> supplier, @NotNull BooleanSupplier condition) {
+		if (condition.getAsBoolean()) {
+			return getCached(compiler, cacheKey, supplier);
+		}
+		else {
+			Map<Object, CompilationLocal<?>> cache = compilerCache.computeIfAbsent(compiler, cm -> new ConcurrentHashMap<>());
+			//noinspection unchecked
+			return cache.containsKey(cacheKey) ? (L) cache.get(cacheKey).get() : supplier.get();
+		}
 	}
 
 	/**
