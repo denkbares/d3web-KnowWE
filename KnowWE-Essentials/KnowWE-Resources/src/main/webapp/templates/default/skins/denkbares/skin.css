@@ -165,7 +165,6 @@ blockquote p {
 }
 
 div.pagename a:hover {
-	color: var(--hover-text-color-pagename);
 	text-decoration: none;
 }
 
