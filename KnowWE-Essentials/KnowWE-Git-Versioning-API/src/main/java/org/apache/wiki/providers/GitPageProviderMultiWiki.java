@@ -22,12 +22,11 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.ProviderException;
 
+import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
 /**
@@ -54,7 +53,7 @@ public class GitPageProviderMultiWiki extends FileSystemProviderMultiWiki {
 		GitConnector gitConnector = getGitConnector(page);
 		gitConnector.commit().addPath(mangleWikiFile(SubWikiUtils.getLocalPageName(page.getName())));
 		// TODO: handle user data
-		gitConnector.commit().commitForUser(new UserData("user", "mail", message));
+		gitConnector.commit().commitForUser(new CommitUserData("user", "mail", message));
 	}
 
 	@Override
@@ -72,7 +71,7 @@ public class GitPageProviderMultiWiki extends FileSystemProviderMultiWiki {
 		GitConnector gitConnector = getGitConnector(page);
 		File pagePropertiesFile = getPagePropertiesFile(page);
 		gitConnector.commit().addPath(pagePropertiesFile.getName());
-		gitConnector.commit().commitForUser(new UserData("user?", "mail?", ""));
+		gitConnector.commit().commitForUser(new CommitUserData("user?", "mail?", ""));
 	}
 
 	private GitConnector getGitConnector(Page page) {

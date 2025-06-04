@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Engine;
@@ -52,8 +51,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.UserData;
 
 import static org.apache.wiki.gitBridge.JSPUtils.getAttachmentDir;
 import static org.apache.wiki.gitBridge.JSPUtils.getPath;
@@ -277,7 +276,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 	private void setAttachmentDataFromCommit(Attachment att, String commit) {
 		long epochTimeInSeconds = this.gitConnector.log().commitTimeFor(commit);
-		UserData userData = this.gitConnector.log().userDataFor(commit);
+		CommitUserData userData = this.gitConnector.log().commitUserDataFor(commit);
 
 		att.setAttribute(Attachment.CHANGENOTE, userData.message);
 		att.setAuthor(userData.user);
@@ -337,7 +336,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 	@NotNull
 	private Attachment fillAttachmentMetadata(Attachment att, int version, String commitHash) {
-		UserData userData = this.gitConnector.log().userDataFor(commitHash);
+		CommitUserData userData = this.gitConnector.log().commitUserDataFor(commitHash);
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			Attachment attVersion = new org.apache.wiki.attachment.Attachment(engine, att.getParentName(), att.getFileName());
@@ -413,7 +412,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			//TODO this filelock is pretty bad to be used in here!
 			gitVersioningFileProvider.commitLock();
 
-			UserData userData = this.gitVersioningFileProvider.getDelegate()
+			CommitUserData userData = this.gitVersioningFileProvider.getDelegate()
 					.getUserData(att.getAuthor(), getMessage(att));
 			//TODO commit only filepath?
 			String commitHash = this.gitConnector.commit().commitForUser(userData);
@@ -489,7 +488,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		}
 
 		//remove old files
-		UserData userData = this.gitVersioningFileProvider.getDelegate().getUserData(oldParent.getAuthor(), comment);
+		CommitUserData userData = this.gitVersioningFileProvider.getDelegate().getUserData(oldParent.getAuthor(), comment);
 		this.gitConnector.commit().deletePaths(oldPaths, userData, true);
 		//add new files
 		this.gitConnector.commit().addPaths(newPaths);

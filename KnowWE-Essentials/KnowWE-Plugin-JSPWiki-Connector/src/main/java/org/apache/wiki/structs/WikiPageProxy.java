@@ -3,7 +3,6 @@ package org.apache.wiki.structs;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.providers.GitVersioningUtils;
@@ -11,8 +10,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.jetbrains.annotations.NotNull;
 
+import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.UserData;
 
 public class WikiPageProxy extends WikiPage {
 
@@ -55,7 +54,7 @@ public class WikiPageProxy extends WikiPage {
 		if (commitHashes == null || commitHashes.isEmpty()) {
 			return null;
 		}
-		UserData userData = this.gitConnector.log().userDataFor(commitHashes.get(commitHashes.size() - 1));
+		CommitUserData userData = this.gitConnector.log().commitUserDataFor(commitHashes.get(commitHashes.size() - 1));
 		super.setAuthor(userData.user);
 		//Note: this is a workaround, if i would determine the version in the corresponding method the code would end up to slow..
 		if (this.getVersion() == -1) {
@@ -81,7 +80,7 @@ public class WikiPageProxy extends WikiPage {
 	}
 
 	@NotNull
-	public static WikiPage fromUserData(String pageName, int version, UserData userData, long fileSize, Date commitTime, Engine engine) {
+	public static WikiPage fromUserData(String pageName, int version, CommitUserData userData, long fileSize, Date commitTime, Engine engine) {
 		final WikiPage page = new WikiPage(engine, pageName);
 
 		page.setAuthor(userData.user);

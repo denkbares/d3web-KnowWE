@@ -38,7 +38,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -66,8 +65,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.UserData;
 import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
@@ -206,7 +205,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			this.openCommits.get(page.getAuthor()).add(changedFile.getName());
 		}
 		else {
-			UserData userdata = getUserData(page.getAuthor(), comment);
+			CommitUserData userdata = getUserData(page.getAuthor(), comment);
 			String commitHash = this.gitConnector.commit().changePath(changedFile.toPath(), userdata);
 			fireWikiEvent(GitVersioningWikiEvent.UPDATE, page.getAuthor(), List.of(page.getName()), commitHash);
 		}
@@ -330,7 +329,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	private @NotNull WikiPage createWikiPageFromCommitHash(PageIdentifier pageIdentifier, String commitHash, int version) {
 		//mark page as to be refreshed TODO why???
 		this.refreshCacheList.add(pageIdentifier.pageName());
-		UserData userData = this.gitConnector.log().userDataFor(commitHash);
+		CommitUserData userData = this.gitConnector.log().commitUserDataFor(commitHash);
 		long filesize = this.gitConnector.log().getFilesizeForCommit(commitHash, pageIdentifier.fileName());
 		long timeInSeconds = this.gitConnector.log().commitTimeFor(commitHash);
 		Date date = Date.from(Instant.ofEpochSecond(timeInSeconds));
@@ -390,7 +389,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		if (page.getAuthor() == null) {
 			String commitHash = this.gitConnector.log().commitHashForFileAndVersion(file.getName(), page.getVersion());
-			UserData userData = this.gitConnector.log().userDataFor(commitHash);
+			CommitUserData userData = this.gitConnector.log().commitUserDataFor(commitHash);
 			page.setAuthor(userData.user);
 		}
 
@@ -409,7 +408,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		fireWikiEvent(GitVersioningWikiEvent.DELETE, page.getAuthor(), List.of(page.getName()), commitHash);
 	}
 
-	public UserData getUserData(String author, String comment) {
+	public CommitUserData getUserData(String author, String comment) {
 		UserProfile userProfile = getUserProfile(author);
 		String userName = author;
 		String email = "";
@@ -417,7 +416,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			userName = userProfile.getFullname();
 			email = userProfile.getEmail();
 		}
-		return new UserData(userName, email, comment);
+		return new CommitUserData(userName, email, comment);
 	}
 
 	@Override
@@ -448,7 +447,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 		else {
 			String comment = gitCommentStrategy.getComment(from, "renamed page " + from + " to " + to);
-			UserData userData = getUserData(author, comment);
+			CommitUserData userData = getUserData(author, comment);
 			String commitHash = this.gitConnector.commit().moveFile(fromFile.toPath(), toFile.toPath(), userData.user, userData.email, userData.message);
 			fireWikiEvent(GitVersioningWikiEvent.MOVED, author, List.of(to), commitHash);
 		}
