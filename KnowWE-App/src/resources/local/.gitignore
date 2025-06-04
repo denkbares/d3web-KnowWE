@@ -3,3 +3,4 @@ jspwiki-custom-*.properties
 jspwiki-custom.properties.bak
 jspwiki.policy.bak
 ehcache.xml
+ehcache-jspwiki.xml
