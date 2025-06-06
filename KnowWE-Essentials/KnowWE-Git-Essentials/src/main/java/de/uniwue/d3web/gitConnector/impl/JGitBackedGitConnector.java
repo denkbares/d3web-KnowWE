@@ -288,6 +288,14 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String forceCherryPick(String commit) {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.forceCherryPick(commit);
+		}
+		return this.jgitConnector.forceCherryPick(commit);
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFile(file);

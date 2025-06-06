@@ -432,4 +432,7 @@ public interface GitConnector {
 	String commitEquivalentOnBranch(String commit, String onBranch);
 
 	boolean deleteBranch(String featureBranchname);
+
+	//cherry picks and forces the changes of the commit onto ours
+	String forceCherryPick(String commit);
 }

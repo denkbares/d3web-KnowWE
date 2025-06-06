@@ -513,4 +513,9 @@ public class CachingGitConnector implements GitConnector {
 	public boolean deleteBranch(String featureBranchname) {
 		return this.delegate.deleteBranch(featureBranchname);
 	}
+
+	@Override
+	public String forceCherryPick(String commit) {
+		return this.delegate.forceCherryPick(commit);
+	}
 }

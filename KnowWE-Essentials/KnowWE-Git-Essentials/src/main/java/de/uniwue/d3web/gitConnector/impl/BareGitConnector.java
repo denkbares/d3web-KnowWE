@@ -981,6 +981,27 @@ public class BareGitConnector implements GitConnector {
 		return false;
 	}
 
+	@Override
+	public String forceCherryPick(String commit) {
+		if (commit==null) {
+			return "";
+		}
+		UserData userdata = userDataFor(commit);
+
+		Map<String, String> environment = new HashMap<>();
+		environment.put("GIT_COMMITTER_NAME", userdata.user);
+		environment.put("GIT_COMMITTER_EMAIL", userdata.email);
+
+		String[] command = { "git", "cherry-pick",  "-X", "theirs", commit, "--" };
+		String cherryPickResult = RawGitExecutor.executeGitCommandWithEnvironment(command, this.repositoryPath, environment);
+		if (cherryPickResult.contains("error:") || cherryPickResult.contains("CONFLICT")
+				|| cherryPickResult.contains("Automatic cherry-pick failed") || cherryPickResult.contains("all conflicts fixed:")) {
+			return cherryPickResult;
+		}
+		//an empty string signals success (OMG such great implementation!)
+		return "";
+	}
+
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {
 		LOGGER.info("Init BareGitConnector at path: " + repositoryPath);
 		File file = new File(repositoryPath);

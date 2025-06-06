@@ -386,6 +386,11 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String forceCherryPick(String commit) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		long time = System.currentTimeMillis();
 		Iterable<RevCommit> commitIterable = null;
