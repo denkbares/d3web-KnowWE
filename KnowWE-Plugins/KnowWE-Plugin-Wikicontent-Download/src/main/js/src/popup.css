@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-.snapshot-popup-content.popup-content {
+#popup-root .snapshot-popup-content.popup-content {
 	max-width: 60rem;
 	padding: 0;
 	border-radius: 0.2rem;
@@ -43,8 +43,8 @@
 
 		.buttons {
 			text-align: right;
-			margin-top: 1rem;
-			margin-right: 1rem;
+			margin-top: 2rem;
+			margin-right: 2rem;
 		}
 	}
 
@@ -54,14 +54,50 @@
 	}
 
 	main {
-		margin-top: 1.5rem;
+		margin-top: 2rem;
 		font-size: 1.2rem;
+
+		form {
+			.input-group {
+				max-width: 40rem;
+				width: 100%;
+				margin: 1rem 0;
+			}
+
+			label {
+				display: block;
+				margin-bottom: 0.2rem;
+				font-weight: 600;
+				font-size: 1rem;
+				color: #2B2B2B;
+			}
+
+			input {
+				display: block;
+				width: 100%;
+				padding: 0.4rem 1.15rem;
+				border-radius: 0.25rem;
+				border: 1px solid #E5E5E5;
+				background-color: #D9D9D9;
+				font-size: 1.2rem;
+				font-weight: 400;
+			}
+
+			input:focus-within {
+				border: 1px solid #6C6C6C;
+			}
+		}
+
+		.select {
+			width: 20rem;
+			margin: 1rem 0;
+		}
 	}
 
 	footer {
 		display: flex;
 		gap: 1rem;
-		margin-top: 2.5rem;
+		margin-top: 3rem;
 		margin-bottom: 4rem;
 	}
 }

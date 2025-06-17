@@ -22,8 +22,9 @@
 
 	/* normalize */
 
-	button, h1, h2, h3 {
+	button, h1, h2, h3, h4, h5, pre, .info {
 		margin: 0;
+		padding: 0;
 	}
 
 	input {
@@ -37,6 +38,7 @@
 
 	a, a:hover {
 		color: black;
+		text-decoration: none;
 	}
 
 	ul, ol {
@@ -47,8 +49,17 @@
 	.btn {
 		padding: 0.35rem 0.9rem;
 		font-weight: 500;
-		font-size: 1.0rem;
+		font-size: 1.1rem;
 		transition: background-color 0.1s;
+	}
+
+	.btn-small {
+		padding: 0.175rem 0.7rem;
+	}
+
+	.btn-default:hover {
+		background-color: var(--hover-bg-color-btn-default);
+		color: var(--hover-text-color-btn-default);
 	}
 
 	.btn-default {
@@ -59,10 +70,22 @@
 	.btn-unavailable {
 		color: #fff;
 		background-color: #828282;
+		cursor: not-allowed;
 	}
 
 	.btn-danger {
 		background-color: var(--text-color-error);
+	}
+
+	pre, .info {
+		background-color: unset;
+		border: none;
+	}
+
+	code {
+		font-family: "JetBrains Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, "Courier New", monospace;
+		background: none;
+		border-radius: 0;
 	}
 
 	.truncate {
@@ -77,5 +100,14 @@
 
 	.absolute {
 		position: absolute;
+	}
+
+	.flex {
+		display: flex;
+		align-items: center;
+	}
+
+	i.transform-down {
+		transform: rotate(90deg);
 	}
 }
