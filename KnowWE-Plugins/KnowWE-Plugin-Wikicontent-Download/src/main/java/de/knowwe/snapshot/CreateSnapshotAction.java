@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jgit.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +29,7 @@ public class CreateSnapshotAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		if (!KnowWEUtils.isAdmin(context)) {
-			context.sendError(403, "Only for Admins available ");
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, "Only for Admins available ");
 			return;
 		}
 		try {
@@ -35,7 +37,7 @@ public class CreateSnapshotAction extends AbstractAction {
 			DownloadFileAction.writeFileToDownloadStream(context, new File(TmpFileDownloadToolProvider.getTmpFileFolder(), createdFileName), createdFileName, false);
 		}
 		catch (IOException e) {
-			context.sendError(500, e.getMessage());
+			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
 

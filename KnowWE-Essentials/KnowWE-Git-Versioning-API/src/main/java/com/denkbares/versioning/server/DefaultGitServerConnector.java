@@ -76,7 +76,8 @@ public class DefaultGitServerConnector implements GitServerConnector {
 			}
 
 			cloneRepo(repoName, branch, gitDir);
-		} else {
+		}
+		else {
 			// this is a weird case that does a normal pull on the existing repo
 		}
 		return true;

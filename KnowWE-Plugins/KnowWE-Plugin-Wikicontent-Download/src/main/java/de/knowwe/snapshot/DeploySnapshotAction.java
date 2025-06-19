@@ -15,6 +15,8 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,12 +45,12 @@ public class DeploySnapshotAction extends SnapshotAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		if (!KnowWEUtils.isAdmin(context)) {
-			context.sendError(403, "Only for Admins available ");
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, "Only for Admins available ");
 			return;
 		}
 		String deployFilename = context.getParameter(KEY_DEPLOY_FILENAME);
 		if (deployFilename == null || deployFilename.isBlank()) {
-			context.sendError(404, "Mandatory parameter not found: " + KEY_DEPLOY_FILENAME);
+			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Mandatory parameter not found: " + KEY_DEPLOY_FILENAME);
 			return;
 		}
 
@@ -57,7 +59,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 
 		// if not present, sent error
 		if (!repoSnapshot.exists()) {
-			context.sendError(404, "Specified deploy snapshot file not found: " + deployFilename);
+			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Specified deploy snapshot file not found: " + deployFilename);
 			return;
 		}
 
@@ -81,7 +83,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 			Environment.getInstance().reinitializeForNewWikiContent();
 		}
 		catch (IOException e) {
-			context.sendError(500, "Error on re-initialization of new wiki content: " + e.getMessage());
+			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error on re-initialization of new wiki content: " + e.getMessage());
 			return;
 		}
 
