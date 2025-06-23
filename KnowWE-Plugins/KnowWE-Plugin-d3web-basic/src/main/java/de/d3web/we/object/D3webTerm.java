@@ -63,7 +63,8 @@ public interface D3webTerm<TermObject extends NamedObject> extends Term, Composi
 
 	@Override
 	default boolean showToolForIdentifier(TermCompiler compiler, Identifier identifier) {
-		return getTerminologyObject((D3webCompiler) compiler, identifier) != null;
+		return compiler instanceof D3webCompiler d3webCompiler
+				&& getTerminologyObject(d3webCompiler, identifier) != null;
 	}
 
 	@Nullable
