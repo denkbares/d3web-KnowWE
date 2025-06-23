@@ -6,7 +6,9 @@ package com.denkbares.versioning.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -18,15 +20,15 @@ import org.slf4j.LoggerFactory;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
-public class DefaultGitServerConnector implements GitServerConnector {
+public class GitLabGitServerConnector implements GitServerConnector {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultGitServerConnector.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
 	private final String repoManagementServerURL;
 
 	private final String gitRemoteURL;
 
-	public DefaultGitServerConnector(String repoManagementServerURL, String gitRemoteURL) {
+	public GitLabGitServerConnector(String repoManagementServerURL, String gitRemoteURL) {
 		this.repoManagementServerURL = repoManagementServerURL;
 		this.gitRemoteURL = gitRemoteURL;
 	}
@@ -45,19 +47,27 @@ public class DefaultGitServerConnector implements GitServerConnector {
 			cloneRepo(repoName, branch, gitDir);
 		}
 		else {
+			// only switches if we want another repo than the current one
 			boolean success = switchFolderToOtherRepoAndBranch(pullTargetFolder, repoName, branch);
 			if (!success) return null;
 		}
 		return getGitConnector(pullTargetFolder);
 	}
 
+	@Override
+	public List<String> listRepositories() throws HttpException {
+		return List.of();
+	}
+
+	@Override
 	public String getGitRemoteURL() {
 		return gitRemoteURL;
 	}
 
 	private boolean switchFolderToOtherRepoAndBranch(@NotNull String pullTargetFolder, @NotNull String repoName, @Nullable String branch) {
 		GitConnector oldGitConnector = getGitConnector(pullTargetFolder);
-		if (!oldGitConnector.repo().repoName().equals(repoName)) {
+		String oldRepoName = oldGitConnector.repo().repoName();
+		if (!oldRepoName.equals(repoName)) {
 			// we want another repo than currently initialized
 
 			if (!oldGitConnector.status().isClean()) {
