@@ -53,6 +53,10 @@
 		font-weight: 500;
 	}
 
+	.error-title {
+		color: red;
+	}
+
 	main {
 		margin-top: 2rem;
 		font-size: 1.2rem;
@@ -75,7 +79,7 @@
 			input {
 				display: block;
 				width: 100%;
-				padding: 0.4rem 1.15rem;
+				padding: 0.4rem 0.8rem;
 				border-radius: 0.25rem;
 				border: 1px solid #E5E5E5;
 				background-color: #D9D9D9;
@@ -85,6 +89,12 @@
 
 			input:focus-within {
 				border: 1px solid #6C6C6C;
+			}
+
+			.helper-text {
+				font-size: 1rem;
+				margin-top: 0.25rem;
+				margin-bottom: 0;
 			}
 		}
 

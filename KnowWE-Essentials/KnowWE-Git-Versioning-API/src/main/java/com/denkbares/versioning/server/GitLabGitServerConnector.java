@@ -24,13 +24,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
-	private final String repoManagementServerURL;
+	private final String repoManagementServerURL, gitRemoteURL, repoManagementServerToken;
 
-	private final String gitRemoteURL;
-
-	public GitLabGitServerConnector(String repoManagementServerURL, String gitRemoteURL) {
+	public GitLabGitServerConnector(String repoManagementServerURL, String gitRemoteURL, String repoManagementServerToken) {
 		this.repoManagementServerURL = repoManagementServerURL;
 		this.gitRemoteURL = gitRemoteURL;
+		this.repoManagementServerToken = repoManagementServerToken;
 	}
 
 	@Override
@@ -46,8 +45,8 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			// we want to pull a new repo into a new folder
 			cloneRepo(repoName, branch, gitDir);
 		}
-		else {
-			// only switches if we want another repo than the current one
+		// only switch if we want another repo than the current one
+		else if (getGitConnector(pullTargetFolder).repo().repoName().equals(repoName)) {
 			boolean success = switchFolderToOtherRepoAndBranch(pullTargetFolder, repoName, branch);
 			if (!success) return null;
 		}
@@ -67,9 +66,11 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	private boolean switchFolderToOtherRepoAndBranch(@NotNull String pullTargetFolder, @NotNull String repoName, @Nullable String branch) {
 		GitConnector oldGitConnector = getGitConnector(pullTargetFolder);
 		String oldRepoName = oldGitConnector.repo().repoName();
+		if (oldRepoName.isBlank()) {
+			throw new RuntimeException("Something went wrong. Could not switch the repository.");
+		}
 		if (!oldRepoName.equals(repoName)) {
 			// we want another repo than currently initialized
-
 			if (!oldGitConnector.status().isClean()) {
 				LOGGER.info("Can not switch Repo as old local repo is not clean");
 				return false;

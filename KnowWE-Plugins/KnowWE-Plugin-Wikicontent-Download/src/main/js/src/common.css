@@ -67,7 +67,7 @@
 		background-color: #000;
 	}
 
-	.btn-unavailable {
+	.btn-unavailable, button[disabled] {
 		color: #fff;
 		background-color: #828282;
 		cursor: not-allowed;
@@ -105,6 +105,10 @@
 	.flex {
 		display: flex;
 		align-items: center;
+	}
+
+	.flex-1 {
+		flex: 1;
 	}
 
 	i.transform-down {
