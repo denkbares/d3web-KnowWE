@@ -140,7 +140,7 @@ public class ImageRenderer implements Renderer {
 		result.append(figureHtml);
 		if (!belongsToVariant) {
 			result.append("/%\n");
-			result.appendHtmlTag("div");
+			result.appendHtmlTag("/div");
 		}
 	}
 
