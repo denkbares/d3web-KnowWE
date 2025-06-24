@@ -72,7 +72,7 @@ public class CompilerManager implements EventListener {
 	private final Set<Compiler> compilerCache;
 	private final ArticleManager articleManager;
 
-	private Iterator<Group<Double, Compiler>> running = null;
+	private volatile Iterator<Group<Double, Compiler>> running = null;
 	private final ThreadPoolExecutor threadPool;
 	private final Object lock = new Object();
 	private final Set<String> currentlyCompiledArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -262,10 +262,10 @@ public class CompilerManager implements EventListener {
 				.collect(Collectors.toCollection(HashSet::new));
 		// most common case: Some Page/Article gets edited... or recompilations
 		boolean allArticles = added.stream().allMatch(s -> s.get() instanceof RootType)
-							  && removed.stream().allMatch(s -> s.get() instanceof RootType);
+				&& removed.stream().allMatch(s -> s.get() instanceof RootType);
 		boolean allRecompilations = added.size() == removed.size()
-									&& removed.stream()
-											.allMatch(s -> addedArticles.contains(s.getArticle().getTitle()));
+				&& removed.stream()
+				.allMatch(s -> addedArticles.contains(s.getArticle().getTitle()));
 		boolean initialCompilation = removed.isEmpty();
 		if (allArticles && (allRecompilations || initialCompilation)) {
 			String articleTitles = addedArticles.size() > 100 ? "" : ": " + addedArticles.stream()
@@ -276,7 +276,7 @@ public class CompilerManager implements EventListener {
 		}
 		else {
 			stopwatch.log(LOGGER, "Compiled " + added.size() + " added and " + removed.size()
-								  + " removed section" + (removed.size() == 1 ? "" : "s"));
+					+ " removed section" + (removed.size() == 1 ? "" : "s"));
 		}
 	}
 
@@ -319,7 +319,7 @@ public class CompilerManager implements EventListener {
 					}
 					catch (Throwable e) {
 						String msg = "Unexpected internal exception while compiling with "
-									 + compiler + ": " + e.getMessage();
+								+ compiler + ": " + e.getMessage();
 						LOGGER.error(msg, e);
 						for (Section<?> section : added) {
 							// it does not matter if we store the messages
@@ -336,7 +336,7 @@ public class CompilerManager implements EventListener {
 							// 1 - update all required compiler flags
 							activeCompilers.remove(compiler);
 							LOGGER.debug(compiler.getClass()
-												 .getSimpleName() + " finished after " + stopwatch.getDisplay());
+									.getSimpleName() + " finished after " + stopwatch.getDisplay());
 							clearCurrentCompilePriority(compiler);
 							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
 							// always notify all, as the clear is usually a noop (if the compiler has cleared before)
@@ -376,9 +376,9 @@ public class CompilerManager implements EventListener {
 	}
 
 	/**
-	 * Returns the priority the given Compiler currently operates in or <tt>null</tt>, if the compiler has
-	 * finished compiling for the current compilation. Compilers that have not started compilation for the current
-	 * compilation cycle will return the Priority AWAIT_COMPILATION.
+	 * Returns the priority the given Compiler currently operates in or <tt>null</tt>, if the compiler has finished
+	 * compiling for the current compilation. Compilers that have not started compilation for the current compilation
+	 * cycle will return the Priority AWAIT_COMPILATION.
 	 *
 	 * @param compiler the compiler for which to check the compilation priority
 	 */
@@ -406,7 +406,7 @@ public class CompilerManager implements EventListener {
 						int newThreadCount = threadCount + 1;
 						setMaxCompilationThreadCount(newThreadCount);
 						LOGGER.warn("All compile threads are occupied with waiting compilers, increasing thread count to " + newThreadCount + ".\n"
-									+ "Consider using system property " + KNOWWE_COMPILER_THREADS_COUNT + " to set thread count to this number at startup.");
+								+ "Consider using system property " + KNOWWE_COMPILER_THREADS_COUNT + " to set thread count to this number at startup.");
 					}
 
 					else if (deadlockDetected()) {
@@ -426,12 +426,12 @@ public class CompilerManager implements EventListener {
 
 	private void threadDump(@NotNull Compiler compiler, @NotNull Priority priority) {
 		String message = "Potential deadlock detected, while compiler " + Compilers.getCompilerName(compiler)
-						 + " was waiting for the compilation to complete priority " + priority;
+				+ " was waiting for the compilation to complete priority " + priority;
 		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid log spam
 			message += "\n####################\n" +
-					   "\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n" +
-					   KnowWEUtils.getThreadDumpViaJcmd() +
-					   "Thread-Dump-End!\n####################";
+					"\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n" +
+					KnowWEUtils.getThreadDumpViaJcmd() +
+					"Thread-Dump-End!\n####################";
 			this.lastThreadDumpThrown = this.compilationCount;
 		}
 		LOGGER.error(message);
@@ -531,22 +531,18 @@ public class CompilerManager implements EventListener {
 	 * @created 30.10.2013
 	 */
 	public boolean isCompiling() {
-		synchronized (lock) {
-			return running != null;
-		}
+		return running != null;
 	}
 
 	/**
-	 * Returns if this compiler manager is currently compiling an article with the given title. You may use {@link
-	 * #awaitTermination()} or {@link #awaitTermination(long)} to wait for the compilation to complete.
+	 * Returns if this compiler manager is currently compiling an article with the given title. You may use
+	 * {@link #awaitTermination()} or {@link #awaitTermination(long)} to wait for the compilation to complete.
 	 *
 	 * @return if a compilation is ongoing
 	 * @created 04.10.2016
 	 */
 	public boolean isCompiling(String title) {
-		synchronized (lock) {
-			return running != null && currentlyCompiledArticles.contains(title);
-		}
+		return running != null && currentlyCompiledArticles.contains(title);
 	}
 
 	/**
