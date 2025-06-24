@@ -98,7 +98,7 @@ public class KnowWEUtils {
 		while (index >= 0) {
 			// string starts with substring which should be replaced
 			// or the char before the substring is not ~
-			if (index == 0 || !buffer.substring(index - 1, index).equals("~")) {
+			if (index == 0 || !"~".equals(buffer.substring(index - 1, index))) {
 				buffer.replace(index, index + toReplace.length(), "~" + toReplace);
 			}
 			index = buffer.indexOf(toReplace, index + 1);
@@ -110,7 +110,7 @@ public class KnowWEUtils {
 		while (index >= 0) {
 			// string does not start with substring which should be replaced
 			// or the char before the substring is ~
-			if (index != 0 || buffer.substring(index - 1, index).equals("~")) {
+			if (index != 0 || "~".equals(buffer.substring(index - 1, index))) {
 				buffer.replace(index - 1, index + toReplace.length(), toReplace);
 			}
 			index = buffer.indexOf(toReplace, index + 1);
@@ -843,7 +843,7 @@ public class KnowWEUtils {
 	 * is not an attachment article, the given article is returned.
 	 */
 	@NotNull
-	private static Article getArticleCompilingAttachmentArticle(Article article) {
+	public static Article getArticleCompilingAttachmentArticle(Article article) {
 		final ArticleManager articleManager = article.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager) {
 			final Set<Section<AttachmentCompileType>> compilingAttachmentSections = ((DefaultArticleManager) articleManager).getAttachmentManager()
