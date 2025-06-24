@@ -404,7 +404,7 @@ public class Compilers {
 	 * @return the name of the given compiler
 	 */
 	@NotNull
-	public static String getCompilerName(Compiler compiler) {
+	public static String getCompilerName(@Nullable Compiler compiler) {
 		if (compiler instanceof NamedCompiler) {
 			return ((NamedCompiler) compiler).getName();
 		}
