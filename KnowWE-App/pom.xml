@@ -712,6 +712,17 @@
 		</profile>
 
 		<profile>
+			<id>knowwe-git-versioning</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Versioning-Git</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>ehcache-100k-default</id>
 			<build>
 				<plugins>
