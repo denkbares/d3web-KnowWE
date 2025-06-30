@@ -4,6 +4,7 @@
 
 package com.denkbares.versioning.server;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpException;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.RepositoryInfo;
 
 public interface GitServerConnector {
 
@@ -49,5 +51,5 @@ public interface GitServerConnector {
 	 */
 	GitConnector getGitConnector(@NotNull String folder);
 
-	List<String> listRepositories() throws HttpException;
+	List<RepositoryInfo> listRepositories() throws HttpException;
 }

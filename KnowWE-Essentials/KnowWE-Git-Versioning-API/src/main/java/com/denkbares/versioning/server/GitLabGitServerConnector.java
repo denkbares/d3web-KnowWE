@@ -8,8 +8,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
@@ -18,17 +27,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.RepositoryInfo;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
 public class GitLabGitServerConnector implements GitServerConnector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
-	private final String repoManagementServerURL, gitRemoteURL, repoManagementServerToken;
+	private final String repoManagementServerURL, gitRemoteURL, repoManagementServerApiURL, repoManagementServerToken;
 
-	public GitLabGitServerConnector(String repoManagementServerURL, String gitRemoteURL, String repoManagementServerToken) {
+	public GitLabGitServerConnector(String repoManagementServerURL, String gitRemoteURL, String repoManagementServerApiURL, String repoManagementServerToken) {
 		this.repoManagementServerURL = repoManagementServerURL;
 		this.gitRemoteURL = gitRemoteURL;
+		this.repoManagementServerApiURL = repoManagementServerApiURL;
 		this.repoManagementServerToken = repoManagementServerToken;
 	}
 
@@ -46,7 +57,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			cloneRepo(repoName, branch, gitDir);
 		}
 		// only switch if we want another repo than the current one
-		else if (getGitConnector(pullTargetFolder).repo().repoName().equals(repoName)) {
+		else if (!getGitConnector(pullTargetFolder).repo().repoName().equals(repoName)) {
 			boolean success = switchFolderToOtherRepoAndBranch(pullTargetFolder, repoName, branch);
 			if (!success) return null;
 		}
@@ -54,8 +65,32 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	}
 
 	@Override
-	public List<String> listRepositories() throws HttpException {
-		return List.of();
+	public List<RepositoryInfo> listRepositories() throws HttpException {
+
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpUriRequest httpGet = new HttpGet(this.repoManagementServerApiURL + "/projects?simple=true&active=true&membership=true");
+			httpGet.setHeader("PRIVATE-TOKEN", this.repoManagementServerToken);
+
+			HttpResponse response = httpClient.execute(httpGet);
+			if (response.getStatusLine().getStatusCode() >= 300) {
+				throw new HttpException("Failed to load repositories");
+			}
+			String jsonString = EntityUtils.toString(response.getEntity());
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<GitLabApiRepository> data = objectMapper.readValue(jsonString, new TypeReference<>() {
+			});
+			return data.stream()
+					.map(repo -> new RepositoryInfo(repo.name, repo.http_url_to_repo, repo.web_url))
+					.toList();
+		}
+		catch (Exception e) {
+			throw new HttpException(e.getMessage());
+		}
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private record GitLabApiRepository(int id, String name, String ssh_url_to_repo, String http_url_to_repo,
+									   String web_url) {
 	}
 
 	@Override
