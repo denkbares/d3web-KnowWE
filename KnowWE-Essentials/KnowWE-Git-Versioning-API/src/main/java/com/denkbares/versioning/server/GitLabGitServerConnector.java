@@ -19,8 +19,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -34,11 +37,11 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
-	private final String repoManagementServerURL, gitRemoteURL, repoManagementServerApiURL, repoManagementServerToken;
+	private final String gitRemoteURL, gitUserName, repoManagementServerApiURL, repoManagementServerToken;
 
-	public GitLabGitServerConnector(String repoManagementServerURL, String gitRemoteURL, String repoManagementServerApiURL, String repoManagementServerToken) {
-		this.repoManagementServerURL = repoManagementServerURL;
+	public GitLabGitServerConnector(String gitRemoteURL, String gitUserName, String repoManagementServerApiURL, String repoManagementServerToken) {
 		this.gitRemoteURL = gitRemoteURL;
+		this.gitUserName = gitUserName;
 		this.repoManagementServerApiURL = repoManagementServerApiURL;
 		this.repoManagementServerToken = repoManagementServerToken;
 	}
@@ -54,10 +57,10 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 		if (!gitDir.exists()) {
 			// we want to pull a new repo into a new folder
-			cloneRepo(repoName, branch, gitDir);
+			cloneRepository(repoName, branch, gitDir);
 		}
 		// only switch if we want another repo than the current one
-		else if (!getGitConnector(pullTargetFolder).repo().repoName().equals(repoName)) {
+		else if (!gitDir.getName().equalsIgnoreCase(repoName)) {
 			boolean success = switchFolderToOtherRepoAndBranch(pullTargetFolder, repoName, branch);
 			if (!success) return null;
 		}
@@ -121,7 +124,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 				throw new RuntimeException(e);
 			}
 
-			cloneRepo(repoName, branch, gitDir);
+			cloneRepository(repoName, branch, gitDir);
 		}
 		else {
 			// this is a weird case that does a normal pull on the existing repo
@@ -129,19 +132,45 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		return true;
 	}
 
-	private void cloneRepo(@NotNull String repoName, @Nullable String branch, File gitDir) {
+	private void cloneRepository(@NotNull String repoName, @Nullable String branch, File savePath) {
 		// initialize/clone new git connected to other repo
-		String cloneBranch = (branch != null && !branch.isBlank()) ? branch : GitConnector.DEFAULT_BRANCH;
-		try (Git result = Git.cloneRepository()
+		CloneCommand clone = Git.cloneRepository()
 				.setURI(new File("").getAbsolutePath() + gitRemoteURL + repoName)
-				.setBranch(cloneBranch)
-				.setDirectory(gitDir)
-				.call()) {
+				.setDirectory(savePath);
+		if (branch != null && !branch.isBlank()) {
+			clone.setBranch(branch);
+		}
+		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
+			clone.setCredentialsProvider(
+					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
+		}
+		try (Git git = clone.call()) {
 			// Note: the call() returns an opened repository already which needs to be closed to avoid file handle leaks!
 		}
 		catch (GitAPIException e) {
-			LOGGER.error("Git clone failed for repo url:" + gitRemoteURL);
+			LOGGER.error("Git clone failed for repo url: " + gitRemoteURL);
 			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void cloneRepository(String remoteURI, File savePath) throws RuntimeException {
+		CloneCommand clone = Git.cloneRepository().setURI(remoteURI);
+		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
+			clone.setCredentialsProvider(
+					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
+		}
+		if (savePath != null) {
+			clone.setDirectory(savePath);
+		}
+		try {
+			clone.call().close();
+		}
+		catch (JGitInternalException e) {
+			throw new RuntimeException("Internal JGit error", e);
+		}
+		catch (GitAPIException e) {
+			throw new RuntimeException("Git clone failed for repo url: " + remoteURI);
 		}
 	}
 }

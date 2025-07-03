@@ -4,7 +4,7 @@
 
 package com.denkbares.versioning.server;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpException;
@@ -51,5 +51,20 @@ public interface GitServerConnector {
 	 */
 	GitConnector getGitConnector(@NotNull String folder);
 
+	/**
+	 * Clones a repository with credentials taken from the instance
+	 *
+	 * @param url
+	 * @param savePath
+	 * @throws Exception
+	 */
+	void cloneRepository(String url, File savePath) throws RuntimeException;
+
+	/**
+	 * Returns a list with all repositories of the server.
+	 *
+	 * @return
+	 * @throws HttpException
+	 */
 	List<RepositoryInfo> listRepositories() throws HttpException;
 }
