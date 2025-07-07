@@ -40,6 +40,10 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	private final String gitRemoteURL, gitUserName, repoManagementServerApiURL, repoManagementServerToken;
 
 	public GitLabGitServerConnector(String gitRemoteURL, String gitUserName, String repoManagementServerApiURL, String repoManagementServerToken) {
+		// make sure that gitRemoteURL always ends with / to prevent bugs
+		if (!gitRemoteURL.endsWith("/")) {
+			gitRemoteURL += "/";
+		}
 		this.gitRemoteURL = gitRemoteURL;
 		this.gitUserName = gitUserName;
 		this.repoManagementServerApiURL = repoManagementServerApiURL;
@@ -83,7 +87,10 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			List<GitLabApiRepository> data = objectMapper.readValue(jsonString, new TypeReference<>() {
 			});
 			return data.stream()
-					.map(repo -> new RepositoryInfo(repo.name, repo.http_url_to_repo, repo.web_url))
+					// This little thing hides all repos in subgroups. This allows us to be able to uniquely identify repos only by their name.
+					// In the future this has to removed and repos need to be identified by namespace_with_path instead.
+					.filter(repo -> repo.web_url.equalsIgnoreCase(this.gitRemoteURL + repo.path))
+					.map(repo -> new RepositoryInfo(repo.name, repo.path, repo.http_url_to_repo, repo.web_url))
 					.toList();
 		}
 		catch (Exception e) {
@@ -92,7 +99,8 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	private record GitLabApiRepository(int id, String name, String ssh_url_to_repo, String http_url_to_repo,
+	private record GitLabApiRepository(int id, String name, String path, String ssh_url_to_repo,
+									   String http_url_to_repo,
 									   String web_url) {
 	}
 
