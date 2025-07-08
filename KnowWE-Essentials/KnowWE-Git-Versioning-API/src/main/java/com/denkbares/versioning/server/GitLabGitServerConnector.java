@@ -163,14 +163,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	@Override
 	public void cloneRepository(String remoteURI, File savePath) throws RuntimeException {
-		CloneCommand clone = Git.cloneRepository().setURI(remoteURI);
-		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
-			clone.setCredentialsProvider(
-					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
-		}
-		if (savePath != null) {
-			clone.setDirectory(savePath);
-		}
+		CloneCommand clone = prepareCloneCommand(remoteURI, savePath);
 		try {
 			clone.call().close();
 		}
@@ -180,5 +173,31 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		catch (GitAPIException e) {
 			throw new RuntimeException("Git clone failed for repo url: " + remoteURI);
 		}
+	}
+
+	@Override
+	public void cloneRepositoryShallow(String remoteURI, File savePath) throws RuntimeException {
+		CloneCommand clone = prepareCloneCommand(remoteURI, savePath).setDepth(1);
+		try {
+			clone.call().close();
+		}
+		catch (JGitInternalException e) {
+			throw new RuntimeException("Internal JGit error", e);
+		}
+		catch (GitAPIException e) {
+			throw new RuntimeException("Git clone failed for repo url: " + remoteURI);
+		}
+	}
+
+	private CloneCommand prepareCloneCommand(String remoteURI, File savePath) {
+		CloneCommand clone = Git.cloneRepository().setURI(remoteURI);
+		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
+			clone.setCredentialsProvider(
+					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
+		}
+		if (savePath != null) {
+			clone.setDirectory(savePath);
+		}
+		return clone;
 	}
 }

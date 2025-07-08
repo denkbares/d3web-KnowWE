@@ -61,6 +61,15 @@ public interface GitServerConnector {
 	void cloneRepository(String url, File savePath) throws RuntimeException;
 
 	/**
+	 * Clones a repository with credentials taken from the instance without any branches
+	 *
+	 * @param url
+	 * @param savePath
+	 * @throws Exception
+	 */
+	void cloneRepositoryShallow(String url, File savePath) throws RuntimeException;
+
+	/**
 	 * Returns a list with all repositories of the server.
 	 *
 	 * @return
