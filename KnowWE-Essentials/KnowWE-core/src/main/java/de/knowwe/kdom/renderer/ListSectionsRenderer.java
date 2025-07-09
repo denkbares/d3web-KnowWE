@@ -32,6 +32,7 @@ import com.denkbares.utils.Pair;
 import com.denkbares.utils.Predicates;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -702,8 +703,12 @@ public class ListSectionsRenderer<T extends Type> {
 	 */
 	public static <T extends Type> Function<Section<T>, Boolean> getDefaultCompilerGreyoutFunction(UserContext context, Class<? extends Compiler> defaultCompilerClass) {
 		return line -> {
+			// don't grey out, if we have no or just one variant
+			if (Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class).size() <= 1) return false;
 			Compiler compiler = Compilers.getCompiler(context, line, defaultCompilerClass);
-			if (compiler == null) return true;
+			if (compiler == null) {
+				return true;
+			}
 			return !Compilers.isDefaultCompiler(context, compiler);
 		};
 	}
