@@ -84,11 +84,14 @@ KNOWWE.plugin.sparql.downloadExcel = function(id, paramFilename, actionClass, fi
 
 KNOWWE.plugin.sparql.initDownloadExcelTools = function() {
 
+
   KNOWWE.helper.observer.subscribe("filterChanged", function() {
     let $elements = jq$(`.ReRenderSectionMarker[sectionid="${(this.sectionId)}"]`).closest(".defaultMarkupFrame").find(".markupMenu .markupMenuItem, button")
       .filter((_, elem) => jq$(elem).find(".fa-arrow-down-to-bracket").exists());
-    $elements.css("display", this.filteringActive ? "block" : "none");
+    $elements.css("display", this.filteringActive ? "inline-block" : "none");
   });
+
+  KNOWWE.helper.observer.notify("registeredFilterChangedListener");
 };
 
 KNOWWE.plugin.turtle.editTool.generateButtons = function(id) {

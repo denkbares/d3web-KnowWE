@@ -536,8 +536,11 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function notifyFilterChanged(sectionId) {
+    let paginationState = getPaginationState(sectionId);
+    let configuredFilters = anyActiveFilter(getFilterState(paginationState));
+    let filteringActive = paginationState.filter.active && configuredFilters;
     KNOWWE.helper.observer.notify("filterChanged", {
-      filteringActive: anyActiveFilter(getFilterState(getPaginationState(sectionId))),
+      filteringActive: filteringActive,
       sectionId: sectionId
     });
   }
@@ -629,10 +632,13 @@ KNOWWE.core.plugin.pagination = function() {
     if (rerenderIfFilterActive && filterState.active) {
       updateNode(sectionId);
     }
+
     //on first load
-    if ((filterActivator.exists() && !filterActivator[0].checked) || !anyActiveFilter(filterState)) {
+    notifyFilterChanged(sectionId);
+
+    KNOWWE.helper.observer.subscribe("registeredFilterChangedListener", function() {
       notifyFilterChanged(sectionId);
-    }
+    });
   }
 
   function initColumnFiltering($columnFilterButton, $table, sectionId) {
