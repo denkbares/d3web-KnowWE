@@ -34,6 +34,9 @@ import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.api.search.QueryItem;
+import org.apache.wiki.event.WikiEvent;
+import org.apache.wiki.event.WikiEventListener;
+import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.util.TextUtil;
@@ -50,7 +53,7 @@ import com.denkbares.utils.Stopwatch;
  * and all this Provider does is to ensure that all locks (on the git repository) are respected correctly
  */
 @SuppressWarnings("rawtypes")
-public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
+public class GitVersioningAttachmentProvider extends BasicAttachmentProvider implements WikiEventListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningAttachmentProvider.class);
 
@@ -66,6 +69,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 		this.delegate = new GitVersioningAttachmentProviderDelegate(gitVersioningFileProvider);
 		this.delegate.initialize(engine, properties);
+		WikiEventManager.addWikiEventListener(this.delegate,this);
 
 		storageDir = TextUtil.getCanonicalFilePathProperty(properties, PROP_STORAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
@@ -211,5 +215,10 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			gitVersioningFileProvider.commitUnlock();
 			gitVersioningFileProvider.writeFileUnlock();
 		}
+	}
+
+	@Override
+	public void actionPerformed(WikiEvent event) {
+			WikiEventManager.fireEvent(this,event);
 	}
 }

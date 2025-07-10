@@ -64,6 +64,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
+import de.uniwue.d3web.gitConnector.GitConnector;
 
 import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
@@ -78,11 +79,15 @@ public class GitAutoUpdater {
 	private final Engine engine;
 	private final Repository repository;
 	private static boolean running;
+	private final String filesystemPath;
+	private final GitConnector gitConnector;
 
 	public GitAutoUpdater(Engine engine, GitVersioningFileProvider fileProvider) {
 		this.fileProvider = fileProvider;
+		this.filesystemPath = fileProvider.getFilesystemPath();
 		repository = fileProvider.getRepository();
 		this.engine = engine;
+		this.gitConnector = fileProvider.getGitConnector();
 	}
 
 	public static boolean running() {
@@ -92,12 +97,17 @@ public class GitAutoUpdater {
 	public void update() {
 		running = true;
 
-		if (Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))) {
+		//if there is a lock we do not update TODO remove this and allow actions
+		if (Files.exists(Paths.get(filesystemPath, "lock.wc"))) {
 			LOGGER.info("Not updating, because of filesystem lock");
 			return;
 		}
 
-		Git git = new Git(fileProvider.getRepository());
+		//if we are not on master branch we also do not update TODO => having a good understanding of the current state in here helps us to remove the start/stop logic of the updater via the scheduler which still causes unwated side effects
+
+
+
+		Git git = new Git(repository);
 		ArticleManager articleManager = getDefaultArticleManager();
 
 		updateMasterBranch(articleManager, git);
@@ -160,8 +170,8 @@ public class GitAutoUpdater {
 			return;
 		}
 
-		RevWalk revWalk = new RevWalk(fileProvider.getRepository());
-		ObjectId oldHead = fileProvider.getRepository().resolve("remotes/origin/master");
+		RevWalk revWalk = new RevWalk(repository);
+		ObjectId oldHead = repository.resolve("remotes/origin/master");
 		RevCommit oldHeadCommit = revWalk.parseCommit(oldHead);
 
 		FetchCommand fetch1 = git.fetch();
@@ -187,7 +197,7 @@ public class GitAutoUpdater {
 				}
 			}
 			fileProvider.pushUnlock();
-			ObjectId newHead = fileProvider.getRepository().resolve(Constants.HEAD);
+			ObjectId newHead = repository.resolve(Constants.HEAD);
 
 			String title = null;
 			if (!oldHeadCommit.equals(newHead)) {

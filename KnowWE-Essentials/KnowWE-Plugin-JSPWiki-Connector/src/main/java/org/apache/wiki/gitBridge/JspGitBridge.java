@@ -6,11 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,26 +20,38 @@ import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.providers.GitProviderProperties;
-import org.apache.wiki.providers.GitVersioningUtils;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RenameDetector;
+import org.eclipse.jgit.errors.StopWalkException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.denkbares.utils.Stopwatch;
+
+import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.diff.GitDiffEntry;
 
 import static org.apache.wiki.api.providers.AttachmentProvider.PROP_STORAGEDIR;
 import static org.apache.wiki.providers.AbstractFileProvider.FILE_EXT;
@@ -85,7 +98,6 @@ public class JspGitBridge {
 		this.commitCount = new AtomicLong();
 	}
 
-
 	private String getFilesystemPath() {
 		return filesystemPath;
 	}
@@ -119,7 +131,6 @@ public class JspGitBridge {
 		}
 	}
 
-
 	private Repository initGitRepository(File gitDir, File pageDir, String remoteURL) throws IOException {
 		if (!RepositoryCache.FileKey.isGitRepository(gitDir, FS.DETECTED)) {
 			if (!"".equals(remoteURL)) {
@@ -134,25 +145,101 @@ public class JspGitBridge {
 		}
 	}
 
+	public static List<RevCommit> reverseToList(Iterable<RevCommit> revCommits) {
+		Stopwatch watch = new Stopwatch();
+		LinkedList<RevCommit> ret = new LinkedList<>();
+		for (RevCommit revCommit : revCommits) {
+			ret.addFirst(revCommit);
+		}
+		LOGGER.info("Read and Reverse RevCommit Iterator took: " + watch.getDisplay());
+		return ret;
+	}
 
+	public static Iterable<RevCommit> getRevCommitsSince(Date timestamp, Repository repository) {
+
+//		List<RevCommit> revCommitsRaw = getRevCommitsSinceRaw(timestamp,repository);
+		Iterable<RevCommit> commits;
+		RevFilter filter = new RevFilter() {
+			@Override
+			public boolean include(RevWalk walker, RevCommit cmit) throws StopWalkException {
+				return (1000L * cmit.getCommitTime()) >= timestamp.getTime();
+			}
+
+			@Override
+			public RevFilter clone() {
+				return null;
+			}
+		};
+		Git git = new Git(repository);
+		try {
+			commits = git
+					.log()
+					.add(git.getRepository().resolve(Constants.HEAD))
+					.setRevFilter(filter)
+					.call();
+			return commits;
+		}
+		catch (IOException | GitAPIException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return new ArrayList<>();
+	}
+
+	public static List<DiffEntry> getDiffEntries(ObjectId oldCommit, ObjectId newCommit, Repository repository) throws IOException {
+		ObjectReader objectReader = repository.newObjectReader();
+		CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
+		CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
+		oldTreeParser.reset(objectReader, oldCommit);
+		newTreeParser.reset(objectReader, newCommit);
+		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+		diffFormatter.setRepository(repository);
+		List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
+		RenameDetector rd = new RenameDetector(repository);
+		rd.addAll(diffs);
+		return rd.compute();
+	}
+
+	public static List<GitDiffEntry> getDiffEntriesGitConnector(String oldCommitId, String newCommitId, String repopath) {
+		JGitBackedGitConnector gitConnector = JGitBackedGitConnector.fromPath(repopath);
+		return gitConnector.diff(oldCommitId, newCommitId,true);
+	}
+
+	public static void main(String[] args) throws Exception {
+
+		String path = "/Users/mkrug/Konap/Wikis/Wiki_VM_release";
+
+		JGitBackedGitConnector gitConnector = JGitBackedGitConnector.fromPath(path);
+		List<String> strings = gitConnector.commitsBetween("0045882277804f4d695284b5cc9b8c609c917b33", "e879149aa2365095294ebf82965e233eadff53d2");
+
+		List<GitDiffEntry> diffEntriesGitConnector = getDiffEntriesGitConnector("0045882277804f4d695284b5cc9b8c609c917b33", "e879149aa2365095294ebf82965e233eadff53d2", path);
+
+		int a = 2;
+	}
+
+	private static ObjectId getTreeId(Repository repository, ObjectId commitId) throws IOException {
+		try (RevWalk revWalk = new RevWalk(repository)) {
+			RevCommit commit = revWalk.parseCommit(commitId);
+			return commit.getTree().getId(); // Extract the tree object ID
+		}
+	}
 
 	@NotNull
 	public List<Page> getAllChangedSinceSafe(Date date, Repository repository, Engine engine) {
-		final Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(date, repository);
+		final Iterable<RevCommit> commits = getRevCommitsSince(date, repository);
 		final List<Page> pages = new ArrayList<>();
 
 		try {
 			ObjectId oldCommit = null;
 			ObjectId newCommit;
 			LOGGER.info("Access commits for repository ");
-			for (final RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
+			for (final RevCommit commit : JspGitBridge.reverseToList(commits)) {
 				final String fullMessage = commit.getFullMessage();
 				final String author = commit.getCommitterIdent().getName();
 				final Date modified = new Date(1000L * commit.getCommitTime());
 
 				if (oldCommit != null) {
 					newCommit = commit.getTree();
-					final List<DiffEntry> diffs = GitVersioningUtils.getDiffEntries(oldCommit, newCommit, repository);
+					final List<DiffEntry> diffs = getDiffEntries(oldCommit, newCommit, repository);
 					for (final DiffEntry diff : diffs) {
 						String path = diff.getOldPath();
 						if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
@@ -216,9 +303,9 @@ public class JspGitBridge {
 		//check whether maintencance branch is already existing
 		Git git = new Git(this.repository);
 		try {
-			String defaultBranchName = properties.getProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH,null);
+			String defaultBranchName = properties.getProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH, null);
 			//do nothing if it is not set
-			if(defaultBranchName==null){
+			if (defaultBranchName == null) {
 				return;
 			}
 			List<Ref> branchRefs = git.branchList().call();
@@ -346,9 +433,6 @@ public class JspGitBridge {
 		return this.repository;
 	}
 
-
-
-
 	public void assignAuthor(Page page) {
 
 		try {
@@ -367,7 +451,7 @@ public class JspGitBridge {
 					LOGGER.error("Tried to access a version that does not exist:" + version + " for page: " + page.getName() + " of which there are: " + commitHashesForPageRaw.size() + " versions");
 					return;
 				}
-				RevCommit revCommit = GitVersioningUtils.getRevCommit(new Git(this.repository), commitHashesForPageRaw.get(commitOffset));
+				RevCommit revCommit = getRevCommit(new Git(this.repository), commitHashesForPageRaw.get(commitOffset));
 				if (revCommit != null) {
 					page.setAuthor(revCommit.getAuthorIdent().getName());
 				}
@@ -381,7 +465,20 @@ public class JspGitBridge {
 		}
 	}
 
-
+	public static RevCommit getRevCommit(Git git, String commitHash) {
+		try {
+			ObjectId objectId = git.getRepository().resolve(commitHash);
+			if (objectId != null) {
+				try (RevWalk revWalk = new RevWalk(git.getRepository())) {
+					return revWalk.parseCommit(objectId);
+				}
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public void periodicalGitGC() {
 		final long l = this.commitCount.incrementAndGet();
@@ -396,7 +493,7 @@ public class JspGitBridge {
 		}
 	}
 
-	private void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
+	private void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive) {
 		LOGGER.info("Start git gc");
 		if (windowsGitHack) {
 			doBinaryGC(repository.getDirectory(), prune);
@@ -412,7 +509,7 @@ public class JspGitBridge {
 			sw.start();
 			LOGGER.info("binary gc start");
 			ProcessBuilder pb = new ProcessBuilder();
-			pb.inheritIO().command("git", "gc", prune?"--prune=now":"").directory(pageDir);
+			pb.inheritIO().command("git", "gc", prune ? "--prune=now" : "").directory(pageDir);
 			Process git_gc = pb.start();
 			git_gc.waitFor(2, TimeUnit.MINUTES);
 			sw.stop();
@@ -434,13 +531,13 @@ public class JspGitBridge {
 			LOGGER.info("Beginn Git gc");
 			GarbageCollectCommand gc = git.gc()
 					.setAggressive(aggressive);
-			if(prune)
+			if (prune) {
 				gc.setExpire(null);
+			}
 			final Properties gcRes = gc.call();
 			for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
 				LOGGER.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
 			}
-
 		}
 		catch (final GitAPIException e) {
 			LOGGER.warn("Git gc not successful: " + e.getMessage());

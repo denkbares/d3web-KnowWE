@@ -45,6 +45,7 @@ import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.pages.PageManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
@@ -267,14 +268,14 @@ public class GitVersioningFileProviderTest {
 		fileProvider.initialize(engine, properties);
 		Git git = new Git(getRepository());
 
-		List<RevCommit> revCommitsInitially = GitVersioningUtils.reverseToList(git.log().call());
+		List<RevCommit> revCommitsInitially = JspGitBridge.reverseToList(git.log().call());
 		WikiPage page = getWikiPage(engine, "test", "egal");
 		fileProvider.putPageText(page, "text");
 		fileProvider.putPageText(page, "text");
 		fileProvider.putPageText(page, "text");
 
 
-		List<RevCommit> revCommits = GitVersioningUtils.reverseToList(git.log().call());
+		List<RevCommit> revCommits = JspGitBridge.reverseToList(git.log().call());
 		assertEquals(1, revCommits.size()-revCommitsInitially.size());
 		Instant nowMinusOneHour = Instant.now().minus(1,ChronoUnit.HOURS);
 		List<Page> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
@@ -311,7 +312,7 @@ public class GitVersioningFileProviderTest {
 		Repository repo = getRepository();
 		Git git = new Git(repo);
 		Iterable<RevCommit> commitLog = git.log().call();
-		List<RevCommit> revCommits = GitVersioningUtils.reverseToList(commitLog);
+		List<RevCommit> revCommits = JspGitBridge.reverseToList(commitLog);
 		assertEquals("expected commits", 3, revCommits.size());
 	}
 
@@ -333,7 +334,7 @@ public class GitVersioningFileProviderTest {
 		Repository repo = getRepository();
 		Git git = new Git(repo);
 
-		List<RevCommit> initialCommits = GitVersioningUtils.reverseToList(git.log().call());
+		List<RevCommit> initialCommits = JspGitBridge.reverseToList(git.log().call());
 
 		fileProvider.openCommit(user1);
 		WikiPage page = getWikiPage(engine, "to revert", user1);
@@ -356,7 +357,7 @@ public class GitVersioningFileProviderTest {
 		fileProvider.commit(user2, commitMsg);
 
 		Iterable<RevCommit> commitLog = git.log().call();
-		List<RevCommit> revCommits = GitVersioningUtils.reverseToList(commitLog);
+		List<RevCommit> revCommits = JspGitBridge.reverseToList(commitLog);
 
 		assertEquals("expected commits", 1, revCommits.size()-initialCommits.size());
 		assertEquals(commitMsg, revCommits.get(revCommits.size()-1).getFullMessage());

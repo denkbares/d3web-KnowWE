@@ -37,7 +37,6 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.event.WikiEvent;
 import org.apache.wiki.event.WikiEventListener;
 import org.apache.wiki.event.WikiEventManager;
-import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.providers.autoUpdate.GitAutoUpdateScheduler;
 import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
 import org.apache.wiki.structs.DefaultPageIdentifier;

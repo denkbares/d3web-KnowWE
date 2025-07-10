@@ -53,6 +53,9 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 import static org.apache.wiki.gitBridge.JSPUtils.getAttachmentDir;
 import static org.apache.wiki.gitBridge.JSPUtils.getPath;
@@ -148,17 +151,50 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			return;
 		}
 
-		boolean isIgnored = this.gitConnector.isIgnored(getPath(att));
-		//TODO adding by default should never hurt
-//		boolean add = !newFile.exists() && !isIgnored;
 
 		copyOnFilesystem(att, data, newFile);
-
-		gitConnector.commit().addPath(getPath(att));
+		boolean isIgnored = this.gitConnector.isIgnored(getPath(att));
 
 		att.setSize(newFile.length());
 
-		commitAttachment(att, GitVersioningWikiEvent.UPDATE, getPath(att));
+		if (!isIgnored) {
+			gitConnector.commit().addPath(getPath(att));
+			att.setSize(newFile.length());
+			commitAttachment(att, GitVersioningWikiEvent.UPDATE, getPath(att));
+		}
+		else{
+			//if the file is ignored this will mean that our staging area might get convoluted
+			checkToUntrackIgnoredFiles(getPath(att));
+			LOGGER.warn("Put attachment data of an ignore file, might not cause trouble, but it might as well: File: " + getPath(att) );
+		}
+
+	}
+
+	/**
+	 * Might be a life saver, if something was added to gitignore but not untracked via git, then this will prevent any further damages
+	 * @param path
+	 */
+	private void checkToUntrackIgnoredFiles(String path) {
+		//1. check if the path is indeed untracked
+		GitStatusCommandResult status = this.gitConnector.status();
+		if(status instanceof GitStatusResultSuccess result){
+			if(result.getChangedFiles().contains(path)){
+				//we untrack
+				boolean untrackSuccess = this.gitConnector.untrackPath(path);
+				if(untrackSuccess){
+					//this means we will probably have to sneak in a commit!
+
+					//check if the file (and only the file) is in staging and marked as delete
+					status = this.gitConnector.status();
+					if(status instanceof GitStatusResultSuccess innerResult){
+						if(innerResult.getRemovedFiles().contains(path) && innerResult.getAffectedFiles().size()==1){
+							this.gitConnector.commitForUser(new UserData("admin","admin@denkbares.com","Untrack: " + path));
+							LOGGER.info("Untracked already ignored file: " +path);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void copyOnFilesystem(Attachment att, InputStream data, File newFile) throws ProviderException {
