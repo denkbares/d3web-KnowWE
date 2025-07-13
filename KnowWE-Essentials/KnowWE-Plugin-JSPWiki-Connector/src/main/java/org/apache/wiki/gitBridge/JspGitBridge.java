@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -49,9 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.utils.Stopwatch;
-
-import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
-import de.uniwue.d3web.gitConnector.impl.raw.diff.GitDiffEntry;
 
 import static org.apache.wiki.api.providers.AttachmentProvider.PROP_STORAGEDIR;
 import static org.apache.wiki.providers.AbstractFileProvider.FILE_EXT;
@@ -197,23 +192,6 @@ public class JspGitBridge {
 		RenameDetector rd = new RenameDetector(repository);
 		rd.addAll(diffs);
 		return rd.compute();
-	}
-
-	public static List<GitDiffEntry> getDiffEntriesGitConnector(String oldCommitId, String newCommitId, String repopath) {
-		JGitBackedGitConnector gitConnector = JGitBackedGitConnector.fromPath(repopath);
-		return gitConnector.diff(oldCommitId, newCommitId,true);
-	}
-
-	public static void main(String[] args) throws Exception {
-
-		String path = "/Users/mkrug/Konap/Wikis/Wiki_VM_release";
-
-		JGitBackedGitConnector gitConnector = JGitBackedGitConnector.fromPath(path);
-		List<String> strings = gitConnector.commitsBetween("0045882277804f4d695284b5cc9b8c609c917b33", "e879149aa2365095294ebf82965e233eadff53d2");
-
-		List<GitDiffEntry> diffEntriesGitConnector = getDiffEntriesGitConnector("0045882277804f4d695284b5cc9b8c609c917b33", "e879149aa2365095294ebf82965e233eadff53d2", path);
-
-		int a = 2;
 	}
 
 	private static ObjectId getTreeId(Repository repository, ObjectId commitId) throws IOException {

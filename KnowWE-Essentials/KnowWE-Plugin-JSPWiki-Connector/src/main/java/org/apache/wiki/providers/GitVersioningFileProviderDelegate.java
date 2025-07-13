@@ -67,13 +67,10 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.UserData;
-import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
-import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
-import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
+import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 /**
  * This Git delegate does the actual work on the underlying Git repository, albeit it does not check any file lock
@@ -195,19 +192,19 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	 */
 	private void checkToUntrackIgnoredFiles(String path) {
 		//1. check if the path is indeed untracked
-		GitStatusCommandResult status = this.gitConnector.status();
+		GitStatusCommandResult status = this.gitConnector.status().get();
 		if(status instanceof GitStatusResultSuccess result){
 			if(result.getChangedFiles().contains(path)){
 				//we untrack
-				boolean untrackSuccess = this.gitConnector.untrackPath(path);
+				boolean untrackSuccess = this.gitConnector.commit().untrackPath(path);
 				if(untrackSuccess){
 					//this means we will probably have to sneak in a commit!
 
 					//check if the file (and only the file) is in staging and marked as delete
-					status = this.gitConnector.status();
+					status = this.gitConnector.status().get();
 					if(status instanceof GitStatusResultSuccess innerResult){
 						if(innerResult.getRemovedFiles().contains(path) && innerResult.getAffectedFiles().size()==1){
-							this.gitConnector.commitForUser(new UserData("admin","admin@denkbares.com","Untrack: " + path));
+							this.gitConnector.commit().commitForUser(new CommitUserData("admin","admin@denkbares.com","Untrack: " + path));
 							LOGGER.info("Untracked already ignored file: " +path);
 						}
 					}
@@ -466,7 +463,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			email = author;
 		}
 
-		return new UserData(userName, email, comment);
+		return new CommitUserData(userName, email, comment);
 	}
 
 	private  String capitalize(String name) {
