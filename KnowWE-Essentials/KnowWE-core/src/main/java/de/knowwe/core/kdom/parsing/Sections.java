@@ -418,6 +418,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 */
 	@Nullable
 	public Section<T> getLast() {
+		if (sections instanceof List<Section<T>> list) {
+			return list.isEmpty() ? null : list.get(list.size() - 1);
+		}
 		Section<T> last = null;
 		for (Section<T> section : this) {
 			last = section;
@@ -476,6 +479,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 */
 	public Section<T> getNth(int index) {
 		if (index < 0) throw new IndexOutOfBoundsException("Invalid index " + index);
+		if (sections instanceof List<Section<T>> list) {
+			return index < list.size() ? list.get(index) : null;
+		}
 		for (Section<T> section : this) {
 			if (index == 0) return section;
 			index--;
