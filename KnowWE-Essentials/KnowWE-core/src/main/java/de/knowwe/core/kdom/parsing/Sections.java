@@ -91,7 +91,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * Create a new Sections object with all section the given compiler is compiling
 	 */
 	public static <T extends Type> Sections<T> $(PackageCompiler compiler) {
-		//noinspection rawtypes,unchecked
+		//noinspection rawtypes,unchecked,deprecation
 		return new Sections(compiler.getCompiledSections());
 	}
 
@@ -1607,7 +1607,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				builder.append("\n");
 			}
 			LOGGER.error("The following sections were not replaced, because they could not be found. " +
-					"Maybe there were changes to their articles in the meantime?\n{}", builder);
+						 "Maybe there were changes to their articles in the meantime?\n{}", builder);
 		}
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
@@ -1741,14 +1741,14 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 		if (!missingIDs.isEmpty()) {
 			context.sendError(409, "The Sections '" + missingIDs
-					+ "' could not be found, possibly because somebody else"
-					+ " has edited them.");
+								   + "' could not be found, possibly because somebody else"
+								   + " has edited them.");
 			return true;
 		}
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
-							+ forbiddenArticles + ".");
+					+ forbiddenArticles + ".");
 			return true;
 		}
 		return false;
@@ -1769,8 +1769,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				String newText = sectionInfo.newText;
 				boolean sameText = text.equals(newText);
 				int textOffset = section.getOffsetInArticle() + diff;
-				int newTextoffSet = sectionInfo.offSet;
-				boolean sameOffset = textOffset == newTextoffSet;
+				int newTextOffSet = sectionInfo.offSet;
+				boolean sameOffset = textOffset == newTextOffSet;
 
 				if (sameText && sameOffset) {
 					diff += section.getText().length() - sectionInfo.oldText.length();
