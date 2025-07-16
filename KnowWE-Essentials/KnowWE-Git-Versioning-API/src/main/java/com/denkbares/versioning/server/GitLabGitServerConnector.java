@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.RepositoryInfo;
+import de.uniwue.d3web.gitConnector.UserCredentials;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
 public class GitLabGitServerConnector implements GitServerConnector {
@@ -52,7 +53,8 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	@Override
 	public GitConnector getGitConnector(@NotNull String folder) {
-		return JGitBackedGitConnector.fromPath(folder);
+		UserCredentials userCredentials = new UserCredentials(this.gitUserName, this.repoManagementServerToken);
+		return JGitBackedGitConnector.fromPath(folder, userCredentials);
 	}
 
 	@Override
@@ -178,8 +180,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	@Override
 	public void cloneRepositoryShallow(String remoteURI, File savePath) throws RuntimeException {
 		CloneCommand clone = prepareCloneCommand(remoteURI, savePath).setDepth(1);
-		try {
-			clone.call().close();
+		try (Git result = clone.call()) {
 		}
 		catch (JGitInternalException e) {
 			throw new RuntimeException("Internal JGit error", e);
