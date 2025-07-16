@@ -64,7 +64,7 @@ KNOWWE.core = function() {
       const version = document.getElementById("version").value;
       const params = {
         restoreThisVersion: version,
-        action: "RestoreAction"
+        action: "RestoreAction",
       };
       const options = {
         url: KNOWWE.core.util.getURL(params),
@@ -73,11 +73,11 @@ KNOWWE.core = function() {
           fn: function() {
             window.location = "Wiki.jsp?page=" + this.responseText;
           },
-          onError: _EC.onErrorBehavior
-        }
+          onError: _EC.onErrorBehavior,
+        },
       };
       new _KA(options).send();
-    }
+    },
   };
 }();
 /**
@@ -138,18 +138,18 @@ KNOWWE.core.actions = function() {
           action: "ReplaceKDOMNodeAction",
           TargetNamespace: nodeID,
           KWikitext: selectedOption,
-          KWiki_Topic: topic
+          KWiki_Topic: topic,
         };
         const options = {
           url: KNOWWE.helper.getURL(params),
           response: {
             action: none,
-            fn: null
-          }
+            fn: null,
+          },
         };
         new _KA(options).send();
       }
-    }
+    },
   };
 }();
 
@@ -198,7 +198,7 @@ KNOWWE.core.util = function() {
      */
     updateProcessingState: function(delta) {
       activityCounter += delta;
-      const indicator = jq$("#KnowWEProcessingIndicator");
+      let indicator = jq$("#KnowWEProcessingIndicator");
       if (!indicator.exists()) {
         // fallback, happens for example on Edit.jsp
         jq$("body").append("<i id='KnowWEProcessingIndicator' class='fa-regular fa-spin fa-circle-notch ajaxloader' " +
@@ -210,6 +210,7 @@ KNOWWE.core.util = function() {
         window.setTimeout(function() {
           // if counter still positive after timeout, show indicator...
           if (activityCounter > 0) {
+            indicator = jq$("#KnowWEProcessingIndicator");
             indicator.attr("state", "processing");
             indicator.show();
           }
@@ -550,7 +551,7 @@ KNOWWE.core.util = function() {
       } else {
         return jq$("#edit")[0];
       }
-    }
+    },
   };
 }();
 
@@ -659,7 +660,7 @@ KNOWWE.core.util.form = function() {
         el.querySelector(".pointDownCaret").style.display = "inline";
         el.querySelector(".pointRightCaret").style.display = "none";
       }
-    }
+    },
   };
 }();
 
@@ -706,7 +707,7 @@ KNOWWE.core.rerendercontent = function() {
         KWikiWeb: "default_web",
         KdomNodeId: node,
         KWiki_Topic: topic,
-        ajaxToHTML: ajaxToHTML
+        ajaxToHTML: ajaxToHTML,
 
       };
       const url = KNOWWE.core.util.getURL(params);
@@ -731,7 +732,7 @@ KNOWWE.core.rerendercontent = function() {
             KWikiWeb: "default_web",
             SectionID: rel.id,
             ajaxToHTML: "render",
-            inPre: KNOWWE.helper.tagParent(_KS("#" + rel.id), "pre") !== document
+            inPre: KNOWWE.helper.tagParent(_KS("#" + rel.id), "pre") !== document,
           };
           if (this.wikiStatus) {
             params.status = this.wikiStatus;
@@ -785,13 +786,13 @@ KNOWWE.core.rerendercontent = function() {
               return;
             }
             _EC.onErrorBehavior.call(this, msgId);
-          }
-        }
+          },
+        },
       };
       if (indicateProcess) KNOWWE.core.util.updateProcessingState(1);
       KNOWWE.helper.observer.notify("beforeRerender");
       new _KA(options).send();
-    }
+    },
   };
 }();
 
@@ -852,7 +853,10 @@ const _KU = KNOWWE.core.util;
       // we only update if the onbeforeunload function does not return a message... if it would return a
       // message, we can assume that there is unsaved work and we should not refresh...
       if (!message) {
-        KNOWWE.helper.observer.notify("update", {status: jq$("#knowWEInfoStatus").val(), reason: "updateEvent"});
+        KNOWWE.helper.observer.notify("update", {
+          status: jq$("#knowWEInfoStatus").val(),
+          reason: "updateEvent",
+        });
       }
     });
     if (KNOWWE.core.util.isIE()) {
