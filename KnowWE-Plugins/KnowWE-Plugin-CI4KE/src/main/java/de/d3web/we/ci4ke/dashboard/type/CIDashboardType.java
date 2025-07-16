@@ -267,8 +267,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	protected TestProcessingResult processDashboard(Section<CIDashboardType> section, DefaultGlobalCompiler compiler, List<String> testsToSkip, Set<Section<CIDashboardType>> processedSections) {
 		if (section == null || processedSections.contains(section)) return null;
 		processedSections.add(section);
-		List<Section<? extends AnnotationContentType>> annotationSections = section.get()
-				.getAnnotationSections(section);
+		List<Section<? extends AnnotationContentType>> annotationSections = section.get().getAnnotationSections(section);
 		TestProcessingResult dashboardResult = processTests(annotationSections, compiler, section);
 		List<String> skip = section.get().getTestsToSkip(section);
 		if (!skip.isEmpty()) testsToSkip.addAll(skip);
