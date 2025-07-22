@@ -244,11 +244,10 @@ public final class Article {
 	}
 
 	/**
-	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS ARTICLE! For the articles title, use
-	 * getTitle() instead!
+	 * Same as {@link #getTitle()}, returns the title of article. The method exists for historical reasons.
 	 */
 	public String getName() {
-		return this.getClass().getSimpleName();
+		return getTitle();
 	}
 
 	public Section<RootType> getRootSection() {
