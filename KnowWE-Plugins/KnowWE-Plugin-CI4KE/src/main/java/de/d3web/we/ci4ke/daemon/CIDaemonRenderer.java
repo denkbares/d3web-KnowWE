@@ -11,6 +11,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.Icon;
 
 public class CIDaemonRenderer implements Renderer {
 
@@ -28,9 +29,8 @@ public class CIDaemonRenderer implements Renderer {
 		CIDashboard dashboard = CIDashboardManager.getDashboard(articleManager, dashboardName);
 
 		if (dashboard == null) {
-			string.appendHtml("<span class='error'>");
-			string.append("The annotation @" + CIDashboardType.NAME_KEY
-					+ " has to specify an existing CI dashboard name.");
+			string.appendHtml("<span class='ci-dashboard-not-found tooltipster' title='CI dashboard " + dashboardName + " not found. Please specify an existing dashboard via annotation @" + CIDashboardType.NAME_KEY + ".'>");
+			string.append(Icon.ERROR.toHtmlElement());
 			string.appendHtml("</span>");
 		}
 		else {

@@ -69,6 +69,10 @@
 	white-space: normal;
 }
 
+.ci-dashboard-not-found {
+	color: var(--text-color-error);
+}
+
 a.ci-daemon:hover {
 	text-decoration: none;
 	opacity: 0.6;
