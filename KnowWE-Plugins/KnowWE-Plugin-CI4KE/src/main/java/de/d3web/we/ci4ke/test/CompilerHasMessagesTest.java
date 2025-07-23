@@ -20,6 +20,7 @@
 
 package de.d3web.we.ci4ke.test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.collections.ConcatenateCollection;
+import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.MessageObject;
@@ -91,14 +93,15 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 
 		TestingUtils.checkInterrupt();
 
+		int totalNumberOfMessages = messages.size();
 		buffer.append(" ")
-				.append(Strings.pluralOf(messages.size(), type.toString().toLowerCase()))
+				.append(Strings.pluralOf(totalNumberOfMessages, type.toString().toLowerCase()))
 				.append(" found in compiler [")
 				.append(compiler.getName())
 				.append("|")
 				.append(getWikiLink(compiler.getCompileSection()));
 		if (!messages.isEmpty()) {
-			buffer.append("]\n");
+			buffer.append("]\n\n");
 			for (de.knowwe.core.report.Message message : messages) {
 				if (message.getType() == Message.Type.ERROR) {
 					hasError = true;
@@ -108,7 +111,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 					hasWarning = true;
 				}
 			}
-			appendMessages(compiler, sectionsByTitle, ignorePatterns, buffer);
+			appendMessages(compiler, sectionsByTitle, totalNumberOfMessages, ignorePatterns, buffer);
 		}
 		if (hasError) {
 			return new de.d3web.testing.Message(
@@ -150,43 +153,56 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		CIRenderer.renderResultMessageFooter(context, testObjectName, testObjectClass, message, renderResult);
 	}
 
-	private void appendMessages(PackageCompiler compiler, Map<String, List<Section<?>>> sectionsByTitle, List<Pattern> ignorePatterns, StringBuilder buffer) {
-		for (Map.Entry<String, List<Section<?>>> entry : sectionsByTitle.entrySet()) {
-			Map<? extends Section<?>, List<Message>> messagesBySection = entry.getValue()
+	private void appendMessages(PackageCompiler compiler, Map<String, List<Section<?>>> sectionsByTitle, int totalNumberOfMessages, List<Pattern> ignorePatterns, StringBuilder buffer) {
+		ArrayList<String> titles = new ArrayList<>(sectionsByTitle.keySet());
+		titles.sort(NumberAwareComparator.CASE_INSENSITIVE);
+		for (String title : titles) {
+			List<Section<?>> sections = sectionsByTitle.get(title);
+			Map<? extends Section<?>, List<Message>> messagesBySection = sections
 					.stream()
-					.collect(Collectors.toMap(s -> s, s -> new ConcatenateCollection<>(Messages.getMessagesFromSubtree(compiler, s, type), Messages
-							.getMessagesFromSubtree(s, type)).stream()
-							.filter(m -> ignorePatterns.stream()
+					.collect(Collectors.toMap(s -> s, s -> new ConcatenateCollection<>(Messages.getMessagesFromSubtree(compiler, s, type),
+							Messages.getMessagesFromSubtree(s, type)).stream().filter(m -> ignorePatterns.stream()
 									.noneMatch(p -> p.matcher(m.getVerbalization()).find()))
 							.collect(Collectors.toList())));
 
 			List<Map.Entry<? extends Section<?>, List<Message>>> messagesBySectionSorted = sortMessagesBySection(messagesBySection);
 			int sum = messagesBySection.values().stream().mapToInt(Collection::size).sum();
 			if (sum > 0) {
-				Section<?> section = entry.getValue().get(0);
-				buffer.append("\n\n__[")
-						.append(entry.getKey())
-						.append("|")
-						.append(getWikiLink(section))
-						.append("]__ has ")
-						.append(Strings.pluralOf(sum, type.name().toLowerCase()))
-						.append(":");
-				for (Map.Entry<? extends Section<?>, List<Message>> listEntry : messagesBySectionSorted) {
+				Section<?> section = sections.get(0);
+				if (totalNumberOfMessages > 1000) {
+					buffer.append("\n* [")
+							.append(title)
+							.append("|")
+							.append(getWikiLink(section))
+							.append("] (")
+							.append(Strings.pluralOf(sum, type.name().toLowerCase()))
+							.append(")");
+				}
+				else {
+					buffer.append("\n\n__[")
+							.append(title)
+							.append("|")
+							.append(getWikiLink(section))
+							.append("]__ has ")
+							.append(Strings.pluralOf(sum, type.name().toLowerCase()))
+							.append(":");
+					for (Map.Entry<? extends Section<?>, List<Message>> listEntry : messagesBySectionSorted) {
 
-					List<Message> sortedMessages = sortMessages(listEntry);
-					for (Message message : sortedMessages) {
-						String verbalization = message.getVerbalization();
-						if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
-							verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization.replaceAll("[\\[\\]|]", ""));
-							buffer.append("\n* ")
-									.append("[")
-									.append(verbalization)
-									.append("|")
-									.append(getWikiLink(listEntry.getKey()))
-									.append("]");
-						}
-						else {
-							buffer.append("\n* ").append(message.getVerbalization());
+						List<Message> sortedMessages = sortMessages(listEntry);
+						for (Message message : sortedMessages) {
+							String verbalization = message.getVerbalization();
+							if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
+								verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization.replaceAll("[\\[\\]|]", ""));
+								buffer.append("\n* ")
+										.append("[")
+										.append(verbalization)
+										.append("|")
+										.append(getWikiLink(listEntry.getKey()))
+										.append("]");
+							}
+							else {
+								buffer.append("\n* ").append(message.getVerbalization());
+							}
 						}
 					}
 				}
