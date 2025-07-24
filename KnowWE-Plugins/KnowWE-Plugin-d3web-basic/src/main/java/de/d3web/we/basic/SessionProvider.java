@@ -85,7 +85,7 @@ public class SessionProvider {
 	 * @return SessionProvider object associated to the user
 	 * @created 06.03.2012
 	 */
-	private static SessionProvider getSessionProvider(UserContext context) {
+	public static SessionProvider getSessionProvider(UserContext context) {
 		HttpSession httpSession = context.getSession();
 		return getSessionProvider(httpSession);
 	}
