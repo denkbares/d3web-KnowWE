@@ -11,6 +11,7 @@ import de.d3web.we.object.D3webTerm;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.PackageCompilerNameDefinition;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.AbstractType;
@@ -25,7 +26,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
-public class KnowledgeBaseDefinition extends AbstractType implements TermDefinition, D3webTerm<KnowledgeBase>, RenamableTerm {
+public class KnowledgeBaseDefinition extends AbstractType implements PackageCompilerNameDefinition, D3webTerm<KnowledgeBase> {
 
 	public KnowledgeBaseDefinition() {
 		setSectionFinder(new AllTextFinderTrimmed(AllTextFinderTrimmed.TrimType.SPACES, true));

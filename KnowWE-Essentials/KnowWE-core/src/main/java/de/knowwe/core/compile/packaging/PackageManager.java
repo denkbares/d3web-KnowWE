@@ -360,6 +360,20 @@ public class PackageManager {// implements EventListener {
 		}
 	}
 
+	/**
+	 * Unmarks the given section for removal. Should only be used in very special cases, where the section was
+	 * previously marked for removal.
+	 *
+	 * @param section the section to unmark for removal
+	 */
+	public void unmarkForRemoval(Section<DefaultMarkupType> section) {
+		for (Pair<Set<Section<?>>, Set<Section<?>>> value : changedPackages.values()) {
+			value.getB().remove(section);
+		}
+
+		removedPredicateSections.remove(section);
+	}
+
 	public boolean containsPackage(String packageName) {
 		Set<Section<? extends DefaultMarkupType>> sectionsOfPackage = packageToSection.getOrDefault(packageName, Set.of());
 		if (sectionsOfPackage.isEmpty()) return false;

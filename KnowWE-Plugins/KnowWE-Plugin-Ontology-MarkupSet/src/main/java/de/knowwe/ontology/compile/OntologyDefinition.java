@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.PackageCompilerNameDefinition;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.AbstractType;
@@ -29,7 +30,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Volker Belli (denkbares GmbH)
  * @created 01.04.2019
  */
-public class OntologyDefinition extends AbstractType implements TermDefinition, RenamableTerm {
+public class OntologyDefinition extends AbstractType implements PackageCompilerNameDefinition {
 
 	public OntologyDefinition() {
 		setSectionFinder(new AllTextFinderTrimmed(AllTextFinderTrimmed.TrimType.SPACES, true));

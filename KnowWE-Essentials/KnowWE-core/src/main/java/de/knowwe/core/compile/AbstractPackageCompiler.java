@@ -98,7 +98,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	}
 
 	@Override
-	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
+	public final void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
 		refreshCompiledPackages();
 		String[] packagesToCompile = getCompiledPackages();
 		if (newlyCreated || hasChangedForCompiler(packagesToCompile)) {
@@ -107,6 +107,11 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 			compilePackages(packagesToCompile);
 			LOGGER.info(this + " finished after " + stopwatch.getDisplay());
 		}
+	}
+
+	@Override
+	public void destroy() {
+		compileSection.get().deregisterPackageCompiler(this, compileSection);
 	}
 
 	private boolean hasChangedForCompiler(String... packagesToCompile) {

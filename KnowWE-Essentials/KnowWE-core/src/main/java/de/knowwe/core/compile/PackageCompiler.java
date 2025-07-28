@@ -50,8 +50,10 @@ public interface PackageCompiler extends Compiler, NamedCompiler {
 	/**
 	 * Get all sections that are currently compiled by this compiler, based on used packages and available sections in
 	 * those packages.
+	 *
 	 * @deprecated use {@link Sections#$(PackageCompiler)} instead
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated
 	default Collection<Section<?>> getCompiledSections() {
 		return getPackageManager().getSectionsOfPackage(getCompiledPackages());
@@ -61,4 +63,9 @@ public interface PackageCompiler extends Compiler, NamedCompiler {
 	 * The packages compiled by this package compiler
 	 */
 	String[] getCompiledPackages();
+
+	@Override
+	default String getName() {
+		return getCompileSection().get().getName(getCompileSection());
+	}
 }

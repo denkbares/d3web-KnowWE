@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -262,10 +263,10 @@ public class CompilerManager implements EventListener {
 				.collect(Collectors.toCollection(HashSet::new));
 		// most common case: Some Page/Article gets edited... or recompilations
 		boolean allArticles = added.stream().allMatch(s -> s.get() instanceof RootType)
-				&& removed.stream().allMatch(s -> s.get() instanceof RootType);
+							  && removed.stream().allMatch(s -> s.get() instanceof RootType);
 		boolean allRecompilations = added.size() == removed.size()
-				&& removed.stream()
-				.allMatch(s -> addedArticles.contains(s.getArticle().getTitle()));
+									&& removed.stream()
+											.allMatch(s -> addedArticles.contains(s.getArticle().getTitle()));
 		boolean initialCompilation = removed.isEmpty();
 		if (allArticles && (allRecompilations || initialCompilation)) {
 			String articleTitles = addedArticles.size() > 100 ? "" : ": " + addedArticles.stream()
@@ -276,7 +277,7 @@ public class CompilerManager implements EventListener {
 		}
 		else {
 			stopwatch.log(LOGGER, "Compiled " + added.size() + " added and " + removed.size()
-					+ " removed section" + (removed.size() == 1 ? "" : "s"));
+								  + " removed section" + (removed.size() == 1 ? "" : "s"));
 		}
 	}
 
@@ -319,7 +320,7 @@ public class CompilerManager implements EventListener {
 					}
 					catch (Throwable e) {
 						String msg = "Unexpected internal exception while compiling with "
-								+ compiler + ": " + e.getMessage();
+									 + compiler + ": " + e.getMessage();
 						LOGGER.error(msg, e);
 						for (Section<?> section : added) {
 							// it does not matter if we store the messages
@@ -336,7 +337,7 @@ public class CompilerManager implements EventListener {
 							// 1 - update all required compiler flags
 							activeCompilers.remove(compiler);
 							LOGGER.debug(compiler.getClass()
-									.getSimpleName() + " finished after " + stopwatch.getDisplay());
+												 .getSimpleName() + " finished after " + stopwatch.getDisplay());
 							clearCurrentCompilePriority(compiler);
 							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
 							// always notify all, as the clear is usually a noop (if the compiler has cleared before)
@@ -406,7 +407,7 @@ public class CompilerManager implements EventListener {
 						int newThreadCount = threadCount + 1;
 						setMaxCompilationThreadCount(newThreadCount);
 						LOGGER.warn("All compile threads are occupied with waiting compilers, increasing thread count to " + newThreadCount + ".\n"
-								+ "Consider using system property " + KNOWWE_COMPILER_THREADS_COUNT + " to set thread count to this number at startup.");
+									+ "Consider using system property " + KNOWWE_COMPILER_THREADS_COUNT + " to set thread count to this number at startup.");
 					}
 
 					else if (deadlockDetected()) {
@@ -426,12 +427,12 @@ public class CompilerManager implements EventListener {
 
 	private void threadDump(@NotNull Compiler compiler, @NotNull Priority priority) {
 		String message = "Potential deadlock detected, while compiler " + Compilers.getCompilerName(compiler)
-				+ " was waiting for the compilation to complete priority " + priority;
+						 + " was waiting for the compilation to complete priority " + priority;
 		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid log spam
 			message += "\n####################\n" +
-					"\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n" +
-					KnowWEUtils.getThreadDumpViaJcmd() +
-					"Thread-Dump-End!\n####################";
+					   "\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n" +
+					   KnowWEUtils.getThreadDumpViaJcmd() +
+					   "Thread-Dump-End!\n####################";
 			this.lastThreadDumpThrown = this.compilationCount;
 		}
 		LOGGER.error(message);
@@ -568,13 +569,21 @@ public class CompilerManager implements EventListener {
 	 * @created 31.10.2013
 	 */
 	public void addCompiler(double priority, Compiler compiler) {
-		// debug code: check that we only add items
-		// that not already have been added
-		if (compilers.contains(compiler)) {
-			throw new IllegalStateException("Do not add equal compilers instances multiple times.");
-		}
+		Objects.requireNonNull(compiler);
 		// add the compiler, being thread-save
 		synchronized (lock) {
+			// debug code: check that we only add items
+			// that not already have been added
+			for (Compiler otherCompiler : compilers) {
+				if (compiler.equals(otherCompiler)) {
+					throw new IllegalStateException("Do not add equal compilers instances multiple times.");
+				}
+				if (compiler instanceof NamedCompiler namedCompiler
+					&& otherCompiler instanceof NamedCompiler namedOtherCompiler
+					&& namedCompiler.getName().equals(namedOtherCompiler.getName())) {
+					throw new IllegalStateException("Do not add multiple compilers with the same name: " + namedCompiler.getName());
+				}
+			}
 			compilers.add(priority, compiler);
 			compilerCache.add(compiler);
 			compiler.init(this);

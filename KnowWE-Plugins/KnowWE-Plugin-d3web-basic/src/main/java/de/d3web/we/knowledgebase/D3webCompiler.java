@@ -87,6 +87,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	@Override
 	public void destroy() {
+		super.destroy();
 		shutDownScriptCompilers();
 	}
 
@@ -124,15 +125,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		return Sections.cast(compileSection, KnowledgeBaseMarkup.class);
 	}
 
-	/**
-	 * Returns the name of this compiler, normally given in the content %%KnowledgeBase section.
-	 */
-	@Override
-	public String getName() {
-		return $(getCompileSection()).successor(KnowledgeBaseDefinition.class)
-				.stream().map(s -> s.get().getTermName(s)).filter(Strings::nonBlank).findAny()
-				.orElseGet(() -> getCompileSection().getTitle());
-	}
 
 	/**
 	 * FIXME: This method is currently only needed by the AnnotationLoadKnowledgeBaseHandler where a knowledge base is

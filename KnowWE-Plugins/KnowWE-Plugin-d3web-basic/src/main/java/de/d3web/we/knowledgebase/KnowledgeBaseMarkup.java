@@ -20,7 +20,6 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Objects;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
@@ -31,6 +30,7 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingPackageCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -97,7 +97,7 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 		MARKUP.setTemplate("""
 				%%Knowledgebase
 				«KB-Name»
-
+				
 				@uses: «package-a»
 				@uses: «package-b»
 				%
@@ -143,9 +143,9 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 
 	@NotNull
 	public D3webCompiler getCompiler(Section<? extends KnowledgeBaseMarkup> self) {
-		return Objects.requireNonNull(
-				Compilers.getCompiler(Sections.successor(self, PackageCompileType.class), D3webCompiler.class),
-				"unexpected internal error: no compiler created");
+		Section<PackageCompileType> successor = Sections.successor(self, PackageCompileType.class);
+		Objects.requireNonNull(successor, "No compile section found");
+		return Objects.requireNonNull(Compilers.getCompiler(successor, D3webCompiler.class), "No compiler found");
 	}
 
 	private static class D3webCompilerRegistrationScript implements PackageRegistrationScript<PackageCompileType> {
@@ -163,6 +163,7 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 			for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
 				if (packageCompiler instanceof D3webCompiler) {
 					compiler.getCompilerManager().removeCompiler(packageCompiler);
+					GroupingPackageCompiler.recompile(compiler, packageCompiler);
 				}
 			}
 		}

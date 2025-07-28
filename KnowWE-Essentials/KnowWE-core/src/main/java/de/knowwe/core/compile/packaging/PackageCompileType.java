@@ -3,12 +3,14 @@ package de.knowwe.core.compile.packaging;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+
 
 public interface PackageCompileType extends Type {
 
@@ -45,9 +47,17 @@ public interface PackageCompileType extends Type {
 	 */
 	Set<String> getPackages(Section<?> section);
 
+	/**
+	 * Return the name the package compiler should have
+	 *
+	 * @param section the section to get the name for
+	 * @return the name the compiler will have
+	 */
+	String getName(Section<? extends PackageCompileType> section);
+
 	default Collection<PackageCompiler> getPackageCompilers(Section<? extends PackageCompileType> section) {
 		Collection<PackageCompiler> compilers = section.getObject(COMPILER_STORY_KEY);
-		return compilers == null ? Collections.emptyList() : Collections.unmodifiableCollection(compilers);
+		return compilers == null ? Collections.emptyList() : List.copyOf(compilers);
 	}
 
 	default void registerPackageCompiler(PackageCompiler compiler, Section<? extends PackageCompileType> section) {
@@ -57,5 +67,11 @@ public interface PackageCompileType extends Type {
 			section.storeObject(COMPILER_STORY_KEY, compilers);
 		}
 		compilers.add(compiler);
+	}
+
+	default void deregisterPackageCompiler(PackageCompiler compiler, Section<? extends PackageCompileType> section) {
+		Collection<PackageCompiler> compilers = section.getObject(COMPILER_STORY_KEY);
+		if (compilers == null) return;
+		compilers.remove(compiler);
 	}
 }

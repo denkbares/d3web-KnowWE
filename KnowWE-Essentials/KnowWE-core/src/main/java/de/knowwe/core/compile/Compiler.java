@@ -55,7 +55,9 @@ public interface Compiler {
 	/**
 	 * Destroys this compiler and frees its resources. This method will called if the compiler is unregistered from the
 	 * CompilerManager.
+	 * <p>
+	 * <b>Attention:</b> If overriding this method, make sure to also call super.destroy()
+	 * </p>
 	 */
 	void destroy();
-
 }

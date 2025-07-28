@@ -123,6 +123,14 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 				.collect(Collectors.toSet());
 	}
 
+	@Override
+	public String getName(Section<? extends PackageCompileType> section) {
+		return $(section).successor(PackageCompilerNameDefinition.class)
+				.stream().map(s -> s.get().getTermName(s))
+				.filter(Strings::nonBlank).findAny()
+				.orElseGet(section::getTitle);
+	}
+
 	public static class PackageCompileSectionRegistrationScript implements PackageRegistrationScript<DefaultMarkupPackageCompileType> {
 
 		@Override

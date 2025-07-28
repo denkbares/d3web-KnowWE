@@ -147,18 +147,10 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		return isIncrementalBuild;
 	}
 
-	/**
-	 * Returns the name of this compiler, normally given in the content %%Ontology section.
-	 */
-	@Override
-	public String getName() {
-		return $(getCompileSection()).successor(OntologyDefinition.class)
-				.stream().map(s -> s.get().getTermName(s)).filter(Strings::nonBlank).findAny()
-				.orElseGet(() -> getCompileSection().getTitle());
-	}
 
 	@Override
 	public void destroy() {
+		super.destroy();
 		shutDownScriptCompilers();
 		EventManager.getInstance().unregister(this);
 		this.rdf2GoCore.close();

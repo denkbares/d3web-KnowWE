@@ -35,6 +35,7 @@ import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingPackageCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -308,6 +309,7 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 			for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
 				if (packageCompiler instanceof OntologyCompiler) {
 					compiler.getCompilerManager().removeCompiler(packageCompiler);
+					GroupingPackageCompiler.recompile(compiler, packageCompiler);
 				}
 			}
 		}

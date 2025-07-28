@@ -16,7 +16,7 @@ import java.util.Collection;
 public interface GroupingCompiler extends Compiler {
 
 	/**
-	 * gets all child compilers for a given section
+	 * Gets all child compilers for a given section
 	 *
 	 * @return collection containing all child compilers of this compiler
 	 */

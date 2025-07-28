@@ -74,6 +74,9 @@ public class DefaultMarkupPackageRegistrationScript extends DefaultMarkupPackage
 			}
 		}
 
+		// in case of recompilation, unmark for removal
+		packageManager.unmarkForRemoval(section);
+
 		// register section for all regular packages in the package manager
 		for (String packageName : packageInfo.packageNames) {
 			boolean isNewPackage = !packageManager.containsPackage(packageName);
