@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.CompilationLocal;
@@ -62,6 +64,7 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 
 		this.addCompileScript(Priority.HIGH, new PackageCompileSectionRegistrationScript());
 		this.addCompileScript(Priority.LOW, new PackageWithoutSectionsWarningScript());
+		this.addCompileScript(Priority.LOWER, new CompilerNameCheck());
 	}
 
 	@Override
@@ -85,7 +88,7 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 
 	private static boolean isBetweenPackageCompilation(Section<? extends PackageCompileType> section, CompilerManager compilerManager) {
 		return compilerManager.getCurrentCompilePriority(Compilers.getPackageRegistrationCompiler(section)) == null
-				&& compilerManager.getCurrentCompilePriority(Compilers.getPackageUnregistrationCompiler(section)) == Priority.AWAIT_COMPILATION;
+			   && compilerManager.getCurrentCompilePriority(Compilers.getPackageUnregistrationCompiler(section)) == Priority.AWAIT_COMPILATION;
 	}
 
 	@NotNull
@@ -169,9 +172,9 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 			Collection<Section<?>> sectionsOfPackages = compiler.getPackageManager().getSectionsOfPackage(
 					packagesToCompile);
 			boolean emptyPackages = sectionsOfPackages.isEmpty()
-					// the parents markup section does not count
-					|| (sectionsOfPackages.size() == 1
-					&& sectionsOfPackages.contains(section));
+									// the parents markup section does not count
+									|| (sectionsOfPackages.size() == 1
+										&& sectionsOfPackages.contains(section));
 			if (emptyPackages) {
 				String packagesString = Strings.concat(" ,", packagesToCompile);
 				if (packagesToCompile.length > 1) {
@@ -188,6 +191,42 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 		@Override
 		public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
 			Messages.clearMessages(compiler, section, getClass());
+		}
+	}
+
+	private static class CompilerNameCheck implements PackageRegistrationScript<DefaultMarkupPackageCompileType> {
+
+		@Override
+		public void compile(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
+			checkCompilerNames(compiler, section);
+		}
+
+		private void checkCompilerNames(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
+			Identifier identifier = $(section).successor(PackageCompilerNameDefinition.class)
+					.mapFirst(s -> s.get().getTermIdentifier(compiler, s));
+			Collection<Section<?>> definitions = compiler.getTerminologyManager().getTermDefiningSections(identifier);
+			for (Section<?> definition : definitions) {
+				if (definitions.size() > 1) {
+					List<String> titles = definitions.stream()
+							.map(Section::getTitle)
+							.distinct()
+							.sorted(NumberAwareComparator.CASE_INSENSITIVE)
+							.map(s -> "[" + s + "]")
+							.toList();
+					Message message = new Message(Message.Type.ERROR, Message.Display.WIKI, "Multiple " + section.get()
+							.getName() + " markups found with name: " + section.get().getName(section)
+																						  + (titles.size() > 1 ? " (" + Strings.concat(", ", titles) + ")" : ""));
+					Messages.storeMessage(compiler, definition, getClass(), message);
+				}
+				else {
+					Messages.clearMessages(compiler, definition, getClass());
+				}
+			}
+		}
+
+		@Override
+		public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
+			checkCompilerNames(compiler, section);
 		}
 	}
 }
