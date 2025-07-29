@@ -213,9 +213,10 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 							.sorted(NumberAwareComparator.CASE_INSENSITIVE)
 							.map(s -> "[" + s + "]")
 							.toList();
-					Message message = new Message(Message.Type.ERROR, Message.Display.WIKI, "Multiple " + section.get()
-							.getName() + " markups found with name: " + section.get().getName(section)
-																						  + (titles.size() > 1 ? " (" + Strings.concat(", ", titles) + ")" : ""));
+					String text = "Multiple " + section.get().getName() + " markups found with name: "
+								  + section.get().getName(section)
+								  + (titles.size() > 1 ? " (" + Strings.concat(", ", titles) + ")" : "");
+					Message message = new Message(Message.Type.ERROR, Message.Display.WIKI, text);
 					Messages.storeMessage(compiler, definition, getClass(), message);
 				}
 				else {
