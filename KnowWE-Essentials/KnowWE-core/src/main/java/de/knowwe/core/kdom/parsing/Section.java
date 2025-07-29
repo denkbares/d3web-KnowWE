@@ -745,7 +745,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @created 08.07.2011
 	 */
 	public <O> O getObject(@Nullable Compiler compiler, String key) {
-		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
+		if (compiler != null && compiler.getCompilerManager() != null && !compiler.getCompilerManager().contains(compiler)) return null;
 		lock.readLock().lock();
 		try {
 			Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
