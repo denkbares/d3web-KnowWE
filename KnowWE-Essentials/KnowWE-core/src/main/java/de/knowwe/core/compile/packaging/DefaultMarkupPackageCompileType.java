@@ -131,21 +131,7 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 		return $(section).successor(PackageCompilerNameDefinition.class)
 				.stream().map(s -> s.get().getTermName(s))
 				.filter(Strings::nonBlank).findAny()
-				.orElseGet(() -> generateNameFromTitle(section));
-	}
-
-	@NotNull
-	private String generateNameFromTitle(Section<? extends PackageCompileType> section) {
-		List<? extends Section<? extends PackageCompileType>> compileTypeSections = $(section).parent()
-				.successor(section.get().getClass())
-				.asList();
-		if (compileTypeSections.size() > 1) {
-			for (int i = 0; i < compileTypeSections.size(); i++) {
-				Section<? extends PackageCompileType> compileTypeSection = compileTypeSections.get(i);
-				if (compileTypeSection == section) return section.getTitle() + "-" + (i + 1);
-			}
-		}
-		return section.getTitle() == null ? section.getText() : section.getTitle();
+				.orElseGet(() -> PackageCompilerNameDefinition.generateNameFromTitle(section));
 	}
 
 	public static class PackageCompileSectionRegistrationScript implements PackageRegistrationScript<DefaultMarkupPackageCompileType> {
