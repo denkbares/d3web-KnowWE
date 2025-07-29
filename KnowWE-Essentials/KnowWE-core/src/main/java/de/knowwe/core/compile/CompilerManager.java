@@ -578,11 +578,6 @@ public class CompilerManager implements EventListener {
 				if (compiler.equals(otherCompiler)) {
 					throw new IllegalStateException("Do not add equal compilers instances multiple times.");
 				}
-				if (compiler instanceof NamedCompiler namedCompiler
-					&& otherCompiler instanceof NamedCompiler namedOtherCompiler
-					&& namedCompiler.getName().equals(namedOtherCompiler.getName())) {
-					throw new IllegalStateException("Do not add multiple compilers with the same name: " + namedCompiler.getName());
-				}
 			}
 			compilers.add(priority, compiler);
 			compilerCache.add(compiler);
