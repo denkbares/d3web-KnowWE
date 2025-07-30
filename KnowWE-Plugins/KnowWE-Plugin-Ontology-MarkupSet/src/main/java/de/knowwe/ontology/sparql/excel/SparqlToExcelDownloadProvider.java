@@ -83,7 +83,12 @@ public class SparqlToExcelDownloadProvider implements ToolProvider {
 		if (lastHeadline != null) {
 			fileName += " " + lastHeadline;
 		}
-		return Strings.encodeFileName(fileName).replaceAll("'", "");
+		fileName = fileName.replaceAll("%%\\([^)]+\\)", "")
+				.replaceAll("%", "")
+				.replaceAll("[^\\w-_ ]", "");
+		fileName = Strings.ellipsis(fileName, 100, "");
+		fileName = Strings.trim(fileName);
+		return Strings.encodeFileName(fileName);
 	}
 
 	protected Tool getDownloadExcelToolFiltered(Section<?> section) {
