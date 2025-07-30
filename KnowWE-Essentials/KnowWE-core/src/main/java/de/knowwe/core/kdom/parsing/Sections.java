@@ -601,6 +601,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@NotNull
 	public Sections<?> definitions(@NotNull TermCompiler compiler) {
 		return new Sections<>(() -> filter(Term.class).stream()
+				.map(s -> s.get().getTermIdentifier(compiler, s))
+				.distinct()
 				.flatMap(s -> Sections.definitions(compiler, s).stream())
 				.iterator());
 	}
@@ -617,6 +619,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@NotNull
 	public <R extends Term> Sections<R> definitions(@NotNull TermCompiler compiler, Class<R> clazz) {
 		return new Sections<R>(() -> filter(Term.class).stream()
+				.map(s -> s.get().getTermIdentifier(compiler, s))
+				.distinct()
 				.flatMap(s -> Sections.definitions(compiler, s).filter(clazz).stream())
 				.iterator());
 	}
@@ -631,7 +635,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@NotNull
 	public Sections<?> references(@NotNull TermCompiler compiler) {
 		return new Sections<>(() -> filter(Term.class).stream()
-				.flatMap(s -> Sections.references(compiler, s).stream())
+				.map(s -> s.get().getTermIdentifier(compiler, s))
+				.distinct()
+				.flatMap(i -> Sections.references(compiler, i).stream())
 				.iterator());
 	}
 
@@ -647,6 +653,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@NotNull
 	public <R extends Term> Sections<R> references(@NotNull TermCompiler compiler, Class<R> clazz) {
 		return new Sections<R>(() -> filter(Term.class).stream()
+				.map(s -> s.get().getTermIdentifier(compiler, s))
+				.distinct()
 				.flatMap(s -> Sections.references(compiler, s).filter(clazz).stream())
 				.iterator());
 	}
@@ -663,6 +671,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 */
 	public <R extends Term> Sections<R> registrations(@NotNull TermCompiler compiler, Class<R> clazz) {
 		return new Sections<R>(() -> filter(Term.class).stream()
+				.map(s -> s.get().getTermIdentifier(compiler, s))
+				.distinct()
 				.flatMap(s -> Stream.concat(Sections.definitions(compiler, s)
 						.filter(clazz).stream(), Sections.references(compiler, s).filter(clazz).stream()))
 				.iterator());
