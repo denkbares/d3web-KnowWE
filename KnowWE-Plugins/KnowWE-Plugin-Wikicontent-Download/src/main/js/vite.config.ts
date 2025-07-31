@@ -1,4 +1,4 @@
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig(({mode}) => {
@@ -6,7 +6,7 @@ export default defineConfig(({mode}) => {
     if (mode === "production") {
         outputDir = "../resources/webapp/KnowWEExtension";
     } else {
-        outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2025.3-SNAPSHOT/KnowWEExtension";
+      outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2025.3-KONAP/KnowWEExtension";
     }
 
     return {

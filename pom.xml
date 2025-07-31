@@ -23,13 +23,13 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>2025.3-SNAPSHOT</version>
+	<version>2025.3-KONAP</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 
 	<properties>
 		<denkbares.version>${project.version}</denkbares.version>
-		<d3web.version>${project.version}</d3web.version>
+		<d3web.version>2025.3-SNAPSHOT</d3web.version>
 		<knowwe.version>${project.version}</knowwe.version>
 		<konap.version>${project.version}</konap.version>
 		<ssp.version>${project.version}</ssp.version>
@@ -484,7 +484,7 @@
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
-				<version>${knowwe.version}</version>
+				<version>2024.3-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
@@ -584,7 +584,7 @@
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
-				<version>${knowwe.version}</version>
+				<version>2025.3-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
