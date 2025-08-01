@@ -1623,7 +1623,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				builder.append("\n");
 			}
 			LOGGER.error("The following sections were not replaced, because they could not be found. " +
-						 "Maybe there were changes to their articles in the meantime?\n{}", builder);
+					"Maybe there were changes to their articles in the meantime?\n{}", builder);
 		}
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
@@ -1704,11 +1704,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			Map<String, String> sectionsMapForCurrentTitle,
 			UserContext context) {
 
-		StringBuilder newText = new StringBuilder();
 		Article article = Environment.getInstance().getArticle(context.getWeb(), title);
-		collectTextAndReplace(article.getRootSection(), sectionsMapForCurrentTitle, newText);
-		trimSuperfluousLineBreaks(newText);
-		return newText.toString();
+		return collectTextAndReplace(article, sectionsMapForCurrentTitle);
 	}
 
 	private static void trimSuperfluousLineBreaks(StringBuilder newText) {
@@ -1724,6 +1721,13 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		if (lineBreakCount >= 1) {
 			newText.setLength(lineBreakPositions.get(lineBreakCount - 1) + 1);
 		}
+	}
+
+	public static String collectTextAndReplace(Article article, Map<String, String> nodesMap) {
+		StringBuilder builder = new StringBuilder();
+		collectTextAndReplace(article.getRootSection(), nodesMap, builder);
+		trimSuperfluousLineBreaks(builder);
+		return builder.toString();
 	}
 
 	private static void collectTextAndReplace(Section<?> sec, Map<String, String> nodesMap, StringBuilder newText) {
@@ -1757,14 +1761,14 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 		if (!missingIDs.isEmpty()) {
 			context.sendError(409, "The Sections '" + missingIDs
-								   + "' could not be found, possibly because somebody else"
-								   + " has edited them.");
+					+ "' could not be found, possibly because somebody else"
+					+ " has edited them.");
 			return true;
 		}
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
-					+ forbiddenArticles + ".");
+							+ forbiddenArticles + ".");
 			return true;
 		}
 		return false;
