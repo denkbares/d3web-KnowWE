@@ -31,6 +31,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
@@ -77,6 +78,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(WIKI_ANNOTATION, true);
 		MARKUP.addAnnotation(PAGE_ANNOTATION, true);
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
+		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
 	public InterWikiImportMarkup() {

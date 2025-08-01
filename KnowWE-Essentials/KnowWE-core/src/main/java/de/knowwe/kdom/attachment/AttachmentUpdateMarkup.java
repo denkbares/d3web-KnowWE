@@ -19,6 +19,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,8 @@ import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -47,6 +51,8 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
+import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
+import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.util.CredentialProvider;
@@ -262,43 +268,82 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 			String connectionString = Strings.readStream(connectionStream);
 
-			for (Section<AnnotationContentType> annotationContent : $(section).successor(AnnotationContentType.class)
-					.asList()) {
-
-				String replacement = annotationContent.getText();
-				if (Strings.isBlank(replacement)) continue;
-				String[] parsedReplacement = Strings.parseConcat("->", replacement);
-				if (parsedReplacement.length < 2) continue;
-
-				String sourceText = parsedReplacement[0];
-				String targetText = parsedReplacement[1].replace("\\n", "\n");
-				if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
-					if (Pattern.compile(sourceText).matcher(connectionString).find()) {
-						connectionString = connectionString.replaceAll(sourceText, targetText);
-						Messages.clearMessages(annotationContent, AttachmentMarkup.class);
-					}
-					else {
-						Messages.storeMessage(annotationContent, AttachmentMarkup.class,
-								Messages.info("Replacement regex /" + sourceText
-										+ "/ does not match to any text in this attachment."));
-					}
-				}
-				else if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
-					if (connectionString.contains(sourceText)) {
-						connectionString = connectionString.replace(sourceText, targetText);
-						Messages.clearMessages(annotationContent, AttachmentMarkup.class);
-					}
-					else {
-						Messages.storeMessage(annotationContent, AttachmentMarkup.class,
-								Messages.info("Replacement pattern '" + sourceText
-										+ "' does not match to any text in this attachment."));
-					}
-				}
-			}
+			connectionString = applyReplacements(section, connectionString);
+			connectionString = applyPackages(section, connectionString);
 
 			connectionStream = new ByteArrayInputStream(connectionString.getBytes(StandardCharsets.UTF_8));
 		}
 		return connectionStream;
+	}
+
+	private static String applyPackages(Section<? extends AttachmentUpdateMarkup> section, String connectionString) {
+		@NotNull String[] packageAnnotations = DefaultMarkupType.getAnnotations(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
+		if (packageAnnotations.length > 0) {
+			StringBuilder packageAnnotationText = new StringBuilder();
+			for (@NotNull String packageAnnotation : packageAnnotations) {
+				packageAnnotationText.append("@" + PackageManager.PACKAGE_ATTRIBUTE_NAME + ": ")
+						.append(packageAnnotation)
+						.append("\n");
+			}
+			Article tempArticle = Article.createTemporaryArticle(connectionString, section.getTitle() + "_Import", section.getWeb());
+			Map<String, String> replacementMap = new HashMap<>();
+			for (Section<DefaultMarkupType> markupSection : $(tempArticle).successor(DefaultMarkupType.class)) {
+
+				// clear existing package annotations
+				for (Section<AnnotationType> annotationSection : $(markupSection).successor(AnnotationType.class)) {
+					if ($(annotationSection).successor(AnnotationNameType.class).anyMatch(
+							s -> s.get().getName(s).equals(PackageManager.PACKAGE_ATTRIBUTE_NAME))) {
+						replacementMap.put(annotationSection.getID(), "");
+					}
+				}
+
+				// append new package annotations
+				Section<?> closingTag = $(markupSection).children().getLast();
+				if (closingTag != null && Strings.trim(closingTag.getText()).equals("%")) {
+					replacementMap.put(closingTag.getID(), packageAnnotationText + Strings.trimLeft(closingTag.getText()));
+				}
+			}
+
+			connectionString = Sections.collectTextAndReplace(tempArticle, replacementMap);
+		}
+		return connectionString;
+	}
+
+	private static String applyReplacements(Section<? extends AttachmentUpdateMarkup> section, String connectionString) {
+		for (Section<AnnotationContentType> annotationContent : $(section).successor(AnnotationContentType.class)
+				.asList()) {
+
+			String replacement = annotationContent.getText();
+			if (Strings.isBlank(replacement)) continue;
+			String[] parsedReplacement = Strings.parseConcat("->", replacement);
+			if (parsedReplacement.length < 2) continue;
+
+			String sourceText = parsedReplacement[0];
+			String targetText = parsedReplacement[1].replace("\\n", "\n");
+			if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
+				if (Pattern.compile(sourceText).matcher(connectionString).find()) {
+					connectionString = connectionString.replaceAll(sourceText, targetText);
+					Messages.clearMessages(annotationContent, AttachmentMarkup.class);
+				}
+				else {
+					Messages.storeMessage(annotationContent, AttachmentMarkup.class,
+							Messages.info("Replacement regex /" + sourceText
+									+ "/ does not match to any text in this attachment."));
+				}
+			}
+			else if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
+				if (connectionString.contains(sourceText)) {
+					connectionString = connectionString.replace(sourceText, targetText);
+					Messages.clearMessages(annotationContent, AttachmentMarkup.class);
+				}
+				else {
+					Messages.storeMessage(annotationContent, AttachmentMarkup.class,
+							Messages.info("Replacement pattern '" + sourceText
+									+ "' does not match to any text in this attachment."));
+				}
+			}
+		}
+		return connectionString;
 	}
 
 	protected boolean isVersioning(Section<? extends AttachmentUpdateMarkup> section) {
