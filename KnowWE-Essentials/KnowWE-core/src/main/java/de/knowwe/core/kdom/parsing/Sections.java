@@ -931,6 +931,13 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return new Sections<>(() -> new SingleMaperator<>(sections.sections.iterator(), mapping));
 	}
 
+	/**
+	 * Makes sure that the returned sections are distinct (same as for Java Streams).
+	 */
+	public Sections<T> distinct() {
+		return $(stream().distinct());
+	}
+
 	private static final class SingleMaperator<T extends Type, R extends Type> implements Iterator<Section<R>> {
 		private final Iterator<Section<T>> base;
 		private final Function<Section<T>, Section<? extends R>> mapper;
@@ -1623,7 +1630,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				builder.append("\n");
 			}
 			LOGGER.error("The following sections were not replaced, because they could not be found. " +
-					"Maybe there were changes to their articles in the meantime?\n{}", builder);
+						 "Maybe there were changes to their articles in the meantime?\n{}", builder);
 		}
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
@@ -1761,14 +1768,14 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 		if (!missingIDs.isEmpty()) {
 			context.sendError(409, "The Sections '" + missingIDs
-					+ "' could not be found, possibly because somebody else"
-					+ " has edited them.");
+								   + "' could not be found, possibly because somebody else"
+								   + " has edited them.");
 			return true;
 		}
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
-							+ forbiddenArticles + ".");
+					+ forbiddenArticles + ".");
 			return true;
 		}
 		return false;
