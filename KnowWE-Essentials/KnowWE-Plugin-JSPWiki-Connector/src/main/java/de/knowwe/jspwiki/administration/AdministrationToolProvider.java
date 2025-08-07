@@ -36,14 +36,20 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MalformedObjectNameException;
+import javax.management.ReflectionException;
 import javax.servlet.http.HttpServletResponse;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.Iterators;
+import com.denkbares.utils.Exec;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
@@ -70,6 +76,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 	public static final String THREAD_DUMP_JCMD = "thread-dump-jcmd";
 	public static final String LOGS_RECENT = "logs-recent";
 	public static final String LOGS_ALL = "logs-all";
+	public static final String RESTART_WEBAPP = "restart-webapp";
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext user) {
@@ -125,7 +132,17 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					"window.location='action/AdministrationToolProvider" +
 							"?type=" + LOGS_ALL + "'",
 					Tool.CATEGORY_DOWNLOAD);
-			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll };
+
+			DefaultTool restartWebApp = new DefaultTool(Icon.REFRESH,
+					"Restart Web App",
+					"Restart this web app. This may take a while",
+					"if (confirm('Are you sure you want to restart the web app? This may take a while...')) " +
+					"{ window.location='action/AdministrationToolProvider" +
+					"?type=" + RESTART_WEBAPP + "' }",
+					Tool.CATEGORY_EXECUTE);
+
+
+			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll, restartWebApp };
 		}
 		else {
 			return null;
@@ -159,6 +176,14 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 		else if (LOGS_ALL.equals(type)) {
 			List<File> logFiles = getAllLogPaths();
 			downloadToday(context, logFiles);
+		}
+		else if (RESTART_WEBAPP.equals(type)) {
+			try {
+				JmxWebAppRestarter.reload(context.getServletContext());
+			}
+			catch (MalformedObjectNameException | ReflectionException | MBeanException | InstanceNotFoundException e) {
+				failUnexpected(context, "Failed to restart due to exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+			}
 		}
 		else {
 			failUnexpected(context, "Unknown tool type: " + type);
