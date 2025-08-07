@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -81,7 +82,12 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitTerminologyHandler.class);
 
 	private static final Map<String, TermCache> importCache = new HashMap<>();
-	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+	private final AtomicLong threadCount = new AtomicLong(1);
+	private final ExecutorService executorService = Executors.newFixedThreadPool(2, r -> {
+		Thread t = new Thread(r, "InitTerminologyHandler-" + threadCount.getAndIncrement());
+		t.setDaemon(true);
+		return t;
+	});
 
 	private static final String[] RESOURCE_TERMS = new String[] {
 			"http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt",
