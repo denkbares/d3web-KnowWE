@@ -499,14 +499,14 @@
 
 	/* -------- COOM -------- */
 	/* text colors */
-	--text-color-implication: #a4305b;
+	--text-color-derivation-table: #a4305b;
 	--text-color-combination: var(--text-combination);
 	--text-color-structure: #2266A1;
 	--text-color-enumeration: #168641;
 	--text-color-include: #F4A300;
 
 	/* background colors */
-	--bg-color-implication: #a4305b;
+	--bg-color-derivation-table: #a4305b;
 	--bg-color-combination: #8E54D4;
 	--bg-color-structure: #2266A1;
 	--bg-color-enumeration: #168641;
