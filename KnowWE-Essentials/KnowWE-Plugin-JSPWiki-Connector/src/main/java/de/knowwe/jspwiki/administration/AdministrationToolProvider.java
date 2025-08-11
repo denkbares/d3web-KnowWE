@@ -36,20 +36,14 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MalformedObjectNameException;
-import javax.management.ReflectionException;
 import javax.servlet.http.HttpServletResponse;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.Iterators;
-import com.denkbares.utils.Exec;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
@@ -123,14 +117,14 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					"Download recent logs",
 					"Download the most recent logs of this wiki",
 					"window.location='action/AdministrationToolProvider" +
-							"?type=" + LOGS_RECENT + "'",
+					"?type=" + LOGS_RECENT + "'",
 					Tool.CATEGORY_DOWNLOAD);
 
 			DefaultTool downloadAll = new DefaultTool(Icon.FILE_ZIP,
 					"Download all logs",
 					"Get all logs of this wiki as a zip file",
 					"window.location='action/AdministrationToolProvider" +
-							"?type=" + LOGS_ALL + "'",
+					"?type=" + LOGS_ALL + "'",
 					Tool.CATEGORY_DOWNLOAD);
 
 			DefaultTool restartWebApp = new DefaultTool(Icon.REFRESH,
@@ -140,7 +134,6 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					"{ window.location='action/AdministrationToolProvider" +
 					"?type=" + RESTART_WEBAPP + "' }",
 					Tool.CATEGORY_EXECUTE);
-
 
 			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll, restartWebApp };
 		}
@@ -178,12 +171,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 			downloadToday(context, logFiles);
 		}
 		else if (RESTART_WEBAPP.equals(type)) {
-			try {
-				JmxWebAppRestarter.reload(context.getServletContext());
-			}
-			catch (MalformedObjectNameException | ReflectionException | MBeanException | InstanceNotFoundException e) {
-				failUnexpected(context, "Failed to restart due to exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-			}
+			JmxWebAppRestarter.reload(context.getServletContext());
 		}
 		else {
 			failUnexpected(context, "Unknown tool type: " + type);
@@ -191,7 +179,9 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 	}
 
 	private void downloadThreadDump(UserActionContext context, String threadDump, String fileName) throws IOException {
-		fileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + "-" + fileName + "-" + Environment.getInstance().getWikiConnector().getApplicationName() + ".txt";
+		fileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + "-" + fileName + "-" + Environment.getInstance()
+				.getWikiConnector()
+				.getApplicationName() + ".txt";
 
 		context.setContentType(Action.BINARY);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
