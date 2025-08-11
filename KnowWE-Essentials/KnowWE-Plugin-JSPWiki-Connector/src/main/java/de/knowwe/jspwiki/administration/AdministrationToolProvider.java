@@ -130,9 +130,8 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 			DefaultTool restartWebApp = new DefaultTool(Icon.REFRESH,
 					"Restart Web App",
 					"Restart this web app. This may take a while",
-					"if (confirm('Are you sure you want to restart the web app? This may take a while...')) " +
-					"{ window.location='action/AdministrationToolProvider" +
-					"?type=" + RESTART_WEBAPP + "' }",
+					"KNOWWE.plugin.jspwikiConnector.restartWebApp()",
+					Tool.ActionType.ONCLICK,
 					Tool.CATEGORY_EXECUTE);
 
 			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll, restartWebApp };
