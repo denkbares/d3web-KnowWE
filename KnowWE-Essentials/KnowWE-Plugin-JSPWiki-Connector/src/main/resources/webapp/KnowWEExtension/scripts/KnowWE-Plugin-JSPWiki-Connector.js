@@ -46,6 +46,13 @@ KNOWWE.plugin.jspwikiConnector.setReadOnly = function(active) {
   new _KA(options).send();
 };
 
+KNOWWE.plugin.jspwikiConnector.restartWebApp = function() {
+  if (confirm("Are you sure you want to restart the web app? This may take a while...")) {
+    KNOWWE.editCommons.showAjaxLoader();
+    setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-webapp"}).done(() => window.location.reload()), 500);
+  }
+};
+
 KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
 
   const timeDisplay = document.getElementById("compile-warning");
@@ -55,8 +62,8 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
     window.location.reload();
   });
 
-  const timeValueSpan = document.getElementById('time-value');
-  const dateStartedMsAgo = parseInt(timeValueSpan.getAttribute('data-started-ms-ago'), 10);
+  const timeValueSpan = document.getElementById("time-value");
+  const dateStartedMsAgo = parseInt(timeValueSpan.getAttribute("data-started-ms-ago"), 10);
   const updateInterval = 1000; // Update alle 1 Sekunde
 
   function formatTime(milliseconds) {
@@ -68,11 +75,11 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
     const remainingSeconds = totalSeconds % 60;
 
     if (days > 0) {
-      return `${days} days ${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} hours`;
+      return `${days} days ${hours}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")} hours`;
     } else if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} hours`;
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")} hours`;
     } else if (minutes > 0) {
-      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')} min`;
+      return `${minutes}:${remainingSeconds.toString().padStart(2, "0")} min`;
     } else {
       return `${totalSeconds}s`;
     }
@@ -93,7 +100,7 @@ KNOWWE.plugin.jspwikiConnector.enableEditButtons = function() {
   jq$("#actionsTop").find(".edit").parent().show();
   jq$("#edit").show();
   _IE.enableDefaultEditTool();
-  if (typeof _EM !== 'undefined') _EM.changeActionMenu();
+  if (typeof _EM !== "undefined") _EM.changeActionMenu();
 };
 
 KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
