@@ -380,9 +380,9 @@ KNOWWE.core.plugin.pagination = function() {
       const encodeHTML = s => jq$("<div/>").text(s).html();
 
       // check last element if it is a date so we are sure all values should be dates. First values can be "empty" so we have to check the last one
-      const isDate = !isNaN(Date.parse(filterTexts[filterTexts.length - 1][0]));
+      const isDateColumn = $thElement.attr('column-type') === "date";
       let datePicker = "";
-      if (isDate) {
+      if (isDateColumn) {
         const firstDate = filterTexts.map(array => new Date(array[0])).find(date => !isNaN(date));
         let firstTimeStrippedDate = firstDate.toISOString().split("T")[0];
         let lastTimeStrippedDate = new Date(filterTexts[filterTexts.length - 1][0]).toISOString().split("T")[0];
