@@ -3,6 +3,8 @@ package de.knowwe.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -20,6 +22,7 @@ import de.knowwe.event.ServletContextInitializedEvent;
  */
 public class ServletContextEventListener implements ServletContextListener {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServletContextEventListener.class);
 	private static final List<Consumer<ServletContextEvent>> contextDestroyedTask = new ArrayList<>();
 	private static boolean destroyInProgress = false;
 
@@ -48,7 +51,11 @@ public class ServletContextEventListener implements ServletContextListener {
 	@Override
 	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 		destroyInProgress = true;
+		LOGGER.info("Executing ContextDestroyedTask...");
 		EventManager.getInstance().fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
 		contextDestroyedTask.forEach(task -> task.accept(servletContextEvent));
+		LOGGER.info("Done executing ContextDestroyedTask, clearing...");
+		contextDestroyedTask.clear();
+		destroyInProgress = false;
 	}
 }

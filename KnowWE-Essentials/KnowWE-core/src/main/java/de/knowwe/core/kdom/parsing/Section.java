@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -71,6 +72,13 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Stores Sections by their IDs.
 	 */
 	private static final Map<Integer, Section<?>> sectionMap = new HashMap<>(2048);
+
+	static {
+		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
+			LOGGER.info("Clearing sections.");
+			sectionMap.clear();
+		});
+	}
 
 	private List<Integer> position = null;
 

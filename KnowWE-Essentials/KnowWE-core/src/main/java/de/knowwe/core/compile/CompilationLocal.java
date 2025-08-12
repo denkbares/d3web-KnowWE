@@ -28,11 +28,14 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
+import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -49,6 +52,8 @@ public final class CompilationLocal<E> {
 	private volatile E variable = null;
 	private static final Map<Compiler, Map<Object, CompilationLocal<?>>> compilerCache = new ConcurrentHashMap<>();
 	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> compilerManagerCache = new ConcurrentHashMap<>();
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CompilationLocal.class);
 
 	static {
 		EventManager.getInstance().registerListener(new EventListener() {
@@ -74,6 +79,11 @@ public final class CompilationLocal<E> {
 					compilerCache.keySet().removeIf(c -> !c.getCompilerManager().contains(c));
 				}
 			}
+		});
+		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
+			LOGGER.info("Clear compiler cache");
+			compilerCache.clear();
+			compilerManagerCache.clear();
 		});
 	}
 
