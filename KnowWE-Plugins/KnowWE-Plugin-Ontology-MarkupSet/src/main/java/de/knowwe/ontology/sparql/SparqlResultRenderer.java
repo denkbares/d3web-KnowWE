@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
@@ -18,7 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
@@ -27,6 +25,9 @@ import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -37,11 +38,6 @@ import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.semanticcore.utils.TableRowComparator;
 import com.denkbares.semanticcore.utils.ValueComparator;
 import com.denkbares.strings.Strings;
-
-import org.json.JSONArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
