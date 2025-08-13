@@ -77,20 +77,21 @@ object UpdateIgnoredFilesScript {
 }
 
 fun main() {
-    val pathToGit = "/Users/mkrug/Konap/Wikis/Wiki_KM"
+    val pathToGit = "/Users/mkrug/Konap/SW-migration/Wiki_KM_release"
 
 
     val ignoreContent = """
-           .DS_Store
-           *.vof
-           */*.vof
-           *.wc
-           */*.wc
-           *.zip
-           */*.zip
-           ci-build*.xml
-           */ci-build*.xml
-           KONAP+master-only+SAP-att/*
+            .DS_Store
+            *.vof
+            */*.vof
+            *.wc
+            */*.wc
+            *.zip
+            */*.zip
+            ci-build*.xml
+            */ci-build*.xml
+            KONAP+master-only+SAP-att/*
+            KONAP+sp+Configit+Bridge-att/history.csv
     """.trimIndent()
 
     val listToUntrack = listOf(
