@@ -144,6 +144,7 @@ public class Icon {
 	public static final Icon EXCLUDED = new Icon("fa-type fa-ban");
 	public static final Icon ABSTRACT = new Icon("fa-type fa-asterisk");
 	public static final Icon PLUG = new Icon("fa-type fa-plug");
+	public static final Icon USB_DRIVE = new Icon("fa-type fa-usb-drive");
 	public static final Icon MEASUREMENT_DEVICE = new Icon("fa-type fa-weight-scale");
 	public static final Icon VISUAL_INSPECTION = new Icon("fa-type fa-eye");
 	public static final Icon SWITCHES = new Icon("fa-type fa-sliders");
