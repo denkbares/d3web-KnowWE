@@ -416,11 +416,10 @@ public final class Environment {
 			File jsonFile = new File(sourceFolder, ToolUtils.SETTINGS_FILE);
 			if (jsonFile.isFile()) {
 				ToolUtils.initSettings(jsonFile);
-				return;
 			}
 		}
 
-		// otherwise load all json files in 'KnowWEExtension/toolmenu' folder in webapp
+		// additionally load all json files in 'KnowWEExtension/toolmenu' folder in webapp
 		File appRoot = new File(KnowWEUtils.getApplicationRootPath(), "KnowWEExtension/toolmenu");
 		File[] jsonFiles = appRoot.listFiles(f -> f.isFile() && f.getName().endsWith(".json"));
 		if (jsonFiles != null) {
