@@ -160,7 +160,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 						.createIRI(subjectNode.stringValue()), propertyUri, headerClassResource));
 			}
 			else {
-				typeAnnotationMissing = Messages.error("If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the typeRelation-typeRelationAnnotationValue. Otherwise, leave the first cell header blank.");
+				typeAnnotationMissing = Messages.error("If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the @" + OntologyTableMarkup.ANNOTATION_TYPE_RELATION + " annotation. Otherwise, leave the first cell header blank.");
 			}
 		}
 		return typeAnnotationMissing;
