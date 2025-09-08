@@ -11,15 +11,20 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class DefaultPreviewRenderer extends AbstractPreviewRenderer {
 
-	public DefaultPreviewRenderer() {
-	}
-
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		if (section.get() instanceof DefaultMarkupType) {
-			// render all sub sections, but not the default markup itself
-			List<Section<?>> children = section.getChildren();
-			DefaultMarkupPreviewRenderer.renderSections(Sections.cast(section, DefaultMarkupType.class), children, user, result);
+		if (section.get() instanceof DefaultMarkupType markupType) {
+			// if the markup has a dynamically created preview render (i.e. not hard-coded in plugin.xml), use it
+			if (markupType.getRenderer() instanceof PreviewRenderer previewRenderer &&
+					previewRenderer.matches(section) &&
+					previewRenderer.isPreviewAncestor(section, section)) {
+				previewRenderer.render(section, relevantSubSections, user, result);
+			}
+			else {
+				// otherwise, render all subsections, but not the default markup itself
+				List<Section<?>> children = section.getChildren();
+				DefaultMarkupPreviewRenderer.renderSections(Sections.cast(section, DefaultMarkupType.class), children, user, result);
+			}
 		}
 		else {
 			// or render the full markup
