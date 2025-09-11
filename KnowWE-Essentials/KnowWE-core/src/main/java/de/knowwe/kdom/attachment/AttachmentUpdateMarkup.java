@@ -4,6 +4,8 @@
 
 package de.knowwe.kdom.attachment;
 
+import javax.servlet.http.HttpServletResponse;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,12 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -73,9 +73,9 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public static final String INTERVAL_ANNOTATION = "interval";
 	public static final String REPLACEMENT = "replacement";
 	public static final String REGEX_REPLACEMENT = "regexReplacement";
-	private static final String LAST_RUN = "lastRun";
 	private static final String LOCK_KEY = "lockKey";
 	protected static final String PATH_SEPARATOR = "/";
+	private static final Map<String, Long> LAST_RUNS = new ConcurrentHashMap<>();
 
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
@@ -97,13 +97,18 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public abstract String getWikiAttachmentPath(Section<? extends AttachmentUpdateMarkup> section);
 
 	protected void logLastRun(Section<? extends AttachmentUpdateMarkup> section) {
-		section.storeObject(LAST_RUN, System.currentTimeMillis());
+		String wikiAttachmentPath = section.get().getWikiAttachmentPath(section);
+		if (wikiAttachmentPath != null) {
+			// we never clean up here, but since it is hard to generate new keys, memory footprint should be negligible
+			LAST_RUNS.put(wikiAttachmentPath, System.currentTimeMillis());
+		}
 	}
 
 	protected long timeSinceLastRun(Section<? extends AttachmentUpdateMarkup> section) {
 		if (section == null) return Long.MAX_VALUE;
-		Long lastRun = section.getObject(LAST_RUN); // TODO: gets lost on recompile, find something more permanent
-		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
+		String wikiAttachmentPath = section.get().getWikiAttachmentPath(section);
+		if (wikiAttachmentPath == null) return Long.MAX_VALUE;
+		return LAST_RUNS.getOrDefault(wikiAttachmentPath, Long.MAX_VALUE);
 	}
 
 	protected long timeSinceLastChange(Section<? extends AttachmentUpdateMarkup> section) {
@@ -164,7 +169,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force) {
 		if (section.getArticleManager() == null) return;
 
-		section.get().logLastRun(section); // TODO: gets lost on recompile, find something more permanent
+		section.get().logLastRun(section);
 		Messages.clearMessages(section, getClass());
 
 		String path = section.get().getWikiAttachmentPath(section);
@@ -176,7 +181,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		ReentrantLock lock = getLock(section);
 		if (!lock.tryLock()) {
 			LOGGER.info("Skipped requested updated for attachment '" + Strings.trim(path)
-					+ "' with resource from URL " + url + ", update already running");
+						+ "' with resource from URL " + url + ", update already running");
 			return;
 		}
 		try {
@@ -328,7 +333,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				else {
 					Messages.storeMessage(annotationContent, AttachmentMarkup.class,
 							Messages.info("Replacement regex /" + sourceText
-									+ "/ does not match to any text in this attachment."));
+										  + "/ does not match to any text in this attachment."));
 				}
 			}
 			else if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
@@ -339,7 +344,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				else {
 					Messages.storeMessage(annotationContent, AttachmentMarkup.class,
 							Messages.info("Replacement pattern '" + sourceText
-									+ "' does not match to any text in this attachment."));
+										  + "' does not match to any text in this attachment."));
 				}
 			}
 		}
@@ -387,12 +392,12 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			state = AttachmentMarkup.State.OUTDATED;
 		}
 		else if (urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()))
-				|| attachmentSectionDateTime.isAfter(attachmentDateTime)) {
+				 || attachmentSectionDateTime.isAfter(attachmentDateTime)) {
 			// check if urlDateTime is equal to unix time 0
 			// if it is, the time was not set (maybe because of server settings)
 			state = AttachmentMarkup.State.UNKNOWN;
 			LOGGER.warn("Unable to get valid lastModified info from http connection, " +
-					"cannot assess changes to resource without downloading it:\n" + url);
+						"cannot assess changes to resource without downloading it:\n" + url);
 		}
 		else {
 			state = AttachmentMarkup.State.UP_TO_DATE;
@@ -434,7 +439,8 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			final String basicAuth = envLoaded ? String.join(":", parts) : url.getUserInfo();
 
 			connection.setRequestProperty("Authorization", "Basic " +
-					new String(Base64.getEncoder().encode(basicAuth.getBytes(UTF_8)), UTF_8)
+														   new String(Base64.getEncoder()
+																   .encode(basicAuth.getBytes(UTF_8)), UTF_8)
 			);
 		}
 		else {
@@ -443,7 +449,8 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			if (username != null) {
 				final String password = CredentialProviders.match(url.toString(), CredentialProvider.Credential.PASSWORD);
 				connection.setRequestProperty("Authorization", "Basic " +
-						new String(Base64.getEncoder().encode((username + ":" + password).getBytes(UTF_8)), UTF_8)
+															   new String(Base64.getEncoder()
+																	   .encode((username + ":" + password).getBytes(UTF_8)), UTF_8)
 				);
 			}
 		}
