@@ -108,7 +108,8 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		if (section == null) return Long.MAX_VALUE;
 		String wikiAttachmentPath = section.get().getWikiAttachmentPath(section);
 		if (wikiAttachmentPath == null) return Long.MAX_VALUE;
-		return LAST_RUNS.getOrDefault(wikiAttachmentPath, Long.MAX_VALUE);
+		Long lastRun = LAST_RUNS.get(wikiAttachmentPath);
+		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
 	}
 
 	protected long timeSinceLastChange(Section<? extends AttachmentUpdateMarkup> section) {
