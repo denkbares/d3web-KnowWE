@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>de.uniwue.d3web</groupId>
 		<artifactId>KnowWE-Essentials</artifactId>
-		<version>2025.4-SNAPSHOT</version>
+		<version>2025.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Git-Versioning-API</artifactId>
