@@ -97,12 +97,12 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public abstract String getWikiAttachmentPath(Section<? extends AttachmentUpdateMarkup> section);
 
 	protected void logLastRun(Section<? extends AttachmentUpdateMarkup> section) {
-		section.storeObject("lastRun", System.currentTimeMillis());
+		section.storeObject(LAST_RUN, System.currentTimeMillis());
 	}
 
 	protected long timeSinceLastRun(Section<? extends AttachmentUpdateMarkup> section) {
 		if (section == null) return Long.MAX_VALUE;
-		Long lastRun = section.getObject(LAST_RUN);
+		Long lastRun = section.getObject(LAST_RUN); // TODO: gets lost on recompile, find something more permanent
 		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
 	}
 
@@ -164,7 +164,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force) {
 		if (section.getArticleManager() == null) return;
 
-		section.get().logLastRun(section);
+		section.get().logLastRun(section); // TODO: gets lost on recompile, find something more permanent
 		Messages.clearMessages(section, getClass());
 
 		String path = section.get().getWikiAttachmentPath(section);
