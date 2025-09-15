@@ -44,9 +44,9 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CreateSnapshotToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CreateWikiSnapshotToolProvider">
 		<parameter id="class" value="de.knowwe.snapshot.CreateSnapshotToolProvider" />
-		<parameter id="name" value="CreateSnapshotToolProvider" />
+		<parameter id="name" value="CreateWikiSnapshotToolProvider" />
 		<parameter id="description"
 				   value="Offers a create snapshot button to create a snapshot from the wiki content state in the file repo." />
 		<parameter id="version" value="1.0" />
