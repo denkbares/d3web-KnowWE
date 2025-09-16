@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -52,6 +54,7 @@ public class AttachmentManager implements EventListener {
 	private final Object queueLock = new Object();
 	private final Set<String> registrationQueue = new LinkedHashSet<>();
 	private final Set<String> unregistrationQueue = new LinkedHashSet<>();
+	private final Set<String> attachmentArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final MultiMap<String, Section<AttachmentCompileType>> pathToSectionsMap = MultiMaps.synchronizedMultiMap(new N2MMap<>());
 	private final MultiMap<String, Section<AttachmentCompileType>> articleTitleToSectionsMap = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
 	private boolean allArticlesInitialized = false;
@@ -142,7 +145,12 @@ public class AttachmentManager implements EventListener {
 	private Set<Section<AttachmentCompileType>> removeAttachmentSectionsOfLastArticleVersion(Article article) {
 		Set<Section<AttachmentCompileType>> lastVersionAttachments = articleTitleToSectionsMap.removeKey(article.getTitle());
 		for (Section<AttachmentCompileType> attachmentSection : lastVersionAttachments) {
-			pathToSectionsMap.removeValue(attachmentSection);
+			Set<String> paths = pathToSectionsMap.removeValue(attachmentSection);
+			for (String path : paths) {
+				if (pathToSectionsMap.getValues(path).isEmpty()) {
+					attachmentArticles.remove(path);
+				}
+			}
 		}
 		return lastVersionAttachments;
 	}
@@ -175,6 +183,7 @@ public class AttachmentManager implements EventListener {
 			String path = attachmentSection.get().getCompiledAttachmentPath(attachmentSection);
 			if (path == null) continue;
 			pathToSectionsMap.put(path, attachmentSection);
+			attachmentArticles.add(path);
 			articleTitleToSectionsMap.put(attachmentSection.getTitle(), attachmentSection);
 		}
 	}
@@ -286,6 +295,6 @@ public class AttachmentManager implements EventListener {
 	 * @compile: true)
 	 */
 	public boolean isAttachmentArticle(String title) {
-		return !pathToSectionsMap.getValues(title).isEmpty();
+		return attachmentArticles.contains(title);
 	}
 }
