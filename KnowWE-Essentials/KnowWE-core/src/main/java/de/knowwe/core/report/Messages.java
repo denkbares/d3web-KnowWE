@@ -47,6 +47,7 @@ import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -59,6 +60,31 @@ public final class Messages {
 	 * This set holds all Sections with Messages.
 	 */
 	private static final Map<Message.Type, Set<Section<?>>> sectionsWithMessages = new ConcurrentHashMap<>();
+
+	/**
+	 * If present, renders {@link Message}s for the given section. Messages of higher {@link Message.Type} come first,
+	 * otherwise messages are sorted by its text.
+	 *
+	 * @param section the section which to render messages for
+	 * @param result where to render the messages to
+	 */
+	public static void renderMessages(Section<?> section, RenderResult result) {
+		Messages.getMessages(section).stream()
+				.sorted((message1, message2) -> {
+					int ordinalResult = Integer.compare(message2.getType().ordinal(), message1.getType().ordinal());
+					if (ordinalResult != 0) {
+						return ordinalResult;
+					}
+					return message1.getVerbalization().compareTo(message2.getVerbalization());
+				})
+				.forEach(message -> {
+					MessageRenderer renderer = section.get().getMessageRenderer(message.getType());
+					if (renderer != null) {
+						renderer.preRenderMessage(message, null, null, result);
+						renderer.postRenderMessage(message, null, null, result);
+					}
+				});
+	}
 
 	/**
 	 * Wraps a single or more {@link Message}s into a Collection to be returned by the {@link CompileScript}
