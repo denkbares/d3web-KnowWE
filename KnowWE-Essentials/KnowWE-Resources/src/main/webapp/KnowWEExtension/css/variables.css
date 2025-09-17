@@ -191,9 +191,6 @@
 	--color-ide-default: #000000;
 	--color-ide-special: #9e880d;
 
-	/* -------- COOM -------- */
-	--text-combination: #8E54D4;
-
 	/* background colors */
 	--bg-grey-table-cell: #d7d7d7;
 
@@ -382,9 +379,6 @@
 	--color-ide-default: #bcbec4;
 	--color-ide-special: #f75464;
 
-	/* -------- COOM -------- */
-	--text-combination: #a37ad5;
-
 	/* background colors */
 	--bg-grey-table-cell: #646464;
 
@@ -496,21 +490,6 @@
 	--bg-color-false: #FFCFCF;
 	--bg-color-unknown: #CFD5FF;
 	--bg-color-fired: #CFFFCF;
-
-	/* -------- COOM -------- */
-	/* text colors */
-	--text-color-derivation-table: #a4305b;
-	--text-color-combination: var(--text-combination);
-	--text-color-structure: #2266A1;
-	--text-color-enumeration: #168641;
-	--text-color-include: #F4A300;
-
-	/* background colors */
-	--bg-color-derivation-table: #a4305b;
-	--bg-color-combination: #8E54D4;
-	--bg-color-structure: #2266A1;
-	--bg-color-enumeration: #168641;
-	--bg-color-include: #F4A300;
 
 	--bg-color-empty-table-cell: var(--bg-grey-table-cell);
 
