@@ -34,6 +34,7 @@ import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
+import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -46,7 +47,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 		this(null);
 	}
 
-	public NamedObjectReference(CompileScript<D3webCompiler, Term> compileScript) {
+	public NamedObjectReference(CompileScript<D3webCompiler, TermReference> compileScript) {
 		this.setRenderer(new ValueTooltipRenderer(new NamedObjectRenderer()));
 		if (compileScript == null) {
 			compileScript = new SimpleReferenceRegistrationScript<>(D3webCompiler.class);

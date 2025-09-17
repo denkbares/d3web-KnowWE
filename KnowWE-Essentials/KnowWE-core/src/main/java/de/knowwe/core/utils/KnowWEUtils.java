@@ -586,9 +586,8 @@ public class KnowWEUtils {
 	 */
 	public static boolean isAttachmentArticle(Article article) {
 		ArticleManager articleManager = article.getArticleManager();
-		if (!(articleManager instanceof DefaultArticleManager)) return false;
-		AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
-		return attachmentManager.isAttachmentArticle(article);
+		if (!(articleManager instanceof DefaultArticleManager defaultArticleManager)) return false;
+		return defaultArticleManager.getAttachmentManager().isAttachmentArticle(article);
 	}
 
 	/**

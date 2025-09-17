@@ -37,7 +37,7 @@ import de.knowwe.core.report.Messages;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.02.2012
  */
-public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends Term> implements CompileScript<C, T>, DestroyScript<C, T> {
+public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends TermReference> implements CompileScript<C, T>, DestroyScript<C, T> {
 
 	private final Class<C> compilerClass;
 
@@ -56,7 +56,8 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends
 	}
 
 	/**
-	 * Creates a new compile script for the given compiler. If the validate function returns false, the script will register
+	 * Creates a new compile script for the given compiler. If the validate function returns false, the script will
+	 * register
 	 * without checking for the validity of the reference (e.g. does a definition exist?).
 	 */
 	public SimpleReferenceRegistrationScript(Class<C> compilerClass, BiFunction<C, Section<T>, Boolean> validate) {
@@ -110,15 +111,12 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends
 	 * @created 28.02.2012
 	 */
 	public Collection<Message> validateReference(C compiler, Section<T> section) {
-		TerminologyManager manager = getTerminologyManager(compiler);
-		if (manager == null) return Messages.noMessage();
-
-		TermCompiler.ReferenceValidationMode validationMode = compiler.getReferenceValidationMode();
-		if (validationMode == TermCompiler.ReferenceValidationMode.ignore) {
+		TermCompiler.ReferenceValidationMode validationMode = section.get()
+				.getReferenceValidationMode(compiler, section);
+		if (validationMode == TermCompiler.ReferenceValidationMode.ignore || validationMode == TermCompiler.ReferenceValidationMode.greyOut) {
 			return Messages.noMessage();
 		}
-		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
-		if (!manager.isDefinedTerm(termIdentifier)) {
+		if (!section.get().isDefinedTerm(compiler, section)) {
 			return Messages.asList(getInvalidTermMessage(compiler, section,
 					validationMode == TermCompiler.ReferenceValidationMode.warn ? Message.Type.WARNING : getMessageLevel(compiler)));
 		}

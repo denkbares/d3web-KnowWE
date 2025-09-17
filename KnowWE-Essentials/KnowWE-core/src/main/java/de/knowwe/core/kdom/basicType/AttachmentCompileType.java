@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.jetbrains.annotations.Nullable;
 
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -47,4 +48,14 @@ public interface AttachmentCompileType extends Type {
 	 * @return true if the attachment is compiled, false otherwise
 	 */
 	boolean isCompilingTheAttachment(Section<? extends AttachmentCompileType> section);
+
+	/**
+	 * Get the reference validation mode defined for this attachment compile type. Default is 'error'.
+	 *
+	 * @param section the section to check
+	 * @return the mode
+	 */
+	default TermCompiler.ReferenceValidationMode getReferenceValidationMode(Section<? extends AttachmentCompileType> section) {
+		return TermCompiler.ReferenceValidationMode.error;
+	}
 }

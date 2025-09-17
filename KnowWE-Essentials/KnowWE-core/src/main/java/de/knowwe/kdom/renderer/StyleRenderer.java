@@ -20,15 +20,24 @@
 
 package de.knowwe.kdom.renderer;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingCompiler;
+import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 import de.knowwe.util.Icon;
@@ -152,24 +161,51 @@ public final class StyleRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		renderOpeningTag(section, string);
+		renderOpeningTag(section, user, string);
 		renderContent(section, user, string);
 		string.appendHtml("</span>");
 	}
 
-	private void renderOpeningTag(Section<?> section, RenderResult string) {
+	private void renderOpeningTag(Section<?> section, UserContext user, RenderResult string) {
 		renderIcon(string);
 		string.appendHtml("<span");
+		String cssClasses = cssClass;
 		if (section != null) {
 			string.append(" sectionid='").append(section.getID()).append("'");
+			if (greyOut(section, user)) {
+				cssClasses += " greyout";
+				cssClasses = cssClasses.trim();
+			}
 		}
-		if (!Strings.isBlank(cssClass)) {
-			string.append(" class='").append(cssClass).append("'");
+		if (!Strings.isBlank(cssClasses)) {
+			string.append(" class='").append(cssClasses).append("'");
 		}
 		if (!Strings.isBlank(cssStyle)) {
 			string.append(" style='").append(cssStyle).append("'");
 		}
 		string.appendHtml(">");
+	}
+
+	private static boolean greyOut(Section<?> section, UserContext user) {
+		if (KnowWEUtils.isAttachmentArticle(section.getArticle()) && section.get() instanceof TermReference) {
+			Section<TermReference> reference = Sections.cast(section, TermReference.class);
+			GroupingCompiler groupingCompiler = Compilers.getCompiler(user, section, GroupingCompiler.class);
+			if (groupingCompiler == null) return false;
+			List<TermCompiler> termCompilers = groupingCompiler.getChildCompilers()
+					.stream()
+					.filter(c -> c instanceof TermCompiler)
+					.map(c -> (TermCompiler) c)
+					.toList();
+			Set<TermCompiler.ReferenceValidationMode> modes = termCompilers.stream()
+					.map(c -> reference.get().getReferenceValidationMode(c, reference))
+					.collect(Collectors.toSet());
+			if (modes.size() != 1) return false;
+			TermCompiler.ReferenceValidationMode mode = modes.iterator().next();
+			if (mode == TermCompiler.ReferenceValidationMode.greyOut) {
+				return termCompilers.stream().noneMatch(c -> reference.get().isDefinedTerm(c, reference));
+			}
+		}
+		return false;
 	}
 
 	private void renderIcon(RenderResult string) {
@@ -178,7 +214,7 @@ public final class StyleRenderer implements Renderer {
 	}
 
 	public void renderText(Section<?> section, String text, UserContext user, RenderResult string) {
-		renderOpeningTag(section, string);
+		renderOpeningTag(section, user, string);
 		string.appendJSPWikiMarkup(text);
 		string.appendHtml("</span>");
 	}
@@ -190,11 +226,12 @@ public final class StyleRenderer implements Renderer {
 	/**
 	 * Renders a text without escaping JSP wiki syntax
 	 */
-	public void renderTextUnmasked(String text, RenderResult string) {
-		renderOpeningTag(null, string);
+	public void renderTextUnmasked(String text, UserContext user, RenderResult string) {
+		renderOpeningTag(null, user, string);
 		string.append(text);
 		string.appendHtml("</span>");
 	}
+
 	/**
 	 * Renders the content that will automatically be styled in the correct way. You may overwrite it for special
 	 * purposes.
@@ -208,7 +245,7 @@ public final class StyleRenderer implements Renderer {
 		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
 		if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)
-				&& ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
+			&& ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
 			string.appendJSPWikiMarkup(encodeHtml(builder));
 		}
 		else if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)) {

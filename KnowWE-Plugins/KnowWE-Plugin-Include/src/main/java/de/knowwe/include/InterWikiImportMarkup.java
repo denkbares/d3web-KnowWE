@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +33,7 @@ import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
@@ -66,6 +68,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String PAGE_ANNOTATION = "page";
 	private static final String SECTION_ANNOTATION = "section";
 	private static final String COMPILE_ANNOTATION = "compile";
+	private static final String VALIDATION_MODE_ANNOTATION = "validationMode";
+
 
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
 
@@ -78,6 +82,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(WIKI_ANNOTATION, true);
 		MARKUP.addAnnotation(PAGE_ANNOTATION, true);
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
+		MARKUP.addAnnotation(VALIDATION_MODE_ANNOTATION, false, TermCompiler.ReferenceValidationMode.class);
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
@@ -104,6 +109,15 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		String sectionName = getSectionName(interWikiSection);
 		sectionName = sectionName == null ? "" : "-" + sectionName;
 		return section.getTitle() + PATH_SEPARATOR + "WikiImport" + pageName + sectionName + ".txt";
+	}
+
+	@Override
+	public TermCompiler.ReferenceValidationMode getReferenceValidationMode(Section<? extends AttachmentCompileType> section) {
+		return $(section).closest(DefaultMarkupType.class)
+				.map(s -> DefaultMarkupType.getAnnotation(s, VALIDATION_MODE_ANNOTATION))
+				.filter(Objects::nonNull)
+				.findFirst().map(TermCompiler.ReferenceValidationMode::valueOf)
+				.orElse(TermCompiler.ReferenceValidationMode.error);
 	}
 
 	private String getPageName(Section<InterWikiImportMarkup> section) {
