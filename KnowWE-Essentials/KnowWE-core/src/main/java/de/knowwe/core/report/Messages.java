@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -62,27 +63,44 @@ public final class Messages {
 	private static final Map<Message.Type, Set<Section<?>>> sectionsWithMessages = new ConcurrentHashMap<>();
 
 	/**
-	 * If present, renders {@link Message}s for the given section. Messages of higher {@link Message.Type} come first,
-	 * otherwise messages are sorted by its text.
+	 * Groups the given messages by their {@link Message.Type}. Sorts all groups by importance (warnings first),
+	 * and displays an error box for each. Each box contains all messages of that group sorted alphabetically.
+	 * Messages are rendered as HTML, make sure to appropriately escape user input (see
+	 * {@link Strings#encodeHtml(String)}).
 	 *
-	 * @param section the section which to render messages for
-	 * @param result where to render the messages to
+	 * @param messages the section which to render messages for
+	 * @param result   where to render the messages to
 	 */
-	public static void renderMessages(Section<?> section, RenderResult result) {
-		Messages.getMessages(section).stream()
-				.sorted((message1, message2) -> {
-					int ordinalResult = Integer.compare(message2.getType().ordinal(), message1.getType().ordinal());
-					if (ordinalResult != 0) {
-						return ordinalResult;
+	public static void renderMessages(Collection<Message> messages, RenderResult result) {
+		messages.stream().collect(
+						Collectors.groupingBy(Message::getType, Collectors.toList())
+				).entrySet().stream()
+				.sorted(Comparator.comparingInt(entry -> -entry.getKey().ordinal()))
+				.forEach(entry -> {
+					Message.Type type = entry.getKey();
+					List<Message> typeMessages = entry.getValue();
+
+					String combinedMessages;
+					if (typeMessages.size() == 1) {
+						combinedMessages = typeMessages.get(0).getVerbalization();
 					}
-					return message1.getVerbalization().compareTo(message2.getVerbalization());
-				})
-				.forEach(message -> {
-					MessageRenderer renderer = section.get().getMessageRenderer(message.getType());
-					if (renderer != null) {
-						renderer.preRenderMessage(message, null, null, result);
-						renderer.postRenderMessage(message, null, null, result);
+					else {
+						combinedMessages = "<ul style=\"margin-left: 1rem;\">" + typeMessages.stream()
+								.sorted(Comparator.comparing(Message::getVerbalization))
+								.map(message -> "<li>" + message.getVerbalization() + "</li>")
+								.collect(Collectors.joining("")) + "</ul>";
 					}
+
+					MessageRenderer renderer = type.getRenderer();
+					renderer.preRenderMessage(new Message(type, combinedMessages), null, null, result);
+					result.appendHtmlTag("span", "class", switch(type) {
+						case INFO -> "info";
+						case WARNING -> "warning";
+						case ERROR -> "error";
+					});
+					result.appendHtml(type.getIcon().addTitle(combinedMessages).toHtml());
+					result.appendHtml(combinedMessages);
+					result.appendHtmlTag("/span");
 				});
 	}
 
