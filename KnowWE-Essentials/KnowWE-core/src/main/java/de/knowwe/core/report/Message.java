@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.util.Icon;
 
 /**
  * Message tied to Sections in the KDOM.
@@ -39,7 +40,34 @@ public final class Message implements Comparable<Message>, Serializable {
 	private Object source;
 
 	public enum Type {
-		INFO, WARNING, ERROR
+
+		INFO(Icon.INFO, DefaultMessageRenderer.NOTE_RENDERER),
+		WARNING(Icon.WARNING, DefaultMessageRenderer.WARNING_RENDERER),
+		ERROR(Icon.ERROR, DefaultMessageRenderer.ERROR_RENDERER);
+
+		private final Icon icon;
+		private final MessageRenderer renderer;
+
+		Type(Icon icon, MessageRenderer renderer) {
+			this.icon = icon;
+			this.renderer = renderer;
+		}
+
+		/**
+		 * Returns an appropriate standardized icon associated with this message type.
+		 */
+		@NotNull
+		public Icon getIcon() {
+			return icon;
+		}
+
+		/**
+		 * Returns an appropriate and standardized {@link MessageRenderer} for this message type.
+		 */
+		@NotNull
+		public MessageRenderer getRenderer() {
+			return renderer;
+		}
 	}
 
 	public enum Display {
