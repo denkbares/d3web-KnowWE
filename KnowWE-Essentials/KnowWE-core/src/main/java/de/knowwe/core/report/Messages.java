@@ -85,14 +85,12 @@ public final class Messages {
 						combinedMessages = typeMessages.get(0).getVerbalization();
 					}
 					else {
-						combinedMessages = "<ul style=\"margin-left: 1rem;\">" + typeMessages.stream()
+						combinedMessages = "<ul style=\"padding-left: 1rem;\">" + typeMessages.stream()
 								.sorted(Comparator.comparing(Message::getVerbalization))
 								.map(message -> "<li>" + message.getVerbalization() + "</li>")
 								.collect(Collectors.joining("")) + "</ul>";
 					}
 
-					MessageRenderer renderer = type.getRenderer();
-					renderer.preRenderMessage(new Message(type, combinedMessages), null, null, result);
 					result.appendHtmlTag("span", "class", switch(type) {
 						case INFO -> "info";
 						case WARNING -> "warning";
