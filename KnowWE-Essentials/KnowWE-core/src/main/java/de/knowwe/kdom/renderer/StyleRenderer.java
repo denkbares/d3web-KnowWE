@@ -27,6 +27,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -194,6 +195,7 @@ public final class StyleRenderer implements Renderer {
 			List<TermCompiler> termCompilers = groupingCompiler.getChildCompilers()
 					.stream()
 					.filter(c -> c instanceof TermCompiler)
+					.filter(c -> CompilerManager.getScriptManager(c).hasScriptsForSubtree(reference))
 					.map(c -> (TermCompiler) c)
 					.toList();
 			Set<TermCompiler.ReferenceValidationMode> modes = termCompilers.stream()
