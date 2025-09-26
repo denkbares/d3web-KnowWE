@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,6 +85,7 @@ public class ListSectionsRenderer<T extends Type> {
 	private Function<Section<T>, Boolean> greyoutFunction; // decides which lines are greyed out
 
 	private String emptyText = "-- no entries --";
+	private Set<Integer> skipSearch = new HashSet<>();
 
 	public ListSectionsRenderer(Sections<T> sections, UserContext context) {
 		this(sections.asList(), context);
@@ -156,8 +158,31 @@ public class ListSectionsRenderer<T extends Type> {
 	 * @return this instance to chain builder calls
 	 */
 	public ListSectionsRenderer<T> header(String heading, String explainHtml) {
+		return header(heading, explainHtml, true);
+	}
+
+	/**
+	 * Adds a new column header to the column(s) specified after this method call. All subsequent columns are jointly
+	 * labeled with the specified heading, until a new heading is defined. The columns may be defined using, e.g.,
+	 * {@link #name(Function)}, {@link #html(Function)}, {@link #description(Function)}, {@link #column(String,
+	 * Function)} or {@link #error(Function)} (and others).
+	 * <p>
+	 * The specified explainHtml is some documentation about the column's content. In contrast to the heading text, it
+	 * may contain html-markup that is rendered as html. The explanation is displayed in a tooltip for the header,
+	 * indicated by some symbol.
+	 * <p>
+	 * Note that tool columns are not labeled.
+	 *
+	 * @param heading     the column's heading text (plain text to be displayed, also html markup characters are printed
+	 *                    as they are in the heading sting)
+	 * @param explainHtml some html text that will be available as a description of the particular column
+	 * @param searchable whether the column should be used for search / filtering
+	 * @return this instance to chain builder calls
+	 */
+	public ListSectionsRenderer<T> header(String heading, String explainHtml, boolean searchable) {
+		if (!searchable) this.skipSearch.add(columns.size());
 		this.headers.put(columns.size(), "<span class='tooltipster' title='" + Strings.encodeHtml(explainHtml) + "'>" +
-				Strings.encodeHtml(heading) + "<span class='knowwe-superscript'>" + Icon.INFO.toHtml() + "</span></span>");
+										 Strings.encodeHtml(heading) + "<span class='knowwe-superscript'>" + Icon.INFO.toHtml() + "</span></span>");
 		return this;
 	}
 
@@ -661,6 +686,7 @@ public class ListSectionsRenderer<T extends Type> {
 	public Map<String, Function<Section<T>, String>> getKeyFilters() {
 		Map<String, Function<Section<T>, String>> keyFilters = new HashMap<>();
 		for (Map.Entry<Integer, String> entry : headers.entrySet()) {
+			if (skipSearch.contains(entry.getKey())) continue;
 			if (columns.size() > entry.getKey()) {
 				Pair<String, Function<Section<T>, String>> column = columns.get(entry.getKey());
 				keyFilters.put(entry.getValue(), column.getB());
