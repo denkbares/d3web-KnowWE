@@ -270,7 +270,9 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public abstract URL getUrl(Section<? extends AttachmentUpdateMarkup> section);
 
 	protected InputStream applyReplacements(Section<? extends AttachmentUpdateMarkup> section, InputStream connectionStream) {
-		if (DefaultMarkupType.getAnnotation(section, REPLACEMENT) != null || DefaultMarkupType.getAnnotation(section, REGEX_REPLACEMENT) != null) {
+		if (DefaultMarkupType.getAnnotation(section, REPLACEMENT) != null
+			|| DefaultMarkupType.getAnnotation(section, REGEX_REPLACEMENT) != null
+			|| DefaultMarkupType.getAnnotation(section, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) {
 
 			String connectionString = Strings.readStream(connectionStream);
 
