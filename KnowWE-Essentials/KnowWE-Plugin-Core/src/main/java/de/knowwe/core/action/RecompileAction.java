@@ -166,7 +166,7 @@ public class RecompileAction extends AbstractAction {
 						.stream()
 						.forEach(markup -> {
 							LOGGER.info("Checking {} for updates...", markup.get().getUrl(markup));
-							markup.get().performUpdate(markup, true);
+							markup.get().performUpdate(markup, true, false);
 						});
 			}
 		}

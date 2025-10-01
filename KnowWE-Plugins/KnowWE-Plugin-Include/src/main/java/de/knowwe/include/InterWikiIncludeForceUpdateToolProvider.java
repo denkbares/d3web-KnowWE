@@ -57,7 +57,7 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 			// also update all markups
 			$(articleManager).successor(AttachmentUpdateMarkup.class).stream().forEach(markup -> {
 				LOGGER.info("Checking " + markup.get().getUrl(markup) + " for updates...");
-				markup.get().performUpdate(markup, true);
+				markup.get().performUpdate(markup, true, false);
 			});
 			RecompileAction.recompileVariant(context, "Update imports tool clicked");
 		}

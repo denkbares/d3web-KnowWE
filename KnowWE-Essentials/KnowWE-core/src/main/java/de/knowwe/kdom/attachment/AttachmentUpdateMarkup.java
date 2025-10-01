@@ -20,15 +20,19 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -49,6 +53,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
@@ -76,9 +81,15 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String LOCK_KEY = "lockKey";
 	protected static final String PATH_SEPARATOR = "/";
 	private static final Map<String, Long> LAST_RUNS = new ConcurrentHashMap<>();
-
+	private static final Set<String> DOWNLOADING = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private static final Set<AttachmentUpdate> QUEUED_ATTACHMENTS = Collections.synchronizedSet(new HashSet<>());
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
+	private static Instant longestWaitingUpdate = null;
+
+	private record AttachmentUpdate(String path, boolean versioning,
+									ByteArrayInputStream attachment) {
+	}
 
 	public enum State {
 		OUTDATED, UP_TO_DATE, UNKNOWN
@@ -164,19 +175,24 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section) {
-		performUpdate(section, false);
+		performUpdate(section, false, false);
 	}
 
-	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force) {
+	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force, boolean allowWaitForOtherDownloads) {
 		if (section.getArticleManager() == null) return;
 
 		section.get().logLastRun(section);
 		Messages.clearMessages(section, getClass());
 
+		boolean versioning = section.get().isVersioning(section);
 		String path = section.get().getWikiAttachmentPath(section);
 		URL url = getUrl(section);
 		if (url == null || path == null) {
 			return; // nothing to do, error will already be rendered from URLType
+		}
+		if (path.split("/").length > 2) {
+			Messages.storeMessage(section, getClass(), Messages.error("Unable to update entries in zipped attachments!"));
+			return;
 		}
 
 		ReentrantLock lock = getLock(section);
@@ -186,14 +202,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return;
 		}
 		try {
-			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
-			String fileName = path.substring(path.indexOf("/") + 1);
-
-			if (path.split("/").length > 2) {
-				Messages.storeMessage(section, getClass(), Messages.error("Unable to update entries in zipped attachments!"));
-				return;
-			}
-
+			DOWNLOADING.add(path);
 			try {
 				Stopwatch stopwatch = new Stopwatch();
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
@@ -235,22 +244,14 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 						connectionStream = new ByteArrayInputStream(connectionBytes);
 					}
 				}
-
-				ArticleManager articleManager = section.getArticleManager();
-				articleManager.open();
-				try {
-					// check for versioning
-					boolean versioning = section.get().isVersioning(section);
-
-					// read and store
-					Environment.getInstance().getWikiConnector()
-							.storeAttachment(parentName, fileName, "SYSTEM", connectionStream, versioning);
+				// make sure all downloading happens in this block
+				synchronized (QUEUED_ATTACHMENTS) {
+					QUEUED_ATTACHMENTS.add(new AttachmentUpdate(path, versioning, new ByteArrayInputStream(Streams.getBytesAndClose(connectionStream))));
+					if (longestWaitingUpdate == null) {
+						longestWaitingUpdate = Instant.now();
+					}
 				}
-				finally {
-					articleManager.commit();
-				}
-
-				stopwatch.log(LOGGER, "Updated attachment '" + path + "' with resource from URL " + url);
+				stopwatch.log(LOGGER, "Queued attachment '" + path + "' with resource from URL " + url);
 			}
 			catch (UnknownHostException e) {
 				LOGGER.warn("Unable to reach " + url + " while trying to update attachment " + path);
@@ -260,10 +261,60 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				Messages.storeMessage(section, getClass(), Messages.error(message + ": " + e.getMessage()));
 				LOGGER.error(message, e);
 			}
+			finally {
+				DOWNLOADING.remove(path);
+				// if there are other downloads currently ongoing, we have to compile once they finished anyway,
+				// so we just wait for them to trigger the compilation of the queue
+				if (!allowWaitForOtherDownloads || DOWNLOADING.isEmpty() || longWaitingAttachmentInQueue()) {
+					compileQueuedAttachments();
+				} else {
+					LOGGER.info("Waiting with attachment compilation, until other currently running downloads area finished...");
+				}
+			}
 		}
 		finally {
 			lock.unlock();
 		}
+	}
+
+	private static boolean longWaitingAttachmentInQueue() {
+		Instant longestWaiting = longestWaitingUpdate;
+		return longestWaiting != null && longestWaiting.isBefore(Instant.now().minus(1, ChronoUnit.HOURS));
+	}
+
+	private void compileQueuedAttachments() {
+
+		if (QUEUED_ATTACHMENTS.isEmpty()) return;
+
+		Set<AttachmentUpdate> copy;
+		synchronized (QUEUED_ATTACHMENTS) {
+			copy = new HashSet<>(QUEUED_ATTACHMENTS);
+			QUEUED_ATTACHMENTS.clear();
+			longestWaitingUpdate = null;
+		}
+
+		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		articleManager.open();
+		try {
+			for (AttachmentUpdate update : copy) {
+				String parentName = update.path.substring(0, update.path.indexOf(PATH_SEPARATOR));
+				String fileName = update.path.substring(update.path.indexOf("/") + 1);
+				try {
+					Environment.getInstance().getWikiConnector()
+							.storeAttachment(parentName, fileName, "SYSTEM", update.attachment, update.versioning);
+				}
+				catch (IOException e) {
+					LOGGER.error("Exception while storing attachment {}/{}", parentName, fileName, e);
+				}
+			}
+		}
+		finally {
+			articleManager.commit();
+		}
+		LOGGER.info("Compiled {} queued {}: {}", copy.size(),
+				Strings.pluralOf(copy.size(), "attachment", false), copy.stream()
+						.map(AttachmentUpdate::path)
+						.collect(Collectors.joining(", ")));
 	}
 
 	@Nullable
@@ -553,7 +604,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			ArticleManager articleManager = section.getArticleManager();
 			if (articleManager instanceof DefaultArticleManager) {
 				((DefaultArticleManager) articleManager).awaitInitialization();
-				section.get().performUpdate(section);
+				section.get().performUpdate(section, false, true);
 			}
 		}
 	}
