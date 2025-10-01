@@ -46,6 +46,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -116,31 +117,41 @@ public class PackageManager {// implements EventListener {
 	}
 
 	public void addDefaultPackage(Article article, String defaultPackage) {
-		articleToDefaultPackages.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4)).add(defaultPackage);
+		addDefaultToMap(articleToDefaultPackages, article, defaultPackage);
 	}
 
 	public void addDefaultPackageRule(Article article, ParsedPredicate defaultPackageRule) {
-		articleToDefaultPackageRules.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4))
-				.add(defaultPackageRule);
+		addDefaultToMap(articleToDefaultPackageRules, article, defaultPackageRule);
 	}
 
-	public void removeDefaultPackage(Article article, String defaultPackage) {
-		Set<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
-		if (defaultPackages != null) {
-			defaultPackages.remove(defaultPackage);
-			if (defaultPackages.isEmpty()) {
-				articleToDefaultPackages.remove(article.getTitle());
-			}
+	private <T> void addDefaultToMap(Map<String, Set<T>> map, Article article, T value) {
+		map.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4)).add(value);
+		if (KnowWEUtils.isAttachmentArticle(article)) {
+			Article parentArticle = KnowWEUtils.getArticleCompilingAttachmentArticle(article);
+			map.computeIfAbsent(parentArticle.getTitle(), k -> new LinkedHashSet<>(4)).add(value);
 		}
 	}
 
+
+	public void removeDefaultPackage(Article article, String defaultPackage) {
+		removeDefaultFromMap(articleToDefaultPackages, article, defaultPackage);
+	}
+
 	public void removeDefaultPackageRule(Article article, ParsedPredicate defaultPackageRule) {
-		Set<ParsedPredicate> defaultPackageRules = articleToDefaultPackageRules.get(article.getTitle());
+		removeDefaultFromMap(articleToDefaultPackageRules, article, defaultPackageRule);
+	}
+
+	private <T> void removeDefaultFromMap(Map<String, Set<T>> map, Article article, T value) {
+		Set<T> defaultPackageRules = map.get(article.getTitle());
 		if (defaultPackageRules != null) {
-			defaultPackageRules.remove(defaultPackageRule);
+			defaultPackageRules.remove(value);
 			if (defaultPackageRules.isEmpty()) {
-				articleToDefaultPackageRules.remove(article.getTitle());
+				map.remove(article.getTitle());
 			}
+		}
+		if (KnowWEUtils.isAttachmentArticle(article)) {
+			Article parentArticle = KnowWEUtils.getArticleCompilingAttachmentArticle(article);
+			removeDefaultFromMap(map, parentArticle, value);
 		}
 	}
 
