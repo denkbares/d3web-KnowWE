@@ -126,10 +126,10 @@ public class PackageManager {// implements EventListener {
 
 	private <T> void addDefaultToMap(Map<String, Set<T>> map, Article article, T value) {
 		map.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4)).add(value);
-		if (KnowWEUtils.isAttachmentArticle(article)) {
-			Article parentArticle = KnowWEUtils.getArticleCompilingAttachmentArticle(article);
-			map.computeIfAbsent(parentArticle.getTitle(), k -> new LinkedHashSet<>(4)).add(value);
-		}
+//		if (KnowWEUtils.isAttachmentArticle(article)) {
+//			Article parentArticle = KnowWEUtils.getArticleCompilingAttachmentArticle(article);
+//			map.computeIfAbsent(parentArticle.getTitle(), k -> new LinkedHashSet<>(4)).add(value);
+//		}
 	}
 
 
@@ -149,10 +149,10 @@ public class PackageManager {// implements EventListener {
 				map.remove(article.getTitle());
 			}
 		}
-		if (KnowWEUtils.isAttachmentArticle(article)) {
-			Article parentArticle = KnowWEUtils.getArticleCompilingAttachmentArticle(article);
-			removeDefaultFromMap(map, parentArticle, value);
-		}
+//		if (KnowWEUtils.isAttachmentArticle(article)) {
+//			Article parentArticle = KnowWEUtils.getArticleCompilingAttachmentArticle(article);
+//			removeDefaultFromMap(map, parentArticle, value);
+//		}
 	}
 
 	@NotNull
