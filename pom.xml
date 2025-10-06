@@ -47,7 +47,7 @@
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
 		<implementationVersion>${project.version}</implementationVersion>
-		<logback.version>1.5.12</logback.version>
+		<logback.version>1.5.19</logback.version>
 		<jackson.version>2.19.2</jackson.version>
 		<stripes.version>1.7.0-async-beta</stripes.version>
 	</properties>
