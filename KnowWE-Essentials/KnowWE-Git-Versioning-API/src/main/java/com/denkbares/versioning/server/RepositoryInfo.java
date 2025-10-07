@@ -4,5 +4,5 @@
 
 package com.denkbares.versioning.server;
 
-public record RepositoryInfo(String name, String relativePath, String repoUrl, String webUrl) {
+public record RepositoryInfo(int id, String name, String relativePath, String repoUrl, String webUrl) {
 }

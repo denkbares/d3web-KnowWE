@@ -91,7 +91,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 					// This little thing hides all repos in subgroups. This allows us to be able to uniquely identify repos only by their name.
 					// In the future this has to removed and repos need to be identified by namespace_with_path instead.
 					.filter(repo -> repo.web_url.equalsIgnoreCase(this.gitRemoteURL + repo.path))
-					.map(repo -> new RepositoryInfo(repo.name, repo.path, repo.http_url_to_repo, repo.web_url))
+					.map(repo -> new RepositoryInfo(repo.id, repo.name, repo.path, repo.http_url_to_repo, repo.web_url))
 					.toList();
 		}
 		catch (Exception e) {
@@ -185,7 +185,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			throw new RuntimeException("Internal JGit error", e);
 		}
 		catch (GitAPIException e) {
-			throw new RuntimeException("Git clone failed for repo url: " + remoteURI);
+			throw new RuntimeException("Git clone failed for repo url: " + remoteURI + ". " + e.getMessage());
 		}
 	}
 
