@@ -24,12 +24,12 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class SnapshotControlPanelMarkup extends DefaultMarkupType {
 
-	private static final String RELEASE_OVERVIEW = "SnapshotControlPanel";
+	private static final String SNAPSHOT_MARKUP = "SnapshotControlPanel";
 	private static final DefaultMarkup MARKUP;
 	private static final String DEPENDENCY = "dependency";
 
 	static {
-		MARKUP = new DefaultMarkup(RELEASE_OVERVIEW);
+		MARKUP = new DefaultMarkup(SNAPSHOT_MARKUP);
 		MARKUP.addContentType(new SnapshotControlPanelMarkupContent());
 		MARKUP.addAnnotation(DEPENDENCY);
 	}

@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.RepositoryInfo;
 
 public interface GitServerConnector {
 

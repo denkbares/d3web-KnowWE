@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
-import de.uniwue.d3web.gitConnector.RepositoryInfo;
 import de.uniwue.d3web.gitConnector.UserCredentials;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
