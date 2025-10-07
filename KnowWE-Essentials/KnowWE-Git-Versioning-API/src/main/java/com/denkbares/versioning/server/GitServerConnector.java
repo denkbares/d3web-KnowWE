@@ -7,7 +7,7 @@ package com.denkbares.versioning.server;
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpException;
+import org.apache.http.HttpException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
