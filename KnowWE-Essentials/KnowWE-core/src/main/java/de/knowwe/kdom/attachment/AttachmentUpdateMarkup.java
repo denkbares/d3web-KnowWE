@@ -359,7 +359,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				// append new package annotations
 				Section<?> closingTag = $(markupSection).children().getLast();
 				if (closingTag != null && Strings.trim(closingTag.getText()).equals("%")) {
-					replacementMap.put(closingTag.getID(), packageAnnotationText + Strings.trimLeft(closingTag.getText()));
+					replacementMap.put(closingTag.getID(), "\n" + packageAnnotationText + Strings.trimLeft(closingTag.getText()));
 				}
 			}
 
