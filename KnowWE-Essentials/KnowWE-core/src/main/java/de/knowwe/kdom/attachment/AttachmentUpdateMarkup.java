@@ -311,7 +311,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		finally {
 			articleManager.commit();
 		}
-		LOGGER.info("Compiled {} queued {}: {}", copy.size(),
+		LOGGER.info("Committed {} queued {} for compilation: {}", copy.size(),
 				Strings.pluralOf(copy.size(), "attachment", false), copy.stream()
 						.map(AttachmentUpdate::path)
 						.collect(Collectors.joining(", ")));
