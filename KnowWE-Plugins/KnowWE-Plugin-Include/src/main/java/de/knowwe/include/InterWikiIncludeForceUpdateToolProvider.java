@@ -20,13 +20,12 @@
 package de.knowwe.include;
 
 import java.io.IOException;
-
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.knowwe.core.ArticleManager;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.RecompileAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -50,21 +49,12 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 	public void execute(UserActionContext context) throws IOException {
 		if (!context.userIsAdmin()) return;
 
-		ArticleManager articleManager = context.getArticleManager();
-
-		articleManager.open();
-		try {
-			// also update all markups
-			$(articleManager).successor(AttachmentUpdateMarkup.class).stream().forEach(markup -> {
-				LOGGER.info("Checking " + markup.get().getUrl(markup) + " for updates...");
-				markup.get().performUpdate(markup, true, false);
-			});
-			RecompileAction.recompileVariant(context, "Update imports tool clicked");
-		}
-		finally {
-			LOGGER.info("Updated all imports, recompiling....");
-			articleManager.commit();
-		}
+		// also update all markups
+		Stopwatch stopwatch = new Stopwatch();
+		List<Section<AttachmentUpdateMarkup>> attachmentMarkups = $(context.getArticleManager()).
+				successor(AttachmentUpdateMarkup.class).asList();
+		attachmentMarkups.parallelStream().forEach(markup -> markup.get().performUpdate(markup, true, true));
+		stopwatch.log(LOGGER, "Updated " + attachmentMarkups.size() + " attachments");
 	}
 
 	@Override
