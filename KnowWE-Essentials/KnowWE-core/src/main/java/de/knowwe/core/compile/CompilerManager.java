@@ -19,7 +19,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -63,6 +62,7 @@ public class CompilerManager implements EventListener {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
 	private static final String KNOWWE_COMPILER_THREADS_COUNT = "knowwe.compiler.threads.count";
+	private static final String KNOWWE_COMPILER_ACTIVE_PATTERN = "knowwe.compiler.active.pattern";
 	// number of threads that are not used for compilers themselves, but for operational handling of compilation process
 	private static final int OPERATIONAL_THREAD_COUNT = 1;
 	private volatile int compilationCount = 0;
@@ -570,6 +570,16 @@ public class CompilerManager implements EventListener {
 	 */
 	public void addCompiler(double priority, Compiler compiler) {
 		Objects.requireNonNull(compiler);
+		String activePattern = System.getProperty(KNOWWE_COMPILER_ACTIVE_PATTERN);
+		if (activePattern != null) {
+			if (compiler instanceof NamedCompiler namedCompiler) {
+				if (!namedCompiler.getName().matches(activePattern)) {
+					LOGGER.info("Ignoring compiler {}, because it does not match the pattern {} given via system property {}",
+							namedCompiler.getName(), activePattern, KNOWWE_COMPILER_ACTIVE_PATTERN);
+					return;
+				}
+			}
+		}
 		// add the compiler, being thread-save
 		synchronized (lock) {
 			// debug code: check that we only add items
