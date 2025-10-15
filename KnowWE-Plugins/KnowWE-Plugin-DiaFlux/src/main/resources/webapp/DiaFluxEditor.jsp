@@ -161,6 +161,7 @@
 	%>
 
 	<link rel="stylesheet" type="text/css" href="KnowWEExtension/css/jquery-ui.min.css"/>
+	<link rel="stylesheet" type="text/css" href="KnowWEExtension/css/variables.css">
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/dropdownlist.css"/>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objectselect.css"/>
 	<link rel="stylesheet" type="text/css" href="cc/kbinfo/objecttree.css"/>
@@ -175,7 +176,7 @@
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css'/>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
 </head>
-<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(Sections.get(kdomID)).replace("\"", "&quot;") %>).showEditor();">
+<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(Sections.get(kdomID)).replace("\"", "&quot;") %>).showEditor();" class="light-mode">
 <%-- default kbinfo objects delivered from server --%>
 <data id="articleKBInfo" style="display:none;">
 	<%= jspHelper.getArticleInfoObjectsAsXML(Sections.get(kdomID)) %>
