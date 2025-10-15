@@ -25,7 +25,7 @@
 <%
 	//Create wiki context; authorization check not needed
 	WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
-	WikiContext wikiContext = new WikiContext( wiki, request, WikiContext.VIEW );
+	WikiContext wikiContext = new WikiContext(wiki, request, WikiContext.VIEW);
 
 	// Check if KnowWE is initialized
 	if (!Environment.isInitialized()) {
@@ -97,13 +97,16 @@
 <head>
 	<link rel="icon" type="image/x-icon" href="/KnowWE/images/favicon.ico">
 	<script>
-		var topic = "<%= topic %>";
-		var nodeID = "<%= kdomID %>";
+      var topic = "<%= topic %>";
+      var nodeID = "<%= kdomID %>";
 	</script>
 
 	<title>Edit Flowchart: <%= title %>
 	</title>
-	<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+	<script>if (typeof module === 'object') {
+      window.module = module;
+      module = undefined;
+    }</script>
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
@@ -117,6 +120,8 @@
 	<script type='text/javascript'
 			src='KnowWEExtension/scripts/jquery-plugin-collection.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-compatibility.js'></script>
+	<script src="KnowWEExtension/scripts/KnowWE-helper.js" type="text/javascript"></script>
+	<script src="KnowWEExtension/scripts/KnowWE.js" type="text/javascript"></script>
 
 	<script src="cc/kbinfo/kbinfo.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/events.js" type="text/javascript"></script>
