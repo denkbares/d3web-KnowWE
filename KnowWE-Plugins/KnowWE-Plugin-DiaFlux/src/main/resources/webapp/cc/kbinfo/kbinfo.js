@@ -98,7 +98,7 @@ KBInfo.createKey = function(name) {
 KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 	if (!nameOrIDOrArray) return;
 	if (DiaFluxUtils.isString(nameOrIDOrArray)) nameOrIDOrArray = [nameOrIDOrArray];
-	var url = "KnowWE.jsp?action=GetInfoObjects";
+	var url = "KnowWE.jsp?action=GetInfoObjects&X-XSRF-TOKEN=" + document.getElementById("knowWEInfoXSRF").value;
 	new Ajax.Request(url, {
 		method: 'post',
 		parameters: {ids: JSON.stringify(nameOrIDOrArray), sectionID: nodeID},

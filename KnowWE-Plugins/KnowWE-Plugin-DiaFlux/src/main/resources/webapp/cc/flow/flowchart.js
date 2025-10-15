@@ -569,15 +569,15 @@ if (typeof KNOWWE != "undefined") {
   KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
     Flowchart.handleButtonVisibility(jq$(this.flow.dom).parents('.type_DiaFlux').attr('id'));
   });
+  if (KNOWWE.helper.loadCheck(["Wiki.jsp"])) {
+    jq$(function() {
+      jq$(".flowchartContainer").each(function() {
+        let $container = jq$(this);
+        Flowchart.loadFlowchart($container.attr("sectionid"), $container.attr("id"));
+      });
+    });
+  }
 }
 
-if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-  jq$(function(){
-    jq$('.flowchartContainer').each(function() {
-      let $container = jq$(this);
-      Flowchart.loadFlowchart($container.attr("sectionid"), $container.attr("id"));
-    })
-  });
-}
 
 
