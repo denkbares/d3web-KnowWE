@@ -531,7 +531,7 @@ Flowchart.prototype.setScroll = function(x, y) {
 
 FlowEditor.prototype._saveFlowchartText = function(xml, closeOnSuccess) {
 	var changeNote = $('changenote').value;
-	var url = "KnowWE.jsp";
+	var url = "KnowWE.jsp?X-XSRF-TOKEN=" + document.getElementById("knowWEInfoXSRF").value;
 	var self = this;
 	new Ajax.Request(url, {
 		method : 'post',
