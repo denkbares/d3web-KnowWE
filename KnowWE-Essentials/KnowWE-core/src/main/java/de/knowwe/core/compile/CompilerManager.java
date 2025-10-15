@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -557,6 +558,20 @@ public class CompilerManager implements EventListener {
 		return Collections.unmodifiableList(compilers);
 	}
 
+	private boolean isActiveCompiler(Compiler compiler) {
+		String activePattern = getActiveCompilersPattern();
+		if (activePattern != null) {
+			if (compiler instanceof NamedCompiler namedCompiler) {
+				return namedCompiler.getName().matches(activePattern);
+			}
+		}
+		return true;
+	}
+
+	private String getActiveCompilersPattern() {
+		return System.getProperty(KNOWWE_COMPILER_ACTIVE_PATTERN);
+	}
+
 	/**
 	 * Adds a new compiler with the specific priority.
 	 * <p/>
@@ -570,15 +585,10 @@ public class CompilerManager implements EventListener {
 	 */
 	public void addCompiler(double priority, Compiler compiler) {
 		Objects.requireNonNull(compiler);
-		String activePattern = System.getProperty(KNOWWE_COMPILER_ACTIVE_PATTERN);
-		if (activePattern != null) {
-			if (compiler instanceof NamedCompiler namedCompiler) {
-				if (!namedCompiler.getName().matches(activePattern)) {
-					LOGGER.info("Ignoring compiler {}, because it does not match the pattern {} given via system property {}",
-							namedCompiler.getName(), activePattern, KNOWWE_COMPILER_ACTIVE_PATTERN);
-					return;
-				}
-			}
+		if (!isActiveCompiler(compiler)) {
+			LOGGER.info("Ignoring compiler {}, because it does not match the pattern {} given via system property {}",
+					Compilers.getCompilerName(compiler), getActiveCompilersPattern(), KNOWWE_COMPILER_ACTIVE_PATTERN);
+			return;
 		}
 		// add the compiler, being thread-save
 		synchronized (lock) {
@@ -609,7 +619,12 @@ public class CompilerManager implements EventListener {
 		// debug code: check that we only remove items
 		// that already have been added
 		if (!compilers.contains(compiler)) {
-			throw new NoSuchElementException("Removing non-existing compiler instance.");
+			if (isActiveCompiler(compiler)) {
+				throw new NoSuchElementException("Removing non-existing compiler instance.");
+			}
+			else {
+				return; // was never added, just ignore
+			}
 		}
 		// remove the compiler, being thread-save
 		synchronized (lock) {
