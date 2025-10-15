@@ -102,6 +102,9 @@ public class CIBuildManager implements EventListener {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 			LOGGER.info("Shutting down CI build executor.");
 			CI_BUILD_EXECUTOR.shutdown();
+			CI_BUILD_TRIGGER.shutdown();
+			TEST_EXECUTOR_SERVICE.shutdown();
+			SUB_TEST_EXECUTOR_SERVICE.shutdown();
 		});
 	}
 
