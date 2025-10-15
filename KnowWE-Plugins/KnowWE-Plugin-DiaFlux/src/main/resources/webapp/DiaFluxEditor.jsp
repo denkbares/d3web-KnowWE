@@ -1,42 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<%@page import="java.util.Map" %>
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="org.apache.wiki.WikiContext" %>
-<%@ page import="org.apache.wiki.WikiEngine" %>
+<%@ page import="org.apache.wiki.api.core.*" %>
+<%@ page import="org.apache.wiki.api.spi.Wiki" %>
+<%@ page import="org.apache.wiki.util.*" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="de.knowwe.core.user.UserContextUtil" %>
+<%@ page import="de.knowwe.core.Attributes" %>
+<%@ page import="de.knowwe.diaflux.type.DiaFluxType" %>
+<%@ page import="de.knowwe.core.kdom.parsing.Sections" %>
+<%@ page import="de.knowwe.core.kdom.parsing.Section" %>
+<%@ page import="de.knowwe.core.action.UserActionContext" %>
+<%@ page import="de.knowwe.core.action.ActionContext" %>
+<%@ page import="de.knowwe.core.action.AbstractActionServlet" %>
+<%@ page import="de.knowwe.core.kdom.Article" %>
+<%@ page import="de.knowwe.core.Environment" %>
+<%@ page import="de.knowwe.core.wikiConnector.WikiConnector" %>
+<%@ page import="de.knowwe.diaflux.kbinfo.JSPHelper" %>
 <%@ page import="com.denkbares.plugin.Extension" %>
 <%@ page import="com.denkbares.plugin.JPFPluginManager" %>
-<%@ page import="de.knowwe.core.Attributes" %>
-<%@ page import="de.knowwe.core.Environment" %>
-<%@ page import="de.knowwe.core.action.AbstractActionServlet" %>
-<%@ page import="de.knowwe.core.action.ActionContext" %>
-<%@ page import="de.knowwe.core.action.UserActionContext" %>
-<%@ page import="de.knowwe.core.kdom.Article" %>
-<%@ page import="de.knowwe.core.kdom.parsing.Section" %>
-<%@ page import="de.knowwe.core.kdom.parsing.Sections" %>
-<%@ page import="de.knowwe.core.user.AuthenticationManager" %>
-<%@ page import="de.knowwe.core.user.UserContextUtil" %>
-<%@ page import="de.knowwe.core.wikiConnector.WikiConnector" %>
 <%@ page import="de.knowwe.diaflux.DiaFluxEditorEnhancement" %>
-<%@ page import="de.knowwe.diaflux.kbinfo.JSPHelper" %>
-<%@ page import="de.knowwe.diaflux.type.DiaFluxType" %>
 <%@ page import="de.knowwe.jspwiki.JSPAuthenticationManager" %>
-<%@ page import="de.knowwe.jspwiki.JSPWikiConnector" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="de.knowwe.core.user.AuthenticationManager" %>
+<%@ page import="org.apache.wiki.WikiSession" %>
+<%@ page errorPage="/Error.jsp" %>
+<%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%
 	//Create wiki context; authorization check not needed
-	WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
-	WikiContext wikiContext = new WikiContext(wiki, request, WikiContext.VIEW);
+	Engine wiki = Wiki.engine().find( getServletConfig() );
+	// Create wiki context and check for authorization
+	Context wikiContext = Wiki.context().create( wiki, request, ContextEnum.PAGE_VIEW.getRequestContext() );
 
-	// Check if KnowWE is initialized
-	if (!Environment.isInitialized()) {
-		Environment.initInstance(new JSPWikiConnector(wiki));
-	}
+	String csrfToken = WikiSession.getWikiSession(wiki, request).antiCsrfToken();
 
 	// We need to do this, because the paramterMap is locked!
 	Map<String, String> parameters = UserContextUtil.getParameters(request);
 
 	// Add user
-	if (!parameters.containsKey(Attributes.USER)) {
+	if (!parameters.containsKey(Attributes.USER) && wikiContext != null) {
 		parameters.put(Attributes.USER, wikiContext.getWikiSession().getUserPrincipal().getName());
 	}
 
@@ -120,8 +118,6 @@
 	<script type='text/javascript'
 			src='KnowWEExtension/scripts/jquery-plugin-collection.js'></script>
 	<script type='text/javascript' src='KnowWEExtension/scripts/jquery-compatibility.js'></script>
-	<script src="KnowWEExtension/scripts/KnowWE-helper.js" type="text/javascript"></script>
-	<script src="KnowWEExtension/scripts/KnowWE.js" type="text/javascript"></script>
 
 	<script src="cc/kbinfo/kbinfo.js" type="text/javascript"></script>
 	<script src="cc/kbinfo/events.js" type="text/javascript"></script>
@@ -180,7 +176,6 @@
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
 </head>
 <body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(Sections.get(kdomID)).replace("\"", "&quot;") %>).showEditor();">
-
 <%-- default kbinfo objects delivered from server --%>
 <data id="articleKBInfo" style="display:none;">
 	<%= jspHelper.getArticleInfoObjectsAsXML(Sections.get(kdomID)) %>
@@ -190,6 +185,7 @@
 	<%= JSPHelper.getReferredInfoObjectsAsXML(Sections.get(kdomID)) %>
 </data>
 <data id="ajaxKBInfo" style="display:none;">
+	<input type='hidden' id='knowWEInfoXSRF' value="<%= csrfToken %>"/>
 	<kbinfo></kbinfo>
 </data>
 <data id="flowchartSource" style="display:none;">
