@@ -96,15 +96,15 @@ public class TomcatServiceRestarter extends AbstractAction {
 	public static boolean canWriteFlag() {
 		File testFlag = new File(FLAG_TEST_PATH);
 		File parent = testFlag.getParentFile();
-		if (!parent.exists() && !parent.mkdirs()) {
+		if (parent == null || (!parent.exists() && !parent.mkdirs())) {
 			LOGGER.error("Cannot create directory: {}", parent);
 			return false;
 		}
 		try {
-			LOGGER.error("Cannot create flag: {}", testFlag);
 			Files.createFile(testFlag.toPath());
 			Files.deleteIfExists(testFlag.toPath());
 		} catch (IOException e) {
+			LOGGER.error("Cannot create test flag: {}", testFlag);
 			return false;
 		}
 		return true;
