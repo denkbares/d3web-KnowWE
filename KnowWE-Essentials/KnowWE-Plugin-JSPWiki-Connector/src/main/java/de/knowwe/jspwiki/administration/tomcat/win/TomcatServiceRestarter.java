@@ -22,11 +22,9 @@ package de.knowwe.jspwiki.administration.tomcat.win;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 
 /**
  * Utility class to interact with the external Tomcat restart watchdog.
@@ -38,7 +36,7 @@ import de.knowwe.core.action.UserActionContext;
  * @author Albrecht Striffler (denkbares GmbH), ChatGPT
  * @created 20.10.2025
  */
-public class TomcatServiceRestarter extends AbstractAction {
+public class TomcatServiceRestarter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TomcatServiceRestarter.class);
 
@@ -114,15 +112,11 @@ public class TomcatServiceRestarter extends AbstractAction {
 		try {
 			Files.createFile(testFlag.toPath());
 			Files.deleteIfExists(testFlag.toPath());
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			LOGGER.error("Cannot create test flag: {}", testFlag);
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public void execute(UserActionContext context) throws IOException {
-
 	}
 }
