@@ -42,12 +42,14 @@ public class TomcatServiceRestarter extends AbstractAction {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TomcatServiceRestarter.class);
 
+	private static final String SERVICE_DIR = "C:\\tomcat-restart\\";
 	// --- Configuration paths (adjust as needed) ---
-	private static final String FLAG_PATH = "C:\\tomcat-restart\\restart.flag";
-	private static final String LOG_PATH = "C:\\tomcat-restart\\watchdog.log";
+	private static final String FLAG_PATH = SERVICE_DIR + "restart.flag";
+	private static final String FLAG_TEST_PATH = SERVICE_DIR + "restart-test.flag";
+	private static final String LOG_PATH = SERVICE_DIR + "watchdog.log";
 
 	// If alive file not updated for more than X minutes, assume watchdog is inactive
-	private static final String ALIVE_PATH = "C:\\tomcat-restart\\watchdog.alive";
+	private static final String ALIVE_PATH = SERVICE_DIR + "watchdog.alive";
 	private static final long MAX_ALIVE_AGE_SECONDS = 60;
 
 	/**
@@ -75,7 +77,8 @@ public class TomcatServiceRestarter extends AbstractAction {
 	public static boolean isWatchdogHealthy() {
 		boolean aliveRecent = isWatchdogActive();
 		boolean logExists = new File(LOG_PATH).exists();
-		return aliveRecent && logExists;
+		boolean canWrite = canWriteFlag();
+		return aliveRecent && logExists && canWrite;
 	}
 
 	/**
@@ -88,6 +91,23 @@ public class TomcatServiceRestarter extends AbstractAction {
 		}
 		long ageMillis = System.currentTimeMillis() - alive.lastModified();
 		return ageMillis < (MAX_ALIVE_AGE_SECONDS * 1000);
+	}
+
+	public static boolean canWriteFlag() {
+		File testFlag = new File(FLAG_TEST_PATH);
+		File parent = testFlag.getParentFile();
+		if (!parent.exists() && !parent.mkdirs()) {
+			LOGGER.error("Cannot create directory: {}", parent);
+			return false;
+		}
+		try {
+			LOGGER.error("Cannot create flag: {}", testFlag);
+			Files.createFile(testFlag.toPath());
+			Files.deleteIfExists(testFlag.toPath());
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
