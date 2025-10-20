@@ -130,7 +130,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					"?type=" + LOGS_ALL + "'",
 					Tool.CATEGORY_DOWNLOAD);
 
-			DefaultTool restartWebApp = new DefaultTool(Icon.REFRESH,
+			DefaultTool restartWebApp = new DefaultTool(Icon.WARNING,
 					"Restart Web App (memory leak)",
 					"Restart this web app. This may take a while and causes a memory leak, so it may not work or only work a few times, before you have to restart the whole Tomcat.",
 					"KNOWWE.plugin.jspwikiConnector.restartWebApp()",
@@ -139,7 +139,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 
 			DefaultTool restartTomcat;
 			if (TomcatServiceRestarter.isWatchdogHealthy()) {
-				restartTomcat = new DefaultTool(Icon.WARNING,
+				restartTomcat = new DefaultTool(Icon.REFRESH,
 						"Restart Tomcat",
 						"Restart the tomcat server - this may take a while.",
 						"KNOWWE.plugin.jspwikiConnector.restartTomcat()",
