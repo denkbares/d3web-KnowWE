@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Util class to restart the web app
+ * Util class to restart the web app (mostly ChatGPT)
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 07.08.2025
