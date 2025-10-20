@@ -42,7 +42,8 @@ public class TomcatServiceRestarter extends AbstractAction {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TomcatServiceRestarter.class);
 
-	private static final String SERVICE_DIR = "C:\\tomcat-restart\\";
+	// Resolve service directory from environment, fallback to default
+	private static final String SERVICE_DIR = resolveServiceDir();
 	// --- Configuration paths (adjust as needed) ---
 	private static final String FLAG_PATH = SERVICE_DIR + "restart.flag";
 	private static final String FLAG_TEST_PATH = SERVICE_DIR + "restart-test.flag";
@@ -51,6 +52,16 @@ public class TomcatServiceRestarter extends AbstractAction {
 	// If alive file not updated for more than X minutes, assume watchdog is inactive
 	private static final String ALIVE_PATH = SERVICE_DIR + "watchdog.alive";
 	private static final long MAX_ALIVE_AGE_SECONDS = 60;
+
+	private static String resolveServiceDir() {
+		// Prefer environment variable "knowwe.tomcat.restart.dir", else default
+		String dir = System.getProperty("knowwe.tomcat.restart.dir", "C:\\tomcat-restart\\");
+		// Normalize to end with a separator/backslash for concatenation below
+		if (!dir.endsWith("/") && !dir.endsWith("\\")) {
+			dir += File.separator;
+		}
+		return dir;
+	}
 
 	/**
 	 * Creates the restart flag file that signals the watchdog to restart Tomcat.
