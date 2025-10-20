@@ -52,6 +52,8 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.administration.tomcat.JmxWebAppRestarter;
+import de.knowwe.jspwiki.administration.tomcat.win.TomcatServiceRestarter;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -71,6 +73,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 	public static final String LOGS_RECENT = "logs-recent";
 	public static final String LOGS_ALL = "logs-all";
 	public static final String RESTART_WEBAPP = "restart-webapp";
+	public static final String RESTART_TOMCAT = "restart-tomcat";
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext user) {
@@ -128,13 +131,31 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					Tool.CATEGORY_DOWNLOAD);
 
 			DefaultTool restartWebApp = new DefaultTool(Icon.REFRESH,
-					"Restart Web App",
-					"Restart this web app. This may take a while",
+					"Restart Web App (memory leak)",
+					"Restart this web app. This may take a while and causes a memory leak, so it may not work or only work a few times, before you have to restart the whole Tomcat.",
 					"KNOWWE.plugin.jspwikiConnector.restartWebApp()",
 					Tool.ActionType.ONCLICK,
 					Tool.CATEGORY_EXECUTE);
 
-			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll, restartWebApp };
+			DefaultTool restartTomcat;
+			if (TomcatServiceRestarter.isWatchdogHealthy()) {
+				restartTomcat = new DefaultTool(Icon.WARNING,
+						"Restart Tomcat",
+						"Restart the tomcat server - this may take a while.",
+						"KNOWWE.plugin.jspwikiConnector.restartTomcat()",
+						Tool.ActionType.ONCLICK,
+						Tool.CATEGORY_EXECUTE);
+			}
+			else {
+				restartTomcat = new DefaultTool(Icon.WARNING,
+						"Unavailable: Restart Tomcat",
+						"Restart the tomcat server - this may take a while.",
+						"alert('Tomcat restart functionality currently not available or not set up.')",
+						Tool.ActionType.ONCLICK,
+						Tool.CATEGORY_EXECUTE);
+			}
+
+			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll, restartTomcat, restartWebApp };
 		}
 		else {
 			return null;
@@ -171,6 +192,9 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 		}
 		else if (RESTART_WEBAPP.equals(type)) {
 			JmxWebAppRestarter.reload(context.getServletContext());
+		}
+		else if (RESTART_TOMCAT.equals(type) && TomcatServiceRestarter.isWatchdogHealthy()) {
+			TomcatServiceRestarter.signalRestart();
 		}
 		else {
 			failUnexpected(context, "Unknown tool type: " + type);
