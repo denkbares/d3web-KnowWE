@@ -53,6 +53,13 @@ KNOWWE.plugin.jspwikiConnector.restartWebApp = function() {
   }
 };
 
+KNOWWE.plugin.jspwikiConnector.restartWebApp = function() {
+  if (confirm("Are you sure you want to restart tomcat? This may take a while...")) {
+    KNOWWE.editCommons.showAjaxLoader();
+    setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-tomcat"}).done(() => window.location.reload()), 12000);
+  }
+};
+
 KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
 
   const timeDisplay = document.getElementById("compile-warning");

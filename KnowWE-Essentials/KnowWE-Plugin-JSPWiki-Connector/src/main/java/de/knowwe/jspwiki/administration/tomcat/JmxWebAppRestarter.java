@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki.administration;
+package de.knowwe.jspwiki.administration.tomcat;
 
 import java.lang.management.ManagementFactory;
 import java.util.Set;
