@@ -55,6 +55,7 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 		Stopwatch stopwatch = new Stopwatch();
 		List<Section<AttachmentUpdateMarkup>> attachmentMarkups = $(context.getArticleManager()).
 				successor(AttachmentUpdateMarkup.class).asList();
+		LOGGER.info("Starting to update all {} attachments", attachmentMarkups.size());
 		AtomicLong counter = new AtomicLong(0);
 		attachmentMarkups.parallelStream().forEach(markup -> {
 			markup.get().performUpdate(markup, true, true);
