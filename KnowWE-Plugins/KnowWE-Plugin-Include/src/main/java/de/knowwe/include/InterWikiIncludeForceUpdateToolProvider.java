@@ -21,6 +21,8 @@ package de.knowwe.include;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +55,15 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 		Stopwatch stopwatch = new Stopwatch();
 		List<Section<AttachmentUpdateMarkup>> attachmentMarkups = $(context.getArticleManager()).
 				successor(AttachmentUpdateMarkup.class).asList();
-		attachmentMarkups.parallelStream().forEach(markup -> markup.get().performUpdate(markup, true, true));
-		stopwatch.log(LOGGER, "Updated " + attachmentMarkups.size() + " attachments");
+		AtomicLong counter = new AtomicLong(0);
+		attachmentMarkups.parallelStream().forEach(markup -> {
+			markup.get().performUpdate(markup, true, true);
+			long current = counter.incrementAndGet();
+			if (current % 100 == 0) {
+				stopwatch.log(LOGGER, "Updated " + current + "/" + attachmentMarkups.size() + " attachments");
+			}
+		});
+		stopwatch.log(LOGGER, "Updated all " + attachmentMarkups.size() + " attachments");
 	}
 
 	@Override
