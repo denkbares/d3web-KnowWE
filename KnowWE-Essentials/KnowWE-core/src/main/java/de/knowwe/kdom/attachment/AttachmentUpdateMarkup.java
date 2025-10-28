@@ -14,16 +14,20 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -33,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -81,14 +86,16 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String LOCK_KEY = "lockKey";
 	protected static final String PATH_SEPARATOR = "/";
 	private static final Map<String, Long> LAST_RUNS = new ConcurrentHashMap<>();
-	private static final Set<String> DOWNLOADING = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	private static final Set<AttachmentUpdate> QUEUED_ATTACHMENTS = Collections.synchronizedSet(new HashSet<>());
+	private static final Map<String, Instant> DOWNLOADING = new ConcurrentHashMap<>();
+	private static final Set<QueuedAttachment> QUEUED_ATTACHMENTS = Collections.synchronizedSet(new HashSet<>());
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
-	private static Instant longestWaitingUpdate = null;
 
-	private record AttachmentUpdate(String path, boolean versioning,
+	private record QueuedAttachment(String path, boolean versioning, Instant waitingSince,
 									ByteArrayInputStream attachment) {
+	}
+
+	private record DownloadingAttachment(String path, Instant started) {
 	}
 
 	public enum State {
@@ -202,7 +209,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return;
 		}
 		try {
-			DOWNLOADING.add(path);
+			DOWNLOADING.put(path, Instant.now());
 			try {
 				Stopwatch stopwatch = new Stopwatch();
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
@@ -246,10 +253,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				}
 				// make sure all downloading happens in this block
 				synchronized (QUEUED_ATTACHMENTS) {
-					QUEUED_ATTACHMENTS.add(new AttachmentUpdate(path, versioning, new ByteArrayInputStream(Streams.getBytesAndClose(connectionStream))));
-					if (longestWaitingUpdate == null) {
-						longestWaitingUpdate = Instant.now();
-					}
+					QUEUED_ATTACHMENTS.add(new QueuedAttachment(path, versioning, Instant.now(), new ByteArrayInputStream(Streams.getBytesAndClose(connectionStream))));
 				}
 				stopwatch.log(LOGGER, "Queued attachment '" + path + "' with resource from URL " + url);
 			}
@@ -267,7 +271,8 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				// so we just wait for them to trigger the compilation of the queue
 				if (!allowWaitForOtherDownloads || DOWNLOADING.isEmpty() || longWaitingAttachmentInQueue()) {
 					compileQueuedAttachments();
-				} else {
+				}
+				else {
 					LOGGER.info("Waiting with attachment compilation, until other currently running downloads area finished...");
 				}
 			}
@@ -278,25 +283,44 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	private static boolean longWaitingAttachmentInQueue() {
-		Instant longestWaiting = longestWaitingUpdate;
-		return longestWaiting != null && longestWaiting.isBefore(Instant.now().minus(1, ChronoUnit.HOURS));
+		List<QueuedAttachment> copy;
+		synchronized (QUEUED_ATTACHMENTS) {
+			copy = new ArrayList<>(QUEUED_ATTACHMENTS);
+		}
+		if (copy.isEmpty()) return false;
+		copy.sort(Comparator.comparing(QueuedAttachment::waitingSince));
+		QueuedAttachment longestWaiting = copy.get(0);
+		// as soon as an attachment is waiting for more than 2 minutes, start logging
+		if (longestWaiting.waitingSince().isBefore(Instant.now().minus(2, ChronoUnit.MINUTES))) {
+			LOGGER.info("Attachment {} is waiting since {}...",
+					longestWaiting.path, Stopwatch.getDisplay(Duration.between(longestWaiting.waitingSince(), Instant.now()).toMillis()));
+
+			// also log long-running downloads if there are any
+			for (Map.Entry<String, Instant> entry : DOWNLOADING.entrySet()) {
+				if (entry.getValue().isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
+					LOGGER.info("Attachment {} is downloading since {}...",
+							entry.getKey(), Stopwatch.getDisplay(Duration.between(entry.getValue(), Instant.now()).toMillis()));
+					return true;
+				}
+			}
+		}
+		return longestWaiting.waitingSince().isBefore(Instant.now().minus(20, ChronoUnit.MINUTES));
 	}
 
 	private void compileQueuedAttachments() {
 
 		if (QUEUED_ATTACHMENTS.isEmpty()) return;
 
-		Set<AttachmentUpdate> copy;
+		Set<QueuedAttachment> copy;
 		synchronized (QUEUED_ATTACHMENTS) {
 			copy = new HashSet<>(QUEUED_ATTACHMENTS);
 			QUEUED_ATTACHMENTS.clear();
-			longestWaitingUpdate = null;
 		}
 
 		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
 		articleManager.open();
 		try {
-			for (AttachmentUpdate update : copy) {
+			for (QueuedAttachment update : copy) {
 				String parentName = update.path.substring(0, update.path.indexOf(PATH_SEPARATOR));
 				String fileName = update.path.substring(update.path.indexOf("/") + 1);
 				try {
@@ -313,7 +337,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 		LOGGER.info("Committed {} queued {} for compilation: {}", copy.size(),
 				Strings.pluralOf(copy.size(), "attachment", false), copy.stream()
-						.map(AttachmentUpdate::path)
+						.map(QueuedAttachment::path)
 						.collect(Collectors.joining(", ")));
 	}
 
