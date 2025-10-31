@@ -8,7 +8,9 @@ import java.io.IOException;
 
 import org.jetbrains.annotations.Nullable;
 
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -57,5 +59,21 @@ public interface AttachmentCompileType extends Type {
 	 */
 	default TermCompiler.ReferenceValidationMode getReferenceValidationMode(Section<? extends AttachmentCompileType> section) {
 		return TermCompiler.ReferenceValidationMode.error;
+	}
+
+	/**
+	 * Get the article of the compiled attachment of the given section.
+	 *
+	 * @param section the section for which to check the attachment article
+	 * @return the article of the compiled attachment or null, if no attachment is compiled
+	 */
+	@Nullable
+	default Article getCompiledAttachmentArticle(Section<? extends AttachmentCompileType> section) {
+		if (!isCompilingTheAttachment(section)) {
+			return null;
+		}
+		ArticleManager articleManager = section.getArticleManager();
+		if (articleManager == null) return null;
+		return articleManager.getArticle(getCompiledAttachmentPath(section));
 	}
 }
