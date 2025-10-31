@@ -16,9 +16,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
@@ -77,10 +81,10 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	public List<RepositoryInfo> listRepositories() throws HttpException {
 
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			HttpUriRequest httpGet = new HttpGet(this.repoManagementServerApiURL + "/projects?simple=true&active=true&membership=true");
-			httpGet.setHeader("PRIVATE-TOKEN", this.repoManagementServerToken);
+			HttpGet request = new HttpGet(this.repoManagementServerApiURL + "/projects?simple=true&active=true&membership=true");
+			request.setHeader(getRequestTokenHeader());
 
-			HttpResponse response = httpClient.execute(httpGet);
+			HttpResponse response = httpClient.execute(request);
 			if (response.getStatusLine().getStatusCode() >= 300) {
 				throw new HttpException("Failed to load repositories");
 			}
@@ -104,6 +108,10 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	private record GitLabApiRepository(int id, String name, String path, String ssh_url_to_repo,
 									   String http_url_to_repo,
 									   String web_url) {
+	}
+
+	private BasicHeader getRequestTokenHeader() {
+		return new BasicHeader("PRIVATE-TOKEN", this.repoManagementServerToken);
 	}
 
 	@Override
@@ -180,6 +188,11 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	@Override
 	public void cloneRepositoryShallow(String remoteURI, File savePath) throws RuntimeException {
 		CloneCommand clone = prepareCloneCommand(remoteURI, savePath).setDepth(1);
+		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
+			clone.setCredentialsProvider(
+					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
+		}
+
 		try (Git result = clone.call()) {
 		}
 		catch (JGitInternalException e) {
@@ -200,5 +213,149 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			clone.setDirectory(savePath);
 		}
 		return clone;
+	}
+
+	@Override
+	public int getRepositoryId(String repoName, String httpUrl) throws HttpException {
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpGet request = new HttpGet(this.repoManagementServerApiURL + "/projects?&active=true&membership=true&search=" + repoName);
+			request.setHeader(getRequestTokenHeader());
+
+			HttpResponse response = httpClient.execute(request);
+			if (response.getStatusLine().getStatusCode() >= 300) {
+				throw new HttpException("Failed to find repository");
+			}
+
+			String jsonString = EntityUtils.toString(response.getEntity());
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<GitLabApiRepository> data = objectMapper.readValue(jsonString, new TypeReference<>() {
+			});
+			String folderUrl = httpUrl.replaceFirst("//(.*@)", "//");
+
+			return data.stream()
+					.filter(repo -> repo.http_url_to_repo.equalsIgnoreCase(folderUrl))
+					.map(repo -> repo.id)
+					.findFirst()
+					.orElseThrow();
+		}
+		catch (Exception e) {
+			throw new HttpException(e.getMessage());
+		}
+	}
+
+	@Override
+	public List<MergeRequest> listMergeRequests(int repositoryId, @Nullable String sourceBranch) throws HttpException {
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			String branchFlag = "";
+			if (sourceBranch != null && !sourceBranch.isBlank()) branchFlag = "?source_branch=" + sourceBranch;
+			HttpGet request = new HttpGet(
+					this.repoManagementServerApiURL + "/projects/" + repositoryId + "/merge_requests" + branchFlag
+			);
+			request.setHeader(getRequestTokenHeader());
+
+			HttpResponse response = httpClient.execute(request);
+			if (response.getStatusLine().getStatusCode() >= 300) {
+				throw new HttpException("Failed to find merge requests");
+			}
+			String jsonString = EntityUtils.toString(response.getEntity());
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<GitLabApiMergeRequest> data = objectMapper.readValue(jsonString, new TypeReference<>() {
+			});
+			return data.stream()
+					.map(mr ->
+							new MergeRequest(
+									mr.iid, mr.title, mr.source_branch, mr.target_branch,
+									MergeRequestState.valueOf(mr.state.toUpperCase()),
+									MergeRequestStatus.valueOf(mr.merge_status.toUpperCase()),
+									mr.web_url
+							))
+					.toList();
+		}
+		catch (Exception e) {
+			throw new HttpException(e.getMessage());
+		}
+	}
+
+	@Override
+	public List<MergeRequest> listMergeRequests(int repositoryId) throws HttpException {
+		return this.listMergeRequests(repositoryId, null);
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public record GitLabApiMergeRequest(int id, int iid, String title, String state,
+										String target_branch, String source_branch,
+										String merge_status, String detailed_merge_status,
+										String merge_error, String web_url) {
+	}
+
+	@Override
+	public MergeRequest createMergeRequest(int repositoryId, String sourceBranch, String targetBranch) throws RuntimeException, HttpException {
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpPost httpPost = new HttpPost(
+					this.repoManagementServerApiURL + "/projects/" + repositoryId + "/merge_requests"
+			);
+			httpPost.setHeader(getRequestTokenHeader());
+
+			JsonObject requestDto = new JsonObject();
+			requestDto.addProperty("source_branch", sourceBranch);
+			requestDto.addProperty("target_branch", targetBranch);
+			requestDto.addProperty("squash", true);
+			requestDto.addProperty("title", String.format("Merge Request from %s to %s", sourceBranch, targetBranch));
+			requestDto.addProperty("description", "This is an automatic merge request from " + sourceBranch + " to " + targetBranch + ".");
+			httpPost.setEntity(new StringEntity(requestDto.toString(), ContentType.APPLICATION_JSON));
+
+			HttpResponse response = httpClient.execute(httpPost);
+			if (response.getStatusLine().getStatusCode() >= 300) {
+				throw new HttpException("Failed to create merge request");
+			}
+			String jsonResponseString = EntityUtils.toString(response.getEntity());
+			ObjectMapper objectMapper = new ObjectMapper();
+			GitLabApiMergeRequest responseDto = objectMapper.readValue(jsonResponseString, new TypeReference<>() {
+			});
+			return new MergeRequest(
+					responseDto.iid, responseDto.title,
+					responseDto.source_branch, responseDto.target_branch,
+					MergeRequestState.valueOf(responseDto.state.toUpperCase()),
+					MergeRequestStatus.valueOf(responseDto.merge_status.toUpperCase()),
+					responseDto.web_url);
+		}
+		catch (Exception e) {
+			throw new HttpException(e.getMessage());
+		}
+	}
+
+	@Override
+	public MergeRequest mergeMergeRequest(int repositoryId, int mergeRequestIid) throws RuntimeException, HttpException {
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpPut request = new HttpPut(
+					this.repoManagementServerApiURL + "/projects/" + repositoryId + "/merge_requests/" + mergeRequestIid + "/merge"
+			);
+			request.setHeader(getRequestTokenHeader());
+
+			JsonObject dto = new JsonObject();
+			dto.addProperty("auto_merge", true);
+			// TODO could be changed to true if everything works as expected
+			dto.addProperty("should_remove_source_branch", false);
+			request.setEntity(new StringEntity(dto.toString(), ContentType.APPLICATION_JSON));
+
+			HttpResponse response = httpClient.execute(request);
+			if (response.getStatusLine().getStatusCode() >= 300) {
+				throw new HttpException("Failed to merge branch");
+			}
+			String jsonString = EntityUtils.toString(response.getEntity());
+			ObjectMapper objectMapper = new ObjectMapper();
+			GitLabApiMergeRequest data = objectMapper.readValue(jsonString, new TypeReference<>() {
+			});
+
+			return new MergeRequest(
+					data.iid, data.title,
+					data.source_branch, data.target_branch,
+					MergeRequestState.valueOf(data.state.toUpperCase()),
+					MergeRequestStatus.valueOf(data.merge_status.toUpperCase()),
+					data.web_url);
+		}
+		catch (Exception e) {
+			throw new HttpException(e.getMessage());
+		}
 	}
 }
