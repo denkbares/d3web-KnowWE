@@ -300,7 +300,9 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			requestDto.addProperty("source_branch", sourceBranch);
 			requestDto.addProperty("target_branch", targetBranch);
 			requestDto.addProperty("squash", true);
-			requestDto.addProperty("title", String.format("Merge Request from %s to %s", sourceBranch, targetBranch));
+			String prefix = "";
+			if (sourceBranch.startsWith("Task")) prefix = String.format("[%s] ", sourceBranch);
+			requestDto.addProperty("title", String.format(prefix + "Merge Request from %s to %s", sourceBranch, targetBranch));
 			requestDto.addProperty("description", "This is an automatic merge request from " + sourceBranch + " to " + targetBranch + ".");
 			httpPost.setEntity(new StringEntity(requestDto.toString(), ContentType.APPLICATION_JSON));
 
