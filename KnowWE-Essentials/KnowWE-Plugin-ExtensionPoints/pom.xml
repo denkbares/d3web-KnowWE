@@ -24,7 +24,7 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2025.5-SNAPSHOT</version>
+		<version>2025.6-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
