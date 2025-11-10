@@ -299,7 +299,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			JsonObject requestDto = new JsonObject();
 			requestDto.addProperty("source_branch", sourceBranch);
 			requestDto.addProperty("target_branch", targetBranch);
-			requestDto.addProperty("squash", true);
+			requestDto.addProperty("squash", false);
 			String prefix = "";
 			if (sourceBranch.startsWith("Task")) prefix = String.format("[%s] ", sourceBranch);
 			requestDto.addProperty("title", String.format(prefix + "Merge Request from %s to %s", sourceBranch, targetBranch));
