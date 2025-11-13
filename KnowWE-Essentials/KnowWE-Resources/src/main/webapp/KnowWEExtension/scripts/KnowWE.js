@@ -849,6 +849,21 @@ const _KU = KNOWWE.core.util;
       if (window.onbeforeunload) {
         message = window.onbeforeunload();
       }
+      if (!message) {
+        // also test beforeunload-handler
+        // Create a synthetic beforeunload event (cancelable)
+        const evt = new Event('beforeunload', { cancelable: true });
+        // noinspection JSDeprecatedSymbols
+        let orgReturnValue = evt.returnValue;
+
+        // Dispatch it — this triggers all registered listeners
+        window.dispatchEvent(evt);
+
+        // Check if any listener set preventDefault or returnValue
+        // noinspection JSDeprecatedSymbols
+        let blocked = evt.defaultPrevented || (evt.returnValue !== orgReturnValue);
+        message = blocked ? 'onload blocked' : null;
+      }
       // we only update if the onbeforeunload function does not return a message... if it would return a
       // message, we can assume that there is unsaved work and we should not refresh...
       if (!message) {
