@@ -26,7 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -166,7 +166,7 @@ public class GetInfoObjects extends AbstractAction {
 			Class<?> termObjectClass = section.get().getTermObjectClass(definitionCompiler, section);
 			// append if TerminologyObject
 			if (section.get() instanceof D3webTermDefinition
-					&& (Solution.class.isAssignableFrom(termObjectClass)
+				&& (Solution.class.isAssignableFrom(termObjectClass)
 					|| QContainer.class.isAssignableFrom(termObjectClass)
 					|| Question.class.isAssignableFrom(termObjectClass))) {
 				Section<D3webTermDefinition> d3webDefinition = Sections.cast(section, D3webTermDefinition.class);

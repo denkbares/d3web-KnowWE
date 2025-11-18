@@ -4,6 +4,7 @@
 
 package de.knowwe.uitest;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -101,7 +102,7 @@ public class HaddockTemplate implements WikiTemplate {
 	@Override
 	public void login(WebDriver driver, UITestUtils.UseCase use, String username, String password) {
 		List<WebElement> elements = null;
-		WebDriverWait wait = new WebDriverWait(driver, 20);
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 		if (use == UITestUtils.UseCase.LOGIN_PAGE) {
 			elements = driver.findElements(By.id("section-login"));
 		}

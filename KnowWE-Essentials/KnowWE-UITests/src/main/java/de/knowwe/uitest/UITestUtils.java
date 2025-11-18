@@ -22,6 +22,7 @@ package de.knowwe.uitest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -114,7 +115,7 @@ public class UITestUtils {
 	}
 
 	public static void awaitStatusChange(final WebDriver driver, final String status) {
-		new WebDriverWait(driver, 10).until(ExpectedConditions.not(ExpectedConditions.attributeToBe(By.cssSelector("#knowWEInfoStatus"), "value", status)));
+		new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.not(ExpectedConditions.attributeToBe(By.cssSelector("#knowWEInfoStatus"), "value", status)));
 	}
 
 	public static String getCurrentStatus(final WebDriver driver) {
@@ -160,12 +161,12 @@ public class UITestUtils {
 		try {
 			final List<WebElement> elements = driver.findElements(by);
 			if (!elements.isEmpty()) {
-				new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(elements.get(0)));
+				new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.stalenessOf(elements.get(0)));
 			}
 		}
 		catch (final TimeoutException ignore) {
 		}
-		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
+		new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
 	public static RemoteWebDriver setUp(final Browser browser, final Platform os, final WikiTemplate template, final String articleName, final TestMode testMode, final String knowWEUrl, final boolean login, final Function<String, String> urlConstructor) throws IOException {
@@ -196,7 +197,11 @@ public class UITestUtils {
 			if (browser == Browser.chrome) {
 				final ChromeOptions localChromeOptions = new ChromeOptions();
 				final boolean headless = Boolean.getBoolean("knowwe.chrome.headless");
-				localChromeOptions.setHeadless(headless);
+				// Selenium 4: ChromeOptions no longer has setHeadless(boolean). Use argument flags instead.
+				if (headless) {
+					// Prefer the new headless mode when available; falls back gracefully on older Chromes
+					localChromeOptions.addArguments("--headless=new");
+				}
 				driver = new ChromeDriver(localChromeOptions);
 			}
 			else //noinspection ConstantConditions
@@ -279,7 +284,7 @@ public class UITestUtils {
 	private static boolean pageExists(final WikiTemplate template, final WebDriver driver) {
 		if (template instanceof HaddockTemplate) {
 			try {
-				new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("a.createpage")));
+				new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("a.createpage")));
 			}
 			catch (final Exception e) {
 				// Element not present
@@ -288,7 +293,7 @@ public class UITestUtils {
 		}
 		else {
 			try {
-				new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.information a")));
+				new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.information a")));
 			}
 			catch (final Exception e) {
 				// Element not present
@@ -317,7 +322,7 @@ public class UITestUtils {
 
 	public static void enterArticleText(final String newText, final WebDriver driver, final WikiTemplate template) {
 		final String areaSelector = template == HaddockTemplate.getInstance() ? ".editor.form-control" : "#editorarea";
-		final List<WebElement> editorAreas = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By
+		final List<WebElement> editorAreas = new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By
 				.cssSelector(areaSelector)));
 		if (driver instanceof JavascriptExecutor) {
 			// hacky but fast/instant!

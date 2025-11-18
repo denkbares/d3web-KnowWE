@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,6 +244,7 @@ public class RenderResult {
 		return this;
 	}
 
+	@SuppressWarnings("EqualsOnSuspiciousObject")
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RenderResult) {
@@ -342,7 +342,7 @@ public class RenderResult {
 		for (int i = 0; i < HTML.length; i++) {
 			// somehow this is way faster for large strings than
 			// StringUtils.replaceEach(String, String[], String[]).
-			html = StringUtils.replace(html, HTML[i], maskedHtml[i]);
+			html = org.apache.commons.lang3.Strings.CS.replace(html, HTML[i], maskedHtml[i]);
 		}
 		return html;
 	}
@@ -405,7 +405,7 @@ public class RenderResult {
 		for (int i = 0; i < maskedHtml.length; i++) {
 			// somehow this is way faster for large strings than
 			// StringUtils.replaceEach(String, String[], String[]).
-			string = StringUtils.replace(string, maskedHtml[i], HTML[i]);
+			string = org.apache.commons.lang3.Strings.CS.replace(string, maskedHtml[i], HTML[i]);
 		}
 		return string;
 	}
@@ -467,8 +467,8 @@ public class RenderResult {
 
 	private static String getAttribute(boolean encode, String attributeName, String attribute) {
 		return " " + attributeName + "=\""
-				+ (encode ? Strings.encodeHtml(attribute) : attribute)
-				+ "\"";
+			   + (encode ? Strings.encodeHtml(attribute) : attribute)
+			   + "\"";
 	}
 
 	/**

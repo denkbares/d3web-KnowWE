@@ -23,7 +23,7 @@ package de.knowwe.kdom.renderer;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;

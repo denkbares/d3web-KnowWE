@@ -22,6 +22,7 @@ package de.knowwe.uitest;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -201,7 +202,7 @@ public abstract class KnowWEUITest {
 
 	@NotNull
 	protected WebDriverWait await(final int timeOutInSeconds) {
-		return new WebDriverWait(getDriver(), timeOutInSeconds);
+		return new WebDriverWait(getDriver(), java.time.Duration.ofSeconds(timeOutInSeconds));
 	}
 
 	protected WebElement waitUntilVisible(final By selector) {

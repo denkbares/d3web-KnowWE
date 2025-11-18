@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
@@ -85,7 +85,7 @@ public abstract class AbstractPageProviderStressTest<T extends PageProvider> {
 		assertTrue(this.wikiDir.getParentFile().exists());
 		System.out.println(this.wikiDir.getAbsolutePath());
 		final Properties properties = new Properties();
-		properties.setProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
+		properties.setProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH, "maintenance");
 
 		initProperties(properties);
 

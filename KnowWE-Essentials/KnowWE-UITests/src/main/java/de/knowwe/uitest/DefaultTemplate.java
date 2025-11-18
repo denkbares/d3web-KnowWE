@@ -14,6 +14,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static java.time.Duration.ofSeconds;
+
 /**
  * Implementation for KnowWE default template.
  *
@@ -38,7 +40,7 @@ public class DefaultTemplate implements WikiTemplate {
 	@Override
 	public void pressSidebarButton(WebDriver driver) {
 		String idSidebarButton = "favorites-toggle-button";
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id(idSidebarButton)));
+  new WebDriverWait(driver, ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id(idSidebarButton)));
 		driver.findElement(By.id(idSidebarButton)).click();
 		try {
 			Thread.sleep(500); // Wait for animation
@@ -109,7 +111,7 @@ public class DefaultTemplate implements WikiTemplate {
 	@Override
 	public void login(WebDriver driver, UITestUtils.UseCase use, String username, String password) {
 		List<WebElement> elements = null;
-		WebDriverWait wait = new WebDriverWait(driver, 20);
+  WebDriverWait wait = new WebDriverWait(driver, ofSeconds(20));
 		if (use == UITestUtils.UseCase.LOGIN_PAGE) {
 			String idLoginElement = "logincontent";
 			elements = driver.findElements(By.id(idLoginElement));

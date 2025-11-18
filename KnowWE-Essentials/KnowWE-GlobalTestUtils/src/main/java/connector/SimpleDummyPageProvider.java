@@ -36,7 +36,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,9 +278,9 @@ public class SimpleDummyPageProvider implements DummyPageProvider{
 	}
 
 	@Override
-	public String getArticle(String title, int version) {
-		throw new NotImplementedException("This DummyPageProvider does not support versions.");
-	}
+ public String getArticle(String title, int version) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
 	@Override
 	public Map<String, WikiAttachment> getAllAttachments() {
@@ -316,9 +315,9 @@ public class SimpleDummyPageProvider implements DummyPageProvider{
 	}
 
 	@Override
-	public List<WikiPageInfo> getArticleHistory(String title) {
-		throw new NotImplementedException("Does not support version history");
-	}
+ public List<WikiPageInfo> getArticleHistory(String title) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
 	@Override
 	public String getChangeNote(String title, int version) {

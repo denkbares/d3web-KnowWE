@@ -20,7 +20,7 @@ package de.knowwe.testcases.table;
 
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.rules.RuleType;

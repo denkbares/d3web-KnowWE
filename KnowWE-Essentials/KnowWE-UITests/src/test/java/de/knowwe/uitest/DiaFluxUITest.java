@@ -615,11 +615,11 @@ public class DiaFluxUITest extends KnowWEUITest {
 		new Actions(getDriver()).moveToElement(toolMenu).moveToElement(editTool).click(editTool).perform();
 	}
 
-	private void createNextFlow() {
-		new WebDriverWait(getDriver(), 5)
-				.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Click here to create one.")))
-				.click();
-	}
+ private void createNextFlow() {
+        new WebDriverWait(getDriver(), java.time.Duration.ofSeconds(5))
+                .until(ExpectedConditions.presenceOfElementLocated(By.linkText("Click here to create one.")))
+                .click();
+    }
 
 	private void saveAndSwitchBack(String winHandleBefore) {
 		getDriver().findElement(By.id("saveClose")).click();
@@ -714,12 +714,12 @@ public class DiaFluxUITest extends KnowWEUITest {
 		getDriver().findElement(By.id("properties.editName")).sendKeys(flowName);
 	}
 
-	protected void switchToEditor(String articleHandle) throws InterruptedException {
-		new WebDriverWait(getDriver(), 10).until((WebDriver driver) -> driver.getWindowHandles().size() == 2);
-		Set<String> windowHandles = new HashSet<>(getDriver().getWindowHandles());
-		windowHandles.remove(articleHandle);
-		getDriver().switchTo().window(windowHandles.iterator().next());
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("start_prototype")));
-	}
+ protected void switchToEditor(String articleHandle) throws InterruptedException {
+        new WebDriverWait(getDriver(), java.time.Duration.ofSeconds(10)).until((WebDriver driver) -> driver.getWindowHandles().size() == 2);
+        Set<String> windowHandles = new HashSet<>(getDriver().getWindowHandles());
+        windowHandles.remove(articleHandle);
+        getDriver().switchTo().window(windowHandles.iterator().next());
+        new WebDriverWait(getDriver(), java.time.Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id("start_prototype")));
+    }
 
 }

@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,13 +190,11 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 		return currentIterator.next();
 	}
 
-
 	public void shutDown() {
 		if (this.threadPool != null) {
 			this.threadPool.shutdown();
 		}
 	}
-
 
 	private void setCurrentIterator() {
 		currentIterator = new ArrayList<>(compileMap.get(currentPriority)).iterator();
@@ -259,8 +257,8 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while compiling.\n" +
-							"Script: " + script + ", @priority " + currentPriority.intValue() + ":\n"
-							+ e.getClass().getSimpleName() + ": " + e.getMessage();
+								 "Script: " + script + ", @priority " + currentPriority.intValue() + ":\n"
+								 + e.getClass().getSimpleName() + ": " + e.getMessage();
 					Messages.storeMessage(compiler, section, ParallelScriptCompiler.class, Messages.error(msg));
 					LOGGER.error(msg, e);
 				}
@@ -298,7 +296,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 					}
 					catch (Exception e) {
 						String msg = "Unexpected internal exception while destroying with script "
-								+ pair.getB();
+									 + pair.getB();
 						LOGGER.error(msg, e);
 					}
 				});

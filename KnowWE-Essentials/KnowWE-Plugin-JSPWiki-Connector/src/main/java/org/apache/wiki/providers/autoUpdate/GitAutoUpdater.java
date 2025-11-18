@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.time.StopWatch;
+import com.denkbares.utils.Stopwatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
@@ -136,8 +136,8 @@ public class GitAutoUpdater {
 		//wait until KnowWe compiler is done
 		Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
 
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+  Stopwatch stopWatch = new Stopwatch();
+  stopWatch.start();
 
 		articleManager.open();
 		fileProvider.pushLock();
@@ -210,8 +210,8 @@ public class GitAutoUpdater {
 				//lets hope this sticks!
 				EventManager.getInstance().fireEvent(new FullParseEvent(article,null));
 			}
-			stopWatch.stop();
-			LOGGER.info("Update of wiki lasts " + stopWatch);
+   stopWatch.pause();
+   LOGGER.info("Update of wiki lasts " + stopWatch);
 		}
 	}
 

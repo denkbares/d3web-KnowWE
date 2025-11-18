@@ -25,8 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -616,7 +615,7 @@ public class CIRenderer {
 					css = icon.getCssClass() + " knowwe-error";
 					text = "Build has errors";
 				}
-				default -> throw new NotImplementedException("unexpected build status: " + resultType);
+				default -> throw new UnsupportedOperationException("unexpected build status: " + resultType);
 			}
 		}
 		result.appendHtml("<i class='tooltipster fa ").append(css).append("'")

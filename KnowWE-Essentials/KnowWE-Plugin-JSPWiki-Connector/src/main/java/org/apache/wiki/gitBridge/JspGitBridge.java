@@ -13,7 +13,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
@@ -483,15 +482,13 @@ public class JspGitBridge {
 
 	private void doBinaryGC(File pageDir, boolean prune) {
 		try {
-			StopWatch sw = new StopWatch();
-			sw.start();
+			Stopwatch sw = new Stopwatch();
 			LOGGER.info("binary gc start");
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.inheritIO().command("git", "gc", prune ? "--prune=now" : "").directory(pageDir);
 			Process git_gc = pb.start();
 			git_gc.waitFor(2, TimeUnit.MINUTES);
-			sw.stop();
-			LOGGER.info("binary gc took " + sw.toString());
+			sw.log(LOGGER, "binary gc");
 		}
 		catch (InterruptedException e) {
 			LOGGER.warn("External git process didn't end in 2 minutes, therefore cancel it");
@@ -502,8 +499,7 @@ public class JspGitBridge {
 	}
 
 	private void doGC(final Repository repository, final boolean aggressive, boolean prune) {
-		final StopWatch stopwatch = new StopWatch();
-		stopwatch.start();
+		final Stopwatch stopwatch = new Stopwatch();
 		final Git git = new Git(repository);
 		try {
 			LOGGER.info("Beginn Git gc");
@@ -520,14 +516,13 @@ public class JspGitBridge {
 		catch (final GitAPIException e) {
 			LOGGER.warn("Git gc not successful: " + e.getMessage());
 		}
-		stopwatch.stop();
-		LOGGER.info("gc took " + stopwatch);
+		stopwatch.log(LOGGER, "gc");
 	}
 
 	private void verifyForWindowsHack() {
 		String os = System.getProperty("os.name").toLowerCase();
 
-		if (os.startsWith("windows") || os.equals("nt")) {
+		if (os.startsWith("windows") || "nt".equals(os)) {
 			windowsGitHackNeeded = true;
 		}
 		if (windowsGitHackNeeded) {

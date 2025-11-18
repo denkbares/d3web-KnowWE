@@ -35,7 +35,7 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
@@ -137,7 +137,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				File pageDir = null;
 				while ((line = in.readLine()) != null) {
 					if (!line.contains("#")
-							&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
+						&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
 						line = line.trim();
 						line = line.substring(line.lastIndexOf(" ") + 1);
 						pageDir = new File(line);
@@ -148,7 +148,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 				if (pageDir != null && pageDir.exists()) {
 					File coreDir = new File(KnowWEUtils.getApplicationRootPath()
-							+ "/WEB-INF/resources/core-pages");
+											+ "/WEB-INF/resources/core-pages");
 					File[] files = coreDir.listFiles();
 					if (files != null) {
 						for (File corePage : files) {
@@ -251,8 +251,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
 		}
 		if (context.getHttpRequest() != null
-				&& !isWorkflow(wikiContext)
-				&& context.getHttpRequest().getParameter("action") != null) {
+			&& !isWorkflow(wikiContext)
+			&& context.getHttpRequest().getParameter("action") != null) {
 			// we don't want to trigger our KnowWE compilation and render pipeline,
 			// if we are just executing some action (ajax from client)
 			return content;
@@ -292,7 +292,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				Article supportArticle = Environment.getInstance()
 						.getArticle(Environment.DEFAULT_WEB, title);
 				if (supportArticle != null
-						&& supportArticle.getRootSection().getText().equals(
+					&& supportArticle.getRootSection().getText().equals(
 						content)) {
 					RenderResult renderResult = new RenderResult(userContext);
 					render(userContext, supportArticle, renderResult);
@@ -324,7 +324,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		// we suggest a link to correct article name
 		if (existingArticle != null && !existingArticle.getTitle().equals(title)) {
 			return "The page \"" + title + "\" does not exist, did you mean \"["
-					+ existingArticle.getTitle() + "]\"?";
+				   + existingArticle.getTitle() + "]\"?";
 		}
 
 		try {
@@ -346,7 +346,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				long start = System.currentTimeMillis();
 				render(userContext, article, renderResult);
 				LOGGER.info("Rendered article '" + article.getTitle() + "' in "
-						+ (System.currentTimeMillis() - start) + "ms");
+							+ (System.currentTimeMillis() - start) + "ms");
 			}
 			stringRaw = renderResult.toStringRaw();
 			userContext.getRequest().setAttribute("renderresult" + title, stringRaw);
@@ -377,8 +377,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			if (!compilerManager.awaitTermination(300)) {
 				HtmlElement compileWarning = new Span().clazz("warning").attributes("id", "compile-warning");
 				compileWarning.children(new Span("Compilation still ongoing, please wait... " +
-						"You are currently viewing a preview of the page, compilation messages and parts of the " +
-						"content might still be missing!"));
+												 "You are currently viewing a preview of the page, compilation messages and parts of the " +
+												 "content might still be missing!"));
 				String commitMessage = compilerManager.getCompileMessage();
 				if (Strings.isNotBlank(commitMessage)) {
 					compileWarning.children(new Span("\n" + commitMessage));
@@ -496,12 +496,12 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		String message;
 		if (e instanceof UpdateNotAllowedException) {
 			message = "Your request tries to change the content of the current article. "
-					+ "You are not authorized to do that.";
+					  + "You are not authorized to do that.";
 		}
 		else {
 			message = "An exception occurred while compiling and rendering this article, "
-					+ "try going back to the last working version of the article.\n\n"
-					+ ExceptionUtils.getStackTrace(e);
+					  + "try going back to the last working version of the article.\n\n"
+					  + ExceptionUtils.getStackTrace(e);
 		}
 		renderResult.appendHtmlElement("div", message, "style",
 				"white-space: pre; overflow: hidden");
@@ -759,11 +759,11 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 					// obviously the plugin is not available in current
 					// installation
 					LOGGER.error("Found dependency to a css/js resource (" + resource +
-							") where the corresponding plugin is not available. " +
-							"This can also happen, if the plugin.xml has the wrong plugin id " +
-							"(id other than the name of module it is in)." +
-							"This can also happen if your js-file reference in the extension as script fails the naming convention."
-							);
+								 ") where the corresponding plugin is not available. " +
+								 "This can also happen, if the plugin.xml has the wrong plugin id " +
+								 "(id other than the name of module it is in)." +
+								 "This can also happen if your js-file reference in the extension as script fails the naming convention."
+					);
 					continue;
 				}
 			}
@@ -808,7 +808,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 	public static boolean isRenderingPreview(UserContext user) {
 		return user != null
-				&& user.getRequest() != null
-				&& user.isRenderingPreview();
+			   && user.getRequest() != null
+			   && user.isRenderingPreview();
 	}
 }

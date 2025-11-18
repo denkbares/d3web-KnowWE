@@ -22,7 +22,6 @@ package de.knowwe.rdf2go;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
@@ -157,7 +156,7 @@ class SparqlCallable implements Callable<Object> {
 			case CONSTRUCT -> (preparedConstructQuery == null)
 					? executeConstruct(timeOutSeconds, new Stopwatch())
 					: executeConstruct(timeOutSeconds, new Stopwatch(), preparedConstructQuery);
-			default -> throw new NotImplementedException("query type is not supported yet: " + type);
+			default -> throw new UnsupportedOperationException("query type is not supported yet: " + type);
 		};
 	}
 

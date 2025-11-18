@@ -20,6 +20,7 @@
 package de.knowwe.uitest;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class PanelUITest extends KnowWEUITest {
 		super(browser, os, template);
 	}
 
-	@Parameterized.Parameters(name="{index}: UITest-Panel-{2}-{0}-{1})")
+	@Parameterized.Parameters(name = "{index}: UITest-Panel-{2}-{0}-{1})")
 	public static Collection<Object[]> parameters() {
 		return UITestUtils.getTestParametersChromeAndFireFox();
 	}
@@ -163,11 +164,10 @@ public class PanelUITest extends KnowWEUITest {
 
 		JavascriptExecutor jse = (JavascriptExecutor) getDriver();
 		Long halfDocumentHeight = ((Long) jse.executeScript("return document.body.scrollHeight;")) / 2;
-		scrollTo(0 , Math.toIntExact(halfDocumentHeight));
+		scrollTo(0, Math.toIntExact(halfDocumentHeight));
 
 		assertEquals("Sidebar is supposed to be fixed after scrolling half page", getSidebar().getCssValue("position"), "fixed");
 		assertEquals("RightPanel is supposed to be fixed after scrolling half page", getSidebar().getCssValue("position"), "fixed");
-
 
 		int topSidebar = Integer.parseInt(getSidebar().getCssValue("top").replace("px", ""));
 		int topRightPanel = Integer.parseInt(getRightPanel().getCssValue("top").replace("px", ""));
@@ -211,12 +211,11 @@ public class PanelUITest extends KnowWEUITest {
 		int rightPanelPosY = getRightPanel().getLocation().getY();
 		assertTrue("Sidebar should not overlay with header after scrolling to top", (sidebarPosY + 5) >= getHeaderBottom());
 		assertTrue("RightPanel should not overlay with header after scrolling to top", rightPanelPosY >= getHeaderBottom());
-
 	}
 
 	private void pressRightPanelButton() throws InterruptedException {
 		String idRightPanel = "rightPanel-toggle-button";
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id(idRightPanel)));
+		new WebDriverWait(getDriver(), Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.id(idRightPanel)));
 		getDriver().findElement(By.id(idRightPanel)).click();
 		Thread.sleep(500); // Wait for Animation
 	}
@@ -229,9 +228,11 @@ public class PanelUITest extends KnowWEUITest {
 		int innerWidth = width - (paddingLeft + paddingRight);
 		if (x == 0 && width >= 250) {
 			return true;
-		} else if (x <= 0 && innerWidth <= Math.abs(x)) {
+		}
+		else if (x <= 0 && innerWidth <= Math.abs(x)) {
 			return false;
-		} else {
+		}
+		else {
 			fail("Sidebar is neither completely visible nor completely invisible\nPosX = " + x + "| width = " + width);
 			return false;
 		}
@@ -241,7 +242,8 @@ public class PanelUITest extends KnowWEUITest {
 		WebElement rightPanel;
 		try {
 			rightPanel = getRightPanel();
-		} catch (NoSuchElementException e) {
+		}
+		catch (NoSuchElementException e) {
 			return false;
 		}
 		int width = rightPanel.getSize().getWidth();
@@ -251,9 +253,11 @@ public class PanelUITest extends KnowWEUITest {
 
 		if (width > 0 || xEnd == windowWidth) {
 			return true;
-		} else if (xStart >= windowWidth || width <= 0) {
+		}
+		else if (xStart >= windowWidth || width <= 0) {
 			return false;
-		} else {
+		}
+		else {
 			fail("Right Panel is not shown correctly");
 			return false;
 		}
@@ -261,7 +265,7 @@ public class PanelUITest extends KnowWEUITest {
 
 	private void addWatchDummy() throws InterruptedException {
 		getRightPanel().findElement(By.className("addwatch")).click();
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfNestedElementLocatedBy(getRightPanel(), By.tagName("textarea")));
+		new WebDriverWait(getDriver(), Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfNestedElementLocatedBy(getRightPanel(), By.tagName("textarea")));
 		getRightPanel().findElement(By.tagName("textarea")).sendKeys("Test");
 		getRightPanel().findElement(By.tagName("textarea")).sendKeys(Keys.ENTER);
 	}
@@ -276,10 +280,10 @@ public class PanelUITest extends KnowWEUITest {
 	private void scrollToBottom() {
 		JavascriptExecutor jse = (JavascriptExecutor) getDriver();
 		Long documentHeight = ((Long) jse.executeScript("return Math.max(" +
-				"document.body.scrollHeight, document.documentElement.scrollHeight," +
-				"document.body.offsetHeight, document.documentElement.offsetHeight," +
-				"document.body.clientHeight, document.documentElement.clientHeight" +
-				");"));
+														"document.body.scrollHeight, document.documentElement.scrollHeight," +
+														"document.body.offsetHeight, document.documentElement.offsetHeight," +
+														"document.body.clientHeight, document.documentElement.clientHeight" +
+														");"));
 		scrollTo(0, Math.toIntExact(documentHeight));
 	}
 
@@ -385,7 +389,6 @@ public class PanelUITest extends KnowWEUITest {
 		scrollToTop();
 		getDriver().manage().window().setSize(STANDARD_SIZE);
 		Thread.sleep(500);
-
 	}
 
 	@Test
@@ -409,10 +412,7 @@ public class PanelUITest extends KnowWEUITest {
 		pressRightPanelButton();
 		getDriver().manage().window().setSize(STANDARD_SIZE);
 		Thread.sleep(500);
-
 	}
-
-
 
 	@Test
 	public void testSidebarAndRightPanelOnMediumWindow() throws InterruptedException {
@@ -498,7 +498,7 @@ public class PanelUITest extends KnowWEUITest {
 		return getTemplate().getRightPanel(getDriver());
 	}
 
-	private void pressSidebarButton()  {
+	private void pressSidebarButton() {
 		getTemplate().pressSidebarButton(getDriver());
 	}
 
@@ -529,5 +529,4 @@ public class PanelUITest extends KnowWEUITest {
 	private boolean isPageAlignedRightWithRightPanel() {
 		return getTemplate().isPageAlignedRightWithRightPanel(getDriver());
 	}
-
 }
