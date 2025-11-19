@@ -86,7 +86,7 @@ public class ImageRenderer implements Renderer {
 		try {
 			WikiAttachment wikiAttachment = AttachmentType.getAttachment(attachmentSrc);
 			if (wikiAttachment == null) {
-				appendErrorMsg(result, "Wrong attachment definition in markup. Please reference each attachment with @annotation.");
+				appendErrorMsg(result, "Referenced image '" + attachmentSrc.getText() + "' not found");
 				return;
 			}
 			String path = KnowWEUtils.getURLLink(Objects.requireNonNull(wikiAttachment));
