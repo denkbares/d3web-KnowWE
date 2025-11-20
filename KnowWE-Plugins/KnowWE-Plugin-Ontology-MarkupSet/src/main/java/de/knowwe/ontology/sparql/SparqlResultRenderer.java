@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,14 +17,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -34,11 +38,6 @@ import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.semanticcore.utils.TableRowComparator;
 import com.denkbares.semanticcore.utils.ValueComparator;
 import com.denkbares.strings.Strings;
-
-import org.json.JSONArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
@@ -68,6 +67,7 @@ public class SparqlResultRenderer {
 	private static final Collection<String> JSPWIKI_ESCAPE_TOKENS = KnowWEUtils.JSPWIKI_TOKENS.stream()
 			.filter(s -> !("[".equals(s) || "]".equals(s)))
 			.collect(Collectors.toList());
+	private static final Set<IRI> DATE_TYPE_URIS = Set.of(XSD.DATE, XSD.TIME, XSD.DATETIME, XSD.DATETIMESTAMP);
 
 	private static SparqlResultRenderer instance = null;
 
@@ -177,8 +177,8 @@ public class SparqlResultRenderer {
 		result.appendHtml("<div class='warning'>");
 		appendMessage(section, e, user, result);
 		result.appendHtml("<br/><a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
-				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
-				+ " class='tooltipster'>Try again...</a></div>");
+						  + "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
+						  + " class='tooltipster'>Try again...</a></div>");
 	}
 
 	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
@@ -348,6 +348,9 @@ public class SparqlResultRenderer {
 		for (String variable : variables) {
 			variablesJson.put(new JSONArray(List.of(variable, getColumnDisplayName(variable))));
 		}
+		IndexedResultTableModel table = IndexedResultTableModel.create(qrt);
+
+		Set<String> dateColumns = getDateColumns(table);
 
 		List<String> tableAttributes = new ArrayList<>();
 		tableAttributes.addAll(List.of("id", tableID));
@@ -370,6 +373,10 @@ public class SparqlResultRenderer {
 				attributes.add("class");
 				attributes.add("hide-filter");
 			}
+			if (dateColumns.contains(var)) {
+				attributes.add("column-type");
+				attributes.add("date");
+			}
 			renderResult.appendHtmlTag("th", attributes.toArray(new String[0]));
 			renderResult.append(getColumnDisplayName(var));
 			renderResult.appendHtml("</th>");
@@ -377,7 +384,7 @@ public class SparqlResultRenderer {
 		renderResult.appendHtml("</tr>");
 		renderResult.appendHtml("</thead>");
 		renderResult.appendHtml("<tbody>");
-		IndexedResultTableModel table = IndexedResultTableModel.create(qrt);
+
 		Iterator<TableRow> iterator;
 		if (isNavigation) {
 			if (opts.isSorting()) {
@@ -477,6 +484,32 @@ public class SparqlResultRenderer {
 		}
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
+	}
+
+	private static @NotNull Set<String> getDateColumns(IndexedResultTableModel table) {
+		Set<String> dateColumns = new HashSet<>();
+		for (String variable : table.getVariables()) {
+			if (isDateColumn(table, variable)) {
+				dateColumns.add(variable);
+			}
+		}
+		return dateColumns;
+	}
+
+	/** Checks a single column and exits early on first non-date value.
+	 *  Also requires at least one date-typed literal to avoid vacuous truth.
+	 */
+	private static boolean isDateColumn(IndexedResultTableModel table, String variable) {
+		boolean sawDateLiteral = false;
+		// Iterate rows and break as soon as the column cannot be a date column
+		for (var it = table.rows().iterator(); it.hasNext(); ) {
+			Value v = it.next().getValue(variable);
+			if (v == null) continue;
+			if (!(v instanceof Literal literal)) return false;
+			if (!DATE_TYPE_URIS.contains(literal.getDatatype())) return false;
+			sawDateLiteral = true; // saw at least one valid date literal
+		}
+		return sawDateLiteral;
 	}
 
 	@NotNull
@@ -617,7 +650,7 @@ public class SparqlResultRenderer {
 			String linkUrl = Strings.trim(matcher.group(2));
 			String linkLabel = matcher.group(1) == null ? linkUrl : Strings.trim(matcher.group(1));
 			boolean pageExists = user.getArticleManager() != null
-					&& user.getArticleManager().getArticle(matcher.group(2)) != null;
+								 && user.getArticleManager().getArticle(matcher.group(2)) != null;
 			boolean internal = matcher.group(3) == null;
 			if (internal && pageExists) {
 				linkUrl = KnowWEUtils.getURLLink(linkUrl);
@@ -646,8 +679,8 @@ public class SparqlResultRenderer {
 	@NotNull
 	private String generateReplacement(String erg, Matcher matcher, String linkLabel, String linkUrl) {
 		return erg.substring(0, matcher.start()) +
-				"<a class='external' href='" + linkUrl + "'>" + linkLabel + "</a>" +
-				erg.substring(matcher.end());
+			   "<a class='external' href='" + linkUrl + "'>" + linkLabel + "</a>" +
+			   erg.substring(matcher.end());
 	}
 
 	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderOptions.RenderMode mode) {

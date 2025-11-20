@@ -148,6 +148,10 @@ public class KnowWEUtils {
 				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
+		return insertEscapeIndices(text, escapeIndices);
+	}
+
+	private static @NotNull String insertEscapeIndices(String text, List<Pair<Integer, Integer>> escapeIndices) {
 		final StringBuilder builder = new StringBuilder(text);
 		int shift = 0;
 		for (final Pair<Integer, Integer> indices : escapeIndices) {
@@ -155,7 +159,7 @@ public class KnowWEUtils {
 			final int end = indices.getB();
 			builder.insert(indices.getA() + shift++, "~");
 			// also escape opening brackets after the first one, but before the closing one
-			// if they are not escaped, JSPWiki will also make links fore these accidental link subsection
+			// if they are not escaped, JSPWiki will also make links for these accidental link subsections
 			final char[] chars = new char[end - start - 1];
 			builder.getChars(start + shift + 1, end + shift, chars, 0);
 			for (int i = 0; i < chars.length; i++) {

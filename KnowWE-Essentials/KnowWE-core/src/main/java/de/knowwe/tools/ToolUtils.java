@@ -105,7 +105,7 @@ public class ToolUtils {
 		for (Tool t : tools) {
 			String category = t.getCategory();
 
-			if (category == null || category.equals("")) {
+			if (category == null || category.isEmpty()) {
 				if (!toolMap.containsKey(EMPTY_CATEGORY)) {
 					toolMap.put(EMPTY_CATEGORY, new HashMap<>());
 					toolMap.get(EMPTY_CATEGORY).put(EMPTY_CATEGORY, new LinkedList<>());
@@ -157,28 +157,20 @@ public class ToolUtils {
 	}
 
 	public static String getActionAttributeName(Tool tool) {
-		switch (tool.getActionType()) {
-			case HREF:
-				return "href";
-			case HREF_SCRIPT:
-				return "href";
-			case ONCLICK:
-				return "onclick";
-		}
-		throw new IllegalStateException("not implemented: " + tool.getActionType());
+		return switch (tool.getActionType()) {
+			case HREF -> "href";
+			case HREF_SCRIPT -> "href";
+			case ONCLICK -> "onclick";
+		};
 	}
 
 	public static String getActionAttributeValue(Tool tool) {
 		if (Strings.isBlank(tool.getAction())) return null;
-		switch (tool.getActionType()) {
-			case HREF:
-				return tool.getAction();
-			case HREF_SCRIPT:
-				return "javascript:" + tool.getAction() + ";_TM.hideToolsPopupMenu()";
-			case ONCLICK:
-				return tool.getAction() + ";_TM.hideToolsPopupMenu()";
-		}
-		throw new IllegalStateException("not implemented: " + tool.getActionType());
+		return switch (tool.getActionType()) {
+			case HREF -> tool.getAction();
+			case HREF_SCRIPT -> "javascript:" + tool.getAction() + ";_TM.hideToolsPopupMenu()";
+			case ONCLICK -> tool.getAction() + ";_TM.hideToolsPopupMenu()";
+		};
 	}
 
 	/**
@@ -319,8 +311,7 @@ public class ToolUtils {
 	 * @param settings the settings
 	 */
 	public static void initSettings(JSONObject settings) {
-		//noinspection unchecked
-		for (String key : (Set<String>) settings.keySet()) {
+		for (String key : settings.keySet()) {
 			//noinspection SwitchStatementWithTooFewBranches
 			switch (key) {
 				case "blocked":
@@ -346,9 +337,8 @@ public class ToolUtils {
 	private static <T> List<T> getList(JSONObject json, String key, Class<T> valueClass) {
 		Object value = json.opt(key);
 		if (value == null) return Collections.emptyList();
-		if (value instanceof JSONArray) {
+		if (value instanceof JSONArray array) {
 			List<T> result = new ArrayList<>();
-			JSONArray array = (JSONArray) value;
 			for (int i = 0; i < array.length(); i++) {
 				result.add(valueClass.cast(array.get(i)));
 			}

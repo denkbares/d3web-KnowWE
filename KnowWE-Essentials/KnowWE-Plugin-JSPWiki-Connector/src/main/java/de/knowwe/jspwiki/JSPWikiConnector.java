@@ -581,6 +581,10 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public int getVersion(String title) {
 		Page page = getPageManager().getPage(title);
+		if (page == null) {
+			LOGGER.warn("Trying to get version of page that does not exist: {}", title);
+			return 0;
+		}
 		return page.getVersion();
 	}
 
@@ -601,7 +605,7 @@ public class JSPWikiConnector implements WikiConnector {
 				}
 			}
 			catch (IOException e) {
-				LOGGER.warn("Could not read attachment content from: " + title);
+				LOGGER.warn("Could not read attachment content from: {}", title);
 			}
 		}
 		try {
