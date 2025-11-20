@@ -26,6 +26,8 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class ImportOntologyAnnotationType extends OntologyReference {
 
+	public static final String ANNOTATION_NAME = "importOntology"; // has to be equal with extension in plugin.xml!
+
 	private static final String KEY_BRIDGE = ImportOntologyAnnotationType.class.getName() + "#bridge";
 
 	public ImportOntologyAnnotationType() {
