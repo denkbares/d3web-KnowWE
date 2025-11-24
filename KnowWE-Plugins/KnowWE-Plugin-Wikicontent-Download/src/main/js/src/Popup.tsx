@@ -28,10 +28,18 @@ export function mountPopup(props: PopupProps) {
 
 export type PopupProps = {
     title: string;
-    message: React.ReactNode | string;
+    message: React.ReactNode | string
+    input?: InputProps;
     button?: ButtonProps;
     secondaryButtons?: ButtonProps[];
 };
+
+export type InputProps = {
+    label: string;
+    placeholder?: string;
+    value: string;
+    required?: boolean;
+}
 
 export type ButtonProps = {
     label: string;
@@ -39,7 +47,7 @@ export type ButtonProps = {
     type: "Primary" | "Danger" | "Secondary";
 }
 
-function Popup({title, message, button, secondaryButtons, unmount}: PopupProps & {unmount: () => void}) {
+function Popup({title, message, input, button, secondaryButtons, unmount}: PopupProps & {unmount: () => void}) {
     function convertTypeToClassName(type: ButtonProps["type"]) {
         if (type === "Primary") return "btn-default";
         if (type === "Danger") return "btn-danger";
@@ -57,7 +65,20 @@ function Popup({title, message, button, secondaryButtons, unmount}: PopupProps &
                 <h2>{title}</h2>
             </header>
 
-            <main>{message}</main>
+            <main>
+                <div>
+                    {message}
+                </div>
+                {input && <form>
+                    <div className={"input-group"}>
+                        <label>{input.label}</label>
+                        <input placeholder={input.placeholder}
+                               defaultValue={input.value}
+                               onChange={(e) => input.value = e.target.value}
+                               required={input.required} />
+                    </div>
+                </form>}
+            </main>
 
             <footer>
                 {button && <button className={"btn " + convertTypeToClassName(button.type)}

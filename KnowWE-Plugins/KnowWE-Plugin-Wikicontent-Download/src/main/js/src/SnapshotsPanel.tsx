@@ -2,7 +2,8 @@ import React, {ChangeEvent} from "react";
 import {createRoot} from "react-dom/client";
 import {createSnapshot, uploadSnapshot} from "./httpRequests.ts";
 import SnapshotsTable from "./SnapshotsTable.tsx";
-import {mountMessagePopUp} from "./utils.ts";
+import {mountMessagePopUp, wrapFormSubmission} from "./utils.ts";
+import {mountPopup} from "./Popup.tsx";
 
 export default function mountPanel(container: HTMLElement) {
     const root = createRoot(container);
@@ -16,7 +17,7 @@ function SnapshotsPanel() {
             {KNOWWE.core.util.isAdmin() === "true"
                 ? (
                     <div className={"buttons"}>
-                        <button className={"btn btn-default"} onClick={createSnapshot}>
+                        <button className={"btn btn-default"} onClick={createSnapshotPopup}>
                             Create Snapshot
                         </button>
                         <div className="upload-button">
@@ -35,6 +36,24 @@ function SnapshotsPanel() {
     );
 }
 
+async function createSnapshotPopup() {
+    const name = {
+        label: "Snapshot name",
+        value: "",
+        required: true,
+    };
+    mountPopup({
+        title: "Create",
+        message: <div>Specify a <b>name</b> for your snapshot:</div>,
+        input: name,
+        button: {
+            label: "Create Snapshot",
+            type: "Primary",
+            action: wrapFormSubmission(() => createSnapshot(name.value)),
+        },
+    });
+}
+
 async function handleUpload(event: ChangeEvent) {
     try {
         const input = event.target as HTMLInputElement;
@@ -50,5 +69,4 @@ async function handleUpload(event: ChangeEvent) {
             message: (e as Error).message,
         });
     }
-
 }
