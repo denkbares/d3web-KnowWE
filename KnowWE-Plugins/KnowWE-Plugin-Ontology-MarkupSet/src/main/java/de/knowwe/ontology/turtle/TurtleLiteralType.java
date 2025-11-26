@@ -143,6 +143,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 
 		public LiteralPart() {
 			this.setSectionFinder(AllTextFinder.getInstance());
+			setRenderer(StyleRenderer.CONTENT);
 		}
 
 		public String getLiteral(Section<LiteralPart> section) {
@@ -153,6 +154,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	public static class LanguageTagPart extends AbstractType {
 
 		public LanguageTagPart() {
+			setRenderer(StyleRenderer.LOCALE);
 			this.setSectionFinder(new RegexSectionFinder(LANGUAGE_TAG + "\\z"));
 		}
 

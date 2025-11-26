@@ -46,7 +46,9 @@ public class TaggedText extends AbstractType {
 		super(LineSectionFinder.getInstance());
 		addChildType(new StringType());
 		addChildType(new LocaleType("@"));
-		addChildType(new KeywordType("@"));
+		KeywordType keywordType = new KeywordType("@");
+		keywordType.setRenderer(StyleRenderer.LOCALE);
+		addChildType(keywordType);
 		addChildType(UnrecognizedSyntaxType.getInstance());
 	}
 
@@ -59,7 +61,7 @@ public class TaggedText extends AbstractType {
 	private static class StringType extends AbstractType {
 		public StringType() {
 			super(new LeftOfTokenFinder("@"));
-			setRenderer(StyleRenderer.PROMPT);
+			setRenderer(StyleRenderer.CONTENT);
 		}
 
 		public String getUnquoted(Section<StringType> section) {

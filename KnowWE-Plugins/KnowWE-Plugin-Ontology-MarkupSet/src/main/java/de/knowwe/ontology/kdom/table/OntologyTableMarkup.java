@@ -18,6 +18,9 @@
  */
 package de.knowwe.ontology.kdom.table;
 
+import java.util.Locale;
+import java.util.Set;
+
 import org.eclipse.rdf4j.model.Resource;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,14 +31,20 @@ import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.sectionFinder.StringSectionFinder;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
@@ -50,6 +59,8 @@ import de.knowwe.ontology.turtle.PredicateObjectSentenceList;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -136,8 +147,57 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		public ColumnLocale(TableIndexConstraint constraint) {
 			setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder("(?i)@[a-z\\-_]+\\s*$"), constraint));
 			addChildType(new LocaleType("@"));
-			addChildType(new KeywordType("@"));
+			KeywordType keywordType = new KeywordType("@");
+			keywordType.setRenderer(StyleRenderer.LOCALE);
+			addChildType(keywordType);
+			addChildType(new LocaleNameDisplay());
 			addChildType(UnrecognizedSyntaxType.getInstance());
+		}
+
+		private static class LocaleNameDisplay extends AbstractType {
+
+			public LocaleNameDisplay() {
+				setRenderer(new LocaleNameDisplayRenderer());
+				setSectionFinder(new StringSectionFinder(""));
+			}
+
+			private static class LocaleNameDisplayRenderer implements Renderer {
+
+				@Override
+				public void render(Section<?> section, UserContext user, RenderResult result) {
+
+					Section<LocaleType> LocaleText = $(section).ancestor(ColumnLocale.class).successor(LocaleType.class).getFirst();
+					if (LocaleText != null) {
+						if (isValidLanguageTag(LocaleText.getText())) {
+							String displayLanguage = Locale.forLanguageTag(LocaleText.getText()).getDisplayLanguage(KnowWEUtils.getBrowserLocales(user)[0]);
+							result.append(" (" + displayLanguage + ")");
+						} else {
+							result.appendHtml("<p class=\"warning tooltipster\" title=\"@" + LocaleText.getText() + " is not a valid language tag\">Unknown Language</p>");
+						}
+					}
+				}
+
+				public static boolean isValidLanguageTag(String tag) {
+					if (tag == null || tag.isBlank()) {
+						return false;
+					}
+
+					Locale locale = Locale.forLanguageTag(tag);
+					String lang = locale.getLanguage();
+					String country = locale.getCountry();
+
+					if (!Set.of(Locale.getISOLanguages()).contains(lang)) {
+						return false;
+					}
+
+					if (!country.isEmpty() && !Set.of(Locale.getISOCountries()).contains(country)) {
+						return false;
+					}
+
+					return true;
+				}
+			}
+
 		}
 	}
 
