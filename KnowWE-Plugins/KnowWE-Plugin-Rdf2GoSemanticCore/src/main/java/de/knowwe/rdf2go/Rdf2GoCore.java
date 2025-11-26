@@ -55,8 +55,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Namespace;
@@ -930,7 +930,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			if (isShutdown()) return Set.of();
 			try (RepositoryConnection connection = this.semanticCore.getConnection()) {
 				RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true);
-				statements1 = Iterations.asSet(statements);
+				statements1 = statements.stream().collect(Collectors.toSet());
 			}
 			catch (RepositoryException e) {
 				LOGGER.error("Exception while getting statements", e);
@@ -1351,6 +1351,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @deprecated unfortunately, as of 2023-10-05, CONSTRUCT queries seem to not work in our current setup (GraphDB?).
 	 * Feel free to try again in later versions.
 	 */
+	@Deprecated
 	public GraphQueryResult sparqlConstruct(String query) {
 		return sparqlConstruct(getNamespaces(), query);
 	}
@@ -1363,6 +1364,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @deprecated unfortunately, as of 2023-10-05, CONSTRUCT queries seem to not work in our current setup (GraphDB?).
 	 * Feel free to try again in later versions.
 	 */
+	@Deprecated
 	public GraphQueryResult sparqlConstruct(Collection<Namespace> namespaces, String query) {
 		String completeQuery = prependPrefixesToQuery(namespaces, query);
 		return (GraphQueryResult) sparql(Options.NO_CACHE, SparqlType.CONSTRUCT, completeQuery, null, null, null);
