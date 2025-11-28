@@ -62,6 +62,8 @@
 		font-size: 1.2rem;
 
 		form {
+			margin-top: 1.5rem;
+
 			.input-group {
 				max-width: 40rem;
 				width: 100%;

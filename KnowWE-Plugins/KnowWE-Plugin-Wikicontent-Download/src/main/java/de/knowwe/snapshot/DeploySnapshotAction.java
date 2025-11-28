@@ -27,9 +27,11 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.download.DownloadWikiZIPAction;
 import de.knowwe.download.TmpFileDownloadToolProvider;
 
 import static de.knowwe.snapshot.CreateSnapshotAction.createAndStoreWikiContentSnapshot;
+import static de.knowwe.snapshot.CreateSnapshotToolProvider.AUTOSAVE_SNAPSHOT;
 import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 
 /**
@@ -69,7 +71,8 @@ public class DeploySnapshotAction extends SnapshotAction {
 	private void reinitializeWikiContent(UserActionContext context, File snapshot) throws IOException {
 		// we force a snapshot as safety BACKUP mechanism against data loss
 		try {
-			createAndStoreWikiContentSnapshot(context, "Autosave" + SNAPSHOT);
+			String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(AUTOSAVE_SNAPSHOT);
+			createAndStoreWikiContentSnapshot(context, wikiContentZipFilename);
 		}
 		catch (IOException e) {
 			context.sendError(500, e.getMessage());

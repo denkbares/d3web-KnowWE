@@ -19,15 +19,20 @@
 
 package de.knowwe.snapshot;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.zip.GZIPOutputStream;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.jspwiki.JSPWikiConnector;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.wiki.providers.SubWikiUtils;
 
 /**
  * Abstract super action for versioning actions. It prepares some input parameters
@@ -67,4 +72,12 @@ public abstract class SnapshotAction extends AbstractAction {
 		return false;
 	}
 
+	public static String getSnapshotsPath() {
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		String wikiProperty = wikiConnector.getWikiProperty("var.snapshots.dir");
+		if (wikiProperty == null || wikiProperty.isBlank()) {
+			return new File(wikiConnector.getSavePath()).getParentFile().getAbsolutePath();
+		}
+		return wikiProperty;
+	}
 }
