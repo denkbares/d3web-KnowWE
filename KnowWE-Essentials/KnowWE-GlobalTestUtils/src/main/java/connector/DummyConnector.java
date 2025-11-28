@@ -48,7 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
+import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
@@ -307,6 +309,31 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public String getArticleText(String title) {
 		return getArticleText(title, -1);
+	}
+
+	@Override
+	public String getGlobalArticleName(String shortTitle, KnowWESubWikiContext context) {
+		if (Strings.isBlank(context.subWiki())) return shortTitle;
+		return context.subWiki() +
+				"&&" + shortTitle;
+	}
+
+	@Override
+	public String getLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context) {
+		// TODO: any multi-wiki functionality required???
+		return qualifiedArticleName;
+	}
+
+	@Override
+	public String getSubwikiName(@NotNull String globalPagename) {
+		// TODO: any multi-wiki functionality required???
+		return "";
+	}
+
+	@Override
+	public Set<String> findPages(@NotNull String localName) {
+		// TODO: any multi-wiki functionality required???
+		return Set.of(localName);
 	}
 
 	@Override

@@ -19,6 +19,8 @@
 package de.knowwe.core;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -34,12 +36,39 @@ public interface ArticleManager {
 
 	CompilerManager getCompilerManager();
 
+
+
 	String getWeb();
 
 	/**
 	 * Returns the Article for a given article name/title. The case of the article is ignored.
 	 */
-	Article getArticle(String title);
+	default Article getArticle(String title) {
+		return getArticle(title, KnowWESubWikiContext.getDefaultContext());
+	}
+
+	/**
+	 * Finds articles with this local name within all available sub-wikis.
+	 *
+	 * @param localName local page name
+	 * @return all articles
+	 */
+	default Set<Article> findArticles(String localName) {
+		Set<String> pages = Environment.getInstance().getWikiConnector().findPages(localName);
+		return pages.stream().map(this::getArticle).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Finds articles with this local name within all available sub-wikis and returns randomly the first or else null.
+	 *
+	 * @param localName local page name
+	 * @return any matching article or null
+	 */
+	default Article findArticle(String localName) {
+		return findArticles(localName).stream().findAny().orElse(null);
+	}
+
+	Article getArticle(String title, KnowWESubWikiContext context);
 
 	/**
 	 * Returns all articles currently registered in this ArticleManager. The returned collection is unmodifiable and is
@@ -52,14 +81,22 @@ public interface ArticleManager {
 	 * contains an
 	 * article with the same name/title, the existing article will be replaced by the new one.
 	 */
-	Article registerArticle(String title, String content);
+	default Article registerArticle(String title, String content) {
+		return registerArticle(title, content, KnowWESubWikiContext.getDefaultContext());
+	}
+
+	Article registerArticle(String title, String content, KnowWESubWikiContext context);
 
 	/**
 	 * Deletes the given article from this article manager
 	 *
 	 * @param title the article to delete
 	 */
-	void deleteArticle(String title);
+	default void deleteArticle(String title) {
+		deleteArticle(title, KnowWESubWikiContext.getDefaultContext());
+	}
+
+	void deleteArticle(String title, KnowWESubWikiContext context);
 
 	/**
 	 * De-compiles and removes all articles. ArticleManager is empty afterward.

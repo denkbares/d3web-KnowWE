@@ -1,0 +1,61 @@
+package de.knowwe.core;
+
+import com.denkbares.strings.Strings;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.wikiConnector.WikiConnector;
+
+/**
+ * In a multi-wiki setup with multiple sub-wiki folders that together form the wiki-content, it is for some operations
+ * necessary to keep track of the sub-wiki context, that the user is currently operating in. For instance,
+ * if a page should be created from some context, the new page should be created within the same sub-wiki context
+ * as the operational context that the user initiated his interaction.
+ * <p>
+ * In single-wiki systems the default KnowWESubWikiContext always contains the empty string.
+ */
+public record KnowWESubWikiContext(String subWiki) {
+
+	public static final KnowWESubWikiContext SIMPLE_CONTEXT = new KnowWESubWikiContext("");
+	public static final String KNOWWE_CONTEXT_PARAMETER = "KnowWESubWikiContext";
+	public static final String MAIN_SUBWIKI_SUBFOLDER = "jspwiki.mainFolder";
+
+	public static KnowWESubWikiContext createFrom(Section<? extends PackageCompileType> compileSection) {
+		return createFrom(compileSection.getTitle());
+	}
+
+	public static KnowWESubWikiContext createFrom(String globalPageName) {
+		return new KnowWESubWikiContext(Environment.getInstance().getWikiConnector().getSubwikiName(globalPageName));
+	}
+
+	public String getGlobalPageName(String localPageName) {
+		if (Strings.isBlank(subWiki)) return localPageName;
+		return Environment.getInstance().getWikiConnector().getGlobalArticleName(localPageName, this);
+	}
+
+	public String getLocalName(String globalName) {
+		if (!globalName.startsWith(this.subWiki)) {
+			throw new IllegalArgumentException("Invalid subwiki context (" + this.subWiki + ") for article: " + globalName);
+		}
+		return Environment.getInstance().getWikiConnector().getLocalArticleName(globalName, this);
+	}
+
+	public KnowWESubWikiContext {
+		if (subWiki == null) {
+			subWiki = "";
+		}
+	}
+
+	/**
+	 * @return default KnowWESubWikiContext
+	 */
+	public static KnowWESubWikiContext getDefaultContext() {
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		String wikiProperty = wikiConnector.getWikiProperty(MAIN_SUBWIKI_SUBFOLDER);
+		if (wikiProperty == null) {
+			return KnowWESubWikiContext.SIMPLE_CONTEXT;
+		}
+		else {
+			return new KnowWESubWikiContext(wikiProperty);
+		}
+	}
+}

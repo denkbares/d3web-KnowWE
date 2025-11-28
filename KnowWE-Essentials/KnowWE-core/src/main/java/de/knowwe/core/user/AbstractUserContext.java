@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.user;
 
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.NoSuchElementException;
 
 import org.jetbrains.annotations.NotNull;
@@ -115,7 +117,8 @@ public abstract class AbstractUserContext implements UserContext {
 
 	@Override
 	public String getParameter(String key) {
-		return this.getParameters().get(key);
+		String value = this.getParameters().get(key);
+		return value;
 	}
 
 	@Override

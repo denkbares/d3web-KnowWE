@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -282,6 +284,40 @@ public interface WikiConnector {
 	 * @param title the title of the article
 	 */
 	String getArticleText(String title);
+
+	/**
+	 * Returns the global page name for a local page name and context.
+	 *
+	 * @param shortTitle local page name
+	 * @param context context
+	 * @return global page name
+	 */
+	String getGlobalArticleName(@NotNull String shortTitle, KnowWESubWikiContext context);
+
+	/**
+	 * Returns the global page name for a local page name and context.
+	 *
+	 * @param qualifiedArticleName global page name
+	 * @param context context
+	 * @return local page name
+	 */
+	String getLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context);
+
+	/**
+	 * Returns a KnowWESubwikiContext for a global page name
+	 *
+	 * @param globalPagename global page name
+	 * @return KnowWESubwikiContext
+	 */
+	String getSubwikiName(@NotNull String globalPagename);
+
+	/**
+	 * Searches over all sub-wikis for pages with the given local name
+	 *
+	 * @param localName local name
+	 * @return pages (global names)
+	 */
+	Set<String> findPages(@NotNull String localName);
 
 	/**
 	 * Returns the change note of the given version of the article with the given title. If the article or the version

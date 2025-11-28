@@ -121,9 +121,12 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @param title the title of the article to return
 	 */
 	@Override
-	public Article getArticle(String title) {
+	public Article getArticle(String title, KnowWESubWikiContext context) {
 		if (title == null) return null;
-		return articleMap.get(title.toLowerCase());
+		String qualifiedArticleName = Environment.getInstance()
+				.getWikiConnector()
+				.getGlobalArticleName(title, context);
+		return articleMap.get(qualifiedArticleName.toLowerCase());
 	}
 
 	@Override
@@ -143,8 +146,8 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @created 20.12.2013
 	 */
 	@Override
-	public Article registerArticle(String title, String content) {
-		Article article = Article.createArticle(content, title, this);
+	public Article registerArticle(String title, String content, KnowWESubWikiContext context) {
+		Article article = Article.createArticle(content, title, this, context);
 		open();
 		try {
 			queueArticle(article);
@@ -181,6 +184,7 @@ public class DefaultArticleManager implements ArticleManager {
 	 * To compile directly after using this method (in a try-block!), you need to call {@link #open()} before, and
 	 * {@link #commit()} afterwards (in the finally-block!).
 	 */
+
 	public void queueArticle(String title, String content) {
 		queueArticle(Article.createArticle(content, title, this));
 	}
@@ -230,7 +234,7 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @param title The article to delete
 	 */
 	@Override
-	public void deleteArticle(String title) {
+	public void deleteArticle(String title, KnowWESubWikiContext context) {
 
 		open();
 		try {

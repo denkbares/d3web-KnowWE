@@ -31,6 +31,7 @@ import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.Environment.CompilationMode;
+import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
@@ -81,6 +82,14 @@ public final class Article {
 		return createArticle(text, title, manager, false);
 	}
 
+	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, @NotNull KnowWESubWikiContext context) {
+		return createArticle(text, title, manager, false, context);
+	}
+
+	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, boolean fullParse, @NotNull KnowWESubWikiContext context) {
+		return createArticle(text, title, manager.getWeb(), manager, fullParse, context);
+	}
+
 	/**
 	 * Create a new article by parsing the given text into a section tree (KDOM). Use this method if you want to add the
 	 * article to an article manager.
@@ -92,7 +101,7 @@ public final class Article {
 	 *                  versions if possible
 	 */
 	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, manager.getWeb(), manager, fullParse);
+		return createArticle(text, title, manager.getWeb(), manager, fullParse, KnowWESubWikiContext.getDefaultContext());
 	}
 
 	/**
@@ -104,15 +113,19 @@ public final class Article {
 	 * @param web   the web the article belongs to (currently unused)
 	 */
 	public static Article createTemporaryArticle(String text, String title, String web) {
-		return createArticle(text, title, web, null, true);
+		return createArticle(text, title, web, null, true, KnowWESubWikiContext.SIMPLE_CONTEXT);
 	}
 
 	public static Article createTemporaryArticle(String text, String title, String web, RootType root) {
-		return createArticle(text, title, web, null, true, root);
+		return createArticle(text, title, web, null, true, root, KnowWESubWikiContext.SIMPLE_CONTEXT);
 	}
 
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType());
+	public static Article createTemporaryArticle(String text, String title, String web, RootType root, @NotNull KnowWESubWikiContext context) {
+		return createArticle(text, title, web, null, true, root, context);
+	}
+
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, @NotNull KnowWESubWikiContext context) {
+		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType(), context);
 	}
 
 	/**
@@ -126,10 +139,10 @@ public final class Article {
 	 *                  versions if possible
 	 * @param root      RootType to be used
 	 */
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root, @NotNull KnowWESubWikiContext context) {
 		Article article = null;
 		try {
-			article = new Article(text, title, web, manager, fullParse, root);
+			article = new Article(text, title, web, manager, fullParse, root, context);
 		}
 		catch (Exception e) {
 			LOGGER.error("Exception while creating article", e);
@@ -137,11 +150,11 @@ public final class Article {
 		return article;
 	}
 
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse) {
-		this(text, title, web, manager, fullParse, null);
+	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @NotNull KnowWESubWikiContext context) {
+		this(text, title, web, manager, fullParse, null, context);
 	}
 
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root) {
+	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root, @NotNull KnowWESubWikiContext context) {
 		if (root == null) {
 			rootType = RootType.getInstance();
 		}
@@ -149,7 +162,7 @@ public final class Article {
 			rootType = root;
 		}
 		long start = System.currentTimeMillis();
-		this.title = title;
+		this.title = context.getGlobalPageName(title);
 		this.web = web;
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
@@ -158,8 +171,8 @@ public final class Article {
 				.getArticle(web, title) : null;
 
 		this.fullParse = fullParse
-						 || lastVersion == null
-						 || Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
+				|| lastVersion == null
+				|| Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
 
 		sectionizeArticle(cleanedText);
 
