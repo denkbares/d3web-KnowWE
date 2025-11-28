@@ -88,6 +88,7 @@ import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
+import org.apache.wiki.providers.SubWikiUtils;
 import org.apache.wiki.references.ReferenceManager;
 import org.apache.wiki.render.RenderingManager;
 import org.apache.wiki.search.SearchManager;
@@ -103,6 +104,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Environment;
+import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.AuthenticationManager;
@@ -236,6 +238,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean doesArticleExist(String title) {
+		title = getGlobalArticleName(title, KnowWESubWikiContext.SIMPLE_CONTEXT);
 		try {
 			return getPageManager().pageExists(title);
 		}
@@ -591,6 +594,34 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String getArticleText(String title) {
 		return getArticleText(title, -1);
+	}
+
+	@Override
+	public String getGlobalArticleName(String shortTitle, KnowWESubWikiContext context) {
+		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), shortTitle, getWikiProperties());
+	}
+
+	@Override
+	public String getLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context) {
+		return SubWikiUtils.getLocalPageName(qualifiedArticleName);
+	}
+
+	@Override
+	public String getSubwikiName(@NotNull String globalPagename) {
+		return SubWikiUtils.getSubFolderNameOfPage(globalPagename, getWikiProperties());
+	}
+
+	@Override
+	public Set<String> findPages(@NotNull String localName) {
+		List<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersWithoutMain(getWikiProperties());
+		Set<String> result = allSubWikiFolders.stream()
+				.map(subWikiName -> SubWikiUtils.concatSubWikiAndLocalPageName(subWikiName, localName, getWikiProperties()))
+				.filter(this::doesArticleExist)
+				.collect(Collectors.toSet());
+		if (this.doesArticleExist(localName)) {
+			result.add(localName);
+		}
+		return result;
 	}
 
 	@Override
