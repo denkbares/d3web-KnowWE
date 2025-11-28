@@ -72,7 +72,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 		// we force a snapshot as safety BACKUP mechanism against data loss
 		try {
 			String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(AUTOSAVE_SNAPSHOT);
-			createAndStoreWikiContentSnapshot(context, wikiContentZipFilename);
+			createAndStoreWikiContentSnapshot(context, getSnapshotsPath(), wikiContentZipFilename);
 		}
 		catch (IOException e) {
 			context.sendError(500, e.getMessage());

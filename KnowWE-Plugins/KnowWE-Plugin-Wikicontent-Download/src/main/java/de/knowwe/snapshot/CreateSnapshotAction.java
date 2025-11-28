@@ -34,29 +34,30 @@ public class CreateSnapshotAction extends SnapshotAction {
 			return;
 		}
 		String snapshotNameParam = context.getParameter("name");
+		String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(SNAPSHOT);
 		try {
-			String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(SNAPSHOT);
 			if (snapshotNameParam != null && !snapshotNameParam.isBlank()) {
 				String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 				wikiContentZipFilename = timestamp + "_" + SNAPSHOT + "_" + snapshotNameParam + ".zip";
 			}
-			String createdFilePath = createAndStoreWikiContentSnapshot(context, wikiContentZipFilename);
+			String createdFilePath = createAndStoreWikiContentSnapshot(context, getSnapshotsPath(), wikiContentZipFilename);
 			// File downloadableTmpFile = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), createdFilePath);
 			// FileUtils.copyFile(new File(createdFilePath), downloadableTmpFile);
 			// DownloadFileAction.writeFileToDownloadStream(context, downloadableTmpFile, createdFilePath, false);
 		}
 		catch (IOException e) {
+			createAndStoreWikiContentSnapshot(
+					context,
+					TmpFileDownloadToolProvider.getTmpFileFolder().getAbsolutePath(),
+					wikiContentZipFilename
+			);
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
 
-	public static String createAndStoreWikiContentSnapshot(@NotNull UserActionContext context, @NotNull String filename) throws IOException {
+	public static String createAndStoreWikiContentSnapshot(@NotNull UserActionContext context, String snapshotStoragePath, @NotNull String filename) throws IOException {
 		context.getParameters().put(PARAM_VERSIONS, "true");
-
-		// File tmpFileFolder = TmpFileDownloadToolProvider.getTmpFileFolder();
-		// Do not rely on a temporary folder. Use instead a config-provided storage path
-		// or fallback to the parent directory of the wiki content folder
-		File wikiContentSnapshot = new File(getSnapshotsPath(), filename);
+		File wikiContentSnapshot = new File(snapshotStoragePath, filename);
 		if (wikiContentSnapshot.exists()) {
 			throw new IOException("Snapshot file " + wikiContentSnapshot.getAbsolutePath() + " already exists. Will not override.");
 		}
