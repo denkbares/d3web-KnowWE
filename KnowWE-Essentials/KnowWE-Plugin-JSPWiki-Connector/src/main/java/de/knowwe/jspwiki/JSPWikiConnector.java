@@ -63,6 +63,7 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.exceptions.WikiException;
 import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
+import org.apache.wiki.api.spi.Wiki;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.auth.AuthorizationManager;
@@ -648,7 +649,7 @@ public class JSPWikiConnector implements WikiConnector {
 				return Set.of(localName);
 			}
 		}
-		List<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersWithoutMain(getWikiProperties());
+		Collection<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersWithoutMain(getEngine());
 		Set<String> result = allSubWikiFolders.stream()
 				.map(subWikiName -> SubWikiUtils.concatSubWikiAndLocalPageName(subWikiName, localName, getWikiProperties()))
 				.filter(this::doesArticleExist)
