@@ -29,14 +29,14 @@ public record KnowWESubWikiContext(String subWiki) {
 
 	public String getGlobalPageName(String localPageName) {
 		if (Strings.isBlank(subWiki)) return localPageName;
-		return Environment.getInstance().getWikiConnector().getGlobalArticleName(localPageName, this);
+		return Environment.getInstance().getWikiConnector().toGlobalArticleName(localPageName, this);
 	}
 
 	public String getLocalName(String globalName) {
 		if (!globalName.startsWith(this.subWiki)) {
 			throw new IllegalArgumentException("Invalid subwiki context (" + this.subWiki + ") for article: " + globalName);
 		}
-		return Environment.getInstance().getWikiConnector().getLocalArticleName(globalName, this);
+		return Environment.getInstance().getWikiConnector().toLocalArticleName(globalName, this);
 	}
 
 	public KnowWESubWikiContext {

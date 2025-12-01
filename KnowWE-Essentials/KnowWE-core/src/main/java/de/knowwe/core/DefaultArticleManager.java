@@ -125,7 +125,7 @@ public class DefaultArticleManager implements ArticleManager {
 		if (title == null) return null;
 		String qualifiedArticleName = Environment.getInstance()
 				.getWikiConnector()
-				.getGlobalArticleName(title, context);
+				.toGlobalArticleName(title, context);
 		return articleMap.get(qualifiedArticleName.toLowerCase());
 	}
 

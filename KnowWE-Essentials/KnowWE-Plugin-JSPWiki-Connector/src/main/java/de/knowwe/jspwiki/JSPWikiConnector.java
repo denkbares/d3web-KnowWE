@@ -238,13 +238,29 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean doesArticleExist(String title) {
-		title = getGlobalArticleName(title, KnowWESubWikiContext.SIMPLE_CONTEXT);
-		try {
-			return getPageManager().pageExists(title);
+
+		if (SubWikiUtils.isGlobalName(title)) {
+			try {
+				return getPageManager().pageExists(title);
+			}
+			catch (ProviderException e) {
+				LOGGER.error("Exception while checking page status", e);
+				return false;
+			}
 		}
-		catch (ProviderException e) {
-			LOGGER.error("Exception while checking page status", e);
-			return false;
+		else {
+			Set<String> pages = findPages(title);
+			if (pages.size() == 1) {
+				return true;
+			}
+			else if (pages.isEmpty()) {
+				return false;
+			}
+			else {
+				String message = "Local page name " + title + " is not unique in the current multi-wiki setup: " + pages;
+				LOGGER.error(message);
+				throw new IllegalStateException(message);
+			}
 		}
 	}
 
@@ -597,29 +613,53 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String getGlobalArticleName(String shortTitle, KnowWESubWikiContext context) {
+	public String toGlobalArticleName(String shortTitle, KnowWESubWikiContext context) {
 		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), shortTitle, getWikiProperties());
 	}
 
+	public String toExistingUniqueOrGlobalName(@NotNull String localPageName) {
+		if (SubWikiUtils.isGlobalName(localPageName)) return localPageName; // being a global page name already
+		Set<String> pages = findPages(localPageName);
+		if (pages.isEmpty()) return null;
+		if (pages.size() == 1) {
+			return pages.stream().findFirst().get();
+		}
+		else {
+			LOGGER.warn("There are multiple pages of name: " + localPageName + " which cannot be uniquely ambiguated: " + pages);
+			return null;
+		}
+	}
+
 	@Override
-	public String getLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context) {
+	public String toLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context) {
 		return SubWikiUtils.getLocalPageName(qualifiedArticleName);
 	}
 
 	@Override
-	public String getSubwikiName(@NotNull String globalPagename) {
-		return SubWikiUtils.getSubFolderNameOfPage(globalPagename, getWikiProperties());
+	public String getSubwikiName(@NotNull String globalPageName) {
+		return SubWikiUtils.getSubFolderNameOfPage(globalPageName, getWikiProperties());
 	}
 
 	@Override
 	public Set<String> findPages(@NotNull String localName) {
+		if (SubWikiUtils.isGlobalName(localName)) {
+			// case of stupid input -> stupid output
+			if (this.doesArticleExist(localName)) {
+				return Set.of(localName);
+			}
+		}
 		List<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersWithoutMain(getWikiProperties());
 		Set<String> result = allSubWikiFolders.stream()
 				.map(subWikiName -> SubWikiUtils.concatSubWikiAndLocalPageName(subWikiName, localName, getWikiProperties()))
 				.filter(this::doesArticleExist)
 				.collect(Collectors.toSet());
-		if (this.doesArticleExist(localName)) {
-			result.add(localName);
+		try {
+			if (getPageManager().pageExists(localName)) {
+				result.add(localName);
+			}
+		}
+		catch (ProviderException e) {
+			throw new RuntimeException(e);
 		}
 		return result;
 	}

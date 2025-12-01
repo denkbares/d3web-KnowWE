@@ -292,7 +292,17 @@ public interface WikiConnector {
 	 * @param context context
 	 * @return global page name
 	 */
-	String getGlobalArticleName(@NotNull String shortTitle, KnowWESubWikiContext context);
+	String toGlobalArticleName(@NotNull String shortTitle, KnowWESubWikiContext context);
+
+	/**
+	 * Returns the global name if the page is (uniquely) existing in a sub-wiki.
+	 * Returns null if no page for the name can be found.
+	 * Returns also null if multiple 'competing' pages in different sub-wikis are found.
+	 *
+	 * @param localPageName local page title
+	 * @return global name or null, of no unique page could be found
+	 */
+	String toExistingUniqueOrGlobalName(@NotNull String localPageName);
 
 	/**
 	 * Returns the global page name for a local page name and context.
@@ -301,7 +311,7 @@ public interface WikiConnector {
 	 * @param context context
 	 * @return local page name
 	 */
-	String getLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context);
+	String toLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context);
 
 	/**
 	 * Returns a KnowWESubwikiContext for a global page name
@@ -628,4 +638,6 @@ public interface WikiConnector {
 	 * Returns the CSRF protection Token associated with this wiki session.
 	 */
 	String getAntiCsrfToken(UserContext context);
+
+
 }
