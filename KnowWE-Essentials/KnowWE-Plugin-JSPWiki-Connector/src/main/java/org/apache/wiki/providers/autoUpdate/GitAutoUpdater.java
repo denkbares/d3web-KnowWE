@@ -167,20 +167,12 @@ public class GitAutoUpdater {
 
 		// *** NEU: Kein fetch() mehr zum Erkennen von Änderungen. ***
 		// Pull (mit Rebase) ist idempotent: wenn nichts zu tun ist, macht er nichts.
-		PullResult pullResult = getPullResult(git);
+		boolean pullResultSuccess = getPullResult(gitConnector);
 
-		if (pullResult != null) {
-			RebaseResult rebaseResult = pullResult.getRebaseResult();
-			boolean successful = rebaseResult.getStatus().isSuccessful();
-			if (!successful) {
-				LOGGER.error("unsuccessful pull " + rebaseResult.getStatus());
-				if (rebaseResult.getConflicts() != null) {
-					LOGGER.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
-				}
-				else {
-					LOGGER.error("unsuccessful pull " + rebaseResult.getFailingPaths());
-				}
-			}
+		if (pullResultSuccess == false) {
+			LOGGER.error("unsuccessful pull, aborting!");
+			fileProvider.pushUnlock();
+			return;
 		}
 
 		fileProvider.pushUnlock();
@@ -221,31 +213,33 @@ public class GitAutoUpdater {
 	}
 
 	@Nullable
-	private PullResult getPullResult(Git git) throws GitAPIException {
-		PullCommand pull = git.pull()
-				.setRemote("origin")
-				.setRemoteBranchName("master")
-				.setStrategy(MergeStrategy.RESOLVE)
-				.setRebase(true);
-		PullResult pullResult = null;
-		try {
-			pullResult = pull.call();
-		}
-		catch (JGitInternalException ie) {
-			LOGGER.error("internal jgit error", ie);
-			try {
-				switch (repository.getRepositoryState()) {
-					case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
-							.setOperation(RebaseCommand.Operation.ABORT)
-							.call();
-				}
-				pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
-			}
-			catch (JGitInternalException ie2) {
-				LOGGER.error("internal jgit error", ie);
-			}
-		}
-		return pullResult;
+	private boolean getPullResult(GitConnector gitConnector) throws GitAPIException {
+
+		return gitConnector.pull().call(true);
+//		PullCommand pull = git.pull()
+//				.setRemote("origin")
+//				.setRemoteBranchName("master")
+//				.setStrategy(MergeStrategy.RESOLVE)
+//				.setRebase(true);
+//		PullResult pullResult = null;
+//		try {
+//			pullResult = pull.call();
+//		}
+//		catch (JGitInternalException ie) {
+//			LOGGER.error("internal jgit error", ie);
+//			try {
+//				switch (repository.getRepositoryState()) {
+//					case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
+//							.setOperation(RebaseCommand.Operation.ABORT)
+//							.call();
+//				}
+//				pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
+//			}
+//			catch (JGitInternalException ie2) {
+//				LOGGER.error("internal jgit error", ie);
+//			}
+//		}
+//		return pullResult;
 	}
 
 	private void postprocess(ArticleManager articleManager) {
