@@ -615,6 +615,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String toGlobalArticleName(String shortTitle, KnowWESubWikiContext context) {
+		if(SubWikiUtils.isGlobalName(shortTitle)) return shortTitle;
 		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), shortTitle, getWikiProperties());
 	}
 
@@ -649,13 +650,15 @@ public class JSPWikiConnector implements WikiConnector {
 				return Set.of(localName);
 			}
 		}
-		Collection<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersWithoutMain(getEngine());
+		// TODO: check how this performs in case of nested wiki (main wiki content directly in root content)
+		Collection<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersInclMain(getEngine());
 		Set<String> result = allSubWikiFolders.stream()
 				.map(subWikiName -> SubWikiUtils.concatSubWikiAndLocalPageName(subWikiName, localName, getWikiProperties()))
 				.filter(this::doesArticleExist)
 				.collect(Collectors.toSet());
 		try {
-			if (getPageManager().pageExists(localName)) {
+			String mainWikiFolder = SubWikiUtils.getMainWikiFolder(getWikiProperties());
+			if (getPageManager().pageExists(localName) && !result.contains(SubWikiUtils.concatSubWikiAndLocalPageName(mainWikiFolder, localName, getWikiProperties()))) {
 				result.add(localName);
 			}
 		}

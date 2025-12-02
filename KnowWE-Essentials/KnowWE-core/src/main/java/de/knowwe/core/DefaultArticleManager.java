@@ -123,10 +123,10 @@ public class DefaultArticleManager implements ArticleManager {
 	@Override
 	public Article getArticle(String title, KnowWESubWikiContext context) {
 		if (title == null) return null;
-		String qualifiedArticleName = Environment.getInstance()
-				.getWikiConnector()
-				.toGlobalArticleName(title, context);
-		return articleMap.get(qualifiedArticleName.toLowerCase());
+		String uniqueArticleName = Environment.getInstance()
+				.getWikiConnector().toExistingUniqueOrGlobalName(title);
+		if(uniqueArticleName == null) return null;
+		return articleMap.get(uniqueArticleName.toLowerCase());
 	}
 
 	@Override

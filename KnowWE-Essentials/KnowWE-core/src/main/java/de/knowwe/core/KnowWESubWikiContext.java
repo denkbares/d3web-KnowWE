@@ -1,5 +1,7 @@
 package de.knowwe.core;
 
+import java.util.Objects;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -19,7 +21,7 @@ public record KnowWESubWikiContext(String subWiki) {
 	public static final String KNOWWE_CONTEXT_PARAMETER = "KnowWESubWikiContext";
 	public static final String MAIN_SUBWIKI_SUBFOLDER = "jspwiki.mainFolder";
 
-	public static KnowWESubWikiContext createFrom(Section<? extends PackageCompileType> compileSection) {
+	public static KnowWESubWikiContext createFrom(Section<?> compileSection) {
 		return createFrom(compileSection.getTitle());
 	}
 
@@ -57,5 +59,17 @@ public record KnowWESubWikiContext(String subWiki) {
 		else {
 			return new KnowWESubWikiContext(wikiProperty);
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) return false;
+		KnowWESubWikiContext that = (KnowWESubWikiContext) o;
+		return Objects.equals(subWiki, that.subWiki);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(subWiki);
 	}
 }

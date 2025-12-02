@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
@@ -34,9 +36,9 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface ArticleManager {
 
+	static final Logger LOGGER = LoggerFactory.getLogger(ArticleManager.class);
+
 	CompilerManager getCompilerManager();
-
-
 
 	String getWeb();
 
@@ -55,7 +57,11 @@ public interface ArticleManager {
 	 */
 	default Set<Article> findArticles(String localName) {
 		Set<String> pages = Environment.getInstance().getWikiConnector().findPages(localName);
-		return pages.stream().map(this::getArticle).collect(Collectors.toSet());
+		Set<Article> articles = pages.stream().map(this::getArticle).collect(Collectors.toSet());
+		if(pages.size() != articles.size()) {
+			System.out.println("oha");
+		}
+		return articles;
 	}
 
 	/**
@@ -65,7 +71,19 @@ public interface ArticleManager {
 	 * @return any matching article or null
 	 */
 	default Article findArticle(String localName) {
-		return findArticles(localName).stream().findAny().orElse(null);
+		Set<Article> articles = findArticles(localName);
+		if (articles.isEmpty()) {
+			//LOGGER.warn("Article not found: " + localName); // often scanning of namespace is done -> spamming logs
+			return null;
+		}
+		else {
+			try {
+				return articles.stream().findAny().orElse(null);
+			} catch (NullPointerException e) {
+				System.out.println("NP");
+			}
+		}
+		return null;
 	}
 
 	Article getArticle(String title, KnowWESubWikiContext context);
