@@ -533,7 +533,7 @@ public interface WikiConnector {
 	 *
 	 * @return list of sub-wiki folders
 	 */
-	List<String> getAllSubWikiFolders();
+	Collection<String> getAllSubWikiFolders();
 
 	/**
 	 * Returns the mail address of this user (if some is registered).

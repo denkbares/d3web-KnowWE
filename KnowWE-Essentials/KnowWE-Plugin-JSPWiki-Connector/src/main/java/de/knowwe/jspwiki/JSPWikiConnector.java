@@ -1102,8 +1102,8 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public List<String> getAllSubWikiFolders() {
-		return null;
+	public Collection<String> getAllSubWikiFolders() {
+		return SubWikiUtils.getAllSubWikiFoldersInclMain(this.engine);
 	}
 
 	@Override
