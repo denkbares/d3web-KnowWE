@@ -57,12 +57,15 @@ public class DeploySnapshotAction extends SnapshotAction {
 		}
 
 		// try to find a corresponding temp repo folder file
-		File repoSnapshot = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), deployFilename);
+		File repoSnapshot = new File(getSnapshotsPath(), deployFilename);
 
 		// if not present, sent error
 		if (!repoSnapshot.exists()) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Specified deploy snapshot file not found: " + deployFilename);
-			return;
+			repoSnapshot = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), deployFilename);
+			if (!repoSnapshot.exists()) {
+				context.sendError(HttpServletResponse.SC_NOT_FOUND, "Specified deploy snapshot file not found: " + deployFilename);
+				return;
+			}
 		}
 
 		reinitializeWikiContent(context, repoSnapshot);

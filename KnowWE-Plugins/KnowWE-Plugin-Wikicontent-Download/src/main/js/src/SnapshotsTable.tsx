@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
-import {receiveJson, wrapFormSubmission} from "./utils.ts";
+import {mountMessagePopUp, receiveJson} from "./utils.ts";
 import {deleteSnapshot, deploySnapshot, downloadSnapshot} from "./httpRequests.ts";
 import {mountPopup} from "./Popup.tsx";
 
@@ -147,7 +147,11 @@ function deleteSnapshotPopUp(props: {snapshotPath: string, snapshotName: string}
         button: {
             label: "Delete Snapshot",
             type: "Danger",
-            action: wrapFormSubmission(() => deleteSnapshot(props.snapshotPath, props.snapshotName)),
+            action: () => deleteSnapshot(props.snapshotPath, props.snapshotName)
+                .catch(_ => mountMessagePopUp({
+                    title: "Error",
+                    message: "Failed to download file",
+                })),
         },
     });
 }
@@ -159,7 +163,11 @@ function deploySnapshotPopUp(snapshotName: string) {
         button: {
             label: "Deploy Snapshot",
             type: "Primary",
-            action: wrapFormSubmission(() => deploySnapshot(snapshotName + ".zip")),
+            action: () => deploySnapshot(snapshotName + ".zip")
+                .catch((err) => mountMessagePopUp({
+                    title: "Error",
+                    message: (err as Error).message,
+                })),
         },
     });
 }

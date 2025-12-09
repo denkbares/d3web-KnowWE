@@ -61,7 +61,7 @@ public class CreateSnapshotAction extends SnapshotAction {
 		if (wikiContentSnapshot.exists()) {
 			throw new IOException("Snapshot file " + wikiContentSnapshot.getAbsolutePath() + " already exists. Will not override.");
 		}
-		if (!wikiContentSnapshot.getParentFile().exists() && wikiContentSnapshot.getParentFile().canWrite()) {
+		if (!wikiContentSnapshot.getParentFile().exists() || !wikiContentSnapshot.getParentFile().canWrite()) {
 			throw new IOException("Cannot write Snapshot file: " + wikiContentSnapshot.getAbsolutePath() + " (No write access to folder or file system error. Contact you administrator.)");
 		}
 		DownloadFileAction.allowDirectory(wikiContentSnapshot.getParentFile());

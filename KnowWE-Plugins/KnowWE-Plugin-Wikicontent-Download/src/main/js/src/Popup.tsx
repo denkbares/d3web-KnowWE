@@ -54,6 +54,15 @@ function Popup({title, message, input, button, secondaryButtons, unmount}: Popup
         if (type === "Secondary") return "btn-secondary";
     }
 
+    function executeGracefully(event: React.MouseEvent<HTMLButtonElement>, action: (event: React.MouseEvent<HTMLButtonElement>) => Promise<void>) {
+        action(event)
+            .then(() => unmount())
+            .catch((error) => {
+                unmount();
+                console.error("not sure", error);
+            });
+    }
+
     return (
         <ReactPopup position="center center" open={true} onClose={unmount} className={"snapshot-popup"}>
             <header>
@@ -82,10 +91,10 @@ function Popup({title, message, input, button, secondaryButtons, unmount}: Popup
 
             <footer>
                 {button && <button className={"btn " + convertTypeToClassName(button.type)}
-                                   onClick={button.action}>{button.label}</button>}
+                                   onClick={(e) => executeGracefully(e, button.action)}>{button.label}</button>}
                 {secondaryButtons && secondaryButtons.map(button =>
                     <button className={"btn " + convertTypeToClassName(button.type)}
-                            onClick={button.action}>{button.label}</button>,
+                            onClick={(e) => executeGracefully(e, button.action)}>{button.label}</button>,
                 )}
             </footer>
         </ReactPopup>
