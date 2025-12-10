@@ -96,7 +96,6 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<!-- @TODO Class Namen ändern / vereinheitlichen ? -->
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DownloadWikiZIP">
 		<parameter id="class" value="de.knowwe.download.DownloadWikiZIPAction" />
 		<parameter id="name" value="DownloadWikiZIP" />
@@ -109,6 +108,14 @@
 		<parameter id="class" value="de.knowwe.snapshot.UploadSnapshotAction" />
 		<parameter id="name" value="UploadSnapshotAction" />
 		<parameter id="description" value="Action to upload a wiki content zip file into the wiki." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation" id="SnapshotDirectoryPermissionInstantiation">
+		<parameter id="class" value="de.knowwe.snapshot.SnapshotDirectoryPermissionInstantiation" />
+		<parameter id="name" value="SnapshotDirectoryPermissionInstantiation" />
+		<parameter id="description" value="Instantiation to allow snapshot directory to be read" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
