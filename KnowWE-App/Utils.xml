@@ -23,6 +23,9 @@
 
 	<!-- Updates all resources needed for the profile core-plugins -->
 	<target name="update_resources core-plugins">
+		<!-- prepare logging -->
+		<mkdir dir="${basedir}/target/logs" />
+		<record name="${basedir}/target/logs/update_resources-core-plugins.log" action="start" loglevel="verbose" />
 		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="KnowWE-Resources/src/main/webapp/**" />
@@ -43,11 +46,15 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
+		<record name="${basedir}/target/logs/update_resources-core-plugins.log" action="stop" />
 	</target>
 
 
 	<!-- Updates all resources needed for the profile denkbares (and core-plugins) -->
 	<target name="update_resources denkbares" depends="update_resources core-plugins">
+		<!-- prepare logging -->
+		<mkdir dir="${basedir}/target/logs" />
+		<record name="${basedir}/target/logs/update_resources-denkbares.log" action="start" loglevel="verbose" />
 		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KnowWE-DES/KnowWE-Plugins-DES/">
 				<include name="*/src/main/resources/webapp/" />
@@ -76,7 +83,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KnowWE-SSP/" erroronmissingdir="false">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
@@ -91,8 +98,12 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
+		<record name="${basedir}/target/logs/update_resources-denkbares.log" action="stop" />
 	</target>
 	<target name="update_resources konap" depends="update_resources core-plugins">
+		<!-- prepare logging -->
+		<mkdir dir="${basedir}/target/logs" />
+		<record name="${basedir}/target/logs/update_resources-konap.log" action="start" loglevel="verbose" />
 		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KRONE/">
 				<include name="KnowWE-Plugin-KONAP/src/main/resources/webapp/" />
@@ -102,8 +113,12 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
+		<record name="${basedir}/target/logs/update_resources-konap.log" action="stop" />
 	</target>
 	<target name="update_resources d3web-Player" depends="update_resources core-plugins">
+		<!-- prepare logging -->
+		<mkdir dir="${basedir}/target/logs" />
+		<record name="${basedir}/target/logs/update_resources-d3web-Player.log" action="start" loglevel="verbose" />
 		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT/KnowWEExtension/d3web-Player/client" verbose="true"
 			  overwrite="true">
 			<fileset dir="${basedir}/../../d3web-Player-Platform/">
@@ -111,5 +126,6 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
+		<record name="${basedir}/target/logs/update_resources-d3web-Player.log" action="stop" />
 	</target>
 </project>
