@@ -54,14 +54,17 @@ public class URLType extends AbstractType {
 				else {
 					return Messages.noMessage();
 				}
-
 			}
-
 		});
 	}
 
 	public static URL getURL(Section<URLType> urlSection) {
 		String url = Strings.trim(urlSection.getText());
+		// replace umlauts
+		url = url.replace("ß", "%C3%9F")
+				.replace("ä", "%C3%A4").replace("Ä", "%C3%84")
+				.replace("ö", "%C3%B6").replace("Ö", "%C3%96")
+				.replace("ü", "%C3%BC").replace("Ü", "%C3%9C");
 		try {
 			return new URL(url);
 		}
