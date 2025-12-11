@@ -64,7 +64,6 @@ public class CreateSnapshotAction extends SnapshotAction {
 		if (!wikiContentSnapshot.getParentFile().exists() || !wikiContentSnapshot.getParentFile().canWrite()) {
 			throw new IOException("Cannot write Snapshot file: " + wikiContentSnapshot.getAbsolutePath() + " (No write access to folder or file system error. Contact you administrator.)");
 		}
-		DownloadFileAction.allowDirectory(wikiContentSnapshot.getParentFile());
 		OutputStream output = new FileOutputStream(wikiContentSnapshot);
 		DownloadWikiZIPAction.writeWikiContentZipStreamToOutputStream(context, output, true, false);
 		return wikiContentSnapshot.getAbsolutePath();

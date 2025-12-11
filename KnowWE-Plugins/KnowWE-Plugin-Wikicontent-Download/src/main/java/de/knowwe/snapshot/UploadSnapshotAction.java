@@ -32,6 +32,8 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.download.TmpFileDownloadToolProvider;
 
+import static de.knowwe.snapshot.SnapshotAction.getSnapshotsPath;
+
 public class UploadSnapshotAction extends AbstractAction {
 
 	private final Logger LOGGER = Logger.getLogger(UploadSnapshotAction.class.getName());
@@ -66,9 +68,8 @@ public class UploadSnapshotAction extends AbstractAction {
 
 				// store file
 				try {
-					String filePath =
-							TmpFileDownloadToolProvider.getTmpFileFolder().getPath() + File.separator + file.getName();
-					file.write(new File(filePath));
+					File newSnapshotFile = new File(getSnapshotsPath(), file.getName());
+					file.write(newSnapshotFile);
 				}
 				catch (Exception e) {
 					throw new RuntimeException(e.getMessage());
