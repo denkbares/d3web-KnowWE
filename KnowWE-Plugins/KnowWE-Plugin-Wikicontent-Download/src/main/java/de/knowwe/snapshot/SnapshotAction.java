@@ -42,6 +42,9 @@ import org.apache.wiki.providers.SubWikiUtils;
  */
 public abstract class SnapshotAction extends AbstractAction {
 
+	public static final String SNAPSHOT = "Snapshot";
+	public static final String AUTOSAVE_SNAPSHOT = "AutosaveSnapshot";
+
 	protected void writeJson(UserActionContext context, Object object) throws IOException {
 		context.setContentType("application/json");
 		ObjectMapper objectMapper = new ObjectMapper();

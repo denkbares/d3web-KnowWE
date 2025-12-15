@@ -9,17 +9,14 @@ import java.time.format.DateTimeFormatter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.progress.DownloadFileAction;
 import de.knowwe.download.DownloadWikiZIPAction;
 import de.knowwe.download.TmpFileDownloadToolProvider;
 
 import static de.knowwe.download.DownloadWikiZIPAction.PARAM_VERSIONS;
-import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 
 /**
  * Action that creates a snapshot of the current wiki content state as a zip file.

@@ -31,8 +31,6 @@ import de.knowwe.download.DownloadWikiZIPAction;
 import de.knowwe.download.TmpFileDownloadToolProvider;
 
 import static de.knowwe.snapshot.CreateSnapshotAction.createAndStoreWikiContentSnapshot;
-import static de.knowwe.snapshot.CreateSnapshotToolProvider.AUTOSAVE_SNAPSHOT;
-import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 
 /**
  * Action that allows to replace the entire wiki content (!!!) by the content of a zip attachment.

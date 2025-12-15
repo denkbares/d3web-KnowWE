@@ -50,7 +50,7 @@ import de.knowwe.fingerprint.Fingerprint;
 import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.WikiFileProviderUtils;
 
-import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
+import static de.knowwe.snapshot.SnapshotAction.SNAPSHOT;
 
 /**
  * @author Johanna Latt
