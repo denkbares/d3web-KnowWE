@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
@@ -479,13 +480,18 @@ public class JSPWikiConnector implements WikiConnector {
 			if (!attachmentFile.exists()) {
 				throw new IllegalStateException("Attachment file not found: " + attachmentFile.getAbsolutePath());
 			}
-			try (ZipFile zipFile = new ZipFile(attachmentFile.getPath())) {
-				Enumeration<? extends ZipEntry> entries = zipFile.entries();
-				while (entries.hasMoreElements()) {
-					ZipEntry entry = entries.nextElement();
-					zipEntryAttachments.add(new JSPWikiZipAttachment(entry.getName(), attachment,
-							attachmentManager));
+			try {
+				try (ZipFile zipFile = new ZipFile(attachmentFile.getPath())) {
+					Enumeration<? extends ZipEntry> entries = zipFile.entries();
+					while (entries.hasMoreElements()) {
+						ZipEntry entry = entries.nextElement();
+						zipEntryAttachments.add(new JSPWikiZipAttachment(entry.getName(), attachment,
+								attachmentManager));
+					}
 				}
+			} catch(ZipException e) {
+				LOGGER.error(e.getMessage());
+				// skip this attachment -> but do not crash
 			}
 			if (!zipEntryAttachments.isEmpty()) {
 				zipAttachmentCache.put(attachment.getName(), zipEntryAttachments);
