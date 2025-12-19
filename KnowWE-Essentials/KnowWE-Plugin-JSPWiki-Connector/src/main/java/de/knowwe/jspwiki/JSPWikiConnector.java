@@ -489,7 +489,8 @@ public class JSPWikiConnector implements WikiConnector {
 								attachmentManager));
 					}
 				}
-			} catch(ZipException e) {
+			}
+			catch (ZipException e) {
 				LOGGER.error(e.getMessage());
 				// skip this attachment -> but do not crash
 			}
@@ -890,7 +891,7 @@ public class JSPWikiConnector implements WikiConnector {
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
 			throw new IOException("Unable to delete zip entry (" + path
-					+ ") in zip attachment. Try to delete attachment instead.");
+								  + ") in zip attachment. Try to delete attachment instead.");
 		}
 		try {
 			boolean wasLocked = isArticleLocked(title);
@@ -980,6 +981,9 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	private boolean checkPagePermission(String title, UserContext context, String permission) {
+		if (context.getTemporaryWritePermissions().contains(title)) {
+			return true;
+		}
 		WikiPage page = new WikiPage(getEngine(), title);
 		Session wikiSession = getWikiSession(getEngine(), context);
 

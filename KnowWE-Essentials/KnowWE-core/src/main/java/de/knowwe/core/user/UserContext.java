@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -43,6 +44,8 @@ import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
  * @created Mar 4, 2011
  */
 public interface UserContext {
+
+	String TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE = "temporaryWritePermissions";
 
 	/**
 	 * Returns whether the user has administration rights.
@@ -198,5 +201,21 @@ public interface UserContext {
 	 */
 	default RenderResultKeyValueStore getRenderResultKeyValueStore() {
 		return new ServletRequestKeyValueStore(getRequest());
+	}
+
+	/**
+	 * Allow writing/changing the articles with the given names to be changed for this request only.
+	 * Use this with care and only in actions that change predetermined articles.
+	 *
+	 * @param articleNames the names/titels of the articles that can be changed (even if not permitted by the policy)
+	 */
+	default void setTemporaryWritePermissions(Set<String> articleNames) {
+		getRequest().setAttribute(TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE, articleNames);
+	}
+
+	default Set<String> getTemporaryWritePermissions() {
+		Object tempWritPermissions = getRequest().getAttribute(TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE);
+		//noinspection unchecked
+		return tempWritPermissions == null ? Set.of() : (Set<String>) tempWritPermissions;
 	}
 }
