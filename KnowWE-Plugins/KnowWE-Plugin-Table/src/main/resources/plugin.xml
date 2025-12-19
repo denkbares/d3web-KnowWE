@@ -26,6 +26,23 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />	
 	</extension>
-	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="TableToExcelAction">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.TableToExcelAction" />
+		<parameter id="name" value="TableToExcelAction" />
+		<parameter id="description" value="Downloads the table as Excel file." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TableToExcelProvider">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.TableToExcelProvider" />
+		<parameter id="name" value="TableToExcelProvider" />
+		<parameter id="description"
+				   value="Offer a download button to download the current Table as an Excel file." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TableType" />
+	</extension>
 	
 </plugin>
