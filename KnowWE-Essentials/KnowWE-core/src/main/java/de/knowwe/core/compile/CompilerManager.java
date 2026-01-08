@@ -17,6 +17,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,7 @@ public class CompilerManager implements EventListener {
 	private volatile Iterator<Group<Double, Compiler>> running = null;
 	private final ThreadPoolExecutor threadPool;
 	private final Object lock = new Object();
+	private int compilationBlockers = 0;
 	private final Set<String> currentlyCompiledArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final Map<Compiler, Priority> currentlyCompiledPriority = new ConcurrentHashMap<>();
 	private final Set<Compiler> awaitedCompilers = new CountingSet<>();
@@ -102,6 +104,25 @@ public class CompilerManager implements EventListener {
 	 */
 	public void setCompileMessage(String commitMessage) {
 		this.compileMessage = commitMessage;
+	}
+
+	/**
+	 * Blocks the start of new compilation cycles until the returned {@link AutoCloseable} is closed. Use with
+	 * try-with-resources to ensure the block is always released.
+	 */
+	public AutoCloseable blockCompilation() {
+		synchronized (lock) {
+			compilationBlockers++;
+		}
+		AtomicBoolean closedTracker = new AtomicBoolean(false);
+		return () -> {
+			if (closedTracker.compareAndSet(false, true)) {
+				synchronized (lock) {
+					compilationBlockers--;
+					lock.notifyAll();
+				}
+			}
+		};
 	}
 
 	/**
@@ -222,7 +243,7 @@ public class CompilerManager implements EventListener {
 	 */
 	public void compile(List<Section<?>> added, List<Section<?>> removed) {
 		synchronized (lock) {
-			while (running != null) {
+			while (running != null || compilationBlockers > 0) {
 				try {
 					lock.wait();
 				}
