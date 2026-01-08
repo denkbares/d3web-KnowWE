@@ -109,8 +109,10 @@ public class CompilerManager implements EventListener {
 	/**
 	 * Blocks the start of new compilation cycles until the returned {@link AutoCloseable} is closed. Use with
 	 * try-with-resources to ensure the block is always released.
+	 * Method also waits for the current compilation to finish before blocking, an InterruptedException is thrown if the
+	 * thread is interrupted while waiting for compilation to finish.
 	 */
-	public AutoCloseable blockCompilation() {
+	public AutoCloseable blockCompilation() throws InterruptedException {
 		if (isCompileThread()) {
 			LOGGER.warn("blockCompilation was called from a compile thread; skipping to avoid deadlock.");
 			return () -> {
@@ -119,13 +121,8 @@ public class CompilerManager implements EventListener {
 
 		synchronized (lock) {
 			while (running != null) {
-				try {
-					LOGGER.info("Waiting to block compilation until current compilation finishes.");
-					lock.wait();
-				}
-				catch (InterruptedException e) {
-					LOGGER.warn("Interrupted while waiting to block compilation...");
-				}
+				LOGGER.info("Waiting to block compilation until current compilation finishes.");
+				lock.wait();
 			}
 
 			compilationBlockers++;
