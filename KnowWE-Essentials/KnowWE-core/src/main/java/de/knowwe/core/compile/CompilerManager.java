@@ -133,7 +133,11 @@ public class CompilerManager implements EventListener {
 				if (closedTracker.compareAndSet(false, true)) {
 					synchronized (lock) {
 						compilationBlockers--;
-						LOGGER.info("Compilation block released. Remaining blockers: {}", compilationBlockers);
+						if (compilationBlockers == 0) {
+							LOGGER.info("Compilation unblocked. No more active blockers.");
+						} else {
+							LOGGER.info("Compilation block released. Remaining blockers: {}", compilationBlockers);
+						}
 						lock.notifyAll();
 					}
 				}
