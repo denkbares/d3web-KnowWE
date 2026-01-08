@@ -111,20 +111,37 @@ public class CompilerManager implements EventListener {
 	 * try-with-resources to ensure the block is always released.
 	 */
 	public AutoCloseable blockCompilation() {
-		synchronized (lock) {
-			compilationBlockers++;
-			LOGGER.info("Compilation blocked. Active blockers: {}", compilationBlockers);
+		if (isCompileThread()) {
+			LOGGER.warn("blockCompilation was called from a compile thread; skipping to avoid deadlock.");
+			return () -> {
+			};
 		}
-		AtomicBoolean closedTracker = new AtomicBoolean(false);
-		return () -> {
-			if (closedTracker.compareAndSet(false, true)) {
-				synchronized (lock) {
-					compilationBlockers--;
-					LOGGER.info("Compilation block released. Remaining blockers: {}", compilationBlockers);
-					lock.notifyAll();
+
+		synchronized (lock) {
+			while (running != null) {
+				try {
+					LOGGER.info("Waiting to block compilation until current compilation finishes.");
+					lock.wait();
+				}
+				catch (InterruptedException e) {
+					LOGGER.warn("Interrupted while waiting to block compilation...");
 				}
 			}
-		};
+
+			compilationBlockers++;
+			LOGGER.info("Compilation blocked. Active blockers: {}", compilationBlockers);
+
+			AtomicBoolean closedTracker = new AtomicBoolean(false);
+			return () -> {
+				if (closedTracker.compareAndSet(false, true)) {
+					synchronized (lock) {
+						compilationBlockers--;
+						LOGGER.info("Compilation block released. Remaining blockers: {}", compilationBlockers);
+						lock.notifyAll();
+					}
+				}
+			};
+		}
 	}
 
 	/**
