@@ -112,7 +112,7 @@ public class CompilerManager implements EventListener {
 	 * Method also waits for the current compilation to finish before blocking, an InterruptedException is thrown if the
 	 * thread is interrupted while waiting for compilation to finish.
 	 */
-	public AutoCloseable blockCompilation() throws InterruptedException {
+	public AutoCloseable blockCompilation() {
 		if (isCompileThread()) {
 			LOGGER.warn("blockCompilation was called from a compile thread; skipping to avoid deadlock.");
 			return () -> {
@@ -121,8 +121,16 @@ public class CompilerManager implements EventListener {
 
 		synchronized (lock) {
 			while (running != null) {
-				LOGGER.info("Waiting to block compilation until current compilation finishes.");
-				lock.wait();
+				try {
+					LOGGER.info("Waiting to block compilation until current compilation finishes.");
+					lock.wait();
+				}
+				catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					LOGGER.warn("Interrupted while waiting to block compilation. No lock acquired or compilation blocked.");
+					return () -> {
+					};
+				}
 			}
 
 			compilationBlockers++;
