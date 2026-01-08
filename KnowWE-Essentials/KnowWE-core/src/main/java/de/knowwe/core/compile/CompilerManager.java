@@ -113,12 +113,14 @@ public class CompilerManager implements EventListener {
 	public AutoCloseable blockCompilation() {
 		synchronized (lock) {
 			compilationBlockers++;
+			LOGGER.info("Compilation blocked. Active blockers: {}", compilationBlockers);
 		}
 		AtomicBoolean closedTracker = new AtomicBoolean(false);
 		return () -> {
 			if (closedTracker.compareAndSet(false, true)) {
 				synchronized (lock) {
 					compilationBlockers--;
+					LOGGER.info("Compilation block released. Remaining blockers: {}", compilationBlockers);
 					lock.notifyAll();
 				}
 			}
