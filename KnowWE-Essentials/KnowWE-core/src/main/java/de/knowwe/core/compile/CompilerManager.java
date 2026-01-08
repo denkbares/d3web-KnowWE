@@ -215,16 +215,21 @@ public class CompilerManager implements EventListener {
 	}
 
 	/**
-	 * Starts the compilation based on a specified set of changing sections. The method returns true if the compilation
-	 * can be started. The method returns false if the request is ignored, e.g. because of an already ongoing
-	 * compilation.
+	 * Convenience method which compiles the given sections. Since for now only one compilation operation can happen at
+	 * the same time, this method waits until the current operation finishes before it starts the next.
 	 *
-	 * @return if the compilation has been started
-	 * @created 30.10.2013
+	 * @created 16.11.2013
 	 */
-	private boolean startCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) {
+	public void compile(List<Section<?>> added, List<Section<?>> removed) {
 		synchronized (lock) {
-			if (isCompiling()) return false;
+			while (running != null) {
+				try {
+					lock.wait();
+				}
+				catch (InterruptedException e) {
+					LOGGER.warn("Caught InterruptedException while waiting to compile.", e);
+				}
+			}
 			lastCompilationStart = new Date();
 			setCompiling(added);
 			setCompiling(removed);
@@ -255,7 +260,6 @@ public class CompilerManager implements EventListener {
 				}
 			}
 		});
-		return true;
 	}
 
 	private static void logCompilation(Collection<Section<?>> added, Collection<Section<?>> removed, Stopwatch stopwatch) {
@@ -683,23 +687,6 @@ public class CompilerManager implements EventListener {
 				long remainingTime = endTime - System.currentTimeMillis();
 				if (remainingTime <= 0) return false;
 				lock.wait(remainingTime);
-			}
-		}
-	}
-
-	/**
-	 * Convenience method which compiles the given sections. Since for now only one compilation operation can happen at
-	 * the same time, this methods wait until the current operation finishes before it starts the next.
-	 *
-	 * @created 16.11.2013
-	 */
-	public void compile(List<Section<?>> added, List<Section<?>> removed) {
-		while (!startCompile(added, removed)) {
-			try {
-				awaitTermination();
-			}
-			catch (InterruptedException e) {
-				LOGGER.warn("Caught InterruptedException while waiting to compile.", e);
 			}
 		}
 	}
