@@ -42,7 +42,6 @@ public class TableToExcelProvider implements ToolProvider {
 	protected Tool getDownloadTool(Section<?> section) {
 		String jsAction;
 		jsAction = "action/TableToExcelAction?" + Attributes.SECTION_ID + "=" + section.getID();
-		// assemble download tool
 		return new DefaultTool(
 				Icon.DOWNLOAD_LINE,
 				"Download as XLSX",

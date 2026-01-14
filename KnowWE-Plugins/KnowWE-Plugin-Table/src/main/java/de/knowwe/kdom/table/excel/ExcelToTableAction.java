@@ -52,11 +52,9 @@ public class ExcelToTableAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 		try {
-			// find file among all fields of the multipart form request
 			List<FileItem> potentialFiles = upload.parseRequest(context.getRequest());
 			var fileOptional = potentialFiles.stream().filter(field -> !field.isFormField()).findFirst();
 			fileOptional.ifPresent(file -> {
-				// check file
 				boolean hasXLSXExtension = file.getName() != null && file.getName().toLowerCase().endsWith(".xlsx");
 				if (!hasXLSXExtension) throw new RuntimeException("File has an invalid format");
 				if (file == null || file.getSize() == 0) {
@@ -64,7 +62,6 @@ public class ExcelToTableAction extends AbstractAction {
 				}
 
 				try (InputStream is = file.getInputStream()) {
-					// Apache POI automatically detects XLSX format for XSSFWorkbook
 					XSSFWorkbook workbook = new XSSFWorkbook(is);
 					String markupText = xlsxToWikiTable(workbook);
 					Section<?> section = getSection(context);
@@ -87,7 +84,7 @@ public class ExcelToTableAction extends AbstractAction {
 
 		wiki.append("%%Table\n");
 
-		// 1️⃣ Determine true max column count (unchanged, but safe)
+		// Determine true max column count
 		int columnCount = 0;
 		for (Row row : sheet) {
 			if (row != null && row.getLastCellNum() > columnCount) {
@@ -99,7 +96,7 @@ public class ExcelToTableAction extends AbstractAction {
 			return ""; // empty sheet
 		}
 
-		// 2️⃣ Iterate by row INDEX (this is the critical fix)
+		// Iterate by row INDEX
 		int firstRow = sheet.getFirstRowNum();
 		int lastRow = sheet.getLastRowNum();
 
@@ -107,16 +104,14 @@ public class ExcelToTableAction extends AbstractAction {
 			Row row = sheet.getRow(r);
 			boolean headerRow = (r == 0);
 
-			// 3️⃣ Handle completely empty rows
+			// Handle completely empty rows
 			if (row == null || row.getLastCellNum() == -1) {
-				for (int c = 0; c < columnCount; c++) {
-					wiki.append("|  ");
-				}
+				wiki.append("|  ".repeat(columnCount));
 				wiki.append("\n");
 				continue;
 			}
 
-			// 4️⃣ Normal row
+			// Normal row
 			for (int col = 0; col < columnCount; col++) {
 				Cell cell = row.getCell(col, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
 
@@ -152,7 +147,6 @@ public class ExcelToTableAction extends AbstractAction {
 
 		int runCount = rich.numFormattingRuns();
 		if (runCount == 0) {
-			// Convert Excel line breaks back to wiki markup
 			return rich.getString().replace("\r\n", "\n").replace("\n", "\\\\");
 		}
 
@@ -168,10 +162,8 @@ public class ExcelToTableAction extends AbstractAction {
 			boolean bold = font != null && font.getBold();
 			boolean italic = font != null && font.getItalic();
 
-			// Normalize line endings
 			text = text.replace("\r\n", "\n");
 
-			// Split by Excel line breaks
 			String[] lines = text.split("\n", -1);
 
 			for (int l = 0; l < lines.length; l++) {

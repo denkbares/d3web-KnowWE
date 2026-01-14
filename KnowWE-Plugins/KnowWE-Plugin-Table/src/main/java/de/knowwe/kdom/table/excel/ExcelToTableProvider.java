@@ -45,11 +45,11 @@ public class ExcelToTableProvider implements ToolProvider {
 		// assemble download tool
 		return new DefaultTool(
 				Icon.UPLOAD,
-				"Upload XLSX",
-				"Upload XLSX Table to convert to Table Markup",
+				"Replace with XLSX",
+				"Upload XLSX Table to replace current Table Markup with Excel file content",
 				jsAction,
 				Tool.ActionType.ONCLICK,
-				Tool.CATEGORY_EXECUTE);
+				Tool.CATEGORY_DOWNLOAD);
 	}
 
 	@Override

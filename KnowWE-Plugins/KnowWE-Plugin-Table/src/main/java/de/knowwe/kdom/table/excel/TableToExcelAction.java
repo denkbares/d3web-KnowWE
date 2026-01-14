@@ -46,6 +46,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.jspwiki.JSPWikiMarkupUtils;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableHeadStart;
 import de.knowwe.kdom.table.TableLine;
@@ -82,6 +83,7 @@ public class TableToExcelAction extends AbstractAction {
 					workbook.write(outputStream);
 				}
 			}
+			context.setHeader("Content-Disposition", "attachment; filename=\"" + JSPWikiMarkupUtils.generateFileNameForSection(section) + ".xlsx\"");
 			try {
 				try (InputStream inputStream = new FileInputStream(file)) {
 					Streams.stream(inputStream, contextOutputStream);
@@ -174,10 +176,8 @@ public class TableToExcelAction extends AbstractAction {
 			String raw,
 			boolean isHeader) {
 
-		// Normalize wiki line breaks FIRST
 		raw = normalizeWikiLineBreaks(raw);
 
-		// If empty after normalization → set empty cell
 		if (raw.isEmpty()) {
 			cell.setCellValue("");
 			return;
@@ -258,15 +258,12 @@ public class TableToExcelAction extends AbstractAction {
 	private static String normalizeWikiLineBreaks(String raw) {
 		if (raw == null) return "";
 
-		// Trim only for checking "only \\"
 		String trimmed = raw.trim();
 
-		// Case 1: cell is only "\\" → empty cell
 		if (trimmed.equals("\\\\")) {
 			return "";
 		}
 
-		// Case 2: mixed content → replace \\ with newline
 		return raw.replace("\\\\", "\n");
 	}
 

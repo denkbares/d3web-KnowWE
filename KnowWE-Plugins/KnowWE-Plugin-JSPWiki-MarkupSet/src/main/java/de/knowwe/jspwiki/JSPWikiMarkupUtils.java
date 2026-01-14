@@ -7,13 +7,17 @@ import java.util.List;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.Plugin;
 import com.denkbares.plugin.PluginManager;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.ScopeUtils;
 import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.plugin.Plugins;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class JSPWikiMarkupUtils {
 
@@ -131,5 +135,26 @@ public class JSPWikiMarkupUtils {
 			}
 		}
 		return i;
+	}
+
+	public static String generateFileNameForSection(Section<?> section) {
+		String fileName = section.getArticle().getTitle();
+		String lastHeadline = null;
+		for (Section<Type> child : $(section).parent().children()) {
+			if (child.get() instanceof HeaderType) {
+				Section<HeaderType> header = Sections.cast(child, HeaderType.class);
+				lastHeadline = header.get().getHeaderText(header);
+			}
+			if (child == section) break;
+		}
+		if (lastHeadline != null) {
+			fileName += " " + lastHeadline;
+		}
+		fileName = fileName.replaceAll("%%\\([^)]+\\)", "")
+				.replaceAll("%", "")
+				.replaceAll("[^\\w-_ ]", "");
+		fileName = Strings.ellipsis(fileName, 100, "");
+		fileName = Strings.trim(fileName);
+		return Strings.encodeFileName(fileName);
 	}
 }

@@ -95,13 +95,7 @@ KNOWWE.tablesorter = function(){
 
 KNOWWE.tableUploadExcel = function () {
 
-    // Private helper: actual upload
     async function handleFile(file, sectionID) {
-        if (!file.name.match(/\.xlsx$/i)) {
-            alert("Only XLSX files are allowed.");
-            return;
-        }
-
         try {
             await uploadFileToAction(file, sectionID);
             closeDialog();
@@ -235,10 +229,18 @@ KNOWWE.tableUploadExcel = function () {
 
             if (e.dataTransfer.files.length > 0) {
                 const file = e.dataTransfer.files[0];
-                showUploading(dropZone);
+
+                // Only show animation for valid XLSX files
+                if (!file.name.match(/\.xlsx$/i)) {
+                    alert("Only XLSX files are allowed.");
+                    return;
+                }
+
+                showUploading(dropZone); // <-- moved here
                 await handleFile(file, sectionID);
             }
         };
+
 
     }
 
