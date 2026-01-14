@@ -44,8 +44,8 @@ public class TableToExcelProvider implements ToolProvider {
 		jsAction = "action/TableToExcelAction?" + Attributes.SECTION_ID + "=" + section.getID();
 		return new DefaultTool(
 				Icon.DOWNLOAD_LINE,
-				"Download as XLSX",
-				"Download this Table as an Excel File",
+				"Export as XLSX",
+				"Export this Table as an Excel File and download it",
 				jsAction,
 				Tool.ActionType.HREF,
 				Tool.CATEGORY_DOWNLOAD);

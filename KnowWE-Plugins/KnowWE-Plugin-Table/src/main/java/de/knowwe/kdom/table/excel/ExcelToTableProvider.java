@@ -45,8 +45,8 @@ public class ExcelToTableProvider implements ToolProvider {
 		// assemble download tool
 		return new DefaultTool(
 				Icon.UPLOAD,
-				"Replace with XLSX",
-				"Upload XLSX Table to replace current Table Markup with Excel file content",
+				"Import XLSX file",
+				"Import XLSX Table to replace current Table Markup with Excel file content",
 				jsAction,
 				Tool.ActionType.ONCLICK,
 				Tool.CATEGORY_DOWNLOAD);
