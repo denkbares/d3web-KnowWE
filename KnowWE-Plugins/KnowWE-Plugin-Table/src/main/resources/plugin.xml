@@ -44,5 +44,26 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TableType" />
 	</extension>
-	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ExcelToTableAction">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.ExcelToTableAction" />
+		<parameter id="name" value="ExcelToTableAction" />
+		<parameter id="description" value="Upload XLSL File to convert to Table" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Table.js"/>
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ExcelToTableProvider">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.ExcelToTableProvider" />
+		<parameter id="name" value="ExcelToTableProvider" />
+		<parameter id="description"
+				   value="Offer an upload Button to convert and XLSX file to Table" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TableType" />
+	</extension>
+
+
+
 </plugin>

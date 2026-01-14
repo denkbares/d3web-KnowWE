@@ -19,7 +19,6 @@
 
 package de.knowwe.kdom.table.excel;
 
-import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -28,11 +27,11 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
- * Tool Provider for TableToExcelAction
+ * Tool Provider for ExcelToTableAction
  *
  * @author Philipp Sehne
  */
-public class TableToExcelProvider implements ToolProvider {
+public class ExcelToTableProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
@@ -40,20 +39,34 @@ public class TableToExcelProvider implements ToolProvider {
 	}
 
 	protected Tool getDownloadTool(Section<?> section) {
+		String sectionID = section.getID();
 		String jsAction;
-		jsAction = "action/TableToExcelAction?" + Attributes.SECTION_ID + "=" + section.getID();
+		jsAction = "KNOWWE.tableUploadExcel.open(" + jsString(sectionID) + ")";
 		// assemble download tool
 		return new DefaultTool(
-				Icon.DOWNLOAD_LINE,
-				"Download as XLSX",
-				"Download this Table as an Excel File",
+				Icon.UPLOAD,
+				"Upload XLSX",
+				"Upload XLSX Table to convert to Table Markup",
 				jsAction,
-				Tool.ActionType.HREF,
-				Tool.CATEGORY_DOWNLOAD);
+				Tool.ActionType.ONCLICK,
+				Tool.CATEGORY_EXECUTE);
 	}
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return true;
+	}
+
+	private static String jsString(String value) {
+		if (value == null) {
+			return "null";
+		}
+		return "'" + value
+				.replace("\\", "\\\\")
+				.replace("\"", "\\\"")
+				.replace("\n", "\\n")
+				.replace("\r", "\\r")
+				.replace("\t", "\\t")
+				+ "'";
 	}
 }

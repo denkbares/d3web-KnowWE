@@ -52,6 +52,11 @@ import de.knowwe.kdom.table.TableLine;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
+/**
+ * Action to convert Table markup into XLSX Excel file and download it
+ *
+ * @author Philipp Sehne
+ */
 public class TableToExcelAction extends AbstractAction {
 
 	private static XSSFFont normalFont;
@@ -64,7 +69,10 @@ public class TableToExcelAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		Section<?> section = getSection(context);
 
-		context.setContentType("application/vnd.ms-excel");
+		context.setContentType(
+				"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+		);
+
 		try (OutputStream contextOutputStream = context.getOutputStream()) {
 			File file = new File(Files.getSystemTempDir(), UUID.randomUUID() + ".xlsx");
 			file.deleteOnExit();
@@ -166,6 +174,15 @@ public class TableToExcelAction extends AbstractAction {
 			String raw,
 			boolean isHeader) {
 
+		// Normalize wiki line breaks FIRST
+		raw = normalizeWikiLineBreaks(raw);
+
+		// If empty after normalization → set empty cell
+		if (raw.isEmpty()) {
+			cell.setCellValue("");
+			return;
+		}
+
 		XSSFRichTextString rich = new XSSFRichTextString();
 
 		boolean bold = isHeader;
@@ -200,6 +217,7 @@ public class TableToExcelAction extends AbstractAction {
 		flush(buffer, rich, currentFont);
 		cell.setCellValue(rich);
 	}
+
 
 	private static void flush(StringBuilder buffer, XSSFRichTextString rich, XSSFFont font) {
 		if (!buffer.isEmpty()) {
@@ -236,4 +254,20 @@ public class TableToExcelAction extends AbstractAction {
 		font.setFontHeightInPoints((short) 11);
 		return font;
 	}
+
+	private static String normalizeWikiLineBreaks(String raw) {
+		if (raw == null) return "";
+
+		// Trim only for checking "only \\"
+		String trimmed = raw.trim();
+
+		// Case 1: cell is only "\\" → empty cell
+		if (trimmed.equals("\\\\")) {
+			return "";
+		}
+
+		// Case 2: mixed content → replace \\ with newline
+		return raw.replace("\\\\", "\n");
+	}
+
 }
