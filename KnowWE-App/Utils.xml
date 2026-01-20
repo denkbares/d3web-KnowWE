@@ -26,20 +26,20 @@
 		<!-- prepare logging -->
 		<mkdir dir="${basedir}/target/logs" />
 		<record name="${basedir}/target/logs/update_resources-core-plugins.log" action="start" loglevel="verbose" />
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="KnowWE-Resources/src/main/webapp/**" />
 				<include name="KnowWE-Resources/src/main/webapp/WEB-INF/" />
 			</fileset>
 			<cutdirsmapper dirs="4" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="*/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Plugins/">
 				<include name="*/src/main/resources/webapp/" />
 				<exclude name="KnowWE-Plugin-d3web-Homepage/**" />
@@ -55,7 +55,7 @@
 		<!-- prepare logging -->
 		<mkdir dir="${basedir}/target/logs" />
 		<record name="${basedir}/target/logs/update_resources-denkbares.log" action="start" loglevel="verbose" />
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KnowWE-DES/KnowWE-Plugins-DES/">
 				<include name="*/src/main/resources/webapp/" />
 
@@ -71,7 +71,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../Experimental/KnowWE-Plugins-Experimental/">
 				<include name="KnowWE-Plugin-d3web-TermBrowser/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-Defi/src/main/resources/webapp/" />
@@ -83,7 +83,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KnowWE-SSP/" erroronmissingdir="false">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
@@ -92,7 +92,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../ServiceMatePlatform/" erroronmissingdir="false">
 				<include name="KnowWE-Plugin-ServiceMate/src/main/resources/webapp/" />
 			</fileset>
@@ -104,7 +104,7 @@
 		<!-- prepare logging -->
 		<mkdir dir="${basedir}/target/logs" />
 		<record name="${basedir}/target/logs/update_resources-konap.log" action="start" loglevel="verbose" />
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KRONE/">
 				<include name="KnowWE-Plugin-KONAP/src/main/resources/webapp/" />
 
@@ -119,7 +119,7 @@
 		<!-- prepare logging -->
 		<mkdir dir="${basedir}/target/logs" />
 		<record name="${basedir}/target/logs/update_resources-d3web-Player.log" action="start" loglevel="verbose" />
-		<copy todir="${basedir}/target/KnowWE-App-2025.6-SNAPSHOT/KnowWEExtension/d3web-Player/client" verbose="true"
+		<copy todir="${basedir}/target/KnowWE-App-2026.2-SNAPSHOT/KnowWEExtension/d3web-Player/client" verbose="true"
 			  overwrite="true">
 			<fileset dir="${basedir}/../../d3web-Player-Platform/">
 				<include name="d3web-Player/src/main/resources/" />
