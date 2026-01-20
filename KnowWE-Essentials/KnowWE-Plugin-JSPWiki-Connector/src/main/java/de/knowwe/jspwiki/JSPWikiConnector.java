@@ -63,7 +63,6 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.exceptions.WikiException;
 import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
-import org.apache.wiki.api.spi.Wiki;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.auth.AuthorizationManager;
@@ -614,8 +613,8 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String toGlobalArticleName(String shortTitle, KnowWESubWikiContext context) {
-		if(SubWikiUtils.isGlobalName(shortTitle)) return shortTitle;
+	public String toGlobalArticleName(@NotNull String shortTitle, KnowWESubWikiContext context) {
+		if (SubWikiUtils.isGlobalName(shortTitle)) return shortTitle;
 		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), shortTitle, getWikiProperties());
 	}
 
@@ -650,22 +649,26 @@ public class JSPWikiConnector implements WikiConnector {
 				return Set.of(localName);
 			}
 		}
-		// TODO: check how this performs in case of nested wiki (main wiki content directly in root content)
 		Collection<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersInclMain(getEngine());
 		Set<String> result = allSubWikiFolders.stream()
 				.map(subWikiName -> SubWikiUtils.concatSubWikiAndLocalPageName(subWikiName, localName, getWikiProperties()))
-				.filter(this::doesArticleExist)
+				.filter(this::askPageManagerForExistence)
 				.collect(Collectors.toSet());
-		try {
-			String mainWikiFolder = SubWikiUtils.getMainWikiFolder(getWikiProperties());
-			if (getPageManager().pageExists(localName) && !result.contains(SubWikiUtils.concatSubWikiAndLocalPageName(mainWikiFolder, localName, getWikiProperties()))) {
-				result.add(localName);
-			}
-		}
-		catch (ProviderException e) {
-			throw new RuntimeException(e);
+		String mainWikiFolder = SubWikiUtils.getMainWikiFolder(getWikiProperties());
+		if (askPageManagerForExistence(localName) && !result.contains(SubWikiUtils.concatSubWikiAndLocalPageName(mainWikiFolder, localName, getWikiProperties()))) {
+			result.add(localName);
 		}
 		return result;
+	}
+
+	private boolean askPageManagerForExistence(@NotNull String title) {
+		try {
+			return getPageManager().pageExists(title);
+		}
+		catch (ProviderException e) {
+			LOGGER.error("Could not ask PageManager if page exists: " + title);
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -1086,7 +1089,7 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean userIsMemberOfGroup(String groupname, UserContext userContext) {
+	public boolean userIsMemberOfGroup(String groupName, UserContext userContext) {
 
 		// which article is not relevant
 		String articleName = "Main";
@@ -1095,7 +1098,7 @@ public class JSPWikiConnector implements WikiConnector {
 		Principal[] principals = context.getWikiSession().getRoles();
 
 		for (Principal principal : principals) {
-			if (principal.getName().equals(groupname)) return true;
+			if (principal.getName().equals(groupName)) return true;
 		}
 
 		return false;
