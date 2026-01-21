@@ -59,7 +59,6 @@ public interface WikiConnector {
 	 * Scenario: External component has modified wiki contents in batch style
 	 * without using the normal wiki-save-process.
 	 *
-	 * @return true if re-initialization was successful
 	 */
 	void reinitializeWikiEngine() throws IOException;
 
@@ -288,38 +287,38 @@ public interface WikiConnector {
 	/**
 	 * Returns the global page name for a local page name and context.
 	 *
-	 * @param shortTitle local page name
+	 * @param localArticleName local page name
 	 * @param context context
 	 * @return global page name
 	 */
-	String toGlobalArticleName(@NotNull String shortTitle, KnowWESubWikiContext context);
+	String toGlobalArticleName(@NotNull String localArticleName, KnowWESubWikiContext context);
 
 	/**
 	 * Returns the global name if the page is (uniquely) existing in a sub-wiki.
 	 * Returns null if no page for the name can be found.
 	 * Returns also null if multiple 'competing' pages in different sub-wikis are found.
 	 *
-	 * @param localPageName local page title
+	 * @param localArticleName local page title
 	 * @return global name or null, of no unique page could be found
 	 */
-	String toExistingUniqueOrGlobalName(@NotNull String localPageName);
+	String toExistingUniqueOrGlobalName(@NotNull String localArticleName);
 
 	/**
 	 * Returns the global page name for a local page name and context.
 	 *
-	 * @param qualifiedArticleName global page name
+	 * @param globalArticleName global page name
 	 * @param context context
 	 * @return local page name
 	 */
-	String toLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context);
+	String toLocalArticleName(@NotNull String globalArticleName, KnowWESubWikiContext context);
 
 	/**
-	 * Returns a KnowWESubwikiContext for a global page name
+	 * Returns a KnowWESubWikiContext for a global page name
 	 *
-	 * @param globalPagename global page name
-	 * @return KnowWESubwikiContext
+	 * @param globalArticleName global page name
+	 * @return KnowWESubWikiContext
 	 */
-	String getSubwikiName(@NotNull String globalPagename);
+	String getSubWikiName(@NotNull String globalArticleName);
 
 	/**
 	 * Searches over all sub-wikis for pages with the given local name

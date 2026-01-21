@@ -3,7 +3,6 @@ package de.knowwe.core;
 import java.util.Objects;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -26,7 +25,7 @@ public record KnowWESubWikiContext(String subWiki) {
 	}
 
 	public static KnowWESubWikiContext createFrom(String globalPageName) {
-		return new KnowWESubWikiContext(Environment.getInstance().getWikiConnector().getSubwikiName(globalPageName));
+		return new KnowWESubWikiContext(Environment.getInstance().getWikiConnector().getSubWikiName(globalPageName));
 	}
 
 	public String getGlobalPageName(String localPageName) {

@@ -613,32 +613,32 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String toGlobalArticleName(@NotNull String shortTitle, KnowWESubWikiContext context) {
-		if (SubWikiUtils.isGlobalName(shortTitle)) return shortTitle;
-		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), shortTitle, getWikiProperties());
+	public String toGlobalArticleName(@NotNull String localArticleName, KnowWESubWikiContext context) {
+		if (SubWikiUtils.isGlobalName(localArticleName)) return localArticleName;
+		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), localArticleName, getWikiProperties());
 	}
 
-	public String toExistingUniqueOrGlobalName(@NotNull String localPageName) {
-		if (SubWikiUtils.isGlobalName(localPageName)) return localPageName; // being a global page name already
-		Set<String> pages = findPages(localPageName);
+	public String toExistingUniqueOrGlobalName(@NotNull String localArticleName) {
+		if (SubWikiUtils.isGlobalName(localArticleName)) return localArticleName; // being a global page name already
+		Set<String> pages = findPages(localArticleName);
 		if (pages.isEmpty()) return null;
 		if (pages.size() == 1) {
 			return pages.stream().findFirst().get();
 		}
 		else {
-			LOGGER.warn("There are multiple pages of name: " + localPageName + " which cannot be uniquely ambiguated: " + pages);
+			LOGGER.warn("There are multiple pages of name: " + localArticleName + " which cannot be uniquely ambiguated: " + pages);
 			return null;
 		}
 	}
 
 	@Override
-	public String toLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context) {
-		return SubWikiUtils.getLocalPageName(qualifiedArticleName);
+	public String toLocalArticleName(@NotNull String globalArticleName, KnowWESubWikiContext context) {
+		return SubWikiUtils.getLocalPageName(globalArticleName);
 	}
 
 	@Override
-	public String getSubwikiName(@NotNull String globalPageName) {
-		return SubWikiUtils.getSubFolderNameOfPage(globalPageName, getWikiProperties());
+	public String getSubWikiName(@NotNull String globalArticleName) {
+		return SubWikiUtils.getSubFolderNameOfPage(globalArticleName, getWikiProperties());
 	}
 
 	@Override

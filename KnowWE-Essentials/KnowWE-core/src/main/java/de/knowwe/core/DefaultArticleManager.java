@@ -231,22 +231,23 @@ public class DefaultArticleManager implements ArticleManager {
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
 	 *
-	 * @param title The article to delete
+	 * @param globalArticleName The article to delete
 	 */
 	@Override
-	public void deleteArticle(String title, KnowWESubWikiContext context) {
+	public void deleteArticle(String globalArticleName, KnowWESubWikiContext context) {
 
+		// TOTO ; fix
 		open();
 		try {
-			registerArticle(title, "");
+			registerArticle(globalArticleName, "");
 
-			deleteAfterCompile.add(title.toLowerCase());
+			deleteAfterCompile.add(globalArticleName.toLowerCase());
 		}
 		finally {
 			commit();
 		}
 
-		LOGGER.info("-> Deleted article '" + title + "'" + " from " + web);
+		LOGGER.info("-> Deleted article '" + globalArticleName + "'" + " from " + web);
 	}
 
 	@NotNull

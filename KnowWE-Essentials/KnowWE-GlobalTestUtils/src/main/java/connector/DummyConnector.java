@@ -312,26 +312,26 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String toGlobalArticleName(String shortTitle, KnowWESubWikiContext context) {
-		if (Strings.isBlank(context.subWiki())) return shortTitle;
+	public String toGlobalArticleName(@NotNull String localArticleName, KnowWESubWikiContext context) {
+		if (Strings.isBlank(context.subWiki())) return localArticleName;
 		return context.subWiki() +
-				"&&" + shortTitle;
+				"&&" + localArticleName;
 	}
 
 	@Override
-	public String toExistingUniqueOrGlobalName(@NotNull String localPageName) {
+	public String toExistingUniqueOrGlobalName(@NotNull String localArticleName) {
 		// TODO: any multi-wiki functionality required???
-		return localPageName;
+		return localArticleName;
 	}
 
 	@Override
-	public String toLocalArticleName(@NotNull String qualifiedArticleName, KnowWESubWikiContext context) {
+	public String toLocalArticleName(@NotNull String globalArticleName, KnowWESubWikiContext context) {
 		// TODO: any multi-wiki functionality required???
-		return qualifiedArticleName;
+		return globalArticleName;
 	}
 
 	@Override
-	public String getSubwikiName(@NotNull String globalPagename) {
+	public String getSubWikiName(@NotNull String globalArticleName) {
 		// TODO: any multi-wiki functionality required???
 		return "";
 	}
