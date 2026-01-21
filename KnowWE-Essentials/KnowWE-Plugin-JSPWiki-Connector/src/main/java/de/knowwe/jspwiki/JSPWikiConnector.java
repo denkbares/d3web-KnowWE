@@ -595,8 +595,14 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	@NotNull
 	public String getSavePath() {
-		return (String) engine.getWikiProperties().get("var.basedir");
+		String savePathParameter = "var.basedir";
+		String savePath = (String) engine.getWikiProperties().get(savePathParameter);
+		if (savePath == null) {
+			throw new RuntimeException("Wiki not properly configured. No save path was found. Plz set \"" + savePathParameter + "\n in your wiki setup.");
+		}
+		return savePath;
 	}
 
 	@Override
@@ -969,7 +975,7 @@ public class JSPWikiConnector implements WikiConnector {
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
 			throw new IOException("Unable to delete zip entry (" + path
-								  + ") in zip attachment. Try to delete attachment instead.");
+					+ ") in zip attachment. Try to delete attachment instead.");
 		}
 		try {
 			boolean wasLocked = isArticleLocked(title);
