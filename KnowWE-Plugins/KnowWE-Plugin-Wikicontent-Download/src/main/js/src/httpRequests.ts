@@ -19,10 +19,10 @@
 
 import {downloadFile} from "./utils.ts";
 
-export async function createSnapshot() {
+export async function createSnapshot(name: string) {
     KNOWWE.editCommons.showAjaxLoader();
     const response = await fetch(
-        `action/CreateSnapshotAction`,
+        `action/CreateSnapshotAction?name=${name}`,
     );
     KNOWWE.editCommons.hideAjaxLoader();
 

@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
@@ -498,13 +499,19 @@ public class JSPWikiConnector implements WikiConnector {
 			if (!attachmentFile.exists()) {
 				throw new IllegalStateException("Attachment file not found: " + attachmentFile.getAbsolutePath());
 			}
-			try (ZipFile zipFile = new ZipFile(attachmentFile.getPath())) {
-				Enumeration<? extends ZipEntry> entries = zipFile.entries();
-				while (entries.hasMoreElements()) {
-					ZipEntry entry = entries.nextElement();
-					zipEntryAttachments.add(new JSPWikiZipAttachment(entry.getName(), attachment,
-							attachmentManager));
+			try {
+				try (ZipFile zipFile = new ZipFile(attachmentFile.getPath())) {
+					Enumeration<? extends ZipEntry> entries = zipFile.entries();
+					while (entries.hasMoreElements()) {
+						ZipEntry entry = entries.nextElement();
+						zipEntryAttachments.add(new JSPWikiZipAttachment(entry.getName(), attachment,
+								attachmentManager));
+					}
 				}
+			}
+			catch (ZipException e) {
+				LOGGER.error(e.getMessage());
+				// skip this attachment -> but do not crash
 			}
 			if (!zipEntryAttachments.isEmpty()) {
 				zipAttachmentCache.put(attachment.getName(), zipEntryAttachments);
@@ -962,7 +969,7 @@ public class JSPWikiConnector implements WikiConnector {
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
 			throw new IOException("Unable to delete zip entry (" + path
-					+ ") in zip attachment. Try to delete attachment instead.");
+								  + ") in zip attachment. Try to delete attachment instead.");
 		}
 		try {
 			boolean wasLocked = isArticleLocked(title);
@@ -1052,6 +1059,9 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	private boolean checkPagePermission(String title, UserContext context, String permission) {
+		if (context.getTemporaryWritePermissions().contains(title)) {
+			return true;
+		}
 		WikiPage page = new WikiPage(getEngine(), title);
 		Session wikiSession = getWikiSession(getEngine(), context);
 

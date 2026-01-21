@@ -25,7 +25,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2025.6-SNAPSHOT</version>
+		<version>2026.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-Table</artifactId>
@@ -62,6 +62,16 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.5.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
 		</dependency>
 	</dependencies>
 </project>

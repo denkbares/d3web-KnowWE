@@ -79,8 +79,6 @@ public class OntologyDownloadAction extends AbstractAction {
 			}
 		}
 
-		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
-
 		String syntaxValue = context.getParameter(PARAM_SYNTAX);
 		RDFFormat syntax;
 		if (RDFUtils.TURTLE_PRETTY.getDefaultMIMEType().equals(syntaxValue)) {
@@ -104,32 +102,38 @@ public class OntologyDownloadAction extends AbstractAction {
 		context.getResponse()
 				.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 		Stopwatch stopwatch = new Stopwatch();
-		try (OutputStream outputStream = context.getOutputStream()) {
-			if (syntax == RDFFormat.TURTLE) {
-				// pretty formatted turtle doesn't always work, we try first and do fallback in case it does not work
-				// since we can't fallback if we write to the response directly, we have to write to a temp file first
-				final File tempFile = Files.createTempFile(rdf2GoCore.getName(), filename).toFile();
-				tempFile.deleteOnExit();
-				try {
-					try (FileOutputStream out = new FileOutputStream(tempFile)) {
-						rdf2GoCore.writeModel(out, syntax);
+		try (AutoCloseable ignore = compiler.getCompilerManager().blockCompilation()) {
+			Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
+			try (OutputStream outputStream = context.getOutputStream()) {
+				if (syntax == RDFFormat.TURTLE) {
+					// pretty formatted turtle doesn't always work, we try first and do fallback in case it does not work
+					// since we can't fallback if we write to the response directly, we have to write to a temp file first
+					final File tempFile = Files.createTempFile(rdf2GoCore.getName(), filename).toFile();
+					tempFile.deleteOnExit();
+					try {
+						try (FileOutputStream out = new FileOutputStream(tempFile)) {
+							rdf2GoCore.writeModel(out, syntax);
+						}
+						try (FileInputStream inputStream = new FileInputStream(tempFile)) {
+							Streams.stream(inputStream, outputStream);
+						}
 					}
-					try (FileInputStream inputStream = new FileInputStream(tempFile)) {
-						Streams.stream(inputStream, outputStream);
+					catch (Exception e) {
+						LOGGER.warn("Formatted turtle export failed, very likely due to setting inline_blank_nodes, trying again without...");
+						// formatted writing didn't work, just write to response directly, we don't expect failure
+						rdf2GoCore.writeModel(Rio.createWriter(syntax, outputStream));
+					}
+					finally {
+						tempFile.delete();
 					}
 				}
-				catch (Exception e) {
-					LOGGER.warn("Formatted turtle export failed, very likely due to setting inline_blank_nodes, trying again without...");
-					// formatted writing didn't work, just write to response directly, we don't expect failure
-					rdf2GoCore.writeModel(Rio.createWriter(syntax, outputStream));
-				}
-				finally {
-					tempFile.delete();
+				else {
+					rdf2GoCore.writeModel(outputStream, syntax);
 				}
 			}
-			else {
-				rdf2GoCore.writeModel(outputStream, syntax);
-			}
+		}
+		catch (Exception e) {
+			throw new IOException(e);
 		}
 		stopwatch.log("Exported " + filename);
 	}

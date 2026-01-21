@@ -17,8 +17,6 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 import static de.knowwe.download.TmpFileDownloadToolProvider.getRepoFiles;
-import static de.knowwe.snapshot.CreateSnapshotToolProvider.AUTOSAVE_SNAPSHOT;
-import static de.knowwe.snapshot.CreateSnapshotToolProvider.SNAPSHOT;
 import static de.knowwe.snapshot.DeploySnapshotAction.KEY_DEPLOY_FILENAME;
 
 /**

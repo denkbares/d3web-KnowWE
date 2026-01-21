@@ -18,6 +18,7 @@
  */
 
 #popup-root .snapshot-popup-content.popup-content {
+	min-width: 50rem;
 	max-width: 60rem;
 	padding: 0;
 	border-radius: 0.2rem;
@@ -62,6 +63,8 @@
 		font-size: 1.2rem;
 
 		form {
+			margin-top: 1.5rem;
+
 			.input-group {
 				max-width: 40rem;
 				width: 100%;

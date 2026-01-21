@@ -17,6 +17,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,7 @@ public class CompilerManager implements EventListener {
 	private volatile Iterator<Group<Double, Compiler>> running = null;
 	private final ThreadPoolExecutor threadPool;
 	private final Object lock = new Object();
+	private int compilationBlockers = 0;
 	private final Set<String> currentlyCompiledArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final Map<Compiler, Priority> currentlyCompiledPriority = new ConcurrentHashMap<>();
 	private final Set<Compiler> awaitedCompilers = new CountingSet<>();
@@ -102,6 +104,53 @@ public class CompilerManager implements EventListener {
 	 */
 	public void setCompileMessage(String commitMessage) {
 		this.compileMessage = commitMessage;
+	}
+
+	/**
+	 * Blocks the start of new compilation cycles until the returned {@link AutoCloseable} is closed. Use with
+	 * try-with-resources to ensure the block is always released.
+	 * Method also waits for the current compilation to finish before blocking, an InterruptedException is thrown if the
+	 * thread is interrupted while waiting for compilation to finish.
+	 */
+	public AutoCloseable blockCompilation() {
+		if (isCompileThread()) {
+			LOGGER.warn("blockCompilation was called from a compile thread; skipping to avoid deadlock.");
+			return () -> {
+			};
+		}
+
+		synchronized (lock) {
+			while (running != null) {
+				try {
+					LOGGER.info("Waiting to block compilation until current compilation finishes.");
+					lock.wait();
+				}
+				catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					LOGGER.warn("Interrupted while waiting to block compilation. No lock acquired or compilation blocked.");
+					return () -> {
+					};
+				}
+			}
+
+			compilationBlockers++;
+			LOGGER.info("Compilation blocked. Active blockers: {}", compilationBlockers);
+
+			AtomicBoolean closedTracker = new AtomicBoolean(false);
+			return () -> {
+				if (closedTracker.compareAndSet(false, true)) {
+					synchronized (lock) {
+						compilationBlockers--;
+						if (compilationBlockers == 0) {
+							LOGGER.info("Compilation unblocked. No more active blockers.");
+						} else {
+							LOGGER.info("Compilation block released. Remaining blockers: {}", compilationBlockers);
+						}
+						lock.notifyAll();
+					}
+				}
+			};
+		}
 	}
 
 	/**
@@ -215,16 +264,21 @@ public class CompilerManager implements EventListener {
 	}
 
 	/**
-	 * Starts the compilation based on a specified set of changing sections. The method returns true if the compilation
-	 * can be started. The method returns false if the request is ignored, e.g. because of an already ongoing
-	 * compilation.
+	 * Convenience method which compiles the given sections. Since for now only one compilation operation can happen at
+	 * the same time, this method waits until the current operation finishes before it starts the next.
 	 *
-	 * @return if the compilation has been started
-	 * @created 30.10.2013
+	 * @created 16.11.2013
 	 */
-	private boolean startCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) {
+	public void compile(List<Section<?>> added, List<Section<?>> removed) {
 		synchronized (lock) {
-			if (isCompiling()) return false;
+			while (running != null || compilationBlockers > 0) {
+				try {
+					lock.wait();
+				}
+				catch (InterruptedException e) {
+					LOGGER.warn("Caught InterruptedException while waiting to compile.", e);
+				}
+			}
 			lastCompilationStart = new Date();
 			setCompiling(added);
 			setCompiling(removed);
@@ -255,7 +309,6 @@ public class CompilerManager implements EventListener {
 				}
 			}
 		});
-		return true;
 	}
 
 	private static void logCompilation(Collection<Section<?>> added, Collection<Section<?>> removed, Stopwatch stopwatch) {
@@ -683,23 +736,6 @@ public class CompilerManager implements EventListener {
 				long remainingTime = endTime - System.currentTimeMillis();
 				if (remainingTime <= 0) return false;
 				lock.wait(remainingTime);
-			}
-		}
-	}
-
-	/**
-	 * Convenience method which compiles the given sections. Since for now only one compilation operation can happen at
-	 * the same time, this methods wait until the current operation finishes before it starts the next.
-	 *
-	 * @created 16.11.2013
-	 */
-	public void compile(List<Section<?>> added, List<Section<?>> removed) {
-		while (!startCompile(added, removed)) {
-			try {
-				awaitTermination();
-			}
-			catch (InterruptedException e) {
-				LOGGER.warn("Caught InterruptedException while waiting to compile.", e);
 			}
 		}
 	}

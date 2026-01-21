@@ -26,6 +26,44 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />	
 	</extension>
-	
-	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="TableToExcelAction">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.TableToExcelAction" />
+		<parameter id="name" value="TableToExcelAction" />
+		<parameter id="description" value="Downloads the table as Excel file." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="TableToExcelProvider">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.TableToExcelProvider" />
+		<parameter id="name" value="TableToExcelProvider" />
+		<parameter id="description"
+				   value="Offer a download button to download the current Table as an Excel file." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TableType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ExcelToTableAction">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.ExcelToTableAction" />
+		<parameter id="name" value="ExcelToTableAction" />
+		<parameter id="description" value="Upload XLSL File to convert to Table" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Table.js"/>
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ExcelToTableProvider">
+		<parameter id="class" value="de.knowwe.kdom.table.excel.ExcelToTableProvider" />
+		<parameter id="name" value="ExcelToTableProvider" />
+		<parameter id="description"
+				   value="Offer an upload Button to convert and XLSX file to Table" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="TableType" />
+	</extension>
+
+
+
 </plugin>

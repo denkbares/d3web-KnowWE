@@ -20,6 +20,7 @@ package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -85,11 +86,11 @@ public class CIResultDownloadAction extends AbstractAction {
 			// write to output stream
 			String content = writer.toString();
 			String fileName = name + " " + latestBuild.getBuildNumber() + ".xml";
-			byte[] contentBytes = content.getBytes("UTF-8");
+			byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
 			context.setContentLength(contentBytes.length);
 			context.setContentType(XML);
 			context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\".xml");
-			context.getWriter().write(new String(contentBytes, "UTF-8"));
+			context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
 		}
 		catch (ParserConfigurationException | TransformerException e) {
 			context.sendError(HttpServletResponse.SC_EXPECTATION_FAILED, e.getMessage());

@@ -58,35 +58,41 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			}
 		}
 
-		KnowledgeBase base = compiler.getKnowledgeBase();
+		try (AutoCloseable ignore = compiler.getCompilerManager().blockCompilation()) {
 
-		String filename = context.getParameter(PARAM_FILENAME);
-		if (filename == null) {
-			filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
-		}
-		if (filename == null) {
-			filename = compiler.getName() + ".d3web";
-		}
+			KnowledgeBase base = compiler.getKnowledgeBase();
 
-		context.setContentType(BINARY);
-		context.getResponse().addHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
-		context.getResponse()
-				.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
+			String filename = context.getParameter(PARAM_FILENAME);
+			if (filename == null) {
+				filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
+			}
+			if (filename == null) {
+				filename = compiler.getName() + ".d3web";
+			}
 
-		// write the timestamp of the creation (Now!) into the knowledge base
-		base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
+			context.setContentType(BINARY);
+			context.getResponse().addHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+			context.getResponse()
+					.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 
-		File file = Files.createTempFile(compiler.getName(), filename).toFile();
-		try {
-			PersistenceManager.getInstance().save(base, file);
-			try (InputStream input = new FileInputStream(file)) {
-				try (OutputStream outs = context.getOutputStream()) {
-					Streams.stream(input, outs);
+			// write the timestamp of the creation (Now!) into the knowledge base
+			base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
+
+			File file = Files.createTempFile(compiler.getName(), filename).toFile();
+			try {
+				PersistenceManager.getInstance().save(base, file);
+				try (InputStream input = new FileInputStream(file)) {
+					try (OutputStream outs = context.getOutputStream()) {
+						Streams.stream(input, outs);
+					}
 				}
 			}
+			finally {
+				file.delete();
+			}
 		}
-		finally {
-			file.delete();
+		catch (Exception e) {
+			throw new IOException(e);
 		}
 	}
 

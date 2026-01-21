@@ -23,7 +23,7 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2025.6-SNAPSHOT</version>
+		<version>2026.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>KnowWE-GlobalTestUtils</artifactId>
 	<description>The purpose of this project is to offer some often needed util classes for JUNIT Tests</description>

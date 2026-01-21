@@ -22,18 +22,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.denkbares.strings.Strings;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.jspwiki.types.HeaderType;
+import de.knowwe.jspwiki.JSPWikiMarkupUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
-
-import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Stefan Plehn
@@ -57,7 +52,7 @@ public class SparqlToExcelDownloadProvider implements ToolProvider {
 	protected Tool getDownloadExcelTool(Section<?> section) {
 		String title = "Download as XLSX";
 		String description = "Download this table as an excel file";
-		String fileName = generateFileName(section);
+		String fileName = JSPWikiMarkupUtils.generateFileNameForSection(section);
 		String jsAction = "KNOWWE.plugin.sparql.downloadExcel(" +
 						  "'" + section.getID() + "', " +
 						  "'" + fileName + ".xlsx'," +
@@ -70,31 +65,10 @@ public class SparqlToExcelDownloadProvider implements ToolProvider {
 				jsAction, Tool.ActionType.ONCLICK, Tool.CATEGORY_DOWNLOAD);
 	}
 
-	private static String generateFileName(Section<?> section) {
-		String fileName = section.getArticle().getTitle();
-		String lastHeadline = null;
-		for (Section<Type> child : $(section).parent().children()) {
-			if (child.get() instanceof HeaderType) {
-				Section<HeaderType> header = Sections.cast(child, HeaderType.class);
-				lastHeadline = header.get().getHeaderText(header);
-			}
-			if (child == section) break;
-		}
-		if (lastHeadline != null) {
-			fileName += " " + lastHeadline;
-		}
-		fileName = fileName.replaceAll("%%\\([^)]+\\)", "")
-				.replaceAll("%", "")
-				.replaceAll("[^\\w-_ ]", "");
-		fileName = Strings.ellipsis(fileName, 100, "");
-		fileName = Strings.trim(fileName);
-		return Strings.encodeFileName(fileName);
-	}
-
 	protected Tool getDownloadExcelToolFiltered(Section<?> section) {
 		String title = "Download as XLSX (filtered)";
 		String description = "Download this table as an excel file only containing the filtered results.";
-		String fileName = generateFileName(section);
+		String fileName = JSPWikiMarkupUtils.generateFileNameForSection(section);
 		String jsAction = "KNOWWE.plugin.sparql.downloadExcel(" +
 				"'" + section.getID() + "', " +
 				"'" + fileName + ".xlsx'," +
