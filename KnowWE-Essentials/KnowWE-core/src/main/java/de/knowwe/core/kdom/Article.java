@@ -186,7 +186,8 @@ public final class Article {
 		this.sectionized = true;
 	}
 
-	public static String cleanupText(@NotNull String text) {
+	public static String cleanupText(String text) {
+		if (text == null) return null;
 		// just remove zero-width spaces and \r
 		text = REMOVE_PATTERN.matcher(text).replaceAll("");
 		// just replace others with regular space
