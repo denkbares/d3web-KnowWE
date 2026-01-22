@@ -2581,29 +2581,45 @@ li.findpages .btn {
 }
 
 .content .sidebar {
-	/*width: 275px;*/
-	/*position: fixed;*/
-	/*float: none;*/
-	/*background: #e5e8ed;*/
-	/*transition: left .5s, top .1s ease-in-out;*/
-	/*margin-left: 0;*/
+	position: relative;
+	flex: 0 0 auto;
+	order: 0;
+	width: 300px;
+	min-width: 250px;
+	max-width: 600px;
+	box-sizing: border-box;
+	transition: none;
 	z-index: 501;
-	max-width: 300px;
 }
 
-/*@media only screen and (max-width: 768px) {
-	.content.active .sidebar, .content.active:after {
-		margin-left: 0;
-	}
+.content .sidebar-handle {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 8px;
+	height: 100%;
+	cursor: col-resize;
+	z-index: 501;
+	background: transparent;
 }
-*/
+
+.content .sidebar-handle:hover {
+	background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.sidebar-resizing {
+	user-select: none;
+	cursor: col-resize;
+}
+
 .content:after {
-	max-width: 300px;
-	z-index: 500;
-	background-color: #f8f9fb;
+	display: none !important;
 }
 
 .page {
+	flex: 1 1 auto;
+	order: 1;
+	min-width: 0;
 	transition-property: width;
 }
 
@@ -2697,6 +2713,9 @@ li.findpages .btn {
 }
 
 .content {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 	background-color: var(--bg-color-content);
 }
 

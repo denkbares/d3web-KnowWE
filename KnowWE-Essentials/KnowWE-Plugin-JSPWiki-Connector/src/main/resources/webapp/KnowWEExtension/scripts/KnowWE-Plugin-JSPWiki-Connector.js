@@ -1,3 +1,4 @@
+/* global _EC, _EM, _IE, _KA, jq$ */
 if (typeof KNOWWE == "undefined" || !KNOWWE) {
   var KNOWWE = {};
 }
@@ -65,7 +66,7 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
   const timeDisplay = document.getElementById("compile-warning");
   if (!timeDisplay) return;
 
-  jq$.ajax("action/AwaitRecompilationAction", {cache: false}).done(function() {
+  jq$.ajax("action/AwaitRecompilationAction", { cache: false }).done(function() {
     window.location.reload();
   });
 
@@ -98,7 +99,6 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
     timeValueSpan.textContent = formatTime(elapsedTime);
   }
 
-  // Initiales Update und Setzen des Intervals
   updateDisplay();
   setInterval(updateDisplay, updateInterval);
 };
@@ -118,13 +118,12 @@ KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
 
 function getSectionId(filterTool) {
   return jq$(filterTool).parents(".page").find(".type_RecentChanges").find("table").attr("section-id");
-
 }
 
 KNOWWE.plugin.jspwikiConnector.setPageFilter = function(filterCheckBox, filterType) {
   let table = jq$(filterCheckBox).parents(".page").find(".type_RecentChanges").find(".knowwe-paginationWrapper");
   KNOWWE.helper.setToLocalSectionStorage(table.attr("id"), filterType, filterCheckBox.checked);
-  table.rerender({reason: "pagination"});
+  table.rerender({ reason: "pagination" });
 };
 
 jq$(function() {
@@ -134,4 +133,57 @@ jq$(function() {
   KNOWWE.plugin.jspwikiConnector.initCompileWarning();
 });
 
+jq$(function SidebarResizer() {
+  "use strict";
 
+  const CONFIG = {
+    selector: "#sidebar, .sidebar",
+    storageKey: "knowwe.sidebar.width"
+  };
+
+  const $sidebar = jq$(CONFIG.selector).first();
+  if (!$sidebar.length) return;
+
+  // read default values from css
+  const style = getComputedStyle($sidebar[0]);
+  const defaultWidth = parseInt(style.width, 10);
+  const minWidth = parseInt(style.minWidth, 10);
+  const maxWidth = parseInt(style.maxWidth, 10);
+
+  // append the resize handler to the sidebar
+  const $handle = jq$("<div class=\"sidebar-handle\"></div>").appendTo($sidebar);
+
+  // read and load the stored sidebar width
+  const savedWidth = localStorage.getItem(CONFIG.storageKey);
+  $sidebar.css("width", savedWidth ? savedWidth + "px" : defaultWidth + "px");
+
+  let dragging = false;
+  let startX = 0;
+  let startWidth = 0;
+
+  $handle.on("mousedown", function(e) {
+    const sidebarRect = $sidebar[0].getBoundingClientRect();
+
+    dragging = true;
+    startX = sidebarRect.right ?? 0;
+    startWidth = sidebarRect.width ?? 0;
+    jq$("body").addClass("sidebar-resizing");
+  });
+
+  jq$(document).on("mousemove", function(e) {
+    if (!dragging) return;
+
+    const delta = e.clientX - startX;
+    let newWidth = startWidth + delta;
+    newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+    $sidebar.css("width", newWidth + "px");
+  });
+
+  jq$(document).on("mouseup", function() {
+    if (!dragging) return;
+
+    dragging = false;
+    jq$("body").removeClass("sidebar-resizing");
+    localStorage.setItem(CONFIG.storageKey, $sidebar[0].getBoundingClientRect().width ?? "0");
+  });
+});
