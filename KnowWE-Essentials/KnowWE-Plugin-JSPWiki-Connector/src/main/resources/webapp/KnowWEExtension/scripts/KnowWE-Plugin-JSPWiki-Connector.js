@@ -1,3 +1,4 @@
+/* global _EC, _EM, _IE, _KA, jq$ */
 if (typeof KNOWWE == "undefined" || !KNOWWE) {
   var KNOWWE = {};
 }
@@ -51,12 +52,12 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
   const timeDisplay = document.getElementById("compile-warning");
   if (!timeDisplay) return;
 
-  jq$.ajax("action/AwaitRecompilationAction", {cache: false}).done(function() {
+  jq$.ajax("action/AwaitRecompilationAction", { cache: false }).done(function() {
     window.location.reload();
   });
 
-  const timeValueSpan = document.getElementById('time-value');
-  const dateStartedMsAgo = parseInt(timeValueSpan.getAttribute('data-started-ms-ago'), 10);
+  const timeValueSpan = document.getElementById("time-value");
+  const dateStartedMsAgo = parseInt(timeValueSpan.getAttribute("data-started-ms-ago"), 10);
   const updateInterval = 1000; // Update alle 1 Sekunde
 
   function formatTime(milliseconds) {
@@ -68,11 +69,11 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
     const remainingSeconds = totalSeconds % 60;
 
     if (days > 0) {
-      return `${days} days ${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} hours`;
+      return `${days} days ${hours}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")} hours`;
     } else if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')} hours`;
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")} hours`;
     } else if (minutes > 0) {
-      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')} min`;
+      return `${minutes}:${remainingSeconds.toString().padStart(2, "0")} min`;
     } else {
       return `${totalSeconds}s`;
     }
@@ -84,7 +85,6 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
     timeValueSpan.textContent = formatTime(elapsedTime);
   }
 
-  // Initiales Update und Setzen des Intervals
   updateDisplay();
   setInterval(updateDisplay, updateInterval);
 };
@@ -93,7 +93,7 @@ KNOWWE.plugin.jspwikiConnector.enableEditButtons = function() {
   jq$("#actionsTop").find(".edit").parent().show();
   jq$("#edit").show();
   _IE.enableDefaultEditTool();
-  if (typeof _EM !== 'undefined') _EM.changeActionMenu();
+  if (typeof _EM !== "undefined") _EM.changeActionMenu();
 };
 
 KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
@@ -104,13 +104,12 @@ KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
 
 function getSectionId(filterTool) {
   return jq$(filterTool).parents(".page").find(".type_RecentChanges").find("table").attr("section-id");
-
 }
 
 KNOWWE.plugin.jspwikiConnector.setPageFilter = function(filterCheckBox, filterType) {
   let table = jq$(filterCheckBox).parents(".page").find(".type_RecentChanges").find(".knowwe-paginationWrapper");
   KNOWWE.helper.setToLocalSectionStorage(table.attr("id"), filterType, filterCheckBox.checked);
-  table.rerender({reason: "pagination"});
+  table.rerender({ reason: "pagination" });
 };
 
 jq$(function() {
@@ -120,4 +119,57 @@ jq$(function() {
   KNOWWE.plugin.jspwikiConnector.initCompileWarning();
 });
 
+jq$(function SidebarResizer() {
+  "use strict";
 
+  const CONFIG = {
+    selector: "#sidebar, .sidebar",
+    storageKey: "knowwe.sidebar.width"
+  };
+
+  const $sidebar = jq$(CONFIG.selector).first();
+  if (!$sidebar.length) return;
+
+  // read default values from css
+  const style = getComputedStyle($sidebar[0]);
+  const defaultWidth = parseInt(style.width, 10);
+  const minWidth = parseInt(style.minWidth, 10);
+  const maxWidth = parseInt(style.maxWidth, 10);
+
+  // append the resize handler to the sidebar
+  const $handle = jq$("<div class=\"sidebar-handle\"></div>").appendTo($sidebar);
+
+  // read and load the stored sidebar width
+  const savedWidth = localStorage.getItem(CONFIG.storageKey);
+  $sidebar.css("width", savedWidth ? savedWidth + "px" : defaultWidth + "px");
+
+  let dragging = false;
+  let startX = 0;
+  let startWidth = 0;
+
+  $handle.on("mousedown", function(e) {
+    const sidebarRect = $sidebar[0].getBoundingClientRect();
+
+    dragging = true;
+    startX = sidebarRect.right ?? 0;
+    startWidth = sidebarRect.width ?? 0;
+    jq$("body").addClass("sidebar-resizing");
+  });
+
+  jq$(document).on("mousemove", function(e) {
+    if (!dragging) return;
+
+    const delta = e.clientX - startX;
+    let newWidth = startWidth + delta;
+    newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+    $sidebar.css("width", newWidth + "px");
+  });
+
+  jq$(document).on("mouseup", function() {
+    if (!dragging) return;
+
+    dragging = false;
+    jq$("body").removeClass("sidebar-resizing");
+    localStorage.setItem(CONFIG.storageKey, $sidebar[0].getBoundingClientRect().width ?? "0");
+  });
+});
