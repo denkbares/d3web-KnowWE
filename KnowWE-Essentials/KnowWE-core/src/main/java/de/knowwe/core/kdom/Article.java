@@ -167,8 +167,9 @@ public final class Article {
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
 		this.articleManager = manager;
-		this.lastVersion = Environment.isInitialized() && articleManager != null ? Environment.getInstance()
-				.getArticle(web, title) : null;
+		this.lastVersion = Environment.isInitialized() && articleManager != null
+				? Environment.getInstance().getArticle(web, title)
+				: null;
 
 		this.fullParse = fullParse
 				|| lastVersion == null
