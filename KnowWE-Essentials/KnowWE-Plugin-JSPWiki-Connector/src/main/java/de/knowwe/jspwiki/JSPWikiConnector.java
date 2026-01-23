@@ -631,10 +631,11 @@ public class JSPWikiConnector implements WikiConnector {
 		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), localArticleName, getWikiProperties());
 	}
 
+	@Override
 	public String toExistingUniqueOrGlobalName(@NotNull String localArticleName) {
 		if (SubWikiUtils.isGlobalName(localArticleName)) return localArticleName; // being a global page name already
 		Set<String> pages = findPages(localArticleName);
-		if (pages.isEmpty()) return null;
+		if (pages.isEmpty()) return localArticleName;
 		if (pages.size() == 1) {
 			return pages.stream().findFirst().get();
 		}
@@ -975,7 +976,7 @@ public class JSPWikiConnector implements WikiConnector {
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
 			throw new IOException("Unable to delete zip entry (" + path
-					+ ") in zip attachment. Try to delete attachment instead.");
+								  + ") in zip attachment. Try to delete attachment instead.");
 		}
 		try {
 			boolean wasLocked = isArticleLocked(title);
