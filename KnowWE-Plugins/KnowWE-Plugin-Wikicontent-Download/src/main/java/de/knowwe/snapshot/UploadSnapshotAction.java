@@ -30,9 +30,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.download.TmpFileDownloadToolProvider;
 
 import static de.knowwe.snapshot.SnapshotAction.getSnapshotsPath;
+import static de.knowwe.snapshot.SnapshotAction.storageLimitWasReached;
 
 public class UploadSnapshotAction extends AbstractAction {
 
@@ -64,6 +64,10 @@ public class UploadSnapshotAction extends AbstractAction {
 
 				if (file.getName().toLowerCase().contains("autosavesnapshot")) {
 					throw new RuntimeException("'AutosaveSnapshot' can not be part of your filename. Try to use a more descriptive filename");
+				}
+
+				if (storageLimitWasReached()) {
+					throw new RuntimeException("Snapshot limit was reached. Please delete a snapshot before continuing.");
 				}
 
 				// store file

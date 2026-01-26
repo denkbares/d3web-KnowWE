@@ -22,17 +22,16 @@ package de.knowwe.snapshot;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
-import de.knowwe.jspwiki.JSPWikiConnector;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.wiki.providers.SubWikiUtils;
 
 /**
  * Abstract super action for versioning actions. It prepares some input parameters
@@ -82,5 +81,40 @@ public abstract class SnapshotAction extends AbstractAction {
 			return new File(wikiConnector.getSavePath()).getParentFile().getAbsolutePath();
 		}
 		return wikiProperty;
+	}
+
+	/**
+	 *
+	 * @return storage limit in GB
+	 */
+	public static int getSnapshotsStorageLimit() {
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		String wikiProperty = wikiConnector.getWikiProperty("var.snapshots.limit");
+		if (wikiProperty == null || wikiProperty.isBlank()) {
+			return 2;
+		}
+		return Integer.parseInt(wikiProperty);
+	}
+
+	public static boolean storageLimitWasReached() {
+		return getDirectorySize(getSnapshotsPath()) >= getSnapshotsStorageLimit() * Math.pow(1000, 3);
+	}
+
+	/**
+	 * get directory file size in byte
+	 *
+	 * @param path
+	 * @return size
+	 */
+	private static long getDirectorySize(String path) {
+		File directory = new File(path);
+		if (!directory.exists() || !directory.isDirectory()) {
+			return 0;
+		}
+		File[] files = directory.listFiles();
+		if (files == null || files.length == 0) {
+			return 0;
+		}
+		return Arrays.stream(files).mapToLong(File::length).sum();
 	}
 }
