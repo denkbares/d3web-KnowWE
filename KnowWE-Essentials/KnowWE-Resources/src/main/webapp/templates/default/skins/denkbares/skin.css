@@ -2585,11 +2585,17 @@ li.findpages .btn {
 	flex: 0 0 auto;
 	order: 0;
 	width: 300px;
-	min-width: 250px;
+	min-width: 200px;
 	max-width: 600px;
 	box-sizing: border-box;
 	transition: none;
+	margin-left: 0 !important; /* overwrite default toggle behaviour */
 	z-index: 501;
+}
+
+/* hide the sidebar on toggle */
+.content:not(.active) .sidebar {
+	display: none;
 }
 
 .content .sidebar-handle {
@@ -2623,10 +2629,11 @@ body.sidebar-resizing {
 	transition-property: width;
 }
 
+/* do not hide page content on resize */
 .content.active .page {
-	min-width: calc(100% - 300px);
+	min-width: unset;
+	width: 100%;
 }
-
 
 .edit .page {
 	transition: none;
