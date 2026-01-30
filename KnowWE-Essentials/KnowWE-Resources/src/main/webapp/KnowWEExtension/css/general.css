@@ -301,6 +301,9 @@ code.box {
 	padding: 5px 5px 5px 5px !important;
 	color: var(--text-color-warning);
 }
+.warning:has(i){
+	padding-left: 45px !important;
+}
 
 .warning:before {
 	content: "\f071";
@@ -308,6 +311,10 @@ code.box {
 	font-weight: 300;
 	margin-right: 10px;
 	margin-left: 5px;
+}
+
+.warning:has(i)::before {
+	content: none;
 }
 
 .error {
