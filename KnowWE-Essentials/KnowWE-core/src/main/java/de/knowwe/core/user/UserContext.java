@@ -210,11 +210,11 @@ public interface UserContext {
 	 * @param articleNames the names/titels of the articles that can be changed (even if not permitted by the policy)
 	 */
 	default void setTemporaryWritePermissions(Set<String> articleNames) {
-		getRequest().setAttribute(TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE, articleNames);
+		getRenderResultKeyValueStore().setAttribute(TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE, articleNames);
 	}
 
 	default Set<String> getTemporaryWritePermissions() {
-		Object tempWritPermissions = getRequest().getAttribute(TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE);
+		Object tempWritPermissions = getRenderResultKeyValueStore().getAttribute(TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE);
 		//noinspection unchecked
 		return tempWritPermissions == null ? Set.of() : (Set<String>) tempWritPermissions;
 	}
