@@ -32,7 +32,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -580,7 +582,16 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		private static final Logger LOGGER = LoggerFactory.getLogger(UpdateTaskRegistrationScript.class);
 
 		private static final String UPDATE_TASK_KEY = "updateTaskKey";
-		private static final ScheduledExecutorService UPDATE_TIMER = Executors.newScheduledThreadPool(10);
+		private static final ScheduledExecutorService UPDATE_TIMER = Executors.newScheduledThreadPool(10, new ThreadFactory() {
+			private final AtomicLong number = new AtomicLong(1);
+
+			@Override
+			public Thread newThread(@NotNull Runnable runnable) {
+				Thread thread = new Thread(runnable, "AttachmentUpdateTask" + "-" + number.getAndIncrement());
+				thread.setDaemon(true);
+				return thread;
+			}
+		});
 
 		static {
 			ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
