@@ -4,8 +4,6 @@
 
 package de.knowwe.kdom.attachment;
 
-import javax.servlet.http.HttpServletResponse;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,13 +28,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +88,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	protected static final String PATH_SEPARATOR = "/";
 	private static final Map<String, Long> LAST_RUNS = new ConcurrentHashMap<>();
 	private static final Map<String, Instant> DOWNLOADING = new ConcurrentHashMap<>();
-	private static final Set<QueuedAttachment> QUEUED_ATTACHMENTS = Collections.synchronizedSet(new HashSet<>());
+	private static final Set<QueuedAttachment> QUEUED_ATTACHMENTS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
 
@@ -99,7 +100,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	public enum State {
-		OUTDATED, UP_TO_DATE, UNKNOWN
+		OUTDATED, UP_TO_DATE, IMPORT_SECTION_CHANGED, UNKNOWN
 	}
 
 	public AttachmentUpdateMarkup(DefaultMarkup markup) {
@@ -209,9 +210,9 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return;
 		}
 		try {
+			Stopwatch stopwatch = new Stopwatch();
 			DOWNLOADING.put(path, Instant.now());
 			try {
-				Stopwatch stopwatch = new Stopwatch();
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
 				State attachmentState = needsUpdate(attachment, url);
 				if (!force && attachmentState == AttachmentMarkup.State.UP_TO_DATE) {
@@ -238,13 +239,14 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 				connectionStream = applyReplacements(section, connectionStream);
 
-				if (force || attachmentState == AttachmentMarkup.State.UNKNOWN || attachmentState == AttachmentMarkup.State.OUTDATED) {
+				if (force || attachmentState == AttachmentMarkup.State.UNKNOWN || attachmentState == AttachmentMarkup.State.OUTDATED || attachmentState == AttachmentMarkup.State.IMPORT_SECTION_CHANGED) {
 					// if state is unknown, compare contents, so we don't produce unnecessary attachment versions and compiles
 					// to be sure that there is actually change, also compare content if we see outdated based on header info...
 					if (attachment != null) {
 						byte[] connectionBytes = Streams.getBytesAndClose(connectionStream);
 						byte[] attachmentBytes = Streams.getBytesAndClose(attachment.getInputStream());
-						if (Arrays.equals(connectionBytes, attachmentBytes)) {
+						// for IMPORT_SECTION_CHANGED we always store a new version of attachment to make sure it gets a new time stamp, so we skip this loop next time
+						if (attachmentState != AttachmentMarkup.State.IMPORT_SECTION_CHANGED && Arrays.equals(connectionBytes, attachmentBytes)) {
 							LOGGER.debug("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on content comparison).");
 							return;
 						}
@@ -252,9 +254,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 					}
 				}
 				// make sure all downloading happens in this block
-				synchronized (QUEUED_ATTACHMENTS) {
-					QUEUED_ATTACHMENTS.add(new QueuedAttachment(path, versioning, Instant.now(), new ByteArrayInputStream(Streams.getBytesAndClose(connectionStream))));
-				}
+				QUEUED_ATTACHMENTS.add(new QueuedAttachment(path, versioning, Instant.now(), new ByteArrayInputStream(Streams.getBytesAndClose(connectionStream))));
 				stopwatch.log(LOGGER, "Queued attachment '" + path + "' with resource from URL " + url);
 			}
 			catch (UnknownHostException e) {
@@ -272,7 +272,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				if (!allowWaitForOtherDownloads || DOWNLOADING.isEmpty() || longWaitingAttachmentInQueue()) {
 					compileQueuedAttachments();
 				}
-				else {
+				else if (!QUEUED_ATTACHMENTS.isEmpty()) {
 					LOGGER.info("Waiting with attachment compilation, until other currently running downloads area finished...");
 				}
 			}
@@ -283,23 +283,22 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	private static boolean longWaitingAttachmentInQueue() {
-		List<QueuedAttachment> copy;
-		synchronized (QUEUED_ATTACHMENTS) {
-			copy = new ArrayList<>(QUEUED_ATTACHMENTS);
-		}
-		if (copy.isEmpty()) return false;
+		if (QUEUED_ATTACHMENTS.isEmpty()) return false;
+		List<QueuedAttachment> copy = new ArrayList<>(QUEUED_ATTACHMENTS);
 		copy.sort(Comparator.comparing(QueuedAttachment::waitingSince));
 		QueuedAttachment longestWaiting = copy.get(0);
 		// as soon as an attachment is waiting for more than 2 minutes, start logging
 		if (longestWaiting.waitingSince().isBefore(Instant.now().minus(2, ChronoUnit.MINUTES))) {
 			LOGGER.info("Attachment {} is waiting since {}...",
-					longestWaiting.path, Stopwatch.getDisplay(Duration.between(longestWaiting.waitingSince(), Instant.now()).toMillis()));
+					longestWaiting.path, Stopwatch.getDisplay(Duration.between(longestWaiting.waitingSince(), Instant.now())
+							.toMillis()));
 
 			// also log long-running downloads if there are any
 			for (Map.Entry<String, Instant> entry : DOWNLOADING.entrySet()) {
 				if (entry.getValue().isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
 					LOGGER.info("Attachment {} is downloading since {}...",
-							entry.getKey(), Stopwatch.getDisplay(Duration.between(entry.getValue(), Instant.now()).toMillis()));
+							entry.getKey(), Stopwatch.getDisplay(Duration.between(entry.getValue(), Instant.now())
+									.toMillis()));
 					return true;
 				}
 			}
@@ -309,18 +308,21 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	private void compileQueuedAttachments() {
 
+		// don't lock if the queue is empty
 		if (QUEUED_ATTACHMENTS.isEmpty()) return;
 
-		Set<QueuedAttachment> copy;
-		synchronized (QUEUED_ATTACHMENTS) {
-			copy = new HashSet<>(QUEUED_ATTACHMENTS);
-			QUEUED_ATTACHMENTS.clear();
-		}
-
 		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		// first acquire lock
 		articleManager.open();
+		Set<QueuedAttachment> attachmentsToCompile;
 		try {
-			for (QueuedAttachment update : copy) {
+			// then copy, so we get attachments queued while waiting for the lock
+			attachmentsToCompile = new HashSet<>(QUEUED_ATTACHMENTS);
+			if (attachmentsToCompile.isEmpty()) {
+				return; // maybe another thread cleared the queue
+			}
+			QUEUED_ATTACHMENTS.removeAll(attachmentsToCompile);
+			for (QueuedAttachment update : attachmentsToCompile) {
 				String parentName = update.path.substring(0, update.path.indexOf(PATH_SEPARATOR));
 				String fileName = update.path.substring(update.path.indexOf("/") + 1);
 				try {
@@ -335,8 +337,8 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		finally {
 			articleManager.commit();
 		}
-		LOGGER.info("Committed {} queued {} for compilation: {}", copy.size(),
-				Strings.pluralOf(copy.size(), "attachment", false), copy.stream()
+		LOGGER.info("Committed {} queued {} for compilation: {}", attachmentsToCompile.size(),
+				Strings.pluralOf(attachmentsToCompile.size(), "attachment", false), attachmentsToCompile.stream()
 						.map(QueuedAttachment::path)
 						.collect(Collectors.joining(", ")));
 	}
@@ -469,8 +471,12 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				.isAfter(attachmentDateTime.truncatedTo(ChronoUnit.SECONDS))) {
 			state = AttachmentMarkup.State.OUTDATED;
 		}
-		else if (urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()))
-				 || attachmentSectionDateTime.isAfter(attachmentDateTime)) {
+		// import-section is newer than the latest version of the attachment, e.g., because replacements have changed
+		else if (attachmentSectionDateTime.isAfter(attachmentDateTime)) {
+			state = AttachmentMarkup.State.IMPORT_SECTION_CHANGED;
+			LOGGER.info("Attachment section is newer than attachment, checking for changes and update attachment...");
+		}
+		else if (urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()))) {
 			// check if urlDateTime is equal to unix time 0
 			// if it is, the time was not set (maybe because of server settings)
 			state = AttachmentMarkup.State.UNKNOWN;
@@ -536,20 +542,20 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return connection;
 	}
 
-	protected long getInitialDelay(Section<AttachmentUpdateMarkup> section, long interval) {
+	protected long getInitialDelayMillis(Section<AttachmentUpdateMarkup> section, long interval) {
 
 		long timeSinceLastRun = section.get().timeSinceLastRun(section);
 		if (interval < TimeUnit.HOURS.toMillis(1)) {
 			// If we have an interval smaller than one hour, we see it as a
 			// delay between executions and start at once. If the updater has run before
 			// and was only removed and added again because of a full compilation of the
-			// article without change to the updater itself, we continue with
-			// desired interval.
+			// article without a change to the updater itself, we continue with
+			// the desired interval.
 			return Math.max(0, interval - timeSinceLastRun);
 		}
 		else {
-			// Otherwise, we see it as a rate and start a the given start delay, taking
-			// again into account, if the equal updater has run before.
+			// Otherwise, we see it as a rate and start at the given start delay, taking
+			// again into account if the same updater has run before.
 			return timeSinceLastRun == Long.MAX_VALUE ?
 					// updater did not run before, just use the given delay
 					getStartDelayFromAnnotation(section) :
@@ -574,12 +580,12 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		private static final Logger LOGGER = LoggerFactory.getLogger(UpdateTaskRegistrationScript.class);
 
 		private static final String UPDATE_TASK_KEY = "updateTaskKey";
-		private static final Timer UPDATE_TIMER = new Timer(true);
+		private static final ScheduledExecutorService UPDATE_TIMER = Executors.newScheduledThreadPool(10);
 
 		static {
 			ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 				LOGGER.info("Shutting down attachment update timer.");
-				UPDATE_TIMER.cancel();
+				UPDATE_TIMER.shutdownNow();
 			});
 		}
 
@@ -594,7 +600,8 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			UpdateTask updateTask = new UpdateTask(section);
 			section.storeObject(compiler, UPDATE_TASK_KEY, updateTask);
 
-			UPDATE_TIMER.scheduleAtFixedRate(updateTask, section.get().getInitialDelay(section, interval), interval);
+			UPDATE_TIMER.scheduleAtFixedRate(updateTask, section.get()
+					.getInitialDelayMillis(section, interval), interval, TimeUnit.MILLISECONDS);
 		}
 
 		@Override
