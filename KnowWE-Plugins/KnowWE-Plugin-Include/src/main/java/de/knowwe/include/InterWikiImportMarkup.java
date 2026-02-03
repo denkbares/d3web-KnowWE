@@ -201,7 +201,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	protected long getIntervalMillis(Section<? extends AttachmentUpdateMarkup> section) {
 		long interval = super.getIntervalMillis(section);
 		if (interval == Long.MAX_VALUE) {
-			interval = 1000 * 60 * 10; // 10 min default interval
+			interval = 1000 * 60 * 60; // 60 min default interval
 		}
 		return interval;
 	}
