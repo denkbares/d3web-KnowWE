@@ -90,6 +90,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	protected static final String PATH_SEPARATOR = "/";
 	private static final Map<String, Long> LAST_RUNS = new ConcurrentHashMap<>();
 	private static final Map<String, Instant> DOWNLOADING = new ConcurrentHashMap<>();
+	private static Instant LAST_WAITING_LOG = Instant.MIN;
 	private static final Set<QueuedAttachment> QUEUED_ATTACHMENTS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
@@ -274,8 +275,9 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				if (!allowWaitForOtherDownloads || DOWNLOADING.isEmpty() || longWaitingAttachmentInQueue()) {
 					compileQueuedAttachments();
 				}
-				else if (!QUEUED_ATTACHMENTS.isEmpty()) {
+				else if (!QUEUED_ATTACHMENTS.isEmpty() && LAST_WAITING_LOG.isBefore(Instant.now().minus(30, ChronoUnit.SECONDS))) {
 					LOGGER.info("Waiting with attachment compilation, until other currently running downloads area finished...");
+					LAST_WAITING_LOG = Instant.now();
 				}
 			}
 		}
