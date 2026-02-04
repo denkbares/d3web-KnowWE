@@ -2,6 +2,8 @@ package de.knowwe.core;
 
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -17,6 +19,7 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 public record KnowWESubWikiContext(String subWiki) {
 
 	public static final KnowWESubWikiContext SIMPLE_CONTEXT = new KnowWESubWikiContext("");
+	public static final KnowWESubWikiContext DEFAULT_CONTEXT = generateDefaultContext();
 	public static final String KNOWWE_CONTEXT_PARAMETER = "KnowWESubWikiContext";
 	public static final String MAIN_SUBWIKI_SUBFOLDER = "jspwiki.mainFolder";
 
@@ -60,6 +63,10 @@ public record KnowWESubWikiContext(String subWiki) {
 	 * @return default KnowWESubWikiContext
 	 */
 	public static KnowWESubWikiContext getDefaultContext() {
+		return DEFAULT_CONTEXT;
+	}
+
+	private static @NotNull KnowWESubWikiContext generateDefaultContext() {
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String wikiProperty = wikiConnector.getWikiProperty(MAIN_SUBWIKI_SUBFOLDER);
 		if (wikiProperty == null) {
