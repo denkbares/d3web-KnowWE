@@ -1,17 +1,14 @@
 package de.knowwe.core.action;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.denkbares.strings.Strings;
-import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -88,22 +85,17 @@ public class GetSectionTextAction extends AbstractAction {
 	}
 
 	protected void writeFile(UserActionContext context, String sectionText, String fileName, Instant lastModified) throws IOException {
-		File tempTextFile = File.createTempFile(fileName, "_SectionText.txt");
-		try {
-			Strings.writeFile(tempTextFile.getPath(), sectionText);
+		context.setContentType(BINARY);
+		context.setHeader("Last-Modified", DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneOffset.UTC)
+				.format(lastModified));
+		context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + ".txt\"");
 
-			context.setContentType(BINARY);
-			context.setHeader("Last-Modified", DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneOffset.UTC)
-					.format(lastModified));
-			context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + ".txt\"");
-
-			FileInputStream in = new FileInputStream(tempTextFile);
-			OutputStream out = context.getOutputStream();
-			Streams.streamAndClose(in, out);
-		}
-		finally {
-			tempTextFile.delete();
-			tempTextFile.deleteOnExit();
+		byte[] data = sectionText.getBytes(StandardCharsets.UTF_8);
+		// Optional: Set content length if desired
+		context.setContentLength(data.length);
+		try (OutputStream out = context.getOutputStream()) {
+			out.write(data);
+			out.flush();
 		}
 	}
 }
