@@ -290,7 +290,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		copy.sort(Comparator.comparing(QueuedAttachment::waitingSince));
 		QueuedAttachment longestWaiting = copy.get(0);
 		// as soon as an attachment is waiting for more than 2 minutes, start logging
-		if (longestWaiting.waitingSince().isBefore(Instant.now().minus(2, ChronoUnit.MINUTES))) {
+		if (longestWaiting.waitingSince().isBefore(Instant.now().minus(10, ChronoUnit.MINUTES))) {
 			LOGGER.info("Attachment {} is waiting since {}...",
 					longestWaiting.path, Stopwatch.getDisplay(Duration.between(longestWaiting.waitingSince(), Instant.now())
 							.toMillis()));
@@ -299,8 +299,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			for (Map.Entry<String, Instant> entry : DOWNLOADING.entrySet()) {
 				if (entry.getValue().isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
 					LOGGER.info("Attachment {} is downloading since {}...",
-							entry.getKey(), Stopwatch.getDisplay(Duration.between(entry.getValue(), Instant.now())
-									.toMillis()));
+							entry.getKey(), Stopwatch.getDisplay(Duration.between(entry.getValue(), Instant.now()).toMillis()));
 					return true;
 				}
 			}
