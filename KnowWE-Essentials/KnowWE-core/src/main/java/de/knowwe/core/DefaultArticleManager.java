@@ -123,9 +123,8 @@ public class DefaultArticleManager implements ArticleManager {
 	@Override
 	public Article getArticle(String title, KnowWESubWikiContext context) {
 		if (title == null) return null;
-		String uniqueArticleName = Environment.getInstance()
-				.getWikiConnector().toExistingUniqueOrGlobalName(title);
-		if(uniqueArticleName == null) return null;
+		String uniqueArticleName = context.toExistingUniqueOrGlobalName(title);
+		if (uniqueArticleName == null) return null;
 		return articleMap.get(uniqueArticleName.toLowerCase());
 	}
 
@@ -310,7 +309,7 @@ public class DefaultArticleManager implements ArticleManager {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
 						String next = iterator.next();
 						Article removed = articleMap.remove(next);
-						if(removed != null) {
+						if (removed != null) {
 							removed.destroy(null);
 						}
 						iterator.remove();

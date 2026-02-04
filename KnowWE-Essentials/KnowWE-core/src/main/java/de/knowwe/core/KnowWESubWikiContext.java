@@ -33,6 +33,16 @@ public record KnowWESubWikiContext(String subWiki) {
 		return Environment.getInstance().getWikiConnector().toGlobalArticleName(localPageName, this);
 	}
 
+	public String toExistingUniqueOrGlobalName(String title) {
+		if (Strings.isBlank(this.subWiki)) {
+			return title;
+		}
+		else {
+			return Environment.getInstance()
+					.getWikiConnector().toExistingUniqueOrGlobalName(title);
+		}
+	}
+
 	public String getLocalName(String globalName) {
 		if (!globalName.startsWith(this.subWiki)) {
 			throw new IllegalArgumentException("Invalid subwiki context (" + this.subWiki + ") for article: " + globalName);
