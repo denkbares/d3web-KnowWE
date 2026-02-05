@@ -2632,7 +2632,6 @@ body.sidebar-resizing {
 
 /* do not hide page content on resize */
 .content.active .page {
-	min-width: unset;
 	width: 100%;
 }
 
