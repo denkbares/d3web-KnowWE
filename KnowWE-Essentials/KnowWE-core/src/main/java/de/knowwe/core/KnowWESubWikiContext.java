@@ -3,6 +3,8 @@ package de.knowwe.core;
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
@@ -17,6 +19,8 @@ import de.knowwe.core.wikiConnector.WikiConnector;
  * In single-wiki systems the default KnowWESubWikiContext always contains the empty string.
  */
 public record KnowWESubWikiContext(String subWiki) {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(KnowWESubWikiContext.class);
 
 	public static final KnowWESubWikiContext SIMPLE_CONTEXT = new KnowWESubWikiContext("");
 	public static final KnowWESubWikiContext DEFAULT_CONTEXT = generateDefaultContext();
@@ -67,6 +71,11 @@ public record KnowWESubWikiContext(String subWiki) {
 	}
 
 	private static @NotNull KnowWESubWikiContext generateDefaultContext() {
+		if (!Environment.isInitialized()) {
+			LOGGER.warn("Environment not initialized, this can happen in test environments, using simple context instead. " +
+						"If this happens in production, something went wrong!");
+			return KnowWESubWikiContext.SIMPLE_CONTEXT;
+		}
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String wikiProperty = wikiConnector.getWikiProperty(MAIN_SUBWIKI_SUBFOLDER);
 		if (wikiProperty == null) {
