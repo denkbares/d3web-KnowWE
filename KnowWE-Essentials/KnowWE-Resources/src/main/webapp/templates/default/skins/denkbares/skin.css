@@ -2584,7 +2584,8 @@ li.findpages .btn {
 	position: relative;
 	flex: 0 0 auto;
 	order: 0;
-	width: 300px;
+	/*noinspection CssUnresolvedCustomProperty*/
+	width: var(--sidebar-width, 300px);
 	min-width: 200px;
 	max-width: 600px;
 	box-sizing: border-box;

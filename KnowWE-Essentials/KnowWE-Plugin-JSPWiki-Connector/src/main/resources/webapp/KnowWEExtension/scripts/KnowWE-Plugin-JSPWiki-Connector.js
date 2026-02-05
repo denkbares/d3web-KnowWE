@@ -13,6 +13,7 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
 }
 
 KNOWWE.plugin.jspwikiConnector = {};
+KNOWWE.SIDEBAR_STORAGE_KEY = "knowwe.sidebar.width";
 
 KNOWWE.plugin.jspwikiConnector.setReadOnlyCheckbox = function(checkbox) {
   var boxActivated = jq$(checkbox).prop("checked");
@@ -133,29 +134,27 @@ jq$(function() {
   KNOWWE.plugin.jspwikiConnector.initCompileWarning();
 });
 
+(function() {
+  // read and load the stored sidebar width asap
+  const value = localStorage.getItem(KNOWWE.SIDEBAR_STORAGE_KEY);
+  if (value) {
+    document.documentElement.style.setProperty("--sidebar-width", value + "px");
+  }
+})();
+
 jq$(function SidebarResizer() {
   "use strict";
 
-  const CONFIG = {
-    selector: "#sidebar, .sidebar",
-    storageKey: "knowwe.sidebar.width"
-  };
-
-  const $sidebar = jq$(CONFIG.selector).first();
+  const $sidebar = jq$("#sidebar, .sidebar").first();
   if (!$sidebar.length) return;
 
   // read default values from css
   const style = getComputedStyle($sidebar[0]);
-  const defaultWidth = parseInt(style.width, 10);
   const minWidth = parseInt(style.minWidth, 10);
   const maxWidth = parseInt(style.maxWidth, 10);
 
   // append the resize handler to the sidebar
   const $handle = jq$("<div class=\"sidebar-handle\"></div>").appendTo($sidebar);
-
-  // read and load the stored sidebar width
-  const savedWidth = localStorage.getItem(CONFIG.storageKey);
-  $sidebar.css("width", savedWidth ? savedWidth + "px" : defaultWidth + "px");
 
   let dragging = false;
   let startX = 0;
@@ -184,6 +183,6 @@ jq$(function SidebarResizer() {
 
     dragging = false;
     jq$("body").removeClass("sidebar-resizing");
-    localStorage.setItem(CONFIG.storageKey, $sidebar[0].getBoundingClientRect().width ?? "0");
+    localStorage.setItem(KNOWWE.SIDEBAR_STORAGE_KEY, $sidebar[0].getBoundingClientRect().width ?? "0");
   });
 });
