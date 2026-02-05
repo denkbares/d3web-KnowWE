@@ -759,7 +759,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares.krone</groupId>
-					<artifactId>KnowWE-Plugin-KONAP</artifactId>
+					<artifactId>KnowWE-Plugin-KONAP-Bundle</artifactId>
 					<exclusions>
 						<exclusion>
 							<groupId>io.swagger</groupId>
