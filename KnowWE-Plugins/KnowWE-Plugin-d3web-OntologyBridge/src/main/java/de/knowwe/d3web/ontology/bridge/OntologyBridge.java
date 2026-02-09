@@ -124,7 +124,7 @@ public class OntologyBridge {
 			if (CompilerManager.isCompileThread()) {
 				LOGGER.error("Interrupted while waiting", e);
 			} else {
-				LOGGER.info("Interrupted while waiting for compiler in compiler bridge");
+				LOGGER.info("Interrupted while waiting for compiler in CompilerBridge");
 			}
 		}
 		return compiler;
