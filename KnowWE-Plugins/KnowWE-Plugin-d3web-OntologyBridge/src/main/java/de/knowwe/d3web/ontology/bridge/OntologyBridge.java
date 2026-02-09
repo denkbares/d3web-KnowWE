@@ -17,6 +17,7 @@ import com.denkbares.collections.N2MMap;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.CompilationLocal;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
@@ -109,14 +110,22 @@ public class OntologyBridge {
 	@NotNull
 	public static OntologyCompiler getOntology(@NotNull D3webCompiler d3webCompiler, Priority priorityToAwait) {
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
-		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler: " + Compilers.getCompilerName(d3webCompiler));
+		if (ontologyId == null) {
+			throw new IllegalArgumentException("No ontology linked to the given d3web compiler: " + Compilers.getCompilerName(d3webCompiler));
+		}
 		OntologyCompiler compiler = getOntologyCompilerCached(d3webCompiler, ontologyId);
-		if (compiler == null) throw new IllegalStateException("Ontology compiler not yet available for d3web compiler: " + Compilers.getCompilerName(d3webCompiler));
+		if (compiler == null) {
+			throw new IllegalStateException("Ontology compiler not yet available for d3web compiler: " + Compilers.getCompilerName(d3webCompiler));
+		}
 		try {
 			compiler.getCompilerManager().awaitCompilePriorityCompleted(compiler, priorityToAwait);
 		}
 		catch (InterruptedException e) {
-			LOGGER.error("Interrupted while waiting", e);
+			if (CompilerManager.isCompileThread()) {
+				LOGGER.error("Interrupted while waiting", e);
+			} else {
+				LOGGER.info("Interrupted while waiting for compiler in compiler bridge");
+			}
 		}
 		return compiler;
 	}
