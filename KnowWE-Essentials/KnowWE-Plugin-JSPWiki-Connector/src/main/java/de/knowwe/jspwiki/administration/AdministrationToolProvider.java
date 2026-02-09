@@ -71,6 +71,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 	public static final String THREAD_DUMP = "thread-dump";
 	public static final String THREAD_DUMP_JCMD = "thread-dump-jcmd";
 	public static final String LOGS_RECENT = "logs-recent";
+	public static final String LOGS_WEEK = "logs-week";
 	public static final String LOGS_ALL = "logs-all";
 	public static final String RESTART_WEBAPP = "restart-webapp";
 	public static final String RESTART_TOMCAT = "restart-tomcat";
@@ -123,6 +124,14 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					"?type=" + LOGS_RECENT + "'",
 					Tool.CATEGORY_DOWNLOAD);
 
+			DefaultTool downloadWeek = new DefaultTool(
+					Icon.FILE_ZIP,
+					"Download logs from last week",
+					"Download logs of the last 7 days of this wiki",
+					"window.location='action/AdministrationToolProvider" +
+					"?type=" + LOGS_WEEK + "'",
+					Tool.CATEGORY_DOWNLOAD);
+
 			DefaultTool downloadAll = new DefaultTool(Icon.FILE_ZIP,
 					"Download all logs",
 					"Get all logs of this wiki as a zip file",
@@ -155,7 +164,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 						Tool.CATEGORY_EXECUTE);
 			}
 
-			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadAll, restartTomcat, restartWebApp };
+			return new Tool[] { readOnlyTool, threadDumpTool, threadDumpJcmdTool, downloadRecent, downloadWeek, downloadAll, restartTomcat, restartWebApp };
 		}
 		else {
 			return null;
@@ -184,6 +193,10 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 		}
 		else if (LOGS_RECENT.equals(type)) {
 			List<File> logFiles = getLogFilePaths();
+			downloadToday(context, logFiles);
+		}
+		else if (LOGS_WEEK.equals(type)) {
+			List<File> logFiles = getLogsLastWeek();
 			downloadToday(context, logFiles);
 		}
 		else if (LOGS_ALL.equals(type)) {
@@ -289,6 +302,13 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 				.map(File::listFiles)
 				.filter(Objects::nonNull)
 				.flatMap(Arrays::stream)
+				.toList();
+	}
+
+	private List<File> getLogsLastWeek() {
+		long weekAgo = System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000;
+		return getAllLogPaths().stream()
+				.filter(file -> file.lastModified() > weekAgo)
 				.toList();
 	}
 }
