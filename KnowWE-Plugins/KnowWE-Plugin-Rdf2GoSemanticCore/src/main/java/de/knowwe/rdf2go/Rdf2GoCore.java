@@ -1448,7 +1448,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			}
 			return result;
 		}
-		catch (CancellationException | InterruptedException | TimeoutException cause) {
+		catch (CancellationException cause) {
+			throw new RuntimeException("SPARQL query was cancelled after " + Stopwatch.getDisplay(sparqlTask.getRunDuration()), cause);
+		}
+		catch (InterruptedException cause) {
+			throw new RuntimeException("SPARQL query was interrupted after " + Stopwatch.getDisplay(sparqlTask.getRunDuration()), cause);
+		}
+		catch ( TimeoutException cause) {
 			throw new RuntimeException(getTimeOutOrCancelMessage(sparqlTask.getRunDuration()), cause);
 		}
 		catch (Exception e) {
