@@ -33,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.denkbares.plugin.test.InitPluginManager;
+import com.denkbares.semanticcore.SemanticCore;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,8 @@ public class Rdf2GoCoreThreadPriorityTest {
 	public void testPriorityQueue() throws RepositoryException, RDFParseException, IOException, InterruptedException {
 		Rdf2GoCore core = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=", RepositoryConfigs.find("OWL_HORST_OPTIMIZED_WITH_PROPERTY_CHAINS"));
 		core.readFrom(this.getClass().getResourceAsStream("dbpedia_2016-10.nt"), RDFFormat.NTRIPLES);
+
+		SemanticCore.setQueryPermits(1);
 
 		ExecutorService executorService = Executors.newCachedThreadPool();
 
