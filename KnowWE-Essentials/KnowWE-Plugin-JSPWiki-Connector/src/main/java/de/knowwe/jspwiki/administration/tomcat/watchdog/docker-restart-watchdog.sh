@@ -10,13 +10,19 @@
 FLAG_FILE="/knowwe/tomcat-restart/restart.flag"
 ALIVE_FILE="/knowwe/tomcat-restart/watchdog.alive"
 LOG_FILE="/knowwe/tomcat-restart/watchdog.log"
-CONTAINER_NAME="knowwe-container-name" # Name Ihres Docker-Containers
 LOG_MAX_SIZE=1048576 # 1 MB
+CONTAINER_NAME="$1" # Name Ihres Docker-Containers
 
 # --- Helper: Logging ---
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
 }
+
+# Falls kein Name übergeben wurde, Abbruch mit Fehlermeldung
+if [ -z "$CONTAINER_NAME" ]; then
+    log "Fehler: Kein Container-Name übergeben!"
+    exit 1
+fi
 
 # --- Helper: Log Rotation ---
 if [ -f "$LOG_FILE" ]; then
