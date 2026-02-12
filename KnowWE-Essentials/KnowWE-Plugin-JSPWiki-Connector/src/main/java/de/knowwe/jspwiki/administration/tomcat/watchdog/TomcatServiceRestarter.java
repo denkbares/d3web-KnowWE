@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki.administration.tomcat.win;
+package de.knowwe.jspwiki.administration.tomcat.watchdog;
 
 import java.io.File;
 import java.io.IOException;

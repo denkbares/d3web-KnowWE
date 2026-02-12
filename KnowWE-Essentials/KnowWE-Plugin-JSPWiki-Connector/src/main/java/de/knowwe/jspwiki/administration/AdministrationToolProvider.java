@@ -53,7 +53,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.administration.tomcat.JmxWebAppRestarter;
-import de.knowwe.jspwiki.administration.tomcat.win.TomcatServiceRestarter;
+import de.knowwe.jspwiki.administration.tomcat.watchdog.TomcatServiceRestarter;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
