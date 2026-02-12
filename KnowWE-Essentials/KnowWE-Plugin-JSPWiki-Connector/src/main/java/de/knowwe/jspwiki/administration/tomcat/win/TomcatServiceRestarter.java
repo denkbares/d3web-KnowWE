@@ -26,6 +26,8 @@ import java.nio.file.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.utils.OS;
+
 /**
  * Utility class to interact with the external Tomcat restart watchdog.
  * It can create the restart flag file to trigger a restart, and check
@@ -53,7 +55,7 @@ public class TomcatServiceRestarter {
 
 	private static String resolveServiceDir() {
 		// Prefer environment variable "knowwe.tomcat.restart.dir", else default
-		String dir = System.getProperty("knowwe.tomcat.restart.dir", "C:\\tomcat-restart\\");
+		String dir = System.getProperty("knowwe.tomcat.restart.dir", OS.WINDOWS.isCurrentOS() ? "C:\\tomcat-restart\\" : "/knowwe/tomcat-restart/");
 		// Normalize to end with a separator/backslash for concatenation below
 		if (!dir.endsWith("/") && !dir.endsWith("\\")) {
 			dir += File.separator;
