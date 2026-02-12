@@ -1479,7 +1479,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	private static @NotNull String getTimeOutOrCancelMessage(long runDuration) {
-		return runDuration == 0 ? "SPARQL query was cancelled" : "SPARQL query timed out or was cancelled after " + Stopwatch.getDisplay(runDuration);
+		return runDuration == 0 ? "SPARQL query was cancelled" : "SPARQL query timed out after " + Stopwatch.getDisplay(runDuration);
 	}
 
 	@NotNull
