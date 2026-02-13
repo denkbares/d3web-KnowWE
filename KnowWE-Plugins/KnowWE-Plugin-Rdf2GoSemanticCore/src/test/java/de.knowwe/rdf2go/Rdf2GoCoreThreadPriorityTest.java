@@ -31,12 +31,11 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.denkbares.plugin.test.InitPluginManager;
-import com.denkbares.semanticcore.SemanticCore;
-import com.denkbares.semanticcore.config.RepositoryConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.denkbares.plugin.test.InitPluginManager;
+import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.utils.Stopwatch;
 
 import static junit.framework.TestCase.assertTrue;
@@ -62,8 +61,6 @@ public class Rdf2GoCoreThreadPriorityTest {
 		Rdf2GoCore core = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=", RepositoryConfigs.find("OWL_HORST_OPTIMIZED_WITH_PROPERTY_CHAINS"));
 		core.readFrom(this.getClass().getResourceAsStream("dbpedia_2016-10.nt"), RDFFormat.NTRIPLES);
 
-		SemanticCore.setQueryPermits(1);
-
 		ExecutorService executorService = Executors.newCachedThreadPool();
 
 		AtomicDouble lastPriority = new AtomicDouble();
@@ -75,7 +72,7 @@ public class Rdf2GoCoreThreadPriorityTest {
 			final int index = i;
 			executorService.execute(() -> {
 				Rdf2GoCore.Options options = new Rdf2GoCore.Options().noCache().timeout(10000000).priority(Math.random());
-				core.sparqlSelect(query, options);
+				core.sparqlSelect(query, options).cachedAndClosed();
 				Stopwatch stopwatch = new Stopwatch();
 				synchronized (lastPriority) {
 					if (options.priority < lastPriority.get()) {
