@@ -41,6 +41,10 @@ public class SetMarkupActivationStatus extends AbstractAction {
 		String sectionID = context.getParameter(Attributes.SECTION_ID);
 		String status = context.getParameter("status");
 		Section<?> section = Sections.get(sectionID);
+		if (section == null) {
+			context.sendError(404, "Section not found: " + sectionID + ". Maybe you are not seeing the latest version of the page, try reloading.");
+			return;
+		}
 
 		if(!KnowWEUtils.canWrite(section, context)) {
 			context.sendError(403, "No right permission for section");
