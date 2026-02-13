@@ -17,14 +17,31 @@
   ~ site: http://www.fsf.org.
   -->
 
-<configuration debug="true">
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-		</encoder>
+<configuration>
+
+	<!-- Log to stdout -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %highlight(%-5level) %cyan(%logger{36}) - %msg%n
+			</Pattern>
+		</layout>
 	</appender>
 
-	<root level="INFO">
-		<appender-ref ref="STDOUT" />
+	<logger name="com.denkbares" level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<logger name="org.apache.wiki" level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<logger name="org.apache.wiki.providers.BasicAttachmentProvider" level="ERROR" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<logger name="com.ontotext" level="ERROR"  additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+	<root level="info">
+		<appender-ref ref="CONSOLE" />
 	</root>
 </configuration>
