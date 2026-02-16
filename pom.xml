@@ -820,7 +820,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.krone</groupId>
-				<artifactId>KnowWE-Plugin-KONAP</artifactId>
+				<artifactId>KnowWE-Plugin-KONAP-Bundle</artifactId>
 				<version>${konap.version}</version>
 			</dependency>
 			<dependency>
