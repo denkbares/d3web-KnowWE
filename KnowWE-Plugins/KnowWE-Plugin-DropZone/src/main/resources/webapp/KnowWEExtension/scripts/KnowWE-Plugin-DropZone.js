@@ -67,13 +67,13 @@ KNOWWE.core.plugin.dropZone = function() {
     ajaxData.append('action', 'upload');
 
     let files = [];
-    if (typeof event.dataTransfer !== "undefined") {
+    if (typeof event.dataTransfer !== "undefined" && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
       files = event.dataTransfer.files; // Dropped files
     }
     const input = form.find('input[type="file"]').first();
     if (files.length === 0) {
-      if (typeof input.context.files !== "undefined" && input.context.files.length > 0) {
-        files.append(input.context.files); // Manually chosen files w/ file chooser
+      if (input[0] && input[0].files && input[0].files.length > 0) {
+        files = input[0].files; // Manually chosen files w/ file chooser
       } else {
         setClass(event.target, "uploading", "Not a valid attachment...");
         setTimeout(function() {
@@ -95,8 +95,18 @@ KNOWWE.core.plugin.dropZone = function() {
   }
 
   function isEventWithFiles(event) {
-    var temp = (event.originalEvent || event).dataTransfer;
-    return temp && (temp = temp.types) && (temp.indexOf('Files') !== -1);
+    var dt = (event.originalEvent || event).dataTransfer;
+    if (!dt || !dt.types) return false;
+    if (Array.isArray(dt.types)) {
+      return dt.types.indexOf('Files') !== -1;
+    }
+    if (typeof dt.types.contains === 'function') {
+      return dt.types.contains('Files');
+    }
+    if (typeof dt.types.indexOf === 'function') {
+      return dt.types.indexOf('Files') !== -1;
+    }
+    return false;
   }
 
   function ajaxData(uploadData, event) {
@@ -133,7 +143,7 @@ KNOWWE.core.plugin.dropZone = function() {
 
   function handleDropToExisting(event) {
     if (!isEventWithFiles(event)) return;
-    if (!jq$(event.toElement).closest('.box-input').exists()) {
+    if (!jq$(event.target).closest('.box-input').exists()) {
       event.preventDefault();
       event.stopPropagation();
       handleDragLeave(event);
