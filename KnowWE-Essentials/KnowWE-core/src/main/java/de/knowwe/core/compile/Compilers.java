@@ -626,6 +626,7 @@ public class Compilers {
 	}
 
 	public static void destroyAndRecompileSubtree(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		if (!compiler.isIncrementalBuild()) return;
 		Sections<?> destroyedSections = compiler.addSubtreeToDestroy(section, scriptFilter);
 		destroyDependencies(compiler, destroyedSections, scriptFilter);
 		if (Sections.isLive(section)) {
@@ -636,16 +637,19 @@ public class Compilers {
 	}
 
 	public static void destroyAndRecompileRegistrations(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		if (!compiler.isIncrementalBuild()) return;
 		Sections.registrations((TermCompiler) compiler, identifier)
 				.forEach(s -> destroyAndRecompileSection(compiler, s, scriptFilter));
 	}
 
 	public static void destroyAndRecompileReferences(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		if (!compiler.isIncrementalBuild()) return;
 		Sections.references((TermCompiler) compiler, identifier)
 				.forEach(s -> destroyAndRecompileSection(compiler, s, scriptFilter));
 	}
 
 	public static void destroyAndRecompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		if (!compiler.isIncrementalBuild()) return;
 		destroySection(compiler, section, scriptFilter);
 		if (Sections.isLive(section)) {
 			recompileSection(compiler, section, scriptFilter);
@@ -653,16 +657,19 @@ public class Compilers {
 	}
 
 	public static void recompileRegistrations(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		if (!compiler.isIncrementalBuild()) return;
 		Sections.registrations((TermCompiler) compiler, identifier)
 				.forEach(s -> recompileSection(compiler, s, scriptFilter));
 	}
 
 	public static void recompileReferences(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		if (!compiler.isIncrementalBuild()) return;
 		Sections.references((TermCompiler) compiler, identifier)
 				.forEach(s -> recompileSection(compiler, s, scriptFilter));
 	}
 
 	public static void recompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		if (!compiler.isIncrementalBuild()) return;
 		compiler.addSectionToCompile(section, scriptFilter);
 		recompileDependencies(compiler, $(section), scriptFilter);
 	}
