@@ -82,7 +82,9 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	public List<RepositoryInfo> listRepositories() throws HttpException {
 		String groupPath = this.groupPath.replaceAll("/", "%2F");
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true", this.serverApiURL, groupPath);
+			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true&per_page=200", this.serverApiURL, groupPath);
+			// So far only repos in this particular group are listed. This allows us to be able to uniquely identify repos only by their name.
+			// In the future add "&include_subgroups=true" and repos need to be identified by namespace_with_path instead.
 			HttpGet request = new HttpGet(url);
 			request.setHeader(getRequestTokenHeader());
 
@@ -95,9 +97,6 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			List<GitLabApiRepository> data = objectMapper.readValue(jsonString, new TypeReference<>() {
 			});
 			return data.stream()
-					// This little thing hides all repos in subgroups. This allows us to be able to uniquely identify repos only by their name.
-					// In the future this has to removed and repos need to be identified by namespace_with_path instead.
-					.filter(repo -> repo.web_url.equalsIgnoreCase(this.gitRemoteURL + repo.path))
 					.map(repo -> new RepositoryInfo(repo.id, repo.name, repo.path, repo.http_url_to_repo, repo.web_url))
 					.toList();
 		}
