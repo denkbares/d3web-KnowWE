@@ -42,22 +42,23 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
-	private final String gitRemoteURL, gitUserName, repoManagementServerApiURL, repoManagementServerToken;
+	private final String gitRemoteURL, groupPath, gitUserName, serverApiURL, serverToken;
 
-	public GitLabGitServerConnector(String gitRemoteURL, String gitUserName, String repoManagementServerApiURL, String repoManagementServerToken) {
+	public GitLabGitServerConnector(String url, String groupPath, String gitUserName, String serverApiURL, String serverToken) {
 		// make sure that gitRemoteURL always ends with / to prevent bugs
-		if (!gitRemoteURL.endsWith("/")) {
-			gitRemoteURL += "/";
+		if (!url.endsWith("/")) {
+			url += "/";
 		}
-		this.gitRemoteURL = gitRemoteURL;
+		this.gitRemoteURL = url + groupPath + "/";
+		this.groupPath = groupPath;
 		this.gitUserName = gitUserName;
-		this.repoManagementServerApiURL = repoManagementServerApiURL;
-		this.repoManagementServerToken = repoManagementServerToken;
+		this.serverApiURL = serverApiURL;
+		this.serverToken = serverToken;
 	}
 
 	@Override
 	public GitConnector getGitConnector(@NotNull String folder) {
-		UserCredentials userCredentials = new UserCredentials(this.gitUserName, this.repoManagementServerToken);
+		UserCredentials userCredentials = new UserCredentials(this.gitUserName, this.serverToken);
 		return JGitBackedGitConnector.fromPath(folder, userCredentials);
 	}
 
@@ -79,9 +80,10 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	@Override
 	public List<RepositoryInfo> listRepositories() throws HttpException {
-
+		String groupPath = this.groupPath.replaceAll("/", "%2F");
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			HttpGet request = new HttpGet(this.repoManagementServerApiURL + "/projects?simple=true&active=true&membership=true");
+			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true", this.serverApiURL, groupPath);
+			HttpGet request = new HttpGet(url);
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
@@ -111,7 +113,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	}
 
 	private BasicHeader getRequestTokenHeader() {
-		return new BasicHeader("PRIVATE-TOKEN", this.repoManagementServerToken);
+		return new BasicHeader("PRIVATE-TOKEN", this.serverToken);
 	}
 
 	@Override
@@ -160,7 +162,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		}
 		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
 			clone.setCredentialsProvider(
-					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
+					new UsernamePasswordCredentialsProvider(this.gitUserName, this.serverToken));
 		}
 		try (Git git = clone.call()) {
 			// Note: the call() returns an opened repository already which needs to be closed to avoid file handle leaks!
@@ -190,7 +192,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		CloneCommand clone = prepareCloneCommand(remoteURI, savePath).setDepth(1);
 		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
 			clone.setCredentialsProvider(
-					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
+					new UsernamePasswordCredentialsProvider(this.gitUserName, this.serverToken));
 		}
 
 		try (Git result = clone.call()) {
@@ -207,7 +209,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		CloneCommand clone = Git.cloneRepository().setURI(remoteURI);
 		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
 			clone.setCredentialsProvider(
-					new UsernamePasswordCredentialsProvider(this.gitUserName, this.repoManagementServerToken));
+					new UsernamePasswordCredentialsProvider(this.gitUserName, this.serverToken));
 		}
 		if (savePath != null) {
 			clone.setDirectory(savePath);
@@ -218,7 +220,8 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	@Override
 	public int getRepositoryId(String repoName, String httpUrl) throws HttpException {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			HttpGet request = new HttpGet(this.repoManagementServerApiURL + "/projects?&active=true&membership=true&search=" + repoName);
+			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true&search=%s", this.serverApiURL, groupPath, repoName);
+			HttpGet request = new HttpGet(url);
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
@@ -249,7 +252,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			String branchFlag = "";
 			if (sourceBranch != null && !sourceBranch.isBlank()) branchFlag = "?source_branch=" + sourceBranch;
 			HttpGet request = new HttpGet(
-					this.repoManagementServerApiURL + "/projects/" + repositoryId + "/merge_requests" + branchFlag
+					this.serverApiURL + "/projects/" + repositoryId + "/merge_requests" + branchFlag
 			);
 			request.setHeader(getRequestTokenHeader());
 
@@ -292,7 +295,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	public MergeRequest createMergeRequest(int repositoryId, String sourceBranch, String targetBranch) throws RuntimeException, HttpException {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPost httpPost = new HttpPost(
-					this.repoManagementServerApiURL + "/projects/" + repositoryId + "/merge_requests"
+					this.serverApiURL + "/projects/" + repositoryId + "/merge_requests"
 			);
 			httpPost.setHeader(getRequestTokenHeader());
 
@@ -330,7 +333,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	public MergeRequest mergeMergeRequest(int repositoryId, int mergeRequestIid) throws RuntimeException, HttpException {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPut request = new HttpPut(
-					this.repoManagementServerApiURL + "/projects/" + repositoryId + "/merge_requests/" + mergeRequestIid + "/merge"
+					this.serverApiURL + "/projects/" + repositoryId + "/merge_requests/" + mergeRequestIid + "/merge"
 			);
 			request.setHeader(getRequestTokenHeader());
 
