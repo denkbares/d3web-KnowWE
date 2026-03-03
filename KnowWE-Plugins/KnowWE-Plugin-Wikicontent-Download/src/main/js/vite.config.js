@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import {defineConfig} from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig(function (_a) {
@@ -8,7 +8,7 @@ export default defineConfig(function (_a) {
         outputDir = "../resources/webapp/KnowWEExtension";
     }
     else {
-        outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2026.2-SNAPSHOT/KnowWEExtension";
+        outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2026.3-SNAPSHOT/KnowWEExtension";
     }
     return {
         plugins: [react()],
