@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
@@ -33,6 +34,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.Span;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -146,11 +149,12 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 	private static class ColumnLocale extends AbstractType {
 		public ColumnLocale(TableIndexConstraint constraint) {
 			setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder("(?i)@[a-z\\-_]+\\s*$"), constraint));
-			addChildType(new LocaleType("@"));
+			LocaleType localeType = new LocaleType("@");
+			addChildType(localeType);
+			localeType.addChildType(new LocaleNameDisplay());
 			KeywordType keywordType = new KeywordType("@");
 			keywordType.setRenderer(StyleRenderer.LOCALE);
 			addChildType(keywordType);
-			addChildType(new LocaleNameDisplay());
 			addChildType(UnrecognizedSyntaxType.getInstance());
 		}
 
@@ -158,19 +162,20 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 
 			public LocaleNameDisplay() {
 				setRenderer(new LocaleNameDisplayRenderer());
-				setSectionFinder(new StringSectionFinder(""));
+				setSectionFinder(AllTextFinder.getInstance());
 			}
 
 			private static class LocaleNameDisplayRenderer implements Renderer {
 
 				@Override
 				public void render(Section<?> section, UserContext user, RenderResult result) {
-
+					Section<? extends Type> localeType = section.getParent();
+					result.append(localeType.getText());
 					Section<LocaleType> LocaleText = $(section).ancestor(ColumnLocale.class).successor(LocaleType.class).getFirst();
 					if (LocaleText != null) {
 						if (isValidLanguageTag(LocaleText.getText())) {
 							String displayLanguage = Locale.forLanguageTag(LocaleText.getText()).getDisplayLanguage(KnowWEUtils.getBrowserLocales(user)[0]);
-							result.append(" (" + displayLanguage + ")");
+							result.append(new Span(" (" + displayLanguage + ")").attributes("style", "color: initial"));
 						} else {
 							result.appendHtml("<p class=\"warning tooltipster\" title=\"@" + LocaleText.getText() + " is not a valid language tag\">Unknown Language</p>");
 						}
