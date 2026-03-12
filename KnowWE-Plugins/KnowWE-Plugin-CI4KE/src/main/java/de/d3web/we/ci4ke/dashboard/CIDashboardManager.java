@@ -28,6 +28,7 @@ import java.util.WeakHashMap;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.N2MMap;
+import com.denkbares.events.EventManager;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
@@ -61,6 +62,7 @@ public class CIDashboardManager {
 		MultiMap<Object, CIDashboard> dashboardsMap = getDashboardsMap(section.getArticleManager());
 		dashboardsMap.put(dashboard.getDashboardName(), dashboard);
 		dashboardsMap.put(section, dashboard);
+		EventManager.getInstance().fireEvent(new CIDashboardRegisteredEvent(dashboard));
 		return dashboard;
 	}
 
@@ -80,7 +82,11 @@ public class CIDashboardManager {
 	}
 
 	public static synchronized void unregisterDashboard(Section<CIDashboardType> section) {
-		getDashboardsMap(section.getArticleManager()).removeValue(getDashboard(section));
+		CIDashboard dashboard = getDashboard(section);
+		getDashboardsMap(section.getArticleManager()).removeValue(dashboard);
+		if (dashboard != null) {
+			EventManager.getInstance().fireEvent(new CIDashboardUnregisteredEvent(dashboard));
+		}
 	}
 
 	public static synchronized Collection<Section<CIDashboardType>> getDashboardSections(ArticleManager manager, String dashboardName) {
