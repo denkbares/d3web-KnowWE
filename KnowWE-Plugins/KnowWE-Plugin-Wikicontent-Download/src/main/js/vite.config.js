@@ -8,7 +8,7 @@ export default defineConfig(function (_a) {
         outputDir = "../resources/webapp/KnowWEExtension";
     }
     else {
-        outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2026.3-SNAPSHOT/KnowWEExtension";
+        outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2026.4-SNAPSHOT/KnowWEExtension";
     }
     return {
         plugins: [react()],
