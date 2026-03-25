@@ -42,7 +42,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
-	private final String gitRemoteURL, groupPath, gitUserName, serverApiURL, serverToken;
+	private final String gitRemoteURL, encodedGroupPath, gitUserName, serverApiURL, serverToken;
 
 	public GitLabGitServerConnector(String url, String groupPath, String gitUserName, String serverApiURL, String serverToken) {
 		// make sure that gitRemoteURL always ends with / to prevent bugs
@@ -50,7 +50,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			url += "/";
 		}
 		this.gitRemoteURL = url + groupPath + "/";
-		this.groupPath = groupPath;
+		this.encodedGroupPath = groupPath.replaceAll("/", "%2F");
 		this.gitUserName = gitUserName;
 		this.serverApiURL = serverApiURL;
 		this.serverToken = serverToken;
@@ -80,9 +80,8 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	@Override
 	public List<RepositoryInfo> listRepositories() throws HttpException {
-		String groupPath = this.groupPath.replaceAll("/", "%2F");
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true&per_page=200", this.serverApiURL, groupPath);
+			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true&per_page=200", this.serverApiURL, this.encodedGroupPath);
 			// So far only repos in this particular group are listed. This allows us to be able to uniquely identify repos only by their name.
 			// In the future add "&include_subgroups=true" and repos need to be identified by namespace_with_path instead.
 			HttpGet request = new HttpGet(url);
@@ -219,7 +218,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	@Override
 	public int getRepositoryId(String repoName, String httpUrl) throws HttpException {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true&search=%s", this.serverApiURL, groupPath, repoName);
+			String url = String.format("%s/groups/%s/projects?simple=true&active=true&membership=true&search=%s", this.serverApiURL, this.encodedGroupPath, repoName);
 			HttpGet request = new HttpGet(url);
 			request.setHeader(getRequestTokenHeader());
 
