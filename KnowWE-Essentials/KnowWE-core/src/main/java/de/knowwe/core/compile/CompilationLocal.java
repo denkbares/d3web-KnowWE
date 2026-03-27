@@ -154,6 +154,15 @@ public final class CompilationLocal<E> {
 	}
 
 	/**
+	 * Clears the cache of the given compiler, meaning all cached objects and keys are removed.
+	 *
+	 * @param compiler the compile for which the cache should be cleared
+	 */
+	public static void clearCache(@NotNull Compiler compiler) {
+		compilerCache.remove(compiler);
+	}
+
+	/**
 	 * Removes the object cached by the given cacheKey and compiler from the cache. Use this to clear up memory.
 	 *
 	 * @param cacheKey the object by which the supplier/result is cached
