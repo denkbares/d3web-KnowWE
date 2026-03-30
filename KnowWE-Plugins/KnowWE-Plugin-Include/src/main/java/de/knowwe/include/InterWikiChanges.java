@@ -100,7 +100,6 @@ final class InterWikiChanges {
 			}
 		}
 
-		stopwatch.log(LOGGER, "Page scan completed").start();
 
 
 		Set<String> attachments = new TreeSet<>();
@@ -111,7 +110,7 @@ final class InterWikiChanges {
 			}
 		}
 
-		stopwatch.log(LOGGER, "Attachment scan completed");
+		stopwatch.log(LOGGER, "Page and attachment scan completed");
 
 		return new InterWikiChanges(nextSince, pages, attachments);
 	}

@@ -105,7 +105,8 @@ final class InterWikiImportUpdateService {
 		if (markups.isEmpty()) return;
 
 		Map<String, List<Section<InterWikiImportMarkup>>> markupsByWiki = markups.stream()
-				.collect(Collectors.groupingBy(markup -> InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup))));
+				.collect(Collectors.groupingBy(markup -> InterWikiImportMarkup.normalizeWiki(markup.get()
+						.getWiki(markup))));
 
 		for (Map.Entry<String, List<Section<InterWikiImportMarkup>>> entry : markupsByWiki.entrySet()) {
 			pollSource(entry.getKey(), entry.getValue());
@@ -117,12 +118,13 @@ final class InterWikiImportUpdateService {
 
 		Instant since = LAST_SUCCESSFUL_POLLS.get(wiki);
 		try {
-			Stopwatch stopwatch = new Stopwatch();
 			InterWikiChanges changes = requestChanges(wiki, since);
 			if (changes.isFullRefreshRequired()) {
+				Stopwatch stopwatch = new Stopwatch();
 				LOGGER.info("Wiki {} does not provide GetWikiChangesSinceAction yet, updating all {} markups of that source.",
 						wiki, markups.size());
 				markups.parallelStream().forEach(markup -> markup.get().performUpdate(markup, false, true));
+				stopwatch.log(LOGGER, "Did full update of " + markups.size() + " markups of " + wiki);
 				return;
 			}
 			if (changes.getAttachments().isEmpty() && changes.getPages().isEmpty()) return;
@@ -132,12 +134,12 @@ final class InterWikiImportUpdateService {
 
 			if (!affectedMarkups.isEmpty()) {
 				LOGGER.info("Found {} changed InterWikiImport markups for {}.", affectedMarkups.size(), wiki);
+				Stopwatch stopwatch = new Stopwatch();
 				affectedMarkups.parallelStream().forEach(markup -> markup.get().performUpdate(markup, false, true));
+				stopwatch.log(LOGGER, "InterWikiImport markup updates completed for " + affectedMarkups.size() + " markups");
 			}
 
 			LAST_SUCCESSFUL_POLLS.put(wiki, changes.getNextSince());
-			stopwatch.log(LOGGER,
-					"Polled InterWikiImport delta for " + wiki + " and matched " + affectedMarkups.size() + " markup(s)");
 		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to poll InterWikiImport changes from {}", wiki, e);
@@ -179,5 +181,4 @@ final class InterWikiImportUpdateService {
 			connection.disconnect();
 		}
 	}
-
 }
