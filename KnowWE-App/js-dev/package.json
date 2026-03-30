@@ -1,0 +1,17 @@
+{
+  "name": "knowwe-app-js-dev",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync:all": "node watch-resources.mjs sync all",
+    "watch:all": "node watch-resources.mjs watch all",
+    "sync:core-plugins": "node watch-resources.mjs sync core-plugins",
+    "watch:core-plugins": "node watch-resources.mjs watch core-plugins",
+    "sync:denkbares": "node watch-resources.mjs sync denkbares",
+    "watch:denkbares": "node watch-resources.mjs watch denkbares",
+    "sync:konap": "node watch-resources.mjs sync konap",
+    "watch:konap": "node watch-resources.mjs watch konap",
+    "sync:d3web-player": "node watch-resources.mjs sync d3web-player",
+    "watch:d3web-player": "node watch-resources.mjs watch d3web-player"
+  }
+}
