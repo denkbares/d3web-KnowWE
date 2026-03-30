@@ -37,8 +37,8 @@ public class InterWikiImportMarkupToolProvider implements ToolProvider {
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		return new Tool[] {
 				new DefaultTool(Icon.REFRESH,
-						"Update now", "Updates the referenced wiki resource",
-						"KNOWWE.core.plugin.attachment.update('" + section.getID() + "')",
+						"Force update now", "Updates the referenced wiki resource, even if it has not changed",
+						"KNOWWE.core.plugin.attachment.update('" + section.getID() + "', true)",
 						Tool.ActionType.ONCLICK,
 						Tool.CATEGORY_EXECUTE)
 		};

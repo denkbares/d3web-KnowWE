@@ -177,7 +177,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	private static boolean isAutoUpdatingActive() {
+	public static boolean isAutoUpdatingActive() {
 		String wikiProperty = Environment.getInstance()
 				.getWikiConnector()
 				.getWikiProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY);
@@ -506,7 +506,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	 * @param url URL to open the connection for
 	 * @return HttpURLConnection instance
 	 */
-	private static HttpURLConnection openHttpConnection(URL url) throws IOException {
+	public static HttpURLConnection openHttpConnection(URL url) throws IOException {
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		if (url.getUserInfo() != null) {
@@ -579,6 +579,14 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return timeInMillis;
 	}
 
+	protected boolean usesOwnScheduling(Section<? extends AttachmentUpdateMarkup> section) {
+		return true;
+	}
+
+	public static @NotNull String getActionFragment() {
+		return System.getProperty("knowwe.attachments.update.actionFragment", "_action");
+	}
+
 	private static class UpdateTaskRegistrationScript extends DefaultGlobalCompiler.DefaultGlobalScript<AttachmentUpdateMarkup> {
 		private static final Logger LOGGER = LoggerFactory.getLogger(UpdateTaskRegistrationScript.class);
 
@@ -606,6 +614,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 			if (section.getArticleManager() == null) return;
 			if (section.get().getUrl(section) == null) return;
+			if (!section.get().usesOwnScheduling(section)) return;
 			long interval = section.get().getIntervalMillis(section);
 			if (interval == Long.MAX_VALUE) return;
 

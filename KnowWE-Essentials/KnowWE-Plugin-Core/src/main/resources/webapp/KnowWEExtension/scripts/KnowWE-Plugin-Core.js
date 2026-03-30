@@ -647,9 +647,10 @@ KNOWWE.core.plugin.attachment = function() {
 
   return {
 
-    update: function(sectionId) {
+    update: function(sectionId, force = false) {
       const params = {
         action: "AttachmentUpdateAction",
+        force: force,
         SectionID: sectionId
       };
 

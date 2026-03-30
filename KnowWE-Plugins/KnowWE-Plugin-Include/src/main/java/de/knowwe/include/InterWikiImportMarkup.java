@@ -32,6 +32,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.Article;
@@ -88,6 +89,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	public InterWikiImportMarkup() {
 		super(MARKUP);
+		InterWikiImportUpdateService.initialize();
+		addCompileScript(new RegistrationScript());
 		setRenderer(new AsynchronousRenderer(new InterWikiImportRenderer()));
 	}
 
@@ -120,11 +123,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				.orElse(TermCompiler.ReferenceValidationMode.error);
 	}
 
-	private String getPageName(Section<InterWikiImportMarkup> section) {
+	String getPageName(Section<InterWikiImportMarkup> section) {
 		return DefaultMarkupType.getAnnotation(section, PAGE_ANNOTATION);
 	}
 
-	private String getSectionName(Section<InterWikiImportMarkup> section) {
+	String getSectionName(Section<InterWikiImportMarkup> section) {
 		return DefaultMarkupType.getAnnotation(section, SECTION_ANNOTATION);
 	}
 
@@ -148,21 +151,14 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	@Override
 	public @Nullable URL getUrl(Section<? extends AttachmentUpdateMarkup> section) {
-		return getUrl(section, "_action/GetWikiSectionTextAction?reference=", true);
+		return getUrl(section, getActionFragment() + "/GetWikiSectionTextAction?reference=", true);
 	}
 
 	@Nullable
 	private URL getUrl(Section<? extends AttachmentUpdateMarkup> sec, String command, boolean params) {
 		Section<InterWikiImportMarkup> section = $(sec).closest(InterWikiImportMarkup.class).getFirst();
 		if (section == null) return null;
-		String wikiAnnotation = getWiki(section);
-		if (wikiAnnotation == null) return null;
-		if (!wikiAnnotation.matches("^https?://.*")) {
-			wikiAnnotation = "https://" + wikiAnnotation;
-		}
-		if (!wikiAnnotation.endsWith("/")) {
-			wikiAnnotation += "/";
-		}
+		String wikiAnnotation = normalizeWiki(getWiki(section));
 
 		String pageName = section.get().getPageName(section);
 		String reference = Strings.encodeURL(pageName);
@@ -193,17 +189,30 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	@Nullable
-	private String getWiki(Section<InterWikiImportMarkup> section) {
+	String getWiki(Section<InterWikiImportMarkup> section) {
 		return Strings.trim(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
+	}
+
+	static String normalizeWiki(String wiki) {
+		if (wiki == null) return "";
+		String normalized = Strings.trim(wiki);
+		if (!normalized.matches("^https?://.*")) {
+			normalized = "https://" + normalized;
+		}
+		if (!normalized.endsWith("/")) {
+			normalized += "/";
+		}
+		return normalized;
 	}
 
 	@Override
 	protected long getIntervalMillis(Section<? extends AttachmentUpdateMarkup> section) {
-		long interval = super.getIntervalMillis(section);
-		if (interval == Long.MAX_VALUE) {
-			interval = 1000 * 60 * 60; // 60 min default interval
-		}
-		return interval;
+		return Long.MAX_VALUE;
+	}
+
+	@Override
+	protected boolean usesOwnScheduling(Section<? extends AttachmentUpdateMarkup> section) {
+		return false;
 	}
 
 	private class InterWikiImportRenderer extends DefaultMarkupRenderer implements AsyncPreviewRenderer {
@@ -301,30 +310,36 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		private void renderLastChangesMessage(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			if (getLock(markup).isLocked()) {
 				result.appendHtmlElement("p", "Update currently ongoing...", "style", "color:green");
-				return;
-			}
-
-			long lastRun = markup.get().timeSinceLastRun(markup);
-			String message;
-			if (lastRun < Long.MAX_VALUE) {
-				String lastRunDisplay = getDisplay(lastRun);
-				message = "Last check for changes was " + lastRunDisplay + " ago";
-				long lastChange = markup.get().timeSinceLastChange(markup);
-				if (lastChange < Long.MAX_VALUE) {
-					String lastChangeDisplay = getDisplay(lastChange);
-					message += ", last change was " + lastChangeDisplay + " ago";
-				}
 			}
 			else {
-				message = "No check yet, click here to check now: ";
+				long lastRun = markup.get().timeSinceLastRun(markup);
+				String message;
+				if (lastRun < Long.MAX_VALUE) {
+					String lastRunDisplay = getDisplay(lastRun);
+					message = "Last check for changes was " + lastRunDisplay + " ago";
+					long lastChange = markup.get().timeSinceLastChange(markup);
+					if (lastChange < Long.MAX_VALUE) {
+						String lastChangeDisplay = getDisplay(lastChange);
+						message += ", last change was " + lastChangeDisplay + " ago";
+					}
+				}
+				else {
+					message = "No check yet, click here to check now: ";
+				}
+				result.appendHtmlTag("p");
+				result.appendHtmlElement("span", message, "class", "include-message");
+				result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
+						"class", "include-refresh tooltipster", "title", "Check for changes");
+				result.appendHtml(Icon.REFRESH.toHtml());
+				result.appendHtmlTag("/a");
+				result.appendHtmlTag("/p");
 			}
-			result.appendHtmlTag("p");
-			result.appendHtmlElement("span", message, "class", "include-message");
-			result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
-					"class", "include-refresh tooltipster", "title", "Check for changes");
-			result.appendHtml(Icon.REFRESH.toHtml());
-			result.appendHtmlTag("/a");
-			result.appendHtmlTag("/p");
+
+			if (DefaultMarkupType.getAnnotation(markup, INTERVAL_ANNOTATION) != null) {
+				result.appendHtmlElement("p",
+						"@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every 10 minutes per source wiki.",
+						"class", "warning");
+			}
 		}
 
 		private void renderHeader(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
@@ -361,6 +376,23 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.appendHtmlTag("/a");
 				result.appendHtmlTag("/h2");
 			}
+		}
+	}
+
+	private static class RegistrationScript extends DefaultGlobalCompiler.DefaultGlobalScript<InterWikiImportMarkup> {
+
+		@Override
+		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
+			if (section.get().getUrl(section) == null) {
+				InterWikiImportUpdateService.deregister(section);
+				return;
+			}
+			InterWikiImportUpdateService.register(section);
+		}
+
+		@Override
+		public void destroy(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
+			InterWikiImportUpdateService.deregister(section);
 		}
 	}
 }
