@@ -1146,12 +1146,36 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user, String changeNote) {
+		String author = user == null ? null : user.getUserName();
+		HttpServletRequest request = user == null ? null : user.getRequest();
+		return writeArticleToWikiPersistence(title, content, author, request, changeNote);
+	}
+
+	@Override
+	public boolean writeArticleToWikiPersistence(String title, String content, String author,
+												 @Nullable HttpServletRequest request,
+												 String changeNote) {
+		return writeArticleToWikiPersistenceInternal(title, content, author, request, changeNote);
+	}
+
+	@Override
+	public boolean writeArticleToWikiPersistence(String title, String content, String author, String changeNote) {
+		return writeArticleToWikiPersistenceInternal(title, content, author, null, changeNote);
+	}
+
+	private boolean writeArticleToWikiPersistenceInternal(String title, String content, @Nullable String author,
+														  @Nullable HttpServletRequest request, @Nullable String changeNote) {
 		try {
 			Page page = getPageManager().getPage(title);
 			// if PageProvider throws exception, page will be null and can't be saved
 			if (page == null) return false;
-			WikiContext context = new WikiContext(getEngine(), user.getRequest(), getPageManager().getPage(title));
-			if (context.getCurrentUser() != null) {
+			WikiContext context = request == null
+					? new WikiContext(getEngine(), page)
+					: new WikiContext(getEngine(), request, page);
+			if (Strings.isNotBlank(author)) {
+				page.setAuthor(author);
+			}
+			else if (context.getCurrentUser() != null) {
 				page.setAuthor(context.getCurrentUser().getName());
 			}
 			if (changeNote != null) {

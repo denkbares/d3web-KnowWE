@@ -554,6 +554,31 @@ public interface WikiConnector {
 	}
 
 	/**
+	 * Saves the article (persistently) into the connected wiki for the given author and optional request.
+	 *
+	 * @param title      the title of the article to save
+	 * @param content    the content of the article to save
+	 * @param author     the author of the change
+	 * @param request    the originating request if available
+	 * @param changeNote the change note associated with the save
+	 */
+	default boolean writeArticleToWikiPersistence(String title, String content, String author,
+												  @Nullable HttpServletRequest request,
+												  @Nullable String changeNote) {
+		return writeArticleToWikiPersistence(title, content, author, changeNote);
+	}
+
+	/**
+	 * Saves the article (persistently) into the connected wiki for the given author without a {@link UserContext}.
+	 *
+	 * @param title      the title of the article to save
+	 * @param content    the content of the article to save
+	 * @param author     the author of the change
+	 * @param changeNote the change note associated with the save
+	 */
+	boolean writeArticleToWikiPersistence(String title, String content, String author, @Nullable String changeNote);
+
+	/**
 	 * Saves the article (persistently) into the connected wiki
 	 *
 	 * @param title   the title of the article to save

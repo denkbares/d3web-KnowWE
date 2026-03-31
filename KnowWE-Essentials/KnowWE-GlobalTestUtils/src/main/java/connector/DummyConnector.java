@@ -477,11 +477,16 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNote) {
+		return writeArticleToWikiPersistence(title, content, context.getUserName(), changeNote);
+	}
+
+	@Override
+	public boolean writeArticleToWikiPersistence(String title, String content, String author, String changeNote) {
 		Environment environment = Environment.getInstance();
 		// create article with the new content
 		dummyPageProvider.setArticleContent(title, content, changeNote);
 
-		ArticleUpdateEvent event = new ArticleUpdateEvent(title, context.getUserName());
+		ArticleUpdateEvent event = new ArticleUpdateEvent(title, author);
 		int latestVersion = Environment.retrieveLatestVersionNumber(title);
 		event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
 		EventManager.getInstance().fireEvent(event);
