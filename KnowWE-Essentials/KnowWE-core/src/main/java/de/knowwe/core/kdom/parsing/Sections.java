@@ -1624,9 +1624,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	/**
 	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the texts deep through the
 	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
-	 * Finally the article is saved with this new content using the supplied replace context.
+	 * Finally, the article is saved with this new content using the supplied replace context.
 	 * <p/>
-	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
+	 * If working on an action, the resulting object may be used to send the errors during replacement back to the caller
 	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
 	 *
 	 * @param context     the replace context to use for modifying the articles
