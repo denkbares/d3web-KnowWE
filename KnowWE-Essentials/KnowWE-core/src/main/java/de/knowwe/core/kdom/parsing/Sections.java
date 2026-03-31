@@ -18,9 +18,12 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -1588,7 +1591,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	/**
 	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the texts deep through the
 	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
-	 * Finally the article is saved with this new content.
+	 * Finally, the article is saved with this new content.
 	 * <p/>
 	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
 	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
@@ -1599,7 +1602,39 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return a result object containing some information about the replacement success or the errors occurred
 	 */
 	public static ReplaceResult replace(UserContext context, Map<String, String> sectionsMap, @Nullable String changeNote) {
+		return replace(ReplaceContext.of(context), sectionsMap, changeNote);
+	}
 
+	/**
+	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the texts deep through the
+	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
+	 * Finally, the article is saved with this new content as system user.
+	 * <p/>
+	 * If working on an action, the resulting object may be used to send the errors during replacement back to the caller
+	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
+	 *
+	 * @param sectionsMap containing pairs of the section id and the new text for this section
+	 * @param changeNote  the change notes to be associated with the given changes
+	 * @return a result object containing some information about the replacement success or the errors occurred
+	 */
+	public static @NotNull ReplaceResult replaceAsSystem(Map<String, String> sectionsMap, @Nullable String changeNote) {
+		return replace(ReplaceContext.of(Environment.DEFAULT_WEB, title -> true, "SYSTEM"), sectionsMap, changeNote);
+	}
+
+	/**
+	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the texts deep through the
+	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
+	 * Finally the article is saved with this new content using the supplied replace context.
+	 * <p/>
+	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
+	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
+	 *
+	 * @param context     the replace context to use for modifying the articles
+	 * @param sectionsMap containing pairs of the section id and the new text for this section
+	 * @param changeNote  the change notes to be associated with the given changes
+	 * @return a result object containing some information about the replacement success or the errors occurred
+	 */
+	public static @NotNull ReplaceResult replace(ReplaceContext context, Map<String, String> sectionsMap, @Nullable String changeNote) {
 		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
 		Map<Article, Collection<String>> idsByTitle = getIdsByArticle(sectionsMap.keySet());
 
@@ -1610,11 +1645,11 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		try {
 			for (Map.Entry<Article, Collection<String>> entry : idsByTitle.entrySet()) {
 				Collection<String> idsForCurrentTitle = entry.getValue();
-				boolean errorsForThisTitle = handleErrors(entry.getKey(), idsForCurrentTitle, context,
+				boolean errorsForThisTitle = handleErrors(entry.getKey(), idsForCurrentTitle, context.getUserCanEdit(),
 						missingIDs, forbiddenArticles);
 				if (!errorsForThisTitle) {
-					replaceForTitle(entry.getKey().getTitle(), getSectionsMapForCurrentTitle(idsForCurrentTitle,
-							sectionsMap), context, changeNote);
+					replaceForTitle(entry.getKey().getTitle(),
+							getSectionsMapForCurrentTitle(idsForCurrentTitle, sectionsMap), context, changeNote);
 				}
 			}
 		}
@@ -1630,7 +1665,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				builder.append("\n");
 			}
 			LOGGER.error("The following sections were not replaced, because they could not be found. " +
-						 "Maybe there were changes to their articles in the meantime?\n{}", builder);
+					"Maybe there were changes to their articles in the meantime?\n{}", builder);
 		}
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
@@ -1669,7 +1704,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	private static boolean handleErrors(
 			Article article,
 			Collection<String> ids,
-			UserContext context,
+			Predicate<String> userCanEdit,
 			Collection<String> missingIDs,
 			Collection<String> forbiddenArticles) {
 
@@ -1677,9 +1712,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			missingIDs.addAll(ids);
 			return true;
 		}
-		if (!Environment.getInstance()
-				.getWikiConnector()
-				.userCanEditArticle(article.getTitle(), context)) {
+		if (!userCanEdit.test(article.getTitle())) {
 			forbiddenArticles.add(article.getTitle());
 			return true;
 		}
@@ -1697,22 +1730,63 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return sectionsMapForCurrentTitle;
 	}
 
-	private static void replaceForTitle(String title,
-										Map<String, String> sectionsMapForCurrentTitle,
-										UserContext context, @Nullable String changeNote) {
-		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
+	private static void replaceForTitle(String title, Map<String, String> sectionsMapForCurrentTitle,
+										ReplaceContext context, @Nullable String changeNote) {
+		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context.getWeb());
 		Environment.getInstance()
 				.getWikiConnector()
-				.writeArticleToWikiPersistence(title, newArticleText, context, changeNote);
+				.writeArticleToWikiPersistence(title, newArticleText, context.getAuthor(), context.getHttpRequest(), changeNote);
 	}
 
 	private static String getNewArticleText(
 			String title,
 			Map<String, String> sectionsMapForCurrentTitle,
-			UserContext context) {
+			String web) {
 
-		Article article = Environment.getInstance().getArticle(context.getWeb(), title);
+		Article article = Environment.getInstance().getArticle(web, title);
 		return collectTextAndReplace(article, sectionsMapForCurrentTitle);
+	}
+
+	public static class ReplaceContext {
+		private final String web;
+		private final Predicate<String> userCanEdit;
+		private final @Nullable HttpServletRequest httpRequest;
+		private final String author;
+
+		private ReplaceContext(String web, Predicate<String> userCanEdit,
+							  @Nullable HttpServletRequest httpRequest, String author) {
+			this.web = web;
+			this.userCanEdit = userCanEdit;
+			this.httpRequest = httpRequest;
+			this.author = author;
+		}
+
+		public static ReplaceContext of(UserContext userContext) {
+			Predicate<String> userCanEdit = title -> Environment.getInstance()
+					.getWikiConnector()
+					.userCanEditArticle(title, userContext);
+			return new ReplaceContext(userContext.getWeb(), userCanEdit, userContext.getRequest(), userContext.getUserName());
+		}
+
+		public static ReplaceContext of(String web, Predicate<String> userCanEdit, String author) {
+			return new ReplaceContext(web, userCanEdit, null, author);
+		}
+
+		public String getWeb() {
+			return web;
+		}
+
+		public Predicate<String> getUserCanEdit() {
+			return userCanEdit;
+		}
+
+		public @Nullable HttpServletRequest getHttpRequest() {
+			return httpRequest;
+		}
+
+		public String getAuthor() {
+			return author;
+		}
 	}
 
 	private static void trimSuperfluousLineBreaks(StringBuilder newText) {
@@ -1762,20 +1836,20 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	private static boolean sendErrorMessages(UserActionContext context,
-											 Collection<String> missingIDs,
-											 Collection<String> forbiddenArticles)
+	                                         Collection<String> missingIDs,
+	                                         Collection<String> forbiddenArticles)
 			throws IOException {
 
 		if (!missingIDs.isEmpty()) {
 			context.sendError(409, "The Sections '" + missingIDs
-								   + "' could not be found, possibly because somebody else"
-								   + " has edited them.");
+					+ "' could not be found, possibly because somebody else"
+					+ " has edited them.");
 			return true;
 		}
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
-					+ forbiddenArticles + ".");
+							+ forbiddenArticles + ".");
 			return true;
 		}
 		return false;
