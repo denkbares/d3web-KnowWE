@@ -2,11 +2,14 @@ package de.knowwe.include;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,28 +24,33 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.wiki.util.CsrfProtectionAllowList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.action.Action;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.ActionAllowListChecker;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 
-final class InterWikiImportUpdateService {
+public final class InterWikiImportUpdateService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiImportUpdateService.class);
-	private static final long POLL_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(5);
-	private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
-	private static final Map<String, Instant> LAST_SUCCESSFUL_POLLS = new ConcurrentHashMap<>();
-	private static final Set<String> REGISTERED_MARKUP_IDS = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	private static final ScheduledExecutorService POLLER = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+
+	private final long pollIntervalMillis = TimeUnit.SECONDS.toMillis(
+			20);
+	private final AtomicBoolean initialized = new AtomicBoolean(false);
+	private final Set<String> registeredMarkupIds = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private final ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
 		private final AtomicLong number = new AtomicLong(1);
 
 		@Override
@@ -53,37 +61,43 @@ final class InterWikiImportUpdateService {
 		}
 	});
 
-	private InterWikiImportUpdateService() {
+	private record ImportInfo(String sectionId, String wiki, String page, @Nullable String sectionHeading,
+	                          @Nullable Instant latestChange) {
 	}
 
-	static void initialize() {
-		if (!INITIALIZED.compareAndSet(false, true)) return;
+	private record PollResult(List<InterWikiChanges.Update> updates, boolean notAuthorized, boolean failed) {
+		private PollResult {
+			updates = List.copyOf(updates);
+		}
+	}
 
+	public void initialize() {
+		if (!initialized.compareAndSet(false, true)) return;
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 			LOGGER.info("Shutting down InterWikiImport update poller.");
-			POLLER.shutdownNow();
+			poller.shutdownNow();
 		});
+		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
 
-		POLLER.scheduleWithFixedDelay(InterWikiImportUpdateService::pollAllSources, 0, POLL_INTERVAL_MILLIS,
+		poller.scheduleWithFixedDelay(this::pollAllSources, 0, pollIntervalMillis,
 				TimeUnit.MILLISECONDS);
 	}
 
-	static void register(Section<InterWikiImportMarkup> markup) {
+	public void register(Section<InterWikiImportMarkup> markup) {
 		if (markup == null) return;
-		REGISTERED_MARKUP_IDS.add(markup.getID());
+		registeredMarkupIds.add(markup.getID());
 	}
 
-	static void deregister(Section<InterWikiImportMarkup> markup) {
+	public void deregister(Section<InterWikiImportMarkup> markup) {
 		if (markup == null) return;
-		REGISTERED_MARKUP_IDS.remove(markup.getID());
+		registeredMarkupIds.remove(markup.getID());
 	}
 
-	static void updateAllNow() {
-		initialize();
-		POLLER.execute(InterWikiImportUpdateService::pollAllSources);
+	public long getPollIntervalMillis() {
+		return pollIntervalMillis;
 	}
 
-	private static void pollAllSources() {
+	private void pollAllSources() {
 		if (!AttachmentUpdateMarkup.isAutoUpdatingActive()) return;
 
 		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
@@ -91,85 +105,155 @@ final class InterWikiImportUpdateService {
 			defaultArticleManager.awaitInitialization();
 		}
 
-		List<Section<InterWikiImportMarkup>> markups = new ArrayList<>();
-		for (String markupId : REGISTERED_MARKUP_IDS) {
-			Section<?> section = Sections.get(markupId);
-			if (!Sections.isLive(section)) {
-				REGISTERED_MARKUP_IDS.remove(markupId);
+		List<ImportInfo> snapshots = getImportSnapshots();
+		if (snapshots.isEmpty()) return;
+
+		Map<String, List<ImportInfo>> markupsByWiki = snapshots.stream()
+				.collect(Collectors.groupingBy(ImportInfo::wiki));
+
+		int updatedImports = 0;
+		int notAuthorizedSources = 0;
+		int failedSources = 0;
+		List<InterWikiChanges.Update> updates = new ArrayList<>();
+
+		articleManager.open();
+		try {
+			for (Map.Entry<String, List<ImportInfo>> entry : markupsByWiki.entrySet()) {
+				PollResult result = pollSource(entry.getKey(), entry.getValue());
+				updates.addAll(result.updates());
+				if (result.notAuthorized()) notAuthorizedSources++;
+				if (result.failed()) failedSources++;
+			}
+
+			if (!updates.isEmpty()) {
+				applyLatestChangeAnnotations(updates);
+				for (InterWikiChanges.Update update : updates) {
+					updateAttachment(update.requestingSectionId(), update.sourceText());
+				}
+			}
+			updatedImports = updates.size();
+		}
+		finally {
+			articleManager.commit();
+		}
+
+		StringBuilder summary = new StringBuilder("InterWikiImport polling finished for ")
+				.append(markupsByWiki.size())
+				.append(" source wikis and ")
+				.append(snapshots.size())
+				.append(" registered imports: ")
+				.append(updatedImports)
+				.append(" imports updated");
+		if (notAuthorizedSources > 0) {
+			summary.append(", ").append(notAuthorizedSources).append(" sources were not authorized");
+		}
+		if (failedSources > 0) {
+			summary.append(", ").append(failedSources).append(" sources failed");
+		}
+		summary.append('.');
+		LOGGER.info(summary.toString());
+	}
+
+	private List<ImportInfo> getImportSnapshots() {
+		List<ImportInfo> snapshots = new ArrayList<>();
+		for (String markupId : registeredMarkupIds) {
+			Section<InterWikiImportMarkup> markup = Sections.get(markupId, InterWikiImportMarkup.class);
+			if (!Sections.isLive(markup)) {
+				registeredMarkupIds.remove(markupId);
 				continue;
 			}
 
-			Section<InterWikiImportMarkup> markup = Sections.cast(section, InterWikiImportMarkup.class);
-			markups.add(markup);
+			snapshots.add(new ImportInfo(
+					markup.getID(),
+					InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup)),
+					markup.get().getPageName(markup),
+					markup.get().getSectionName(markup),
+					markup.get().getLatestChange(markup)));
 		}
-		if (markups.isEmpty()) return;
-
-		Map<String, List<Section<InterWikiImportMarkup>>> markupsByWiki = markups.stream()
-				.collect(Collectors.groupingBy(markup -> InterWikiImportMarkup.normalizeWiki(markup.get()
-						.getWiki(markup))));
-
-		for (Map.Entry<String, List<Section<InterWikiImportMarkup>>> entry : markupsByWiki.entrySet()) {
-			pollSource(entry.getKey(), entry.getValue());
-		}
+		return snapshots;
 	}
 
-	private static void pollSource(String wiki, List<Section<InterWikiImportMarkup>> markups) {
-		if (wiki == null || wiki.isBlank() || markups.isEmpty()) return;
+	private PollResult pollSource(String wiki, List<ImportInfo> snapshots) {
+		if (wiki == null || wiki.isBlank() || snapshots.isEmpty()) {
+			return new PollResult(List.of(), false, false);
+		}
 
-		Instant since = LAST_SUCCESSFUL_POLLS.get(wiki);
 		try {
-			InterWikiChanges changes = requestChanges(wiki, since);
-			if (changes.isFullRefreshRequired()) {
-				Stopwatch stopwatch = new Stopwatch();
-				LOGGER.info("Wiki {} does not provide GetWikiChangesSinceAction yet, updating all {} markups of that source.",
-						wiki, markups.size());
-				markups.parallelStream().forEach(markup -> markup.get().performUpdate(markup, false, true));
-				stopwatch.log(LOGGER, "Did full update of " + markups.size() + " markups of " + wiki);
-				return;
-			}
-			if (changes.getAttachments().isEmpty() && changes.getPages().isEmpty()) return;
-			List<Section<InterWikiImportMarkup>> affectedMarkups = markups.stream()
-					.filter(markup -> referencesChangedObject(markup, changes))
-					.toList();
+			LOGGER.info("Starting to poll InterWikiImport changes from {} for {} registered imports.", wiki, snapshots.size());
+			Stopwatch stopwatch = new Stopwatch();
+			InterWikiChanges changes = requestChanges(wiki, snapshots);
+			if (changes == null) return new PollResult(List.of(), false, false);
 
-			if (!affectedMarkups.isEmpty()) {
-				LOGGER.info("Found {} changed InterWikiImport markups for {}.", affectedMarkups.size(), wiki);
-				Stopwatch stopwatch = new Stopwatch();
-				affectedMarkups.parallelStream().forEach(markup -> markup.get().performUpdate(markup, false, true));
-				stopwatch.log(LOGGER, "InterWikiImport markup updates completed for " + affectedMarkups.size() + " markups");
+			if (changes.getStatus() == InterWikiChanges.Status.not_authorized) {
+				LOGGER.warn("Not authorized to poll InterWikiImport changes from {}.", wiki);
+				return new PollResult(List.of(), true, false);
 			}
 
-			LAST_SUCCESSFUL_POLLS.put(wiki, changes.getNextSince());
+			if (changes.getUpdates().isEmpty()) return new PollResult(List.of(), false, false);
+			LOGGER.info("Found {} changed InterWikiImport markups for {}.", changes.getUpdates().size(), wiki);
+			stopwatch.log(LOGGER, "InterWikiImport markup updates completed for " + changes.getUpdates()
+					.size() + " markups");
+			return new PollResult(changes.getUpdates(), false, false);
 		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to poll InterWikiImport changes from {}", wiki, e);
+			return new PollResult(List.of(), false, true);
 		}
 	}
 
-	private static boolean referencesChangedObject(Section<InterWikiImportMarkup> markup, InterWikiChanges changes) {
-		String pageName = markup.get().getPageName(markup);
-		return changes.getPages().contains(pageName) || changes.getAttachments().contains(pageName);
+	private void applyLatestChangeAnnotations(List<InterWikiChanges.Update> updates) {
+		Map<String, String> replacements = new LinkedHashMap<>();
+		for (InterWikiChanges.Update update : updates) {
+			Section<InterWikiImportMarkup> markup = Sections.get(update.requestingSectionId(), InterWikiImportMarkup.class);
+			if (!Sections.isLive(markup)) {
+				registeredMarkupIds.remove(update.requestingSectionId());
+				continue;
+			}
+			markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
+		}
+		if (!replacements.isEmpty()) {
+			Sections.replaceAsSystem(replacements, "Update InterWikiImport latestChange after change from remote wiki");
+		}
 	}
 
-	private static InterWikiChanges requestChanges(String wiki, Instant since) throws IOException {
-		StringBuilder urlBuilder = new StringBuilder(wiki).append(AttachmentUpdateMarkup.getActionFragment())
-				.append("/GetWikiChangesSinceAction");
-		if (since != null) {
-			urlBuilder.append("?")
-					.append(InterWikiChanges.SINCE_PARAMETER)
-					.append("=")
-					.append(Strings.encodeURL(since.toString()));
+	private void updateAttachment(String sectionId, @Nullable String sourceText) {
+		Section<InterWikiImportMarkup> markup = Sections.get(sectionId, InterWikiImportMarkup.class);
+		if (!Sections.isLive(markup)) {
+			registeredMarkupIds.remove(sectionId);
+			return;
 		}
 
-		URL url = new URL(urlBuilder.toString());
+		if (sourceText != null) {
+			markup.get().updateAttachmentWithSourceText(markup, sourceText);
+		}
+	}
+
+	private InterWikiChanges requestChanges(String wiki, List<ImportInfo> snapshots) throws IOException {
+		List<InterWikiChanges.RequestedImport> requestedImports = snapshots.stream()
+				.map(snapshot -> new InterWikiChanges.RequestedImport(
+						snapshot.sectionId(),
+						snapshot.page(),
+						snapshot.sectionHeading(),
+						snapshot.latestChange()))
+				.toList();
+
+		String urlString = wiki + AttachmentUpdateMarkup.getActionFragment() + "/GetWikiChangesSinceAction";
+		URL url = new URL(urlString);
 		HttpURLConnection connection = AttachmentUpdateMarkup.openHttpConnection(url);
-		connection.setRequestMethod("GET");
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Content-Type", Action.JSON);
+		connection.setDoOutput(true);
+
+		byte[] requestBytes = InterWikiChanges.toRequestJson(requestedImports).getBytes(StandardCharsets.UTF_8);
+		// should we optimize the request size?
+		LOGGER.info("Polling InterWikiImport changes from {} with request payload of {} kB.", wiki,
+				String.format("%.1f", requestBytes.length / 1024.0));
+		try (OutputStream outputStream = connection.getOutputStream()) {
+			outputStream.write(requestBytes);
+			outputStream.flush();
+		}
 
 		int responseCode = connection.getResponseCode();
-		if (responseCode == HttpServletResponse.SC_NOT_FOUND) {
-			connection.disconnect();
-			return InterWikiChanges.fullRefreshRequired();
-		}
 		if (responseCode != HttpServletResponse.SC_OK) {
 			throw new IOException("Unexpected response " + responseCode + " while polling " + url);
 		}

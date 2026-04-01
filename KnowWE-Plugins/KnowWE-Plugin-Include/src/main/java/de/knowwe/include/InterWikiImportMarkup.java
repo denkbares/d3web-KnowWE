@@ -19,17 +19,25 @@
 
 package de.knowwe.include;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
+import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -39,8 +47,10 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.tools.HelpToolProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -70,8 +80,9 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String SECTION_ANNOTATION = "section";
 	private static final String COMPILE_ANNOTATION = "compile";
 	private static final String VALIDATION_MODE_ANNOTATION = "validationMode";
+	private static final String LATEST_CHANGE_ANNOTATION = "latestChange";
 
-
+	private static final InterWikiImportUpdateService UPDATE_SERVICE = new InterWikiImportUpdateService();
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
 
 	static {
@@ -84,12 +95,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(PAGE_ANNOTATION, true);
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
 		MARKUP.addAnnotation(VALIDATION_MODE_ANNOTATION, false, TermCompiler.ReferenceValidationMode.class);
+		MARKUP.addAnnotation(LATEST_CHANGE_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
+		UPDATE_SERVICE.initialize();
 	}
 
 	public InterWikiImportMarkup() {
 		super(MARKUP);
-		InterWikiImportUpdateService.initialize();
 		addCompileScript(new RegistrationScript());
 		setRenderer(new AsynchronousRenderer(new InterWikiImportRenderer()));
 	}
@@ -196,6 +208,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	static String normalizeWiki(String wiki) {
 		if (wiki == null) return "";
 		String normalized = Strings.trim(wiki);
+		if (normalized.isBlank()) return "";
 		if (!normalized.matches("^https?://.*")) {
 			normalized = "https://" + normalized;
 		}
@@ -203,6 +216,75 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			normalized += "/";
 		}
 		return normalized;
+	}
+
+	@Nullable
+	Instant getLatestChange(Section<InterWikiImportMarkup> section) {
+		String latestChangeText = DefaultMarkupType.getAnnotation(section, LATEST_CHANGE_ANNOTATION);
+		return InterWikiChanges.parseInstant(latestChangeText);
+	}
+
+	void collectLatestChangeReplacement(Section<InterWikiImportMarkup> section, Instant latestChange, Map<String, String> replacements) {
+		Section<?> latestChangeContent = DefaultMarkupType.getAnnotationContentSection(section, LATEST_CHANGE_ANNOTATION);
+		if (latestChangeContent != null) {
+			replacements.put(latestChangeContent.getID(), latestChange.toString());
+		}
+		else {
+			Section<?> closingTag = $(section).children().getLast();
+			if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return;
+			replacements.put(closingTag.getID(),
+					"\n@" + LATEST_CHANGE_ANNOTATION + ": " + latestChange + "\n" + Strings.trimLeft(closingTag.getText()));
+		}
+	}
+
+	void updateLatestChange(Section<InterWikiImportMarkup> section, Instant latestChange) {
+		Map<String, String> replacements = new HashMap<>();
+		collectLatestChangeReplacement(section, latestChange, replacements);
+		Sections.replaceAsSystem(replacements, "Update InterWikiImport latestChange after change from remote wiki");
+	}
+
+	void updateAttachmentWithSourceText(Section<InterWikiImportMarkup> section, String sourceText) {
+		if (section.getArticleManager() == null) return;
+
+		logLastRun(section);
+		Messages.clearMessages(section, getClass());
+
+		String path = getWikiAttachmentPath(section);
+		if (path == null) return;
+		if (path.split("/").length > 2) {
+			Messages.storeMessage(section, getClass(), Messages.error("Unable to update entries in zipped attachments!"));
+			return;
+		}
+
+		ReentrantLock lock = getLock(section);
+		if (!lock.tryLock()) {
+			return;
+		}
+
+		try {
+			byte[] sourceBytes = Streams.getBytesAndClose(applyReplacements(section,
+					new ByteArrayInputStream(sourceText.getBytes(StandardCharsets.UTF_8))));
+			WikiAttachment attachment = getWikiAttachment(section);
+			if (attachment != null) {
+				byte[] attachmentBytes = Streams.getBytesAndClose(attachment.getInputStream());
+				if (java.util.Arrays.equals(sourceBytes, attachmentBytes)) {
+					return;
+				}
+			}
+
+			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
+			String fileName = path.substring(path.indexOf(PATH_SEPARATOR) + 1);
+			Environment.getInstance().getWikiConnector()
+					.storeAttachment(parentName, fileName, "SYSTEM", new ByteArrayInputStream(sourceBytes), isVersioning(section));
+		}
+		catch (IOException e) {
+			String message = e.getClass().getSimpleName() + " while trying to update attachment " + path;
+			Messages.storeMessage(section, getClass(), Messages.error(message + ": " + e.getMessage()));
+			throw new RuntimeException(message, e);
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
@@ -337,7 +419,9 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 			if (DefaultMarkupType.getAnnotation(markup, INTERVAL_ANNOTATION) != null) {
 				result.appendHtmlElement("p",
-						"@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every 10 minutes per source wiki.",
+						"@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
+								+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
+								+ " minutes per source wiki.",
 						"class", "warning");
 			}
 		}
@@ -384,15 +468,15 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			if (section.get().getUrl(section) == null) {
-				InterWikiImportUpdateService.deregister(section);
+				UPDATE_SERVICE.deregister(section);
 				return;
 			}
-			InterWikiImportUpdateService.register(section);
+			UPDATE_SERVICE.register(section);
 		}
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
-			InterWikiImportUpdateService.deregister(section);
+			UPDATE_SERVICE.deregister(section);
 		}
 	}
 }
