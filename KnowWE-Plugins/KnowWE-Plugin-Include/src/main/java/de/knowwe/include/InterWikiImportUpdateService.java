@@ -3,6 +3,7 @@ package de.knowwe.include;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -178,7 +179,6 @@ public final class InterWikiImportUpdateService {
 		}
 
 		try {
-			LOGGER.info("Starting to poll InterWikiImport changes from {} for {} registered imports.", wiki, snapshots.size());
 			Stopwatch stopwatch = new Stopwatch();
 			InterWikiChanges changes = requestChanges(wiki, snapshots);
 			if (changes == null) return new PollResult(List.of(), false, false);
@@ -189,13 +189,11 @@ public final class InterWikiImportUpdateService {
 			}
 
 			if (changes.getUpdates().isEmpty()) return new PollResult(List.of(), false, false);
-			LOGGER.info("Found {} changed InterWikiImport markups for {}.", changes.getUpdates().size(), wiki);
-			stopwatch.log(LOGGER, "InterWikiImport markup updates completed for " + changes.getUpdates()
-					.size() + " markups");
+			stopwatch.log(LOGGER, "Found " + changes.getUpdates().size() + " changed InterWikiImport markups for " + wiki + ".");
 			return new PollResult(changes.getUpdates(), false, false);
 		}
 		catch (Exception e) {
-			LOGGER.warn("Failed to poll InterWikiImport changes from {}", wiki, e);
+			LOGGER.warn("Failed to poll InterWikiImport changes from {}: {}: {}", wiki, e.getClass().getSimpleName(), e.getMessage());
 			return new PollResult(List.of(), false, true);
 		}
 	}
@@ -245,7 +243,7 @@ public final class InterWikiImportUpdateService {
 
 		byte[] requestBytes = InterWikiChanges.toRequestJson(requestedImports).getBytes(StandardCharsets.UTF_8);
 		// should we optimize the request size?
-		LOGGER.info("Polling InterWikiImport changes from {} with request payload of {} kB.", wiki,
+		LOGGER.info("Polling {} InterWikiImport changes from {} with request payload of {} kB.", requestedImports.size(), wiki,
 				String.format("%.1f", requestBytes.length / 1024.0));
 		try (OutputStream outputStream = connection.getOutputStream()) {
 			outputStream.write(requestBytes);
