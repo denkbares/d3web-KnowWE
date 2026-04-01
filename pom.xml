@@ -844,6 +844,11 @@
 				<artifactId>jspwiki-knowwe-main</artifactId>
 				<version>${jspwiki.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.jspwiki</groupId>
+				<artifactId>jspwiki-knowwe-util</artifactId>
+				<version>${jspwiki.version}</version>
+			</dependency>
 			<!-- Other -->
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
