@@ -137,6 +137,23 @@ public class Plugins {
 		return null;
 	}
 
+	/**
+	 * Get the action for the given action name.
+	 *
+	 * @param actionClass the class to get the action name for
+	 * @return the action name for the given action class
+	 */
+	public static @Nullable String getAction(Class<? extends Action> actionClass) {
+		PluginManager manager = PluginManager.getInstance();
+		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_KnowWEAction);
+		for (Extension e : extensions) {
+			if (e.getInstanceClass().equals(actionClass)) {
+				return e.getName();
+			}
+		}
+		return null;
+	}
+
 	public static void addChildrenTypesToType(Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Type);
