@@ -286,6 +286,7 @@ public class DefaultArticleManager implements ArticleManager {
 		}
 
 		boolean outermostCommit = mainLock.getHoldCount() == 1;
+		boolean changesCommitted = false;
 		try {
 			if (outermostCommit) {
 				EventManager.getInstance().fireEvent(new ArticleManagerCommitStartEvent(this));
@@ -307,6 +308,7 @@ public class DefaultArticleManager implements ArticleManager {
 					addedSections.sort(Comparator.naturalOrder());
 					removedSections.sort(Comparator.naturalOrder());
 					compilerManager.compile(addedSections, removedSections);
+					changesCommitted = true;
 				}
 				originalArticleMap.clear();
 				synchronized (deleteAfterCompile) {
@@ -324,7 +326,7 @@ public class DefaultArticleManager implements ArticleManager {
 		finally {
 			mainLock.unlock();
 			if (outermostCommit) {
-				EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(this));
+				EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(this, changesCommitted));
 			}
 		}
 	}

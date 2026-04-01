@@ -23,7 +23,14 @@ import de.knowwe.core.ArticleManager;
 
 public class ArticleManagerCommitDoneEvent extends ArticleManagerEvent {
 
-	public ArticleManagerCommitDoneEvent(ArticleManager articleManager) {
+	private final boolean changesCommitted;
+
+	public ArticleManagerCommitDoneEvent(ArticleManager articleManager, boolean changesCommitted) {
 		super(articleManager);
+		this.changesCommitted = changesCommitted;
+	}
+
+	public boolean changesCommitted() {
+		return changesCommitted;
 	}
 }

@@ -84,7 +84,7 @@ public final class CompilationLocal<E> {
 					// make sure we don't have stale caches
 					compilerCache.keySet().removeIf(c -> !c.getCompilerManager().contains(c));
 				}
-				else if (event instanceof ArticleManagerCommitDoneEvent) {
+				else if (event instanceof ArticleManagerCommitDoneEvent doneEvent && doneEvent.changesCommitted()) {
 					CompletableFuture.runAsync(CompilationLocal::cleanupStaleSectionCaches);
 				}
 			}
@@ -249,12 +249,14 @@ public final class CompilationLocal<E> {
 
 	private static void cleanupStaleSectionCaches() {
 		Stopwatch stopwatch = new Stopwatch();
-		cleanupStaleSectionCaches(compilerCache);
-		cleanupStaleSectionCaches(compilerManagerCache);
-		stopwatch.log(LOGGER, "Cleaned up stale section caches");
+		int counter = 0;
+		counter += cleanupStaleSectionCaches(compilerCache);
+		counter += cleanupStaleSectionCaches(compilerManagerCache);
+		stopwatch.log(LOGGER, "Cleaned up stale section caches: " + counter);
 	}
 
-	private static void cleanupStaleSectionCaches(Map<?, Map<Object, CompilationLocal<?>>> caches) {
+	private static int cleanupStaleSectionCaches(Map<?, Map<Object, CompilationLocal<?>>> caches) {
+		int counter = 0;
 		for (Map<Object, CompilationLocal<?>> cache : caches.values()) {
 			Iterator<Object> iterator = cache.keySet().iterator();
 			while (iterator.hasNext()) {
@@ -262,9 +264,11 @@ public final class CompilationLocal<E> {
 				Section<?> section = getSectionFromCacheKey(key);
 				if (!Sections.isLive(section)) {
 					iterator.remove();
+					counter++;
 				}
 			}
 		}
+		return counter;
 	}
 
 	private static Section<?> getSectionFromCacheKey(Object key) {
