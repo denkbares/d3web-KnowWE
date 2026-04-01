@@ -39,6 +39,8 @@ import com.denkbares.events.EventManager;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.event.ArticleManagerCommitDoneEvent;
+import de.knowwe.event.ArticleManagerCommitStartEvent;
 import de.knowwe.event.ArticleRegisteredEvent;
 
 /**
@@ -283,8 +285,10 @@ public class DefaultArticleManager implements ArticleManager {
 			return;
 		}
 
+		boolean outermostCommit = mainLock.getHoldCount() == 1;
 		try {
-			if (mainLock.getHoldCount() == 1) {
+			if (outermostCommit) {
+				EventManager.getInstance().fireEvent(new ArticleManagerCommitStartEvent(this));
 				ArrayList<Section<?>> addedSections = new ArrayList<>();
 				ArrayList<Section<?>> removedSections = new ArrayList<>();
 				synchronized (added) {
@@ -319,6 +323,9 @@ public class DefaultArticleManager implements ArticleManager {
 		}
 		finally {
 			mainLock.unlock();
+			if (outermostCommit) {
+				EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(this));
+			}
 		}
 	}
 

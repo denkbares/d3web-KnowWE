@@ -21,9 +21,12 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -35,8 +38,11 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.event.ArticleManagerCommitDoneEvent;
 
 /**
  * A container for a variable that is only valid during one compilation cycle. The variable is discarded as soon as a
@@ -52,6 +58,11 @@ public final class CompilationLocal<E> {
 	private volatile E variable = null;
 	private static final Map<Compiler, Map<Object, CompilationLocal<?>>> compilerCache = new ConcurrentHashMap<>();
 	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> compilerManagerCache = new ConcurrentHashMap<>();
+	private static final ExecutorService cleanupExecutor = Executors.newSingleThreadExecutor(runnable -> {
+		Thread thread = new Thread(runnable, CompilationLocal.class.getSimpleName() + "-cleanup");
+		thread.setDaemon(true);
+		return thread;
+	});
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompilationLocal.class);
 
@@ -62,7 +73,8 @@ public final class CompilationLocal<E> {
 				return List.of(
 						CompilerRemovedEvent.class,
 						CompilationStartEvent.class,
-						ScriptCompilerCompilePhaseStartEvent.class);
+						ScriptCompilerCompilePhaseStartEvent.class,
+						ArticleManagerCommitDoneEvent.class);
 			}
 
 			@Override
@@ -78,12 +90,16 @@ public final class CompilationLocal<E> {
 					// make sure we don't have stale caches
 					compilerCache.keySet().removeIf(c -> !c.getCompilerManager().contains(c));
 				}
+				else if (event instanceof ArticleManagerCommitDoneEvent) {
+					cleanupExecutor.execute(CompilationLocal::cleanupStaleSectionCaches);
+				}
 			}
 		});
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 			LOGGER.info("Clear compiler cache");
 			compilerCache.clear();
 			compilerManagerCache.clear();
+			cleanupExecutor.shutdown();
 		});
 	}
 
@@ -236,5 +252,40 @@ public final class CompilationLocal<E> {
 			}
 		}
 		return variable;
+	}
+
+	private static void cleanupStaleSectionCaches() {
+		Stopwatch stopwatch = new Stopwatch();
+		cleanupStaleSectionCaches(compilerCache);
+		cleanupStaleSectionCaches(compilerManagerCache);
+		stopwatch.log(LOGGER, "Cleaned up stale section caches");
+	}
+
+	private static void cleanupStaleSectionCaches(Map<?, Map<Object, CompilationLocal<?>>> caches) {
+		for (Map<Object, CompilationLocal<?>> cache : caches.values()) {
+			Iterator<Object> iterator = cache.keySet().iterator();
+			while (iterator.hasNext()) {
+				Object key = iterator.next();
+				Section<?> section = getSectionFromCacheKey(key);
+				if (!Sections.isLive(section)) {
+					iterator.remove();
+				}
+			}
+		}
+	}
+
+	private static Section<?> getSectionFromCacheKey(Object key) {
+		if (key instanceof Section<?> section) {
+			return section;
+		}
+		if (key instanceof Pair<?, ?> pair) {
+			if (pair.getA() instanceof Section<?> section) {
+				return section;
+			}
+			if (pair.getB() instanceof Section<?> section) {
+				return section;
+			}
+		}
+		return null;
 	}
 }
