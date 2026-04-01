@@ -24,9 +24,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -58,11 +57,6 @@ public final class CompilationLocal<E> {
 	private volatile E variable = null;
 	private static final Map<Compiler, Map<Object, CompilationLocal<?>>> compilerCache = new ConcurrentHashMap<>();
 	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> compilerManagerCache = new ConcurrentHashMap<>();
-	private static final ExecutorService cleanupExecutor = Executors.newSingleThreadExecutor(runnable -> {
-		Thread thread = new Thread(runnable, CompilationLocal.class.getSimpleName() + "-cleanup");
-		thread.setDaemon(true);
-		return thread;
-	});
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompilationLocal.class);
 
@@ -91,7 +85,7 @@ public final class CompilationLocal<E> {
 					compilerCache.keySet().removeIf(c -> !c.getCompilerManager().contains(c));
 				}
 				else if (event instanceof ArticleManagerCommitDoneEvent) {
-					cleanupExecutor.execute(CompilationLocal::cleanupStaleSectionCaches);
+					CompletableFuture.runAsync(CompilationLocal::cleanupStaleSectionCaches);
 				}
 			}
 		});
@@ -99,7 +93,6 @@ public final class CompilationLocal<E> {
 			LOGGER.info("Clear compiler cache");
 			compilerCache.clear();
 			compilerManagerCache.clear();
-			cleanupExecutor.shutdown();
 		});
 	}
 
