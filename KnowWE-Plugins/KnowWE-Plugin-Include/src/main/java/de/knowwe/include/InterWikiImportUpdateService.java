@@ -46,8 +46,7 @@ public final class InterWikiImportUpdateService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiImportUpdateService.class);
 
-	private final long pollIntervalMillis = TimeUnit.SECONDS.toMillis(
-			20);
+	private final long pollIntervalMillis = TimeUnit.MINUTES.toMillis(10);
 	private final AtomicBoolean initialized = new AtomicBoolean(false);
 	private final Set<String> registeredMarkupIds = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final ScheduledExecutorService poller = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
