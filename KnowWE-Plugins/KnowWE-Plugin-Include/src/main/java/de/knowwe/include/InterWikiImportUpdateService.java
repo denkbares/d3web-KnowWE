@@ -211,7 +211,7 @@ public final class InterWikiImportUpdateService {
 			updatedImports++;
 		}
 		if (!replacements.isEmpty()) {
-			Sections.replaceAsSystem(replacements, "Update InterWikiImport latestChange after change from remote wiki");
+			Sections.replaceAsSystem(replacements, "Update after changes in remote wiki");
 		}
 		return updatedImports;
 	}
