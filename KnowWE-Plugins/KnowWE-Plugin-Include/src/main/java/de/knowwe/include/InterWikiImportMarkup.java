@@ -26,7 +26,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +46,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -237,28 +235,26 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 	}
 
-	void updateLatestChange(Section<InterWikiImportMarkup> section, Instant latestChange) {
-		Map<String, String> replacements = new HashMap<>();
-		collectLatestChangeReplacement(section, latestChange, replacements);
-		Sections.replaceAsSystem(replacements, "Update InterWikiImport latestChange after change from remote wiki");
+	boolean shouldUpdateLatestChange(Section<InterWikiImportMarkup> section, boolean attachmentChanged) {
+		return getSectionName(section) == null || attachmentChanged;
 	}
 
-	void updateAttachmentWithSourceText(Section<InterWikiImportMarkup> section, String sourceText) {
-		if (section.getArticleManager() == null) return;
+	boolean updateAttachmentWithSourceText(Section<InterWikiImportMarkup> section, String sourceText) {
+		if (section.getArticleManager() == null) return false;
 
 		logLastRun(section);
 		Messages.clearMessages(section, getClass());
 
 		String path = getWikiAttachmentPath(section);
-		if (path == null) return;
+		if (path == null) return false;
 		if (path.split("/").length > 2) {
 			Messages.storeMessage(section, getClass(), Messages.error("Unable to update entries in zipped attachments!"));
-			return;
+			return false;
 		}
 
 		ReentrantLock lock = getLock(section);
 		if (!lock.tryLock()) {
-			return;
+			return false;
 		}
 
 		try {
@@ -268,7 +264,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			if (attachment != null) {
 				byte[] attachmentBytes = Streams.getBytesAndClose(attachment.getInputStream());
 				if (java.util.Arrays.equals(sourceBytes, attachmentBytes)) {
-					return;
+					return false;
 				}
 			}
 
@@ -276,6 +272,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			String fileName = path.substring(path.indexOf(PATH_SEPARATOR) + 1);
 			Environment.getInstance().getWikiConnector()
 					.storeAttachment(parentName, fileName, "SYSTEM", new ByteArrayInputStream(sourceBytes), isVersioning(section));
+			return true;
 		}
 		catch (IOException e) {
 			String message = e.getClass().getSimpleName() + " while trying to update attachment " + path;
@@ -420,8 +417,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			if (DefaultMarkupType.getAnnotation(markup, INTERVAL_ANNOTATION) != null) {
 				result.appendHtmlElement("p",
 						"@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
-								+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
-								+ " minutes per source wiki.",
+						+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
+						+ " minutes per source wiki.",
 						"class", "warning");
 			}
 		}

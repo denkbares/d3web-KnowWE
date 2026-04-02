@@ -126,12 +126,8 @@ public final class InterWikiImportUpdateService {
 			}
 
 			if (!updates.isEmpty()) {
-				applyLatestChangeAnnotations(updates);
-				for (InterWikiChanges.Update update : updates) {
-					updateAttachment(update.requestingSectionId(), update.sourceText());
-				}
+				updatedImports = processUpdates(updates);
 			}
-			updatedImports = updates.size();
 		}
 		finally {
 			articleManager.commit();
@@ -198,31 +194,26 @@ public final class InterWikiImportUpdateService {
 		}
 	}
 
-	private void applyLatestChangeAnnotations(List<InterWikiChanges.Update> updates) {
+	private int processUpdates(List<InterWikiChanges.Update> updates) {
 		Map<String, String> replacements = new LinkedHashMap<>();
+		int updatedImports = 0;
 		for (InterWikiChanges.Update update : updates) {
 			Section<InterWikiImportMarkup> markup = Sections.get(update.requestingSectionId(), InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) {
 				registeredMarkupIds.remove(update.requestingSectionId());
 				continue;
 			}
-			markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
+
+			boolean attachmentChanged = markup.get().updateAttachmentWithSourceText(markup, update.sourceText());
+			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)) {
+				markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
+			}
+			updatedImports++;
 		}
 		if (!replacements.isEmpty()) {
 			Sections.replaceAsSystem(replacements, "Update InterWikiImport latestChange after change from remote wiki");
 		}
-	}
-
-	private void updateAttachment(String sectionId, @Nullable String sourceText) {
-		Section<InterWikiImportMarkup> markup = Sections.get(sectionId, InterWikiImportMarkup.class);
-		if (!Sections.isLive(markup)) {
-			registeredMarkupIds.remove(sectionId);
-			return;
-		}
-
-		if (sourceText != null) {
-			markup.get().updateAttachmentWithSourceText(markup, sourceText);
-		}
+		return updatedImports;
 	}
 
 	private InterWikiChanges requestChanges(String wiki, List<ImportInfo> snapshots) throws IOException {
