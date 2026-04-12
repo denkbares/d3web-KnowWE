@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-d3web-Rdf2Go" version="1.0">
+	
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+	
+	<runtime>
+		<library id="de.knowwe" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoTermDefinitionHandler">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoTermDefinitionHandler" />
+		<parameter id="name" value="Rdf2GoTermDefinitionHandler" />
+		<parameter id="description" value="Handler Rdf2GoTermDefinitionHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="-200" />
+		<parameter id="scope" value="D3webTermDefinition" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoTermReferenceHandler">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoTermReferenceHandler" />
+		<parameter id="name" value="Rdf2GoTermReferenceHandler" />
+		<parameter id="description" value="Handler Rdf2GoTermReferenceHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="-300" />
+		<parameter id="scope" value="D3webTermReference" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoResourceDefinitionHandler">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoResourceDefinitionHandler" />
+		<parameter id="name" value="Rdf2GoResourceDefinitionHandler" />
+		<parameter id="description" value="Handler Rdf2GoResourceDefinitionHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="-200" />
+		<parameter id="scope" value="ResourceDefinition" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoResourceReferenceHandler">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoResourceReferenceHandler" />
+		<parameter id="name" value="Rdf2GoResourceReferenceHandler" />
+		<parameter id="description" value="Handler Rdf2GoResourceReferenceHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="-300" />
+		<parameter id="scope" value="ResourceReference" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoPropertyHandler">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoPropertyHandler" />
+		<parameter id="name" value="Rdf2GoPropertyHandler" />
+		<parameter id="description" value="Handler Rdf2GoPropertyHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="200" />
+		<parameter id="scope" value="PropertyDeclarationType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoDashTreeSolutionRelationScript">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoDashTreeSolutionRelationScript" />
+		<parameter id="name" value="Rdf2GoDashTreeSolutionRelationScript" />
+		<parameter id="description" value="Handler Rdf2GoDashTreeSolutionRelationScript" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="SolutionTreeSolutionDefinition" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoDashTreeQuestionRelationScript">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoDashTreeQuestionRelationScript" />
+		<parameter id="name" value="Rdf2GoDashTreeQuestionRelationScript" />
+		<parameter id="description" value="Handler Rdf2GoDashTreeQuestionRelationScript" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="QuestionTreeQuestionDefinition" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoDashTreeQuestionnaireRelationScript">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoDashTreeQuestionnaireRelationScript" />
+		<parameter id="name" value="Rdf2GoDashTreeQuestionnaireRelationScript" />
+		<parameter id="description" value="Handler Rdf2GoDashTreeQuestionnaireRelationScript" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="QuestionTreeQuestionnaireDefinition" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoFlowScript">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoFlowScript" />
+		<parameter id="name" value="Rdf2GoFlowScript" />
+		<parameter id="description" value="Compiles information about flowcharts into the triple store." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="FlowchartType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript"
+		id="Rdf2GoNodeScript">
+		<parameter id="class" value="de.knowwe.rdfs.d3web.Rdf2GoNodeScript" />
+		<parameter id="name" value="Rdf2GoNodeScript" />
+		<parameter id="description" value="Compiles information about flowchart nodes into the triple store." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="compilepriority" value="0" />
+		<parameter id="scope" value="NodeType" />
+	</extension>
+
+</plugin>

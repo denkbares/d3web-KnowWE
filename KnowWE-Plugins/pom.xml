@@ -56,6 +56,8 @@
 		<module>KnowWE-Plugin-DropZone</module>
 		<module>KnowWE-Plugin-d3web-Homepage</module>
 		<module>KnowWE-Plugin-QuartzScheduler</module>
+		<module>KnowWE-Plugin-SparqlEndpoint</module>
+		<module>KnowWE-Plugin-d3web-Rdf2Go</module>
 	</modules>
 
 </project>
