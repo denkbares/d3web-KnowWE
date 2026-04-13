@@ -25,7 +25,7 @@
 	<parent>
 		<artifactId>KnowWE-Essentials</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2026.4-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>KnowWE-UITests</artifactId>
@@ -89,7 +89,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

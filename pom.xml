@@ -23,33 +23,81 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>2026.4-SNAPSHOT</version>
+	<version>${revision}</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 
 	<properties>
-		<denkbares.version>${project.version}</denkbares.version>
-		<d3web.version>${project.version}</d3web.version>
-		<knowwe.version>${project.version}</knowwe.version>
-		<konap.version>${project.version}</konap.version>
-		<ssp.version>${project.version}</ssp.version>
-		<mate.version>${project.version}</mate.version>
+		<!-- project version -->
+		<revision>2026.4-SNAPSHOT</revision>
+
+		<!-- cross-repo versions (default: same version) -->
+		<denkbares-Commons.version>${revision}</denkbares-Commons.version>
+		<d3web.version>${revision}</d3web.version>
+		<d3web-DES.version>${revision}</d3web-DES.version>
+		<denkbares-Internals.version>${revision}</denkbares-Internals.version>
+		<konap.version>${revision}</konap.version>
+		<ssp.version>${revision}</ssp.version>
+		<mate.version>${revision}</mate.version>
+
+		<!-- build -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven-enforcer.version>3.6.2</maven-enforcer.version>
+
+		<!-- logging -->
 		<slf4j.version>2.0.15</slf4j.version>
 		<log4j.version>2.22.0</log4j.version>
+		<logback.version>1.5.19</logback.version>
+
+		<!-- serialization -->
+		<jackson.version>2.19.2</jackson.version>
+		<gson.version>2.13.2</gson.version>
+		<jdom2.version>2.0.6.1</jdom2.version>
+		<json.version>20250517</json.version>
+
+		<!-- web -->
 		<jspwiki.version>2.12.6-SNAPSHOT</jspwiki.version>
-		<selenium.version>4.38.0</selenium.version>
 		<tomcat.version>9.0.104</tomcat.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<stripes.version>1.7.0-async-beta</stripes.version>
+		<servlet-api.version>3.1.0</servlet-api.version>
+		<spring.version>4.0.5.RELEASE</spring.version>
+		<httpcore.version>4.4</httpcore.version>
+		<httpclient.version>4.5.13</httpclient.version>
+
+		<!-- apache commons -->
+		<commons-csv.version>1.4</commons-csv.version>
+		<commons-text.version>1.10.0</commons-text.version>
+		<commons-lang3.version>3.20.0</commons-lang3.version>
+		<commons-io.version>2.18.0</commons-io.version>
+		<commons-fileupload.version>1.6.0</commons-fileupload.version>
+		<commons-codec.version>1.14</commons-codec.version>
+
+		<!-- testing -->
+		<selenium.version>4.38.0</selenium.version>
+		<junit.version>4.13.1</junit.version>
+		<junit5.version>5.11.4</junit5.version>
+		<mockito.version>2.22.0</mockito.version>
+		<hamcrest.version>1.3</hamcrest.version>
+
+		<!-- other -->
+		<antlr4.version>4.13.1</antlr4.version>
+		<rdf4j.version>4.3.13</rdf4j.version>
+		<poi.version>5.5.0</poi.version>
+		<quartz.version>2.3.2</quartz.version>
+		<saxon.version>9.7.0-19</saxon.version>
+		<batik.version>1.19</batik.version>
+		<jgrapht.version>1.4.0</jgrapht.version>
+		<mvel.version>2.2.4.Final</mvel.version>
+		<jetbrains-annotations.version>19.0.0</jetbrains-annotations.version>
+		<implementationVersion>${revision}</implementationVersion>
+
+		<!-- sonar/clover -->
 		<maven.clover.encoding>UTF-8</maven.clover.encoding>
 		<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
 		<sonar.clover.version>3.0.2</sonar.clover.version>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
-		<implementationVersion>${project.version}</implementationVersion>
-		<logback.version>1.5.19</logback.version>
-		<jackson.version>2.19.2</jackson.version>
-		<stripes.version>1.7.0-async-beta</stripes.version>
 	</properties>
 
 	<modules>
@@ -112,6 +160,58 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<configuration>
+					<updatePomFile>true</updatePomFile>
+					<flattenMode>ossrh</flattenMode>
+				</configuration>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>${maven-enforcer.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.denkbares.maven</groupId>
+						<artifactId>denkbares-MavenRules</artifactId>
+						<version>${denkbares-Commons.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>enforce-managed-dependencies</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<banDuplicatePomDependencyVersions/>
+								<banInternalDependencyVersions implementation="com.denkbares.maven.enforcer.BanInternalDependencyVersions"/>
+							</rules>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -269,28 +369,399 @@
 
 	<dependencyManagement>
 		<dependencies>
+
+			<!-- ===== KnowWE eigene Module ===== -->
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-core</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Core</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-KDOMParseUtils</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-GlobalTestUtils</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Resources</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Resources</artifactId>
+				<version>${revision}</version>
+				<type>war</type>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-CI4KE</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-CI4KE-d3web</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-d3web-Homepage</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
+				<version>${revision}</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-d3web-OntologyBridge</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Dialog</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-DropZone</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Include</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-KBRenderer</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Ontology-MarkupSet</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-OntoVis</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-QuartzScheduler</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-RightPanel</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Table</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Tagging</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-TestCase</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-TestCases</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Visualization</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Defi</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-CityVis</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Hello-Kotlin</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-LexiconInterface</artifactId>
+				<version>${revision}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>denkbares-Git-Essentials</artifactId>
-				<version>${project.version}</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-core</artifactId>
-				<version>${logback.version}</version>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.version}</version>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-FontAwesomePro</artifactId>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.13.2</version>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Auth-OIDC</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-KnowSEC</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Gantt</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-EditMode</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-ImageMap</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-JournalParser</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-KBB</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-KPI</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-PlantUML</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-TimeDB</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-ASP</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-COOM</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Todos</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-SemanticAutocompletion</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-d3web-Player</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-OntologyDebugger</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-WikiBook</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-d3web-TermBrowser</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-OntoDoc</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Mail</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Keychain</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Ontology-TermBrowser</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Versioning-Git</artifactId>
+				<version>${revision}</version>
 			</dependency>
 
-			<!-- d3web -->
+			<!-- ===== denkbares-Commons Module ===== -->
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-Utils</artifactId>
+				<version>${denkbares-Commons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-TestUtils</artifactId>
+				<version>${denkbares-Commons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-Progress</artifactId>
+				<version>${denkbares-Commons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-SemanticCore</artifactId>
+				<version>${denkbares-Commons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-SemanticCore-Plugin-GraphDB</artifactId>
+				<version>${denkbares-Commons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-PluginManager</artifactId>
+				<version>${denkbares-Commons.version}</version>
+			</dependency>
+
+			<!-- ===== d3web Module ===== -->
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>d3web-GlobalTests</artifactId>
@@ -367,44 +838,9 @@
 				<version>${d3web.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>denkbares-PluginManager</artifactId>
-				<version>${denkbares.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>d3web-Plugin-Tests</artifactId>
 				<version>${d3web.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>d3web-Plugin-Tests-ClosedSource</artifactId>
-				<version>${d3web.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>d3web-Plugin-TextbundleExport</artifactId>
-				<version>${d3web.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>d3web-Plugin-TimeDB</artifactId>
-				<version>${d3web.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>d3web-Plugin-ASP</artifactId>
-				<version>${d3web.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>d3web-Plugin-CostBenefit-AStar</artifactId>
-				<version>${d3web.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares.ssp</groupId>
-				<artifactId>d3web-Plugin-AVL</artifactId>
-				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
@@ -417,74 +853,38 @@
 				<version>${d3web.version}</version>
 			</dependency>
 
-			<!-- denkbares -->
+			<!-- ===== d3web-DES Module ===== -->
 			<dependency>
 				<groupId>com.denkbares</groupId>
-				<artifactId>denkbares-Utils</artifactId>
-				<version>${denkbares.version}</version>
+				<artifactId>d3web-Plugin-Tests-ClosedSource</artifactId>
+				<version>${d3web-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
-				<artifactId>denkbares-TestUtils</artifactId>
-				<version>${denkbares.version}</version>
+				<artifactId>d3web-Plugin-TextbundleExport</artifactId>
+				<version>${d3web-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
-				<artifactId>denkbares-Progress</artifactId>
-				<version>${denkbares.version}</version>
+				<artifactId>d3web-Plugin-TimeDB</artifactId>
+				<version>${d3web-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
-				<artifactId>denkbares-SemanticCore</artifactId>
-				<version>${denkbares.version}</version>
+				<artifactId>d3web-Plugin-ASP</artifactId>
+				<version>${d3web-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
-				<artifactId>denkbares-SemanticCore-Plugin-GraphDB</artifactId>
-				<version>${denkbares.version}</version>
+				<artifactId>d3web-Plugin-CostBenefit-AStar</artifactId>
+				<version>${d3web-DES.version}</version>
 			</dependency>
 
-			<!-- KnowWE -->
-
+			<!-- ===== SSP/KONAP/MATE Module ===== -->
 			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-FontAwesomePro</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-Auth-OIDC</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-KnowSEC</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-Gantt</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-d3web-OntologyBridge</artifactId>
-				<version>${knowwe.version}</version>
+				<groupId>com.denkbares.ssp</groupId>
+				<artifactId>d3web-Plugin-AVL</artifactId>
+				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
@@ -497,109 +897,9 @@
 				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-EditMode</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-ImageMap</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-JournalParser</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-ServiceMate</artifactId>
 				<version>${mate.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-KBB</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-KPI</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-PlantUML</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-TimeDB</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-ASP</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-COOM</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-Todos</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-RightPanel</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-SemanticAutocompletion</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-CityVis</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-d3web-Homepage</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>denkbares-Git-Essentials</artifactId>
-				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
@@ -607,211 +907,14 @@
 				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-CI4KE-d3web</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-DiaFlux</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-KBRenderer</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Ontology-MarkupSet</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Dialog</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-d3web-Player</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-OntoVis</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Visualization</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Tagging</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Defi</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
-				<version>${knowwe.version}</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Include</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jgrapht</groupId>
-				<artifactId>jgrapht-ext</artifactId>
-				<version>1.4.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jgrapht</groupId>
-				<artifactId>jgrapht-io</artifactId>
-				<version>1.4.0</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Table</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-core</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-CI4KE</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-TestCase</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-TestCases</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-KDOMParseUtils</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-GlobalTestUtils</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Core</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Resources</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-OntologyDebugger</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Resources</artifactId>
-				<version>${knowwe.version}</version>
-				<type>war</type>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-WikiBook</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-d3web-TermBrowser</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-OntoDoc</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-ExperienceDatabase</artifactId>
 				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-Mail</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-Keychain</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-Hello-Kotlin</artifactId>
-				<version>${knowwe.version}</version>
+				<groupId>com.denkbares.ssp</groupId>
+				<artifactId>SemanticServiceCore-Plugin-KTM</artifactId>
+				<version>3.6</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.krone</groupId>
@@ -819,20 +922,91 @@
 				<version>${konap.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-QuartzScheduler</artifactId>
+				<groupId>com.denkbares.krone</groupId>
+				<artifactId>KONAP-Plugin-COOM</artifactId>
 				<version>${konap.version}</version>
 			</dependency>
+
+			<!-- ===== Third-party: logging ===== -->
 			<dependency>
-				<groupId>com.denkbares</groupId>
-				<artifactId>KnowWE-Plugin-Ontology-TermBrowser</artifactId>
-				<version>${knowwe.version}</version>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-DropZone</artifactId>
-				<version>${knowwe.version}</version>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+
+			<!-- ===== Third-party: serialization ===== -->
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jakarta-jsonp</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-cbor</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jdom</groupId>
+				<artifactId>jdom2</artifactId>
+				<version>${jdom2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
+			</dependency>
+
+			<!-- ===== Third-party: web ===== -->
 			<dependency>
 				<groupId>org.apache.jspwiki</groupId>
 				<artifactId>jspwiki-knowwe-war</artifactId>
@@ -846,10 +1020,26 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.jspwiki</groupId>
+				<artifactId>jspwiki-knowwe-main</artifactId>
+				<version>${jspwiki.version}</version>
+				<type>test-jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jspwiki</groupId>
 				<artifactId>jspwiki-knowwe-util</artifactId>
 				<version>${jspwiki.version}</version>
 			</dependency>
-			<!-- Other -->
+			<dependency>
+				<groupId>org.apache.jspwiki</groupId>
+				<artifactId>jspwiki-multiwiki</artifactId>
+				<version>${jspwiki.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jspwiki</groupId>
+				<artifactId>jspwiki-multiwiki</artifactId>
+				<version>${jspwiki.version}</version>
+				<type>test-jar</type>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-annotations-api</artifactId>
@@ -876,79 +1066,76 @@
 				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jstl</artifactId>
-				<version>1.2</version>
-			</dependency>
-			<dependency>
-				<groupId>taglibs</groupId>
-				<artifactId>standard</artifactId>
-				<version>1.1.2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.prefuse</groupId>
-				<artifactId>prefuse</artifactId>
-				<version>beta-20060220</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-csv</artifactId>
-				<version>1.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-text</artifactId>
-				<version>1.10.0</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina</artifactId>
 				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jdom</groupId>
-				<artifactId>jdom2</artifactId>
-				<version>2.0.6.1</version>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${servlet-api.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.quartz-scheduler</groupId>
-				<artifactId>quartz</artifactId>
-				<version>2.3.2</version>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jstl</artifactId>
+				<version>1.2</version>
 			</dependency>
 			<dependency>
-				<groupId>jrcs-diff</groupId>
-				<artifactId>jrcs-diff</artifactId>
-				<version>0</version>
+				<groupId>net.sourceforge.stripes</groupId>
+				<artifactId>stripes</artifactId>
+				<version>${stripes.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>1.6.0</version>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.18.0</version>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-logging</groupId>
-				<artifactId>commons-logging-api</artifactId>
-				<version>1.0.4</version>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.xmlgraphics</groupId>
-				<artifactId>batik-svggen</artifactId>
-				<version>1.19</version>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore</artifactId>
+				<version>${httpcore.version}</version>
+			</dependency>
+
+			<!-- ===== Third-party: apache commons ===== -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-csv</artifactId>
+				<version>${commons-csv.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-codec</groupId>
-				<artifactId>commons-codec</artifactId>
-				<version>1.14</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>${commons-text.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.20.0</version>
+				<version>${commons-lang3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>${commons-fileupload.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons-codec.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-logging</groupId>
@@ -956,24 +1143,36 @@
 				<version>1.2</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging-api</artifactId>
+				<version>1.0.4</version>
+			</dependency>
+
+			<!-- ===== Third-party: testing ===== -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.json</groupId>
-				<artifactId>json</artifactId>
-				<version>20250517</version>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${junit5.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.vintage</groupId>
+				<artifactId>junit-vintage-engine</artifactId>
+				<version>${junit5.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-core</artifactId>
-				<version>1.3</version>
-			</dependency>
-			<dependency>
-				<groupId>org.codehaus.openxma</groupId>
-				<artifactId>javaxdelta</artifactId>
-				<version>1.1.0</version>
+				<version>${hamcrest.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.seleniumhq.selenium</groupId>
@@ -1000,80 +1199,87 @@
 				<artifactId>selenium-chrome-driver</artifactId>
 				<version>${selenium.version}</version>
 			</dependency>
+
+			<!-- ===== Third-party: other ===== -->
+			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-runtime</artifactId>
+				<version>${antlr4.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.rdf4j</groupId>
+				<artifactId>rdf4j-queryresultio-api</artifactId>
+				<version>${rdf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.rdf4j</groupId>
+				<artifactId>rdf4j-queryresultio-text</artifactId>
+				<version>${rdf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>${poi.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
-				<version>5.5.0</version>
+				<version>${poi.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>log4j-over-slf4j</artifactId>
-				<version>${slf4j.version}</version>
+				<groupId>org.quartz-scheduler</groupId>
+				<artifactId>quartz</artifactId>
+				<version>${quartz.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>${log4j.version}</version>
+				<groupId>net.sf.saxon</groupId>
+				<artifactId>Saxon-HE</artifactId>
+				<version>${saxon.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>4.5.13</version>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>batik-svggen</artifactId>
+				<version>${batik.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jgrapht</groupId>
+				<artifactId>jgrapht-ext</artifactId>
+				<version>${jgrapht.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jgrapht</groupId>
+				<artifactId>jgrapht-io</artifactId>
+				<version>${jgrapht.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mvel</groupId>
+				<artifactId>mvel2</artifactId>
+				<version>${mvel.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>taglibs</groupId>
+				<artifactId>standard</artifactId>
+				<version>1.1.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.prefuse</groupId>
+				<artifactId>prefuse</artifactId>
+				<version>beta-20060220</version>
+			</dependency>
+			<dependency>
+				<groupId>jrcs-diff</groupId>
+				<artifactId>jrcs-diff</artifactId>
+				<version>0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.openxma</groupId>
+				<artifactId>javaxdelta</artifactId>
+				<version>1.1.0</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.activation</groupId>
 				<artifactId>activation</artifactId>
 				<version>1.1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.saxon</groupId>
-				<artifactId>Saxon-HE</artifactId>
-				<version>9.7.0-19</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.module</groupId>
-				<version>${jackson.version}</version>
-				<artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jakarta-jsonp</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-yaml</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-cbor</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sourceforge.stripes</groupId>
-				<artifactId>stripes</artifactId>
-				<version>${stripes.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -1087,12 +1293,12 @@
 		<dependency>
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
-			<version>19.0.0</version>
+			<version>${jetbrains-annotations.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -24,7 +24,7 @@
 	<parent>
 		<artifactId>KnowWE</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2026.4-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>KnowWE-App</artifactId>
@@ -32,7 +32,7 @@
 	<description>Maven module for the KnowWE web app. Produces a .war file.</description>
 
 	<properties>
-		<implementationVersion>${project.version}</implementationVersion>
+		<implementationVersion>${revision}</implementationVersion>
 	</properties>
 
 
@@ -662,7 +662,6 @@
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>SemanticServiceCore-Plugin-KTM</artifactId>
-					<version>3.6</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -696,7 +695,6 @@
 				<dependency>
 					<groupId>com.denkbares.krone</groupId>
 					<artifactId>KONAP-Plugin-COOM</artifactId>
-					<version>${project.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -717,7 +715,6 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Versioning-Git</artifactId>
-					<version>${project.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -729,7 +726,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.7</version>
 						<executions>
 							<execution>
 								<id>copy-ehcache</id>
