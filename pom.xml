@@ -40,6 +40,10 @@
 		<denkbares-Internals.version>${revision}</denkbares-Internals.version>
 		<konap.version>${revision}</konap.version>
 		<ssp.version>${revision}</ssp.version>
+		<SemanticServicePlatform.version>${revision}</SemanticServicePlatform.version>
+		<KnowWE-SSP.version>${revision}</KnowWE-SSP.version>
+		<KRONE.version>${revision}</KRONE.version>
+		<KMW.version>${revision}</KMW.version>
 		<mate.version>${revision}</mate.version>
 
 		<!-- build -->
@@ -852,7 +856,7 @@
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>d3web-Plugin-Tests-ThrillSeeker</artifactId>
-				<version>${d3web.version}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 
 			<!-- ===== d3web-DES Module ===== -->
@@ -886,17 +890,17 @@
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>d3web-Plugin-AVL</artifactId>
-				<version>${ssp.version}</version>
+				<version>${SemanticServicePlatform.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-CBX</artifactId>
-				<version>${ssp.version}</version>
+				<version>${KnowWE-SSP.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-ILME</artifactId>
-				<version>${ssp.version}</version>
+				<version>${KnowWE-SSP.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
@@ -906,27 +910,27 @@
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
-				<version>${ssp.version}</version>
+				<version>${KnowWE-SSP.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-ExperienceDatabase</artifactId>
-				<version>${ssp.version}</version>
+				<version>${KnowWE-SSP.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>SemanticServiceCore-Plugin-KTM</artifactId>
-				<version>3.6</version>
+				<version>${SemanticServicePlatform.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.krone</groupId>
 				<artifactId>KnowWE-Plugin-KONAP</artifactId>
-				<version>${konap.version}</version>
+				<version>${KRONE.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares.krone</groupId>
 				<artifactId>KONAP-Plugin-COOM</artifactId>
-				<version>${konap.version}</version>
+				<version>${KRONE.version}</version>
 			</dependency>
 
 			<!-- ===== Third-party: logging ===== -->
