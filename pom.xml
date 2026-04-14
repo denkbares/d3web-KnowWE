@@ -35,6 +35,8 @@
 		<denkbares-Commons.version>${revision}</denkbares-Commons.version>
 		<d3web.version>${revision}</d3web.version>
 		<d3web-DES.version>${revision}</d3web-DES.version>
+		<KnowWE-DES.version>${revision}</KnowWE-DES.version>
+		<Experimental.version>${revision}</Experimental.version>
 		<denkbares-Internals.version>${revision}</denkbares-Internals.version>
 		<konap.version>${revision}</konap.version>
 		<ssp.version>${revision}</ssp.version>
@@ -551,182 +553,182 @@
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-Defi</artifactId>
-				<version>${revision}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-CityVis</artifactId>
-				<version>${revision}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
-				<version>${revision}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-Hello-Kotlin</artifactId>
-				<version>${revision}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
-				<version>${revision}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
-				<version>${revision}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-LexiconInterface</artifactId>
-				<version>${revision}</version>
+				<version>${Experimental.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>denkbares-Git-Essentials</artifactId>
-				<version>${revision}</version>
+				<version>${denkbares-Internals.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-FontAwesomePro</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Auth-OIDC</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-KnowSEC</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Gantt</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-EditMode</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-ImageMap</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-JournalParser</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-KBB</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-KPI</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-PlantUML</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-TimeDB</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-ASP</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-COOM</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Todos</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-SemanticAutocompletion</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-d3web-Player</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-OntologyDebugger</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-WikiBook</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-d3web-TermBrowser</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-OntoDoc</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Mail</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Keychain</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Ontology-TermBrowser</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Versioning-Git</artifactId>
-				<version>${revision}</version>
+				<version>${KnowWE-DES.version}</version>
 			</dependency>
 
 			<!-- ===== denkbares-Commons Module ===== -->
