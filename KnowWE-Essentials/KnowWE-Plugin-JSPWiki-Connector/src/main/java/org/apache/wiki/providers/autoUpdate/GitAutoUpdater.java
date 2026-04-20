@@ -3,10 +3,8 @@ package org.apache.wiki.providers.autoUpdate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,30 +25,13 @@ import org.apache.wiki.providers.GitVersioningAttachmentProvider;
 import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullCommand;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RebaseCommand;
-import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.merge.ContentMergeStrategy;
-import org.eclipse.jgit.merge.MergeStrategy;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevSort;
-import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,8 +143,7 @@ public class GitAutoUpdater {
 
 		// *** NEU: Immer den lokalen HEAD vor dem Pull merken ***
 		ObjectId oldLocalHead = repository.resolve(Constants.HEAD);
-		RevWalk revWalk = new RevWalk(repository);
-		RevCommit oldLocalHeadCommit = revWalk.parseCommit(oldLocalHead);
+		String oldLocalHeadHash = oldLocalHead.getName();
 
 		// *** NEU: Kein fetch() mehr zum Erkennen von Änderungen. ***
 		// Pull (mit Rebase) ist idempotent: wenn nichts zu tun ist, macht er nichts.
@@ -183,12 +163,12 @@ public class GitAutoUpdater {
 		// *** NEU: Änderungserkennung rein lokal über HEAD-Vergleich ***
 		if (!oldLocalHead.equals(newHead)) {
 			LOGGER.info("Read changes after rebase (local HEAD moved)");
-			title = readChangesAfterRebase(revWalk, newHead, git, oldLocalHeadCommit, oldLocalHead);
+			title = readChangesAfterRebase(oldLocalHeadHash, newHead.getName());
 		}
 		else if (pullAfterReset) {
 			// nach Reset dennoch prüfen (sollte selten sein)
 			LOGGER.info("Read changes after rebase (post-reset)");
-			title = readChangesAfterRebase(revWalk, newHead, git, oldLocalHeadCommit, oldLocalHead);
+			title = readChangesAfterRebase(oldLocalHeadHash, newHead.getName());
 		}
 
 		if (title != null) {
@@ -281,43 +261,21 @@ public class GitAutoUpdater {
 	}
 
 	@Nullable
-	private String readChangesAfterRebase(RevWalk revWalk, ObjectId newHead, Git git,
-										  RevCommit oldHeadCommit, ObjectId oldHead) throws IOException, GitAPIException {
+	private String readChangesAfterRebase(String oldHeadHash, String newHeadHash) {
 		String title;
 		try {
 			fileProvider.canWriteFileLock();
-			RevCommit newHeadCommit = revWalk.parseCommit(newHead);
-
-			// optional: für Logging – die Range existiert immer lokal
-			git.log().addRange(oldHeadCommit, newHeadCommit).call();
-
-			final ObjectReader objectReader = this.repository.newObjectReader();
-			final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-			final CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-			final DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-			diffFormatter.setRepository(this.repository);
-			revWalk.reset();
-			revWalk.sort(RevSort.REVERSE);
-			revWalk.markStart(newHeadCommit);
-			revWalk.parseCommit(oldHead);
-			Iterator<RevCommit> iterator = revWalk.iterator();
-			boolean parse = false;
 			Collection<String> toRefresh = new HashSet<>();
-			Collection<RevCommit> revWalkCommits = new ArrayList<>();
-			while (iterator.hasNext()) {
-				RevCommit commit = iterator.next();
-				revWalkCommits.add(commit);
+			List<String> commitHashes = gitConnector.log().commitsBetween(oldHeadHash, newHeadHash);
+			for (String commitHash : commitHashes) {
+				LOGGER.info("Read changed paths for commit: " + commitHash);
+				for (String changedPath : gitConnector.log().listChangedFilesForHash(commitHash)) {
+					if (changedPath != null && !changedPath.isBlank()) {
+						toRefresh.add(changedPath);
+					}
+				}
 			}
 
-			for (RevCommit commit : revWalkCommits) {
-				if (commit.equals(oldHeadCommit)) {
-					parse = true;
-					continue;
-				}
-				if (parse) {
-					mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, toRefresh);
-				}
-			}
 			Set<String> refreshedPages = new TreeSet<>();
 			for (String path : toRefresh) {
 				chooseAndUpdate(refreshedPages, path);
@@ -342,48 +300,6 @@ public class GitAutoUpdater {
 			fileProvider.writeFileUnlock();
 		}
 		return title;
-	}
-
-	private void mapRevCommit(ObjectReader objectReader, CanonicalTreeParser oldTreeParser,
-							  CanonicalTreeParser newTreeParser, DiffFormatter diffFormatter,
-							  RevCommit commit, Collection<String> toRefresh) throws IOException {
-		final RevCommit[] parents = commit.getParents();
-		RevTree tree = commit.getTree();
-		if (parents.length > 0) {
-			oldTreeParser.reset(objectReader, commit.getParent(0).getTree());
-			newTreeParser.reset(objectReader, tree);
-			List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
-			RenameDetector rd = new RenameDetector(repository);
-			rd.addAll(diffs);
-			diffs = rd.compute();
-			for (final DiffEntry diff : diffs) {
-				String path;
-				switch (diff.getChangeType()) {
-					case MODIFY -> {
-						path = diff.getOldPath();
-						if (path != null) toRefresh.add(path);
-					}
-					case ADD -> {
-						path = diff.getNewPath();
-						if (path != null) toRefresh.add(path);
-					}
-					case DELETE -> toRefresh.add(diff.getOldPath());
-					case RENAME -> {
-						toRefresh.add(diff.getOldPath());
-						toRefresh.add(diff.getNewPath());
-					}
-					default -> { /* ignore */ }
-				}
-			}
-		}
-		else {
-			final TreeWalk tw = new TreeWalk(this.repository);
-			tw.reset(tree);
-			tw.setRecursive(true);
-			while (tw.next()) {
-				toRefresh.add(tw.getPathString());
-			}
-		}
 	}
 
 	private void chooseAndUpdate(Collection<String> refreshedPages, String path) {
