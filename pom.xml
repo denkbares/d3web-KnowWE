@@ -29,10 +29,11 @@
 
 	<properties>
 		<!-- project version -->
-		<revision>2026.4-SNAPSHOT</revision>
+		<revision>2026.5-SNAPSHOT</revision>
 
 		<!-- cross-repo versions (default: same version) -->
 		<denkbares-Commons.version>${revision}</denkbares-Commons.version>
+		<denkbares-Maven-Plugins.version>${revision}</denkbares-Maven-Plugins.version>
 		<d3web.version>${revision}</d3web.version>
 		<d3web-DES.version>${revision}</d3web-DES.version>
 		<KnowWE-DES.version>${revision}</KnowWE-DES.version>
@@ -201,8 +202,8 @@
 				<dependencies>
 					<dependency>
 						<groupId>com.denkbares.maven</groupId>
-						<artifactId>denkbares-MavenRules</artifactId>
-						<version>${denkbares-Commons.version}</version>
+						<artifactId>denkbares-Maven-EnforcerRules</artifactId>
+						<version>${denkbares-Maven-Plugins.version}</version>
 					</dependency>
 				</dependencies>
 				<executions>
