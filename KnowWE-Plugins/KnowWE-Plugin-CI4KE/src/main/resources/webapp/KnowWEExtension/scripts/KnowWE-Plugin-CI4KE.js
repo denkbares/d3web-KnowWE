@@ -439,3 +439,21 @@ jq$(function() {
   });
 });
 
+KNOWWE.plugin.ci4ke.FreezeFailedTests = function() {
+
+  async function run(sectionId, dashboardName) {
+
+    var url = "/KnowWE/action/CIFreezeFailedTestsAction?"
+      + "SectionID=" + encodeURIComponent(sectionId)
+      + "&dashboardName=" + encodeURIComponent(dashboardName);
+
+    await fetch(url);
+
+    window.location.reload();
+  }
+
+  return {
+    run: run
+  };
+
+}();

@@ -20,6 +20,7 @@ package de.d3web.we.ci4ke.dashboard.action;
 
 import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -46,7 +47,9 @@ public class CIDashboardToolProvider implements ToolProvider {
 		}
 		else {
 			return new Tool[] { getStartNewBuildTool(dashboardName, section.getTitle()),
-					getReportDownloadTool(dashboardName, section.getTitle()) };
+					getReportDownloadTool(dashboardName, section.getTitle()),
+					getFreezeSoftTestsTool(dashboardName, section.getID())
+			};
 		}
 	}
 
@@ -78,5 +81,19 @@ public class CIDashboardToolProvider implements ToolProvider {
 				"Start a new build",
 				"Starts a new build.",
 				jsAction, Tool.CATEGORY_EXECUTE);
+	}
+
+	public static Tool getFreezeSoftTestsTool(String dashboardName, String sectionId) {
+		String jsAction = "KNOWWE.plugin.ci4ke.FreezeFailedTests.run('"
+				+ sectionId + "','"
+				+ dashboardName + "')";
+		return new DefaultTool(
+				Icon.FILE_TEXT,
+				"Freeze Failed Tests",
+				"Description here",
+				jsAction,
+				Tool.ActionType.ONCLICK,
+				Tool.CATEGORY_UTIL
+		);
 	}
 }

@@ -145,6 +145,7 @@ public class CIBuildManager implements EventListener {
 				testExecutor.run();
 
 				BuildResult build = testExecutor.getBuildResult();
+				CIBuildFrozenTestAdjuster.adjustFrozenTests(build, dashboard);
 
 				// fire event to inform listeners about new result
 				CIBuildResultEvent event = new CIBuildResultEvent(dashboard, build);

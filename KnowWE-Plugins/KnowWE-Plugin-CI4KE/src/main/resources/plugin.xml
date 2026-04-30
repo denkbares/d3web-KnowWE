@@ -107,6 +107,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CIFreezeFailedTestsAction">
+		<parameter id="class" value="de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction" />
+		<parameter id="name" value="CIFreezeFailedTestsAction" />
+		<parameter id="description" value="Add Soft Test as Attachments" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CIDashboardToolProvider">
 		<parameter id="class" value="de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider" />
 		<parameter id="name" value="CIDashboardToolProvider" />
