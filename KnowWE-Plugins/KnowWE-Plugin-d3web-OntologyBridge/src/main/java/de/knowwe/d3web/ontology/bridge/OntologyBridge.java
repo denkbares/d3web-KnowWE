@@ -17,8 +17,10 @@ import com.denkbares.collections.N2MMap;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.CompilationLocal;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -109,12 +111,15 @@ public class OntologyBridge {
 	 */
 	@NotNull
 	public static OntologyCompiler getOntology(@NotNull D3webCompiler d3webCompiler, Priority priorityToAwait) {
-		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
+		String d3webSectionId = d3webCompiler.getCompileSection().getID();
+		String ontologyId = mapping.getAnyValue(d3webSectionId);
 		if (ontologyId == null) {
+			logBridgeFailure("getOntology - no ontology linked", d3webCompiler, d3webSectionId, null);
 			throw new IllegalArgumentException("No ontology linked to the given d3web compiler: " + Compilers.getCompilerName(d3webCompiler));
 		}
 		OntologyCompiler compiler = getOntologyCompilerCached(d3webCompiler, ontologyId);
 		if (compiler == null) {
+			logBridgeFailure("getOntology - ontology compiler not yet available", d3webCompiler, d3webSectionId, ontologyId);
 			throw new IllegalStateException("Ontology compiler not yet available for d3web compiler: " + Compilers.getCompilerName(d3webCompiler));
 		}
 		try {
@@ -166,20 +171,84 @@ public class OntologyBridge {
 	 */
 	@NotNull
 	public static D3webCompiler getCompiler(@NotNull OntologyCompiler ontologyCompiler) {
-		String d3webId = mapping.getAnyKey(ontologyCompiler.getCompileSection().getID());
+		String ontologySectionId = ontologyCompiler.getCompileSection().getID();
+		String d3webId = mapping.getAnyKey(ontologySectionId);
 		if (d3webId == null) {
+			logBridgeFailure("getCompiler - ontology not linked", ontologyCompiler, ontologySectionId, null);
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler: " + Compilers.getCompilerName(ontologyCompiler));
 		}
 		Section<?> section = Sections.get(d3webId);
 		if (section == null) {
+			logBridgeFailure("getCompiler - mapped d3web section not found", ontologyCompiler, ontologySectionId, d3webId);
 			throw new IllegalStateException("Bridge mapping outdated, section for D3webCompiler not found");
 		}
 		D3webCompiler compiler = CompilationLocal.getCached(ontologyCompiler, D3webCompiler.class + ":" + d3webId,
 				() -> Compilers.getCompiler(section, D3webCompiler.class));
 		if (compiler == null) {
 			// should not happen
+			logBridgeFailure("getCompiler - mapping not up to date", ontologyCompiler, ontologySectionId, d3webId);
 			throw new IllegalArgumentException("Mapping not up to date, this is probably a failure of the OntologyBridge");
 		}
 		return compiler;
+	}
+
+	/**
+	 * Diagnostic logging for the OntologyBridge throw-paths. Captures everything we need to tell apart
+	 * the suspected root causes (stale mapping, race during initial compile, attachment-update lifecycle,
+	 * concurrent access from non-compile threads, etc.) without changing the throw behaviour.
+	 */
+	private static void logBridgeFailure(String reason, Object caller, String callerSectionId, String mappedTargetId) {
+		try {
+			Thread thread = Thread.currentThread();
+			boolean isCompileThread = CompilerManager.isCompileThread();
+			Section<?> callerSection = Sections.get(callerSectionId);
+			Section<?> mappedSection = mappedTargetId == null ? null : Sections.get(mappedTargetId);
+
+			StringBuilder sb = new StringBuilder();
+			sb.append("OntologyBridge failure: ").append(reason).append('\n');
+			sb.append("  caller             = ").append(describeCompiler(caller)).append('\n');
+			sb.append("  caller sectionId   = ").append(callerSectionId)
+					.append(" (live=").append(callerSection != null).append(")\n");
+			sb.append("  mapped targetId    = ").append(mappedTargetId)
+					.append(" (live=").append(mappedSection != null).append(")\n");
+			sb.append("  thread             = ").append(thread.getName())
+					.append(" (compileThread=").append(isCompileThread).append(")\n");
+			sb.append("  mapping size       = ").append(mapping.size()).append('\n');
+			sb.append("  mapping entries    = ").append(mapping.entrySet()).append('\n');
+			CompilerManager cm = caller instanceof Compiler c ? c.getCompilerManager() : null;
+			if (cm != null) {
+				sb.append("  compilerManager.isCompiling = ").append(cm.isCompiling()).append('\n');
+				sb.append("  active D3webCompilers       = ");
+				cm.getCompilers().stream().filter(D3webCompiler.class::isInstance)
+						.forEach(c -> sb.append(describeCompiler(c)).append(' '));
+				sb.append('\n');
+				sb.append("  active OntologyCompilers    = ");
+				cm.getCompilers().stream().filter(OntologyCompiler.class::isInstance)
+						.forEach(c -> sb.append(describeCompiler(c)).append(' '));
+				sb.append('\n');
+			}
+			LOGGER.error(sb.toString(), new Throwable("OntologyBridge failure stacktrace (informational)"));
+		}
+		catch (Throwable t) {
+			// never let diagnostics break the actual throw path
+			LOGGER.warn("OntologyBridge failure diagnostic logging itself failed: {}", t.toString());
+		}
+	}
+
+	private static String describeCompiler(Object o) {
+		if (o == null) return "null";
+		if (o instanceof Compiler c) {
+			String name = Compilers.getCompilerName(c);
+			String secId;
+			try {
+				secId = c instanceof PackageCompiler pc ? pc.getCompileSection().getID() : "?";
+			}
+			catch (Throwable t) {
+				secId = "?";
+			}
+			return c.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(c))
+					+ "[" + name + ", section=" + secId + "]";
+		}
+		return o.toString();
 	}
 }
