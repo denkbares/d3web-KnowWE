@@ -464,31 +464,65 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		private void renderTracking(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			String path = markup.get().getWikiAttachmentPath(markup);
+			InterWikiTrackingService.TrackingStatus trackingStatus;
 			try {
-				InterWikiTrackingService.TrackingStatus trackingStatus = InterWikiTrackingService.getTrackingStatus(markup);
-				if (trackingStatus.state() == InterWikiTrackingService.State.MISSING_REFERENCE) {
-					result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
-				}
-				else {
-					result.append(new HtmlElement("p").clazz("note").content(
-							"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ")."));
-					if (!trackingStatus.localComparisonAvailable()) {
-						result.append(new HtmlElement("p").clazz("warning").content("Tracking mode: local comparison range is currently not available."));
-					}
-					else if (trackingStatus.state() == InterWikiTrackingService.State.EQUAL) {
-						result.append(new HtmlElement("p").clazz("success").content("Tracking mode: local content matches the reference."));
-					}
-					else {
-						String message = trackingStatus.warningActive()
-								? "Tracking mode: local content differs from the reference and requires acknowledgement."
-								: "Tracking mode: local content differs from the reference (already acknowledged).";
-						result.append(new HtmlElement("p").clazz(trackingStatus.warningActive() ? "warning" : "note").content(message));
-						trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(DiffHtmlRenderer.renderTextDiff(diff)));
-					}
-				}
+				trackingStatus = InterWikiTrackingService.getTrackingStatus(markup);
 			}
 			catch (IOException e) {
 				result.append(new HtmlElement("p").clazz("warning").content("Unable to read tracking reference attachment: " + e.getMessage()));
+				return;
+			}
+
+			if (trackingStatus.state() == InterWikiTrackingService.State.MISSING_REFERENCE) {
+				result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
+			}
+			else {
+				result.append(new HtmlElement("p").clazz("note").content(
+						"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ")."));
+				if (trackingStatus.localComparisonAvailable()) {
+					renderTrackingComparisonStatus(markup, trackingStatus, result);
+				}
+				else {
+					result.append(new HtmlElement("p").clazz("warning")
+							.content("Tracking mode: local comparison range is currently not available."));
+				}
+			}
+		}
+
+		private void renderTrackingComparisonStatus(
+				Section<InterWikiImportMarkup> markup,
+				InterWikiTrackingService.TrackingStatus trackingStatus,
+				RenderResult result) {
+			switch (trackingStatus.state()) {
+				case EQUAL -> result.append(new HtmlElement("p").clazz("success")
+						.content("Tracking mode: local content matches the reference."));
+				case UNACCEPTED_DIFF -> {
+					result.append(new HtmlElement("p").clazz("note")
+							.content("Tracking mode: local content differs from the reference."));
+					result.append(new HtmlElement("p").clazz("warning")
+							.content("Warning: differences are not acknowledged yet."));
+					trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(DiffHtmlRenderer.renderTextDiff(diff)));
+				}
+				case ACCEPTED_DIFF -> {
+					result.append(new HtmlElement("p").clazz("note")
+							.content("Tracking mode: local content differs from the reference (already acknowledged)."));
+					String diffContainerId = "tracking-diff-" + markup.getID();
+					result.append(new HtmlElement("button")
+							.attributes("type", "button",
+									"class", "tracking-diff-toggle-button",
+									"onclick", "var e=document.getElementById('" + diffContainerId + "');"
+											+ "if(!e)return;"
+											+ "var show=(e.style.display==='none');"
+											+ "e.style.display=show?'block':'none';"
+											+ "this.textContent=show?'Aktuelle Abweichungen ausblenden':'Aktuelle Abweichungen anzeigen';")
+							.content("Aktuelle Abweichungen anzeigen"));
+					trackingStatus.diffOptional().ifPresent(diff -> result.append(
+							new HtmlElement("div")
+									.attributes("id", diffContainerId, "style", "display:none;")
+									.children(new HtmlNode(DiffHtmlRenderer.renderTextDiff(diff)))));
+				}
+				default -> result.append(new HtmlElement("p").clazz("note")
+						.content("Tracking mode: status currently unavailable."));
 			}
 		}
 
