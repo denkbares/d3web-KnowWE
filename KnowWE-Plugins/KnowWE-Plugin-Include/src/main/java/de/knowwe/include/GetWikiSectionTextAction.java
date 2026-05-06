@@ -73,6 +73,7 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 	private static SourceInfo getSourceInfo(Section<WikiReference> wikiReferenceSection, UserActionContext context) {
 		Section<?> referencedSection = WikiReference.findReferencedSection(wikiReferenceSection, KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB));
 		if (referencedSection == null) return null;
+		// Access is already validated via canView before returning any section content.
 		if (!KnowWEUtils.canView(referencedSection, context)) return new SourceInfo(referencedSection, null, null);
 
 		Instant sourceLatestChange = Environment.getInstance()

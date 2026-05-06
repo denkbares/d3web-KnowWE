@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -11,6 +13,12 @@ public class GetWikiChangesSinceAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		// individual view rights are checked further down...
+		if (!context.userIsAuthenticated()) {
+			context.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication required.");
+			return;
+		}
+
 		List<InterWikiChanges.RequestedImport> imports = InterWikiChanges.parseRequestJson(context.getParameter("data"));
 		List<InterWikiChanges.Update> updates = new ArrayList<>();
 
@@ -35,6 +43,7 @@ public class GetWikiChangesSinceAction extends AbstractAction {
 		if (requestedImport.section() != null) {
 			wikiReference += "#" + requestedImport.section();
 		}
+		// Access checks are delegated to GetWikiSectionTextAction.getSourceInfo(...) via KnowWEUtils.canView(...).
 		return GetWikiSectionTextAction.getSourceInfo(wikiReference, context);
 	}
 }
