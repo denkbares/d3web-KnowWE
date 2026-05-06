@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
@@ -301,6 +302,34 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 	}
 
+	@Nullable
+	String getTrackingReferenceText(Section<InterWikiImportMarkup> section) throws IOException {
+		WikiAttachment attachment = getWikiAttachment(section);
+		if (attachment == null) return null;
+		return Streams.getTextAndClose(attachment.getInputStream());
+	}
+
+	@Nullable
+	String getTrackingLocalComparisonText(Section<InterWikiImportMarkup> section) {
+		Article article = section.getArticle();
+		if (article == null) return null;
+		String articleText = article.getText();
+		if (articleText == null) return null;
+
+		int sectionStart = section.getOffsetInArticle();
+		int sectionEnd = sectionStart + section.getTextLength();
+
+		OptionalInt nextInterWikiImportStart = $(article).successor(InterWikiImportMarkup.class)
+				.stream()
+				.mapToInt(Section::getOffsetInArticle)
+				.filter(offset -> offset > sectionStart)
+				.min();
+
+		int compareStart = Math.max(0, Math.min(sectionEnd, articleText.length()));
+		int compareEnd = Math.max(compareStart, Math.min(nextInterWikiImportStart.orElse(articleText.length()), articleText.length()));
+		return articleText.substring(compareStart, compareEnd);
+	}
+
 	@Override
 	protected long getIntervalMillis(Section<? extends AttachmentUpdateMarkup> section) {
 		return Long.MAX_VALUE;
@@ -393,7 +422,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		private void renderTracking(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			String path = markup.get().getWikiAttachmentPath(markup);
 			try {
-				if (markup.get().getWikiAttachment(markup) == null) {
+				if (markup.get().getTrackingReferenceText(markup) == null) {
 					result.appendHtmlElement("p", "Tracking reference attachment not (yet) available", "class", "note");
 				}
 				else {
