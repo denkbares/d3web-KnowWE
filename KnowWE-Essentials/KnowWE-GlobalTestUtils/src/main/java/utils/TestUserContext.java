@@ -65,9 +65,10 @@ public class TestUserContext implements UserContext, UserActionContext {
 	private final TestHttpSession session = new TestHttpSession();
 	private final TestHttpServletRequest request = new TestHttpServletRequest(session);
 	private final TestHttpServletResponse response = new TestHttpServletResponse();
+	private final boolean isAuthenticated;
 
 	public TestUserContext(Article article) {
-		this(article, false, false);
+		this(article, false, false, false);
 	}
 
 	/**
@@ -92,9 +93,14 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	public TestUserContext(Article article, boolean isAdmin, boolean isAsserted) {
+		this(article, isAdmin, isAsserted, false);
+	}
+
+	public TestUserContext(Article article, boolean isAdmin, boolean isAsserted, boolean isAuthenticated) {
 		this.article = article;
 		this.isAdmin = isAdmin;
 		this.isAsserted = isAsserted;
+		this.isAuthenticated = isAuthenticated;
 		addParameter(Attributes.WEB, getWeb());
 		addParameter(Attributes.TITLE, getTitle());
 		addParameter(Attributes.USER, getUserName());
@@ -108,6 +114,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 	@Override
 	public boolean userIsAsserted() {
 		return isAsserted;
+	}
+
+	@Override
+	public boolean userIsAuthenticated() {
+		return isAuthenticated;
 	}
 
 	@Override

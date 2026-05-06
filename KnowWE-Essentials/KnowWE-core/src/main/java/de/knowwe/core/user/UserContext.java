@@ -62,6 +62,11 @@ public interface UserContext {
 	boolean userIsAsserted();
 
 	/**
+	 * Returns whether the user is authenticated or not.
+	 */
+	boolean userIsAuthenticated();
+
+	/**
 	 * Returns the name of the current user.
 	 *
 	 * @created 14.10.2010

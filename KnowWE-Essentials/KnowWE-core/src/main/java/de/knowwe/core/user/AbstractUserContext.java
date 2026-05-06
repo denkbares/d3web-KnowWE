@@ -53,6 +53,11 @@ public abstract class AbstractUserContext implements UserContext {
 	}
 
 	@Override
+	public boolean userIsAuthenticated() {
+		return manager.userIsAuthenticated();
+	}
+
+	@Override
 	public boolean userIsAdmin() {
 		return manager.userIsAdmin();
 	}
