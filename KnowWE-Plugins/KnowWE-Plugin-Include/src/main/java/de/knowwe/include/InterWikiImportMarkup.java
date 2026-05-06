@@ -261,6 +261,23 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 	}
 
+	boolean collectTrackingAcceptedAtReplacement(Section<InterWikiImportMarkup> section, Instant acceptedAt, Map<String, String> replacements) {
+		Section<?> acceptedAtContent = DefaultMarkupType.getAnnotationContentSection(section, TRACKING_ACCEPTED_AT_ANNOTATION);
+		if (acceptedAtContent != null) {
+			replacements.put(acceptedAtContent.getID(), acceptedAt.toString());
+			return true;
+		}
+
+		Section<?> closingTag = $(section).children().getLast();
+		if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return false;
+		String existingReplacement = replacements.getOrDefault(closingTag.getID(), closingTag.getText());
+		replacements.put(closingTag.getID(),
+				Strings.trimRight(existingReplacement)
+						+ "\n@" + TRACKING_ACCEPTED_AT_ANNOTATION + ": " + acceptedAt
+						+ "\n" + Strings.trimLeft(closingTag.getText()));
+		return true;
+	}
+
 	boolean shouldUpdateLatestChange(Section<InterWikiImportMarkup> section, boolean attachmentChanged) {
 		return getSectionName(section) == null || attachmentChanged;
 	}

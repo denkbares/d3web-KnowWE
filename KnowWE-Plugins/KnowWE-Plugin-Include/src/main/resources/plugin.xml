@@ -92,6 +92,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AcceptInterWikiTrackingDiffAction">
+		<parameter id="class" value="de.knowwe.include.AcceptInterWikiTrackingDiffAction" />
+		<parameter id="name" value="AcceptInterWikiTrackingDiffAction" />
+		<parameter id="description" value="Action AcceptInterWikiTrackingDiffAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="ImportedHeaderRenderer">
 		<parameter id="class" value="de.knowwe.include.ImportedHeaderRenderer" />
 		<parameter id="name" value="ImportedHeaderRenderer" />
