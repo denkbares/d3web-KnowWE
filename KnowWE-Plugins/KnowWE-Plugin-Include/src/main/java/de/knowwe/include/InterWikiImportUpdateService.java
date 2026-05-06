@@ -3,7 +3,6 @@ package de.knowwe.include;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -34,9 +33,9 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.action.Action;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.action.Action;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -207,6 +206,14 @@ public final class InterWikiImportUpdateService {
 			boolean attachmentChanged = markup.get().updateAttachmentWithSourceText(markup, update.sourceText());
 			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)) {
 				markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
+			}
+			try {
+				// Keep initialization in the same replacement batch to avoid extra compile cycles per update.
+				markup.get().collectTrackingInitializationReplacement(markup, replacements);
+			}
+			catch (IOException e) {
+				LOGGER.warn("Failed to initialize local tracking copy for {}: {}: {}",
+						markup.getID(), e.getClass().getSimpleName(), e.getMessage());
 			}
 			updatedImports++;
 		}

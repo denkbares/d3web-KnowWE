@@ -330,6 +330,28 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return articleText.substring(compareStart, compareEnd);
 	}
 
+	void collectTrackingInitializationReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
+		if (getMode(section) != Mode.TRACKING) return;
+
+		String referenceText = getTrackingReferenceText(section);
+		if (Strings.isBlank(referenceText)) return;
+
+		String localComparisonText = getTrackingLocalComparisonText(section);
+		// Initialize only when the local area is still empty to protect user-maintained local content.
+		if (localComparisonText == null || Strings.isNotBlank(localComparisonText)) return;
+
+		Section<?> closingTag = $(section).children().getLast();
+		if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return;
+
+		// Merge with a possibly existing replacement for this closing tag (e.g. @latestChange update).
+		String existingReplacement = replacements.getOrDefault(closingTag.getID(), closingTag.getText());
+		String initializedText = Strings.trimRight(existingReplacement)
+				+ "\n"
+				+ Strings.trimRight(referenceText)
+				+ "\n";
+		replacements.put(closingTag.getID(), initializedText);
+	}
+
 	@Override
 	protected long getIntervalMillis(Section<? extends AttachmentUpdateMarkup> section) {
 		return Long.MAX_VALUE;
