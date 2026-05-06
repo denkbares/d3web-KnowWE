@@ -77,6 +77,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String PAGE_ANNOTATION = "page";
 	private static final String SECTION_ANNOTATION = "section";
 	private static final String COMPILE_ANNOTATION = "compile";
+	private static final String MODE_ANNOTATION = "mode";
 	private static final String VALIDATION_MODE_ANNOTATION = "validationMode";
 	private static final String LATEST_CHANGE_ANNOTATION = "latestChange";
 
@@ -87,6 +88,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, false);
 		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, new TimeStampType());
 		MARKUP.addAnnotation(COMPILE_ANNOTATION, false, "true", "false");
+		MARKUP.addAnnotation(MODE_ANNOTATION, false, "import", "tracking");
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
 		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
 		MARKUP.addAnnotation(WIKI_ANNOTATION, true);
@@ -141,6 +143,19 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return DefaultMarkupType.getAnnotation(section, SECTION_ANNOTATION);
 	}
 
+	public Mode getMode(Section<InterWikiImportMarkup> section) {
+		String mode = Strings.trim(DefaultMarkupType.getAnnotation(section, MODE_ANNOTATION));
+		if ("tracking".equalsIgnoreCase(mode)) {
+			return Mode.TRACKING;
+		}
+		return Mode.IMPORT;
+	}
+
+	public boolean isTrackingMode(Section<?> markupOrSuccessor) {
+		Section<InterWikiImportMarkup> markup = $(markupOrSuccessor).closest(InterWikiImportMarkup.class).getFirst();
+		return markup != null && getMode(markup) == Mode.TRACKING;
+	}
+
 	@Override
 	public @Nullable WikiAttachment getCompiledAttachment(Section<? extends AttachmentCompileType> section) throws IOException {
 		if (isCompilingTheAttachment(section)) {
@@ -151,11 +166,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	@Override
 	public String getCompiledAttachmentPath(Section<? extends AttachmentCompileType> section) {
+		if (isTrackingMode(section)) return null;
 		return $(section).closest(AttachmentUpdateMarkup.class).mapFirst(this::getWikiAttachmentPath);
 	}
 
 	@Override
 	public boolean isCompilingTheAttachment(Section<? extends AttachmentCompileType> section) {
+		if (isTrackingMode(section)) return false;
 		return !"false".equals(DefaultMarkupType.getAnnotation(section, COMPILE_ANNOTATION));
 	}
 
@@ -318,6 +335,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			if (waitForUpdate) {
 				Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 				if (markup != null) {
+					if (markup.get().isTrackingMode(markup)) return;
 					String path = markup.get().getWikiAttachmentPath(markup);
 					ArticleManager articleManager = user.getArticleManager();
 					try {
@@ -342,7 +360,12 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 			renderHeader(markup, user, result);
 			renderLastChangesMessage(markup, result);
-			renderImport(markup, user, result);
+			if (markup.get().isTrackingMode(markup)) {
+				renderTracking(markup, result);
+			}
+			else {
+				renderImport(markup, user, result);
+			}
 
 			if (isFramed()) {
 				renderAnnotations(markup, $(markup).successor(AnnotationType.class).asList(), user, result);
@@ -353,6 +376,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
 			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 			if (markup == null) return true;
+			if (markup.get().isTrackingMode(markup)) return false;
 			try {
 				if (markup.get().getWikiAttachment(markup) == null) {
 					return true;
@@ -364,6 +388,23 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			Article article = user.getArticleManager().getArticle(markup.get().getWikiAttachmentPath(markup));
 			if (article == null) return true;
 			return getLock(markup).isLocked();
+		}
+
+		private void renderTracking(Section<InterWikiImportMarkup> markup, RenderResult result) {
+			String path = markup.get().getWikiAttachmentPath(markup);
+			try {
+				if (markup.get().getWikiAttachment(markup) == null) {
+					result.appendHtmlElement("p", "Tracking reference attachment not (yet) available", "class", "note");
+				}
+				else {
+					result.appendHtmlElement("p",
+							"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ").",
+							"class", "note");
+				}
+			}
+			catch (IOException e) {
+				result.appendHtmlElement("p", "Unable to read tracking reference attachment: " + e.getMessage(), "class", "warning");
+			}
 		}
 
 		private void renderImport(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
@@ -458,6 +499,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.appendHtmlTag("/h2");
 			}
 		}
+	}
+
+	public enum Mode {
+		IMPORT,
+		TRACKING
 	}
 
 	private static class RegistrationScript extends DefaultGlobalCompiler.DefaultGlobalScript<InterWikiImportMarkup> {
