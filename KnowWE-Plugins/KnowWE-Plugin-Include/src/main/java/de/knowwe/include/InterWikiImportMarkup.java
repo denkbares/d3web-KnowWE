@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
-import com.denkbares.knowwe.textdiff.TextDiff;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
@@ -88,6 +87,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String MODE_ANNOTATION = "mode";
 	private static final String VALIDATION_MODE_ANNOTATION = "validationMode";
 	private static final String LATEST_CHANGE_ANNOTATION = "latestChange";
+	private static final String TRACKING_ACCEPTED_AT_ANNOTATION = "trackingAcceptedAt";
 
 	private static final InterWikiImportUpdateService UPDATE_SERVICE = new InterWikiImportUpdateService();
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
@@ -104,6 +104,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
 		MARKUP.addAnnotation(VALIDATION_MODE_ANNOTATION, false, TermCompiler.ReferenceValidationMode.class);
 		MARKUP.addAnnotation(LATEST_CHANGE_ANNOTATION, false);
+		MARKUP.addAnnotation(TRACKING_ACCEPTED_AT_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
 		UPDATE_SERVICE.initialize();
 	}
@@ -317,6 +318,19 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	@Nullable
+	Instant getTrackingReferenceLastModified(Section<InterWikiImportMarkup> section) throws IOException {
+		WikiAttachment attachment = getWikiAttachment(section);
+		if (attachment == null || attachment.getDate() == null) return null;
+		return attachment.getDate().toInstant();
+	}
+
+	@Nullable
+	Instant getTrackingAcceptedAt(Section<InterWikiImportMarkup> section) {
+		String acceptedAt = DefaultMarkupType.getAnnotation(section, TRACKING_ACCEPTED_AT_ANNOTATION);
+		return InterWikiChanges.parseInstant(acceptedAt);
+	}
+
+	@Nullable
 	String getTrackingLocalComparisonText(Section<InterWikiImportMarkup> section) {
 		Article article = section.getArticle();
 		if (article == null) return null;
@@ -357,14 +371,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				+ Strings.trimRight(referenceText)
 				+ "\n";
 		replacements.put(closingTag.getID(), initializedText);
-	}
-
-	@Nullable
-	TextDiff getTrackingTextDiff(Section<InterWikiImportMarkup> section) throws IOException {
-		String referenceText = getTrackingReferenceText(section);
-		if (referenceText == null) return null;
-		String localComparisonText = getTrackingLocalComparisonText(section);
-		return new TextDiff(referenceText, localComparisonText == null ? "" : localComparisonText);
 	}
 
 	@Override
@@ -459,26 +465,25 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		private void renderTracking(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			String path = markup.get().getWikiAttachmentPath(markup);
 			try {
-				String referenceText = markup.get().getTrackingReferenceText(markup);
-				if (referenceText == null) {
+				InterWikiTrackingService.TrackingStatus trackingStatus = InterWikiTrackingService.getTrackingStatus(markup);
+				if (trackingStatus.state() == InterWikiTrackingService.State.MISSING_REFERENCE) {
 					result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
 				}
 				else {
-					String localComparisonText = markup.get().getTrackingLocalComparisonText(markup);
 					result.append(new HtmlElement("p").clazz("note").content(
 							"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ")."));
-					if (localComparisonText == null) {
+					if (!trackingStatus.localComparisonAvailable()) {
 						result.append(new HtmlElement("p").clazz("warning").content("Tracking mode: local comparison range is currently not available."));
 					}
-					else if (Strings.trim(referenceText).equals(Strings.trim(localComparisonText))) {
+					else if (trackingStatus.state() == InterWikiTrackingService.State.EQUAL) {
 						result.append(new HtmlElement("p").clazz("success").content("Tracking mode: local content matches the reference."));
 					}
 					else {
-						result.append(new HtmlElement("p").clazz("note").content("Tracking mode: local content differs from the reference."));
-						TextDiff diff = markup.get().getTrackingTextDiff(markup);
-						if (diff != null) {
-							result.appendHtml(DiffHtmlRenderer.renderTextDiff(diff));
-						}
+						String message = trackingStatus.warningActive()
+								? "Tracking mode: local content differs from the reference and requires acknowledgement."
+								: "Tracking mode: local content differs from the reference (already acknowledged).";
+						result.append(new HtmlElement("p").clazz(trackingStatus.warningActive() ? "warning" : "note").content(message));
+						trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(DiffHtmlRenderer.renderTextDiff(diff)));
 					}
 				}
 			}
