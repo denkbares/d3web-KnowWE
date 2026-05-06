@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
+import com.denkbares.knowwe.textdiff.TextDiff;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
@@ -48,6 +50,11 @@ import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.A;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.HtmlNode;
+import de.knowwe.core.kdom.rendering.elements.Span;
+import de.knowwe.core.kdom.rendering.elements.TextNode;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.tools.HelpToolProvider;
@@ -352,6 +359,14 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		replacements.put(closingTag.getID(), initializedText);
 	}
 
+	@Nullable
+	TextDiff getTrackingTextDiff(Section<InterWikiImportMarkup> section) throws IOException {
+		String referenceText = getTrackingReferenceText(section);
+		if (referenceText == null) return null;
+		String localComparisonText = getTrackingLocalComparisonText(section);
+		return new TextDiff(referenceText, localComparisonText == null ? "" : localComparisonText);
+	}
+
 	@Override
 	protected long getIntervalMillis(Section<? extends AttachmentUpdateMarkup> section) {
 		return Long.MAX_VALUE;
@@ -444,17 +459,31 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		private void renderTracking(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			String path = markup.get().getWikiAttachmentPath(markup);
 			try {
-				if (markup.get().getTrackingReferenceText(markup) == null) {
-					result.appendHtmlElement("p", "Tracking reference attachment not (yet) available", "class", "note");
+				String referenceText = markup.get().getTrackingReferenceText(markup);
+				if (referenceText == null) {
+					result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
 				}
 				else {
-					result.appendHtmlElement("p",
-							"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ").",
-							"class", "note");
+					String localComparisonText = markup.get().getTrackingLocalComparisonText(markup);
+					result.append(new HtmlElement("p").clazz("note").content(
+							"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ")."));
+					if (localComparisonText == null) {
+						result.append(new HtmlElement("p").clazz("warning").content("Tracking mode: local comparison range is currently not available."));
+					}
+					else if (Strings.trim(referenceText).equals(Strings.trim(localComparisonText))) {
+						result.append(new HtmlElement("p").clazz("success").content("Tracking mode: local content matches the reference."));
+					}
+					else {
+						result.append(new HtmlElement("p").clazz("note").content("Tracking mode: local content differs from the reference."));
+						TextDiff diff = markup.get().getTrackingTextDiff(markup);
+						if (diff != null) {
+							result.appendHtml(DiffHtmlRenderer.renderTextDiff(diff));
+						}
+					}
 				}
 			}
 			catch (IOException e) {
-				result.appendHtmlElement("p", "Unable to read tracking reference attachment: " + e.getMessage(), "class", "warning");
+				result.append(new HtmlElement("p").clazz("warning").content("Unable to read tracking reference attachment: " + e.getMessage()));
 			}
 		}
 
@@ -462,7 +491,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			String path = markup.get().getWikiAttachmentPath(markup);
 			Article article = user.getArticleManager().getArticle(path);
 			if (article == null) {
-				result.appendHtmlElement("span", "Included article not (yet) available", "class", "warning");
+				result.append(new Span("Included article not (yet) available").clazz("warning"));
 			}
 			else {
 				if (isFramed()) {
@@ -480,7 +509,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		private void renderLastChangesMessage(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			if (getLock(markup).isLocked()) {
-				result.appendHtmlElement("p", "Update currently ongoing...", "style", "color:green");
+				result.append(new HtmlElement("p").attributes("style", "color:green").content("Update currently ongoing..."));
 			}
 			else {
 				long lastRun = markup.get().timeSinceLastRun(markup);
@@ -497,21 +526,22 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				else {
 					message = "No check yet, click here to check now: ";
 				}
-				result.appendHtmlTag("p");
-				result.appendHtmlElement("span", message, "class", "include-message");
-				result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
-						"class", "include-refresh tooltipster", "title", "Check for changes");
-				result.appendHtml(Icon.REFRESH.toHtml());
-				result.appendHtmlTag("/a");
-				result.appendHtmlTag("/p");
+				result.append(new HtmlElement("p").children(
+						new Span(message).clazz("include-message"),
+						new A().attributes(
+										"onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
+										"class", "include-refresh tooltipster",
+										"title", "Check for changes")
+								.children(new HtmlNode(Icon.REFRESH.toHtml()))
+				));
 			}
 
 			if (DefaultMarkupType.getAnnotation(markup, INTERVAL_ANNOTATION) != null) {
-				result.appendHtmlElement("p",
-						"@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
-						+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
-						+ " minutes per source wiki.",
-						"class", "warning");
+				result.append(new HtmlElement("p")
+						.clazz("warning")
+						.content("@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
+								+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
+								+ " minutes per source wiki."));
 			}
 		}
 
@@ -527,27 +557,29 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					linkLabel += " - " + sectionName;
 				}
 
-				result.appendHtmlTag("h2");
-				result.append("Import from wiki ");
-				String shortenedUrl = url.toString().replaceAll("%23.+$", "");
-				result.appendHtmlElement("a", linkLabel, "href", shortenedUrl);
+					String shortenedUrl = url.toString().replaceAll("%23.+$", "");
+					HtmlElement header = new HtmlElement("h2").children(
+							new TextNode("Import from wiki "),
+							new A(linkLabel, shortenedUrl));
 
 				HelpToolProvider helpToolProvider = new HelpToolProvider();
 				if (helpToolProvider.hasTools(markup, user)) {
 					Tool[] tools = helpToolProvider.getTools(markup, user);
 					for (Tool tool : tools) {
-						result.appendHtmlTag("a", "title", tool.getDescription(), "class", "tooltipster help-tool", tool.getActionType() == Tool.ActionType.ONCLICK ? "onclick" : "href", tool.getAction());
-						result.appendHtml(tool.getIcon().toHtml());
-						result.appendHtmlTag("/a");
+						header.children(new A()
+								.attributes("title", tool.getDescription(),
+										"class", "tooltipster help-tool",
+										tool.getActionType() == Tool.ActionType.ONCLICK ? "onclick" : "href",
+										tool.getAction())
+								.children(new HtmlNode(tool.getIcon().toHtml())));
 					}
 				}
 
 				String action = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + markup.getID() + "', 'off')";
-				result.appendHtmlTag("a", "onclick", action, "class", "include-deactivate tooltipster",
-						"title", "Deactivate import");
-				result.appendHtml(Icon.TOGGLE_OFF.toHtml());
-				result.appendHtmlTag("/a");
-				result.appendHtmlTag("/h2");
+				header.children(new A()
+						.attributes("onclick", action, "class", "include-deactivate tooltipster", "title", "Deactivate import")
+						.children(new HtmlNode(Icon.TOGGLE_OFF.toHtml())));
+				result.append(header);
 			}
 		}
 	}

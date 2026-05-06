@@ -556,6 +556,11 @@
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-TextDiff</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-Defi</artifactId>
 				<version>${Experimental.version}</version>
