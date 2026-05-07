@@ -23,25 +23,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
 import de.d3web.testing.BuildResult;
-import de.d3web.testing.Message;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
@@ -177,7 +168,6 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 					currentContent.clear();
 					currentHeader = line;
 					if (isFirstHeaderInSection) {
-						//appendLine(line, result, isHeader, isSectionHeader); line should append when flushing the block
 						newLines.remove(0); //remove Section Header since it already exists
 						isFirstHeaderInSection = false;
 					}

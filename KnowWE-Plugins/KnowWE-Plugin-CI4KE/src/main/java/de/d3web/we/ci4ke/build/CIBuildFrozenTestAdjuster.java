@@ -19,9 +19,7 @@
 
 package de.d3web.we.ci4ke.build;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +48,6 @@ import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
 class CIBuildFrozenTestAdjuster {
 
 	static void adjustFrozenTests(BuildResult buildResult, CIDashboard dashboard) throws IOException {
-		//clean results before
 		List<TestResult> testResults = buildResult.getResults();
 		List<TestResult> newResults = new ArrayList<>();
 		List<TestResult> removeResults = new ArrayList<>();
@@ -132,7 +129,7 @@ class CIBuildFrozenTestAdjuster {
 		return false;
 	}
 
-	private static boolean containsLine(String[] lines, String fileText) throws IOException {
+	private static boolean containsLine(String[] lines, String fileText) {
 		List<String> fileLines = List.of(fileText.split("\\R"));
 		Set<String> fileLineSet = new HashSet<>(fileLines);
 
@@ -144,8 +141,7 @@ class CIBuildFrozenTestAdjuster {
 		return false;
 	}
 
-	//TODO: rewrite method to adjust for different Sections, matching plural words, cleaning up code
-	private static Pair<Message, Message> splitText(Message message, String fileText, String testObject) throws IOException {
+	private static Pair<Message, Message> splitText(Message message, String fileText, String testObject) {
 
 		List<String> messageLines = List.of(message.getText().split("\\R"));
 		messageLines = messageLines.stream()
@@ -254,6 +250,7 @@ class CIBuildFrozenTestAdjuster {
 					if (currentHeader != null) {
 						frozenContent.put(currentHeader, currentContent);
 					}
+					currentContent.clear();
 					currentHeader = fileLine;
 				} else {
 					currentContent.add(fileLine);
@@ -263,159 +260,6 @@ class CIBuildFrozenTestAdjuster {
 		frozenContent.put(currentHeader, currentContent);
 
 		return frozenContent;
-	}
-
-	private static Pair<Message, Message> splitText(Message message, String fileText) throws IOException {
-		//only get text from the correct testobject
-		//plural words might not be matched correctly...
-		String text = message.getText();
-
-		List<String> fileLines = List.of(fileText.split("\\R"));
-
-		// Build header → content map (normalized header as key)
-		Map<String, Set<String>> fileHeaderToContent = new HashMap<>();
-		String currentFileHeader = null;
-
-		for (String line : fileLines) {
-			if (!line.startsWith("*")) {
-				currentFileHeader = normalizeHeader(line);
-				fileHeaderToContent.putIfAbsent(currentFileHeader, new HashSet<>());
-			} else if (currentFileHeader != null) {
-				fileHeaderToContent.get(currentFileHeader).add(line);
-			}
-		}
-
-		StringBuilder normalTest = new StringBuilder();
-		StringBuilder softTest = new StringBuilder();
-
-		boolean isFullyNormal = true;
-		boolean isFullySoft = true;
-
-		String[] lines = text.split("\\R");
-
-		String currentHeader = null;
-		List<String> currentNormalContent = new ArrayList<>();
-		List<String> currentSoftContent = new ArrayList<>();
-
-		boolean isFirstHeader = true;
-
-		for (String line : lines) {
-
-			boolean isStar = line.startsWith("*");
-
-			if (!isStar) {
-				// flush previous block
-				if (currentHeader != null) {
-
-					String normalizedHeader = normalizeHeader(currentHeader);
-					Set<String> fileContent =
-							fileHeaderToContent.getOrDefault(normalizedHeader, Collections.emptySet());
-
-					int normalCount = currentNormalContent.size();
-					int softCount = currentSoftContent.size();
-
-					String normalHeader = currentHeader;
-					String softHeader = currentHeader;
-
-					if (isFirstHeader) {
-						normalHeader = replaceFirstNumber(currentHeader, normalCount);
-						softHeader = replaceFirstNumber(currentHeader, softCount);
-					} else {
-						normalHeader = replaceLastNumber(currentHeader, normalCount);
-						softHeader = replaceLastNumber(currentHeader, softCount);
-					}
-
-					// NORMAL
-					if (!currentNormalContent.isEmpty() || isFirstHeader) {
-						normalTest.append(normalHeader).append(System.lineSeparator());
-						for (String l : currentNormalContent) {
-							normalTest.append(l).append(System.lineSeparator());
-							isFullySoft = false;
-						}
-					}
-
-					// SOFT
-					if (!currentSoftContent.isEmpty() || isFirstHeader) {
-						softTest.append(softHeader).append(System.lineSeparator());
-						for (String l : currentSoftContent) {
-							softTest.append(l).append(System.lineSeparator());
-							isFullyNormal = false;
-						}
-					}
-
-					isFirstHeader = false;
-				}
-
-				// start new block
-				currentHeader = line;
-				currentNormalContent.clear();
-				currentSoftContent.clear();
-
-			} else {
-				String normalizedHeader = normalizeHeader(currentHeader);
-				Set<String> fileContent =
-						fileHeaderToContent.getOrDefault(normalizedHeader, Collections.emptySet());
-
-				boolean existsInFile = fileContent.contains(line);
-
-				// NORMAL: keep lines NOT in file
-				if (!existsInFile) {
-					currentNormalContent.add(line);
-				}
-
-				// SOFT: keep lines IN file
-				if (existsInFile) {
-					currentSoftContent.add(line);
-				}
-			}
-		}
-
-		// flush last block
-		if (currentHeader != null) {
-
-			int normalCount = currentNormalContent.size();
-			int softCount = currentSoftContent.size();
-
-			String normalHeader = currentHeader;
-			String softHeader = currentHeader;
-
-			if (isFirstHeader) {
-				normalHeader = replaceFirstNumber(currentHeader, normalCount);
-				softHeader = replaceFirstNumber(currentHeader, softCount);
-			} else {
-				normalHeader = replaceLastNumber(currentHeader, normalCount);
-				softHeader = replaceLastNumber(currentHeader, softCount);
-			}
-
-			if (!currentNormalContent.isEmpty() || isFirstHeader) {
-				normalTest.append(normalHeader).append(System.lineSeparator());
-				for (String l : currentNormalContent) {
-					normalTest.append(l).append(System.lineSeparator());
-					isFullySoft = false;
-				}
-			}
-
-			if (!currentSoftContent.isEmpty() || isFirstHeader) {
-				softTest.append(softHeader).append(System.lineSeparator());
-				for (String l : currentSoftContent) {
-					softTest.append(l).append(System.lineSeparator());
-					isFullyNormal = false;
-				}
-			}
-		}
-
-		// If no * lines remain → clear result
-		if (isFullyNormal) {
-			softTest = new StringBuilder();
-		}
-		if (isFullySoft) {
-			normalTest = new StringBuilder();
-		}
-
-		return new Pair<>(
-				new Message(message.getType(), adjustHeaderCounts(normalTest.toString()).trim()),
-				new Message(message.getType(), adjustHeaderCounts(softTest.toString()).trim())
-		);
 	}
 
 	private static String adjustHeaderCounts(String text) {
