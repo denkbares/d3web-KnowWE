@@ -33,11 +33,6 @@ final class InterWikiTrackingService {
 		String referenceText = markup.get().getTrackingReferenceText(markup);
 		String localComparisonText = markup.get().getTrackingLocalComparisonText(markup);
 		boolean localComparisonAvailable = localComparisonText != null;
-		// Missing local comparison area is treated like empty content for diff generation,
-		// while localComparisonAvailable keeps this fact visible for renderer decisions.
-		String localTextForCompare = localComparisonText == null ? "" : localComparisonText;
-		boolean referenceBlank = Strings.isBlank(referenceText);
-		boolean localBlank = Strings.isBlank(localTextForCompare);
 
 		if (referenceText == null) {
 			return new TrackingStatus(
@@ -45,14 +40,18 @@ final class InterWikiTrackingService {
 					false,
 					localComparisonAvailable,
 					true,
-					localBlank,
+					normalizeForComparison(localComparisonText).isEmpty(),
 					null,
 					null,
 					null);
 		}
 
-		boolean isEqual = Strings.trim(referenceText).equals(Strings.trim(localTextForCompare));
-		if (isEqual) {
+		String normalizedReference = normalizeForComparison(referenceText);
+		String normalizedLocal = normalizeForComparison(localComparisonText);
+		boolean referenceBlank = normalizedReference.isEmpty();
+		boolean localBlank = normalizedLocal.isEmpty();
+
+		if (normalizedReference.equals(normalizedLocal)) {
 			return new TrackingStatus(
 					State.EQUAL,
 					false,
@@ -77,9 +76,18 @@ final class InterWikiTrackingService {
 				localComparisonAvailable,
 				referenceBlank,
 				localBlank,
-				new TextDiff(referenceText, localTextForCompare),
+				new TextDiff(normalizedReference, normalizedLocal),
 				acceptedAt,
 				referenceLastModified);
+	}
+
+	/**
+	 * Normalizes a text for tracking comparison: {@code null}-safe trim. Used for both the
+	 * equality check and the {@link TextDiff} input so equal-after-trim cases produce no
+	 * visible diff (no leading/trailing empty lines).
+	 */
+	static String normalizeForComparison(@org.jetbrains.annotations.Nullable String text) {
+		return text == null ? "" : Strings.trim(text);
 	}
 
 	enum State {

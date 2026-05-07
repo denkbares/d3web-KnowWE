@@ -353,6 +353,12 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	@Nullable
 	String getTrackingLocalComparisonText(Section<InterWikiImportMarkup> section) {
+		int[] range = getLocalComparisonRange(section);
+		if (range == null) return null;
+		return section.getArticle().getText().substring(range[0], range[1]);
+	}
+
+	private int[] getLocalComparisonRange(Section<InterWikiImportMarkup> section) {
 		Article article = section.getArticle();
 		if (article == null) return null;
 		String articleText = article.getText();
@@ -369,7 +375,64 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		int compareStart = Math.max(0, Math.min(sectionEnd, articleText.length()));
 		int compareEnd = Math.max(compareStart, Math.min(nextInterWikiImportStart.orElse(articleText.length()), articleText.length()));
-		return articleText.substring(compareStart, compareEnd);
+		return new int[] { compareStart, compareEnd };
+	}
+
+	boolean collectSwitchToReferenceReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
+		String referenceText = getTrackingReferenceText(section);
+		if (referenceText == null) return false;
+
+		int[] range = getLocalComparisonRange(section);
+		if (range == null) return false;
+
+		Article article = section.getArticle();
+		String articleText = article.getText();
+		String newArticleText = articleText.substring(0, range[0])
+				+ "\n\n" + Strings.trimRight(referenceText) + "\n"
+				+ articleText.substring(range[1]);
+		replacements.put(article.getRootSection().getID(), newArticleText);
+		return true;
+	}
+
+	void refreshNow(Section<InterWikiImportMarkup> section, boolean force) {
+		UPDATE_SERVICE.pollSingleMarkup(section, force);
+	}
+
+	static String buildRefreshScript(String sectionId, boolean force) {
+		return "(function(){"
+				+ "jq$.ajax({"
+				+ "url: KNOWWE.core.util.getURL({action:'RefreshInterWikiImportAction',"
+				+ Attributes.SECTION_ID + ":'" + sectionId + "',"
+				+ "force:'" + force + "'}),"
+				+ "type:'post',"
+				+ "cache:false"
+				+ "}).done(function(){window.location.reload();})"
+				+ ".fail(function(xhr){"
+				+ "KNOWWE.notification.error(null,"
+				+ "xhr.responseText || 'Unable to refresh InterWikiImport.',"
+				+ "'iwii-refresh',5000);"
+				+ "});"
+				+ "})();";
+	}
+
+	void refreshTrackingMessages(Section<InterWikiImportMarkup> section) {
+		Messages.clearMessages(section, TrackingMessages.class);
+		if (getMode(section) != Mode.TRACKING) return;
+		try {
+			InterWikiTrackingService.TrackingStatus status = InterWikiTrackingService.getTrackingStatus(section);
+			if (status.warningActive()) {
+				Messages.storeMessage(section, TrackingMessages.class,
+						Messages.warning("InterWikiImport tracking differences are not acknowledged yet."));
+			}
+		}
+		catch (IOException e) {
+			Messages.storeMessage(section, TrackingMessages.class,
+					Messages.warning("Unable to evaluate InterWikiImport tracking status: " + e.getMessage()));
+		}
+	}
+
+	/** Marker source so tracking messages can be cleared independently from other markup messages. */
+	private static final class TrackingMessages {
 	}
 
 	void collectTrackingInitializationReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
@@ -483,7 +546,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 
 		private void renderTracking(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
-			String path = markup.get().getWikiAttachmentPath(markup);
 			InterWikiTrackingService.TrackingStatus trackingStatus;
 			try {
 				trackingStatus = InterWikiTrackingService.getTrackingStatus(markup);
@@ -497,9 +559,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
 				return;
 			}
-
-			result.append(new HtmlElement("p").clazz("note").content(
-					"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ")."));
 
 			if (trackingStatus.canInitializeFromReference() && KnowWEUtils.canWrite(markup, user)) {
 				renderInitializationButton(markup, result);
@@ -518,24 +577,73 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		private void renderInitializationButton(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			result.append(new HtmlElement("p").clazz("note")
 					.content("Tracking mode: local copy is empty. Insert the current reference text from the source wiki below the markup as a starting point."));
-			String action = "(function(){"
+			result.append(new HtmlElement("button")
+					.attributes("type", "button",
+							"class", "tracking-action-button",
+							"onclick", buildTrackingActionScript(
+									"InitInterWikiTrackingLocalCopyAction", markup.getID(),
+									"tracking-init", "Unable to initialize local copy.", null))
+					.content("Insert reference text below"));
+		}
+
+		private void renderDiffActionButtons(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result,
+				boolean canAcknowledge, @Nullable String toggleDiffContainerId) {
+			boolean canWrite = KnowWEUtils.canWrite(markup, user);
+			if (!canWrite && toggleDiffContainerId == null) return;
+			HtmlElement container = new HtmlElement("div").clazz("tracking-action-buttons");
+			if (toggleDiffContainerId != null) {
+				container.children(new HtmlElement("button")
+						.attributes("type", "button",
+								"class", "tracking-action-button",
+								"onclick", "var e=document.getElementById('" + toggleDiffContainerId + "');"
+										+ "if(!e)return;"
+										+ "var show=(e.style.display==='none');"
+										+ "e.style.display=show?'block':'none';"
+										+ "this.textContent=show?'Hide current differences':'Show current differences';")
+						.content("Show current differences"));
+			}
+			if (!canWrite) {
+				result.append(container);
+				return;
+			}
+			if (canAcknowledge) {
+				container.children(new HtmlElement("button")
+						.attributes("type", "button",
+								"class", "tracking-action-button",
+								"onclick", buildTrackingActionScript(
+										"AcceptInterWikiTrackingDiffAction", markup.getID(),
+										"tracking-accept", "Unable to acknowledge tracking differences.", null))
+						.content("Acknowledge differences"));
+			}
+			container.children(new HtmlElement("button")
+					.attributes("type", "button",
+							"class", "tracking-action-button",
+							"onclick", buildTrackingActionScript(
+									"SwitchInterWikiTrackingToReferenceAction", markup.getID(),
+									"tracking-switch", "Unable to switch to reference content.",
+									"Replace the local content below the markup with the current reference text from the source wiki? Local edits in this range will be lost."))
+					.content("Switch to changes from reference"));
+			result.append(container);
+		}
+
+		private static String buildTrackingActionScript(String action, String sectionId, String notificationKey, String fallbackError, @Nullable String confirmMessage) {
+			String prefix = confirmMessage == null
+					? ""
+					: "if(!confirm('" + confirmMessage.replace("\\", "\\\\").replace("'", "\\'") + "'))return;";
+			return "(function(){"
+					+ prefix
 					+ "jq$.ajax({"
-					+ "url: KNOWWE.core.util.getURL({action:'InitInterWikiTrackingLocalCopyAction',"
-					+ Attributes.SECTION_ID + ":'" + markup.getID() + "'}),"
+					+ "url: KNOWWE.core.util.getURL({action:'" + action + "',"
+					+ Attributes.SECTION_ID + ":'" + sectionId + "'}),"
 					+ "type:'post',"
 					+ "cache:false"
 					+ "}).done(function(){window.location.reload();})"
 					+ ".fail(function(xhr){"
 					+ "KNOWWE.notification.error(null,"
-					+ "xhr.responseText || 'Unable to initialize local copy.',"
-					+ "'tracking-init',10000);"
+					+ "xhr.responseText || '" + fallbackError + "',"
+					+ "'" + notificationKey + "',10000);"
 					+ "});"
 					+ "})();";
-			result.append(new HtmlElement("button")
-					.attributes("type", "button",
-							"class", "tracking-init-button",
-							"onclick", action)
-					.content("Insert reference text below"));
 		}
 
 		private void renderTrackingComparisonStatus(
@@ -549,23 +657,14 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				case UNACCEPTED_DIFF -> {
 					result.append(new HtmlElement("p").clazz("note")
 							.content("Tracking mode: local content differs from the reference."));
-					result.append(new HtmlElement("p").clazz("warning")
-							.content("Warning: differences are not acknowledged yet."));
 					trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(renderTrackingDiff(diff, user)));
+					renderDiffActionButtons(markup, user, result, true, null);
 				}
 				case ACCEPTED_DIFF -> {
 					result.append(new HtmlElement("p").clazz("note")
 							.content("Tracking mode: local content differs from the reference (already acknowledged)."));
 					String diffContainerId = "tracking-diff-" + markup.getID();
-					result.append(new HtmlElement("button")
-							.attributes("type", "button",
-									"class", "tracking-diff-toggle-button",
-									"onclick", "var e=document.getElementById('" + diffContainerId + "');"
-											+ "if(!e)return;"
-											+ "var show=(e.style.display==='none');"
-											+ "e.style.display=show?'block':'none';"
-											+ "this.textContent=show?'Hide current differences':'Show current differences';")
-							.content("Show current differences"));
+					renderDiffActionButtons(markup, user, result, false, diffContainerId);
 					trackingStatus.diffOptional().ifPresent(diff -> result.append(
 							new HtmlElement("div")
 									.attributes("id", diffContainerId, "style", "display:none;")
@@ -637,7 +736,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.append(new HtmlElement("p").children(
 						new Span(message).clazz("include-message"),
 						new A().attributes(
-										"onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
+										"onclick", buildRefreshScript(markup.getID(), false),
 										"class", "include-refresh tooltipster",
 										"title", "Check for changes")
 								.children(new HtmlNode(Icon.REFRESH.toHtml()))
@@ -703,14 +802,17 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			if (section.get().getUrl(section) == null) {
 				UPDATE_SERVICE.deregister(section);
+				Messages.clearMessages(section, TrackingMessages.class);
 				return;
 			}
 			UPDATE_SERVICE.register(section);
+			section.get().refreshTrackingMessages(section);
 		}
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			UPDATE_SERVICE.deregister(section);
+			Messages.clearMessages(section, TrackingMessages.class);
 		}
 	}
 }
