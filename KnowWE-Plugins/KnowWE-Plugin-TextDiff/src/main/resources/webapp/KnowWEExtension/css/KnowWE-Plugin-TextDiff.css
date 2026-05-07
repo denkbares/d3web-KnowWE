@@ -1,0 +1,627 @@
+/*
+ * KnowWE TextDiff — diff viewer styles (Primer-inspired).
+ *
+ * The component renders inside a shadow root, so all selectors here are scoped
+ * to that root. Visual tokens are exposed as --diff-* custom properties and
+ * pierce the shadow boundary, allowing host pages to retheme any instance.
+ * Anatomical parts are also reachable via ::part() — see DiffHtmlRenderer.
+ */
+
+:host {
+	/* Surface */
+	--diff-fg: #1f2328;
+	--diff-fg-muted: #59636e;
+	--diff-bg: #ffffff;
+	--diff-border: #d1d9e0;
+	--diff-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
+
+	/* Gutter (line numbers) */
+	--diff-num-fg: #59636e;
+	--diff-num-bg: #f6f8fa;
+
+	/* Added — three tonal layers: line bg, num gutter, sign emphasis */
+	--diff-added-bg: #e6ffec;
+	--diff-added-num-bg: #ccffd8;
+	--diff-added-emph-bg: #aceebb;
+	--diff-added-fg: #1a7f37;
+
+	/* Removed */
+	--diff-removed-bg: #ffebe9;
+	--diff-removed-num-bg: #ffd7d5;
+	--diff-removed-emph-bg: #ffc1ba;
+	--diff-removed-fg: #cf222e;
+
+	/* Elision (collapsed-context expander) */
+	--diff-elide-bg: #f6f8fa;
+	--diff-elide-fg: #59636e;
+	--diff-elide-hover-bg: #ddf4ff;
+	--diff-elide-hover-fg: #0969da;
+
+	/* Typography & geometry */
+	--diff-font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	--diff-font-size: 12.5px;
+	--diff-line-height: 1.6;
+	--diff-tab-size: 4;
+	--diff-radius: 6px;
+
+	display: block;
+	contain: content;
+	color: var(--diff-fg);
+}
+
+/* --- Status placeholders rendered on the host (light DOM) ---------------- */
+
+:host([data-status="loading"])::before,
+:host([data-status="error"])::before {
+	display: block;
+	padding: 12px 16px;
+	border: 1px solid var(--diff-border);
+	border-radius: var(--diff-radius);
+	background: var(--diff-num-bg);
+	color: var(--diff-fg-muted);
+	font: var(--diff-font-size)/var(--diff-line-height) var(--diff-font-family);
+}
+
+:host([data-status="loading"])::before {
+	content: "Loading diff…";
+	font-style: italic;
+}
+
+:host([data-status="error"])::before {
+	content: "Failed to load diff: " attr(data-status-message);
+	border-color: var(--diff-removed-fg);
+	background: var(--diff-removed-bg);
+	color: var(--diff-removed-fg);
+}
+
+/* --- Dark theme ---------------------------------------------------------- */
+
+:host([data-theme="dark"]) {
+	--diff-fg: #f0f6fc;
+	--diff-fg-muted: #9198a1;
+	--diff-bg: #0d1117;
+	--diff-border: #3d444d;
+	--diff-shadow: 0 1px 0 rgba(1, 4, 9, 0.2);
+
+	--diff-num-fg: #9198a1;
+	--diff-num-bg: #151b23;
+
+	--diff-added-bg: rgba(46, 160, 67, 0.15);
+	--diff-added-num-bg: rgba(46, 160, 67, 0.3);
+	--diff-added-emph-bg: rgba(46, 160, 67, 0.4);
+	--diff-added-fg: #3fb950;
+
+	--diff-removed-bg: rgba(248, 81, 73, 0.15);
+	--diff-removed-num-bg: rgba(248, 81, 73, 0.3);
+	--diff-removed-emph-bg: rgba(248, 81, 73, 0.4);
+	--diff-removed-fg: #f85149;
+
+	--diff-elide-bg: #151b23;
+	--diff-elide-fg: #9198a1;
+	--diff-elide-hover-bg: rgba(56, 139, 253, 0.15);
+	--diff-elide-hover-fg: #58a6ff;
+}
+
+@media (prefers-color-scheme: dark) {
+	:host(:not([data-theme])) {
+		--diff-fg: #f0f6fc;
+		--diff-fg-muted: #9198a1;
+		--diff-bg: #0d1117;
+		--diff-border: #3d444d;
+		--diff-shadow: 0 1px 0 rgba(1, 4, 9, 0.2);
+
+		--diff-num-fg: #9198a1;
+		--diff-num-bg: #151b23;
+
+		--diff-added-bg: rgba(46, 160, 67, 0.15);
+		--diff-added-num-bg: rgba(46, 160, 67, 0.3);
+		--diff-added-emph-bg: rgba(46, 160, 67, 0.4);
+		--diff-added-fg: #3fb950;
+
+		--diff-removed-bg: rgba(248, 81, 73, 0.15);
+		--diff-removed-num-bg: rgba(248, 81, 73, 0.3);
+		--diff-removed-emph-bg: rgba(248, 81, 73, 0.4);
+		--diff-removed-fg: #f85149;
+
+		--diff-elide-bg: #151b23;
+		--diff-elide-fg: #9198a1;
+		--diff-elide-hover-bg: rgba(56, 139, 253, 0.15);
+		--diff-elide-hover-fg: #58a6ff;
+	}
+}
+
+/* --- Card frame ---------------------------------------------------------- */
+
+.diff-frame {
+	background: var(--diff-bg);
+	border: var(--diff-frame-border, 1px solid var(--diff-border));
+	border-radius: var(--diff-frame-radius, var(--diff-radius));
+	overflow: hidden;
+	box-shadow: var(--diff-frame-shadow, var(--diff-shadow));
+}
+
+.diff {
+	border-collapse: collapse;
+	width: 100%;
+	font-family: var(--diff-font-family);
+	font-size: var(--diff-font-size);
+	line-height: var(--diff-line-height);
+	tab-size: var(--diff-tab-size);
+	-moz-tab-size: var(--diff-tab-size);
+}
+
+/* --- Lines --------------------------------------------------------------- */
+
+.line.common { background: var(--diff-bg); color: var(--diff-fg); }
+.line.added { background: var(--diff-added-bg); }
+.line.removed { background: var(--diff-removed-bg); }
+.line.hidden { display: none; }
+
+/* Line numbers (two-column gutter) */
+.num {
+	width: 1%;
+	min-width: 3ch;
+	padding: 0 10px;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	color: var(--diff-num-fg);
+	background: var(--diff-num-bg);
+	user-select: none;
+	white-space: nowrap;
+}
+
+/* Only the inner edge of the gutter gets a divider, separating num from sign. */
+.num.new {
+	border-right: 1px solid var(--diff-border);
+}
+
+.diff.single-line-number .num {
+	min-width: 42px;
+	border-right: 1px solid var(--diff-border);
+}
+
+.line.added .num { background: var(--diff-added-num-bg); color: var(--diff-added-fg); }
+.line.removed .num { background: var(--diff-removed-num-bg); color: var(--diff-removed-fg); }
+.line.added .num.new { border-right-color: var(--diff-added-num-bg); }
+.line.removed .num.new { border-right-color: var(--diff-removed-num-bg); }
+.diff.single-line-number .line.added .num { border-right-color: var(--diff-added-num-bg); }
+.diff.single-line-number .line.removed .num { border-right-color: var(--diff-removed-num-bg); }
+
+/* Sign column (+ / − / blank) — shares the gutter tint; emphasis comes from the bold colored glyph. */
+.sign {
+	width: 1%;
+	min-width: 18px;
+	padding: 0 6px;
+	text-align: center;
+	user-select: none;
+	font-weight: 600;
+	color: var(--diff-fg-muted);
+}
+
+.line.added .sign { background: var(--diff-added-bg); color: var(--diff-added-fg); }
+.line.removed .sign { background: var(--diff-removed-bg); color: var(--diff-removed-fg); }
+
+/* Code text */
+.text {
+	width: 100%;
+	padding: 0 10px;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+
+/* --- Elided rows + expander -------------------------------------------- */
+
+.elided {
+	background: var(--diff-elide-bg);
+}
+
+.elided td {
+	padding: 0;
+	border-top: 1px solid var(--diff-border);
+	border-bottom: 1px solid var(--diff-border);
+}
+
+.elided button.expand {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	margin: 0;
+	padding: 6px 12px;
+	background: transparent;
+	border: 0;
+	color: var(--diff-elide-fg);
+	font-family: var(--diff-font-family);
+	font-size: var(--diff-font-size);
+	line-height: var(--diff-line-height);
+	cursor: pointer;
+	transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.elided button.expand:hover {
+	background: var(--diff-elide-hover-bg);
+	color: var(--diff-elide-hover-fg);
+}
+
+.elided button.expand:focus-visible {
+	background: var(--diff-elide-hover-bg);
+	color: var(--diff-elide-hover-fg);
+	outline: 2px solid var(--diff-elide-hover-fg);
+	outline-offset: -2px;
+}
+
+.elided button.expand .icon {
+	flex-shrink: 0;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.7;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* -------------------------------------------------------------------------
+ * <knowwe-file-change>
+ * ---------------------------------------------------------------------- */
+
+:host {
+	--file-change-bg: #ffffff;
+	--file-change-header-bg: #f6f8fa;
+	--file-change-header-hover-bg: #eef2f5;
+	--file-change-fg: #1f2328;
+	--file-change-muted-fg: #59636e;
+	--file-change-border: #d1d9e0;
+	--file-change-blue: #0969da;
+	--file-change-blue-bg: #ddf4ff;
+	--file-change-purple: #8250df;
+	--file-change-purple-bg: #fbefff;
+	--file-change-radius: 6px;
+	--file-change-control-bg: #ffffff;
+	--file-change-control-hover-bg: #f3f4f6;
+	--file-change-focus: #0969da;
+	--file-change-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+	--file-change-mono-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+	display: block;
+}
+
+:host([data-theme="dark"]) {
+	--file-change-bg: #0d1117;
+	--file-change-header-bg: #151b23;
+	--file-change-header-hover-bg: #1f2630;
+	--file-change-fg: #f0f6fc;
+	--file-change-muted-fg: #9198a1;
+	--file-change-border: #3d444d;
+	--file-change-blue: #58a6ff;
+	--file-change-blue-bg: rgba(56, 139, 253, 0.15);
+	--file-change-purple: #bc8cff;
+	--file-change-purple-bg: rgba(163, 113, 247, 0.15);
+	--file-change-control-bg: #212830;
+	--file-change-control-hover-bg: #262c36;
+	--file-change-focus: #58a6ff;
+}
+
+@media (prefers-color-scheme: dark) {
+	:host(:not([data-theme])) {
+		--file-change-bg: #0d1117;
+		--file-change-header-bg: #151b23;
+		--file-change-fg: #f0f6fc;
+		--file-change-muted-fg: #9198a1;
+		--file-change-border: #3d444d;
+		--file-change-blue: #58a6ff;
+		--file-change-blue-bg: rgba(56, 139, 253, 0.15);
+		--file-change-purple: #bc8cff;
+		--file-change-purple-bg: rgba(163, 113, 247, 0.15);
+		--file-change-control-bg: #212830;
+		--file-change-control-hover-bg: #262c36;
+		--file-change-focus: #58a6ff;
+	}
+}
+
+.file-change {
+	display: block;
+	overflow: hidden;
+	color: var(--file-change-fg);
+	background: var(--file-change-bg);
+	border: 1px solid var(--file-change-border);
+	border-left-width: 5px;
+	border-radius: var(--file-change-radius);
+	font-family: var(--file-change-font-family);
+	box-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
+}
+
+.file-change[data-change="added"] {
+	border-left-color: var(--diff-added-fg);
+}
+
+.file-change[data-change="deleted"] {
+	border-left-color: var(--diff-removed-fg);
+}
+
+.file-change[data-change="modified"] {
+	border-left-color: var(--file-change-blue);
+}
+
+.file-change[data-change="renamed"],
+.file-change[data-change="renamed-modified"] {
+	border-left-color: var(--file-change-purple);
+}
+
+.file-change-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 39px;
+	padding: 7px 12px 7px 8px;
+	background: var(--file-change-header-bg);
+	border-bottom: 1px solid var(--file-change-border);
+	box-sizing: border-box;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 120ms ease;
+}
+
+.file-change-header:hover {
+	background: var(--file-change-header-hover-bg);
+}
+
+:host([data-empty-body]) .file-change-header {
+	border-bottom: 0;
+	cursor: default;
+}
+
+.file-change-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 28px;
+	height: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--file-change-muted-fg);
+	font: inherit;
+	cursor: pointer;
+	transition: background-color 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.file-change-header:hover .file-change-toggle {
+	color: var(--file-change-fg);
+}
+
+.file-change-toggle:focus-visible {
+	outline: 2px solid var(--file-change-focus);
+	outline-offset: -2px;
+}
+
+.file-change-toggle[hidden] {
+	display: none;
+}
+
+.file-change-toggle .icon {
+	display: block;
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 120ms ease;
+}
+
+.file-change.is-collapsed .file-change-toggle .icon {
+	transform: rotate(-90deg);
+}
+
+.file-change[data-change="added"] .file-change-badge,
+.file-change-stat.additions {
+	color: var(--diff-added-fg);
+}
+
+.file-change[data-change="deleted"] .file-change-badge,
+.file-change-stat.deletions {
+	color: var(--diff-removed-fg);
+}
+
+.file-change[data-change="modified"] .file-change-badge {
+	color: var(--file-change-blue);
+}
+
+.file-change[data-change="renamed"] .file-change-badge,
+.file-change[data-change="renamed-modified"] .file-change-badge {
+	color: var(--file-change-purple);
+}
+
+.file-change-badge {
+	flex: 0 0 auto;
+	padding: 0 7px;
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 20px;
+	white-space: nowrap;
+	background: var(--file-change-bg);
+}
+
+.file-change[data-change="added"] .file-change-badge {
+	background: var(--diff-added-bg);
+}
+
+.file-change[data-change="deleted"] .file-change-badge {
+	background: var(--diff-removed-bg);
+}
+
+.file-change[data-change="modified"] .file-change-badge {
+	background: var(--file-change-blue-bg);
+}
+
+.file-change[data-change="renamed"] .file-change-badge,
+.file-change[data-change="renamed-modified"] .file-change-badge {
+	background: var(--file-change-purple-bg);
+}
+
+.file-change-title {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	min-width: 0;
+	flex: 1 1 auto;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--file-change-fg);
+}
+
+.file-change-title:not(.is-rename) .file-change-arrow,
+.file-change-title:not(.is-rename) .file-change-name.new {
+	display: none;
+}
+
+.file-change-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-family: var(--file-change-mono-family);
+	color: inherit;
+	text-decoration: none;
+	border-radius: 4px;
+}
+
+.file-change-name[href]:hover {
+	color: var(--file-change-blue);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.file-change-title:has(.file-change-name[href]) {
+	user-select: text;
+}
+
+.file-change-name[href]:focus-visible {
+	outline: 2px solid var(--file-change-focus);
+	outline-offset: 2px;
+}
+
+.file-change-name:not([href]) {
+	pointer-events: none;
+}
+
+.file-change-name.old {
+	color: var(--file-change-fg);
+}
+
+.file-change-title.is-rename .file-change-name.old {
+	color: var(--file-change-muted-fg);
+	text-decoration: line-through;
+	text-decoration-thickness: 1px;
+}
+
+.file-change-title.is-rename .file-change-name.new {
+	color: var(--file-change-fg);
+}
+
+.file-change-arrow {
+	flex: 0 0 auto;
+	color: var(--file-change-muted-fg);
+}
+
+.file-change-stats {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	flex: 0 0 auto;
+	margin-left: auto;
+	font-family: var(--file-change-mono-family);
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.file-change-stat {
+	min-width: 0;
+	font-variant-numeric: tabular-nums;
+}
+
+.file-change-body {
+	background: var(--file-change-bg);
+}
+
+:host([data-empty-body]) .file-change-body {
+	display: none;
+}
+
+.file-change.is-collapsed .file-change-body {
+	display: none;
+}
+
+::slotted(knowwe-text-diff) {
+	display: block;
+	--diff-radius: 0;
+	--diff-border: var(--file-change-border);
+	--diff-shadow: none;
+	--diff-frame-border: 0;
+	--diff-frame-radius: 0;
+	--diff-frame-shadow: none;
+}
+
+/* --- Print: no expander, every line visible ---------------------------- */
+
+@media print {
+	.diff-frame {
+		box-shadow: none;
+		border-color: #000;
+	}
+
+	.elided {
+		display: none;
+	}
+
+	.line.hidden {
+		display: table-row;
+	}
+}
+
+/* --- Windows high-contrast / forced colors ----------------------------- */
+
+@media (forced-colors: active) {
+	.diff-frame {
+		border-color: CanvasText;
+	}
+
+	.line.added,
+	.line.removed,
+	.line.common,
+	.line .num,
+	.line .sign {
+		background: Canvas;
+		color: CanvasText;
+		forced-color-adjust: none;
+	}
+
+	.line.added .sign,
+	.line.added .num,
+	.line.added .text {
+		color: LinkText;
+	}
+
+	.line.removed .sign,
+	.line.removed .num,
+	.line.removed .text {
+		color: Mark;
+	}
+
+	.elided button.expand {
+		color: LinkText;
+	}
+}
