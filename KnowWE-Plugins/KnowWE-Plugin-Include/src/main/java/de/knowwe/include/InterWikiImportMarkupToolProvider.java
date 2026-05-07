@@ -59,6 +59,7 @@ public class InterWikiImportMarkupToolProvider implements ToolProvider {
 					+ "jq$.ajax({"
 					+ "url: KNOWWE.core.util.getURL({action:'AcceptInterWikiTrackingDiffAction',"
 					+ Attributes.SECTION_ID + ":'" + markup.getID() + "'}),"
+					+ "type:'post',"
 					+ "cache:false"
 					+ "}).done(function(){window.location.reload();})"
 					+ ".fail(function(xhr){"
@@ -68,8 +69,8 @@ public class InterWikiImportMarkupToolProvider implements ToolProvider {
 					+ "});"
 					+ "})();";
 			tools.add(new DefaultTool(Icon.CHECK2,
-					"Abweichungen als Ok markieren",
-					"Schreibt @trackingAcceptedAt fuer den aktuell angezeigten Diff.",
+					"Acknowledge differences",
+					"Stores @trackingAcceptedAt for the currently displayed diff.",
 					action,
 					Tool.ActionType.ONCLICK,
 					Tool.CATEGORY_EDIT));

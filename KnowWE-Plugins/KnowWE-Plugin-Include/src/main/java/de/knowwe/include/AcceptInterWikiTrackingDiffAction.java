@@ -7,15 +7,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.denkbares.strings.Strings;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-
-import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Stores {@code @trackingAcceptedAt} for the current InterWikiImport tracking markup.
@@ -26,23 +22,7 @@ public class AcceptInterWikiTrackingDiffAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		if (Strings.isBlank(sectionId)) {
-			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: " + Attributes.SECTION_ID);
-			return;
-		}
-
-		Section<?> section = Sections.get(sectionId);
-		if (section == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Section not found: " + sectionId);
-			return;
-		}
-
-		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
-		if (markup == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND, "InterWikiImport markup not found for section: " + sectionId);
-			return;
-		}
+		Section<InterWikiImportMarkup> markup = getSection(context, InterWikiImportMarkup.class);
 
 		if (markup.get().getMode(markup) != InterWikiImportMarkup.Mode.TRACKING) {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "Action is only available for @mode: tracking.");

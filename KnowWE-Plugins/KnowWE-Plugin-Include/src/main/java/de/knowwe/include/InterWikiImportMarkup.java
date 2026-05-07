@@ -531,8 +531,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 											+ "if(!e)return;"
 											+ "var show=(e.style.display==='none');"
 											+ "e.style.display=show?'block':'none';"
-											+ "this.textContent=show?'Aktuelle Abweichungen ausblenden':'Aktuelle Abweichungen anzeigen';")
-							.content("Aktuelle Abweichungen anzeigen"));
+											+ "this.textContent=show?'Hide current differences':'Show current differences';")
+							.content("Show current differences"));
 					trackingStatus.diffOptional().ifPresent(diff -> result.append(
 							new HtmlElement("div")
 									.attributes("id", diffContainerId, "style", "display:none;")
