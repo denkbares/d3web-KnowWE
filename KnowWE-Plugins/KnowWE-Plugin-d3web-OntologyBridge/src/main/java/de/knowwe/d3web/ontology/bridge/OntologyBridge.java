@@ -6,6 +6,9 @@ package de.knowwe.d3web.ontology.bridge;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +39,16 @@ public class OntologyBridge {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyBridge.class);
 
 	private static final MultiMap<String, String> mapping = new N2MMap<>();
+
+	/**
+	 * Throttles {@link #logBridgeFailure} so a single root cause does not flood the log.
+	 * Keyed on (reason, callerSectionId, mappedTargetId); the value is the timestamp of the last
+	 * verbose log. Within the throttle window we only count suppressions; the next verbose log
+	 * after the window includes the suppression count.
+	 */
+	private static final long LOG_THROTTLE_MILLIS = 60_000L;
+	private static final ConcurrentMap<String, AtomicLong> lastLogMillisByKey = new ConcurrentHashMap<>();
+	private static final ConcurrentMap<String, AtomicLong> suppressedSinceLastLog = new ConcurrentHashMap<>();
 
 	public static void registerBridge(String d3webCompileSectionID, String ontologyCompileSectionID) {
 		mapping.put(d3webCompileSectionID, ontologyCompileSectionID);
@@ -79,7 +92,6 @@ public class OntologyBridge {
 	 * @param section the section to get the bridged ontology for
 	 * @return the ontology compiler bridged for the given section
 	 */
-	@NotNull
 	public static OntologyCompiler getOntology(Section<?> section) {
 		final D3webCompiler compiler = D3webUtils.getCompiler(section);
 		if (compiler == null) return null;
@@ -199,18 +211,38 @@ public class OntologyBridge {
 	 */
 	private static void logBridgeFailure(String reason, Object caller, String callerSectionId, String mappedTargetId) {
 		try {
+			String throttleKey = reason + '|' + callerSectionId + '|' + mappedTargetId;
+			long now = System.currentTimeMillis();
+			AtomicLong lastLog = lastLogMillisByKey.computeIfAbsent(throttleKey, k -> new AtomicLong(0L));
+			long previous = lastLog.get();
+			if (now - previous < LOG_THROTTLE_MILLIS) {
+				suppressedSinceLastLog.computeIfAbsent(throttleKey, k -> new AtomicLong(0L)).incrementAndGet();
+				return;
+			}
+			if (!lastLog.compareAndSet(previous, now)) {
+				// another thread just logged — count this as suppressed
+				suppressedSinceLastLog.computeIfAbsent(throttleKey, k -> new AtomicLong(0L)).incrementAndGet();
+				return;
+			}
+			long suppressedCount = suppressedSinceLastLog.computeIfAbsent(throttleKey, k -> new AtomicLong(0L)).getAndSet(0L);
+
 			Thread thread = Thread.currentThread();
 			boolean isCompileThread = CompilerManager.isCompileThread();
 			Section<?> callerSection = Sections.get(callerSectionId);
 			Section<?> mappedSection = mappedTargetId == null ? null : Sections.get(mappedTargetId);
 
 			StringBuilder sb = new StringBuilder();
-			sb.append("OntologyBridge failure: ").append(reason).append('\n');
+			sb.append("OntologyBridge failure: ").append(reason);
+			if (suppressedCount > 0) {
+				sb.append(" [suppressed ").append(suppressedCount)
+						.append(" similar within last ").append(LOG_THROTTLE_MILLIS / 1000).append("s]");
+			}
+			sb.append('\n');
 			sb.append("  caller             = ").append(describeCompiler(caller)).append('\n');
 			sb.append("  caller sectionId   = ").append(callerSectionId)
-					.append(" (live=").append(callerSection != null).append(")\n");
+					.append(" (").append(describeSection(callerSection)).append(")\n");
 			sb.append("  mapped targetId    = ").append(mappedTargetId)
-					.append(" (live=").append(mappedSection != null).append(")\n");
+					.append(" (").append(describeSection(mappedSection)).append(")\n");
 			sb.append("  thread             = ").append(thread.getName())
 					.append(" (compileThread=").append(isCompileThread).append(")\n");
 			sb.append("  mapping size       = ").append(mapping.size()).append('\n');
@@ -218,14 +250,12 @@ public class OntologyBridge {
 			CompilerManager cm = caller instanceof Compiler c ? c.getCompilerManager() : null;
 			if (cm != null) {
 				sb.append("  compilerManager.isCompiling = ").append(cm.isCompiling()).append('\n');
-				sb.append("  active D3webCompilers       = ");
+				sb.append("  active D3webCompilers       =\n");
 				cm.getCompilers().stream().filter(D3webCompiler.class::isInstance)
-						.forEach(c -> sb.append(describeCompiler(c)).append(' '));
-				sb.append('\n');
-				sb.append("  active OntologyCompilers    = ");
+						.forEach(c -> appendCompilerVsSection(sb, (Compiler) c, callerSection));
+				sb.append("  active OntologyCompilers    =\n");
 				cm.getCompilers().stream().filter(OntologyCompiler.class::isInstance)
-						.forEach(c -> sb.append(describeCompiler(c)).append(' '));
-				sb.append('\n');
+						.forEach(c -> appendCompilerVsSection(sb, (Compiler) c, mappedSection));
 			}
 			LOGGER.error(sb.toString(), new Throwable("OntologyBridge failure stacktrace (informational)"));
 		}
@@ -239,16 +269,68 @@ public class OntologyBridge {
 		if (o == null) return "null";
 		if (o instanceof Compiler c) {
 			String name = Compilers.getCompilerName(c);
-			String secId;
+			String secDesc;
 			try {
-				secId = c instanceof PackageCompiler pc ? pc.getCompileSection().getID() : "?";
+				secDesc = c instanceof PackageCompiler pc ? describeSection(pc.getCompileSection()) : "?";
 			}
 			catch (Throwable t) {
-				secId = "?";
+				secDesc = "?";
 			}
 			return c.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(c))
-					+ "[" + name + ", section=" + secId + "]";
+					+ "[" + name + ", section=" + secDesc + "]";
 		}
 		return o.toString();
+	}
+
+	/**
+	 * Renders a section as "id@<identityHash>(live=<bool>)" so we can tell apart different Java
+	 * instances that share the same logical ID (Section IDs can be re-bound to a new instance via
+	 * {@code Section.unregisterOrUpdateSectionID} after an article rebuild).
+	 */
+	private static String describeSection(Section<?> section) {
+		if (section == null) return "null";
+		String id;
+		try {
+			id = section.getID();
+		}
+		catch (Throwable t) {
+			id = "?";
+		}
+		return id + "@" + Integer.toHexString(System.identityHashCode(section))
+				+ "(live=" + Sections.isLive(section) + ")";
+	}
+
+	/**
+	 * Per-compiler diagnostic line that compares the compile-section the compiler holds against the
+	 * section the bridge actually wants to find. Reveals stale-instance issues where the IDs match
+	 * but the Java identity does not.
+	 */
+	private static void appendCompilerVsSection(StringBuilder sb, Compiler compiler, Section<?> bridgeTargetSection) {
+		sb.append("    ").append(describeCompiler(compiler));
+		if (bridgeTargetSection == null || !(compiler instanceof PackageCompiler pc)) {
+			sb.append('\n');
+			return;
+		}
+		try {
+			Section<?> compilerSection = pc.getCompileSection();
+			boolean identityMatch = compilerSection == bridgeTargetSection;
+			boolean idMatch = compilerSection.getID().equals(bridgeTargetSection.getID());
+			boolean articleMatch = compilerSection.getArticle() == bridgeTargetSection.getArticle();
+			boolean isCompilingResult;
+			try {
+				isCompilingResult = compiler.isCompiling(bridgeTargetSection);
+			}
+			catch (Throwable t) {
+				isCompilingResult = false;
+			}
+			sb.append(" vs bridgeTarget: identityMatch=").append(identityMatch)
+					.append(", idMatch=").append(idMatch)
+					.append(", articleMatch=").append(articleMatch)
+					.append(", isCompiling=").append(isCompilingResult);
+		}
+		catch (Throwable t) {
+			sb.append(" (comparison failed: ").append(t).append(")");
+		}
+		sb.append('\n');
 	}
 }

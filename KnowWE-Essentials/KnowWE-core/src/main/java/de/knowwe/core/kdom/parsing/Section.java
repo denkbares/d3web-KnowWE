@@ -435,6 +435,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Returns the unique ID of this section.
 	 */
+	@NotNull
 	public String getID() {
 		if (!hasID()) {
 			intID = generateAndRegisterSectionID(this);
