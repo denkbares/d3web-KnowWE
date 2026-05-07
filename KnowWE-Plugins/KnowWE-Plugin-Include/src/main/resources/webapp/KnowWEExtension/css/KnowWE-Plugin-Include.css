@@ -68,3 +68,17 @@
     /* do not show icon in TOC */
 	display: none;
 }
+
+.tracking-init-button {
+	background-color: #3873b5;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	padding: 0.5em 1em;
+	font-size: 0.95em;
+	cursor: pointer;
+}
+
+.tracking-init-button:hover {
+	background-color: #2c5d94;
+}

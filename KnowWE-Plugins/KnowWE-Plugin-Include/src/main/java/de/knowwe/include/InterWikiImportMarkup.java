@@ -26,6 +26,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -33,13 +34,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpSession;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
+import com.denkbares.knowwe.textdiff.TextDiff;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -48,6 +53,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.elements.A;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
@@ -270,10 +276,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		Section<?> closingTag = $(section).children().getLast();
 		if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return false;
-		String existingReplacement = replacements.getOrDefault(closingTag.getID(), closingTag.getText());
 		replacements.put(closingTag.getID(),
-				Strings.trimRight(existingReplacement)
-						+ "\n@" + TRACKING_ACCEPTED_AT_ANNOTATION + ": " + acceptedAt
+				"\n@" + TRACKING_ACCEPTED_AT_ANNOTATION + ": " + acceptedAt
 						+ "\n" + Strings.trimLeft(closingTag.getText()));
 		return true;
 	}
@@ -384,7 +388,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		// Merge with a possibly existing replacement for this closing tag (e.g. @latestChange update).
 		String existingReplacement = replacements.getOrDefault(closingTag.getID(), closingTag.getText());
 		String initializedText = Strings.trimRight(existingReplacement)
-				+ "\n"
+				+ "\n\n"
 				+ Strings.trimRight(referenceText)
 				+ "\n";
 		replacements.put(closingTag.getID(), initializedText);
@@ -450,7 +454,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			renderHeader(markup, user, result);
 			renderLastChangesMessage(markup, result);
 			if (markup.get().isTrackingMode(markup)) {
-				renderTracking(markup, result);
+				renderTracking(markup, user, result);
 			}
 			else {
 				renderImport(markup, user, result);
@@ -465,7 +469,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
 			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 			if (markup == null) return true;
-			if (markup.get().isTrackingMode(markup)) return false;
 			try {
 				if (markup.get().getWikiAttachment(markup) == null) {
 					return true;
@@ -479,7 +482,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			return getLock(markup).isLocked();
 		}
 
-		private void renderTracking(Section<InterWikiImportMarkup> markup, RenderResult result) {
+		private void renderTracking(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
 			String path = markup.get().getWikiAttachmentPath(markup);
 			InterWikiTrackingService.TrackingStatus trackingStatus;
 			try {
@@ -492,23 +495,53 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 			if (trackingStatus.state() == InterWikiTrackingService.State.MISSING_REFERENCE) {
 				result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
+				return;
+			}
+
+			result.append(new HtmlElement("p").clazz("note").content(
+					"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ")."));
+
+			if (trackingStatus.canInitializeFromReference() && KnowWEUtils.canWrite(markup, user)) {
+				renderInitializationButton(markup, result);
+				return;
+			}
+
+			if (trackingStatus.localComparisonAvailable()) {
+				renderTrackingComparisonStatus(markup, trackingStatus, user, result);
 			}
 			else {
-				result.append(new HtmlElement("p").clazz("note").content(
-						"Tracking mode: reference attachment is updated but not rendered as imported content (" + path + ")."));
-				if (trackingStatus.localComparisonAvailable()) {
-					renderTrackingComparisonStatus(markup, trackingStatus, result);
-				}
-				else {
-					result.append(new HtmlElement("p").clazz("warning")
-							.content("Tracking mode: local comparison range is currently not available."));
-				}
+				result.append(new HtmlElement("p").clazz("warning")
+						.content("Tracking mode: local comparison range is currently not available."));
 			}
+		}
+
+		private void renderInitializationButton(Section<InterWikiImportMarkup> markup, RenderResult result) {
+			result.append(new HtmlElement("p").clazz("note")
+					.content("Tracking mode: local copy is empty. Insert the current reference text from the source wiki below the markup as a starting point."));
+			String action = "(function(){"
+					+ "jq$.ajax({"
+					+ "url: KNOWWE.core.util.getURL({action:'InitInterWikiTrackingLocalCopyAction',"
+					+ Attributes.SECTION_ID + ":'" + markup.getID() + "'}),"
+					+ "type:'post',"
+					+ "cache:false"
+					+ "}).done(function(){window.location.reload();})"
+					+ ".fail(function(xhr){"
+					+ "KNOWWE.notification.error(null,"
+					+ "xhr.responseText || 'Unable to initialize local copy.',"
+					+ "'tracking-init',10000);"
+					+ "});"
+					+ "})();";
+			result.append(new HtmlElement("button")
+					.attributes("type", "button",
+							"class", "tracking-init-button",
+							"onclick", action)
+					.content("Insert reference text below"));
 		}
 
 		private void renderTrackingComparisonStatus(
 				Section<InterWikiImportMarkup> markup,
 				InterWikiTrackingService.TrackingStatus trackingStatus,
+				UserContext user,
 				RenderResult result) {
 			switch (trackingStatus.state()) {
 				case EQUAL -> result.append(new HtmlElement("p").clazz("success")
@@ -518,7 +551,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 							.content("Tracking mode: local content differs from the reference."));
 					result.append(new HtmlElement("p").clazz("warning")
 							.content("Warning: differences are not acknowledged yet."));
-					trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(DiffHtmlRenderer.renderTextDiff(diff)));
+					trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(renderTrackingDiff(diff, user)));
 				}
 				case ACCEPTED_DIFF -> {
 					result.append(new HtmlElement("p").clazz("note")
@@ -536,11 +569,30 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					trackingStatus.diffOptional().ifPresent(diff -> result.append(
 							new HtmlElement("div")
 									.attributes("id", diffContainerId, "style", "display:none;")
-									.children(new HtmlNode(DiffHtmlRenderer.renderTextDiff(diff)))));
+									.children(new HtmlNode(renderTrackingDiff(diff, user)))));
 				}
 				default -> result.append(new HtmlElement("p").clazz("note")
 						.content("Tracking mode: status currently unavailable."));
 			}
+		}
+
+		private String renderTrackingDiff(TextDiff diff, UserContext user) {
+			String theme = getDiffTheme(user);
+			return DiffHtmlRenderer.renderTextDiff(diff)
+					.replaceFirst("<knowwe-text-diff ", "<knowwe-text-diff data-theme=\"" + theme + "\" ");
+		}
+
+		// Mirrors DefaultLogoAction#getLogoPath: derive light/dark from the user's "DisplayMode"
+		// preference, defaulting to light when no preference is available.
+		private static String getDiffTheme(UserContext user) {
+			HttpSession session = user.getSession();
+			if (session == null) return "light";
+			Object prefs = session.getAttribute("prefs");
+			if (prefs instanceof Map<?, ?> map) {
+				Object mode = map.get("DisplayMode");
+				if (mode != null && "dark-mode".equals(mode.toString())) return "dark";
+			}
+			return "light";
 		}
 
 		private void renderImport(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {

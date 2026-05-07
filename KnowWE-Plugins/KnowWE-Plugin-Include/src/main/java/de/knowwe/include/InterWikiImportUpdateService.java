@@ -207,14 +207,6 @@ public final class InterWikiImportUpdateService {
 			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)) {
 				markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
 			}
-			try {
-				// Keep initialization in the same replacement batch to avoid extra compile cycles per update.
-				markup.get().collectTrackingInitializationReplacement(markup, replacements);
-			}
-			catch (IOException e) {
-				LOGGER.warn("Failed to initialize local tracking copy for {}: {}: {}",
-						markup.getID(), e.getClass().getSimpleName(), e.getMessage());
-			}
 			updatedImports++;
 		}
 		if (!replacements.isEmpty()) {

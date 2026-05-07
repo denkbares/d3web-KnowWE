@@ -100,6 +100,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="InitInterWikiTrackingLocalCopyAction">
+		<parameter id="class" value="de.knowwe.include.InitInterWikiTrackingLocalCopyAction" />
+		<parameter id="name" value="InitInterWikiTrackingLocalCopyAction" />
+		<parameter id="description" value="Action InitInterWikiTrackingLocalCopyAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="ImportedHeaderRenderer">
 		<parameter id="class" value="de.knowwe.include.ImportedHeaderRenderer" />
 		<parameter id="name" value="ImportedHeaderRenderer" />

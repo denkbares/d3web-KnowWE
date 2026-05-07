@@ -36,12 +36,16 @@ final class InterWikiTrackingService {
 		// Missing local comparison area is treated like empty content for diff generation,
 		// while localComparisonAvailable keeps this fact visible for renderer decisions.
 		String localTextForCompare = localComparisonText == null ? "" : localComparisonText;
+		boolean referenceBlank = Strings.isBlank(referenceText);
+		boolean localBlank = Strings.isBlank(localTextForCompare);
 
 		if (referenceText == null) {
 			return new TrackingStatus(
 					State.MISSING_REFERENCE,
 					false,
 					localComparisonAvailable,
+					true,
+					localBlank,
 					null,
 					null,
 					null);
@@ -53,6 +57,8 @@ final class InterWikiTrackingService {
 					State.EQUAL,
 					false,
 					localComparisonAvailable,
+					referenceBlank,
+					localBlank,
 					null,
 					markup.get().getTrackingAcceptedAt(markup),
 					markup.get().getTrackingReferenceLastModified(markup));
@@ -69,6 +75,8 @@ final class InterWikiTrackingService {
 				warningActive ? State.UNACCEPTED_DIFF : State.ACCEPTED_DIFF,
 				warningActive,
 				localComparisonAvailable,
+				referenceBlank,
+				localBlank,
 				new TextDiff(referenceText, localTextForCompare),
 				acceptedAt,
 				referenceLastModified);
@@ -92,12 +100,22 @@ final class InterWikiTrackingService {
 			State state,
 			boolean warningActive,
 			boolean localComparisonAvailable,
+			boolean referenceBlank,
+			boolean localBlank,
 			@Nullable TextDiff diff,
 			@Nullable Instant trackingAcceptedAt,
 			@Nullable Instant referenceLastModified
 	) {
 		Optional<TextDiff> diffOptional() {
 			return Optional.ofNullable(diff);
+		}
+
+		/**
+		 * True if the local comparison area is empty and the reference attachment has content
+		 * — the situation where local copy can be initialized from the source wiki.
+		 */
+		boolean canInitializeFromReference() {
+			return localComparisonAvailable && localBlank && !referenceBlank;
 		}
 	}
 }
