@@ -92,6 +92,38 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AcceptInterWikiTrackingDiffAction">
+		<parameter id="class" value="de.knowwe.include.AcceptInterWikiTrackingDiffAction" />
+		<parameter id="name" value="AcceptInterWikiTrackingDiffAction" />
+		<parameter id="description" value="Action AcceptInterWikiTrackingDiffAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="InitInterWikiTrackingLocalCopyAction">
+		<parameter id="class" value="de.knowwe.include.InitInterWikiTrackingLocalCopyAction" />
+		<parameter id="name" value="InitInterWikiTrackingLocalCopyAction" />
+		<parameter id="description" value="Action InitInterWikiTrackingLocalCopyAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SwitchInterWikiTrackingToReferenceAction">
+		<parameter id="class" value="de.knowwe.include.SwitchInterWikiTrackingToReferenceAction" />
+		<parameter id="name" value="SwitchInterWikiTrackingToReferenceAction" />
+		<parameter id="description" value="Action SwitchInterWikiTrackingToReferenceAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RefreshInterWikiImportAction">
+		<parameter id="class" value="de.knowwe.include.RefreshInterWikiImportAction" />
+		<parameter id="name" value="RefreshInterWikiImportAction" />
+		<parameter id="description" value="Action RefreshInterWikiImportAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="ImportedHeaderRenderer">
 		<parameter id="class" value="de.knowwe.include.ImportedHeaderRenderer" />
 		<parameter id="name" value="ImportedHeaderRenderer" />

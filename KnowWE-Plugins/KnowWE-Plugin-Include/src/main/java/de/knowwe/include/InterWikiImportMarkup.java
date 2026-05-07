@@ -26,18 +26,25 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpSession;
+
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
+import com.denkbares.knowwe.textdiff.TextDiff;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -46,7 +53,13 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.A;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.HtmlNode;
+import de.knowwe.core.kdom.rendering.elements.Span;
+import de.knowwe.core.kdom.rendering.elements.TextNode;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.tools.HelpToolProvider;
@@ -77,8 +90,10 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String PAGE_ANNOTATION = "page";
 	private static final String SECTION_ANNOTATION = "section";
 	private static final String COMPILE_ANNOTATION = "compile";
+	private static final String MODE_ANNOTATION = "mode";
 	private static final String VALIDATION_MODE_ANNOTATION = "validationMode";
 	private static final String LATEST_CHANGE_ANNOTATION = "latestChange";
+	private static final String TRACKING_ACCEPTED_AT_ANNOTATION = "trackingAcceptedAt";
 
 	private static final InterWikiImportUpdateService UPDATE_SERVICE = new InterWikiImportUpdateService();
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
@@ -87,6 +102,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, false);
 		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, new TimeStampType());
 		MARKUP.addAnnotation(COMPILE_ANNOTATION, false, "true", "false");
+		MARKUP.addAnnotation(MODE_ANNOTATION, false, "import", "tracking");
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
 		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
 		MARKUP.addAnnotation(WIKI_ANNOTATION, true);
@@ -94,6 +110,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
 		MARKUP.addAnnotation(VALIDATION_MODE_ANNOTATION, false, TermCompiler.ReferenceValidationMode.class);
 		MARKUP.addAnnotation(LATEST_CHANGE_ANNOTATION, false);
+		MARKUP.addAnnotation(TRACKING_ACCEPTED_AT_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
 		UPDATE_SERVICE.initialize();
 	}
@@ -141,6 +158,19 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return DefaultMarkupType.getAnnotation(section, SECTION_ANNOTATION);
 	}
 
+	public Mode getMode(Section<InterWikiImportMarkup> section) {
+		String mode = Strings.trim(DefaultMarkupType.getAnnotation(section, MODE_ANNOTATION));
+		if ("tracking".equalsIgnoreCase(mode)) {
+			return Mode.TRACKING;
+		}
+		return Mode.IMPORT;
+	}
+
+	public boolean isTrackingMode(Section<?> markupOrSuccessor) {
+		Section<InterWikiImportMarkup> markup = $(markupOrSuccessor).closest(InterWikiImportMarkup.class).getFirst();
+		return markup != null && getMode(markup) == Mode.TRACKING;
+	}
+
 	@Override
 	public @Nullable WikiAttachment getCompiledAttachment(Section<? extends AttachmentCompileType> section) throws IOException {
 		if (isCompilingTheAttachment(section)) {
@@ -151,11 +181,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	@Override
 	public String getCompiledAttachmentPath(Section<? extends AttachmentCompileType> section) {
+		if (isTrackingMode(section)) return null;
 		return $(section).closest(AttachmentUpdateMarkup.class).mapFirst(this::getWikiAttachmentPath);
 	}
 
 	@Override
 	public boolean isCompilingTheAttachment(Section<? extends AttachmentCompileType> section) {
+		if (isTrackingMode(section)) return false;
 		return !"false".equals(DefaultMarkupType.getAnnotation(section, COMPILE_ANNOTATION));
 	}
 
@@ -235,6 +267,21 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 	}
 
+	boolean collectTrackingAcceptedAtReplacement(Section<InterWikiImportMarkup> section, Instant acceptedAt, Map<String, String> replacements) {
+		Section<?> acceptedAtContent = DefaultMarkupType.getAnnotationContentSection(section, TRACKING_ACCEPTED_AT_ANNOTATION);
+		if (acceptedAtContent != null) {
+			replacements.put(acceptedAtContent.getID(), acceptedAt.toString());
+			return true;
+		}
+
+		Section<?> closingTag = $(section).children().getLast();
+		if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return false;
+		replacements.put(closingTag.getID(),
+				"\n@" + TRACKING_ACCEPTED_AT_ANNOTATION + ": " + acceptedAt
+						+ "\n" + Strings.trimLeft(closingTag.getText()));
+		return true;
+	}
+
 	boolean shouldUpdateLatestChange(Section<InterWikiImportMarkup> section, boolean attachmentChanged) {
 		return getSectionName(section) == null || attachmentChanged;
 	}
@@ -284,6 +331,132 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 	}
 
+	@Nullable
+	String getTrackingReferenceText(Section<InterWikiImportMarkup> section) throws IOException {
+		WikiAttachment attachment = getWikiAttachment(section);
+		if (attachment == null) return null;
+		return Streams.getTextAndClose(attachment.getInputStream());
+	}
+
+	@Nullable
+	Instant getTrackingReferenceLastModified(Section<InterWikiImportMarkup> section) throws IOException {
+		WikiAttachment attachment = getWikiAttachment(section);
+		if (attachment == null || attachment.getDate() == null) return null;
+		return attachment.getDate().toInstant();
+	}
+
+	@Nullable
+	Instant getTrackingAcceptedAt(Section<InterWikiImportMarkup> section) {
+		String acceptedAt = DefaultMarkupType.getAnnotation(section, TRACKING_ACCEPTED_AT_ANNOTATION);
+		return InterWikiChanges.parseInstant(acceptedAt);
+	}
+
+	@Nullable
+	String getTrackingLocalComparisonText(Section<InterWikiImportMarkup> section) {
+		int[] range = getLocalComparisonRange(section);
+		if (range == null) return null;
+		return section.getArticle().getText().substring(range[0], range[1]);
+	}
+
+	private int[] getLocalComparisonRange(Section<InterWikiImportMarkup> section) {
+		Article article = section.getArticle();
+		if (article == null) return null;
+		String articleText = article.getText();
+		if (articleText == null) return null;
+
+		int sectionStart = section.getOffsetInArticle();
+		int sectionEnd = sectionStart + section.getTextLength();
+
+		OptionalInt nextInterWikiImportStart = $(article).successor(InterWikiImportMarkup.class)
+				.stream()
+				.mapToInt(Section::getOffsetInArticle)
+				.filter(offset -> offset > sectionStart)
+				.min();
+
+		int compareStart = Math.max(0, Math.min(sectionEnd, articleText.length()));
+		int compareEnd = Math.max(compareStart, Math.min(nextInterWikiImportStart.orElse(articleText.length()), articleText.length()));
+		return new int[] { compareStart, compareEnd };
+	}
+
+	boolean collectSwitchToReferenceReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
+		String referenceText = getTrackingReferenceText(section);
+		if (referenceText == null) return false;
+
+		int[] range = getLocalComparisonRange(section);
+		if (range == null) return false;
+
+		Article article = section.getArticle();
+		String articleText = article.getText();
+		String newArticleText = articleText.substring(0, range[0])
+				+ "\n\n" + Strings.trimRight(referenceText) + "\n"
+				+ articleText.substring(range[1]);
+		replacements.put(article.getRootSection().getID(), newArticleText);
+		return true;
+	}
+
+	void refreshNow(Section<InterWikiImportMarkup> section, boolean force) {
+		UPDATE_SERVICE.pollSingleMarkup(section, force);
+	}
+
+	static String buildRefreshScript(String sectionId, boolean force) {
+		return "(function(){"
+				+ "jq$.ajax({"
+				+ "url: KNOWWE.core.util.getURL({action:'RefreshInterWikiImportAction',"
+				+ Attributes.SECTION_ID + ":'" + sectionId + "',"
+				+ "force:'" + force + "'}),"
+				+ "type:'post',"
+				+ "cache:false"
+				+ "}).done(function(){window.location.reload();})"
+				+ ".fail(function(xhr){"
+				+ "KNOWWE.notification.error(null,"
+				+ "xhr.responseText || 'Unable to refresh InterWikiImport.',"
+				+ "'iwii-refresh',5000);"
+				+ "});"
+				+ "})();";
+	}
+
+	void refreshTrackingMessages(Section<InterWikiImportMarkup> section) {
+		Messages.clearMessages(section, TrackingMessages.class);
+		if (getMode(section) != Mode.TRACKING) return;
+		try {
+			InterWikiTrackingService.TrackingStatus status = InterWikiTrackingService.getTrackingStatus(section);
+			if (status.warningActive()) {
+				Messages.storeMessage(section, TrackingMessages.class,
+						Messages.warning("InterWikiImport tracking differences are not acknowledged yet."));
+			}
+		}
+		catch (IOException e) {
+			Messages.storeMessage(section, TrackingMessages.class,
+					Messages.warning("Unable to evaluate InterWikiImport tracking status: " + e.getMessage()));
+		}
+	}
+
+	/** Marker source so tracking messages can be cleared independently from other markup messages. */
+	private static final class TrackingMessages {
+	}
+
+	void collectTrackingInitializationReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
+		if (getMode(section) != Mode.TRACKING) return;
+
+		String referenceText = getTrackingReferenceText(section);
+		if (Strings.isBlank(referenceText)) return;
+
+		String localComparisonText = getTrackingLocalComparisonText(section);
+		// Initialize only when the local area is still empty to protect user-maintained local content.
+		if (localComparisonText == null || Strings.isNotBlank(localComparisonText)) return;
+
+		Section<?> closingTag = $(section).children().getLast();
+		if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return;
+
+		// Merge with a possibly existing replacement for this closing tag (e.g. @latestChange update).
+		String existingReplacement = replacements.getOrDefault(closingTag.getID(), closingTag.getText());
+		String initializedText = Strings.trimRight(existingReplacement)
+				+ "\n\n"
+				+ Strings.trimRight(referenceText)
+				+ "\n";
+		replacements.put(closingTag.getID(), initializedText);
+	}
+
 	@Override
 	protected long getIntervalMillis(Section<? extends AttachmentUpdateMarkup> section) {
 		return Long.MAX_VALUE;
@@ -318,6 +491,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			if (waitForUpdate) {
 				Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 				if (markup != null) {
+					if (markup.get().isTrackingMode(markup)) return;
 					String path = markup.get().getWikiAttachmentPath(markup);
 					ArticleManager articleManager = user.getArticleManager();
 					try {
@@ -342,7 +516,12 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 			renderHeader(markup, user, result);
 			renderLastChangesMessage(markup, result);
-			renderImport(markup, user, result);
+			if (markup.get().isTrackingMode(markup)) {
+				renderTracking(markup, user, result);
+			}
+			else {
+				renderImport(markup, user, result);
+			}
 
 			if (isFramed()) {
 				renderAnnotations(markup, $(markup).successor(AnnotationType.class).asList(), user, result);
@@ -366,11 +545,160 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			return getLock(markup).isLocked();
 		}
 
+		private void renderTracking(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
+			InterWikiTrackingService.TrackingStatus trackingStatus;
+			try {
+				trackingStatus = InterWikiTrackingService.getTrackingStatus(markup);
+			}
+			catch (IOException e) {
+				result.append(new HtmlElement("p").clazz("warning").content("Unable to read tracking reference attachment: " + e.getMessage()));
+				return;
+			}
+
+			if (trackingStatus.state() == InterWikiTrackingService.State.MISSING_REFERENCE) {
+				result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
+				return;
+			}
+
+			if (trackingStatus.canInitializeFromReference() && KnowWEUtils.canWrite(markup, user)) {
+				renderInitializationButton(markup, result);
+				return;
+			}
+
+			if (trackingStatus.localComparisonAvailable()) {
+				renderTrackingComparisonStatus(markup, trackingStatus, user, result);
+			}
+			else {
+				result.append(new HtmlElement("p").clazz("warning")
+						.content("Tracking mode: local comparison range is currently not available."));
+			}
+		}
+
+		private void renderInitializationButton(Section<InterWikiImportMarkup> markup, RenderResult result) {
+			result.append(new HtmlElement("p").clazz("note")
+					.content("Tracking mode: local copy is empty. Insert the current reference text from the source wiki below the markup as a starting point."));
+			result.append(new HtmlElement("button")
+					.attributes("type", "button",
+							"class", "tracking-action-button",
+							"onclick", buildTrackingActionScript(
+									"InitInterWikiTrackingLocalCopyAction", markup.getID(),
+									"tracking-init", "Unable to initialize local copy.", null))
+					.content("Insert reference text below"));
+		}
+
+		private void renderDiffActionButtons(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result,
+				boolean canAcknowledge, @Nullable String toggleDiffContainerId) {
+			boolean canWrite = KnowWEUtils.canWrite(markup, user);
+			if (!canWrite && toggleDiffContainerId == null) return;
+			HtmlElement container = new HtmlElement("div").clazz("tracking-action-buttons");
+			if (toggleDiffContainerId != null) {
+				container.children(new HtmlElement("button")
+						.attributes("type", "button",
+								"class", "tracking-action-button",
+								"onclick", "var e=document.getElementById('" + toggleDiffContainerId + "');"
+										+ "if(!e)return;"
+										+ "var show=(e.style.display==='none');"
+										+ "e.style.display=show?'block':'none';"
+										+ "this.textContent=show?'Hide current differences':'Show current differences';")
+						.content("Show current differences"));
+			}
+			if (!canWrite) {
+				result.append(container);
+				return;
+			}
+			if (canAcknowledge) {
+				container.children(new HtmlElement("button")
+						.attributes("type", "button",
+								"class", "tracking-action-button",
+								"onclick", buildTrackingActionScript(
+										"AcceptInterWikiTrackingDiffAction", markup.getID(),
+										"tracking-accept", "Unable to acknowledge tracking differences.", null))
+						.content("Acknowledge differences"));
+			}
+			container.children(new HtmlElement("button")
+					.attributes("type", "button",
+							"class", "tracking-action-button",
+							"onclick", buildTrackingActionScript(
+									"SwitchInterWikiTrackingToReferenceAction", markup.getID(),
+									"tracking-switch", "Unable to switch to reference content.",
+									"Replace the local content below the markup with the current reference text from the source wiki? Local edits in this range will be lost."))
+					.content("Switch to changes from reference"));
+			result.append(container);
+		}
+
+		private static String buildTrackingActionScript(String action, String sectionId, String notificationKey, String fallbackError, @Nullable String confirmMessage) {
+			String prefix = confirmMessage == null
+					? ""
+					: "if(!confirm('" + confirmMessage.replace("\\", "\\\\").replace("'", "\\'") + "'))return;";
+			return "(function(){"
+					+ prefix
+					+ "jq$.ajax({"
+					+ "url: KNOWWE.core.util.getURL({action:'" + action + "',"
+					+ Attributes.SECTION_ID + ":'" + sectionId + "'}),"
+					+ "type:'post',"
+					+ "cache:false"
+					+ "}).done(function(){window.location.reload();})"
+					+ ".fail(function(xhr){"
+					+ "KNOWWE.notification.error(null,"
+					+ "xhr.responseText || '" + fallbackError + "',"
+					+ "'" + notificationKey + "',10000);"
+					+ "});"
+					+ "})();";
+		}
+
+		private void renderTrackingComparisonStatus(
+				Section<InterWikiImportMarkup> markup,
+				InterWikiTrackingService.TrackingStatus trackingStatus,
+				UserContext user,
+				RenderResult result) {
+			switch (trackingStatus.state()) {
+				case EQUAL -> result.append(new HtmlElement("p").clazz("success")
+						.content("Tracking mode: local content matches the reference."));
+				case UNACCEPTED_DIFF -> {
+					result.append(new HtmlElement("p").clazz("note")
+							.content("Tracking mode: local content differs from the reference."));
+					trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(renderTrackingDiff(diff, user)));
+					renderDiffActionButtons(markup, user, result, true, null);
+				}
+				case ACCEPTED_DIFF -> {
+					result.append(new HtmlElement("p").clazz("note")
+							.content("Tracking mode: local content differs from the reference (already acknowledged)."));
+					String diffContainerId = "tracking-diff-" + markup.getID();
+					renderDiffActionButtons(markup, user, result, false, diffContainerId);
+					trackingStatus.diffOptional().ifPresent(diff -> result.append(
+							new HtmlElement("div")
+									.attributes("id", diffContainerId, "style", "display:none;")
+									.children(new HtmlNode(renderTrackingDiff(diff, user)))));
+				}
+				default -> result.append(new HtmlElement("p").clazz("note")
+						.content("Tracking mode: status currently unavailable."));
+			}
+		}
+
+		private String renderTrackingDiff(TextDiff diff, UserContext user) {
+			String theme = getDiffTheme(user);
+			return DiffHtmlRenderer.renderTextDiff(diff)
+					.replaceFirst("<knowwe-text-diff ", "<knowwe-text-diff data-theme=\"" + theme + "\" ");
+		}
+
+		// Mirrors DefaultLogoAction#getLogoPath: derive light/dark from the user's "DisplayMode"
+		// preference, defaulting to light when no preference is available.
+		private static String getDiffTheme(UserContext user) {
+			HttpSession session = user.getSession();
+			if (session == null) return "light";
+			Object prefs = session.getAttribute("prefs");
+			if (prefs instanceof Map<?, ?> map) {
+				Object mode = map.get("DisplayMode");
+				if (mode != null && "dark-mode".equals(mode.toString())) return "dark";
+			}
+			return "light";
+		}
+
 		private void renderImport(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
 			String path = markup.get().getWikiAttachmentPath(markup);
 			Article article = user.getArticleManager().getArticle(path);
 			if (article == null) {
-				result.appendHtmlElement("span", "Included article not (yet) available", "class", "warning");
+				result.append(new Span("Included article not (yet) available").clazz("warning"));
 			}
 			else {
 				if (isFramed()) {
@@ -388,7 +716,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		private void renderLastChangesMessage(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			if (getLock(markup).isLocked()) {
-				result.appendHtmlElement("p", "Update currently ongoing...", "style", "color:green");
+				result.append(new HtmlElement("p").attributes("style", "color:green").content("Update currently ongoing..."));
 			}
 			else {
 				long lastRun = markup.get().timeSinceLastRun(markup);
@@ -405,21 +733,22 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				else {
 					message = "No check yet, click here to check now: ";
 				}
-				result.appendHtmlTag("p");
-				result.appendHtmlElement("span", message, "class", "include-message");
-				result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
-						"class", "include-refresh tooltipster", "title", "Check for changes");
-				result.appendHtml(Icon.REFRESH.toHtml());
-				result.appendHtmlTag("/a");
-				result.appendHtmlTag("/p");
+				result.append(new HtmlElement("p").children(
+						new Span(message).clazz("include-message"),
+						new A().attributes(
+										"onclick", buildRefreshScript(markup.getID(), false),
+										"class", "include-refresh tooltipster",
+										"title", "Check for changes")
+								.children(new HtmlNode(Icon.REFRESH.toHtml()))
+				));
 			}
 
 			if (DefaultMarkupType.getAnnotation(markup, INTERVAL_ANNOTATION) != null) {
-				result.appendHtmlElement("p",
-						"@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
-						+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
-						+ " minutes per source wiki.",
-						"class", "warning");
+				result.append(new HtmlElement("p")
+						.clazz("warning")
+						.content("@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
+								+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
+								+ " minutes per source wiki."));
 			}
 		}
 
@@ -435,29 +764,36 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					linkLabel += " - " + sectionName;
 				}
 
-				result.appendHtmlTag("h2");
-				result.append("Import from wiki ");
-				String shortenedUrl = url.toString().replaceAll("%23.+$", "");
-				result.appendHtmlElement("a", linkLabel, "href", shortenedUrl);
+					String shortenedUrl = url.toString().replaceAll("%23.+$", "");
+					HtmlElement header = new HtmlElement("h2").children(
+							new TextNode("Import from wiki "),
+							new A(linkLabel, shortenedUrl));
 
 				HelpToolProvider helpToolProvider = new HelpToolProvider();
 				if (helpToolProvider.hasTools(markup, user)) {
 					Tool[] tools = helpToolProvider.getTools(markup, user);
 					for (Tool tool : tools) {
-						result.appendHtmlTag("a", "title", tool.getDescription(), "class", "tooltipster help-tool", tool.getActionType() == Tool.ActionType.ONCLICK ? "onclick" : "href", tool.getAction());
-						result.appendHtml(tool.getIcon().toHtml());
-						result.appendHtmlTag("/a");
+						header.children(new A()
+								.attributes("title", tool.getDescription(),
+										"class", "tooltipster help-tool",
+										tool.getActionType() == Tool.ActionType.ONCLICK ? "onclick" : "href",
+										tool.getAction())
+								.children(new HtmlNode(tool.getIcon().toHtml())));
 					}
 				}
 
 				String action = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + markup.getID() + "', 'off')";
-				result.appendHtmlTag("a", "onclick", action, "class", "include-deactivate tooltipster",
-						"title", "Deactivate import");
-				result.appendHtml(Icon.TOGGLE_OFF.toHtml());
-				result.appendHtmlTag("/a");
-				result.appendHtmlTag("/h2");
+				header.children(new A()
+						.attributes("onclick", action, "class", "include-deactivate tooltipster", "title", "Deactivate import")
+						.children(new HtmlNode(Icon.TOGGLE_OFF.toHtml())));
+				result.append(header);
 			}
 		}
+	}
+
+	public enum Mode {
+		IMPORT,
+		TRACKING
 	}
 
 	private static class RegistrationScript extends DefaultGlobalCompiler.DefaultGlobalScript<InterWikiImportMarkup> {
@@ -466,14 +802,17 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			if (section.get().getUrl(section) == null) {
 				UPDATE_SERVICE.deregister(section);
+				Messages.clearMessages(section, TrackingMessages.class);
 				return;
 			}
 			UPDATE_SERVICE.register(section);
+			section.get().refreshTrackingMessages(section);
 		}
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			UPDATE_SERVICE.deregister(section);
+			Messages.clearMessages(section, TrackingMessages.class);
 		}
 	}
 }

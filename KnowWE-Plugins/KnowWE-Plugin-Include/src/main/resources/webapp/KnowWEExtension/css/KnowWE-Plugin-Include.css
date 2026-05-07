@@ -68,3 +68,24 @@
     /* do not show icon in TOC */
 	display: none;
 }
+
+.tracking-action-button {
+	background-color: #3873b5;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	padding: 0.5em 1em;
+	font-size: 0.95em;
+	cursor: pointer;
+}
+
+.tracking-action-button:hover {
+	background-color: #2c5d94;
+}
+
+.tracking-action-buttons {
+	display: flex;
+	gap: 0.5em;
+	margin-top: 0.5em;
+	flex-wrap: wrap;
+}

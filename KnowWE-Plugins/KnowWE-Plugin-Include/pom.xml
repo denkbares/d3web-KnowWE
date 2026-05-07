@@ -66,5 +66,9 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.denkbares</groupId>
+			<artifactId>KnowWE-Plugin-TextDiff</artifactId>
+		</dependency>
 	</dependencies>
 </project>

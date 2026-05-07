@@ -3,7 +3,6 @@ package de.knowwe.include;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -34,9 +33,9 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.action.Action;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.action.Action;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -86,6 +85,43 @@ public final class InterWikiImportUpdateService {
 	public void register(Section<InterWikiImportMarkup> markup) {
 		if (markup == null) return;
 		registeredMarkupIds.add(markup.getID());
+	}
+
+	/**
+	 * Polls a single markup on demand (used by the manual refresh button), reusing the same
+	 * {@code @latestChange}-aware pipeline as the periodic poller. With {@code force=true}
+	 * the request is sent with {@code latestChange=null}, so the source always returns the
+	 * current text — but the byte comparison in {@code updateAttachmentWithSourceText} still
+	 * prevents an unnecessary new attachment version when the content has not changed.
+	 */
+	public void pollSingleMarkup(Section<InterWikiImportMarkup> markup, boolean force) {
+		if (!Sections.isLive(markup)) return;
+		if (!AttachmentUpdateMarkup.isAutoUpdatingActive() && !force) return;
+		String wiki = InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup));
+		if (wiki.isBlank()) return;
+
+		ImportInfo snapshot = new ImportInfo(
+				markup.getID(),
+				wiki,
+				markup.get().getPageName(markup),
+				markup.get().getSectionName(markup),
+				force ? null : markup.get().getLatestChange(markup));
+
+		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
+			defaultArticleManager.awaitInitialization();
+		}
+
+		articleManager.open();
+		try {
+			PollResult result = pollSource(wiki, List.of(snapshot));
+			if (!result.updates().isEmpty()) {
+				processUpdates(result.updates());
+			}
+		}
+		finally {
+			articleManager.commit();
+		}
 	}
 
 	public void deregister(Section<InterWikiImportMarkup> markup) {
