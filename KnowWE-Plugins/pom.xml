@@ -58,7 +58,6 @@
 		<module>KnowWE-Plugin-QuartzScheduler</module>
 		<module>KnowWE-Plugin-SparqlEndpoint</module>
 		<module>KnowWE-Plugin-d3web-Rdf2Go</module>
-		<module>KnowWE-Plugin-TextDiff</module>
 	</modules>
 
 </project>
