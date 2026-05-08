@@ -168,6 +168,9 @@ fuer Stil-Isolation (analog zu `<knowwe-text-diff>`):
 - Ueber `webapp/templates/default/InfoContent.jsp` einen neuen Tab anhaengen — JSPWiki
   rendert Tabs ueber das `tabs`-Tag.
 - Tab-Inhalt laedt das HTML der Action via Lazy-Load (oder direkt server-rendered).
+- `ChangeAnnotationsTab.jsp` lebt im **Connector** (JSPWiki-Tags, JSPWiki-Action),
+  nicht im domain-puren ChangeAnnotations-Plugin. Plugin-eigene `InfoContent.jsp`-Varianten
+  (KnowWE, defi, defi2, wisskont, denkbaresTmp) wurden ebenfalls gepatcht.
 
 ### Schritt 9: CSS + minimaler JS
 - `KnowWE-Plugin-Annotation.css` als Shadow-DOM-Stylesheet (analog TextDiff).
@@ -215,6 +218,6 @@ Akzeptabel. Bei sehr grossen Wikis ggf. LRU einfuehren.
 - [x] Schritt 5: PageAnnotationCache
 - [x] Schritt 6: Server-Renderer
 - [x] Schritt 7: Action
-- [ ] Schritt 8: Tab in InfoContent.jsp
+- [x] Schritt 8: Tab in InfoContent.jsp
 - [ ] Schritt 9: CSS + JS
 - [ ] Schritt 10: Verifikation
