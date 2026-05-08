@@ -22,12 +22,14 @@ table.annotate {
 
 table.annotate td {
 	padding: 3px 10px;
-	border-bottom: 1px solid #eaecef;
 	vertical-align: top;
 }
 
-table.annotate tr:last-child td {
-	border-bottom: none;
+/* Horizontal separator only between meta columns; the content column stays as one block. */
+table.annotate tbody tr:not(:last-child) td.version,
+table.annotate tbody tr:not(:last-child) td.date,
+table.annotate tbody tr:not(:last-child) td.author {
+	border-bottom: 1px solid #eaecef;
 }
 
 table.annotate tbody tr:hover td {
@@ -35,7 +37,6 @@ table.annotate tbody tr:hover td {
 }
 
 td.version {
-	width: 4em;
 	color: #57606a;
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
@@ -51,7 +52,6 @@ td.version a:hover {
 }
 
 td.date {
-	width: 8em;
 	color: #57606a;
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
@@ -62,6 +62,8 @@ td.author {
 }
 
 td.text {
+	/* Take whatever horizontal space the meta columns leave over. */
+	width: 100%;
 	border-left: 1px solid #d0d7de;
 	font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 	white-space: pre;
@@ -78,7 +80,9 @@ td.text {
 		border-color: #30363d;
 	}
 
-	:host(:not([data-theme])) table.annotate td {
+	:host(:not([data-theme])) table.annotate tbody tr:not(:last-child) td.version,
+	:host(:not([data-theme])) table.annotate tbody tr:not(:last-child) td.date,
+	:host(:not([data-theme])) table.annotate tbody tr:not(:last-child) td.author {
 		border-bottom-color: #21262d;
 	}
 
@@ -109,7 +113,9 @@ td.text {
 	border-color: #30363d;
 }
 
-:host([data-theme="dark"]) table.annotate td {
+:host([data-theme="dark"]) table.annotate tbody tr:not(:last-child) td.version,
+:host([data-theme="dark"]) table.annotate tbody tr:not(:last-child) td.date,
+:host([data-theme="dark"]) table.annotate tbody tr:not(:last-child) td.author {
 	border-bottom-color: #21262d;
 }
 
