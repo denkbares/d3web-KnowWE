@@ -203,7 +203,7 @@ Akzeptabel. Bei sehr grossen Wikis ggf. LRU einfuehren.
 
 - [x] Schritt 1: Modul-Setup
 - [x] Schritt 2: Datenmodell + Tests
-- [ ] Schritt 3: PageAnnotator
+- [x] Schritt 3: PageAnnotator
 - [ ] Schritt 4: JSPWiki-Adapter
 - [ ] Schritt 5: PageAnnotationCache
 - [ ] Schritt 6: Server-Renderer
