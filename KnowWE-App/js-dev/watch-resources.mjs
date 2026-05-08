@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, readdir, stat } from "node:fs/promises";
+import { copyFile, mkdir, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -114,14 +114,31 @@ async function main() {
     return;
   }
 
-  let previousSnapshot = await scanFiles(sources);
+  let activeSources = sources;
+  let previousSnapshot = await scanFiles(activeSources);
   const initialResult = await syncFiles(previousSnapshot, targetDir);
   printResult(initialResult);
   console.log(`Watching ${previousSnapshot.size} JS/CSS files. Poll interval: ${options.intervalMs} ms.`);
 
+  // Re-discover sources periodically so plugins added while the watcher is running are picked up.
+  const rediscoverEveryTicks = Math.max(1, Math.round(30000 / options.intervalMs));
+  let tickCount = 0;
+
   setInterval(async () => {
     try {
-      const currentSnapshot = await scanFiles(sources);
+      tickCount += 1;
+      if (tickCount % rediscoverEveryTicks === 0) {
+        const refreshed = await discoverSources(profile);
+        const known = new Set(activeSources.map(s => s.sourceDir));
+        const added = refreshed.filter(s => !known.has(s.sourceDir));
+        if (added.length > 0) {
+          console.log(`[discover] picked up ${added.length} new source dir(s):`);
+          for (const s of added) console.log(`  + ${s.sourceDir}`);
+        }
+        activeSources = refreshed;
+      }
+
+      const currentSnapshot = await scanFiles(activeSources);
       const result = await processChanges(previousSnapshot, currentSnapshot, targetDir);
       if (result.copied || result.skippedMissingTarget || result.deleted) {
         printResult(result);
@@ -161,16 +178,31 @@ function parseOptions(args) {
 }
 
 async function inferTargetDir() {
-  const pomPath = path.join(appDir, "pom.xml");
-  const pomContent = await readFile(pomPath, "utf8");
-  const artifactIdMatch = pomContent.match(/<artifactId>(KnowWE-App)<\/artifactId>/);
-  const versionMatch = pomContent.match(/<parent>[\s\S]*?<version>([^<]+)<\/version>[\s\S]*?<\/parent>/);
-
-  if (!artifactIdMatch || !versionMatch) {
-    throw new Error(`Could not infer target directory from ${pomPath}.`);
+  // Reading the <version> tag straight from pom.xml doesn't work anymore — KnowWE switched
+  // to CI-friendly versions, so the parent block reads <version>${revision}</version> with
+  // the actual version coming from a property in a higher parent POM.
+  // Scan the target/ directory for an exploded KnowWE-App-* webapp instead.
+  const targetBase = path.join(appDir, "target");
+  if (!(await exists(targetBase))) {
+    throw new Error(`Target directory ${targetBase} does not exist. Run 'mvn package' first.`);
   }
 
-  return path.join(appDir, "target", `${artifactIdMatch[1]}-${versionMatch[1].trim()}`);
+  const entries = await readdir(targetBase, { withFileTypes: true });
+  const candidates = entries
+    .filter(entry => entry.isDirectory() && entry.name.startsWith("KnowWE-App-") && !entry.name.endsWith(".war"))
+    .map(entry => path.join(targetBase, entry.name));
+
+  if (candidates.length === 0) {
+    throw new Error(`No KnowWE-App-* directory under ${targetBase}. Run 'mvn package' first.`);
+  }
+  if (candidates.length > 1) {
+    // Pick the most recently modified — typical when an old build is left around.
+    const stats = await Promise.all(candidates.map(async dir => ({ dir, mtimeMs: (await stat(dir)).mtimeMs })));
+    stats.sort((left, right) => right.mtimeMs - left.mtimeMs);
+    console.warn(`Multiple KnowWE-App-* directories found, using most recent: ${stats[0].dir}`);
+    return stats[0].dir;
+  }
+  return candidates[0];
 }
 
 async function discoverSources(profile) {
@@ -310,7 +342,8 @@ async function walkFiles(rootDir, onFile) {
   }
 }
 
-async function processChanges(previousSnapshot, currentSnapshot, targetDir) {
+async function processChanges(previousSnapshot, currentSnapshot, targetDir, options = {}) {
+  const { createMissingTargets = false } = options;
   const result = {
     copied: 0,
     skippedMissingTarget: 0,
@@ -324,7 +357,9 @@ async function processChanges(previousSnapshot, currentSnapshot, targetDir) {
     }
 
     const targetPath = path.join(targetDir, fileInfo.source.targetSubdir, fileInfo.relativePath);
-    if (!(await exists(targetPath))) {
+    if (!createMissingTargets && !(await exists(targetPath))) {
+      // Watch loop only updates files that were already part of the built webapp; new files
+      // are picked up by the next initial sync (e.g. after a Maven rebuild or watcher restart).
       result.skippedMissingTarget += 1;
       continue;
     }
@@ -345,9 +380,15 @@ async function processChanges(previousSnapshot, currentSnapshot, targetDir) {
   return result;
 }
 
+// Initial sync: as long as the webapp target dir is there, copy every source file even if
+// the destination didn't exist yet — that's how newly added plugin resources find their way
+// into the running container.
 async function syncFiles(snapshot, targetDir) {
-  const emptySnapshot = new Map();
-  return processChanges(emptySnapshot, snapshot, targetDir);
+  if (!(await exists(targetDir))) {
+    console.warn(`Target directory does not exist: ${targetDir}. Run 'mvn package' first.`);
+    return { copied: 0, skippedMissingTarget: 0, deleted: 0 };
+  }
+  return processChanges(new Map(), snapshot, targetDir, { createMissingTargets: true });
 }
 
 function printResult(result) {
