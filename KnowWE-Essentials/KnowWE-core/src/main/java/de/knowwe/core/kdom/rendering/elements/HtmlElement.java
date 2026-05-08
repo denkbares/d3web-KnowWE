@@ -62,6 +62,27 @@ public class HtmlElement implements HtmlProvider {
 		return this;
 	}
 
+	/** Sets the {@code title} attribute, typically rendered as a hover tooltip. */
+	public HtmlElement title(String titleText) {
+		this.attributes.add("title");
+		this.attributes.add(titleText);
+		return this;
+	}
+
+	/** Sets the {@code id} attribute. */
+	public HtmlElement id(String id) {
+		this.attributes.add("id");
+		this.attributes.add(id);
+		return this;
+	}
+
+	/** Sets the {@code style} attribute (inline CSS declarations). */
+	public HtmlElement style(String style) {
+		this.attributes.add("style");
+		this.attributes.add(style);
+		return this;
+	}
+
 	/**
 	 * Add text content to this element. Will be added as a TextNode.
 	 */
