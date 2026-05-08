@@ -1,7 +1,6 @@
 package com.denkbares.knowwe.changeannotations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -46,12 +45,12 @@ public final class PageAnnotator {
 		sorted.sort(Comparator.comparingInt(VersionEntry::version));
 
 		VersionEntry first = sorted.get(0);
-		List<String> currentLines = splitLines(first.text());
+		List<String> currentLines = PageLines.split(first.text());
 		List<LineBlame> currentBlames = initialBlames(first, currentLines.size());
 
 		for (int idx = 1; idx < sorted.size(); idx++) {
 			VersionEntry next = sorted.get(idx);
-			List<String> nextLines = splitLines(next.text());
+			List<String> nextLines = PageLines.split(next.text());
 			currentBlames = stepForward(currentBlames, currentLines, nextLines, next);
 			currentLines = nextLines;
 		}
@@ -153,17 +152,4 @@ public final class PageAnnotator {
 		return line.replaceAll("\\s+", " ").trim();
 	}
 
-	/**
-	 * Splits {@code text} into its visible lines. A single trailing newline is treated as a
-	 * line terminator (not a blank line), so {@code "foo\nbar\n"} yields two lines, matching
-	 * how editors typically render the same content.
-	 */
-	private static List<String> splitLines(String text) {
-		if (text.isEmpty()) return List.of();
-		String[] parts = text.split("\\R", -1);
-		int len = parts.length;
-		if (len > 0 && parts[len - 1].isEmpty()) len--;
-		if (len == 0) return List.of();
-		return new ArrayList<>(Arrays.asList(parts).subList(0, len));
-	}
 }

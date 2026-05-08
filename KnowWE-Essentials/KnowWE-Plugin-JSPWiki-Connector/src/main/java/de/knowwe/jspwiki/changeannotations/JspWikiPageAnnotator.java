@@ -12,6 +12,7 @@ import org.apache.wiki.pages.PageManager;
 import com.denkbares.knowwe.changeannotations.PageAnnotation;
 import com.denkbares.knowwe.changeannotations.PageAnnotator;
 import com.denkbares.knowwe.changeannotations.VersionEntry;
+import com.denkbares.strings.Strings;
 
 /**
  * Bridges {@link PageManager}'s version history into {@link VersionEntry} input for the
@@ -49,7 +50,7 @@ public final class JspWikiPageAnnotator {
 			String changeNote = page.getAttribute(Page.CHANGENOTE);
 			result.add(new VersionEntry(
 					page.getVersion(),
-					author == null ? "unknown" : author,
+					Strings.isBlank(author) ? "unknown" : author,
 					date,
 					changeNote,
 					text == null ? "" : text));
