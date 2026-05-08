@@ -80,6 +80,10 @@
 			<artifactId>KnowWE-Plugin-TextDiff</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-ChangeAnnotations</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.jspwiki</groupId>
 			<artifactId>jspwiki-knowwe-main</artifactId>
 			<exclusions>

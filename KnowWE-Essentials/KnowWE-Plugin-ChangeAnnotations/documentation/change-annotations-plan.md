@@ -138,7 +138,10 @@ fuer Stil-Isolation (analog zu `<knowwe-text-diff>`):
 
 ### Schritt 4: JSPWiki-Adapter
 - Bruecke zwischen `PageManager.getVersionHistory(...)` und `PageAnnotator`-Input.
-- Hier wohnt das `Context`-Wissen, sonst nichts.
+- Wohnt **nicht** in diesem Modul, sondern in `KnowWE-Plugin-JSPWiki-Connector`
+  (`de.knowwe.jspwiki.changeannotations.JspWikiPageAnnotator`). `KnowWE-Plugin-ChangeAnnotations`
+  bleibt damit von JSPWiki unabhaengig — andere Wiki-Backends koennten einen eigenen Adapter
+  darueber legen.
 
 ### Schritt 5: PageAnnotationCache
 - `ConcurrentHashMap<String, CacheEntry>` mit `(pageVersion, PageAnnotation)`.
@@ -204,7 +207,7 @@ Akzeptabel. Bei sehr grossen Wikis ggf. LRU einfuehren.
 - [x] Schritt 1: Modul-Setup
 - [x] Schritt 2: Datenmodell + Tests
 - [x] Schritt 3: PageAnnotator
-- [ ] Schritt 4: JSPWiki-Adapter
+- [x] Schritt 4: JSPWiki-Adapter
 - [ ] Schritt 5: PageAnnotationCache
 - [ ] Schritt 6: Server-Renderer
 - [ ] Schritt 7: Action
