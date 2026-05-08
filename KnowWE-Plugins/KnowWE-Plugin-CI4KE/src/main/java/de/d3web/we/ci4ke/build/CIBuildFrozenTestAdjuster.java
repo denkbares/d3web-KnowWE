@@ -110,12 +110,12 @@ class CIBuildFrozenTestAdjuster {
 				mergedResults.add(mergedResult);
 			}
 		}
-		for (TestResult duplicate : duplicates) {
-			buildResult.removeResult(duplicate);
-		}
-		for (TestResult mergedResult : mergedResults) {
-			buildResult.addTestResult(mergedResult);
-		}
+//		for (TestResult duplicate : duplicates) {
+//			buildResult.removeResult(duplicate);
+//		}
+//		for (TestResult mergedResult : mergedResults) {
+//			buildResult.addTestResult(mergedResult);
+//		}
 	}
 
 	private static boolean isFrozenTest(TestResult testResult, CIDashboard dashboard) throws IOException {
