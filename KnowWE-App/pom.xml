@@ -181,6 +181,10 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-ChangeAnnotations</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-CI4KE</artifactId>
 				</dependency>
 				<dependency>
