@@ -122,5 +122,14 @@
         <parameter id="version" value="1.0" />
         <parameter id="priority" value="5" />
     </extension>
-	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AnnotatePageAction">
+		<parameter id="class" value="de.knowwe.jspwiki.changeannotations.AnnotatePageAction" />
+		<parameter id="name" value="AnnotatePageAction" />
+		<parameter id="description" value="Returns the server-rendered page annotation (blame) for a wiki page." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="css" value="KnowWE-Plugin-ChangeAnnotations.css" />
+	</extension>
+
 </plugin>

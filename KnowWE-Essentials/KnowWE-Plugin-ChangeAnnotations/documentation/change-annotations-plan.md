@@ -214,7 +214,7 @@ Akzeptabel. Bei sehr grossen Wikis ggf. LRU einfuehren.
 - [x] Schritt 4: JSPWiki-Adapter
 - [x] Schritt 5: PageAnnotationCache
 - [x] Schritt 6: Server-Renderer
-- [ ] Schritt 7: Action
+- [x] Schritt 7: Action
 - [ ] Schritt 8: Tab in InfoContent.jsp
 - [ ] Schritt 9: CSS + JS
 - [ ] Schritt 10: Verifikation
