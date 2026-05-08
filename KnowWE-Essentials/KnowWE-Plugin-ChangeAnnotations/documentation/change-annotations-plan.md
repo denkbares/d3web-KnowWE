@@ -144,9 +144,13 @@ fuer Stil-Isolation (analog zu `<knowwe-text-diff>`):
   darueber legen.
 
 ### Schritt 5: PageAnnotationCache
-- `ConcurrentHashMap<String, CacheEntry>` mit `(pageVersion, PageAnnotation)`.
-- Invalidierung ueber `WikiEventListener`: bei Page-Save/Rename/Delete den Eintrag verwerfen.
-- Lazy-Compute on demand.
+- `ConcurrentHashMap<String, PageAnnotation>` im Connector, `JspWikiPageAnnotationCache`.
+- Invalidierung ueber `WikiEventListener` an der `PageManager`-Instanz: `PAGE_REINDEX`
+  (= post-save), `PAGE_DELETED`, `PAGE_DELETE_REQUEST`, `WikiPageRenameEvent` (alter + neuer
+  Name) verwerfen den Eintrag.
+- Lazy-Compute on demand. Listener-Registrierung erfolgt einmalig beim ersten Zugriff.
+- Falls wir spaeter Bounded-Memory oder Versionsabhaengiges Caching brauchen, ziehen wir hier
+  ein Interface in `KnowWE-Plugin-ChangeAnnotations` und tauschen den Backing-Store.
 
 ### Schritt 6: Server-Renderer (HTML)
 - `AnnotateRenderer.render(PageAnnotation, currentText)` -> HTML mit
@@ -208,7 +212,7 @@ Akzeptabel. Bei sehr grossen Wikis ggf. LRU einfuehren.
 - [x] Schritt 2: Datenmodell + Tests
 - [x] Schritt 3: PageAnnotator
 - [x] Schritt 4: JSPWiki-Adapter
-- [ ] Schritt 5: PageAnnotationCache
+- [x] Schritt 5: PageAnnotationCache
 - [ ] Schritt 6: Server-Renderer
 - [ ] Schritt 7: Action
 - [ ] Schritt 8: Tab in InfoContent.jsp
