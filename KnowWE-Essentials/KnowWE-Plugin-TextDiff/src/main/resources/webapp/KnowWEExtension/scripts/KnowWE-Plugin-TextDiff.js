@@ -76,7 +76,21 @@
 				this._wireExpanders();
 				return;
 			}
+			// Only auto-fetch when the host actually opted into lazy mode (slots or data-old/new-text/null).
+			// Server-rendered components without these inputs must never trigger a network call — that would
+			// surface as a "Failed to load diff" error overlay even when the page already shows a valid diff
+			// (e.g. when the declarative shadow DOM hydrated through a path our heuristic missed).
+			if (!this._hasLazyInputs()) return;
 			this._scheduleLazyLoad();
+		}
+
+		_hasLazyInputs() {
+			if (this.querySelector(':scope > [slot="old"]') !== null) return true;
+			if (this.querySelector(':scope > [slot="new"]') !== null) return true;
+			return this.hasAttribute('data-old-text')
+					|| this.hasAttribute('data-new-text')
+					|| this.hasAttribute('data-old-null')
+					|| this.hasAttribute('data-new-null');
 		}
 
 		disconnectedCallback() {
