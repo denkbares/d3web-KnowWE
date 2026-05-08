@@ -2,13 +2,12 @@
    shadow DOM, so :host(...) selectors target the element from outside the shadow. */
 
 :host {
-	/* Match the haddock body baseline: JSPWiki/Haddock pins html { font-size: 10px },
-	   then sets body to 16px / 1.428571429. Use the same numbers explicitly so the
-	   shadow-DOM content lines up with the surrounding wiki page. */
+	/* JSPWiki/Haddock pins html { font-size: 10px } and body { font-size: 16px }.
+	   Use the same 16px baseline; line-height 1.4 keeps the per-line spacing tight. */
 	display: block;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
 	font-size: 16px;
-	line-height: 1.428571429;
+	line-height: 1.4;
 	color: #1f2328;
 	background: #ffffff;
 }
@@ -22,17 +21,13 @@ table.annotate {
 }
 
 table.annotate td {
-	padding: 6px 10px;
+	padding: 3px 10px;
 	border-bottom: 1px solid #eaecef;
 	vertical-align: top;
 }
 
 table.annotate tr:last-child td {
 	border-bottom: none;
-}
-
-table.annotate tbody tr:nth-child(even) td {
-	background: #f6f8fa;
 }
 
 table.annotate tbody tr:hover td {
@@ -55,13 +50,6 @@ td.version a:hover {
 	text-decoration: underline;
 }
 
-td.author {
-	width: 12em;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 td.date {
 	width: 8em;
 	color: #57606a;
@@ -69,7 +57,12 @@ td.date {
 	white-space: nowrap;
 }
 
+td.author {
+	white-space: nowrap;
+}
+
 td.text {
+	border-left: 1px solid #d0d7de;
 	font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 	white-space: pre;
 	overflow-x: auto;
@@ -98,8 +91,8 @@ td.text {
 		color: #58a6ff;
 	}
 
-	:host(:not([data-theme])) table.annotate tbody tr:nth-child(even) td {
-		background: #161b22;
+	:host(:not([data-theme])) td.text {
+		border-left-color: #30363d;
 	}
 
 	:host(:not([data-theme])) table.annotate tbody tr:hover td {
@@ -129,8 +122,8 @@ td.text {
 	color: #58a6ff;
 }
 
-:host([data-theme="dark"]) table.annotate tbody tr:nth-child(even) td {
-	background: #161b22;
+:host([data-theme="dark"]) td.text {
+	border-left-color: #30363d;
 }
 
 :host([data-theme="dark"]) table.annotate tbody tr:hover td {

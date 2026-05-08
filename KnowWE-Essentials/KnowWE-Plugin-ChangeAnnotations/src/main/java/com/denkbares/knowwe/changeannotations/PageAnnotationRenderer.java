@@ -86,8 +86,8 @@ public final class PageAnnotationRenderer {
 	private static HtmlElement buildRow(LineBlame blame, String text, DiffLinkBuilder linkBuilder) {
 		return new Tr().attributes("part", "line").children(
 				buildVersionCell(blame, linkBuilder),
-				buildAuthorCell(blame),
 				buildDateCell(blame),
+				buildAuthorCell(blame),
 				buildTextCell(text));
 	}
 
