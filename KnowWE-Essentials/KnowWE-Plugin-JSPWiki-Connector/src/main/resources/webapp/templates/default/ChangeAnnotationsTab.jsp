@@ -1,46 +1,36 @@
 <%--
    Tab content for the Annotate ("blame") view, included by InfoContent.jsp.
-   Renders a placeholder + a small lazy-load script that fetches the server-rendered
-   <knowwe-page-annotate> on first activation. The actual computation happens in
-   AnnotatePageAction; this JSP only wires the UI.
+   Renders the <knowwe-page-annotate> server-side via AnnotateRenderHelper — no AJAX.
+   Tomcat surfaces any exception directly in the page, which makes diagnostics easier
+   than swallowing it in a fetch() error handler.
 --%>
+<%@ page import="org.apache.wiki.api.core.Context" %>
+<%@ page import="org.apache.wiki.api.core.Page" %>
+<%@ page import="de.knowwe.jspwiki.changeannotations.AnnotateRenderHelper" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<c:set var="changeAnnotationsPage"><wiki:Variable var="pagename"/></c:set>
-<div class="page-annotate-tab" data-page="<c:out value='${changeAnnotationsPage}'/>" aria-live="polite">
-	<p class="loading-placeholder" style="color:#57606a;font-style:italic;">Loading annotations…</p>
-</div>
-<script type="text/javascript">
-(function () {
-	var tab = document.querySelector('.page-annotate-tab');
-	if (!tab) return;
-	var loaded = false;
-
-	function load() {
-		if (loaded) return;
-		loaded = true;
-		var pageName = tab.getAttribute('data-page');
-		var url = 'action/AnnotatePageAction?page=' + encodeURIComponent(pageName);
-		if (typeof Wiki !== 'undefined' && Wiki.CsrfProtection) {
-			url += '&X-XSRF-TOKEN=' + encodeURIComponent(Wiki.CsrfProtection);
+<%
+	Context changeAnnotationsContext = Context.findContext(pageContext);
+	Page changeAnnotationsPage = changeAnnotationsContext.getPage();
+	String changeAnnotationsHtml = null;
+	String changeAnnotationsError = null;
+	if (changeAnnotationsPage != null) {
+		try {
+			changeAnnotationsHtml = AnnotateRenderHelper.renderHtml(
+					changeAnnotationsContext.getEngine(),
+					changeAnnotationsPage.getName(),
+					session);
 		}
-		fetch(url, { credentials: 'same-origin' })
-			.then(function (r) {
-				if (!r.ok) throw new Error('HTTP ' + r.status);
-				return r.text();
-			})
-			.then(function (html) { tab.innerHTML = html; })
-			.catch(function (e) {
-				tab.innerHTML = '<p class="warning">Failed to load annotations: '
-						+ (e && e.message ? e.message : e) + '</p>';
-			});
+		catch (IllegalArgumentException e) {
+			changeAnnotationsError = e.getMessage();
+		}
 	}
-
-	// Trigger on click of the tab heading, on direct hash navigation, and when JSPWiki
-	// already marked the heading as the active pane on initial render.
-	var heading = document.getElementById('annotate');
-	if (heading) heading.addEventListener('click', load);
-	if (window.location.hash === '#annotate') load();
-	if (heading && heading.hasAttribute('data-activePane')) load();
-})();
-</script>
+	pageContext.setAttribute("changeAnnotationsHtml", changeAnnotationsHtml);
+	pageContext.setAttribute("changeAnnotationsError", changeAnnotationsError);
+%>
+<c:if test="${changeAnnotationsHtml != null}">
+	${changeAnnotationsHtml}
+</c:if>
+<c:if test="${changeAnnotationsError != null}">
+	<p class="warning">No annotation available: <c:out value="${changeAnnotationsError}"/></p>
+</c:if>
