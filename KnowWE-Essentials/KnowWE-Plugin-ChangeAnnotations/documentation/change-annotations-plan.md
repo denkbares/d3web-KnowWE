@@ -219,5 +219,5 @@ Akzeptabel. Bei sehr grossen Wikis ggf. LRU einfuehren.
 - [x] Schritt 6: Server-Renderer
 - [x] Schritt 7: Action
 - [x] Schritt 8: Tab in InfoContent.jsp
-- [ ] Schritt 9: CSS + JS
+- [x] Schritt 9: CSS + JS
 - [ ] Schritt 10: Verifikation

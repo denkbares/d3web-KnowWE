@@ -27,6 +27,14 @@ table.annotate tr:last-child td {
 	border-bottom: none;
 }
 
+table.annotate tbody tr:nth-child(even) td {
+	background: #f6f8fa;
+}
+
+table.annotate tbody tr:hover td {
+	background: #fff8c5;
+}
+
 td.version {
 	width: 4em;
 	color: #57606a;
@@ -86,6 +94,14 @@ td.text {
 	:host(:not([data-theme="light"])) td.version a {
 		color: #58a6ff;
 	}
+
+	:host(:not([data-theme="light"])) table.annotate tbody tr:nth-child(even) td {
+		background: #161b22;
+	}
+
+	:host(:not([data-theme="light"])) table.annotate tbody tr:hover td {
+		background: #2d3139;
+	}
 }
 
 :host([data-theme="dark"]) {
@@ -108,4 +124,12 @@ td.text {
 
 :host([data-theme="dark"]) td.version a {
 	color: #58a6ff;
+}
+
+:host([data-theme="dark"]) table.annotate tbody tr:nth-child(even) td {
+	background: #161b22;
+}
+
+:host([data-theme="dark"]) table.annotate tbody tr:hover td {
+	background: #2d3139;
 }

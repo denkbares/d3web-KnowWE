@@ -33,18 +33,32 @@ public final class PageAnnotationRenderer {
 	}
 
 	/**
+	 * Renders with {@link Theme#AUTO} — the bundled stylesheet's {@code prefers-color-scheme}
+	 * media query decides between light and dark. Use the 4-arg variant to pin a theme.
+	 */
+	@NotNull
+	public static String render(@NotNull PageAnnotation annotation,
+								@NotNull String currentText,
+								@NotNull DiffLinkBuilder linkBuilder) {
+		return render(annotation, currentText, linkBuilder, Theme.AUTO);
+	}
+
+	/**
 	 * Renders {@code annotation} alongside the lines from {@code currentText}. The
 	 * annotation must carry one {@link LineBlame} per visible line of the page — see
 	 * {@link PageAnnotator} for how the line counts are kept in sync.
 	 *
 	 * @param linkBuilder produces the diff URL per version; pass {@link DiffLinkBuilder#NONE}
 	 *                    to render version numbers without links
+	 * @param theme       pin the color theme via {@code data-theme}, or {@link Theme#AUTO} to
+	 *                    leave the choice to CSS / {@code prefers-color-scheme}
 	 * @throws IllegalArgumentException if {@code annotation} and {@code currentText} disagree on line count
 	 */
 	@NotNull
 	public static String render(@NotNull PageAnnotation annotation,
 								@NotNull String currentText,
-								@NotNull DiffLinkBuilder linkBuilder) {
+								@NotNull DiffLinkBuilder linkBuilder,
+								@NotNull Theme theme) {
 		List<String> lines = PageLines.split(currentText);
 		List<LineBlame> blames = annotation.lines();
 		if (lines.size() != blames.size()) {
@@ -58,7 +72,11 @@ public final class PageAnnotationRenderer {
 			tbody.children(buildRow(blames.get(i), lines.get(i), linkBuilder));
 		}
 
-		return new HtmlElement("knowwe-page-annotate").children(
+		HtmlElement root = new HtmlElement("knowwe-page-annotate");
+		if (theme.dataAttributeValue() != null) {
+			root.attributes("data-theme", theme.dataAttributeValue());
+		}
+		return root.children(
 				new HtmlElement("template").attributes("shadowrootmode", "open").children(
 						new HtmlElement("link").attributes("rel", "stylesheet", "href", STYLESHEET),
 						new Table().clazz("annotate").attributes("part", "annotate").children(tbody)))

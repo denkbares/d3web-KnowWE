@@ -99,6 +99,26 @@ class PageAnnotationRendererTest {
 	}
 
 	@Test
+	void autoThemeOmitsDataThemeAttribute() {
+		PageAnnotation annotation = new PageAnnotation("Main", 1, List.of(
+				new LineBlame(1, 1, "alice", T1, null)));
+
+		String html = PageAnnotationRenderer.render(annotation, "alpha\n", DiffLinkBuilder.NONE, Theme.AUTO);
+
+		assertFalse(html.contains("data-theme"), html);
+	}
+
+	@Test
+	void darkThemeSetsDataThemeAttribute() {
+		PageAnnotation annotation = new PageAnnotation("Main", 1, List.of(
+				new LineBlame(1, 1, "alice", T1, null)));
+
+		String html = PageAnnotationRenderer.render(annotation, "alpha\n", DiffLinkBuilder.NONE, Theme.DARK);
+
+		assertTrue(html.contains("data-theme=\"dark\""), html);
+	}
+
+	@Test
 	void emptyAnnotationProducesEmptyTable() {
 		PageAnnotation annotation = new PageAnnotation("Main", 1, List.of());
 

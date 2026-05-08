@@ -8,6 +8,10 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.pages.PageManager;
@@ -15,6 +19,7 @@ import org.apache.wiki.pages.PageManager;
 import com.denkbares.knowwe.changeannotations.DiffLinkBuilder;
 import com.denkbares.knowwe.changeannotations.PageAnnotation;
 import com.denkbares.knowwe.changeannotations.PageAnnotationRenderer;
+import com.denkbares.knowwe.changeannotations.Theme;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -76,7 +81,8 @@ public class AnnotatePageAction extends AbstractAction {
 		String pureText = pageManager.getPureText(pageName, PageProvider.LATEST_VERSION);
 		if (pureText == null) pureText = "";
 
-		String html = PageAnnotationRenderer.render(annotation, pureText, diffLinkBuilderFor(pageName));
+		Theme theme = themeFor(context);
+		String html = PageAnnotationRenderer.render(annotation, pureText, diffLinkBuilderFor(pageName), theme);
 		context.setContentType("text/html; charset=UTF-8");
 		context.getWriter().write(html);
 	}
@@ -86,6 +92,22 @@ public class AnnotatePageAction extends AbstractAction {
 			return jsp.getWikiContext().getEngine();
 		}
 		return null;
+	}
+
+	/**
+	 * Mirrors the diff provider: pin {@link Theme#DARK} when the user's {@code DisplayMode}
+	 * preference is {@code dark-mode}, otherwise leave it on {@link Theme#AUTO}. Reads the
+	 * preferences map straight from the session — keeps this file off jsp-api types.
+	 */
+	private static Theme themeFor(UserActionContext context) {
+		HttpSession session = context.getSession();
+		if (session == null) return Theme.AUTO;
+		Object prefs = session.getAttribute("prefs");
+		if (prefs instanceof Map<?, ?> map) {
+			Object mode = map.get("DisplayMode");
+			if (mode != null && "dark-mode".equals(mode.toString())) return Theme.DARK;
+		}
+		return Theme.AUTO;
 	}
 
 	/**

@@ -7,8 +7,8 @@
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="changeAnnotationsPage"><wiki:Variable var="pagename"/></c:set>
-<div class="page-annotate-tab" data-page="<c:out value='${changeAnnotationsPage}'/>">
-	<p class="loading-placeholder">Loading annotations…</p>
+<div class="page-annotate-tab" data-page="<c:out value='${changeAnnotationsPage}'/>" aria-live="polite">
+	<p class="loading-placeholder" style="color:#57606a;font-style:italic;">Loading annotations…</p>
 </div>
 <script type="text/javascript">
 (function () {
