@@ -242,6 +242,9 @@
       </tr>
     </table>
 
+    <h4 id="annotate">Annotate</h4>
+    <wiki:Include page="ChangeAnnotationsTab.jsp"/>
+
     <%-- DIFF section --%>
     <wiki:CheckRequestContext context='diff'>
       <h4 data-activePane id="diff"><fmt:message key="diff.tab" /></h4>

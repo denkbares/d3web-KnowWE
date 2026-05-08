@@ -185,6 +185,9 @@
 
   <div class="clearbox"></div>
 
+  <h4 id="annotate">Annotate</h4>
+  <wiki:Include page="ChangeAnnotationsTab.jsp"/>
+
   <%-- DIFF section --%>
   <wiki:CheckRequestContext context='diff'>
      <wiki:Include page="DiffTab.jsp"/>
