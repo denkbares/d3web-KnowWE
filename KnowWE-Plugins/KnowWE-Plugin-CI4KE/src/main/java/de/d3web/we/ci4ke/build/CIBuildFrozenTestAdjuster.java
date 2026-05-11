@@ -45,6 +45,12 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 
 import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
 
+/**
+ * Takes a buildResult turns the frozen tests into soft tests
+ *
+ * @author Philipp Sehne (denkbares GmbH)
+ * @created 08.05.2026
+ */
 class CIBuildFrozenTestAdjuster {
 
 	static void adjustFrozenTests(BuildResult buildResult, CIDashboard dashboard) throws IOException {
@@ -58,8 +64,7 @@ class CIBuildFrozenTestAdjuster {
 				Map<String, Message> expectedMessages = Collections.synchronizedMap(new TreeMap<>());
 				boolean isFullySoft = true;
 
-				String fileName = testResult.getTestName() + ".txt";
-				Optional<WikiAttachment> attachment = Environment.getInstance().getWikiConnector().getAttachments(dashboard.getDashboardArticle()).stream().filter(a -> a.getFileName().contains(fileName)).findFirst();
+				Optional<WikiAttachment> attachment = Environment.getInstance().getWikiConnector().getAttachments(dashboard.getDashboardArticle()).stream().filter(a -> a.getFileName().contains(CIFreezeFailedTestsAction.getFileName(dashboard, testResult))).findFirst();
 				if (attachment.isEmpty()) continue;
 				String fileText = Streams.getTextAndClose(attachment.get().getInputStream());
 
@@ -161,7 +166,7 @@ class CIBuildFrozenTestAdjuster {
 
 		List<String> currentList = null;
 
-		//iterate over message lines, match lines to corresponding header, split text
+		//match headers as keys from frozenContent, split weather frozenContent contains line
 		for (String messageLine : messageLines) {
 			boolean isHeader = !messageLine.startsWith("*");
 			boolean isSectionHeader = isHeader && messageLines.indexOf(messageLine) < messageLines.size() - 1 && !messageLines.get(messageLines.indexOf(messageLine) + 1).startsWith("*");
@@ -181,7 +186,7 @@ class CIBuildFrozenTestAdjuster {
 				currentHeader = messageLine;
 			} else {
 				if (currentList != null) {
-					if (currentList.contains(messageLine)) {
+					if (currentList.contains(normalizeLink(messageLine))) {
 						currentSoftContent.add(messageLine);
 						fullyNormal = false;
 					} else {
@@ -248,12 +253,12 @@ class CIBuildFrozenTestAdjuster {
 				if (isSectionHeader) continue;
 				if (isHeader) {
 					if (currentHeader != null) {
-						frozenContent.put(currentHeader, currentContent);
+						frozenContent.put(currentHeader, new ArrayList<String>(currentContent));
 					}
 					currentContent.clear();
-					currentHeader = fileLine;
+					currentHeader = normalizeHeader(fileLine);
 				} else {
-					currentContent.add(fileLine);
+					currentContent.add(normalizeLink(fileLine));
 				}
 			}
 		}
@@ -331,7 +336,7 @@ class CIBuildFrozenTestAdjuster {
 		Set<String> testObjects2 = new HashSet<>(testResult.getTestObjectsWithUnexpectedOutcome());
 		testObjects2.addAll(testResult.getTestObjectsWithExpectedOutcome());
 		for (TestResult result : results) {
-			if (result.getTestName().equals(testResult.getTestName()) && result.isSoftTest() == testResult.isSoftTest() && !result.equals(testResult)){
+			if (result.getTestName().equals(testResult.getTestName()) && result.isSoftTest() == testResult.isSoftTest() && !result.equals(testResult) && result.getConfiguration() == testResult.getConfiguration()) {
 				//Expected and Unexpected together to get total test Objects
 				Set<String> testObjects1 = new HashSet<>(result.getTestObjectsWithUnexpectedOutcome());
 				testObjects1.addAll(result.getTestObjectsWithExpectedOutcome());
@@ -378,6 +383,7 @@ class CIBuildFrozenTestAdjuster {
 		return newTest;
 	}
 
+	//still has singular, plural matching bug, no link normalization
 	private static String mergeTexts(List<String> texts) {
 
 		Map<String, LinkedHashSet<String>> map = new LinkedHashMap<>();
