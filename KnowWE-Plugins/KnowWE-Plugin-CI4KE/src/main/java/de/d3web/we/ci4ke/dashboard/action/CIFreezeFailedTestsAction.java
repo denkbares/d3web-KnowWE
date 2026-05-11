@@ -61,10 +61,20 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 
 		List<TestResult> results = build.getResults();
 
+		//remove all previous files
+		List<WikiAttachment> attachments = Environment.getInstance()
+				.getWikiConnector()
+				.getAttachments(dashboard.getDashboardArticle())
+				.stream()
+				.filter(a -> a.getFileName().contains("CIFreeze_" + dashboard.getDashboardName()))
+				.toList();
+
+		for (WikiAttachment attachment : attachments) {
+			attachment.delete(attachment.getVersion()); //only deletes the latest version, not all versions
+		}
 
 		for (TestResult result : results) {
 			if (result.isSuccessful()) continue;
-			if (result.isSoftTest()) continue;
 
 			String fileName = getFileName(dashboard, result);
 
@@ -83,6 +93,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 				if (existingAttachment.isPresent()) {
 					AttachmentString = Streams.getTextAndClose(existingAttachment.get().getInputStream());
 				}
+
 
 				for (String testObject : result.getTestObjectsWithUnexpectedOutcome()) {
 					addIfNotExists(file, AttachmentString, result.getMessageForTestObject(testObject).getText());
@@ -109,7 +120,11 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 	}
 
 	public static String getFileName(CIDashboard dashboard, TestResult testResult) {
-		return "CIFreeze_" + dashboard.getDashboardName() + "_" + testResult.getTestName() + ".txt";
+		String config = Arrays.toString(testResult.getConfiguration())
+				.replaceAll("[^a-zA-Z0-9\\s]", "")
+				.trim()
+				.replaceAll("\\s+", "_");
+		return "CIFreeze_" + dashboard.getDashboardName() + "_" + testResult.getTestName() + "_" + config +".txt";
 	}
 
 
@@ -273,7 +288,22 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 	}
 
 	public static String normalizeHeader(String header) {
-		return header.replaceAll("\\b\\d+\\b", "").trim();
+		header = normalizeLink(header);
+		return header.replaceAll("\\b\\d+\\b", "REMOVE")
+				.replaceAll("REMOVE\\s+\\S+", "")
+				.replaceAll("\\s{2,}", " ")
+				.trim();
+	}
+
+	//normalize Header without plural fix
+//	public static String normalizeHeader(String header) {
+//		header = normalizeLink(header);
+//		return header.replaceAll("\\b\\d+\\b", "")
+//				.trim();
+//	}
+
+	public static String normalizeLink(String link) {
+		return link.replaceAll("#[a-f0-9]{1,8}]", "]");
 	}
 
 }
