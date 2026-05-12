@@ -178,6 +178,9 @@ public class Icon {
 	public static final Icon FILE_EXCEL = new Icon("fa-type fa-file-excel");
 	public static final Icon FILE_WORD = new Icon("fa-type fa-file-word");
 	public static final Icon FILE_PDF = new Icon("fa-type fa-file-pdf");
+	public static final Icon FILE_POWERPOINT = new Icon("fa-type fa-file-powerpoint");
+	public static final Icon FILE_IMAGE = new Icon("fa-type fa-file-image");
+	public static final Icon ENVELOPE = new Icon("fa-type fa-envelope");
 	public static final Icon FILE_ZIP = new Icon("fa-type fa-file-zipper");
 	public static final Icon FILE_CODE = new Icon("fa-type fa-file-code");
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
