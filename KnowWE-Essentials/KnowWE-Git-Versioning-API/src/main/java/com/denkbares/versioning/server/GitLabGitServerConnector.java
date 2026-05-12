@@ -108,8 +108,8 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private record GitLabApiRepository(int id, String name, String path, String ssh_url_to_repo,
-									   String http_url_to_repo,
-									   String web_url) {
+	                                   String http_url_to_repo,
+	                                   String web_url) {
 	}
 
 	private BasicHeader getRequestTokenHeader() {
@@ -317,9 +317,9 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public record GitLabApiMergeRequest(int id, int iid, String title, String state,
-										String target_branch, String source_branch,
-										String merge_status, String detailed_merge_status,
-										String merge_error, String web_url) {
+	                                    String target_branch, String source_branch,
+	                                    String merge_status, String detailed_merge_status,
+	                                    String merge_error, String web_url) {
 	}
 
 	@Override
@@ -371,7 +371,10 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setHeader(getRequestTokenHeader());
 
 			JsonObject dto = new JsonObject();
-			dto.addProperty("auto_merge", true);
+			// The auto_merge property is currently not working. It should be set to false by default, but it is working as it is set to true.
+			// Maybe in the next Gitlab version the behavior is fixed again.
+			// dto.addProperty("auto_merge", true);
+
 			// TODO could be changed to true if everything works as expected
 			dto.addProperty("should_remove_source_branch", false);
 			request.setEntity(new StringEntity(dto.toString(), ContentType.APPLICATION_JSON));
