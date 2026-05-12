@@ -88,9 +88,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
-			if (response.getStatusLine().getStatusCode() >= 300) {
-				throw new HttpException("Failed to load repositories");
-			}
+			ensureSuccessfulResponse(response, "Loading GitLab repositories");
 			String jsonString = EntityUtils.toString(response.getEntity());
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<GitLabApiRepository> data = objectMapper.readValue(jsonString, new TypeReference<>() {
@@ -99,8 +97,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 					.map(repo -> new RepositoryInfo(repo.id, repo.name, repo.path, repo.http_url_to_repo, repo.web_url))
 					.toList();
 		}
+		catch (HttpException e) {
+			throw e;
+		}
 		catch (Exception e) {
-			throw new HttpException(e.getMessage());
+			LOGGER.warn("Failed to load GitLab repositories.", e);
+			throw new HttpException("Failed to load repositories", e);
 		}
 	}
 
@@ -112,6 +114,29 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	private BasicHeader getRequestTokenHeader() {
 		return new BasicHeader("PRIVATE-TOKEN", this.serverToken);
+	}
+
+	private void ensureSuccessfulResponse(HttpResponse response, String operation) throws IOException, HttpException {
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode < 300) {
+			return;
+		}
+
+		String responseBody = readResponseBody(response);
+		if (responseBody.isBlank()) {
+			LOGGER.warn("{} failed. GitLab response status: {}", operation, response.getStatusLine());
+		}
+		else {
+			LOGGER.warn("{} failed. GitLab response status: {}. Response body: {}", operation, response.getStatusLine(), responseBody);
+		}
+		throw new HttpException(operation + " failed with status " + statusCode);
+	}
+
+	private String readResponseBody(HttpResponse response) throws IOException {
+		if (response.getEntity() == null) {
+			return "";
+		}
+		return EntityUtils.toString(response.getEntity());
 	}
 
 	@Override
@@ -166,7 +191,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			// Note: the call() returns an opened repository already which needs to be closed to avoid file handle leaks!
 		}
 		catch (GitAPIException e) {
-			LOGGER.error("Git clone failed for repo url: " + gitRemoteURL);
+			LOGGER.error("Git clone failed for configured GitLab repository URL.", e);
 			throw new RuntimeException(e);
 		}
 	}
@@ -178,10 +203,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			clone.call().close();
 		}
 		catch (JGitInternalException e) {
+			LOGGER.error("Internal JGit error while cloning repository.", e);
 			throw new RuntimeException("Internal JGit error", e);
 		}
 		catch (GitAPIException e) {
-			throw new RuntimeException("Git clone failed for repo url: " + remoteURI);
+			LOGGER.error("Git clone failed for remote repository.", e);
+			throw new RuntimeException("Git clone failed for repo url: " + remoteURI, e);
 		}
 	}
 
@@ -196,10 +223,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		try (Git result = clone.call()) {
 		}
 		catch (JGitInternalException e) {
+			LOGGER.error("Internal JGit error while shallow-cloning repository.", e);
 			throw new RuntimeException("Internal JGit error", e);
 		}
 		catch (GitAPIException e) {
-			throw new RuntimeException("Git clone failed for repo url: " + remoteURI + ". " + e.getMessage());
+			LOGGER.error("Git shallow clone failed for remote repository.", e);
+			throw new RuntimeException("Git clone failed for repo url: " + remoteURI + ". " + e.getMessage(), e);
 		}
 	}
 
@@ -223,9 +252,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
-			if (response.getStatusLine().getStatusCode() >= 300) {
-				throw new HttpException("Failed to find repository");
-			}
+			ensureSuccessfulResponse(response, "Finding GitLab repository");
 
 			String jsonString = EntityUtils.toString(response.getEntity());
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -239,8 +266,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 					.findFirst()
 					.orElseThrow();
 		}
+		catch (HttpException e) {
+			throw e;
+		}
 		catch (Exception e) {
-			throw new HttpException(e.getMessage());
+			LOGGER.warn("Failed to find GitLab repository '{}'.", repoName, e);
+			throw new HttpException("Failed to find repository", e);
 		}
 	}
 
@@ -255,9 +286,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
-			if (response.getStatusLine().getStatusCode() >= 300) {
-				throw new HttpException("Failed to find merge requests");
-			}
+			ensureSuccessfulResponse(response, "Listing GitLab merge requests");
 			String jsonString = EntityUtils.toString(response.getEntity());
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<GitLabApiMergeRequest> data = objectMapper.readValue(jsonString, new TypeReference<>() {
@@ -272,8 +301,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 							))
 					.toList();
 		}
+		catch (HttpException e) {
+			throw e;
+		}
 		catch (Exception e) {
-			throw new HttpException(e.getMessage());
+			LOGGER.warn("Failed to list GitLab merge requests for repository {} and source branch '{}'.", repositoryId, sourceBranch, e);
+			throw new HttpException("Failed to find merge requests", e);
 		}
 	}
 
@@ -308,9 +341,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			httpPost.setEntity(new StringEntity(requestDto.toString(), ContentType.APPLICATION_JSON));
 
 			HttpResponse response = httpClient.execute(httpPost);
-			if (response.getStatusLine().getStatusCode() >= 300) {
-				throw new HttpException("Failed to create merge request");
-			}
+			ensureSuccessfulResponse(response, "Creating GitLab merge request");
 			String jsonResponseString = EntityUtils.toString(response.getEntity());
 			ObjectMapper objectMapper = new ObjectMapper();
 			GitLabApiMergeRequest responseDto = objectMapper.readValue(jsonResponseString, new TypeReference<>() {
@@ -322,8 +353,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 					MergeRequestStatus.valueOf(responseDto.merge_status.toUpperCase()),
 					responseDto.web_url);
 		}
+		catch (HttpException e) {
+			throw e;
+		}
 		catch (Exception e) {
-			throw new HttpException(e.getMessage());
+			LOGGER.warn("Failed to create GitLab merge request from '{}' to '{}' in repository {}.", sourceBranch, targetBranch, repositoryId, e);
+			throw new HttpException("Failed to create merge request", e);
 		}
 	}
 
@@ -342,9 +377,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setEntity(new StringEntity(dto.toString(), ContentType.APPLICATION_JSON));
 
 			HttpResponse response = httpClient.execute(request);
-			if (response.getStatusLine().getStatusCode() >= 300) {
-				throw new HttpException("Failed to merge branch");
-			}
+			ensureSuccessfulResponse(response, "Merging GitLab merge request");
 			String jsonString = EntityUtils.toString(response.getEntity());
 			ObjectMapper objectMapper = new ObjectMapper();
 			GitLabApiMergeRequest data = objectMapper.readValue(jsonString, new TypeReference<>() {
@@ -357,8 +390,12 @@ public class GitLabGitServerConnector implements GitServerConnector {
 					MergeRequestStatus.valueOf(data.merge_status.toUpperCase()),
 					data.web_url);
 		}
+		catch (HttpException e) {
+			throw e;
+		}
 		catch (Exception e) {
-			throw new HttpException(e.getMessage());
+			LOGGER.warn("Failed to merge GitLab merge request {} in repository {}.", mergeRequestIid, repositoryId, e);
+			throw new HttpException("Failed to merge branch", e);
 		}
 	}
 }
