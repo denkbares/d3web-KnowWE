@@ -328,27 +328,13 @@
 	color: var(--file-change-fg);
 	background: var(--file-change-bg);
 	border: 1px solid var(--file-change-border);
-	border-left-width: 5px;
 	border-radius: var(--file-change-radius);
 	font-family: var(--file-change-font-family);
 	box-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
 }
 
-.file-change[data-change="added"] {
-	border-left-color: var(--diff-added-fg);
-}
-
-.file-change[data-change="deleted"] {
-	border-left-color: var(--diff-removed-fg);
-}
-
-.file-change[data-change="modified"] {
-	border-left-color: var(--file-change-blue);
-}
-
-.file-change[data-change="renamed"],
-.file-change[data-change="renamed-modified"] {
-	border-left-color: var(--file-change-purple);
+.file-change[data-change="renamed"] .file-change-title {
+	margin-left: .5rem;
 }
 
 .file-change-header {

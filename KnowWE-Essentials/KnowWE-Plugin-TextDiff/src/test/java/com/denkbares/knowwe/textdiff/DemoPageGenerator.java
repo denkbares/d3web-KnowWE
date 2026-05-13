@@ -31,7 +31,7 @@ class DemoPageGenerator {
 			candidate = path.resolve("KnowWE-Plugin-TextDiff/src/main/resources/webapp").normalize();
 			if (isWebappResourceBase(candidate)) return candidate;
 
-			candidate = path.resolve("KnowWE-DES/KnowWE-Plugins-DES/KnowWE-Plugin-TextDiff/src/main/resources/webapp").normalize();
+			candidate = path.resolve("KnowWE/KnowWE-Essentials/KnowWE-Plugin-TextDiff/src/main/resources/webapp").normalize();
 			if (isWebappResourceBase(candidate)) return candidate;
 		}
 
