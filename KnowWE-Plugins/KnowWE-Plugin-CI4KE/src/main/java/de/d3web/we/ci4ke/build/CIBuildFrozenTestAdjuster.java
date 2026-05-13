@@ -46,7 +46,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
 
 /**
- * Takes a buildResult turns the frozen tests into soft tests
+ * Turns frozen tests of a BuildResult into soft tests
  *
  * @author Philipp Sehne (denkbares GmbH)
  * @created 08.05.2026
@@ -97,30 +97,8 @@ class CIBuildFrozenTestAdjuster {
 		for (TestResult newResult : newResults) {
 			buildResult.addTestResult(newResult);
 		}
-		//Merge Duplicates
-		List<String> mergedResultsName = new ArrayList<>();
-		List<TestResult> duplicates = new ArrayList<>();
-		List<TestResult> mergedResults = new ArrayList<>();
-
-		for (TestResult result : buildResult.getResults()) {
-
-			if (mergedResultsName.contains(result.getTestName())) continue;
-			List<TestResult> tempDuplicates = getDuplicates(result, buildResult);
-
-			if (!tempDuplicates.isEmpty()) {
-				mergedResultsName.add(result.getTestName());
-				TestResult mergedResult = mergeEqualTests(result, tempDuplicates);
-				duplicates.addAll(tempDuplicates);
-				duplicates.add(result);
-				mergedResults.add(mergedResult);
-			}
-		}
-//		for (TestResult duplicate : duplicates) {
-//			buildResult.removeResult(duplicate);
-//		}
-//		for (TestResult mergedResult : mergedResults) {
-//			buildResult.addTestResult(mergedResult);
-//		}
+		//Duplicate tests should not happen, but just in case in left the method here
+		//mergeDuplicates(buildResult);
 	}
 
 	private static boolean isFrozenTest(TestResult testResult, CIDashboard dashboard) throws IOException {
@@ -162,7 +140,7 @@ class CIBuildFrozenTestAdjuster {
 		List<String> currentNormalContent = new ArrayList<>();
 		List<String> currentSoftContent = new ArrayList<>();
 
-		Map<String, List<String>> frozenContent = extractMatchingFileSectoin(fileText, testObject);
+		Map<String, List<String>> frozenContent = extractMatchingFileSection(fileText, testObject);
 
 		List<String> currentList = null;
 
@@ -225,7 +203,7 @@ class CIBuildFrozenTestAdjuster {
 		}
 	}
 
-	private static Map<String, List<String>> extractMatchingFileSectoin(String fileText, String testObject) {
+	private static Map<String, List<String>> extractMatchingFileSection(String fileText, String testObject) {
 		List<String> fileLines = List.of(fileText.split("\\R"));
 		fileLines = fileLines.stream()
 				.filter(s -> s != null && !s.isBlank())
@@ -237,6 +215,7 @@ class CIBuildFrozenTestAdjuster {
 		String currentHeader = null;
 		List<String> currentContent = new ArrayList<>();
 
+		//find SectionHeader that contains testObject, put content under that Section into the map
 		for (String fileLine : fileLines) {
 			boolean isHeader = !fileLine.startsWith("*");
 			boolean isSectionHeader = isHeader && fileLines.indexOf(fileLine) < fileLines.size() - 1 && !fileLines.get(fileLines.indexOf(fileLine) + 1).startsWith("*");
@@ -330,6 +309,32 @@ class CIBuildFrozenTestAdjuster {
 		return String.join(System.lineSeparator(), result);
 	}
 
+	private static void mergeDuplicates(BuildResult buildResult) {
+		List<String> mergedResultsName = new ArrayList<>();
+		List<TestResult> duplicates = new ArrayList<>();
+		List<TestResult> mergedResults = new ArrayList<>();
+
+		for (TestResult result : buildResult.getResults()) {
+
+			if (mergedResultsName.contains(result.getTestName())) continue;
+			List<TestResult> tempDuplicates = getDuplicates(result, buildResult);
+
+			if (!tempDuplicates.isEmpty()) {
+				mergedResultsName.add(result.getTestName());
+				TestResult mergedResult = mergeEqualTests(result, tempDuplicates);
+				duplicates.addAll(tempDuplicates);
+				duplicates.add(result);
+				mergedResults.add(mergedResult);
+			}
+		}
+		for (TestResult duplicate : duplicates) {
+			buildResult.removeResult(duplicate);
+		}
+		for (TestResult mergedResult : mergedResults) {
+			buildResult.addTestResult(mergedResult);
+		}
+	}
+
 	private static List<TestResult> getDuplicates(TestResult testResult, BuildResult buildResult) {
 		List<TestResult> results = buildResult.getResults();
 		List<TestResult> duplicates = new ArrayList<>();
@@ -383,7 +388,6 @@ class CIBuildFrozenTestAdjuster {
 		return newTest;
 	}
 
-	//still has singular, plural matching bug, no link normalization
 	private static String mergeTexts(List<String> texts) {
 
 		Map<String, LinkedHashSet<String>> map = new LinkedHashMap<>();
@@ -395,13 +399,15 @@ class CIBuildFrozenTestAdjuster {
 		StringBuilder result = new StringBuilder();
 
 		for (Map.Entry<String, LinkedHashSet<String>> entry : map.entrySet()) {
+			boolean header = true;
 
-			String header = entry.getKey();
 			Set<String> content = entry.getValue();
 
-			result.append(System.lineSeparator()).append(header).append(System.lineSeparator());
-
 			for (String line : content) {
+				if (header) {
+					result.append(System.lineSeparator());
+					header = false;
+				}
 				result.append(line).append(System.lineSeparator());
 			}
 		}
@@ -414,19 +420,15 @@ class CIBuildFrozenTestAdjuster {
 		String[] lines = text.split("\\R");
 
 		String currentHeader = null;
-		boolean firstHeader = true;
 
 		for (String line : lines) {
 
 			if (!line.startsWith("*")) {
-				if (firstHeader) {
-					currentHeader = replaceFirstNumber(line, 1);
-					firstHeader = false;
-				} else {
-					currentHeader = replaceLastNumber(line, 1);
-				}
+				currentHeader = normalizeHeader(line);
 				map.putIfAbsent(currentHeader, new LinkedHashSet<>());
-
+				if (map.get(currentHeader).isEmpty()) { //always add not normalized header as the first line
+					map.get(currentHeader).add(line);
+				}
 			} else if (currentHeader != null) {
 				map.get(currentHeader).add(line);
 			}

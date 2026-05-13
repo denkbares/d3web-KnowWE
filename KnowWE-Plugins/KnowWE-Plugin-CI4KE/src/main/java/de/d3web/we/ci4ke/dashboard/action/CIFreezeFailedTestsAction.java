@@ -43,7 +43,14 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
+/**
+ * Freezes failed tests by storing them inside an attachment
+ *
+ * @author Philipp Sehne (denkbares GmbH)
+ * @created 08.05.2026
+ */
 public class CIFreezeFailedTestsAction extends AbstractAction {
 
 	Path renamedPath = null;
@@ -61,16 +68,17 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 
 		List<TestResult> results = build.getResults();
 
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+
 		//remove all previous files
-		List<WikiAttachment> attachments = Environment.getInstance()
-				.getWikiConnector()
+		List<WikiAttachment> attachments = wikiConnector
 				.getAttachments(dashboard.getDashboardArticle())
 				.stream()
 				.filter(a -> a.getFileName().contains("CIFreeze_" + dashboard.getDashboardName()))
 				.toList();
 
 		for (WikiAttachment attachment : attachments) {
-			attachment.delete(attachment.getVersion()); //only deletes the latest version, not all versions
+			wikiConnector.deleteAttachment(context.getArticle().getTitle(), attachment.getFileName(), "CIFreeze_" + dashboard.getDashboardName());
 		}
 
 		for (TestResult result : results) {
@@ -82,8 +90,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 			File file = tempPath.toFile();
 
 			try {
-				Optional<WikiAttachment> existingAttachment = Environment.getInstance()
-						.getWikiConnector()
+				Optional<WikiAttachment> existingAttachment = wikiConnector
 						.getAttachments(dashboard.getDashboardArticle())
 								.stream()
 								.filter(a -> a.getFileName().contains(fileName))
@@ -94,6 +101,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 					AttachmentString = Streams.getTextAndClose(existingAttachment.get().getInputStream());
 				}
 
+				if (result.getTestObjectsWithUnexpectedOutcome().isEmpty()) continue;
 
 				for (String testObject : result.getTestObjectsWithUnexpectedOutcome()) {
 					addIfNotExists(file, AttachmentString, result.getMessageForTestObject(testObject).getText());
@@ -104,7 +112,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 
 				File finalFile = renamedPath.toFile();
 
-				Environment.getInstance().getWikiConnector().storeAttachment(
+				wikiConnector.storeAttachment(
 						dashboard.getDashboardArticle(),
 						"CI-FreezeFailedTests",
 						finalFile
@@ -127,8 +135,14 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 		return "CIFreeze_" + dashboard.getDashboardName() + "_" + testResult.getTestName() + "_" + config +".txt";
 	}
 
-
-
+	/**
+	 * Adds new frozen tests into a file without adding duplicates
+	 *
+	 * @param file the file to store the frozen test into
+	 * @param fileText the text already present in the file
+	 * @param newTests the new test to add into the file
+	 * @created 08.05.2026
+	 */
 	private static void addIfNotExists(File file, String fileText, String newTests) throws IOException {
 
 		if (!file.exists()) {
@@ -289,7 +303,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 
 	public static String normalizeHeader(String header) {
 		header = normalizeLink(header);
-		return header.replaceAll("\\b\\d+\\b", "REMOVE")
+		return header.replaceAll("\\b\\d+\\b(?!.*\\b\\d+\\b)", "REMOVE")
 				.replaceAll("REMOVE\\s+\\S+", "")
 				.replaceAll("\\s{2,}", " ")
 				.trim();
@@ -298,7 +312,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 	//normalize Header without plural fix
 //	public static String normalizeHeader(String header) {
 //		header = normalizeLink(header);
-//		return header.replaceAll("\\b\\d+\\b", "")
+//		return header.replaceAll("\b\d+\b(?!.*\b\d+\b)", "")
 //				.trim();
 //	}
 

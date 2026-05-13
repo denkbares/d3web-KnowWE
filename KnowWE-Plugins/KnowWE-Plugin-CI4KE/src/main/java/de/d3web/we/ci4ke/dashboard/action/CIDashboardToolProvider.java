@@ -20,7 +20,6 @@ package de.d3web.we.ci4ke.dashboard.action;
 
 import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -31,7 +30,7 @@ import de.knowwe.util.Icon;
 
 /**
  * A provider for adding a "Start a new build"-Tool for the CIDashboardType
- *
+ *ø
  * @author Marc-Oliver Ochlast (denkbares GmbH)
  * @created 01.12.2010
  */
@@ -48,7 +47,7 @@ public class CIDashboardToolProvider implements ToolProvider {
 		else {
 			return new Tool[] { getStartNewBuildTool(dashboardName, section.getTitle()),
 					getReportDownloadTool(dashboardName, section.getTitle()),
-					getFreezeSoftTestsTool(dashboardName, section.getID())
+					getFreezeSoftTestsTool(dashboardName, section.getID(), section.getTitle()),
 			};
 		}
 	}
@@ -83,14 +82,15 @@ public class CIDashboardToolProvider implements ToolProvider {
 				jsAction, Tool.CATEGORY_EXECUTE);
 	}
 
-	public static Tool getFreezeSoftTestsTool(String dashboardName, String sectionId) {
+	public static Tool getFreezeSoftTestsTool(String dashboardName, String sectionId, String title) {
 		String jsAction = "KNOWWE.plugin.ci4ke.FreezeFailedTests.run('"
 				+ sectionId + "','"
-				+ dashboardName + "')";
+				+ dashboardName + "','"
+				+ title + "')";
 		return new DefaultTool(
 				Icon.FILE_TEXT,
 				"Freeze Failed Tests",
-				"Description here",
+				"Stores Failed Tests inside Attachment",
 				jsAction,
 				Tool.ActionType.ONCLICK,
 				Tool.CATEGORY_UTIL

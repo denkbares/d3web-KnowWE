@@ -441,13 +441,15 @@ jq$(function() {
 
 KNOWWE.plugin.ci4ke.FreezeFailedTests = function() {
 
-  async function run(sectionId, dashboardName) {
+  async function run(sectionId, dashboardName, title) {
 
     var url = "/KnowWE/action/CIFreezeFailedTestsAction?"
       + "SectionID=" + encodeURIComponent(sectionId)
       + "&dashboardName=" + encodeURIComponent(dashboardName);
 
     await fetch(url);
+
+    KNOWWE.plugin.ci4ke.executeNewBuild(dashboardName, title)
 
     window.location.reload();
   }
