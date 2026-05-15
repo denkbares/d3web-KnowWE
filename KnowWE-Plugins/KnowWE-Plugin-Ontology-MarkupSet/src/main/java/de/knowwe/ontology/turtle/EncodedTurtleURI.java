@@ -18,8 +18,10 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
+import org.eclipse.rdf4j.common.net.ParsedIRI;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 
@@ -35,11 +37,11 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.ontology.kdom.namespace.AbbreviationReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
-import de.knowwe.ontology.compile.provider.URIProvider;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -69,6 +71,14 @@ public class EncodedTurtleURI extends AbstractType implements URIProvider<Encode
 	@Override
 	public Value getNode(OntologyCompiler core, Section<? extends EncodedTurtleURI> section) {
 		String uri = getURI(section);
+		// validate uri and fail early
+		// if we don't, we will fail during Rdf2GoCore.commit() which is far worse
+		try {
+			new ParsedIRI(uri);
+		}
+		catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 		return core.getRdf2GoCore().createIRI(uri);
 	}
 
