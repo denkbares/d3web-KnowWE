@@ -120,6 +120,10 @@ KNOWWE.core.plugin.rightPanel = function () {
 		return clampedWidth;
 	}
 
+	function isRightPanelBuilt() {
+		return rightPanel && rightPanel.length && jq$.contains(document, rightPanel[0]);
+	}
+
 	function getSelected() {
 		let t = '';
 		if (window.getSelection) {
@@ -332,7 +336,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 				jq$(KNOWWE.core.util.getPageSelector()).css("width", "auto");
 			});
 			rightPanel.animate({left: (jq$(window).width() + "px")}, globalFloatingTime, function () {
-				rightPanel.remove();
+				hideRightPanelElement();
 				jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "block");
 				jq$(window).resize();
 			});
@@ -342,21 +346,20 @@ KNOWWE.core.plugin.rightPanel = function () {
 			if (!isOnBottom) {
 				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': '0'}, globalFloatingTime);
 				rightPanel.animate({'right': -getRightPanelWidth() + 'px'}, globalFloatingTime, function () {
-					removeRightPanel();
+					hideRightPanelElement();
 				});
 			} else {
 				rightPanel.animate({'bottom': -rightPanel.height() + 'px'}, globalFloatingTime, function () {
-					removeRightPanel();
+					hideRightPanelElement();
 				});
 			}
 		}
 
 	}
 
-	function removeRightPanel() {
-		jq$(document).off(".rightPanelResize");
+	function hideRightPanelElement() {
 		jq$("body").removeClass("right-panel-resizing");
-		rightPanel.remove();
+		rightPanel.hide();
 		isOnBottom = false;
 		jq$(window).resize();
 	}
@@ -411,6 +414,38 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	}
 
+	function prepareRightPanelForShow() {
+		const offsetTop = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : 0;
+		const scrollTop = jq$(window).scrollTop();
+		const panelWidth = getStoredRightPanelWidth();
+
+		rightPanel.stop(true, true).show();
+		if (isOnBottom) {
+			rightPanel.removeClass("right-panel-right").addClass("right-panel-bottom");
+			rightPanel.css({
+				position: 'fixed',
+				left: '',
+				right: 'auto',
+				top: 'auto',
+				width: '100%'
+			});
+			rightPanel.css('bottom', -rightPanel.height() + 'px');
+		} else {
+			rightPanel.removeClass("right-panel-bottom").addClass("right-panel-right");
+			const css = {
+				position: 'absolute',
+				left: '',
+				right: -panelWidth + 'px',
+				top: (offsetTop - scrollTop) + 'px',
+				width: panelWidth + 'px'
+			};
+			if (!KNOWWE.core.util.isKnowWETemplate()) {
+				css.bottom = '0';
+			}
+			rightPanel.css(css);
+		}
+	}
+
 	function initRightPanelTools() {
 		KNOWWE.core.plugin.rightPanel.watches.initWatchesTool();
 		KNOWWE.core.plugin.rightPanel.custom.initCustomContent();
@@ -461,7 +496,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 
 		function bindHideInPanel() {
-			jq$("#rightPanel .rightpanelhide").on("click", function () {
+			jq$("#rightPanel .rightpanelhide").off("click.rightPanelHide").on("click.rightPanelHide", function () {
 				terminateRightPanel();
 			})
 		}
@@ -471,14 +506,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").prop("title", "Show Right Panel");
 		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").unbind();
 		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").on("click", function () {
-			KNOWWE.plugin.core.rightPanel.showRightPanel();
+			KNOWWE.core.plugin.rightPanel.showRightPanel();
 		});
 		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").text("Show Right Panel");
-	}
-
-	function bindUiActions() {
-		bindCollapseIcons();
-		bindHideFunctions();
 	}
 
 	function initRightPanel(fromCookie) {
@@ -491,11 +521,19 @@ KNOWWE.core.plugin.rightPanel = function () {
 				globalFloatingTime = 500;
 			}
 			shrinkPage();
-			buildRightPanel();
+			const wasBuilt = isRightPanelBuilt();
+			if (wasBuilt) {
+				prepareRightPanelForShow();
+			} else {
+				buildRightPanel();
+			}
 			floatRightPanel();
 			setRightPanelCookie(true);
-			bindUiActions();
-			initRightPanelTools();
+			if (!wasBuilt) {
+				bindCollapseIcons();
+				initRightPanelTools();
+			}
+			bindHideFunctions();
 			globalFloatingTime = 500;
 		}
 	}
