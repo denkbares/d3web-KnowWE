@@ -27,6 +27,9 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 KNOWWE.core.plugin.rightPanel = function () {
 
 	const rightPanelStorageKey = "rightPanel";
+	const rightPanelWidthStorageKey = "knowwe.rightPanel.width";
+	const defaultRightPanelWidth = 300;
+	const minRightPanelWidth = 300;
 
 	let rightPanel = null;
 
@@ -44,24 +47,78 @@ KNOWWE.core.plugin.rightPanel = function () {
 		if (showSidebar) {
 			windowWidth = jq$(window).width();
 
-			let resize = jq$(window).width() - jq$('#rightPanel').width();
 			if (KNOWWE.core.util.isKnowWETemplate()) {
-				resize -= jq$(KNOWWE.core.util.getPageSelector()).offset().left;
-				jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
-				const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
-				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
+				setRightPanelWidth(getRightPanelWidth(), false);
 			} else {
 				if (windowWidth < 600) {
 					KNOWWE.core.plugin.rightPanel.moveToBottom();
 					jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "0");
 				} else {
 					KNOWWE.core.plugin.rightPanel.moveToRight();
-					jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "300px");
 				}
 				rightPanelScroll();
 			}
 		}
 	});
+
+	function getRightPanelMaxWidth() {
+		let maxWidth = jq$(window).width();
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			const $lastTab = jq$(".tabmenu a:last-child").first();
+			const $actionsTop = jq$(KNOWWE.core.util.getActionsTopSelector());
+			if ($lastTab.length && $actionsTop.length) {
+				const resizeHandleWidth = jq$("#rightPanel .right-panel-resize-handle").outerWidth() || 8;
+				maxWidth = maxWidth
+					- ($lastTab.offset().left
+						+ $lastTab.outerWidth()
+						+ $actionsTop.outerWidth()
+						+ resizeHandleWidth + 20);
+			}
+		} else {
+			maxWidth = maxWidth / 2;
+		}
+		return Math.max(minRightPanelWidth, Math.floor(maxWidth));
+	}
+
+	function clampRightPanelWidth(width) {
+		return Math.max(minRightPanelWidth, Math.min(getRightPanelMaxWidth(), width));
+	}
+
+	function getStoredRightPanelWidth() {
+		const storedWidth = parseInt(localStorage.getItem(rightPanelWidthStorageKey), 10);
+		if (!isNaN(storedWidth)) return clampRightPanelWidth(storedWidth);
+		return defaultRightPanelWidth;
+	}
+
+	function getRightPanelWidth() {
+		if (rightPanel && rightPanel.length && !isOnBottom) {
+			const currentWidth = rightPanel[0].getBoundingClientRect().width;
+			if (currentWidth) return clampRightPanelWidth(currentWidth);
+		}
+		return getStoredRightPanelWidth();
+	}
+
+	function updatePageForRightPanelWidth(width) {
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			let resize = jq$(window).width() - width;
+			resize -= jq$(KNOWWE.core.util.getPageSelector()).offset().left;
+			jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
+			const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
+			rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
+		} else if (!isOnBottom) {
+			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", width + "px");
+		}
+	}
+
+	function setRightPanelWidth(width, persist) {
+		const clampedWidth = clampRightPanelWidth(width);
+		rightPanel.css("width", clampedWidth + "px");
+		updatePageForRightPanelWidth(clampedWidth);
+		if (persist) {
+			localStorage.setItem(rightPanelWidthStorageKey, clampedWidth);
+		}
+		return clampedWidth;
+	}
 
 	function getSelected() {
 		let t = '';
@@ -148,6 +205,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function moveRightPanelToBottom() {
 		isOnBottom = true;
+		rightPanel.removeClass("right-panel-right").addClass("right-panel-bottom");
 		rightPanel.css({
 			position: 'fixed',
 			width: '100%',
@@ -163,43 +221,59 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function moveRightPanelToRight() {
 		isOnBottom = false;
+		rightPanel.removeClass("right-panel-bottom").addClass("right-panel-right");
 		rightPanel.css({
 			bottom: '0',
-			width: '300px',
 			right: '0'
 		});
+		setRightPanelWidth(getStoredRightPanelWidth(), false);
 		rightPanelScroll();
 		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', 'auto');
 	}
 
 	function makeRightPanelResizable() {
-		let theMaxWidth = jq$(window).width();
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			theMaxWidth = theMaxWidth
-				- (jq$(".tabmenu a:last-child").first().offset().left
-					+ jq$(".tabmenu a:last-child").first().outerWidth()
-					+ jq$(KNOWWE.core.util.getActionsTopSelector()).outerWidth()
-					+ jq$("#rightPanel .ui-resizable-w").width() + 20)
-		} else {
-			theMaxWidth /= 2;
-		}
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			rightPanel.resizable({
-				handles: "w",
-				minWidth: 300,
-				maxWidth: theMaxWidth,
-				resize: function (event, ui) {
-					jq$(window).resize();
-				}
-			});
-		}
+		if (rightPanel.find(".right-panel-resize-handle").length) return;
 
+		const $handle = jq$("<div class=\"right-panel-resize-handle\"></div>").prependTo(rightPanel);
+		let dragging = false;
+		let startX = 0;
+		let startWidth = 0;
+
+		$handle.on("mousedown", function(e) {
+			if (isOnBottom) return;
+
+			const panelRect = rightPanel[0].getBoundingClientRect();
+			dragging = true;
+			startX = e.clientX;
+			startWidth = panelRect.width;
+			jq$("body").addClass("right-panel-resizing");
+			e.preventDefault();
+		});
+
+		jq$(document).off(".rightPanelResize");
+		jq$(document).on("mousemove.rightPanelResize", function(e) {
+			if (!dragging) return;
+
+			const delta = startX - e.clientX;
+			setRightPanelWidth(startWidth + delta, false);
+			rightPanelScroll();
+			e.preventDefault();
+		});
+
+		jq$(document).on("mouseup.rightPanelResize", function() {
+			if (!dragging) return;
+
+			dragging = false;
+			jq$("body").removeClass("right-panel-resizing");
+			setRightPanelWidth(rightPanel[0].getBoundingClientRect().width, true);
+		});
 	}
 
 	function restoreLayout() {
-		const resize = jq$(window).width() - jq$("#favorites").outerWidth() - 300;
+		const rightPanelWidth = getRightPanelWidth();
+		const resize = jq$(window).width() - jq$("#favorites").outerWidth() - rightPanelWidth;
 		jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
-		jq$(rightPanel).css("width", "300px");
+		jq$(rightPanel).css("width", rightPanelWidth + "px");
 		const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
 		rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
 	}
@@ -238,13 +312,14 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function shrinkPage() {
 		isOnBottom = jq$(window).width() < 600;
+		const rightPanelWidth = getStoredRightPanelWidth();
 		if (KNOWWE.core.util.isKnowWETemplate()) {
-			jq$(KNOWWE.core.util.getPageSelector()).animate({'width': "-=300px"}, globalFloatingTime);
+			jq$(KNOWWE.core.util.getPageSelector()).animate({'width': "-=" + rightPanelWidth + "px"}, globalFloatingTime);
 			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "5px");
 			jq$("#actionsBottom").css("margin-right", "5px");
 		} else {
 			if (!isOnBottom) {
-				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': "300px"}, globalFloatingTime);
+				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': rightPanelWidth + "px"}, globalFloatingTime);
 			}
 		}
 	}
@@ -266,7 +341,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		} else {
 			if (!isOnBottom) {
 				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': '0'}, globalFloatingTime);
-				rightPanel.animate({'right': '-=300px'}, globalFloatingTime, function () {
+				rightPanel.animate({'right': -getRightPanelWidth() + 'px'}, globalFloatingTime, function () {
 					removeRightPanel();
 				});
 			} else {
@@ -279,6 +354,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function removeRightPanel() {
+		jq$(document).off(".rightPanelResize");
+		jq$("body").removeClass("right-panel-resizing");
 		rightPanel.remove();
 		isOnBottom = false;
 		jq$(window).resize();
@@ -287,11 +364,13 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function buildRightPanel() {
 		const offsetTop = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : 0;
 		const scrollTop = jq$(window).scrollTop();
-		const width = isOnBottom ? '100%' : '300px';
-		const right = isOnBottom ? 'auto' : '-300px';
+		const panelWidth = getStoredRightPanelWidth();
+		const width = isOnBottom ? '100%' : panelWidth + 'px';
+		const right = isOnBottom ? 'auto' : -panelWidth + 'px';
 		const position = isOnBottom ? 'fixed' : 'absolute';
 		rightPanel = jq$('<div/>', {
 			'id': 'rightPanel',
+			'class': isOnBottom ? 'right-panel-bottom' : 'right-panel-right',
 			'css': {
 				'position': position,
 				'right': right,

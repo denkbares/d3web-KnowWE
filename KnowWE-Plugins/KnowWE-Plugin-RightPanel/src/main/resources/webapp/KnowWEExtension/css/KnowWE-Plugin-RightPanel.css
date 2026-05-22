@@ -25,6 +25,30 @@
 	z-index: 500;
 }
 
+#rightPanel .right-panel-resize-handle {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 8px;
+	height: 100%;
+	cursor: col-resize;
+	z-index: 501;
+	background: transparent;
+}
+
+#rightPanel .right-panel-resize-handle:hover {
+	background-color: rgba(0, 0, 0, 0.08);
+}
+
+#rightPanel.right-panel-bottom .right-panel-resize-handle {
+	display: none;
+}
+
+body.right-panel-resizing {
+	user-select: none;
+	cursor: col-resize;
+}
+
 #rightPanel .rightpanelhide {
 	position: absolute;
 	top: -18px;
