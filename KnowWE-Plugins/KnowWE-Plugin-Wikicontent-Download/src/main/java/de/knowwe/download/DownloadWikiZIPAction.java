@@ -82,11 +82,11 @@ public class DownloadWikiZIPAction extends AbstractAction {
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 
 		boolean fingerprint = Boolean.parseBoolean(context.getParameter(PARAM_FINGERPRINT, "false"));
-		boolean versions = Boolean.parseBoolean(context.getParameter(PARAM_VERSIONS, "false"));
-		LOGGER.info("Preparing wiki content download: " + filename + ", versions: " + versions + ", fingerprint: " + fingerprint);
+		boolean includeVersions = Boolean.parseBoolean(context.getParameter(PARAM_VERSIONS, "false"));
+		LOGGER.info("Preparing wiki content download: " + filename + ", versions: " + includeVersions + ", fingerprint: " + fingerprint);
 		Stopwatch stopwatch = new Stopwatch();
 		try (OutputStream outs = context.getOutputStream()) {
-			writeWikiContentZipStreamToOutputStream(context, outs, versions, fingerprint);
+			writeWikiContentZipStreamToOutputStream(context, outs, includeVersions, fingerprint);
 		}
 		stopwatch.log(LOGGER, "Finished writing wiki content to output stream: " + filename);
 	}
@@ -102,9 +102,9 @@ public class DownloadWikiZIPAction extends AbstractAction {
 		return new File(wikiProperty);
 	}
 
-	public static void writeWikiContentZipStreamToOutputStream(UserActionContext context, OutputStream outs, boolean versions, boolean fingerprint) throws IOException {
+	public static void writeWikiContentZipStreamToOutputStream(UserActionContext context, OutputStream outs, boolean includeVersions, boolean fingerprint) throws IOException {
 		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs))) {
-			zipDir(getWikiFolder(), zos, context, versions);
+			zipDir(getWikiFolder(), zos, context, includeVersions);
 			if (fingerprint) zipFingerprint(zos, context);
 		}
 	}
@@ -137,11 +137,11 @@ public class DownloadWikiZIPAction extends AbstractAction {
 	 * @param wikiRootFolder the folder to be zipped
 	 * @created 21.04.2012
 	 */
-	private static void zipDir(File wikiRootFolder, ZipOutputStream zos, UserActionContext context, boolean includeOld) throws IOException {
-		zipDir(wikiRootFolder, wikiRootFolder, zos, context, 0, includeOld);
+	private static void zipDir(File wikiRootFolder, ZipOutputStream zos, UserActionContext context, boolean includeVersions) throws IOException {
+		zipDir(wikiRootFolder, wikiRootFolder, zos, context, 0, includeVersions);
 	}
 
-	private static void zipDir(File wikiRootFolder, File file, ZipOutputStream zos, UserActionContext context, int level, boolean includeOld) throws IOException {
+	private static void zipDir(File wikiRootFolder, File file, ZipOutputStream zos, UserActionContext context, int level, boolean includeVersions) throws IOException {
 
 		// ignore all files if they belong to an article
 		// we have no read access for
@@ -159,9 +159,9 @@ public class DownloadWikiZIPAction extends AbstractAction {
 		}
 		else {
 			for (File child : Objects.requireNonNull(file.listFiles())) {
-				if (isHidden(child)) continue;
-				if (!includeOld && level == 0 && child.getName().equals("OLD")) continue;
-				zipDir(wikiRootFolder, child, zos, context, level + 1, includeOld);
+				if (!(includeVersions && child.getName().equals(".git")) && isHidden(child)) continue;
+				if (!includeVersions && level < 2 && child.getName().equals("OLD")) continue;
+				zipDir(wikiRootFolder, child, zos, context, level + 1, includeVersions);
 			}
 		}
 	}
