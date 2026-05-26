@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -221,11 +222,18 @@ public final class InterWikiImportUpdateService {
 			}
 
 			if (changes.getUpdates().isEmpty()) return new PollResult(List.of(), false, false);
-			stopwatch.log(LOGGER, "Found " + changes.getUpdates().size() + " changed InterWikiImport markups for " + wiki + ".");
+			stopwatch.log(LOGGER, "Found " + changes.getUpdates()
+					.size() + " changed InterWikiImport markups for " + wiki + ": " + changes.getUpdates()
+					.stream()
+					.map(u -> Sections.get(u.requestingSectionId()))
+					.filter(Objects::nonNull)
+					.map(Section::getTitle)
+					.collect(Collectors.joining(", ")));
 			return new PollResult(changes.getUpdates(), false, false);
 		}
 		catch (Exception e) {
-			LOGGER.warn("Failed to poll InterWikiImport changes from {}: {}: {}", wiki, e.getClass().getSimpleName(), e.getMessage());
+			LOGGER.warn("Failed to poll InterWikiImport changes from {}: {}: {}", wiki, e.getClass()
+					.getSimpleName(), e.getMessage());
 			return new PollResult(List.of(), false, true);
 		}
 	}
