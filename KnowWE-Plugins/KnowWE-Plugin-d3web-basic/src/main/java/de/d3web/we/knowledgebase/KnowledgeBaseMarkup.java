@@ -152,6 +152,7 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+			if (!Sections.isLive(section)) return; // may happen on GroupingPackageCompiler.recompile... maybe find better fix for that?
 			String annotation = DefaultMarkupType.getAnnotation(section, ANNOTATION_TERM_MATCHING);
 			boolean caseSensitive = CASE_SENSITIVE.equalsIgnoreCase(annotation);
 			compiler.getCompilerManager()

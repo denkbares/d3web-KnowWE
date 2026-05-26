@@ -260,6 +260,7 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<OntologyMarkup> section) throws CompilerMessage {
+			if (!Sections.isLive(section)) return; // may happen on GroupingPackageCompiler.recompile... maybe find better fix for that?
 			String ruleSetValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_RULE_SET);
 			RepositoryConfig ruleSet = getRuleSet(ruleSetValue);
 			String multiDefModeValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_MULTI_DEF_MODE);
