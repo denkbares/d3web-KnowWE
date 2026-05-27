@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
@@ -97,6 +98,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	private static final InterWikiImportUpdateService UPDATE_SERVICE = new InterWikiImportUpdateService();
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
+
+	/**
+	 * Last sync-failure message per wiki attachment path, so the warning survives article
+	 * recompiles (which discard section messages and rerun the compile scripts). Keyed by the
+	 * stable attachment path, analogous to {@link AttachmentUpdateMarkup}'s last-run tracking.
+	 */
+	private static final Map<String, String> LAST_SYNC_ERRORS = new ConcurrentHashMap<>();
 
 	static {
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, false);
@@ -435,6 +443,40 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final class TrackingMessages {
 	}
 
+	/** Marker source so sync-failure warnings can be cleared independently from other markup messages. */
+	private static final class SyncMessages {
+	}
+
+	/**
+	 * Records the outcome of a remote-change poll on this markup, called by
+	 * {@link InterWikiImportUpdateService} after every attempt (whether or not anything changed).
+	 * Always refreshes the "last check" timestamp; on failure ({@code errorMessage != null}) it
+	 * stores a warning so the failing sync is visible in the markup instead of silently showing
+	 * "No check yet", on success it clears any previous warning. The failure is also remembered
+	 * per attachment path so {@link RegistrationScript} can re-apply it after a recompile.
+	 */
+	void recordSyncOutcome(Section<InterWikiImportMarkup> section, @Nullable String errorMessage) {
+		logLastRun(section);
+		String path = getWikiAttachmentPath(section);
+		if (errorMessage == null) {
+			if (path != null) LAST_SYNC_ERRORS.remove(path);
+			Messages.clearMessages(section, SyncMessages.class);
+		}
+		else {
+			if (path != null) LAST_SYNC_ERRORS.put(path, errorMessage);
+			Messages.storeMessage(section, SyncMessages.class, Messages.warning(errorMessage));
+		}
+	}
+
+	/** Re-applies a remembered sync-failure warning after a recompile cleared the section messages. */
+	private void restoreSyncMessage(Section<InterWikiImportMarkup> section) {
+		String path = getWikiAttachmentPath(section);
+		String error = path == null ? null : LAST_SYNC_ERRORS.get(path);
+		if (error != null) {
+			Messages.storeMessage(section, SyncMessages.class, Messages.warning(error));
+		}
+	}
+
 	void collectTrackingInitializationReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
 		if (getMode(section) != Mode.TRACKING) return;
 
@@ -482,7 +524,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		private void render(Section<?> section, UserContext user, RenderResult result, boolean waitForUpdate) {
 			waitForUpdate(section, user, waitForUpdate);
 			Collection<String> errors = getMessageStrings(section, Message.Type.ERROR, user);
-			Collection<String> warnings = getMessageStrings(section, Message.Type.ERROR, user);
+			Collection<String> warnings = getMessageStrings(section, Message.Type.WARNING, user);
 			setFramed(!errors.isEmpty() || !warnings.isEmpty());
 			super.render(section, user, result);
 		}
@@ -807,12 +849,14 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			}
 			UPDATE_SERVICE.register(section);
 			section.get().refreshTrackingMessages(section);
+			section.get().restoreSyncMessage(section);
 		}
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			UPDATE_SERVICE.deregister(section);
 			Messages.clearMessages(section, TrackingMessages.class);
+			Messages.clearMessages(section, SyncMessages.class);
 		}
 	}
 }

@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
@@ -66,7 +65,8 @@ public final class InterWikiImportUpdateService {
 	                          @Nullable Instant latestChange) {
 	}
 
-	private record PollResult(List<InterWikiChanges.Update> updates, boolean notAuthorized, boolean failed) {
+	private record PollResult(List<InterWikiChanges.Update> updates, boolean notAuthorized, boolean failed,
+	                          @Nullable String error) {
 		private PollResult {
 			updates = List.copyOf(updates);
 		}
@@ -116,7 +116,9 @@ public final class InterWikiImportUpdateService {
 
 		articleManager.open();
 		try {
-			PollResult result = pollSource(wiki, List.of(snapshot));
+			List<ImportInfo> snapshots = List.of(snapshot);
+			PollResult result = pollSource(wiki, snapshots);
+			recordOutcome(snapshots, result);
 			if (!result.updates().isEmpty()) {
 				processUpdates(result.updates());
 			}
@@ -158,6 +160,7 @@ public final class InterWikiImportUpdateService {
 		try {
 			for (Map.Entry<String, List<ImportInfo>> entry : markupsByWiki.entrySet()) {
 				PollResult result = pollSource(entry.getKey(), entry.getValue());
+				recordOutcome(entry.getValue(), result);
 				updates.addAll(result.updates());
 				if (result.notAuthorized()) notAuthorizedSources++;
 				if (result.failed()) failedSources++;
@@ -209,36 +212,58 @@ public final class InterWikiImportUpdateService {
 
 	private PollResult pollSource(String wiki, List<ImportInfo> snapshots) {
 		if (wiki == null || wiki.isBlank() || snapshots.isEmpty()) {
-			return new PollResult(List.of(), false, false);
+			return new PollResult(List.of(), false, false, null);
 		}
 
 		try {
 			Stopwatch stopwatch = new Stopwatch();
 			InterWikiChanges changes = requestChanges(wiki, snapshots);
-			if (changes == null) return new PollResult(List.of(), false, false);
+			if (changes == null) return new PollResult(List.of(), false, false, null);
 
 			if (changes.getStatus() == InterWikiChanges.Status.not_authorized) {
 				LOGGER.warn("Not authorized to poll InterWikiImport changes from {}.", wiki);
-				return new PollResult(List.of(), true, false);
+				return new PollResult(List.of(), true, false,
+						"Source wiki rejected the change-poll request as not authorized.");
 			}
 
-			if (changes.getUpdates().isEmpty()) return new PollResult(List.of(), false, false);
+			if (changes.getUpdates().isEmpty()) return new PollResult(List.of(), false, false, null);
 			stopwatch.log(LOGGER, "Found " + changes.getUpdates()
 					.size() + " changed InterWikiImport markups for " + wiki + ": " + changes.getUpdates()
 					.stream()
 					.map(u -> Sections.get(u.requestingSectionId()))
 					.filter(Objects::nonNull)
 					.map(Section::getTitle)
-					.filter(Objects::nonNull)
-					.sorted(NumberAwareComparator.CASE_INSENSITIVE)
 					.collect(Collectors.joining(", ")));
-			return new PollResult(changes.getUpdates(), false, false);
+			return new PollResult(changes.getUpdates(), false, false, null);
 		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to poll InterWikiImport changes from {}: {}: {}", wiki, e.getClass()
 					.getSimpleName(), e.getMessage());
-			return new PollResult(List.of(), false, true);
+			return new PollResult(List.of(), false, true, e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Records the outcome of a poll attempt on every involved markup, regardless of whether
+	 * anything changed: it refreshes the "last check" timestamp and stores a warning message on
+	 * failure (so a failing sync is visible in the markup, not silently stuck at "No check yet")
+	 * or clears a previous warning on success.
+	 */
+	private void recordOutcome(List<ImportInfo> snapshots, PollResult result) {
+		String message = syncFailureMessage(result);
+		for (ImportInfo snapshot : snapshots) {
+			Section<InterWikiImportMarkup> markup = Sections.get(snapshot.sectionId(), InterWikiImportMarkup.class);
+			if (!Sections.isLive(markup)) continue;
+			markup.get().recordSyncOutcome(markup, message);
+		}
+	}
+
+	@Nullable
+	private static String syncFailureMessage(PollResult result) {
+		if (!result.notAuthorized() && !result.failed()) return null;
+		String detail = result.error();
+		return "Last attempt to check for changes in the source wiki failed"
+				+ (detail == null ? "." : ": " + detail);
 	}
 
 	private int processUpdates(List<InterWikiChanges.Update> updates) {
