@@ -82,9 +82,10 @@ public class SparqlEndpointAction extends AbstractAction {
 				}
 			}
 		}
-		if (!wikiConnector.userIsMemberOfGroup(GROUPNAME, context)) {
+		if (wikiConnector.userIsMemberOfGroup(GROUPNAME, context)) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
 					"You are not allowed to use this sparql endpoint. Please talk to your administrator.");
+			return;
 		}
 
 		RepositoryController repositoryController = new RepositoryController();
