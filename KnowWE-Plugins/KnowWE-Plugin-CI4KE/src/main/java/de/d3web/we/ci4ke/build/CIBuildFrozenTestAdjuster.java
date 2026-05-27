@@ -78,17 +78,18 @@ class CIBuildFrozenTestAdjuster {
 				for (String testObject : testResult.getTestObjectsWithExpectedOutcome()) {
 					expectedMessages.put(testObject, testResult.getMessageForTestObject(testObject));
 				}
-
+				TestResult normalTest;
+				TestResult frozenTest;
 				if (isFullyFrozen) {
-					testResult.setFrozenTest(true);
+					normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  Collections.synchronizedMap(new TreeMap<>()), Collections.synchronizedMap(new TreeMap<>()), new Message(Message.Type.SUCCESS));
 				} else {
-					TestResult normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesNormal, expectedMessages, testResult.getSummary());
-					TestResult frozenTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesFrozen, expectedMessages, testResult.getSummary());
-					frozenTest.setFrozenTest(true);
-					newResults.add(normalTest);
-					newResults.add(frozenTest);
-					removeResults.add(testResult);
+					normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesNormal, expectedMessages, testResult.getSummary());
 				}
+				frozenTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesFrozen, expectedMessages, testResult.getSummary());
+				frozenTest.setFrozenTest(true);
+				newResults.add(normalTest);
+				newResults.add(frozenTest);
+				removeResults.add(testResult);
 			}
 		}
 		for (TestResult removeResult : removeResults) {
@@ -102,6 +103,7 @@ class CIBuildFrozenTestAdjuster {
 	}
 
 	private static boolean isFrozenTest(TestResult testResult, CIDashboard dashboard) throws IOException {
+		if (testResult.isSoftTest()) return false;
 		Collection<WikiAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments(dashboard.getDashboardArticle()).stream().filter(a -> a.getFileName().contains(CIFreezeFailedTestsAction.getFileName(dashboard, testResult))).toList();
 		Optional<WikiAttachment> attachment = attachments.stream().findFirst();
 		if (attachment.isEmpty()) return false;
@@ -241,7 +243,11 @@ class CIBuildFrozenTestAdjuster {
 				//if (isSectionHeader) continue;
 				if (isHeader) {
 					if (currentHeader != null) {
-						frozenContent.put(currentHeader, new ArrayList<String>(currentContent));
+						if (frozenContent.containsKey(currentHeader)) {
+							frozenContent.get(currentHeader).addAll(currentContent);
+						} else {
+							frozenContent.put(currentHeader, new ArrayList<String>(currentContent));
+						}
 					}
 					currentContent.clear();
 					currentHeader = normalizeHeader(fileLine);
@@ -250,7 +256,11 @@ class CIBuildFrozenTestAdjuster {
 				}
 			}
 		}
-		frozenContent.put(currentHeader, currentContent);
+		if (frozenContent.containsKey(currentHeader)) {
+			frozenContent.get(currentHeader).addAll(currentContent);
+		} else {
+			frozenContent.put(currentHeader, new ArrayList<String>(currentContent));
+		}
 
 		return frozenContent;
 	}
