@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
@@ -228,6 +229,8 @@ public final class InterWikiImportUpdateService {
 					.map(u -> Sections.get(u.requestingSectionId()))
 					.filter(Objects::nonNull)
 					.map(Section::getTitle)
+					.filter(Objects::nonNull)
+					.sorted(NumberAwareComparator.CASE_INSENSITIVE)
 					.collect(Collectors.joining(", ")));
 			return new PollResult(changes.getUpdates(), false, false);
 		}
