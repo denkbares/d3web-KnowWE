@@ -83,6 +83,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 
 		for (TestResult result : results) {
 			if (result.isSuccessful()) continue;
+			if (result.isSoftTest()) continue;
 
 			String fileName = getFileName(dashboard, result);
 
@@ -104,7 +105,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 				if (result.getTestObjectsWithUnexpectedOutcome().isEmpty()) continue;
 
 				for (String testObject : result.getTestObjectsWithUnexpectedOutcome()) {
-					addIfNotExists(file, AttachmentString, result.getMessageForTestObject(testObject).getText());
+					addIfNotExists(file, AttachmentString, result.getMessageForTestObject(testObject).getText(), testObject);
 				}
 
 				renamedPath = tempPath.resolveSibling(fileName);
@@ -143,7 +144,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 	 * @param newTests the new test to add into the file
 	 * @created 08.05.2026
 	 */
-	private static void addIfNotExists(File file, String fileText, String newTests) throws IOException {
+	private static void addIfNotExists(File file, String fileText, String newTests, String testObject) throws IOException {
 
 		if (!file.exists()) {
 			file.createNewFile();
@@ -160,6 +161,9 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 		if (newLines.isEmpty())  {
 			Files.writeString(file.toPath(), fileText);
 			return;
+		}
+		if (!newTests.contains(testObject)) {
+			newLines.add(0, testObject);
 		}
 
 		String newSectionHeader = newLines.get(0);

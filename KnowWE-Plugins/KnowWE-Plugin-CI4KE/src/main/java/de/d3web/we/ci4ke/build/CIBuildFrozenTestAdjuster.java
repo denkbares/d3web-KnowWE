@@ -46,7 +46,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
 
 /**
- * Turns frozen tests of a BuildResult into soft tests
+ * Marks test as Frozen according to attachments
  *
  * @author Philipp Sehne (denkbares GmbH)
  * @created 08.05.2026
@@ -60,9 +60,9 @@ class CIBuildFrozenTestAdjuster {
 		for (TestResult testResult : testResults) {
 			if (isFrozenTest(testResult, dashboard)) {
 				Map<String, Message> unexpectedMessagesNormal = Collections.synchronizedMap(new TreeMap<>());
-				Map<String, Message> unexpectedMessagesSoft = Collections.synchronizedMap(new TreeMap<>());
+				Map<String, Message> unexpectedMessagesFrozen = Collections.synchronizedMap(new TreeMap<>());
 				Map<String, Message> expectedMessages = Collections.synchronizedMap(new TreeMap<>());
-				boolean isFullySoft = true;
+				boolean isFullyFrozen = true;
 
 				Optional<WikiAttachment> attachment = Environment.getInstance().getWikiConnector().getAttachments(dashboard.getDashboardArticle()).stream().filter(a -> a.getFileName().contains(CIFreezeFailedTestsAction.getFileName(dashboard, testResult))).findFirst();
 				if (attachment.isEmpty()) continue;
@@ -71,22 +71,22 @@ class CIBuildFrozenTestAdjuster {
 				for (String testObject : testResult.getTestObjectsWithUnexpectedOutcome()) {
 					Pair<Message, Message> messagePair = splitText(testResult.getMessageForTestObject(testObject), fileText, testObject);
 					unexpectedMessagesNormal.put(testObject, messagePair.getA());
-					unexpectedMessagesSoft.put(testObject, messagePair.getB());
-					if (!messagePair.getA().getText().isEmpty()) isFullySoft = false;
+					unexpectedMessagesFrozen.put(testObject, messagePair.getB());
+					if (!messagePair.getA().getText().isEmpty()) isFullyFrozen = false;
 				}
 
 				for (String testObject : testResult.getTestObjectsWithExpectedOutcome()) {
 					expectedMessages.put(testObject, testResult.getMessageForTestObject(testObject));
 				}
 
-				if (isFullySoft) {
-					testResult.setSoftTest(true);
+				if (isFullyFrozen) {
+					testResult.setFrozenTest(true);
 				} else {
 					TestResult normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesNormal, expectedMessages, testResult.getSummary());
-					TestResult softTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesSoft, expectedMessages, testResult.getSummary());
-					softTest.setSoftTest(true);
+					TestResult frozenTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesFrozen, expectedMessages, testResult.getSummary());
+					frozenTest.setFrozenTest(true);
 					newResults.add(normalTest);
-					newResults.add(softTest);
+					newResults.add(frozenTest);
 					removeResults.add(testResult);
 				}
 			}
@@ -132,13 +132,13 @@ class CIBuildFrozenTestAdjuster {
 				.toList();
 
 		StringBuilder normalTest = new StringBuilder();
-		StringBuilder softTest = new StringBuilder();
-		boolean fullySoft = true;
+		StringBuilder frozenTest = new StringBuilder();
+		boolean fullyFrozen = true;
 		boolean fullyNormal = true;
 
 		String currentHeader = null;
 		List<String> currentNormalContent = new ArrayList<>();
-		List<String> currentSoftContent = new ArrayList<>();
+		List<String> currentFrozenContent = new ArrayList<>();
 
 		Map<String, List<String>> frozenContent = extractMatchingFileSection(fileText, testObject);
 
@@ -150,46 +150,49 @@ class CIBuildFrozenTestAdjuster {
 			boolean isSectionHeader = isHeader && messageLines.indexOf(messageLine) < messageLines.size() - 1 && !messageLines.get(messageLines.indexOf(messageLine) + 1).startsWith("*");
 			if (isHeader) {
 				if (isSectionHeader) {
-					normalTest.append(System.lineSeparator()).append(System.lineSeparator()).append(messageLine).append(System.lineSeparator());
-					softTest.append(System.lineSeparator()).append(System.lineSeparator()).append(messageLine).append(System.lineSeparator());
-					continue;
+					normalTest.append(System.lineSeparator());//.append(System.lineSeparator()).append(messageLine).append(System.lineSeparator());
+					frozenTest.append(System.lineSeparator());//.append(System.lineSeparator()).append(messageLine).append(System.lineSeparator());
+					//continue;
 				}
 				if (currentHeader != null) {
 					flushBlock(normalTest, currentNormalContent, currentHeader);
-					flushBlock(softTest, currentSoftContent, currentHeader);
+					flushBlock(frozenTest, currentFrozenContent, currentHeader);
 				}
 				currentNormalContent.clear();
-				currentSoftContent.clear();
+				currentFrozenContent.clear();
 				currentList = frozenContent.get(normalizeHeader(messageLine));
 				currentHeader = messageLine;
 			} else {
 				if (currentList != null) {
 					if (currentList.contains(normalizeLink(messageLine))) {
-						currentSoftContent.add(messageLine);
+						currentFrozenContent.add(messageLine);
 						fullyNormal = false;
 					} else {
 						currentNormalContent.add(messageLine);
-						fullySoft = false;
+						fullyFrozen = false;
 					}
+				} else {
+					currentNormalContent.add(messageLine);
+					fullyFrozen = false;
 				}
 			}
 		}
 
 		if (currentHeader != null) {
 			flushBlock(normalTest, currentNormalContent, currentHeader);
-			flushBlock(softTest, currentSoftContent, currentHeader);
+			flushBlock(frozenTest, currentFrozenContent, currentHeader);
 		}
 
 		if (fullyNormal) {
-			softTest = new StringBuilder();
+			frozenTest = new StringBuilder();
 		}
-		if (fullySoft) {
+		if (fullyFrozen) {
 			normalTest = new StringBuilder();
 		}
 
 		return new Pair<>(
 				new Message(message.getType(), adjustHeaderCounts(normalTest.toString()).trim()),
-				new Message(message.getType(), adjustHeaderCounts(softTest.toString()).trim())
+				new Message(message.getType(), adjustHeaderCounts(frozenTest.toString()).trim())
 		);
 	}
 
@@ -215,10 +218,16 @@ class CIBuildFrozenTestAdjuster {
 		String currentHeader = null;
 		List<String> currentContent = new ArrayList<>();
 
+		boolean firstLineMustBeSectionHeader = true;
+
 		//find SectionHeader that contains testObject, put content under that Section into the map
 		for (String fileLine : fileLines) {
 			boolean isHeader = !fileLine.startsWith("*");
 			boolean isSectionHeader = isHeader && fileLines.indexOf(fileLine) < fileLines.size() - 1 && !fileLines.get(fileLines.indexOf(fileLine) + 1).startsWith("*");
+			if (firstLineMustBeSectionHeader) {
+				isSectionHeader = true;
+				firstLineMustBeSectionHeader = false;
+			}
 
 			if (isSectionHeader) {
 				if (inMatchingSection) {
@@ -229,7 +238,7 @@ class CIBuildFrozenTestAdjuster {
 				}
 			}
 			if (inMatchingSection) {
-				if (isSectionHeader) continue;
+				//if (isSectionHeader) continue;
 				if (isHeader) {
 					if (currentHeader != null) {
 						frozenContent.put(currentHeader, new ArrayList<String>(currentContent));
@@ -341,7 +350,7 @@ class CIBuildFrozenTestAdjuster {
 		Set<String> testObjects2 = new HashSet<>(testResult.getTestObjectsWithUnexpectedOutcome());
 		testObjects2.addAll(testResult.getTestObjectsWithExpectedOutcome());
 		for (TestResult result : results) {
-			if (result.getTestName().equals(testResult.getTestName()) && result.isSoftTest() == testResult.isSoftTest() && !result.equals(testResult) && result.getConfiguration() == testResult.getConfiguration()) {
+			if (result.getTestName().equals(testResult.getTestName()) && result.isFrozenTest() == testResult.isFrozenTest() && !result.equals(testResult) && result.getConfiguration() == testResult.getConfiguration()) {
 				//Expected and Unexpected together to get total test Objects
 				Set<String> testObjects1 = new HashSet<>(result.getTestObjectsWithUnexpectedOutcome());
 				testObjects1.addAll(result.getTestObjectsWithExpectedOutcome());
@@ -384,7 +393,7 @@ class CIBuildFrozenTestAdjuster {
 			expectedMessages.put(testObject, new Message(Message.Type.SUCCESS, stringBuilder.toString()));
 		}
 		TestResult newTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(), unexpectedMessages, expectedMessages, testResult.getSummary());
-		newTest.setSoftTest(testResult.isSoftTest());
+		newTest.setFrozenTest(testResult.isFrozenTest());
 		return newTest;
 	}
 

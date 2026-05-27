@@ -81,6 +81,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String MAX_BUILDS = "max-builds";
 
 	public static final String SOFT_TEST_KEY = "softTest";
+	public static final String FROZEN_TEST_KEY = "frozen";
 	public static final String TRIGGER_KEY = "trigger";
 	public static final String PRIORITY = "priority";
 	public static final String TRIGGER_REGEX = "^(onDemand|(onSave|onSchedule)\\s*(\".+?\"|[^\\s]+))$";
@@ -113,6 +114,7 @@ public class CIDashboardType extends DefaultMarkupType {
 						" to others, meaning the tests will get priority while queueing for execution." +
 						" Default priority is 10.");
 		markup.addAnnotation(SOFT_TEST_KEY, false);
+		markup.addAnnotation(FROZEN_TEST_KEY, false);
 		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(TRIGGER_REGEX));
 		markup.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
 				"<p><b>Options:</b><br>" +
@@ -124,6 +126,8 @@ public class CIDashboardType extends DefaultMarkupType {
 				"</p>");
 		markup.getAnnotation(SOFT_TEST_KEY).setDocumentation("Declare tests as 'soft tests'.<br>" +
 				"Soft tests are only acknowledged in the build details but have no effect on the overall build result.");
+		markup.getAnnotation(FROZEN_TEST_KEY).setDocumentation("Declare tests as 'frozen'.<br>" +
+				"Frozen tests are only acknowledged in the build details but have no effect on the overall build result.");
 
 		// allow grouping of tests
 		markup.addAnnotation(GROUP_KEY, false);
@@ -132,8 +136,10 @@ public class CIDashboardType extends DefaultMarkupType {
 		markup.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
 		markup.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
 		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestIgnoreType());
+		markup.addAnnotationContentType(FROZEN_TEST_KEY, new TestIgnoreType());
 		markup.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
 		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestDeclarationType());
+		markup.addAnnotationContentType(FROZEN_TEST_KEY, new TestDeclarationType());
 		markup.addAnnotation(TEMPLATE, false);
 		markup.addAnnotation(SKIP_TESTS, false);
 
@@ -184,12 +190,12 @@ public class CIDashboardType extends DefaultMarkupType {
 	}
 
 	/**
-	 * Returns a testProcessingResult containing testSpecifications and testParsers of all defined tests and
-	 * soft tests from the respective annotations
+	 * Returns a testProcessingResult containing testSpecifications and testParsers of all defined tests,
+	 * soft tests and frozen tests from the respective annotations
 	 *
 	 * @param annotationSections all annotations of given dashboard
 	 * @param section            current ci dashboard section
-	 * @return final testProcessingResult containing all defined tests and soft tests
+	 * @return final testProcessingResult containing all defined tests, soft tests and frozen tests
 	 */
 	protected TestProcessingResult processTests(List<Section<? extends AnnotationContentType>> annotationSections, DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
 		List<TestSpecification<?>> tests = new ArrayList<>();
@@ -203,8 +209,11 @@ public class CIDashboardType extends DefaultMarkupType {
 						new TestGroup(), "void", new String[] { textWithoutComment }, new String[0][]);
 				tests.add(group);
 			}
-			else if (type.equalsIgnoreCase(TEST_KEY) || type.equalsIgnoreCase(SOFT_TEST_KEY)) {
+			else if (type.equalsIgnoreCase(TEST_KEY) || type.equalsIgnoreCase(SOFT_TEST_KEY) ||  type.equalsIgnoreCase(FROZEN_TEST_KEY)) {
 				if (type.equalsIgnoreCase(SOFT_TEST_KEY)) {
+					textWithoutComment += " " + type;
+				}
+				if (type.equalsIgnoreCase(FROZEN_TEST_KEY)) {
 					textWithoutComment += " " + type;
 				}
 				TestParser testParser = new TestParser(textWithoutComment);
@@ -253,7 +262,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	}
 
 	protected List<Section<? extends AnnotationContentType>> getAnnotationSections(Section<CIDashboardType> section) {
-		return DefaultMarkupType.getAnnotationContentSections(section, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY, TEMPLATE, SKIP_TESTS);
+		return DefaultMarkupType.getAnnotationContentSections(section, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY, TEMPLATE, SKIP_TESTS, FROZEN_TEST_KEY);
 	}
 
 	/**
@@ -324,7 +333,7 @@ public class CIDashboardType extends DefaultMarkupType {
 				String[][] allIgnores = ignoreSet.toArray(new String[0][]);
 
 				combinedTestSpecifications.add(new TestSpecification<>(specification1.getTest(), specification1.getTestObject(),
-						allArgs, allIgnores, specification1.isSoftTest()));
+						allArgs, allIgnores, specification1.isSoftTest(), specification1.isFrozenTest()));
 				secondPrioritySpecs.remove(specification2);
 			}
 			else {

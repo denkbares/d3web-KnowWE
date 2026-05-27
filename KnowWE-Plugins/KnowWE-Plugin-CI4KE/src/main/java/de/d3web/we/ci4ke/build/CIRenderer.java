@@ -215,12 +215,20 @@ public class CIRenderer {
 				}
 				// render the particular tests
 				List<TestResult> softTests = new ArrayList<>();
+				List<TestResult> frozenTests = new ArrayList<>();
 				for (TestResult testResult : groupResults) {
 					if (testResult.isSoftTest()) {
 						softTests.add(testResult);
 						continue;
 					}
+					if (testResult.isFrozenTest()) {
+						frozenTests.add(testResult);
+						continue;
+					}
 					appendTestResult(context, testResult, result);
+				}
+				for (TestResult frozenTest : frozenTests) {
+					appendTestResult(context, frozenTest, result);
 				}
 				if (!softTests.isEmpty()) {
 					result.append(new Div().clazz("soft-tests-separator").children(
@@ -336,6 +344,9 @@ public class CIRenderer {
 		renderResult.appendHtml(getTitleHtml(title));
 		if (testResult.isSoftTest()) {
 			renderResult.append(new Span("Soft:").attributes("class", "ci-softTest"));
+		}
+		if (testResult.isFrozenTest()) {
+			renderResult.append(new Span("Frozen:").attributes("class", "ci-softTest"));
 		}
 		renderResult.append(name);
 
