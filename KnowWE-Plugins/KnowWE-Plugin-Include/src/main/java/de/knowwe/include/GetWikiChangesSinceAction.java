@@ -47,7 +47,15 @@ public class GetWikiChangesSinceAction extends AbstractAction {
 		for (InterWikiChanges.RequestedImport requestedImport : imports) {
 			GetWikiSectionTextAction.SourceInfo sourceInfo = getSourceImport(requestedImport, context);
 			if (sourceInfo == null) continue;
-			if (sourceInfo.sourceText() == null || sourceInfo.sourceLatestChange() == null) continue;
+			if (sourceInfo.sourceText() == null) continue;
+
+			// Record the "imported by" marker on the source section on every poll cycle (which keeps it within
+			// its TTL), mirroring GetWikiSectionTextAction#execute. The bulk poll carries the importing wiki's
+			// from/link per import in the request body, since they are not available as request parameters here.
+			ImportMarker.markAsImported(sourceInfo.referencedSection(), requestedImport.reference(),
+					requestedImport.from(), requestedImport.link());
+
+			if (sourceInfo.sourceLatestChange() == null) continue;
 			if (requestedImport.latestChange() == null || sourceInfo.sourceLatestChange()
 					.isAfter(requestedImport.latestChange())) {
 				updates.add(new InterWikiChanges.Update(
@@ -62,11 +70,7 @@ public class GetWikiChangesSinceAction extends AbstractAction {
 	}
 
 	private GetWikiSectionTextAction.SourceInfo getSourceImport(InterWikiChanges.RequestedImport requestedImport, UserActionContext context) {
-		String wikiReference = requestedImport.page();
-		if (requestedImport.section() != null) {
-			wikiReference += "#" + requestedImport.section();
-		}
 		// Access checks are delegated to GetWikiSectionTextAction.getSourceInfo(...) via KnowWEUtils.canView(...).
-		return GetWikiSectionTextAction.getSourceInfo(wikiReference, context);
+		return GetWikiSectionTextAction.getSourceInfo(requestedImport.reference(), context);
 	}
 }

@@ -105,15 +105,29 @@ public class ImportMarker {
 	}
 
 	public static void markAsImported(Section<? extends Type> section, UserActionContext context) {
+		markAsImported(section, context.getParameter(REFERENCE), context.getParameter(REQUEST_FROM),
+				context.getParameter(REQUEST_LINK));
+	}
+
+	/**
+	 * Records that the given source section was imported by the wiki identified by {@code sourceLabel} /
+	 * {@code sourceLink}. Used both by the direct {@link GetWikiSectionTextAction} (params from the request)
+	 * and by the bulk {@link GetWikiChangesSinceAction} (values carried per import in the request body), so
+	 * the "imported by" marker shows up regardless of which path resolved the content.
+	 */
+	public static void markAsImported(Section<? extends Type> section, @NotNull String reference,
+									  @Nullable String sourceLabel, @Nullable String sourceLink) {
 		Set<ImportMarker> markers = section.computeIfAbsent(null, ImportMarker.class.getName(),
 				(c, s) -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
-		ImportMarker marker = new ImportMarker(new Date(), context.getParameter(REFERENCE), context.getParameter(REQUEST_FROM), context.getParameter(REQUEST_LINK));
+		ImportMarker marker = new ImportMarker(new Date(), reference, sourceLabel, sourceLink);
 
+		// remove+add so the creation date (the "... ago" shown in the marker) refreshes on every import
 		markers.remove(marker);
 		markers.add(marker);
 
 		// also safe statically, so it can be displayed after the page changed
 		Set<ImportMarker> staticMarkersOfPage = IMPORT_MARKERS.computeIfAbsent(section.getTitle(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
+		staticMarkersOfPage.remove(marker);
 		staticMarkersOfPage.add(marker);
 		Date twoHoursAgo = Date.from(Instant.now().minus(2, ChronoUnit.HOURS));
 		staticMarkersOfPage.removeIf(m -> m.getCreationDate().before(twoHoursAgo)); // cleanup

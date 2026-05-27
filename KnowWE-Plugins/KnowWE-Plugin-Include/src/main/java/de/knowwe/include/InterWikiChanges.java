@@ -22,6 +22,8 @@ final class InterWikiChanges {
 	private static final String PAGE = "page";
 	private static final String SECTION = "section";
 	private static final String LATEST_CHANGE = "latestChange";
+	private static final String FROM = "from";
+	private static final String LINK = "link";
 
 	enum Status {
 		ok,
@@ -29,13 +31,16 @@ final class InterWikiChanges {
 	}
 
 	record RequestedImport(String requestingSectionId, String page, @Nullable String section,
-	                       @Nullable Instant latestChange) {
+	                       @Nullable Instant latestChange, @Nullable String from, @Nullable String link) {
 		JSONObject toJson() {
 			JSONObject json = new JSONObject();
 			json.put(REQUESTING_SECTION_ID, requestingSectionId);
 			json.put(PAGE, page);
 			if (section != null) json.put(SECTION, section);
 			if (latestChange != null) json.put(LATEST_CHANGE, latestChange.toString());
+			// from/link identify the importing wiki+section, so the source can show an "imported by" marker
+			if (from != null) json.put(FROM, from);
+			if (link != null) json.put(LINK, link);
 			return json;
 		}
 
@@ -44,7 +49,13 @@ final class InterWikiChanges {
 					json.getString(REQUESTING_SECTION_ID),
 					json.getString(PAGE),
 					json.optString(SECTION, null),
-					parseInstant(json.optString(LATEST_CHANGE, null)));
+					parseInstant(json.optString(LATEST_CHANGE, null)),
+					json.optString(FROM, null),
+					json.optString(LINK, null));
+		}
+
+		String reference() {
+			return section == null ? page : page + "#" + section;
 		}
 	}
 

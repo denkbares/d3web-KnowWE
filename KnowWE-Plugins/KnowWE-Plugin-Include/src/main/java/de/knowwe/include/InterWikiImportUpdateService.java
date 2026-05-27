@@ -62,7 +62,7 @@ public final class InterWikiImportUpdateService {
 	});
 
 	private record ImportInfo(String sectionId, String wiki, String page, @Nullable String sectionHeading,
-	                          @Nullable Instant latestChange) {
+	                          @Nullable Instant latestChange, @Nullable String from, @Nullable String link) {
 	}
 
 	private record PollResult(List<InterWikiChanges.Update> updates, boolean notAuthorized, boolean failed,
@@ -107,7 +107,9 @@ public final class InterWikiImportUpdateService {
 				wiki,
 				markup.get().getPageName(markup),
 				markup.get().getSectionName(markup),
-				force ? null : markup.get().getLatestChange(markup));
+				force ? null : markup.get().getLatestChange(markup),
+				markup.get().getImportSourceLabel(markup),
+				markup.get().getImportSourceLink(markup));
 
 		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
@@ -205,7 +207,9 @@ public final class InterWikiImportUpdateService {
 					InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup)),
 					markup.get().getPageName(markup),
 					markup.get().getSectionName(markup),
-					markup.get().getLatestChange(markup)));
+					markup.get().getLatestChange(markup),
+					markup.get().getImportSourceLabel(markup),
+					markup.get().getImportSourceLink(markup)));
 		}
 		return snapshots;
 	}
@@ -294,7 +298,9 @@ public final class InterWikiImportUpdateService {
 						snapshot.sectionId(),
 						snapshot.page(),
 						snapshot.sectionHeading(),
-						snapshot.latestChange()))
+						snapshot.latestChange(),
+						snapshot.from(),
+						snapshot.link()))
 				.toList();
 
 		String urlString = wiki + AttachmentUpdateMarkup.getActionFragment() + "/GetWikiChangesSinceAction";

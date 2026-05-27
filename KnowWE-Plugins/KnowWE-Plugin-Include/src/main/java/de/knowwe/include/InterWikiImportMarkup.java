@@ -217,16 +217,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			reference += Strings.encodeURL("#" + sectionName);
 		}
 
-		String linkLabel = Environment.getInstance().getWikiConnector().getApplicationName();
-		if (Strings.isBlank(linkLabel) || "knowwe".equalsIgnoreCase(linkLabel)) {
-			linkLabel = "another wiki";
-		}
-		linkLabel += ": " + section.getTitle();
-
-		String fromParam = "&" + ImportMarker.REQUEST_FROM + "=" + Strings.encodeURL(linkLabel);
-
-		String link = KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getURLLink(section));
-		String linkParam = "&" + ImportMarker.REQUEST_LINK + "=" + Strings.encodeURL(link);
+		String fromParam = "&" + ImportMarker.REQUEST_FROM + "=" + Strings.encodeURL(getImportSourceLabel(section));
+		String linkParam = "&" + ImportMarker.REQUEST_LINK + "=" + Strings.encodeURL(getImportSourceLink(section));
 
 		String url = wikiAnnotation + command + reference + (params ? fromParam + linkParam : "");
 
@@ -236,6 +228,23 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		catch (MalformedURLException e) {
 			return null;
 		}
+	}
+
+	/**
+	 * Label identifying this importing wiki and article, shown on the source page's "imported by" marker.
+	 * Sent both as the {@code requestFrom} URL parameter (single fetch) and in the bulk poll request body.
+	 */
+	String getImportSourceLabel(Section<InterWikiImportMarkup> section) {
+		String linkLabel = Environment.getInstance().getWikiConnector().getApplicationName();
+		if (Strings.isBlank(linkLabel) || "knowwe".equalsIgnoreCase(linkLabel)) {
+			linkLabel = "another wiki";
+		}
+		return linkLabel + ": " + section.getTitle();
+	}
+
+	/** Absolute link back to this importing section, shown on the source page's "imported by" marker. */
+	String getImportSourceLink(Section<InterWikiImportMarkup> section) {
+		return KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getURLLink(section));
 	}
 
 	@Nullable
