@@ -20,20 +20,25 @@ public class GetWikiChangesSinceAction extends AbstractAction {
 	 * single-import refresh calls (manual refresh button, two locally running wikis without
 	 * configured cross-wiki credentials) work out of the box, while bulk poller requests still
 	 * need to authenticate. Per-page access is enforced independently via
-	 * {@link de.knowwe.core.utils.KnowWEUtils#canView(de.knowwe.core.kdom.parsing.Section, de.knowwe.core.user.UserContext)}
+	 * {@link de.knowwe.core.utils.KnowWEUtils#canView(de.knowwe.core.kdom.parsing.Section,
+	 * de.knowwe.core.user.UserContext)}
 	 * inside {@link GetWikiSectionTextAction#getSourceInfo(String, de.knowwe.core.action.UserActionContext)},
 	 * so anonymous callers still only see content the page allows them to read.
 	 */
 	private static final int ANON_REQUEST_BYTE_LIMIT = 10 * 1024;
+	// false for now, because userIsAuthenticated doesn't yet work in some setups
+	private static final boolean CHECK_PERMISSION_BEFORE_PARSE = false;
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		// individual view rights are checked further down...
-		int contentLength = context.getRequest() == null ? -1 : context.getRequest().getContentLength();
-		if (contentLength > ANON_REQUEST_BYTE_LIMIT && !context.userIsAuthenticated()) {
-			context.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-					"Authentication required for requests larger than " + ANON_REQUEST_BYTE_LIMIT + " bytes.");
-			return;
+		if (CHECK_PERMISSION_BEFORE_PARSE) {
+			// individual view rights are checked further down...
+			int contentLength = context.getRequest() == null ? -1 : context.getRequest().getContentLength();
+			if (contentLength > ANON_REQUEST_BYTE_LIMIT && !context.userIsAuthenticated()) {
+				context.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+						"Authentication required for requests larger than " + ANON_REQUEST_BYTE_LIMIT + " bytes.");
+				return;
+			}
 		}
 
 		List<InterWikiChanges.RequestedImport> imports = InterWikiChanges.parseRequestJson(context.getParameter("data"));
@@ -43,7 +48,8 @@ public class GetWikiChangesSinceAction extends AbstractAction {
 			GetWikiSectionTextAction.SourceInfo sourceInfo = getSourceImport(requestedImport, context);
 			if (sourceInfo == null) continue;
 			if (sourceInfo.sourceText() == null || sourceInfo.sourceLatestChange() == null) continue;
-			if (requestedImport.latestChange() == null || sourceInfo.sourceLatestChange().isAfter(requestedImport.latestChange())) {
+			if (requestedImport.latestChange() == null || sourceInfo.sourceLatestChange()
+					.isAfter(requestedImport.latestChange())) {
 				updates.add(new InterWikiChanges.Update(
 						requestedImport.requestingSectionId(),
 						sourceInfo.sourceLatestChange(),
