@@ -249,13 +249,17 @@ public class OntologyBridge {
 			sb.append("  mapping entries    = ").append(mapping.entrySet()).append('\n');
 			CompilerManager cm = caller instanceof Compiler c ? c.getCompilerManager() : null;
 			if (cm != null) {
+				// figure out which of caller/mapped is the d3web side and which is the ontology side
+				// so each compiler type is compared against the section of its own kind
+				Section<?> d3webSection = caller instanceof D3webCompiler ? callerSection : mappedSection;
+				Section<?> ontologySection = caller instanceof OntologyCompiler ? callerSection : mappedSection;
 				sb.append("  compilerManager.isCompiling = ").append(cm.isCompiling()).append('\n');
 				sb.append("  active D3webCompilers       =\n");
 				cm.getCompilers().stream().filter(D3webCompiler.class::isInstance)
-						.forEach(c -> appendCompilerVsSection(sb, (Compiler) c, callerSection));
+						.forEach(c -> appendCompilerVsSection(sb, (Compiler) c, d3webSection));
 				sb.append("  active OntologyCompilers    =\n");
 				cm.getCompilers().stream().filter(OntologyCompiler.class::isInstance)
-						.forEach(c -> appendCompilerVsSection(sb, (Compiler) c, mappedSection));
+						.forEach(c -> appendCompilerVsSection(sb, (Compiler) c, ontologySection));
 			}
 			LOGGER.error(sb.toString(), new Throwable("OntologyBridge failure stacktrace (informational)"));
 		}
