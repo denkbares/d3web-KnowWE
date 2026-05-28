@@ -163,7 +163,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 			return;
 		}
 		if (!newTests.contains(testObject)) {
-			newLines.add(0, testObject);
+			newLines.add(0, testObject); //add testobject as a header because we use it to differentiate in CIBuildFrozenTestAdjuster
 		}
 
 		String newSectionHeader = newLines.get(0);
