@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import static de.knowwe.core.kdom.parsing.Sections.isLive;
 
 /**
  * Abstract class for PackageCompilers.
@@ -99,6 +100,10 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public final void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
+		if (!isLive(compileSection)) {
+			LOGGER.warn("Skipping compilation of {} because the compile section is not live.", this);
+			return;
+		}
 		refreshCompiledPackages();
 		String[] packagesToCompile = getCompiledPackages();
 		if (newlyCreated || hasChangedForCompiler(packagesToCompile)) {
