@@ -86,6 +86,13 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 	}
 
 	@Override
+	protected boolean isCreationDateBatchEnabled() {
+		// Git handles versioning and creation/modified dates; the file-system OLD/ creation-date batch must not
+		// run here - it would create an untracked OLD/versioning.properties in the git working tree.
+		return false;
+	}
+
+	@Override
 	public void initialize(Engine engine, Properties properties) throws NoRequiredPropertyException, IOException {
 		super.initialize(engine, properties);
 

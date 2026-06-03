@@ -46,11 +46,11 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 
 /**
- * @author Josua Nürnberger
- * @created 2019-03-13
- *
  * This is the main Provider for retrieving Attachments from Git - however the actual implementation is done via a delegate
  * and all this Provider does is to ensure that all locks (on the git repository) are respected correctly
+ *
+ * @author Josua Nürnberger
+ * @created 2019-03-13
  */
 @SuppressWarnings("rawtypes")
 public class GitVersioningAttachmentProvider extends BasicAttachmentProvider implements WikiEventListener {
@@ -60,6 +60,13 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider imp
 	private String storageDir;
 	private GitVersioningFileProvider gitVersioningFileProvider;
 	private GitVersioningAttachmentProviderDelegate delegate;
+
+	@Override
+	protected boolean isCreationDateBatchEnabled() {
+		// Git handles versioning and creation/modified dates; the file-system OLD/ creation-date batch must not
+		// run here - it would create an untracked OLD/versioning.properties in the git working tree.
+		return false;
+	}
 
 	@Override
 	public void initialize(Engine engine, Properties properties) throws NoRequiredPropertyException, IOException {
