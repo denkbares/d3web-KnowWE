@@ -186,3 +186,71 @@ jq$(function SidebarResizer() {
     localStorage.setItem(KNOWWE.SIDEBAR_STORAGE_KEY, $sidebar[0].getBoundingClientRect().width ?? "0");
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  document.querySelectorAll("pre").forEach(pre => {
+
+    if (pre.dataset.copyButtonAdded) {
+      return;
+    }
+
+    pre.dataset.copyButtonAdded = "true";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "codeblock-wrapper";
+
+    const button = document.createElement("button");
+    button.className = "copy-button";
+
+    button.innerHTML = '<i class="fa fa-copy"></i>';
+
+    // Custom tooltip
+    const tooltip = document.createElement("div");
+    tooltip.className = "copy-tooltipster";
+    tooltip.innerText = "Copy";
+
+    button.appendChild(tooltip);
+
+    // Hover handling
+    button.addEventListener("mouseenter", () => {
+      tooltip.classList.add("visible");
+    });
+
+    button.addEventListener("mouseleave", () => {
+      tooltip.classList.remove("visible");
+    });
+
+    // Copy action
+    button.addEventListener("click", async () => {
+
+      try {
+
+        await navigator.clipboard.writeText(pre.innerText);
+
+        tooltip.innerText = "Copied!";
+
+        button.classList.add("copied");
+
+        setTimeout(() => {
+
+          button.classList.remove("copied");
+
+          tooltip.innerText = "Copy";
+
+        }, 1500);
+
+      } catch (err) {
+
+        console.error("Copy failed:", err);
+      }
+    });
+
+    pre.parentNode.insertBefore(wrapper, pre);
+
+    wrapper.appendChild(pre);
+
+    wrapper.appendChild(button);
+  });
+
+});

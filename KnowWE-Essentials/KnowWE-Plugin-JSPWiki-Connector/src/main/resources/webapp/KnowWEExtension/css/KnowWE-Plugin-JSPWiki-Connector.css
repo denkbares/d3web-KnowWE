@@ -127,3 +127,70 @@
 #delete-admin.noneAdmin {
 	display: none;
 }
+
+.codeblock-wrapper {
+	position: relative;
+	margin: 1em 0;
+}
+
+.copy-button {
+	position: absolute;
+	top: 5px;
+	right: 25px;
+	z-index: 1;
+
+	border: none;
+	background: transparent;
+	cursor: pointer;
+
+	opacity: 0.65;
+}
+
+.copy-button:hover {
+	opacity: 1;
+}
+
+.copy-button i {
+	font-size: 14px;
+
+	transition:
+			color 1.8s ease-out,
+			transform 0.12s ease-out;
+}
+
+.copy-button.copied i {
+
+	color: #4caf50;
+
+	transition:
+			color 0.05s linear,
+			transform 0.05s linear;
+
+	transform: scale(1.15);
+}
+
+.copy-tooltipster {
+
+	position: absolute;
+
+	top: -32px;
+	right: 0;
+
+	background: #222;
+	color: white;
+
+	padding: 4px 8px;
+	border-radius: 4px;
+
+	font-size: 12px;
+	white-space: nowrap;
+
+	opacity: 0;
+	pointer-events: none;
+
+	transition: opacity 0.08s linear;
+}
+
+.copy-tooltipster.visible {
+	opacity: 1;
+}
