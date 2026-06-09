@@ -7,6 +7,7 @@ package de.knowwe.kdom.attachment;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -636,15 +637,16 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	private static class UpdateTask extends TimerTask {
 
-		private final Section<AttachmentUpdateMarkup> section;
+		private final WeakReference<Section<AttachmentUpdateMarkup>> section;
 
 		private UpdateTask(Section<AttachmentUpdateMarkup> section) {
-			this.section = section;
+			this.section = new WeakReference<>(section);
 		}
 
 		@Override
 		public void run() {
-			// clean up this task, if its section no longer exists..
+			Section<AttachmentUpdateMarkup> section = this.section.get();
+			// clean up this task, if its section no longer exists...
 			if (!Sections.isLive(section)) {
 				this.cancel();
 				return;
