@@ -611,7 +611,7 @@ public class JSPWikiConnector implements WikiConnector {
 			LOGGER.warn("Could not obtain page text from PageManager for: " + title);
 			return null;
 		}
-
+		if(pageText == null) return null;
 		return Article.cleanupText(pageText);
 	}
 
