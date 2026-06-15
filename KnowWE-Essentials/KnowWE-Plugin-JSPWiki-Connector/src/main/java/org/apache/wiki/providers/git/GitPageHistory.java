@@ -96,14 +96,30 @@ public class GitPageHistory {
 	 */
 	@Nullable
 	public String commitPut(File pageFile, CommitUserData userData) {
+		// in a flat per-sub-wiki page repo the file name is the repo-relative path
+		return commitFile(pageFile, pageFile.getName(), userData);
+	}
+
+	/**
+	 * Commits a single just-written file immediately (page or attachment), returning the commit hash, or {@code null}
+	 * if there was nothing to commit (unchanged content) or the path is git-ignored. The repo-relative path is given
+	 * explicitly because attachments live in a {@code <page>-att/} subdirectory of the repo, unlike flat page files.
+	 *
+	 * @param file             the file on disk (already written by the caller)
+	 * @param repoRelativePath the file's path relative to the repository root (used for the ignore check)
+	 * @param userData         resolved author, email and commit message
+	 */
+	@Nullable
+	public String commitFile(File file, String repoRelativePath, CommitUserData userData) {
 		commitLock.lock();
 		try {
-			if (connector.isIgnored(pageFile.getName())) {
-				// guard against a file that was added to .gitignore but never untracked (ported life-saver)
-				untrackIgnoredFile(pageFile);
+			if (connector.isIgnored(repoRelativePath)) {
+				// guard against a file added to .gitignore but never untracked (ported life-saver)
+				untrackIgnoredFile(repoRelativePath);
+				return null;
 			}
 			// changePath stages and commits, on unchanged content git finds nothing to commit and returns null
-			return connector.commit().changePath(pageFile.toPath(), userData);
+			return connector.commit().changePath(file.toPath(), userData);
 		}
 		finally {
 			commitLock.unlock();
@@ -223,7 +239,48 @@ public class GitPageHistory {
 			if (!pageFile.delete()) {
 				LOGGER.warn("Failed to delete page file on disk: {}", pageFile.getName());
 			}
-			return connector.commit().deletePath(pageFile.getName(), userData, false);
+			return removeFile(pageFile.getName(), userData);
+		}
+		finally {
+			commitLock.unlock();
+		}
+	}
+
+	/**
+	 * Removes an already-deleted path from git and commits, returning the commit hash (or {@code null} if the path is
+	 * git-ignored). The caller is responsible for having deleted the working-tree file. Used by the attachment provider,
+	 * whose base class deletes the file on disk before the git side runs.
+	 */
+	@Nullable
+	public String removeFile(String repoRelativePath, CommitUserData userData) {
+		commitLock.lock();
+		try {
+			if (connector.isIgnored(repoRelativePath)) {
+				return null;
+			}
+			return connector.commit().deletePath(repoRelativePath, userData, false);
+		}
+		finally {
+			commitLock.unlock();
+		}
+	}
+
+	/**
+	 * Commits a set of moved paths as one commit: the (already-moved-on-disk) old paths are removed from the index and
+	 * the new paths added. Used by the attachment provider's {@code moveAttachmentsForPage}. Returns the commit hash.
+	 */
+	@Nullable
+	public String commitMovedPaths(List<String> removedRelPaths, List<String> addedRelPaths, CommitUserData userData) {
+		commitLock.lock();
+		try {
+			if (!removedRelPaths.isEmpty()) {
+				// cached = index only; the working-tree files were already moved by the caller
+				connector.commit().deletePaths(removedRelPaths, userData, true);
+			}
+			if (!addedRelPaths.isEmpty()) {
+				connector.commit().addPaths(addedRelPaths);
+			}
+			return connector.commit().commitForUser(userData);
 		}
 		finally {
 			commitLock.unlock();
@@ -277,8 +334,7 @@ public class GitPageHistory {
 		}
 	}
 
-	private void untrackIgnoredFile(File file) {
-		String path = file.getPath();
+	private void untrackIgnoredFile(String path) {
 		GitStatusCommandResult status = connector.status().get();
 		if (!(status instanceof GitStatusResultSuccess result) || !result.getChangedFiles().contains(path)) {
 			return;

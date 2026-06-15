@@ -137,9 +137,8 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 	 * Creates (and registers) the {@link GitPageHistory} for a sub-wiki folder, initializing the git repository if it
 	 * does not exist yet. Returns {@code null} if the folder does not exist on disk.
 	 * <p>
-	 * TODO(connector-pool): once {@code GitConnectorPool} lands, acquire the connector from the pool
-	 * ({@code GitConnectorPool.acquire(repoPath)}) instead of constructing one here, so the provider and the task
-	 * plugin stay cache-coherent and lock-coordinated (plan decision 4).
+	 * The provider owns its connectors. The batch registry resolves connectors from these via
+	 * {@link #connectorForRepoKey}, so a shared pool would be a one-line swap if a concrete need ever arises.
 	 */
 	@Nullable
 	private GitPageHistory createHistory(String folder) {
@@ -398,6 +397,36 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 				LOGGER.info("Rolled back batch of user '{}' in repo '{}'.", user, repoKey);
 			}
 		}
+	}
+
+	// --- accessors shared with the attachment provider -----------------------
+	// The git attachment provider routes to the SAME GitPageHistory instances and the SAME batch registry, so that
+	// attachment changes share the page repo, the per-repo commit lock, and (within a transaction) the same commit.
+
+	/**
+	 * Routes a (possibly prefixed) page name to its sub-wiki {@link GitPageHistory}. Public for the attachment
+	 * provider.
+	 */
+	GitPageHistory gitHistoryForPage(String fullPageName) throws ProviderException {
+		return historyFor(fullPageName);
+	}
+
+	/**
+	 * The shared batch registry, so attachment changes join the same per-repo transaction commit.
+	 */
+	GitCommitBatchRegistry getBatchRegistry() {
+		return batchRegistry;
+	}
+
+	GitCommentStrategy getGitCommentStrategy() {
+		return gitCommentStrategy;
+	}
+
+	/**
+	 * Resolves author/email/message exactly as the page path does (user-profile lookup, SSO-email parsing).
+	 */
+	CommitUserData resolveUserData(String author, String comment) {
+		return getUserData(author, comment);
 	}
 
 	/**
