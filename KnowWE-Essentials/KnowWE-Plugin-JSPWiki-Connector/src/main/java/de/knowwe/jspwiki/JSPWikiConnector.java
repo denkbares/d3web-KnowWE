@@ -87,7 +87,7 @@ import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
-import org.apache.wiki.providers.GitVersioningFileProvider;
+import org.apache.wiki.providers.GitVersioningProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.providers.SubWikiUtils;
 import org.apache.wiki.references.ReferenceManager;
@@ -822,26 +822,35 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public void openPageTransaction(String user) {
-		PageProvider realProvider = getRealPageProvider();
-		if (realProvider instanceof GitVersioningFileProvider) {
-			((GitVersioningFileProvider) realProvider).openCommit(user);
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		if (gitProvider != null) {
+			gitProvider.openCommit(user);
 		}
 	}
 
 	@Override
 	public void commitPageTransaction(String user, String commitMsg) {
-		PageProvider realProvider = getRealPageProvider();
-		if (realProvider instanceof GitVersioningFileProvider) {
-			((GitVersioningFileProvider) realProvider).commit(user, commitMsg);
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		if (gitProvider != null) {
+			gitProvider.commit(user, commitMsg);
 		}
 	}
 
 	@Override
 	public void rollbackPageTransaction(String user) {
-		PageProvider realProvider = getRealPageProvider();
-		if (realProvider instanceof GitVersioningFileProvider) {
-			((GitVersioningFileProvider) realProvider).rollback(user);
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		if (gitProvider != null) {
+			gitProvider.rollback(user);
 		}
+	}
+
+	/**
+	 * Resolves the {@link GitVersioningProvider} capability of the configured page provider. Returns null if the
+	 * configured provider is not git-backed.
+	 */
+	@Nullable
+	private GitVersioningProvider getGitVersioningProvider() {
+		return getRealPageProvider() instanceof GitVersioningProvider provider ? provider : null;
 	}
 
 	public PageProvider getRealPageProvider() {
@@ -857,7 +866,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean hasRollbackPageProvider() {
-		return getRealPageProvider() instanceof GitVersioningFileProvider;
+		return getGitVersioningProvider() != null;
 	}
 
 	/**
