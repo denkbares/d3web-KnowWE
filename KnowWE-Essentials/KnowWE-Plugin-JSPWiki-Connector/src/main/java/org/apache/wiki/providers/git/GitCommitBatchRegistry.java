@@ -25,8 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,11 @@ import de.uniwue.d3web.gitConnector.GitConnector;
  * Replaces the old delegates' shared, externally-mutated {@code openCommits} map: callers stage and close batches only
  * through this API, nobody reaches into another class's mutable state.
  * <p>
+ * The registry does not depend on the connector pool. It is given a connector resolver ({@code repoKey -> connector})
+ * at construction (in production backed by the provider's per-repo {@code GitPageHistory}, which owns the pooled
+ * connector, in tests a trivial lambda). Resolving lazily at commit/rollback time means a batch always uses the repo's
+ * current connector, not whichever instance was live when a path was staged.
+ * <p>
  * Closing a batch produces one commit per touched repository. There is no cross-repo atomicity, since git cannot
  * provide it, so a failure committing one repository is logged and the remaining repositories are still committed.
  */
@@ -49,6 +55,16 @@ public class GitCommitBatchRegistry {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitCommitBatchRegistry.class);
 
 	private final Map<String, GitCommitBatch> openBatches = new ConcurrentHashMap<>();
+	private final Function<String, GitConnector> connectorResolver;
+
+	/**
+	 * @param connectorResolver resolves a repo key to the {@link GitConnector} that commits/rolls back that
+	 *                          repository's staged paths. Called once per touched repo when a batch closes, may return
+	 *                          {@code null} for an unknown repo (that repo is then skipped with an error log).
+	 */
+	public GitCommitBatchRegistry(Function<String, GitConnector> connectorResolver) {
+		this.connectorResolver = connectorResolver;
+	}
 
 	/**
 	 * Opens a batch for the given user, so that subsequent {@link #stage} calls accumulate instead of committing
@@ -73,25 +89,25 @@ public class GitCommitBatchRegistry {
 	 * @return {@code true} if the path was added to an open batch, {@code false} if there is no open batch and the
 	 * caller should commit immediately
 	 */
-	public boolean stage(String user, String repoKey, GitConnector connector, String path) {
+	public boolean stage(String user, String repoKey, String path) {
 		GitCommitBatch batch = openBatches.get(user);
 		if (batch == null) {
 			return false;
 		}
-		batch.stage(repoKey, connector, path);
+		batch.stage(repoKey, path);
 		return true;
 	}
 
 	/**
 	 * Stages several changed paths of the same repository for the user (e.g. the from/to paths of a move). Semantics
-	 * match {@link #stage(String, String, GitConnector, String)}.
+	 * match {@link #stage(String, String, String)}.
 	 */
-	public boolean stage(String user, String repoKey, GitConnector connector, Collection<String> paths) {
+	public boolean stage(String user, String repoKey, Collection<String> paths) {
 		GitCommitBatch batch = openBatches.get(user);
 		if (batch == null) {
 			return false;
 		}
-		batch.stage(repoKey, connector, paths);
+		batch.stage(repoKey, paths);
 		return true;
 	}
 
@@ -101,7 +117,7 @@ public class GitCommitBatchRegistry {
 	 * and comment strategy) and applied to every repository's commit.
 	 *
 	 * @return one {@link RepoCommitResult} per repository that was committed successfully, empty if the user had no
-	 * open batch. Repositories whose commit failed are omitted (failure is logged).
+	 * open batch. Repositories whose connector could not be resolved or whose commit failed are omitted (logged).
 	 */
 	public List<RepoCommitResult> commit(String user, String message, String author, String email) {
 		GitCommitBatch batch = openBatches.remove(user);
@@ -111,10 +127,17 @@ public class GitCommitBatchRegistry {
 		}
 		List<RepoCommitResult> results = new ArrayList<>();
 		for (String repoKey : batch.repoKeys()) {
-			GitCommitBatch.RepoStaging staging = batch.staging(repoKey);
-			Set<String> paths = new TreeSet<>(staging.paths);
+			SortedSet<String> paths = batch.paths(repoKey);
+			GitConnector connector = connectorResolver.apply(repoKey);
+			if (connector == null) {
+				LOGGER.error(
+						"No connector for repo '{}' while committing batch of user '{}'; skipping it.",
+						repoKey, user
+				);
+				continue;
+			}
 			try {
-				String commitHash = staging.connector.commit().commitPathsForUser(message, author, email, paths);
+				String commitHash = connector.commit().commitPathsForUser(message, author, email, paths);
 				results.add(new RepoCommitResult(repoKey, commitHash, paths));
 			}
 			catch (Exception e) {
@@ -142,9 +165,16 @@ public class GitCommitBatchRegistry {
 			return Collections.emptySet();
 		}
 		for (String repoKey : batch.repoKeys()) {
-			GitCommitBatch.RepoStaging staging = batch.staging(repoKey);
+			GitConnector connector = connectorResolver.apply(repoKey);
+			if (connector == null) {
+				LOGGER.error(
+						"No connector for repo '{}' while rolling back batch of user '{}'; skipping it.",
+						repoKey, user
+				);
+				continue;
+			}
 			try {
-				staging.connector.rollback().rollbackPaths(new TreeSet<>(staging.paths));
+				connector.rollback().rollbackPaths(batch.paths(repoKey));
 			}
 			catch (Exception e) {
 				LOGGER.error(

@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -63,7 +64,11 @@ public class GitCommitBatchRegistryTest {
 		connector1 = BareGitConnector.fromPath(repo1.getAbsolutePath());
 		connector2 = BareGitConnector.fromPath(repo2.getAbsolutePath());
 		assumeTrue(connector1.gitInstalledAndReady());
-		registry = new GitCommitBatchRegistry();
+		// resolver maps each repo key to its connector, the seam that decouples the registry from the pool
+		Map<String, GitConnector> connectors = Map.of(
+				repo1.getAbsolutePath(), connector1,
+				repo2.getAbsolutePath(), connector2);
+		registry = new GitCommitBatchRegistry(connectors::get);
 	}
 
 	@After
@@ -132,9 +137,9 @@ public class GitCommitBatchRegistryTest {
 	 * Staging without an open batch signals "commit immediately" via a false return; nothing is recorded.
 	 */
 	@Test
-	public void stageWithoutOpenBatchSignalsCommitImmediately() throws IOException {
+	public void stageWithoutOpenBatchSignalsCommitImmediately() {
 		assertFalse(registry.isOpen("carol"));
-		boolean staged = registry.stage("carol", repo1Key(), connector1, "Loose.txt");
+		boolean staged = registry.stage("carol", repo1Key(), "Loose.txt");
 		assertFalse("stage without open batch must report commit-immediately", staged);
 
 		// committing a never-opened user is a harmless no-op
@@ -203,7 +208,7 @@ public class GitCommitBatchRegistryTest {
 	private void stageNewFile(GitConnector connector, File repo, String user, String repoKey, String name) throws IOException {
 		FileUtils.writeStringToFile(new File(repo, name), "content of " + name, StandardCharsets.UTF_8);
 		connector.commit().addPath(name);
-		assertTrue(registry.stage(user, repoKey, connector, name));
+		assertTrue(registry.stage(user, repoKey, name));
 	}
 
 	private static GitCommitBatchRegistry.RepoCommitResult resultFor(List<GitCommitBatchRegistry.RepoCommitResult> results, String repoKey) {
