@@ -231,6 +231,16 @@ public final class Messages {
 	}
 
 	/**
+	 * Creates and returns a {@link Message} of the {@link Type} ERROR whose text is rendered as wiki markup
+	 * (e.g. so embedded wiki links become clickable instead of being shown as plain text).
+	 *
+	 * @param message is the wiki-markup text content of the created {@link Message}
+	 */
+	public static Message wikiError(String message) {
+		return new Message(Message.Type.ERROR, Message.Display.WIKI, message);
+	}
+
+	/**
 	 * Filters the given Collection of {@link Message}s and returns a new Collection containing only {@link Message}s of
 	 * the {@link Type} ERROR.
 	 *
@@ -769,6 +779,16 @@ public final class Messages {
 	 */
 	public static Message warning(String message) {
 		return new Message(Message.Type.WARNING, message);
+	}
+
+	/**
+	 * Creates and returns a {@link Message} of the {@link Type} WARNING whose text is rendered as wiki markup
+	 * (e.g. so embedded wiki links become clickable instead of being shown as plain text).
+	 *
+	 * @param message is the wiki-markup text content of the created {@link Message}
+	 */
+	public static Message wikiWarning(String message) {
+		return new Message(Message.Type.WARNING, Message.Display.WIKI, message);
 	}
 
 	private Messages() {
