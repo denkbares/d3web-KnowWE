@@ -158,6 +158,41 @@ public class GitPageHistory {
 	}
 
 	/**
+	 * Info about a single version of the page without computing the full history, one commit lookup. Returns
+	 * {@code null} if the page does not exist on disk or git has no commit for the requested version (e.g. the file is
+	 * staged in an open batch but not yet committed; the caller decides how to fall back).
+	 *
+	 * @param version a 1-based version number, or {@link WikiProvider#LATEST_VERSION} for the latest
+	 */
+	@Nullable
+	public GitPageVersion infoAt(String localName, int version) {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, localName, version);
+		if (!id.exists()) {
+			return null;
+		}
+		String fileName = id.fileName();
+		String commitHash = connector.log().commitHashForFileAndVersion(fileName, version);
+		if (commitHash == null) {
+			return null;
+		}
+		int realVersion = version == WikiProvider.LATEST_VERSION
+				? connector.log().numberOfCommitsForFile(fileName)
+				: version;
+		return buildVersion(fileName, commitHash, realVersion);
+	}
+
+	/**
+	 * Number of committed versions of the page in git, 0 if none / not tracked.
+	 */
+	public int versionCount(String localName) {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, localName, -1);
+		if (!id.exists()) {
+			return 0;
+		}
+		return connector.log().numberOfCommitsForFile(id.fileName());
+	}
+
+	/**
 	 * Text of the page at the given version. The latest version is read from disk (fast), older versions are read from
 	 * git. Returns {@code null} if the page file does not exist.
 	 *
