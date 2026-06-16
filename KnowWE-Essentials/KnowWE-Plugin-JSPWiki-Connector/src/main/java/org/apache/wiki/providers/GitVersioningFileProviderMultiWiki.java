@@ -103,7 +103,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		folders.add(SubWikiUtils.getMainWikiFolder(properties));
 		folders.addAll(getAllSubWikiFolders(true));
 		for (String folder : folders) {
-			GitPageHistory history = createHistory(folder);
+			GitPageHistory history = historyByFolder.computeIfAbsent(folder, this::createHistory);
 			if (history != null) {
 				history.sweepUp("provider-startup");
 			}
@@ -165,7 +165,8 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		// build the commit-graph to accelerate git-log reads (matches the single-wiki provider)
 		connector.repo().executeCommitGraph();
 		GitPageHistory history = new GitPageHistory(connector);
-		historyByFolder.put(folder, history);
+		// the folder -> history mapping is established by the computeIfAbsent caller (initialize / historyFor), so a
+		// concurrent first access to the same runtime-added folder builds exactly one connector
 		historyByRepoKey.put(history.repoKey(), history);
 		return history;
 	}
@@ -176,10 +177,8 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 	 */
 	private GitPageHistory historyFor(String fullPageName) throws ProviderException {
 		String folder = SubWikiUtils.getSubFolderNameOfPage(fullPageName, m_engine.getWikiProperties());
-		GitPageHistory history = historyByFolder.get(folder);
-		if (history == null) {
-			history = createHistory(folder);
-		}
+		// atomic per folder: concurrent first accesses to a runtime-added sub-wiki build exactly one connector
+		GitPageHistory history = historyByFolder.computeIfAbsent(folder, this::createHistory);
 		if (history == null) {
 			throw new ProviderException("No git repository for page '" + fullPageName + "' (sub-wiki folder '" + folder + "').");
 		}
