@@ -125,9 +125,11 @@ public class GitCommitBatchRegistryTest {
 		registry.open("bob");
 		stageNewFile(connector1, repo1, "bob", repo1Key(), "Draft.txt");
 
-		Set<String> rolledBack = registry.rollback("bob");
+		List<GitCommitBatchRegistry.RepoRollbackResult> rolledBack = registry.rollback("bob");
 
-		assertEquals(Set.of(repo1Key()), rolledBack);
+		assertEquals("one touched repo", 1, rolledBack.size());
+		assertEquals(repo1Key(), rolledBack.get(0).repoKey());
+		assertEquals("restored paths reported for cache refresh", Set.of("Draft.txt"), rolledBack.get(0).paths());
 		assertFalse("batch must be closed after rollback", registry.isOpen("bob"));
 		assertEquals("rolled-back file must not be committed", 0,
 				connector1.log().commitHashesForFile("Draft.txt").size());

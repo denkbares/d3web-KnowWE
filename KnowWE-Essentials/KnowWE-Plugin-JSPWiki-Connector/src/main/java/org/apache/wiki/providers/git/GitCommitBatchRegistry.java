@@ -151,20 +151,24 @@ public class GitCommitBatchRegistry {
 	}
 
 	/**
-	 * Discards all paths staged for the user since {@link #open}, restoring the affected files in
-	 * each touched repository, and closes the batch. A failure rolling back one repository is logged
-	 * and the remaining repositories are still rolled back.
+	 * Discards all paths staged for the user since {@link #open}, restoring the affected files in each touched
+	 * repository, and closes the batch. A failure rolling back one repository is logged and the remaining repositories
+	 * are still rolled back.
 	 *
-	 * @return the repo keys whose staged paths were the subject of the rollback (regardless of
-	 * per-repo failures), so the caller can refresh caches for them
+	 * @return one {@link RepoRollbackResult} per touched repository (regardless of per-repo failures), carrying the
+	 * restored paths, so the caller can refresh page caches and Lucene for them. Empty if the user had no open batch.
 	 */
-	public Set<String> rollback(String user) {
+	public List<RepoRollbackResult> rollback(String user) {
 		GitCommitBatch batch = openBatches.remove(user);
 		if (batch == null) {
 			LOGGER.warn("Tried to roll back batch for user '{}' but no batch was open.", user);
-			return Collections.emptySet();
+			return Collections.emptyList();
 		}
+		List<RepoRollbackResult> results = new ArrayList<>();
 		for (String repoKey : batch.repoKeys()) {
+			SortedSet<String> paths = batch.paths(repoKey);
+			// recorded even if the rollback below fails, so the caller still refreshes caches for the affected paths
+			results.add(new RepoRollbackResult(repoKey, paths));
 			GitConnector connector = connectorResolver.apply(repoKey);
 			if (connector == null) {
 				LOGGER.error(
@@ -174,7 +178,7 @@ public class GitCommitBatchRegistry {
 				continue;
 			}
 			try {
-				connector.rollback().rollbackPaths(batch.paths(repoKey));
+				connector.rollback().rollbackPaths(paths);
 			}
 			catch (Exception e) {
 				LOGGER.error(
@@ -183,7 +187,7 @@ public class GitCommitBatchRegistry {
 				);
 			}
 		}
-		return batch.repoKeys();
+		return results;
 	}
 
 	/**
@@ -191,5 +195,13 @@ public class GitCommitBatchRegistry {
 	 * that went into the commit. The provider uses this to fire wiki events and refresh caches for the committed paths.
 	 */
 	public record RepoCommitResult(String repoKey, String commitHash, Set<String> paths) {
+	}
+
+	/**
+	 * Outcome of rolling back one repository's share of a batch: the repo key and the paths whose working-tree state
+	 * was restored. The provider uses this to refresh page caches and Lucene for the restored paths (the on-disk files
+	 * were reverted, so any cached version of the discarded edit must be evicted).
+	 */
+	public record RepoRollbackResult(String repoKey, Set<String> paths) {
 	}
 }

@@ -397,14 +397,13 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 
 	@Override
 	public void rollback(String user) {
-		Set<String> repoKeys = batchRegistry.rollback(user);
-		// the staged files were restored on disk, KnowWE/Lucene caches must be refreshed for them too. The registry
-		// returns only repo keys, so we evict the whole sub-wiki's page list defensively for the touched repos.
-		for (String repoKey : repoKeys) {
-			GitPageHistory history = historyByRepoKey.get(repoKey);
-			if (history != null) {
-				LOGGER.info("Rolled back batch of user '{}' in repo '{}'.", user, repoKey);
-			}
+		List<GitCommitBatchRegistry.RepoRollbackResult> results = batchRegistry.rollback(user);
+		// the staged files were restored on disk, so the JSPWiki page cache and Lucene must drop the discarded edits
+		for (GitCommitBatchRegistry.RepoRollbackResult result : results) {
+			Collection<String> pages = globalPageNames(result.repoKey(), result.paths());
+			refreshCache(pages);
+			LOGGER.info("Rolled back batch of user '{}' in repo '{}' ({} path(s)).",
+					user, result.repoKey(), result.paths().size());
 		}
 	}
 

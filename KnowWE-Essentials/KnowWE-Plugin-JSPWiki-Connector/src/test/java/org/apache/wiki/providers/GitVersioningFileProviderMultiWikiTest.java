@@ -61,6 +61,7 @@ public class GitVersioningFileProviderMultiWikiTest {
 	private File subRepo;
 	private Properties properties;
 	private Engine engine;
+	private PageManager pageManager;
 	private GitVersioningFileProviderMultiWiki provider;
 
 	@Before
@@ -156,6 +157,8 @@ public class GitVersioningFileProviderMultiWikiTest {
 
 		assertEquals(0, commitsForFile(subRepo, "Draft.txt"));
 		assertTrue(provider.getVersionHistory("Sub1&&Draft").isEmpty());
+		// the discarded edit must be evicted from the JSPWiki page cache / Lucene (refreshCache -> deleteVersion)
+		Mockito.verify(pageManager).deleteVersion(Mockito.any(Page.class));
 	}
 
 	@Test
@@ -206,8 +209,9 @@ public class GitVersioningFileProviderMultiWikiTest {
 		UserDatabase userDatabase = Mockito.mock(UserDatabase.class);
 		when(engine.getManager(UserManager.class)).thenReturn(userManager);
 		when(userManager.getUserDatabase()).thenReturn(userDatabase);
-		// refreshCache during commit() needs a PageManager
-		when(engine.getManager(PageManager.class)).thenReturn(Mockito.mock(PageManager.class));
+		// refreshCache during commit()/rollback() needs a PageManager; kept in a field so tests can verify eviction
+		pageManager = Mockito.mock(PageManager.class);
+		when(engine.getManager(PageManager.class)).thenReturn(pageManager);
 		return engine;
 	}
 }
