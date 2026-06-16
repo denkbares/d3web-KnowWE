@@ -208,13 +208,27 @@ public class GitPageHistory {
 			return null;
 		}
 		String fileName = id.fileName();
-		GitFileRevision revision = index.atVersion(fileName, version);
-		if (revision == null) {
+		// single index read (one HEAD check): the per-file list yields both the requested revision and the version
+		// count, so getPageInfo(LATEST) no longer does two HEAD checks (and can't observe two different HEADs).
+		List<GitFileRevision> revisions = index.revisionsNewestFirst(fileName);
+		if (revisions.isEmpty()) {
 			return null;
 		}
-		int realVersion = version == WikiProvider.LATEST_VERSION
-				? index.latestVersionNumber(fileName)
-				: version;
+		int count = revisions.size();
+		GitFileRevision revision;
+		int realVersion;
+		if (version == WikiProvider.LATEST_VERSION) {
+			revision = revisions.get(0);
+			realVersion = count;
+		}
+		else if (version >= 1 && version <= count) {
+			// newest-first list: oldest-first version v is at index count - v
+			revision = revisions.get(count - version);
+			realVersion = version;
+		}
+		else {
+			return null;
+		}
 		return buildVersion(fileName, revision, realVersion);
 	}
 

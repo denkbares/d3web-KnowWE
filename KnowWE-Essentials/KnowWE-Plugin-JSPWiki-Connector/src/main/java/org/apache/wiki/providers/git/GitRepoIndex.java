@@ -139,13 +139,6 @@ public class GitRepoIndex {
 	}
 
 	/**
-	 * The real (1-based oldest-first) version number of the file's latest commit, i.e. its committed version count.
-	 */
-	public int latestVersionNumber(String repoRelativePath) {
-		return versionCount(repoRelativePath);
-	}
-
-	/**
 	 * The whole current-branch snapshot, repo-relative file path to newest-first revisions. Used by
 	 * {@code getAllPages} (enrich the filesystem listing with author/date) and {@code getAllChangedSince}. The returned
 	 * map is unmodifiable and reflects a single consistent {@code HEAD}.
