@@ -126,9 +126,17 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		try {
 			this.gitCommentStrategy = (GitCommentStrategy) Class.forName(className).getConstructor().newInstance();
 		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
-		       InvocationTargetException e) {
-			LOGGER.error("Comment strategy not found: {}, falling back to ChangeNoteStrategy.", className, e);
+		catch (ClassNotFoundException
+		       | InstantiationException
+		       | IllegalAccessException
+		       | NoSuchMethodException
+		       | InvocationTargetException
+				e
+		) {
+			LOGGER.error(
+					"Comment strategy not found: {}, falling back to {}.",
+					className, ChangeNoteStrategy.class.getName(), e
+			);
 			this.gitCommentStrategy = new ChangeNoteStrategy();
 		}
 	}
@@ -149,7 +157,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		}
 		String repoPath = repoDir.getAbsolutePath();
 		if (!new File(repoDir, ".git").isDirectory()) {
-			// self-sufficient without the task plugin (BR4): ensure a repo exists
+			// ensure a repo exists
 			RawGitExecutor.executeGitCommand("git init", repoPath);
 			LOGGER.info("Initialized new git repository at '{}'.", repoPath);
 		}
@@ -319,8 +327,9 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 
 	@Override
 	public void deleteVersion(Page page, int version) throws ProviderException {
-		throw new ProviderException("Deleting a single version is not supported by git-backed history. "
-				+ "Use revert (RevertLocalFileChangeAction) to undo a change.");
+		throw new ProviderException(
+				"Deleting a single version is not supported by git-backed history. Use revert (RevertLocalFileChangeAction) to undo a change."
+		);
 	}
 
 	@Override
@@ -330,8 +339,9 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		String fromFolder = SubWikiUtils.getSubFolderNameOfPage(fromName, props);
 		String toFolder = SubWikiUtils.getSubFolderNameOfPage(to, props);
 		if (!fromFolder.equals(toFolder)) {
-			throw new ProviderException("Moving a page across sub-wikis is not supported (each sub-wiki is its own "
-					+ "git repository): '" + fromName + "' -> '" + to + "'.");
+			throw new ProviderException(
+					"Moving a page across sub-wikis is not supported (each sub-wiki is its own git repository): '" + fromName + "' -> '" + to + "'."
+			);
 		}
 		GitPageHistory history = historyFor(fromName);
 		File fromFile = findPage(fromName);
