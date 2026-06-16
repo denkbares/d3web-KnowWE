@@ -22,6 +22,7 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -218,7 +219,46 @@ public class GitVersioningFileProviderMultiWikiTest {
 		assertEquals("with no fresh note an edit falls back to the provider default", "Edited Topic", latestNote);
 	}
 
+	@Test
+	public void getAllPagesListsAcrossReposWithGitMetadataFromTheIndex() throws ProviderException {
+		putPage("Welcome", "main content");
+		putPage("Sub1&&Topic", "sub v1");
+		putPage("Sub1&&Topic", "sub v2");
+
+		Collection<Page> all = provider.getAllPages();
+
+		// in non-nested mode every repo (including the main "Main" folder) contributes a folder-prefixed page name,
+		// matching the base VersioningFileProviderMultiWiki.getAllPages contract (BR3)
+		Page welcome = byName(all, "Main&&Welcome");
+		Page topic = byName(all, "Sub1&&Topic");
+		assertNotNull("main-wiki page listed", welcome);
+		assertNotNull("sub-wiki page listed (prefixed)", topic);
+		// author/date/version come from git via the eager index (one walk per repo, no per-page git call)
+		assertEquals(AUTHOR, welcome.getAuthor());
+		assertEquals(1, welcome.getVersion());
+		assertEquals("two commits -> version 2", 2, topic.getVersion());
+		assertEquals(AUTHOR, topic.getAuthor());
+	}
+
+	@Test
+	public void getAllChangedSinceReportsChangesFromGit() throws ProviderException {
+		putPage("Welcome", "main content");
+		putPage("Sub1&&Topic", "sub content");
+
+		Collection<Page> changed = provider.getAllChangedSince(new Date(0L));
+		assertNotNull(byName(changed, "Main&&Welcome"));
+		assertNotNull(byName(changed, "Sub1&&Topic"));
+
+		// nothing changed in the future
+		Collection<Page> future = provider.getAllChangedSince(new Date(System.currentTimeMillis() + 3_600_000L));
+		assertTrue("no changes after a future cut-off", future.isEmpty());
+	}
+
 	// --- helpers -------------------------------------------------------------
+
+	private static Page byName(Collection<Page> pages, String name) {
+		return pages.stream().filter(p -> name.equals(p.getName())).findFirst().orElse(null);
+	}
 
 	private void putPage(String fullName, String text) throws ProviderException {
 		WikiPage page = new WikiPage(engine, fullName);

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.wiki.api.providers.WikiProvider;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitFileRevision;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
@@ -66,10 +68,20 @@ public class GitPageHistory {
 	private final GitConnector connector;
 	private final String repoPath;
 	private final ReentrantLock commitLock = new ReentrantLock();
+	private final GitRepoIndex index;
 
 	public GitPageHistory(GitConnector connector) {
 		this.connector = connector;
 		this.repoPath = connector.repo().getGitDirectory();
+		this.index = new GitRepoIndex(connector);
+	}
+
+	/**
+	 * The eager per-repo index this component reads history and page info from. The provider uses it for the bulk
+	 * {@code getAllPages} / {@code getAllChangedSince} paths so those cost one git walk per repo, not one per page.
+	 */
+	public GitRepoIndex index() {
+		return index;
 	}
 
 	/**
@@ -151,26 +163,35 @@ public class GitPageHistory {
 		if (file == null || !file.exists()) {
 			return Collections.emptyList();
 		}
-		// commitHashesForFile is oldest-first, so the natural index gives version 1 = oldest
-		List<String> commitHashes = connector.log().commitHashesForFile(id.fileName());
-		List<GitPageVersion> versions = new ArrayList<>(commitHashes.size());
-		int version = 1;
-		for (String commitHash : commitHashes) {
-			versions.add(buildVersion(id.fileName(), commitHash, version));
-			version++;
+		// The index serves the per-file revisions (author/email/time/message) from one whole-repo walk. The list is
+		// newest-first and version numbers are oldest-first (1 = oldest), so the newest commit gets version = count.
+		List<GitFileRevision> revisions = index.revisionsNewestFirst(id.fileName());
+		int count = revisions.size();
+		List<GitPageVersion> versions = new ArrayList<>(count);
+		for (int i = 0; i < count; i++) {
+			versions.add(buildVersion(id.fileName(), revisions.get(i), count - i));
 		}
 		if (versions.isEmpty()) {
 			LOGGER.error("File '{}' exists but git reports no version of it.", id.fileName());
 		}
-		Collections.reverse(versions);
+		// already newest-first (revisions were newest-first)
 		return versions;
 	}
 
-	private GitPageVersion buildVersion(String fileName, String commitHash, int version) {
-		CommitUserData userData = connector.log().commitUserDataFor(commitHash);
-		long size = connector.log().getFilesizeForCommit(commitHash, fileName);
-		long timeInSeconds = connector.log().commitTimeFor(commitHash);
-		return new GitPageVersion(version, commitHash, userData, size, Date.from(Instant.ofEpochSecond(timeInSeconds)));
+	/**
+	 * Maps an index revision to a {@link GitPageVersion}. Author/email/time/message come from the index (free after the
+	 * one walk); only the file size is fetched lazily here ({@code git cat-file -s}, cached per commit+path by the
+	 * connector) because the {@code git log --name-status} walk does not report sizes.
+	 */
+	private GitPageVersion buildVersion(String fileName, GitFileRevision revision, int version) {
+		long size = connector.log().getFilesizeForCommit(revision.commitHash(), fileName);
+		return new GitPageVersion(
+				version,
+				revision.commitHash(),
+				revision.userData(),
+				size,
+				Date.from(Instant.ofEpochSecond(revision.timeSeconds()))
+		);
 	}
 
 	/**
@@ -187,14 +208,14 @@ public class GitPageHistory {
 			return null;
 		}
 		String fileName = id.fileName();
-		String commitHash = connector.log().commitHashForFileAndVersion(fileName, version);
-		if (commitHash == null) {
+		GitFileRevision revision = index.atVersion(fileName, version);
+		if (revision == null) {
 			return null;
 		}
 		int realVersion = version == WikiProvider.LATEST_VERSION
-				? connector.log().numberOfCommitsForFile(fileName)
+				? index.latestVersionNumber(fileName)
 				: version;
-		return buildVersion(fileName, commitHash, realVersion);
+		return buildVersion(fileName, revision, realVersion);
 	}
 
 	/**
@@ -205,7 +226,18 @@ public class GitPageHistory {
 		if (!id.exists()) {
 			return 0;
 		}
-		return connector.log().numberOfCommitsForFile(id.fileName());
+		return index.versionCount(id.fileName());
+	}
+
+	/**
+	 * Whole-repo revisionsByFile, repo-relative file path to its newest-first revisions, from one git walk per repo
+	 * (cached
+	 * with HEAD-diff invalidation). The provider drives both {@code getAllPages} (latest = first of each list, version
+	 * count = list size) and {@code getAllChangedSince} (revisions newer than a date) off this, so neither costs a
+	 * per-page git call.
+	 */
+	public Map<String, List<GitFileRevision>> revisionsByFile() {
+		return index.revisionsByFile();
 	}
 
 	/**
@@ -248,7 +280,8 @@ public class GitPageHistory {
 
 	/**
 	 * Removes an already-deleted path from git and commits, returning the commit hash (or {@code null} if the path is
-	 * git-ignored). The caller is responsible for having deleted the working-tree file. Used by the attachment provider,
+	 * git-ignored). The caller is responsible for having deleted the working-tree file. Used by the attachment
+	 * provider,
 	 * whose base class deletes the file on disk before the git side runs.
 	 */
 	@Nullable

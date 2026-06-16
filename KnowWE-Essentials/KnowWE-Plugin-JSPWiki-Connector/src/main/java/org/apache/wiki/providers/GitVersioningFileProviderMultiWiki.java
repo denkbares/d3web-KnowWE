@@ -23,8 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitFileRevision;
 import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
@@ -304,6 +307,122 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		catch (ProviderException e) {
 			LOGGER.error("Could not check existence of '{}' v{}.", page, version, e);
 			return false;
+		}
+	}
+
+	// --- bulk read path (eager index, one git walk per repo) -----------------
+
+	/**
+	 * Lists all pages with their latest author/date/version, enriched from the per-repo eager index instead of the
+	 * inherited base which calls the git-backed {@link #getPageInfo} once per page (an O(pages) git-process storm at
+	 * startup). Pages are enumerated from the filesystem (so deleted pages are correctly absent) and each repo's
+	 * history is read once via {@link GitPageHistory#revisionsByFile()}, so the cost is O(repos) git walks, not O(pages).
+	 */
+	@Override
+	public Collection<Page> getAllPages() throws ProviderException {
+		ensureAllFolders();
+		Properties props = m_engine.getWikiProperties();
+		Collection<Page> pages = new ArrayList<>();
+		for (Map.Entry<String, GitPageHistory> entry : historyByFolder.entrySet()) {
+			String folder = entry.getKey();
+			GitPageHistory history = entry.getValue();
+			Map<String, List<GitFileRevision>> revisionsByFile = history.revisionsByFile();
+			File repoDir = new File(history.repoKey());
+			File[] wikiFiles = repoDir.listFiles(new WikiFileFilter());
+			if (wikiFiles == null) {
+				continue;
+			}
+			for (File wikiFile : wikiFiles) {
+				String fileName = wikiFile.getName();
+				String localName = localNameOfFile(fileName);
+				String fullName = SubWikiUtils.concatSubWikiAndLocalPageName(folder, localName, props);
+				pages.add(buildListingPage(fullName, wikiFile, revisionsByFile.get(fileName), history));
+			}
+		}
+		return pages;
+	}
+
+	/**
+	 * Builds the page-listing entry: size from disk (the on-disk file is the latest version), author/commit-time/
+	 * change-note and version count from the index. Falls back to a filesystem-only page when the file is not yet in
+	 * git (staged in an open batch, or untracked).
+	 */
+	private Page buildListingPage(String fullName, File wikiFile, @Nullable List<GitFileRevision> revisions, GitPageHistory history) {
+		if (revisions != null && !revisions.isEmpty()) {
+			GitFileRevision latest = revisions.get(0);
+			return WikiPageProxy.fromUserData(fullName, revisions.size(), latest.userData(), wikiFile.length(),
+					Date.from(Instant.ofEpochSecond(latest.timeSeconds())), m_engine);
+		}
+		WikiPageProxy page = new WikiPageProxy(m_engine, fullName);
+		page.setHistoryProvider(history.connector());
+		page.setVersion(WikiProvider.LATEST_VERSION);
+		page.setSize(wikiFile.length());
+		page.setLastModified(new Date(wikiFile.lastModified()));
+		return page;
+	}
+
+	/**
+	 * All page changes since the given date, one entry per (page, commit) with that commit's author, change-note and
+	 * date, served from each repo's index revisionsByFile (one git walk per repo). Replaces the inherited base, which returns
+	 * an empty list, so Recent Changes works on the multi-wiki git provider. Attachment paths (those in a
+	 * {@code <page>-att/} subdirectory) are skipped, only page files are reported.
+	 */
+	@Override
+	public Collection<Page> getAllChangedSince(Date date) {
+		long sinceSeconds = date.getTime() / 1000L;
+		Properties props = m_engine.getWikiProperties();
+		List<Page> changed = new ArrayList<>();
+		ensureAllFolders();
+		for (Map.Entry<String, GitPageHistory> entry : historyByFolder.entrySet()) {
+			String folder = entry.getKey();
+			Map<String, List<GitFileRevision>> revisionsByFile = entry.getValue().revisionsByFile();
+			for (Map.Entry<String, List<GitFileRevision>> fileEntry : revisionsByFile.entrySet()) {
+				String path = fileEntry.getKey();
+				if (path.contains("/") || !path.endsWith(AbstractFileProvider.FILE_EXT)) {
+					// only top-level page files; attachments live in a <page>-att/ subdirectory
+					continue;
+				}
+				String fullName = SubWikiUtils.concatSubWikiAndLocalPageName(folder, localNameOfFile(path), props);
+				List<GitFileRevision> revisions = fileEntry.getValue();
+				for (int i = 0; i < revisions.size(); i++) {
+					GitFileRevision revision = revisions.get(i);
+					if (revision.timeSeconds() < sinceSeconds) {
+						// newest-first: once we pass the cut-off, all remaining revisions of this file are older
+						break;
+					}
+					// version is oldest-first (1 = oldest); newest-first index i maps to size - i
+					changed.add(buildChangePage(fullName, revisions.size() - i, revision));
+				}
+			}
+		}
+		return changed;
+	}
+
+	private Page buildChangePage(String fullName, int version, GitFileRevision revision) {
+		org.apache.wiki.WikiPage page = new org.apache.wiki.WikiPage(m_engine, fullName);
+		page.setVersion(version);
+		page.setAuthor(revision.author());
+		page.setLastModified(Date.from(Instant.ofEpochSecond(revision.timeSeconds())));
+		page.setAttribute(Page.CHANGENOTE, revision.message());
+		return page;
+	}
+
+	private String localNameOfFile(String fileName) {
+		int cut = fileName.lastIndexOf(AbstractFileProvider.FILE_EXT);
+		return unmangleName(cut >= 0 ? fileName.substring(0, cut) : fileName);
+	}
+
+	/**
+	 * Ensures every current sub-wiki folder (including ones added at runtime) has a {@link GitPageHistory}, so the bulk
+	 * read paths see all repos. Missing folders are created lazily (and git-initialized) by {@link #createHistory}.
+	 */
+	private void ensureAllFolders() {
+		Properties props = m_engine.getWikiProperties();
+		Set<String> folders = new LinkedHashSet<>();
+		folders.add(SubWikiUtils.getMainWikiFolder(props));
+		folders.addAll(getAllSubWikiFolders(true));
+		for (String folder : folders) {
+			historyByFolder.computeIfAbsent(folder, this::createHistory);
 		}
 	}
 
