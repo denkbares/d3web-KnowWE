@@ -214,7 +214,11 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 			batchRegistry.stage(user, history.repoKey(), file.getName());
 		}
 		else {
-			CommitUserData userData = getUserData(user, resolveComment(page, addFile));
+			// "use the page's change note, else this operation's default", same seam as delete/move. The default is
+			// a meaningful message (not the connector's catch-all "Added page" for every put), a custom
+			// GitCommentStrategy can override it (e.g. to prefix the branch).
+			String comment = gitCommentStrategy.getComment(page, addFile ? "Added page" : "Edited " + localName(fullName));
+			CommitUserData userData = getUserData(user, comment);
 			String commitHash = history.commitPut(file, userData);
 			if (commitHash != null) {
 				fireWikiEvent(GitVersioningWikiEvent.UPDATE, user, List.of(fullName), commitHash);
@@ -232,14 +236,6 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 			}
 		}
 		return false;
-	}
-
-	private String resolveComment(Page page, boolean addFile) {
-		String comment = gitCommentStrategy.getComment(page, "");
-		if (comment.isEmpty()) {
-			return addFile ? "Added page" : "-";
-		}
-		return comment;
 	}
 
 	// --- read path -----------------------------------------------------------
@@ -268,9 +264,17 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 	@Override
 	public Page getPageInfo(String pageName, int version) throws ProviderException {
 		GitPageHistory history = historyFor(pageName);
-		GitPageVersion v = history.infoAt(localName(pageName), version);
-		if (v != null) {
-			return WikiPageProxy.fromUserData(pageName, v.version(), v.userData(), v.size(), v.date(), m_engine);
+		GitPageVersion gitVersion = history.infoAt(localName(pageName), version);
+		if (gitVersion != null) {
+			Page page = WikiPageProxy.fromUserData(pageName, gitVersion.version(), gitVersion.userData(), gitVersion.size(), gitVersion.date(), m_engine);
+			if (version == WikiProvider.LATEST_VERSION) {
+				// The current/live page is the basis for the next save or delete. It must NOT carry a change note:
+				// ChangeNoteStrategy would otherwise hand that note straight back as the next commit's message, so the
+				// previous commit's message would silently round-trip into the new commit. Per-version history entries
+				// (getVersionHistory) keep their commit message as the change note for display.
+				page.removeAttribute(Page.CHANGENOTE);
+			}
+			return page;
 		}
 		// not in git (yet): a file staged in an open batch but not committed, serve it from the filesystem
 		File file = findPage(pageName);
@@ -315,7 +319,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		}
 		GitPageHistory history = historyFor(fullName);
 		String author = authorOrLatest(page, history);
-		String comment = gitCommentStrategy.getComment(page, "removed page");
+		String comment = gitCommentStrategy.getComment(page, "Removed page");
 		// Deletes commit immediately, even inside an open transaction (documented divergence from batching). A page
 		// delete within a bulk transaction is rare, keeping it immediate avoids staging a removal into the batch.
 		String commitHash = history.commitDelete(file, getUserData(author, comment));
@@ -346,7 +350,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		File fromFile = findPage(fromName);
 		File toFile = findPage(to);
 		String author = authorOrLatest(from, history);
-		String comment = gitCommentStrategy.getComment(from, "renamed page " + fromName + " to " + to);
+		String comment = gitCommentStrategy.getComment(from, "Renamed page " + fromName + " to " + to);
 		try {
 			String commitHash = history.commitMove(fromFile, toFile, getUserData(author, comment));
 			if (commitHash != null) {

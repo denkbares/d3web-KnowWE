@@ -187,6 +187,37 @@ public class GitVersioningFileProviderMultiWikiTest {
 		assertEquals("history restarts at the rename", 1, provider.getVersionHistory("Sub1&&After").size());
 	}
 
+	@Test
+	public void currentPageHasNoChangeNoteButHistoryDoes() throws ProviderException {
+		putPage("Sub1&&Topic", "v1"); // putPage sets CHANGENOTE = "edit"
+
+		// the live/current page (what getPage()/the cache serves, and the basis for the next write) must not carry a
+		// change note - otherwise a subsequent save/delete with no fresh note would reuse the last commit message
+		Page current = provider.getPageInfo("Sub1&&Topic", WikiProvider.LATEST_VERSION);
+		assertNull("current page must not expose the last commit message as a change note",
+				current.getAttribute(WikiPage.CHANGENOTE));
+
+		// history entries, by contrast, keep their commit message as the change note for display
+		List<Page> history = provider.getVersionHistory("Sub1&&Topic");
+		assertEquals("edit", history.get(0).getAttribute(WikiPage.CHANGENOTE));
+	}
+
+	@Test
+	public void saveWithoutFreshNoteDoesNotInheritPreviousMessage() throws ProviderException {
+		putPage("Sub1&&Topic", "v1"); // first commit carries the note "edit"
+
+		// second save with no change note set on the page (as the engine does when the user supplies none)
+		WikiPage page = new WikiPage(engine, "Sub1&&Topic");
+		page.setAuthor(AUTHOR);
+		provider.putPageText(page, "v2");
+
+		List<Page> history = provider.getVersionHistory("Sub1&&Topic");
+		assertEquals(2, history.size());
+		String latestNote = history.get(0).getAttribute(WikiPage.CHANGENOTE);
+		assertNotEquals("the 2nd commit must not reuse the 1st commit's message", "edit", latestNote);
+		assertEquals("with no fresh note an edit falls back to the provider default", "Edited Topic", latestNote);
+	}
+
 	// --- helpers -------------------------------------------------------------
 
 	private void putPage(String fullName, String text) throws ProviderException {
