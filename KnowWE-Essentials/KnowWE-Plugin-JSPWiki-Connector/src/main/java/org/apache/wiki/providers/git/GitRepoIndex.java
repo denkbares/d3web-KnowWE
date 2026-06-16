@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.wiki.api.providers.WikiProvider;
 import org.jetbrains.annotations.NotNull;
@@ -50,9 +49,9 @@ import de.uniwue.d3web.gitConnector.GitFileRevision;
  *     <li>Non-fast-forward (backward {@code reset --hard}, divergent/force-updated history) or branch switch: the
  *         branch index is rebuilt from a fresh full walk.</li>
  * </ul>
- * A {@code BranchIndex} is immutable once published, updates build a new instance and swap it into the per-branch map,
- * so readers never observe a half-built index (thread-safe without locking reads). Mutation happens only inside
- * {@link #fresh()} under {@link #rebuildLock}.
+ * A {@code BranchIndex} is immutable once published, so a returned snapshot stays consistent even as the map changes.
+ * The per-branch map is an LRU bounded at {@link #MAX_CACHED_BRANCHES}, so an instance that visits many branches (task
+ * workflow) does not accumulate a full repo snapshot per branch indefinitely.
  * <p>
  * Per-file lists are <b>newest-first</b> (matching {@code revisionsByFile}); version numbers exposed to callers are
  * 1-based <b>oldest-first</b> ({@code version 1 = oldest}, {@link WikiProvider#LATEST_VERSION} = newest), the same
@@ -62,17 +61,26 @@ public class GitRepoIndex {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepoIndex.class);
 
+	/**
+	 * Upper bound on how many per-branch snapshots are kept in memory at once.
+	 */
+	private static final int MAX_CACHED_BRANCHES = 4;
+
 	private final GitConnector connector;
 
 	/**
-	 * Branch name to its immutable snapshot. A {@link ConcurrentHashMap} so a read on one branch never blocks a read on
-	 * another, and so the published-reference swap is visible across threads.
+	 * Branch name to its immutable snapshot, an access-ordered LRU bounded at {@link #MAX_CACHED_BRANCHES}.
 	 */
-	private final Map<String, BranchIndex> byBranch = new ConcurrentHashMap<>();
+	private final Map<String, BranchIndex> byBranch = new LinkedHashMap<>(16, 0.75f, true) {
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<String, BranchIndex> eldest) {
+			return size() > MAX_CACHED_BRANCHES;
+		}
+	};
 
 	/**
-	 * Serializes the (rare) build/rebuild/forward-update of a branch index so two concurrent readers that both observe
-	 * a HEAD change do the work once.
+	 * Serializes the build/rebuild/forward-update of a branch index (so two concurrent readers that both observe a HEAD
+	 * change do the work once) and guards all access to {@link #byBranch}.
 	 */
 	private final Object rebuildLock = new Object();
 
@@ -148,6 +156,16 @@ public class GitRepoIndex {
 		return Collections.unmodifiableMap(fresh().byFile());
 	}
 
+	/**
+	 * Number of per-branch snapshots currently held in memory (bounded by {@link #MAX_CACHED_BRANCHES}). Test seam for
+	 * the eviction bound.
+	 */
+	int cachedBranchCount() {
+		synchronized (rebuildLock) {
+			return byBranch.size();
+		}
+	}
+
 	// --- freshness / invalidation --------------------------------------------
 
 	/**
@@ -169,20 +187,16 @@ public class GitRepoIndex {
 			return BranchIndex.EMPTY;
 		}
 
-		BranchIndex existing = byBranch.get(branch);
-		if (existing != null && gitHead.equals(existing.head())) {
-			return existing;
-		}
-
 		synchronized (rebuildLock) {
-			// re-check under the lock: another thread may have just refreshed this branch
-			existing = byBranch.get(branch);
+			// get() also marks the branch most-recently-used, so the access-order LRU never evicts the current branch
+			BranchIndex existing = byBranch.get(branch);
 			if (existing != null && gitHead.equals(existing.head())) {
 				return existing;
 			}
 			BranchIndex updated = (existing == null || existing.head() == null)
 					? buildFull(gitHead)
 					: update(existing, gitHead);
+			// put() bounds the map via removeEldestEntry (evicts the least-recently-used branch, never this one)
 			byBranch.put(branch, updated);
 			return updated;
 		}

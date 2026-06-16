@@ -197,7 +197,7 @@ public class GitPageHistory {
 	/**
 	 * Info about a single version of the page without computing the full history, one commit lookup. Returns
 	 * {@code null} if the page does not exist on disk or git has no commit for the requested version (e.g. the file is
-	 * staged in an open batch but not yet committed; the caller decides how to fall back).
+	 * staged in an open batch but not yet committed, the caller decides how to fall back).
 	 *
 	 * @param version a 1-based version number, or {@link WikiProvider#LATEST_VERSION} for the latest
 	 */

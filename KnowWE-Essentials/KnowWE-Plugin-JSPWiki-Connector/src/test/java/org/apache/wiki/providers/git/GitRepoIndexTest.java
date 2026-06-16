@@ -161,6 +161,28 @@ public class GitRepoIndexTest {
 	}
 
 	@Test
+	public void perBranchCacheIsBoundedYetStillCorrect() throws IOException {
+		commit("Base.txt", "base", "Alice", "base");
+		String mainBranch = connector.branches().currentBranch();
+
+		// visit many more branches than the cache bound, reading (=indexing) on each
+		for (int i = 0; i < 10; i++) {
+			RawGitExecutor.executeGitCommand("git checkout -b feature" + i + " " + mainBranch, repo.getAbsolutePath());
+			commit("Feature" + i + ".txt", "f" + i, "Bob", "on feature" + i);
+			assertEquals(1, index.versionCount("Feature" + i + ".txt"));
+		}
+
+		// the cache must not have grown to one snapshot per visited branch
+		assertTrue("per-branch cache must stay bounded, was " + index.cachedBranchCount(),
+				index.cachedBranchCount() <= 4);
+
+		// an evicted branch still reads correctly (it is simply rebuilt on access)
+		RawGitExecutor.executeGitCommand("git checkout " + mainBranch, repo.getAbsolutePath());
+		assertEquals(1, index.versionCount("Base.txt"));
+		assertEquals(0, index.versionCount("Feature0.txt"));
+	}
+
+	@Test
 	public void emptyRepositoryWithoutCommitsIsHandled() {
 		// fresh repo, no commits yet: HEAD does not resolve, the index is simply empty (no failure)
 		assertEquals(0, index.versionCount("Anything.txt"));
