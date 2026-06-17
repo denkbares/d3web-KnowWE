@@ -604,7 +604,7 @@ public class JSPWikiConnector implements WikiConnector {
 		String savePathParameter = "var.basedir";
 		String savePath = (String) engine.getWikiProperties().get(savePathParameter);
 		if (savePath == null) {
-			throw new RuntimeException("Wiki not properly configured. No save path was found. Plz set \"" + savePathParameter + "\n in your wiki setup.");
+			throw new RuntimeException("Wiki not properly configured. No save path was found. Please set \"" + savePathParameter + "\n in your wiki setup.");
 		}
 		return savePath;
 	}
