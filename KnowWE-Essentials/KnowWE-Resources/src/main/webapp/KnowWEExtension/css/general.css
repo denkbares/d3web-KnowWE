@@ -1110,7 +1110,8 @@ span.ajaxLoader {
 /* -------------- logger settings     --------------- */
 /* ################################################## */
 #KNOWWE-logger-main {
-	font: normal 10px Tahoma, Verdana, Arial;
+	font-size: 10px;
+	font-weight: normal;
 	position: absolute;
 	top: 2px;
 	left: 10px;
@@ -1165,7 +1166,9 @@ span.ajaxLoader {
 }
 
 #o-lay-title {
-	font: bold 0.8em/1.4em Arial, Verdana;
+	font-weight: bold;
+	font-size: 0.8em;
+	line-height: 1.4em;
 	text-align: center;
 	vertical-align: middle;
 	background-color: rgb(150, 187, 217);
@@ -1175,7 +1178,8 @@ span.ajaxLoader {
 
 #o-lay-body {
 	margin: 5px;
-	font: normal 1em Verdana;
+	font-size: 1em;
+	font-weight: normal;
 }
 
 .questionsheet-layer {
