@@ -4,8 +4,14 @@
 package de.knowwe.plugin;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -14,6 +20,9 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.PriorityList;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.JPFExtension;
 import com.denkbares.plugin.PluginManager;
@@ -31,8 +40,12 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.rightpanel.RightPanelTab;
+import de.knowwe.core.rightpanel.RightPanelTabProvider;
 import de.knowwe.core.taghandler.TagHandler;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeUtils;
+import de.knowwe.event.DeInitEvent;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
@@ -55,6 +68,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_ToolProvider = "ToolProvider";
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
+	public static final String EXTENDED_POINT_RightPanelTab = "RightPanelTab";
 	public static final String EXTENDED_POINT_Instantiation = "Instantiation";
 	public static final String EXTENDED_POINT_SectionizerModule = "SectionizerModule";
 	public static final String EXTENDED_POINT_EventListener = "EventListener";
@@ -184,10 +198,10 @@ public class Plugins {
 						(CompileScript<Compiler, AbstractType>) extension.getSingleton());
 			}
 			else {
-				LOGGER.warn("Tried to plug CompileScript '"
-							+ extension.getSingleton().getClass().getSimpleName()
-							+ "' into an type '" + type.getClass().getSimpleName()
-							+ "' which is not an AbstractType");
+				LOGGER.warn("Tried to plug CompileScript '{}' into an type '{}' which is not an AbstractType",
+						extension.getSingleton().getClass().getSimpleName(),
+						type.getClass().getSimpleName()
+				);
 			}
 		}
 	}
@@ -252,7 +266,7 @@ public class Plugins {
 			else {
 				throw new ClassCastException(
 						"renderer can only be plugged to type instances of 'AbstractType', but not to "
-						+ type.getClass().getName());
+								+ type.getClass().getName());
 			}
 		}
 	}
@@ -337,6 +351,108 @@ public class Plugins {
 	}
 
 	/**
+	 * A right panel tab registered programmatically: its id, sort priority and provider. The id and priority are
+	 * declared metadata, not part of the provider interface (mirrors the extension {@code id} attribute / {@code
+	 * priority} parameter of {@code plugin.xml}-declared tabs).
+	 */
+	private record RegisteredRightPanelTab(String id, double priority, RightPanelTabProvider provider) {
+	}
+
+	/**
+	 * Right panel tab providers registered programmatically, e.g. by an {@link Instantiation} during startup.
+	 * Populated before any panel request, then merged with the {@code plugin.xml}-declared providers in
+	 * {@link #getRightPanelTabs(UserContext)}.
+	 */
+	private static final List<RegisteredRightPanelTab> registeredRightPanelTabs = new CopyOnWriteArrayList<>();
+
+	/**
+	 * Clears the programmatic right panel tab registry when the environment is shut down. A subsequent
+	 * re-initialization re-runs all {@link Instantiation}s, so without this the registry would accumulate stale
+	 * providers from previous lifecycles (the JVM-singleton {@link EventManager} keeps this listener alive across
+	 * re-inits, and {@link DeInitEvent} fires on every shutdown).
+	 */
+	private static final EventListener RIGHT_PANEL_TAB_REGISTRY_CLEANER = new EventListener() {
+		@Override
+		public Collection<Class<? extends Event>> getEvents() {
+			return Collections.singleton(DeInitEvent.class);
+		}
+
+		@Override
+		public void notify(Event event) {
+			registeredRightPanelTabs.clear();
+		}
+	};
+
+	static {
+		EventManager.getInstance().registerListener(RIGHT_PANEL_TAB_REGISTRY_CLEANER);
+	}
+
+	/**
+	 * Registers a right panel tab provider programmatically with a default priority of {@code 5}.
+	 *
+	 * @param id       the stable, unique tab id (matches a declared tab's extension {@code id}, used as the DOM
+	 *                 {@code data-tab} key, client storage key and lazy-fetch parameter)
+	 * @param provider the provider to register
+	 * @see #registerRightPanelTabProvider(String, RightPanelTabProvider, double)
+	 */
+	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider) {
+		registerRightPanelTabProvider(id, provider, 5d);
+	}
+
+	/**
+	 * Registers a right panel tab provider programmatically, e.g. via an {@link Instantiation}. Providers registered
+	 * here are merged with the {@code plugin.xml}-declared {@code RightPanelTab} extensions by
+	 * {@link #getRightPanelTabs(UserContext)}. The id and priority are the values a {@code plugin.xml}-declared tab
+	 * gets
+	 * from its extension {@code id} attribute / {@code priority} parameter (priority ascending, KnowWE convention:
+	 * higher priority == lower number).
+	 * <p>
+	 * Note: resources ({@code script} / {@code css} / {@code module}) of a purely programmatic provider are not
+	 * auto-loaded by the {@code initJS} / {@code initCSS} / {@code initJsModules} scans (those only see
+	 * {@code plugin.xml} extensions). Such a provider should render server-side HTML that pulls its own resources, or
+	 * register them alongside the provider.
+	 *
+	 * @param id       the stable, unique tab id (matches a declared tab's extension {@code id}; used as the DOM
+	 *                 {@code data-tab} key, client storage key and lazy-fetch parameter)
+	 * @param provider the provider to register
+	 * @param priority the sort priority of the tab (ascending; lower number == earlier/leftmost)
+	 */
+	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider, double priority) {
+		registeredRightPanelTabs.add(new RegisteredRightPanelTab(id, priority, provider));
+	}
+
+	/**
+	 * Returns the full set of right panel tabs sorted by priority ascending, then title, then provider class. Each tab
+	 * pairs its provider with its id: the extension {@code id} attribute (declared) or the registration id
+	 * (programmatic). Tabs are deduplicated by id; declared tabs take precedence over programmatic ones
+	 * with the same id.
+	 *
+	 * @param context the user context, used to resolve tab titles for ordering
+	 * @return the sorted, deduplicated list of right panel tabs
+	 */
+	public static List<RightPanelTab> getRightPanelTabs(UserContext context) {
+		List<RegisteredRightPanelTab> all = new ArrayList<>();
+		for (Extension e : PluginManager.getInstance()
+				.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_RightPanelTab)) {
+			all.add(new RegisteredRightPanelTab(e.getID(), e.getPriority(), (RightPanelTabProvider) e.getSingleton()));
+		}
+		all.addAll(registeredRightPanelTabs);
+		Map<String, RegisteredRightPanelTab> deduped = new LinkedHashMap<>();
+		for (RegisteredRightPanelTab tab : all) {
+			deduped.putIfAbsent(tab.id(), tab);
+		}
+		Comparator<RegisteredRightPanelTab> order = Comparator
+				.comparingDouble(RegisteredRightPanelTab::priority)
+				.thenComparing(tab -> tab.provider()
+						.getTitle(context), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+				.thenComparing(tab -> tab.provider().getClass().getName());
+		return deduped.values().stream()
+				.sorted(order)
+				.map(tab -> new RightPanelTab(tab.id(), tab.provider()))
+				.toList();
+	}
+
+	/**
 	 * Returns a list of all plugged Annotations
 	 *
 	 * @return List of Annotations
@@ -378,6 +494,8 @@ public class Plugins {
 				EXTENDED_POINT_Renderer), files);
 		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction), files);
+		addScripts(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_RightPanelTab), files);
 		for (Pair<String, String> s : files) {
 			ResourceLoader.getInstance().add(s.getA(), ResourceLoader.Type.script, s.getB());
 		}
@@ -400,6 +518,8 @@ public class Plugins {
 				EXTENDED_POINT_Renderer), files);
 		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction), files);
+		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_RightPanelTab), files);
 		for (Pair<String, String> s : files) {
 			ResourceLoader.getInstance().add(s.getA(), ResourceLoader.Type.module, s.getB());
 		}
@@ -419,6 +539,8 @@ public class Plugins {
 				EXTENDED_POINT_Renderer), files);
 		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_KnowWEAction), files);
+		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_RightPanelTab), files);
 		for (Pair<String, String> s : files) {
 			ResourceLoader.getInstance().addFirst(s.getA(), ResourceLoader.Type.stylesheet, s.getB());
 		}
@@ -463,7 +585,8 @@ public class Plugins {
 			Class<?> instanceClass;
 			try {
 				instanceClass = extension.getInstanceClass();
-			} catch (Throwable e) {
+			}
+			catch (Throwable e) {
 				LOGGER.warn("Could not get extension class for extension {}", extension.getName());
 				instanceClass = Plugins.class;
 			}
