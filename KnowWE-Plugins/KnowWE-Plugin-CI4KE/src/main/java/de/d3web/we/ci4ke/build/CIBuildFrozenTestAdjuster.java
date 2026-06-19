@@ -54,6 +54,7 @@ import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
 class CIBuildFrozenTestAdjuster {
 
 	static void adjustFrozenTests(BuildResult buildResult, CIDashboard dashboard) throws IOException {
+		if (buildResult == null) return;
 		List<TestResult> testResults = buildResult.getResults();
 		List<TestResult> newResults = new ArrayList<>();
 		List<TestResult> removeResults = new ArrayList<>();
