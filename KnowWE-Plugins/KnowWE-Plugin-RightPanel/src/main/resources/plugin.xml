@@ -63,10 +63,18 @@
 		<parameter id="css" value="KnowWE-Plugin-RightPanel.css" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetRightPanelContentAction">
-		<parameter id="class" value="de.knowwe.rightpanel.custom.GetRightPanelContentAction" />
-		<parameter id="name" value="GetRightPanelContentAction" />
-		<parameter id="description" value="Action that gets custom content for the right panel." />
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler" id="RightPanelAppendHandler">
+		<parameter id="class" value="de.knowwe.rightpanel.RightPanelAppendHandler" />
+		<parameter id="name" value="RightPanelAppendHandler" />
+		<parameter id="description" value="Scaffolds the right panel DOM (tab strip + tab bodies) inline during page render." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="RightPanelTab" id="custom">
+		<parameter id="class" value="de.knowwe.rightpanel.custom.CustomContentTabProvider" />
+		<parameter id="name" value="CustomContentTabProvider" />
+		<parameter id="description" value="Built-in 'Custom' tab showing the wiki-editable RightPanel article. Carries the core right panel JS/CSS." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-Plugin-RightPanel.js" />
