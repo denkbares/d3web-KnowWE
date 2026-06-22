@@ -886,6 +886,13 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public String getLockingUser(String title) {
+		WikiPage page = new WikiPage(getEngine(), title);
+		PageLock lock = getPageManager().getCurrentLock(page);
+		return lock != null ? lock.getLocker() : null;
+	}
+
+	@Override
 	public boolean lockArticle(String title, String user) {
 		WikiPage page = new WikiPage(getEngine(), title);
 		PageLock lock = getPageManager().lockPage(page, user);

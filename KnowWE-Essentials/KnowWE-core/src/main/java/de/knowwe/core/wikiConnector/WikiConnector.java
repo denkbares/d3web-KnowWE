@@ -353,6 +353,16 @@ public interface WikiConnector {
 	boolean isArticleLockedCurrentUser(String title, String user);
 
 	/**
+	 * Returns the name of the user currently holding the editing lock on the article, or {@code null} if the article
+	 * is not locked. The default implementation returns {@code null}; connectors that support locks should override it.
+	 *
+	 * @param title the title of the article to check the lock for
+	 */
+	default String getLockingUser(String title) {
+		return null;
+	}
+
+	/**
 	 * Sets an editing lock on the article, denoting that the article is currently edited by the given user.
 	 *
 	 * @param title the title of the article to be locked
