@@ -351,19 +351,11 @@ public class Plugins {
 	}
 
 	/**
-	 * A right panel tab registered programmatically: its id, sort priority and provider. The id and priority are
-	 * declared metadata, not part of the provider interface (mirrors the extension {@code id} attribute / {@code
-	 * priority} parameter of {@code plugin.xml}-declared tabs).
-	 */
-	private record RegisteredRightPanelTab(String id, double priority, RightPanelTabProvider provider) {
-	}
-
-	/**
-	 * Right panel tab providers registered programmatically, e.g. by an {@link Instantiation} during startup.
+	 * Right panel tabs registered programmatically, e.g. by an {@link Instantiation} during startup.
 	 * Populated before any panel request, then merged with the {@code plugin.xml}-declared providers in
-	 * {@link #getRightPanelTabs(UserContext)}.
+	 * {@link #getRightPanelTabs()}.
 	 */
-	private static final List<RegisteredRightPanelTab> registeredRightPanelTabs = new CopyOnWriteArrayList<>();
+	private static final List<RightPanelTab> registeredRightPanelTabs = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Clears the programmatic right panel tab registry when the environment is shut down. A subsequent
@@ -402,9 +394,8 @@ public class Plugins {
 	/**
 	 * Registers a right panel tab provider programmatically, e.g. via an {@link Instantiation}. Providers registered
 	 * here are merged with the {@code plugin.xml}-declared {@code RightPanelTab} extensions by
-	 * {@link #getRightPanelTabs(UserContext)}. The id and priority are the values a {@code plugin.xml}-declared tab
-	 * gets
-	 * from its extension {@code id} attribute / {@code priority} parameter (priority ascending, KnowWE convention:
+	 * {@link #getRightPanelTabs()}. The id and priority are the values a {@code plugin.xml}-declared tab
+	 * gets from its extension {@code id} attribute / {@code priority} parameter (priority ascending, KnowWE convention:
 	 * higher priority == lower number).
 	 * <p>
 	 * Note: resources ({@code script} / {@code css} / {@code module}) of a purely programmatic provider are not
@@ -418,37 +409,40 @@ public class Plugins {
 	 * @param priority the sort priority of the tab (ascending; lower number == earlier/leftmost)
 	 */
 	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider, double priority) {
-		registeredRightPanelTabs.add(new RegisteredRightPanelTab(id, priority, provider));
+		registeredRightPanelTabs.add(new RightPanelTab(id, priority, provider));
 	}
 
 	/**
-	 * Returns the full set of right panel tabs sorted by priority ascending, then title, then provider class. Each tab
-	 * pairs its provider with its id: the extension {@code id} attribute (declared) or the registration id
-	 * (programmatic). Tabs are deduplicated by id; declared tabs take precedence over programmatic ones
-	 * with the same id.
+	 * Returns the full set of right panel tabs sorted by priority ascending, then id ascending. Each tab pairs its
+	 * provider with its id: the extension {@code id} attribute (declared) or the registration id (programmatic). Tabs
+	 * are deduplicated by id; declared tabs take precedence over programmatic ones with the same id.
+	 * <p>
+	 * Sorting on the id (a stable, unique, server-side identifier) rather than the title keeps the tab order identical
+	 * for every user, since {@link RightPanelTabProvider#getTitle(UserContext)} may differ between users (e.g.
+	 * localized labels).
 	 *
-	 * @param context the user context, used to resolve tab titles for ordering
 	 * @return the sorted, deduplicated list of right panel tabs
 	 */
-	public static List<RightPanelTab> getRightPanelTabs(UserContext context) {
-		List<RegisteredRightPanelTab> all = new ArrayList<>();
-		for (Extension e : PluginManager.getInstance()
+	public static List<RightPanelTab> getRightPanelTabs() {
+		List<RightPanelTab> all = new ArrayList<>();
+		for (Extension extension : PluginManager.getInstance()
 				.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_RightPanelTab)) {
-			all.add(new RegisteredRightPanelTab(e.getID(), e.getPriority(), (RightPanelTabProvider) e.getSingleton()));
+			all.add(new RightPanelTab(
+					extension.getID(),
+					extension.getPriority(),
+					(RightPanelTabProvider) extension.getSingleton())
+			);
 		}
 		all.addAll(registeredRightPanelTabs);
-		Map<String, RegisteredRightPanelTab> deduped = new LinkedHashMap<>();
-		for (RegisteredRightPanelTab tab : all) {
+		Map<String, RightPanelTab> deduped = new LinkedHashMap<>();
+		for (RightPanelTab tab : all) {
 			deduped.putIfAbsent(tab.id(), tab);
 		}
-		Comparator<RegisteredRightPanelTab> order = Comparator
-				.comparingDouble(RegisteredRightPanelTab::priority)
-				.thenComparing(tab -> tab.provider()
-						.getTitle(context), Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
-				.thenComparing(tab -> tab.provider().getClass().getName());
+		Comparator<RightPanelTab> order = Comparator
+				.comparingDouble(RightPanelTab::priority)
+				.thenComparing(RightPanelTab::id, String.CASE_INSENSITIVE_ORDER);
 		return deduped.values().stream()
 				.sorted(order)
-				.map(tab -> new RightPanelTab(tab.id(), tab.provider()))
 				.toList();
 	}
 
