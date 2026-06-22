@@ -29,9 +29,9 @@ import de.knowwe.util.Icon;
  * {@link Plugins#registerRightPanelTabProvider(String, RightPanelTabProvider, double)}.
  * <p>
  * One provider == one tab. A plugin that needs several tabs registers several providers. The right panel renders all
- * available providers, sorted by priority ascending, then title, then provider class as a stable final tiebreaker.
- * The id is a stable, space-free identifier, unique across right-panel tabs, used as the DOM {@code data-tab} key, the
- * client storage key and the lazy-fetch parameter (KnowWE convention: higher priority == lower number).
+ * available providers, sorted by priority ascending, then id ascending as a stable tiebreaker. The id is a stable,
+ * space-free identifier, unique across right-panel tabs, used as the DOM {@code data-tab} key, the client storage key
+ * and the lazy-fetch parameter (KnowWE convention: higher priority == lower number).
  */
 public interface RightPanelTabProvider {
 
@@ -41,9 +41,20 @@ public interface RightPanelTabProvider {
 	String getTitle(UserContext user);
 
 	/**
-	 * Tab-header icon.
+	 * The fallback tab-header icon used by the default {@link #renderIcon(UserContext, RenderResult)} when a provider
+	 * does not supply its own. Every tab always has an icon.
 	 */
-	Icon getIcon();
+	Icon DEFAULT_ICON = Icon.LIST;
+
+	/**
+	 * Renders this tab's header icon into the given result. Because the right panel is server-scaffolded (rendered by
+	 * a {@code PageAppendHandler}), this can emit any HTML, e.g. an {@link Icon} via
+	 * {@code result.appendHtml(icon.toHtml())}, an inline {@code <svg>}, an {@code <img>}, etc.
+	 * The default renders the generic {@link #DEFAULT_ICON}, override to supply a tab-specific icon.
+	 */
+	default void renderIcon(UserContext user, RenderResult result) {
+		result.appendHtml(DEFAULT_ICON.toHtml());
+	}
 
 	/**
 	 * Per-page availability, re-evaluated on every panel load (i.e. every page load). Return {@code false} to hide this
