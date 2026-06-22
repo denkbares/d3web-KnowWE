@@ -49,6 +49,62 @@ body.right-panel-resizing {
 	cursor: col-resize;
 }
 
+#rightPanel[hidden] {
+	display: none;
+}
+
+#rightPanel .right-panel-tablist {
+	container-type: inline-size;
+	display: flex;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	border-bottom: 1px solid var(--border-color-light);
+	background-color: var(--bg-color-secondary);
+}
+
+#rightPanel .right-panel-tablist:not(:has(button ~ button)) {
+	display: none;
+}
+
+#rightPanel .right-panel-tablist button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	flex: 0 0 auto;
+	padding: 5px 10px;
+	cursor: pointer;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: transparent;
+	color: var(--text-color-default-head);
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+#rightPanel .right-panel-tablist button:hover {
+	color: var(--hover-text-color-header-icons);
+}
+
+#rightPanel .right-panel-tablist button[data-active] {
+	border-bottom-color: var(--text-color-primary);
+	color: var(--text-color-primary);
+}
+
+#rightPanel .right-panel-tab {
+	padding: 2px 4px;
+}
+
+#rightPanel .right-panel-tab[hidden] {
+	display: none;
+}
+
+@container (max-width: 240px) {
+	#rightPanel .right-panel-tab-label {
+		display: none;
+	}
+}
+
 #rightPanel .rightpanelhide {
 	position: absolute;
 	top: -18px;
