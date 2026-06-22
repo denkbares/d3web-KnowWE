@@ -28,6 +28,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	const rightPanelStorageKey = "rightPanel";
 	const rightPanelWidthStorageKey = "knowwe.rightPanel.width";
+	const activeTabStorageKey = "knowwe.rightPanel.activeTab";
 	const defaultRightPanelWidth = 300;
 	const minRightPanelWidth = 300;
 
@@ -332,7 +333,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 				jq$(KNOWWE.core.util.getPageSelector()).css("width", "auto");
 			});
 			rightPanel.animate({left: (jq$(window).width() + "px")}, globalFloatingTime, function () {
-				rightPanel.remove();
+				hideMountedPanel();
 				jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "block");
 				jq$(window).resize();
 			});
@@ -353,67 +354,161 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	}
 
-	function removeRightPanel() {
+	function hideMountedPanel() {
 		jq$(document).off(".rightPanelResize");
 		jq$("body").removeClass("right-panel-resizing");
-		rightPanel.remove();
+		if (rightPanel && rightPanel.length) {
+			rightPanel.find(".right-panel-resize-handle").remove();
+			rightPanel.removeAttr("style").attr("hidden", "");
+		}
+	}
+
+	function removeRightPanel() {
+		hideMountedPanel();
 		isOnBottom = false;
 		jq$(window).resize();
 	}
 
-	function buildRightPanel() {
+	function locateScaffold() {
+		const $all = jq$('#rightPanel');
+		if ($all.length > 1) {
+			$all.slice(1).remove();
+		}
+		return jq$('#rightPanel').first();
+	}
+
+	function addHideBar() {
+		if (rightPanel.find('.rightpanelhide').length) return;
+		const rightPanelHide = jq$('<div/>', {'class': 'rightpanelhide'});
+		rightPanelHide.append(jq$('<span/>', {'text': 'Hide'}));
+		rightPanelHide.append(jq$('<img/>', {'src': 'KnowWEExtension/images/arrow_right.png'}));
+		rightPanel.prepend(rightPanelHide);
+	}
+
+	function mountRightPanel() {
+		rightPanel = locateScaffold();
+		if (!rightPanel.length) return false;
+
+		const $parent = KNOWWE.core.util.isKnowWETemplate()
+			? jq$(KNOWWE.core.util.getContentSelector())
+			: jq$(KNOWWE.core.util.getPageSelector());
+		if ($parent.length && !rightPanel.parent().is($parent)) {
+			rightPanel.appendTo($parent);
+		}
+
 		const offsetTop = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : 0;
 		const scrollTop = jq$(window).scrollTop();
 		const panelWidth = getStoredRightPanelWidth();
 		const width = isOnBottom ? '100%' : panelWidth + 'px';
 		const right = isOnBottom ? 'auto' : -panelWidth + 'px';
 		const position = isOnBottom ? 'fixed' : 'absolute';
-		rightPanel = jq$('<div/>', {
-			'id': 'rightPanel',
-			'class': isOnBottom ? 'right-panel-bottom' : 'right-panel-right',
-			'css': {
+		rightPanel
+			.removeClass('right-panel-right right-panel-bottom')
+			.addClass(isOnBottom ? 'right-panel-bottom' : 'right-panel-right')
+			.css({
 				'position': position,
 				'right': right,
 				'width': width,
 				'overflow-x': 'hidden',
 				'overflow-y': 'hidden'
-			}
-		});
+			});
 
+		addHideBar();
 
-		const rightPanelHide = jq$('<div/>', {
-			'class': 'rightpanelhide'
-		});
-
-		const rightPanelHideText = jq$('<span/>', {
-			'text': 'Hide'
-
-		});
-
-		const rightPanelHideIcon = jq$('<img/>', {
-			'src': 'KnowWEExtension/images/arrow_right.png'
-
-		});
-
-		rightPanelHide.append(rightPanelHideText);
-		rightPanelHide.append(rightPanelHideIcon);
-		rightPanel.append(rightPanelHide);
 		if (isOnBottom) {
 			rightPanel.css('bottom', '-' + jq$('#rightPanel').height());
 		} else {
-			rightPanel.css('top', (offsetTop - scrollTop) + 'px')
-		}
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			jq$(KNOWWE.core.util.getContentSelector()).append(rightPanel);
-		} else {
-			jq$(KNOWWE.core.util.getPageSelector()).append(rightPanel);
+			rightPanel.css('top', (offsetTop - scrollTop) + 'px');
 		}
 
+		rightPanel.removeAttr('hidden');
+		return true;
 	}
 
-	function initRightPanelTools() {
-		KNOWWE.core.plugin.rightPanel.watches.initWatchesTool();
-		KNOWWE.core.plugin.rightPanel.custom.initCustomContent();
+	function tabButton(id) {
+		return rightPanel.find(".right-panel-tablist button").filter(function () {
+			return this.getAttribute("data-tab") === id;
+		});
+	}
+
+	function tabBody(id) {
+		return rightPanel.find(".right-panel-tab").filter(function () {
+			return this.getAttribute("data-tab") === id;
+		});
+	}
+
+	function dispatchTabEvent(name, id, body) {
+		document.dispatchEvent(new CustomEvent(name, {detail: {id: id, body: body}}));
+	}
+
+	function ensureInitialized(id, body) {
+		if (!body || body.getAttribute("data-initialized") === "true") return;
+		body.setAttribute("data-initialized", "true");
+		dispatchTabEvent("rightPanelTabInitialized", id, body);
+	}
+
+	function fetchLazyBody(id, $body, onDone) {
+		jq$.ajax({
+			url: KNOWWE.core.util.getURL({action: 'GetRightPanelTabContentAction', tab: id}),
+			cache: false,
+			type: 'post'
+		}).done(function (html) {
+			$body.html(html);
+			$body.attr("data-loaded", "true");
+			onDone();
+		}).fail(_IE.onErrorBehavior);
+	}
+
+	function activateTab(id) {
+		const $btn = tabButton(id);
+		if (!$btn.length) return;
+		const $body = tabBody(id);
+		const lazy = $btn.is("[data-lazy]");
+
+		function show() {
+			rightPanel.find(".right-panel-tablist button").removeAttr("data-active");
+			$btn.attr("data-active", "");
+			rightPanel.find(".right-panel-tab").attr("hidden", "");
+			$body.removeAttr("hidden");
+			localStorage.setItem(activeTabStorageKey, id);
+			dispatchTabEvent("rightPanelTabShown", id, $body[0]);
+		}
+
+		if (lazy && $body.attr("data-loaded") !== "true") {
+			fetchLazyBody(id, $body, function () {
+				ensureInitialized(id, $body[0]);
+				show();
+			});
+		} else {
+			ensureInitialized(id, $body[0]);
+			show();
+		}
+	}
+
+	function initRightPanelTabs() {
+		const $tablist = rightPanel.find(".right-panel-tablist");
+
+		$tablist.off("click.rightPanelTabs").on("click.rightPanelTabs", "button[data-tab]", function () {
+			activateTab(this.getAttribute("data-tab"));
+		});
+
+		// eagerly initialize every non-lazy body, even ones never opened (decision 7a)
+		rightPanel.find(".right-panel-tab").each(function () {
+			const id = this.getAttribute("data-tab");
+			if (!tabButton(id).is("[data-lazy]")) {
+				ensureInitialized(id, this);
+			}
+		});
+
+		// restore the persisted active tab if it still exists, else fall back to the scaffold default
+		const stored = localStorage.getItem(activeTabStorageKey);
+		let activeId = (stored && tabBody(stored).length) ? stored : null;
+		if (!activeId) {
+			const $default = $tablist.find("button[data-active]").first();
+			const $first = $default.length ? $default : $tablist.find("button[data-tab]").first();
+			activeId = $first.attr("data-tab");
+		}
+		if (activeId) activateTab(activeId);
 	}
 
 	function setRightPanelCookie(b) {
@@ -430,7 +525,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function bindCollapseIcons() {
-		jq$("#rightPanel").on("click", ".tool .topbar", function () {
+		jq$("#rightPanel").off("click.rightPanelCollapse").on("click.rightPanelCollapse", ".tool .topbar", function () {
 			if (jq$(this).find("i").hasClass("fa-caret-down")) {
 				jq$(this).find("i").removeClass("fa-caret-down").addClass("fa-caret-right");
 				jq$(this).parent().find(".right-panel-content").first().slideUp();
@@ -461,7 +556,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 
 		function bindHideInPanel() {
-			jq$("#rightPanel .rightpanelhide").on("click", function () {
+			jq$("#rightPanel").off("click.rightPanelHide").on("click.rightPanelHide", ".rightpanelhide", function () {
 				terminateRightPanel();
 			})
 		}
@@ -491,11 +586,15 @@ KNOWWE.core.plugin.rightPanel = function () {
 				globalFloatingTime = 500;
 			}
 			shrinkPage();
-			buildRightPanel();
+			if (!mountRightPanel()) {
+				showSidebar = false;
+				globalFloatingTime = 500;
+				return;
+			}
 			floatRightPanel();
 			setRightPanelCookie(true);
 			bindUiActions();
-			initRightPanelTools();
+			initRightPanelTabs();
 			globalFloatingTime = 500;
 		}
 	}
@@ -536,7 +635,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function appendNewToolToRightPanel(tool, topbar, div) {
 		tool.append(topbar);
 		tool.append(div);
-		rightPanel.append(tool);
+		const $active = rightPanel.find(".right-panel-tab:not([hidden])").first();
+		($active.length ? $active : rightPanel).append(tool);
 	}
 
 	function buildToolContent(pluginDiv) {
@@ -584,6 +684,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 		},
 
 		init: function () {
+			rightPanel = locateScaffold();
+			if (!rightPanel.length) return;
+
 			const isShown = isRightPanelShown();
 			if (isShown) {
 				initRightPanel(true);
@@ -614,6 +717,18 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 		isShownOnRight: function () {
 			return isRightPanelShown() && !isOnBottom;
+		},
+
+		setTabEnabled: function (id, enabled) {
+			if (!rightPanel || !rightPanel.length) return;
+			const $btn = tabButton(id);
+			const $body = tabBody(id);
+			if (enabled) {
+				$btn.removeAttr("hidden");
+			} else {
+				$btn.attr("hidden", "");
+				$body.attr("hidden", "");
+			}
 		}
 
 	}
@@ -621,39 +736,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 }
 ();
 
-KNOWWE.core.plugin.rightPanel.custom = function () {
-
-	function buildCustomContentDiv() {
-		const customContent = jq$('<div/>', {
-			class: 'custom-container'
-		});
-
-		jq$.ajax({
-			url: KNOWWE.core.util.getURL({
-				action: 'GetRightPanelContentAction'
-			}),
-			cache: false,
-			async: true,
-			data: {},
-			type: 'post'
-		}).done(function (r) {
-			customContent.append(r);
-			jq$(document).trigger("rightPanelReady");
-		}).fail(
-			_IE.onErrorBehavior
-		);
-
-		KNOWWE.core.plugin.rightPanel.addToolToRightPanel("Custom", "custom", customContent);
-	}
-
-	return {
-		initCustomContent: function () {
-			buildCustomContentDiv();
-		}
-	}
-
-}();
-
+// The Custom tab is server-rendered inline by CustomContentTabProvider (decision H), so it needs no
+// client hydration: any interactive markup inside the RightPanel article is wired up by the normal
+// page-load init. The former GetRightPanelContentAction AJAX module was removed with the action.
 
 KNOWWE.core.plugin.rightPanel.watches = function () {
 
