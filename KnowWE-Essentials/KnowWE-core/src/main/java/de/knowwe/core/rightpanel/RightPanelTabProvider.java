@@ -78,5 +78,5 @@ public interface RightPanelTabProvider {
 	 * Renders the server-side body of this tab. A client-rendered tab writes an empty container here and fills it from
 	 * a JS init hook registered for the tab's id.
 	 */
-	void render(UserContext context, RenderResult result);
+	void renderContent(UserContext context, RenderResult result);
 }
