@@ -335,6 +335,49 @@
 		</profile>
 
 		<profile>
+		    <!-- denkbares with only the generic dependencies, so no d3web, ontologies or coom-->
+			<id>denkbares-slim</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Auth-OIDC</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-FontAwesomePro</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-EditMode</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Todos</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Keychain</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DropZone</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>denkbares</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
