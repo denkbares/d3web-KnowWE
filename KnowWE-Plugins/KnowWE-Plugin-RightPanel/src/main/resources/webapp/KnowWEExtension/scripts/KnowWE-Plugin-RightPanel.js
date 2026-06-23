@@ -48,36 +48,18 @@ KNOWWE.core.plugin.rightPanel = function () {
 		if (showSidebar) {
 			windowWidth = jq$(window).width();
 
-			if (KNOWWE.core.util.isKnowWETemplate()) {
-				setRightPanelWidth(getRightPanelWidth(), false);
+			if (windowWidth < 600) {
+				KNOWWE.core.plugin.rightPanel.moveToBottom();
+				jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "0");
 			} else {
-				if (windowWidth < 600) {
-					KNOWWE.core.plugin.rightPanel.moveToBottom();
-					jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "0");
-				} else {
-					KNOWWE.core.plugin.rightPanel.moveToRight();
-				}
-				rightPanelScroll();
+				KNOWWE.core.plugin.rightPanel.moveToRight();
 			}
+			rightPanelScroll();
 		}
 	});
 
 	function getRightPanelMaxWidth() {
-		let maxWidth = jq$(window).width();
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			const $lastTab = jq$(".tabmenu a:last-child").first();
-			const $actionsTop = jq$(KNOWWE.core.util.getActionsTopSelector());
-			if ($lastTab.length && $actionsTop.length) {
-				const resizeHandleWidth = jq$("#rightPanel .right-panel-resize-handle").outerWidth() || 8;
-				maxWidth = maxWidth
-					- ($lastTab.offset().left
-						+ $lastTab.outerWidth()
-						+ $actionsTop.outerWidth()
-						+ resizeHandleWidth + 20);
-			}
-		} else {
-			maxWidth = maxWidth / 2;
-		}
+		const maxWidth = jq$(window).width() / 2;
 		return Math.max(minRightPanelWidth, Math.floor(maxWidth));
 	}
 
@@ -100,13 +82,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function updatePageForRightPanelWidth(width) {
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			let resize = jq$(window).width() - width;
-			resize -= jq$(KNOWWE.core.util.getPageSelector()).offset().left;
-			jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
-			const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
-			rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
-		} else if (!isOnBottom) {
+		if (!isOnBottom) {
 			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", width + "px");
 		}
 	}
@@ -136,70 +112,28 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function rightPanelScroll() {
 		if (showSidebar) {
-			// Old standard Template
-			if (KNOWWE.core.util.isKnowWETemplate()) {
-				const element = $("rightPanel");
-				if (!element)
-					return;
-				const originY = initScrolling;
-				const wHeight = window.getHeight();
+			//Calculate user's scroll position from bottom
+			const scrollPosition = window.pageYOffset;
+			const windowSize = window.innerHeight;
+			const bodyHeight = document.body.offsetHeight;
+			const distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+			const footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
 
-				const docHeight = getDocHeight();
-				const favHeight = element.clientHeight;
-				const scrollY = window.getScrollTop();
-				const scrollMax = docHeight - wHeight;
-				const favToScroll = favHeight - wHeight;
-				const actionsBottom = $("actionsBottom");
-				const disableFixing = (actionsBottom == null
-					|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
-				if (scrollY <= originY || disableFixing) {
-					// when reaching top of page or if page height is made by leftMenu
-					// align fav originally to page
-					element.style.position = "absolute";
-					element.style.top = originY + "px";
-				} else if (scrollMax - scrollY <= favToScroll) {
-					// when reaching end of page
-					// align bottom of fav to bottom of page
-					element.style.position = "absolute";
-					element.style.top = (docHeight - favHeight) + "px";
-				} else {
-					// otherwise fix fav to the top of the viewport
-					element.style.position = "fixed";
-					element.style.top = "0px";
-
-				}
+			if (isOnBottom) {
+				//Haddock Template on the bottom
+				jq$('#rightPanel').css({
+					bottom: footerHeightVisible + 'px'
+				});
 			} else {
-				//Calculate user's scroll position from bottom
-				const scrollPosition = window.pageYOffset;
-				const windowSize = window.innerHeight;
-				const bodyHeight = document.body.offsetHeight;
-				const distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
-				const footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
-
-				if (isOnBottom) {
-					//Haddock Template on the bottom
-					jq$('#rightPanel').css({
-						bottom: footerHeightVisible + 'px'
-					});
-				} else {
-					// HaddockTemplate on the right
-					let $header = jq$('.header');
-					let $navigation = $header.find('.navigation');
-					let isFixedHeader = $header.hasClass("scrolling-down");
-					let position = isFixedHeader ? "fixed" : "absolute";
-					let top = isFixedHeader ? $navigation.height() : 0;
-					let height = document.documentElement.clientHeight - ($navigation.position().top + $navigation.height() + footerHeightVisible);
-					jq$('#rightPanel').css({position: position, top: top + 'px', height: height + 'px'});
-				}
+				// HaddockTemplate on the right
+				let $header = jq$('.header');
+				let $navigation = $header.find('.navigation');
+				let isFixedHeader = $header.hasClass("scrolling-down");
+				let position = isFixedHeader ? "fixed" : "absolute";
+				let top = isFixedHeader ? $navigation.height() : 0;
+				let height = document.documentElement.clientHeight - ($navigation.position().top + $navigation.height() + footerHeightVisible);
+				jq$('#rightPanel').css({position: position, top: top + 'px', height: height + 'px'});
 			}
-		}
-
-		function getDocHeight() {
-			const D = document;
-			return Math.max(Math.max(D.body.scrollHeight,
-				D.documentElement.scrollHeight), Math.max(D.body.offsetHeight,
-				D.documentElement.offsetHeight), Math.max(D.body.clientHeight,
-				D.documentElement.clientHeight));
 		}
 	}
 
@@ -270,42 +204,22 @@ KNOWWE.core.plugin.rightPanel = function () {
 		});
 	}
 
-	function restoreLayout() {
-		const rightPanelWidth = getRightPanelWidth();
-		const resize = jq$(window).width() - jq$("#favorites").outerWidth() - rightPanelWidth;
-		jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
-		jq$(rightPanel).css("width", rightPanelWidth + "px");
-		const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
-		rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
-	}
-
 	function floatRightPanel() {
 
 		showSidebar = true;
 
-		const options = {right: '0px'};
-
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			rightPanel.animate(options, globalFloatingTime, function () {
-				//"left" is needed for resizable to work properly
-				const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
-				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
+		if (!isOnBottom) {
+			rightPanelScroll();
+			rightPanel.animate({'right': '0'}, globalFloatingTime, function () {
 				jq$(window).resize();
 			});
 		} else {
-			if (!isOnBottom) {
-				rightPanelScroll();
-				rightPanel.animate({'right': '0'}, globalFloatingTime, function () {
-					jq$(window).resize();
-				});
-			} else {
-				rightPanel.animate({'bottom': '0'}, globalFloatingTime, function () {
-					jq$(window).resize();
-				});
-			}
+			rightPanel.animate({'bottom': '0'}, globalFloatingTime, function () {
+				jq$(window).resize();
+			});
 		}
 
-		initScrolling = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : jq$('.navigation').offset().top;
+		initScrolling = jq$('.navigation').offset().top;
 
 		//make sidebar resizable
 		makeRightPanelResizable();
@@ -314,44 +228,22 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function shrinkPage() {
 		isOnBottom = jq$(window).width() < 600;
 		const rightPanelWidth = getStoredRightPanelWidth();
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			jq$(KNOWWE.core.util.getPageSelector()).animate({'width': "-=" + rightPanelWidth + "px"}, globalFloatingTime);
-			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "5px");
-			jq$("#actionsBottom").css("margin-right", "5px");
-		} else {
-			if (!isOnBottom) {
-				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': rightPanelWidth + "px"}, globalFloatingTime);
-			}
+		if (!isOnBottom) {
+			jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': rightPanelWidth + "px"}, globalFloatingTime);
 		}
 	}
 
 	function growPage() {
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "none");
-			const pageWidth = jq$(KNOWWE.core.util.getPageSelector()).width() + jq$('#rightPanel').width();
-			jq$(KNOWWE.core.util.getPageSelector()).animate({'width': pageWidth}, globalFloatingTime, function () {
-				jq$(KNOWWE.core.util.getPageSelector()).css("width", "auto");
+		if (!isOnBottom) {
+			jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': '0'}, globalFloatingTime);
+			rightPanel.animate({'right': -getRightPanelWidth() + 'px'}, globalFloatingTime, function () {
+				removeRightPanel();
 			});
-			rightPanel.animate({left: (jq$(window).width() + "px")}, globalFloatingTime, function () {
-				hideMountedPanel();
-				jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "block");
-				jq$(window).resize();
-			});
-			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "auto");
-			jq$("#actionsBottom").css("margin-right", "auto");
 		} else {
-			if (!isOnBottom) {
-				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': '0'}, globalFloatingTime);
-				rightPanel.animate({'right': -getRightPanelWidth() + 'px'}, globalFloatingTime, function () {
-					removeRightPanel();
-				});
-			} else {
-				rightPanel.animate({'bottom': -rightPanel.height() + 'px'}, globalFloatingTime, function () {
-					removeRightPanel();
-				});
-			}
+			rightPanel.animate({'bottom': -rightPanel.height() + 'px'}, globalFloatingTime, function () {
+				removeRightPanel();
+			});
 		}
-
 	}
 
 	function hideMountedPanel() {
@@ -389,14 +281,11 @@ KNOWWE.core.plugin.rightPanel = function () {
 		rightPanel = locateScaffold();
 		if (!rightPanel.length) return false;
 
-		const $parent = KNOWWE.core.util.isKnowWETemplate()
-			? jq$(KNOWWE.core.util.getContentSelector())
-			: jq$(KNOWWE.core.util.getPageSelector());
+		const $parent = jq$(KNOWWE.core.util.getPageSelector());
 		if ($parent.length && !rightPanel.parent().is($parent)) {
 			rightPanel.appendTo($parent);
 		}
 
-		const offsetTop = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : 0;
 		const scrollTop = jq$(window).scrollTop();
 		const panelWidth = getStoredRightPanelWidth();
 		const width = isOnBottom ? '100%' : panelWidth + 'px';
@@ -418,7 +307,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		if (isOnBottom) {
 			rightPanel.css('bottom', '-' + jq$('#rightPanel').height());
 		} else {
-			rightPanel.css('top', (offsetTop - scrollTop) + 'px');
+			rightPanel.css('top', (-scrollTop) + 'px');
 		}
 
 		rightPanel.removeAttr('hidden');
