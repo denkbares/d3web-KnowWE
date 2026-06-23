@@ -30,8 +30,8 @@ import de.knowwe.util.Icon;
  * a wiki always has at least this one tab.
  * <p>
  * The body is rendered server-side, inline in the scaffold ({@link #renderContent(UserContext, RenderResult)}), so the
- * panel mounts with no extra AJAX roundtrip. When the {@code RightPanel} article is missing it renders the create-page
- * link instead.
+ * panel mounts with no extra AJAX roundtrip. When the {@code RightPanel} article is missing <em>or</em> renders blank
+ * it renders the create-page link instead.
  */
 public class CustomContentTabProvider implements RightPanelTabProvider {
 
@@ -51,10 +51,15 @@ public class CustomContentTabProvider implements RightPanelTabProvider {
 	public void renderContent(UserContext context, RenderResult result) {
 		Article article = context.getArticleManager().getArticle(ARTICLE_NAME);
 		if (article != null) {
-			DelegateRenderer.getInstance().render(article.getRootSection(), context, result);
+			// render into a temporary buffer so we can fall back to the create-page link when the article
+			// exists but renders blank (e.g. an empty page)
+			RenderResult content = new RenderResult(result);
+			DelegateRenderer.getInstance().render(article.getRootSection(), context, content);
+			if (!content.toString().isBlank()) {
+				result.append(content);
+				return;
+			}
 		}
-		else {
-			result.appendHtml("<a href='Edit.jsp?page=RightPanel' class='createpage'>RightPanel</a>");
-		}
+		result.appendHtml("<a href='Edit.jsp?page=RightPanel' class='createpage'>RightPanel</a>");
 	}
 }

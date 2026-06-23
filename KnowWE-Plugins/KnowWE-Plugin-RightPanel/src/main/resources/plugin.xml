@@ -42,6 +42,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetRightPanelTabContentAction">
+		<parameter id="class" value="de.knowwe.rightpanel.GetRightPanelTabContentAction" />
+		<parameter id="name" value="GetRightPanelTabContentAction" />
+		<parameter id="description" value="Renders one right-panel tab body on demand (lazy tabs, fetched on first activation)." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="RightPanelTab" id="custom">
 		<parameter id="class" value="de.knowwe.rightpanel.custom.CustomContentTabProvider" />
 		<parameter id="name" value="CustomContentTabProvider" />
