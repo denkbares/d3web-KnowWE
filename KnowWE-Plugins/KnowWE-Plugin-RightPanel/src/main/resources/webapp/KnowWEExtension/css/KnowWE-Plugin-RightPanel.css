@@ -161,11 +161,6 @@ body.right-panel-resizing {
 	bottom: 1px;
 }
 
-#rightPanel .tooltitle {
-	position: relative;
-	font-weight: bold;
-}
-
 #rightPanel .collapseicon {
 	position: relative;
 	top: 2px;
@@ -177,14 +172,6 @@ body.right-panel-resizing {
 	left: -4px;
 	width: 103%;
 	background-color: var(--bg-color-base);
-}
-
-#rightPanel #custom {
-	height: 100%;
-}
-
-#rightPanel #custom .custom-container {
-	height: 100%;
 }
 
 #rightPanel .right-panel-content {
