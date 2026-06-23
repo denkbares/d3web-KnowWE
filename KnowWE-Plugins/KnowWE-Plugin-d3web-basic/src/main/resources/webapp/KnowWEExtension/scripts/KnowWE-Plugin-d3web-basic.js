@@ -259,3 +259,451 @@ KNOWWE.plugin.rule.editTool.generateButtons = function(id) {
 		["<a class='action format' onclick='KNOWWE.plugin.rule.editTool.format(\"" + id + "\")'>" +
 		"Format</a>"]);
 };
+
+/**
+ * Namespace: KNOWWE.plugin.d3webbasic.watches
+ *
+ * The Watches debugging tool, contributed as the "watches" right-panel tab (WatchesTabProvider). It
+ * resolves term identifiers to their current knowledge-base value.
+ */
+KNOWWE.plugin.d3webbasic.watches = function () {
+
+	const watchesStorageKey = "watches";
+
+	let watchesArray;
+
+	let watches;
+
+	const restorableEntries = {};
+
+	let watchlist;
+
+	function bindUiActions() {
+		watches.on("click", ".watchlistentry", function (e) {
+			editWatch(this);
+		});
+		watches.on("click", ".addwatch", function (e) {
+			addWatch();
+		});
+		watches.on("click", ".fromselection", function (e) {
+			addWatchFromSelection();
+		});
+		watches.on("keydown", "textarea", function (e) {
+			handleTextarea(this, e);
+		});
+		watches.on("click", ".deletewatch", function (e) {
+			e.stopPropagation();
+			removeWatch(this);
+		});
+	}
+
+	function handleResponse(data) {
+		const expressionArrays = data.values;
+		const oldEntries = watchlist.find(".watchlistentry");
+		jq$.each(expressionArrays, function (index, value) {
+			const newEntry = createNewEntry(watchesArray[index], value);
+			jq$(oldEntries[index]).replaceWith(newEntry);
+		});
+		enableAddWatch();
+	}
+
+	function updateOldWatchesList(data) {
+		handleResponse(data);
+	}
+
+	function updateWatches() {
+		getExpressionValue(watchesArray).done(function (data) {
+			updateOldWatchesList(data);
+		});
+
+
+	}
+
+	function enableAddWatch() {
+		if (watches.find(".addwatch").prop("disabled") === true && watches.find(".newwatch").length === 0) {
+			watches.find(".addwatch").prop("disabled", false);
+			watches.find(".fromselection").prop("disabled", false);
+		}
+	}
+
+	function disableAddWatch() {
+		if (watches.find(".addwatch").prop("disabled") === false) {
+			watches.find(".addwatch").prop("disabled", true);
+			watches.find(".fromselection").prop("disabled", true);
+		}
+	}
+
+	function addWatch(text) {
+		const textarea = createTextarea(null, text);
+		watchlist.append(textarea);
+		jq$(textarea).find("textarea").focus();
+		//allow only one new textarea - disable Add Watch
+		disableAddWatch();
+	}
+
+	function addWatchFromSelection() {
+		const text = getSelectionText();
+		addWatch(text);
+	}
+
+	function removeWatch(that) {
+		const index = getWatchesIndex(jq$(that).parent());
+		watchesArray.splice(index, 1);
+		jq$(that).parent().remove();
+		updateCookies();
+	}
+
+	function saveOldEntry(index, that) {
+		const oldEntry = jq$(that);
+		restorableEntries[index] = oldEntry;
+	}
+
+	function editWatch(that) {
+		const index = getWatchesIndex(that);
+		saveOldEntry(index, that);
+		watchesArray.splice(index, 1);
+		const textarea = createTextarea(that);
+		jq$(that).replaceWith(textarea);
+		jq$(textarea).find("textarea").focus();
+		//allow only one new textarea - disable Add Watch
+		disableAddWatch();
+	}
+
+	function restoreEntry(entry, watchesIndex) {
+		const restorableEntry = restorableEntries[watchesIndex];
+		const restorableExpression = jq$(restorableEntry).find(".expression").text();
+		watchesArray.splice(watchesIndex, 0, restorableExpression);
+		jq$(entry).replaceWith(restorableEntry);
+		delete restorableEntries[watchesIndex];
+	}
+
+	function handleTextarea(that, e) {
+		const entry = jq$(that).parent();
+		const watchesIndex = getWatchesIndex(entry);
+
+		//escape
+		if (e.keyCode === 27) {
+			//is it an old element?
+			if (watchesIndex <= watchesArray.length) {
+				//restore it
+				restoreEntry(entry, watchesIndex);
+			}
+			else {
+				entry.remove();
+			}
+			enableAddWatch();
+		}
+
+		if (jq$(that).data('ui-tooltip') && jq$(that).val().trim() !== "") {
+			jq$(that).tooltip("destroy");
+			jq$(that).attr("title", null);
+		}
+
+		const trimmedValue = jq$(that).val().trim();
+		//shift+enter = newline, enter=submit
+		if (e.keyCode === 13 && !e.shiftKey) {
+			if (trimmedValue === "") {
+				jq$(that).tooltip({position: {my: "right bottom", at: "left top"}});
+				jq$(that).attr("title", "Please enter an expression.");
+				jq$(that).trigger("mouseover");
+				// prevent default behavior
+				e.preventDefault();
+				//alert("ok");
+			}
+			else {
+				if (watchesIndex < watchesArray.length) {
+					addExpression(jq$(that), watchesIndex);
+				}
+				else {
+					jq$(that).val(trimmedValue);
+					addExpression(jq$(that));
+				}
+
+			}
+		}
+
+	}
+
+	function getWatchesIndex(that) {
+		return jq$(that).index();
+	}
+
+	function getExpressionValue(expr, id) {
+		const data = {expressions: expr, page: KNOWWE.helper.gup('page'), id: id};
+		return jq$.ajax({
+			type: 'post',
+			url: 'action/GetExpressionValueAction',
+			data: JSON.stringify(data),
+			cache: false,
+			contentType: 'application/json; charset=UTF-8'
+		});
+	}
+
+
+	function createTextarea(that, text) {
+		const watchesNewEntry = jq$('<div/>', {
+			'class': 'newwatch watchlistline'
+		});
+		const textarea = jq$('<textarea>', {});
+
+		const textareaDom = textarea[0];
+
+		if (typeof AutoComplete != "undefined") {
+			new AutoComplete(textareaDom, function (callback, prefix) {
+				const scope = "$d3web/condition";
+				const data = {prefix: prefix, scope: scope};
+				if (KNOWWE && KNOWWE.helper) {
+					data.KWiki_Topic = KNOWWE.helper.gup('page');
+				}
+				jq$.ajax({
+					url: 'action/CompletionAction',
+					cache: false,
+					data: data
+				}).done(function (data) {
+					callback(eval(data));
+				});
+			});
+		}
+
+		if (that) {
+			const oldEntry = restorableEntries[getWatchesIndex(that)];
+			const oldText = jq$(oldEntry).find(".expression").text();
+			textarea.val(oldText);
+		}
+
+		if (typeof text != 'undefined') {
+			textarea.val(text);
+		}
+		textarea.autosize({minHeight: "22px"});
+		watchesNewEntry.append(textarea);
+		return watchesNewEntry;
+	}
+
+	function createWatchesEntryValueSpan(value) {
+		return jq$('<span/>', {
+			'class': 'value tooltip',
+			'text': value.value,
+			'title': value.kbname
+		});
+	}
+
+
+	function createWatchesEntryHistoryValueSpan(title) {
+		return jq$('<span/>', {
+			'class': 'value tooltip history',
+			'title': title
+		});
+	}
+
+	function handleDefaultResponse(watchesEntry, responseObject) {
+
+		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
+			const watchesEntryValue = createWatchesEntryValueSpan(value);
+			const tooltipcontent = jq$('<span style="padding-right: 5px" class="fa fa-book"></span><span>' + value.kbname + '  </span>');
+			jq$(watchesEntryValue).tooltipster({
+				content: tooltipcontent,
+				position: "top-left",
+				delay: 300,
+				theme: ".tooltipster-knowwe"
+			});
+			watchesEntry.append(watchesEntryValue);
+		});
+
+		return watchesEntry;
+
+	}
+
+	function handleHistoryResponse(watchesEntry, responseObject) {
+
+		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
+			const watchesEntryValue = createWatchesEntryHistoryValueSpan(value.kbname);
+
+			jq$.each(value.value, function iterateValuesInHistory(index, value) {
+				const historyEntrySpan = jq$('<span/>', {
+					'class': 'value tooltip historyentry',
+					'text': value.value
+				});
+				createTimestampsToolTip.call(this, historyEntrySpan);
+				watchesEntryValue.append(historyEntrySpan);
+
+			});
+			watchesEntry.append(watchesEntryValue);
+		});
+
+		function createTimestampsToolTip(historyEntrySpan) {
+			const start = this.timestamps[0];
+			const end = this.timestamps[1];
+			let tooltipcontent;
+			if (start !== end) {
+				tooltipcontent = jq$('<span>Start: ' + start + '</span><br><span>End: ' + end + '  </span>');
+			}
+			else {
+				tooltipcontent = jq$('<span>Start: ' + start + '</span>');
+			}
+			jq$(historyEntrySpan).tooltipster({
+				content: tooltipcontent,
+				position: "top-left",
+				delay: 300,
+				theme: ".tooltipster-knowwe"
+			});
+		}
+
+		return watchesEntry;
+	}
+
+	function createNewEntry(expression, responseObject) {
+
+		const watchesEntry = jq$('<div/>', {
+			'class': 'watchlistline watchlistentry'
+
+		});
+		watchesEntry.uniqueId();
+		const watchesEntryExpression = jq$('<span/>', {
+			'class': 'expression',
+			'text': expression
+		});
+		watchesEntry.append(watchesEntryExpression);
+
+
+		const length = Object.keys(responseObject).length;
+		if (length > 0) {
+			switch (responseObject.info) {
+				case 'history':
+					handleHistoryResponse(watchesEntry, responseObject);
+					break;
+				default:
+					handleDefaultResponse(watchesEntry, responseObject);
+			}
+		}
+		else {
+			const watchesEntryValue = jq$('<span/>', {
+				'class': 'value expressionerror',
+				'text': '<not a valid expression>'
+			});
+			watchesEntry.append(watchesEntryValue);
+		}
+
+		watchesEntry.append(createDeleteButton());
+		return watchesEntry;
+	}
+
+	function addExpression(original, watchesIndex) {
+
+		const expression = original.val();
+
+		const watchesEntry = jq$('<div/>', {
+			'class': 'watchlistline watchlistentry',
+			'text': expression
+		});
+		jq$(original).parent().replaceWith(watchesEntry);
+
+		if (typeof watchesIndex != 'undefined') {
+			watchesArray.splice(watchesIndex, 0, expression);
+		}
+		else {
+			watchesArray.push(expression);
+		}
+		updateCookies();
+
+		getExpressionValue(watchesArray).done(function (data) {
+			updateOldWatchesList(data);
+		});
+	}
+
+	function buildBasicWatchesDiv(body) {
+
+		const watchcontent = jq$('<div/>', {});
+
+		const watchlist = jq$('<div/>', {
+			'class': 'watchlist'
+		});
+
+		const watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-circle-plus'></i>&nbsp;Add Watch</button>");
+
+
+		const watchesAddEntryFromSelection = jq$("<button class='fromselection'><i class='fa fa-paragraph'></i>&nbsp;from Selection</button>");
+
+		watchcontent.append(watchlist);
+		watchcontent.append(watchesAddEntry);
+		watchcontent.append(watchesAddEntryFromSelection);
+
+		// build the standard collapsible tool chrome (.tool#watches > .topbar + .right-panel-content) and
+		// mount it into this tab's own body (passed by the rightPanelTabInitialized event), not via
+		// addToolToRightPanel - eager init fires while a different tab may be active
+		const tool = KNOWWE.core.plugin.rightPanel.buildTool("Watches", "watches", watchcontent);
+		jq$(body).append(tool);
+	}
+
+	function createDeleteButton() {
+
+		const deleteContainer = jq$('<div/>', {
+			'class': 'iconcontainer deletewatch select'
+		});
+
+		const deleteIcon = jq$("<a class=''><i class='fa fa-circle-xmark icon'></i></a>");
+
+
+		return deleteContainer.append(deleteIcon);
+	}
+
+	function loadWatchesFromCookies() {
+		watchesArray = simpleStorage.get(watchesStorageKey);
+		if (typeof watchesArray != 'undefined') {
+			getExpressionValue(watchesArray).done(function (data) {
+				const expressionArrays = data.values;
+				jq$.each(expressionArrays, function (index, value) {
+					const newEntry = createNewEntry(watchesArray[index], value);
+					watchlist.append(newEntry);
+				});
+			});
+		}
+		else {
+			watchesArray = [];
+		}
+	}
+
+	function updateCookies() {
+		simpleStorage.set(watchesStorageKey, watchesArray);
+	}
+
+	function getSelectionText() {
+		let text = "";
+		if (window.getSelection) {
+			text = window.getSelection().toString();
+		} else if (document.selection && document.selection.type !== "Control") {
+			text = document.selection.createRange().text;
+		}
+		return text;
+	}
+
+	function initVariables() {
+		watches = jq$("#watches");
+		watchlist = watches.find(".watchlist");
+	}
+
+	return {
+		initWatchesTool: function (body) {
+			buildBasicWatchesDiv(body);
+			loadWatchesFromCookies();
+			initVariables();
+			bindUiActions();
+			KNOWWE.helper.observer.subscribe("update", function () {
+				updateWatches();
+			});
+		},
+
+		addToWatches: function (text) {
+			KNOWWE.core.plugin.rightPanel.showRightPanel();
+			KNOWWE.core.plugin.rightPanel.activateTab("watches");
+			addWatch(text);
+		}
+	}
+}();
+
+// Hydrate the watches tab body when the panel initializes it (decision 7a/7b). Subscribing on the
+// document needs no eval-time dependency on the RightPanel module having loaded first.
+document.addEventListener("rightPanelTabInitialized", function (event) {
+	if (event.detail && event.detail.id === "watches") {
+		KNOWWE.plugin.d3webbasic.watches.initWatchesTool(event.detail.body);
+	}
+});

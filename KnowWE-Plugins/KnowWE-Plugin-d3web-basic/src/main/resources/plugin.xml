@@ -175,5 +175,42 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="RightPanelTab" id="watches">
+		<parameter id="class" value="de.d3web.we.watches.WatchesTabProvider" />
+		<parameter id="name" value="WatchesTabProvider" />
+		<parameter id="description" value="Built-in 'Watches' tab: a d3web debugging tool, available on pages that compile a d3web knowledge base. Carries the watches JS/CSS." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
+		<parameter id="css" value="KnowWE-Plugin-d3web-basic.css" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetExpressionValueAction">
+		<parameter id="class" value="de.d3web.we.watches.GetExpressionValueAction" />
+		<parameter id="name" value="GetExpressionValueAction" />
+		<parameter id="description" value="Action that gets a value for an arbitrary expression." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AddToWatchesToolProvider">
+		<parameter id="class" value="de.d3web.we.watches.AddToWatchesToolProvider" />
+		<parameter id="name" value="AddToWatchesToolProvider" />
+		<parameter id="description" value="Offer a button to add this term to the watches menu and opens it." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="QuestionDefinition" />
+		<parameter id="scope" value="SolutionDefinition" />
+		<parameter id="scope" value="QuestionReference" />
+		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="QASetReference" />
+		<parameter id="scope" value="AnswerReference" />
+		<parameter id="scope" value="AnswerDefinition" />
+		<parameter id="scope" value="SolutionReference" />
+		<parameter id="scope" value="NamedObjectReference" />
+		<parameter id="scope" value="AbstractIRITermDefinition" />
+		<parameter id="scope" value="FlowchartOrderReference" />
+	</extension>
+
 
 </plugin>

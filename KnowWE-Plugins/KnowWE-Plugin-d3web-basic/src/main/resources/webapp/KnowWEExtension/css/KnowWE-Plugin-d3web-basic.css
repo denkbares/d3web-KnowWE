@@ -6,3 +6,157 @@
 	color: #337ab7;
 	cursor: pointer;
 }
+
+#watches .newwatch textarea {
+	min-width: 250px;
+	background-color: var(--bg-color-default-Markup);
+	border: 1px dashed var(--text-color-watches-general);
+}
+
+#watches div.watchlistline {
+	padding: 5px;
+	padding-left: 26px;
+	padding-right: 5px;
+}
+
+#watches div.watchlistline:hover {
+	background-color: var(--hover-color-watches-line);
+}
+
+#watches .watchlist .watchlistline span.expression {
+	color: var(--text-color-watches-expression);
+	margin-right: 5px;
+}
+
+#watches .watchlist .watchlistline span.value {
+	color: var(--text-color-watches-value);
+}
+
+#watches .watchlist .watchlistline span.value.expressionerror {
+	color: var(--text-color-watches-expressionerror);
+}
+
+#watches .watchlist .watchlistline span.value ~ span.value:before {
+	content: " | ";
+	color: var(--text-color-watches-general);
+}
+
+#watches .watchlist .watchlistline span.historyentry ~ span.historyentry:before {
+	content: ", ";
+	color: var(--text-color-watches-general);
+}
+
+#watches .watchlist .history > .historyentry:before {
+	color: var(--text-color-watches-general);
+	content: "[";
+}
+
+#watches .watchlist .historyentry:last-child:after {
+	color: var(--text-color-watches-general);
+	content: "]";
+}
+
+#watches .watchlist .watchlistline span.expression::after {
+	content: "=";
+	color: var(--text-color-watches-general);
+	margin-left: 5px;
+}
+
+#watches div.iconcontainer {
+	display: block;
+	position: absolute;
+	width: 27px;
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	cursor: pointer;
+}
+
+#watches div.iconcontainer i {
+	top: 5px;
+	left: 7px;
+	position: relative;
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s linear 0.2s, opacity 0.2s linear;
+}
+
+#watches div.watchlistline:hover .icon {
+	visibility: visible;
+	opacity: 1;
+	transition-delay: 0.2s;
+}
+
+#watches div.iconcontainer:hover .icon {
+	color: var(--hover-text-color-header-icons);
+}
+
+#watches div.add img {
+	height: 11px !important;
+}
+
+#watches textarea {
+	resize: vertical;
+}
+
+#watches button {
+	height: 22px;
+	position: relative;
+	color: var(--text-color-default-head) !important;
+	font-size: 12px !important;
+	margin-top: 5px;
+	margin-bottom: 8px;
+	cursor: pointer;
+	border: 0;
+	background: var(--bg-color-default-Markup);
+	border: 1px solid var(--border-color-table);
+}
+
+#watches button[disabled] {
+	cursor: default !important;
+	-webkit-filter: grayscale(100%);
+	-moz-filter: grayscale(100%);
+	-o-filter: grayscale(100%);
+	-ms-filter: grayscale(100%);
+	filter: grayscale(100%);
+}
+
+#watches button[disabled]:hover {
+	cursor: default !important;
+	-webkit-filter: grayscale(100%);
+	-moz-filter: grayscale(100%);
+	-o-filter: grayscale(100%);
+	-ms-filter: grayscale(100%);
+	filter: grayscale(100%);
+	background-color: var(--hover-bg-color-text-field) !important;
+}
+
+#watches button.addwatch {
+	width: 95px;
+	margin-left: 8px;
+}
+
+#watches button.addwatch i {
+	position: relative;
+	left: -4px;
+}
+
+#watches button.fromselection {
+	margin-left: 8px;
+}
+
+#watches button:hover {
+	color: var(--hover-text-color-header-icons) !important;
+	background-color: var(--hover-bg-color-btn-default) !important;
+}
+
+#watches div.watchlistentry:hover img {
+	opacity: 1;
+	height: auto;
+}
+
+#watches div.watchlistentry {
+	cursor: text;
+	word-wrap: break-word;
+	position: relative;
+}

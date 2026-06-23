@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.rightpanel.watches;
+package de.d3web.we.watches;
 
 import java.io.IOException;
 
@@ -60,7 +60,7 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 			ArticleManager articleManager = KnowWEUtils.getArticleManager(context.getWeb());
 			for (int k = 0; k < expressionArray.length(); k++) {
 				String expression = expressionArray.get(k)
-						.toString().replaceAll("\u200b", "").replaceAll("\00a0", " ");
+						.toString().replace("\u200b", "").replace("\00a0", " ");
 				JSONObject jsonValuesObject = getExpressionValue(expression, context, articleManager);
 				responseArray.put(jsonValuesObject);
 			}
@@ -73,12 +73,12 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 			responseObject.write(context.getWriter());
 		}
 		catch (JSONException | IOException e) {
-			LOGGER.error("Exception while resolving watch expression: " + data + "\n", e);
+			LOGGER.error("Exception while resolving watch expression: {}\n", data, e);
 		}
 
 	}
 
-	public static JSONObject getExpressionValue(String expr, UserActionContext context, ArticleManager articleManager) {
+	private static JSONObject getExpressionValue(String expr, UserActionContext context, ArticleManager articleManager) {
 		JSONObject resultJsonObject = new JSONObject();
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				"KnowWEExtensionPoints",
@@ -91,10 +91,9 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 
 		for (Extension extension : prioList) {
 			Object object = extension.getSingleton();
-			if (object instanceof ExpressionResolver) {
-				ExpressionResolver er = (ExpressionResolver) object;
+			if (object instanceof ExpressionResolver er) {
 				resultJsonObject = er.getValue(expr, context, articleManager);
-				if (resultJsonObject.length() > 0) {
+				if (!resultJsonObject.isEmpty()) {
 					return resultJsonObject;
 				}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
+ * Copyright (C) 2015 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,10 +17,12 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.core.tools;
+package de.d3web.we.watches;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -47,11 +49,18 @@ public class AddToWatchesToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return (section.get() instanceof Term
-				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null);
+		if (section.get() instanceof Term) {
+			final Section<Term> termSection = Sections.cast(section, Term.class);
+			return termSection.get().getTermIdentifier(getTermCompiler(section), termSection) != null;
+		}
+		return false;
 	}
 
-	protected Tool getAddToWatchesTool(Section<? extends Term> section) {
+	private TermCompiler getTermCompiler(Section<?> section) {
+		return Compilers.getCompilersWithCompileScript(section, TermCompiler.class).stream().findAny().orElse(null);
+	}
+
+	private Tool getAddToWatchesTool(Section<? extends Term> section) {
 		return new DefaultTool(Icon.ADD,
 				"Add to watches",
 				"Add this term to the watches for debugging.",
@@ -59,8 +68,8 @@ public class AddToWatchesToolProvider implements ToolProvider {
 				Tool.CATEGORY_UTIL);
 	}
 
-	protected String createAddToWatchesAction(Section<? extends Term> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(Sections.cast(section, Term.class));
-		return "KNOWWE.core.plugin.rightPanel.watches.addToWatches('" + Strings.encodeHtml(termIdentifier.toExternalForm()) + "')";
+	private String createAddToWatchesAction(Section<? extends Term> section) {
+		Identifier termIdentifier = section.get().getTermIdentifier(getTermCompiler(section), section);
+		return "KNOWWE.plugin.d3webbasic.watches.addToWatches('" + Strings.encodeHtml(termIdentifier.toExternalForm()) + "')";
 	}
 }
