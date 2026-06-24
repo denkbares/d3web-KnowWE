@@ -28,7 +28,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	const rightPanelStorageKey = "rightPanel";
 	const rightPanelWidthStorageKey = "knowwe.rightPanel.width";
-	const activeTabStorageKey = "knowwe.rightPanel.activeTab";
+	const tabOrderStorageKey = "knowwe.rightPanel.tabOrder";
 	const defaultRightPanelWidth = 300;
 	const minRightPanelWidth = 300;
 
@@ -350,7 +350,26 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}).fail(_IE.onErrorBehavior);
 	}
 
-	function activateTab(id) {
+	function getStoredTabOrder() {
+		let order = [];
+		try {
+			const raw = localStorage.getItem(tabOrderStorageKey);
+			if (raw) order = JSON.parse(raw);
+		} catch (e) { }
+		if (!Array.isArray(order)) order = [];
+		order = order.filter(id => typeof id === "string");
+		return order;
+	}
+
+	function recordTabActivation(id) {
+		const order = getStoredTabOrder().filter(x => x !== id);
+		order.unshift(id);
+		try {
+			localStorage.setItem(tabOrderStorageKey, JSON.stringify(order));
+		} catch (e) { }
+	}
+
+	function activateTab(id, userInitiated) {
 		const $btn = tabButton(id);
 		if (!$btn.length) return;
 		const $body = tabBody(id);
@@ -361,7 +380,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 			$btn.attr("data-active", "");
 			rightPanel.find(".right-panel-tab").attr("hidden", "");
 			$body.removeAttr("hidden");
-			localStorage.setItem(activeTabStorageKey, id);
+			if (userInitiated) recordTabActivation(id);
 			dispatchTabEvent("rightPanelTabShown", id, $body[0]);
 		}
 
@@ -398,7 +417,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		const $tablist = rightPanel.find(".right-panel-tablist");
 
 		$tablist.off("click.rightPanelTabs").on("click.rightPanelTabs", "button[data-tab]", function () {
-			activateTab(this.getAttribute("data-tab"));
+			activateTab(this.getAttribute("data-tab"), true);
 		});
 
 		// eagerly initialize every non-lazy body, even ones never opened (decision 7a)
@@ -409,15 +428,20 @@ KNOWWE.core.plugin.rightPanel = function () {
 			}
 		});
 
-		// restore the persisted active tab if it still exists, else fall back to the scaffold default
-		const stored = localStorage.getItem(activeTabStorageKey);
-		let activeId = (stored && tabBody(stored).length) ? stored : null;
+		const order = getStoredTabOrder();
+		let activeId = null;
+		for (let i = 0; i < order.length; i++) {
+			if (tabButton(order[i]).length) {
+				activeId = order[i];
+				break;
+			}
+		}
 		if (!activeId) {
 			const $default = $tablist.find("button[data-active]").first();
 			const $first = $default.length ? $default : $tablist.find("button[data-tab]").first();
 			activeId = $first.attr("data-tab");
 		}
-		if (activeId) activateTab(activeId);
+		if (activeId) activateTab(activeId, false);
 
 		setupResponsiveTabs($tablist[0]);
 	}
@@ -622,7 +646,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		},
 
 		activateTab: function (id) {
-			activateTab(id);
+			activateTab(id, true);
 		},
 
 		moveToBottom: function () {
