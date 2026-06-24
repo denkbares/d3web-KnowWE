@@ -44,6 +44,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	let isOnBottom = false;
 
+	let tabResizeObserver = null;
+
 	jq$(window).resize(function () {
 		if (showSidebar) {
 			windowWidth = jq$(window).width();
@@ -374,6 +376,24 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}
 	}
 
+	function updateTabLabelVisibility(tablist) {
+		tablist.classList.remove("icons-only");
+		if (tablist.scrollWidth > tablist.clientWidth) {
+			tablist.classList.add("icons-only");
+		}
+	}
+
+	function setupResponsiveTabs(tablist) {
+		if (!tablist) return;
+		updateTabLabelVisibility(tablist);
+		if (typeof ResizeObserver === "undefined") return;
+		if (tabResizeObserver) tabResizeObserver.disconnect();
+		tabResizeObserver = new ResizeObserver(function () {
+			updateTabLabelVisibility(tablist);
+		});
+		tabResizeObserver.observe(tablist);
+	}
+
 	function initRightPanelTabs() {
 		const $tablist = rightPanel.find(".right-panel-tablist");
 
@@ -398,6 +418,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 			activeId = $first.attr("data-tab");
 		}
 		if (activeId) activateTab(activeId);
+
+		setupResponsiveTabs($tablist[0]);
 	}
 
 	function setRightPanelCookie(b) {

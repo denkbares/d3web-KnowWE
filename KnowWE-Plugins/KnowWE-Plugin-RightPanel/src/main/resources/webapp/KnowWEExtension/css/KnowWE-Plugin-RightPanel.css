@@ -56,7 +56,6 @@ body.right-panel-resizing {
 }
 
 #rightPanel .right-panel-tablist {
-	container-type: inline-size;
 	display: flex;
 	flex: 0 0 auto;
 	overflow-x: auto;
@@ -73,8 +72,8 @@ body.right-panel-resizing {
 	align-items: center;
 	justify-content: center;
 	gap: 6px;
-	flex: 0 0 auto;
-	padding: 7px 13px;
+	flex: 1 0 auto;
+	padding: 7px 9px;
 	cursor: pointer;
 	border: 0;
 	border-bottom: 2px solid transparent;
@@ -110,10 +109,8 @@ body.right-panel-resizing {
 	display: none !important;
 }
 
-@container (max-width: 240px) {
-	#rightPanel .right-panel-tab-label {
-		display: none;
-	}
+#rightPanel .right-panel-tablist.icons-only .right-panel-tab-label {
+	display: none;
 }
 
 #rightPanel .rightpanelhide {
