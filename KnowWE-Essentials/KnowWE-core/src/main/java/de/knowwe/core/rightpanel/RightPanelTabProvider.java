@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.rightpanel;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.plugin.Plugins;
@@ -38,7 +40,17 @@ public interface RightPanelTabProvider {
 	/**
 	 * Tab label shown in the header (when more than one tab is visible).
 	 */
+	@NotNull
 	String getTitle(UserContext user);
+
+	/**
+	 * Human-readable description of this tab, rendered as the tab button's hover tooltip (the {@code title}
+	 * attribute). Defaults to {@link #getTitle(UserContext)}, override to supply a fuller explanation.
+	 */
+	@NotNull
+	default String getDescription(UserContext user) {
+		return getTitle(user);
+	}
 
 	/**
 	 * The fallback tab-header icon used by the default {@link #renderIcon(UserContext, RenderResult)} when a provider
@@ -59,7 +71,7 @@ public interface RightPanelTabProvider {
 	/**
 	 * Per-page availability, re-evaluated on every panel load (i.e. every page load). Return {@code false} to hide this
 	 * tab for the current request/page. The context provides the page (title/article) and compiled types needed to
-	 * decide; it is intentionally a {@link UserContext} so the same check works both from the server-side bootstrap
+	 * decide. It is intentionally a {@link UserContext} so the same check works both from the server-side bootstrap
 	 * (page render) and from the AJAX action.
 	 */
 	default boolean isAvailable(UserContext context) {

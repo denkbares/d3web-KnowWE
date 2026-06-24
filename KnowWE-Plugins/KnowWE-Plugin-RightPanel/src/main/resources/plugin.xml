@@ -53,7 +53,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="RightPanelTab" id="custom">
 		<parameter id="class" value="de.knowwe.rightpanel.custom.CustomContentTabProvider" />
 		<parameter id="name" value="CustomContentTabProvider" />
-		<parameter id="description" value="Built-in 'Custom' tab showing the wiki-editable RightPanel article. Carries the core right panel JS/CSS." />
+		<parameter id="description" value="Built-in 'Custom' tab showing the wiki-editable RightPanel article." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="KnowWE-Plugin-RightPanel.js" />

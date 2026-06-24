@@ -18,6 +18,8 @@
  */
 package de.d3web.we.watches;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
@@ -36,8 +38,13 @@ import de.knowwe.util.Icon;
 public class WatchesTabProvider implements RightPanelTabProvider {
 
 	@Override
-	public String getTitle(UserContext user) {
+	public @NotNull String getTitle(UserContext user) {
 		return "Watches";
+	}
+
+	@Override
+	public @NotNull String getDescription(UserContext user) {
+		return "Live values of watched knowledge-base terms";
 	}
 
 	@Override
@@ -54,6 +61,7 @@ public class WatchesTabProvider implements RightPanelTabProvider {
 	public boolean isAvailable(UserContext context) {
 		// only on pages that compile a d3web knowledge base (same notion of "d3web page" the watch
 		// resolver relies on), re-evaluated on every panel load
+//		return true;
 		Article article = context.getArticle();
 		if (article == null) return false;
 		return !Compilers.getCompilers(article.getRootSection(), D3webCompiler.class).isEmpty();

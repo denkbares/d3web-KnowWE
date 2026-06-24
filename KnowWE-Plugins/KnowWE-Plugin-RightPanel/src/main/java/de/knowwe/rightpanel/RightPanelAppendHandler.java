@@ -30,10 +30,11 @@ import de.knowwe.plugin.Plugins;
 
 /**
  * Scaffolds the right panel DOM inline during page render. Runs as a post {@link PageAppendHandler}, so its output is
- * appended to the viewed article's HTML (the framework already skips support / non-viewed articles, leaving exactly one
- * scaffold per page view). It queries {@link Plugins#getRightPanelTabs()}, drops tabs whose
+ * appended to the viewed article's HTML (the framework already skips support / non-viewed articles, leaving exactly
+ * one scaffold per page view). It queries {@link Plugins#getRightPanelTabs()}, drops tabs whose
  * {@link de.knowwe.core.rightpanel.RightPanelTabProvider#isAvailable(UserContext) isAvailable} is false and, if any
- * remain, emits the panel structure. When no tab is available it emits nothing at all, so no panel and no toggle appear.
+ * remain, emits the panel structure. When no tab is available it emits nothing at all, so no panel and no toggle
+ * appear.
  * <p>
  * The scaffold starts {@code hidden} and sits inside the page content body; the RightPanel JS relocates it to the
  * stable panel parent and un-hides it on dom-ready.
@@ -62,6 +63,10 @@ public class RightPanelAppendHandler implements PageAppendHandler {
 			result.appendHtml("<button data-tab=\"" + Strings.encodeHtml(tab.id()) + "\"");
 			if (active) result.appendHtml(" data-active");
 			if (tab.provider().isLazy()) result.appendHtml(" data-lazy");
+			String description = tab.provider().getDescription(user);
+			if (!Strings.isBlank(description)) {
+				result.appendHtml(" title=\"" + Strings.encodeHtml(description) + "\"");
+			}
 			result.appendHtml(">");
 			tab.provider().renderIcon(user, result);
 			result.appendHtmlElement("span", tab.provider().getTitle(user), "class", "right-panel-tab-label");

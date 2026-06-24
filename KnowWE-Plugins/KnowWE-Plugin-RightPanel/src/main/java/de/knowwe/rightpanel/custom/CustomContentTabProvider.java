@@ -18,6 +18,8 @@
  */
 package de.knowwe.rightpanel.custom;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -38,8 +40,13 @@ public class CustomContentTabProvider implements RightPanelTabProvider {
 	private static final String ARTICLE_NAME = "RightPanel";
 
 	@Override
-	public String getTitle(UserContext user) {
+	public @NotNull String getTitle(UserContext user) {
 		return "Custom";
+	}
+
+	@Override
+	public @NotNull String getDescription(UserContext user) {
+		return "Wiki-editable content from the RightPanel article";
 	}
 
 	@Override
