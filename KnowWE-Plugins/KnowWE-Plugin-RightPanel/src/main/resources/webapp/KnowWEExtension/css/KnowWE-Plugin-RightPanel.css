@@ -18,6 +18,8 @@
  */
 
 #rightPanel {
+	display: flex;
+	flex-direction: column;
 	border-left: 1px solid var(--border-color-light);
 	background-color: var(--bg-color-default-Markup);
 	padding-left: 4px;
@@ -56,10 +58,10 @@ body.right-panel-resizing {
 #rightPanel .right-panel-tablist {
 	container-type: inline-size;
 	display: flex;
+	flex: 0 0 auto;
 	overflow-x: auto;
 	scrollbar-width: thin;
-	border-bottom: 1px solid var(--border-color-light);
-	background-color: var(--bg-color-secondary);
+	background-color: transparent;
 }
 
 #rightPanel .right-panel-tablist:not(:has(button ~ button)) {
@@ -70,33 +72,42 @@ body.right-panel-resizing {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 5px;
+	gap: 6px;
 	flex: 0 0 auto;
-	padding: 5px 10px;
+	padding: 7px 13px;
 	cursor: pointer;
 	border: 0;
 	border-bottom: 2px solid transparent;
+	border-radius: 0;
 	background: transparent;
-	color: var(--text-color-default-head);
-	font-weight: bold;
+	color: var(--text-color-secondary);
+	font-weight: normal;
 	white-space: nowrap;
+	transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 #rightPanel .right-panel-tablist button:hover {
-	color: var(--hover-text-color-header-icons);
+	color: var(--text-color-default-head);
+	background-color: var(--bg-color-secondary);
 }
 
 #rightPanel .right-panel-tablist button[data-active] {
-	border-bottom-color: var(--text-color-primary);
-	color: var(--text-color-primary);
+	/* distinguish by accent color + underline only; deliberately no font-weight change, which would
+	   alter the label's intrinsic width and shift the tabs when switching */
+	color: var(--text-color-default-head);
+	border-bottom-color: var(--text-color-default-head);
 }
 
 #rightPanel .right-panel-tab {
+	flex: 1 1 auto;
+	min-height: 0;
 	padding: 2px 4px;
 }
 
+/* only one tab body is shown at a time; !important so a tab's own content CSS (e.g. a client-rendered
+   tab that sets display:flex on its body) cannot override the panel's hide of inactive tabs */
 #rightPanel .right-panel-tab[hidden] {
-	display: none;
+	display: none !important;
 }
 
 @container (max-width: 240px) {
