@@ -76,6 +76,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 			try {
 				for (WikiAttachment wikiAttachment : connector.getAttachments(article.getTitle())) {
 					html.appendHtmlElement("span", wikiAttachment.getFileName(), "class", "knowWEInfoAttachmentName", "data-size", String.valueOf(wikiAttachment.getSize()));
+					html.append("\n");
 				}
 			}
 			catch (IOException e) {
