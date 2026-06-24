@@ -203,6 +203,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const button = document.createElement("button");
     button.className = "copy-button";
 
+    // Match the button background to the codeblock's actual background
+    button.style.backgroundColor = window.getComputedStyle(pre).backgroundColor;
+
     button.innerHTML = '<i class="fa fa-copy"></i>';
 
     // Custom tooltip
@@ -241,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1500);
 
       } catch (err) {
-
         console.error("Copy failed:", err);
       }
     });

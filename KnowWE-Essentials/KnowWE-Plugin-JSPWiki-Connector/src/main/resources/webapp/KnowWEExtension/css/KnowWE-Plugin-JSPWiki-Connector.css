@@ -142,24 +142,31 @@
 	background: transparent;
 	cursor: pointer;
 
-	opacity: 0.65;
-}
-
-.copy-button:hover {
-	opacity: 1;
+	/* room so scrolling text fades under the button instead of touching the icon */
+	padding: 2px 6px;
+	border-radius: 4px;
 }
 
 .copy-button i {
 	font-size: 14px;
 
+	/* opacity moved here from .copy-button so the button background stays opaque */
+	opacity: 0.65;
+
 	transition:
 			color 1.8s ease-out,
-			transform 0.12s ease-out;
+			transform 0.12s ease-out,
+			opacity 0.12s ease-out;
+}
+
+.copy-button:hover i {
+	opacity: 1;
 }
 
 .copy-button.copied i {
 
 	color: #4caf50;
+	opacity: 1;
 
 	transition:
 			color 0.05s linear,
