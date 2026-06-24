@@ -61,6 +61,7 @@ body.right-panel-resizing {
 	overflow-x: auto;
 	scrollbar-width: thin;
 	background-color: transparent;
+	margin-bottom: 0.5rem;
 }
 
 #rightPanel .right-panel-tablist:not(:has(button ~ button)) {
@@ -73,7 +74,7 @@ body.right-panel-resizing {
 	justify-content: center;
 	gap: 6px;
 	flex: 1 0 auto;
-	padding: 7px 9px;
+	padding: 5px 9px;
 	cursor: pointer;
 	border: 0;
 	border-bottom: 2px solid transparent;
