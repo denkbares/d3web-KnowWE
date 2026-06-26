@@ -443,13 +443,15 @@ KNOWWE.plugin.ci4ke.FreezeFailedTests = function() {
 
   async function run(sectionId, dashboardName, title) {
 
-    var url = "/KnowWE/action/CIFreezeFailedTestsAction?"
-      + "SectionID=" + encodeURIComponent(sectionId)
-      + "&dashboardName=" + encodeURIComponent(dashboardName);
+    var url = KNOWWE.core.util.getURL({
+      action: "CIFreezeFailedTestsAction",
+      SectionID: sectionId,
+      dashboardName: dashboardName
+    });
 
-    await fetch(url);
+    await fetch(url, { credentials: "same-origin" });
 
-    KNOWWE.plugin.ci4ke.executeNewBuild(dashboardName, title)
+    KNOWWE.plugin.ci4ke.executeNewBuild(dashboardName, title);
 
     window.location.reload();
   }
