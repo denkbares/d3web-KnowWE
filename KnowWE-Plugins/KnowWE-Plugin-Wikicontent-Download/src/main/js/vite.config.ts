@@ -6,7 +6,7 @@ export default defineConfig(({mode}) => {
     if (mode === "production") {
         outputDir = "../resources/webapp/KnowWEExtension";
     } else {
-      outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2025.3-KONAP/KnowWEExtension";
+      outputDir = "../../../../../../KnowWE/KnowWE-App/target/KnowWE-App-2025.3-KONAP-SNAPSHOTKnowWEExtension";
     }
 
     return {
