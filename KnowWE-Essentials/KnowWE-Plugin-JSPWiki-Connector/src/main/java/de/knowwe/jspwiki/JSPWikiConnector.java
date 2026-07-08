@@ -644,7 +644,7 @@ public class JSPWikiConnector implements WikiConnector {
 		engine.getManager(SearchManager.class).initialize(engine, engine.getWikiProperties());
 	}
 
-	private void clearJSPWikiCaches() throws WikiException {
+	public void clearJSPWikiCaches() throws WikiException {
 
 		// we clear the ehcache
 		CachingManager cachingManager = engine.getManager(CachingManager.class);
