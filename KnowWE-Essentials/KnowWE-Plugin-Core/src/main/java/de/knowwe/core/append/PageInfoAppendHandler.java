@@ -19,6 +19,7 @@
 package de.knowwe.core.append;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,9 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		if (article == null) return; // Can happen in preview mode
 		final String title = article.getTitle();
 		int version = connector.getVersion(title);
-		long modDate = connector.getLastModifiedDate(title, -1).getTime();
+		// date is null if the page does not exist yet, e.g. when previewing a new page
+		Date lastModified = connector.getLastModifiedDate(title, -1);
+		long modDate = lastModified == null ? 0 : lastModified.getTime();
 		String userName = user.getUserName();
 		String overallStatus = KnowWEUtils.getOverallStatus(user);
 
