@@ -161,7 +161,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		String repoPath = repoDir.getAbsolutePath();
 		if (!new File(repoDir, ".git").isDirectory()) {
 			// ensure a repo exists
-			RawGitExecutor.executeGitCommand("git init", repoPath);
+			RawGitExecutor.executeGitCommand(new String[] { "git", "init" }, repoPath);
 			LOGGER.info("Initialized new git repository at '{}'.", repoPath);
 		}
 		GitConnector connector = new CachingGitConnector(JGitBackedGitConnector.fromPath(repoPath));
@@ -316,7 +316,8 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 	 * Lists all pages with their latest author/date/version, enriched from the per-repo eager index instead of the
 	 * inherited base which calls the git-backed {@link #getPageInfo} once per page (an O(pages) git-process storm at
 	 * startup). Pages are enumerated from the filesystem (so deleted pages are correctly absent) and each repo's
-	 * history is read once via {@link GitPageHistory#revisionsByFile()}, so the cost is O(repos) git walks, not O(pages).
+	 * history is read once via {@link GitPageHistory#revisionsByFile()}, so the cost is O(repos) git walks, not
+	 * O(pages).
 	 */
 	@Override
 	public Collection<Page> getAllPages() throws ProviderException {
@@ -363,8 +364,8 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 
 	/**
 	 * All page changes since the given date, one entry per (page, commit) with that commit's author, change-note and
-	 * date, served from each repo's index revisionsByFile (one git walk per repo). Replaces the inherited base, which returns
-	 * an empty list, so Recent Changes works on the multi-wiki git provider. Attachment paths (those in a
+	 * date, served from each repo's index revisionsByFile (one git walk per repo). Replaces the inherited base, which
+	 * returns an empty list, so Recent Changes works on the multi-wiki git provider. Attachment paths (those in a
 	 * {@code <page>-att/} subdirectory) are skipped, only page files are reported.
 	 */
 	@Override
