@@ -44,7 +44,7 @@ import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.event.WikiEventManager;
-import org.apache.wiki.pages.PageManager;
+import org.apache.wiki.cache.CachingManager;
 import org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy;
 import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
 import org.apache.wiki.providers.git.GitCommitBatchRegistry;
@@ -592,24 +592,22 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		return null;
 	}
 
+	/**
+	 * Evicts the given pages from the JSPWiki page caches, so reads after a batch commit or rollback see the current
+	 * on-disk state. Evicts directly via the {@link CachingManager} rather than through
+	 * {@code PageManager.deleteVersion} (whose delegate call would reach this provider's throwing
+	 * {@link #deleteVersion} and skip the history-cache eviction).
+	 */
 	private void refreshCache(Collection<String> pageNames) {
-		PageManager pm = m_engine.getManager(PageManager.class);
-		for (String pageName : pageNames) {
-			Page page = getRefreshPage(pageName);
-			try {
-				// only evicts the page from the cache, the underlying provider delete is a no-op here
-				pm.deleteVersion(page);
-			}
-			catch (ProviderException e) {
-				LOGGER.error("Could not refresh cache for '{}'.", pageName, e);
-			}
+		CachingManager cachingManager = m_engine.getManager(CachingManager.class);
+		if (cachingManager == null) {
+			return;
 		}
-	}
-
-	private Page getRefreshPage(String pageName) {
-		Page page = new org.apache.wiki.WikiPage(m_engine, pageName);
-		page.setVersion(WikiProvider.LATEST_VERSION);
-		return page;
+		for (String pageName : pageNames) {
+			cachingManager.remove(CachingManager.CACHE_PAGES, pageName);
+			cachingManager.remove(CachingManager.CACHE_PAGES_TEXT, pageName);
+			cachingManager.remove(CachingManager.CACHE_PAGES_HISTORY, pageName);
+		}
 	}
 
 	// --- user data (ported from the single-wiki delegate) --------------------
