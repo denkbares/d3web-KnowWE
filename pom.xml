@@ -948,6 +948,11 @@
 
 			<!-- ===== Third-party: logging ===== -->
 			<dependency>
+				<groupId>com.denkbares.krone</groupId>
+				<artifactId>KnowWE-Plugin-KONAP-Bundle</artifactId>
+				<version>${konap.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${logback.version}</version>
