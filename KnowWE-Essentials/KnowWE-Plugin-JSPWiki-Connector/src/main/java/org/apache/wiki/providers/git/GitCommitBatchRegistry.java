@@ -69,16 +69,22 @@ public class GitCommitBatchRegistry {
 	/**
 	 * Opens a batch for the given user, so that subsequent {@link #stage} calls accumulate instead of committing
 	 * immediately. Idempotent: a second open while a batch is already open is a no-op (the existing batch is kept).
+	 * A {@code null} user cannot open a batch (its changes are committed immediately by the caller).
 	 */
 	public void open(String user) {
+		if (user == null) {
+			LOGGER.warn("Tried to open a commit batch without a user; ignoring.");
+			return;
+		}
 		openBatches.computeIfAbsent(user, GitCommitBatch::new);
 	}
 
 	/**
-	 * Whether the given user currently has an open batch.
+	 * Whether the given user currently has an open batch. Null-tolerant: a {@code null} user (page saved without an
+	 * author) never has an open batch.
 	 */
 	public boolean isOpen(String user) {
-		return openBatches.containsKey(user);
+		return user != null && openBatches.containsKey(user);
 	}
 
 	/**
@@ -90,7 +96,7 @@ public class GitCommitBatchRegistry {
 	 * caller should commit immediately
 	 */
 	public boolean stage(String user, String repoKey, String path) {
-		GitCommitBatch batch = openBatches.get(user);
+		GitCommitBatch batch = user == null ? null : openBatches.get(user);
 		if (batch == null) {
 			return false;
 		}
@@ -103,7 +109,7 @@ public class GitCommitBatchRegistry {
 	 * match {@link #stage(String, String, String)}.
 	 */
 	public boolean stage(String user, String repoKey, Collection<String> paths) {
-		GitCommitBatch batch = openBatches.get(user);
+		GitCommitBatch batch = user == null ? null : openBatches.get(user);
 		if (batch == null) {
 			return false;
 		}
@@ -120,7 +126,7 @@ public class GitCommitBatchRegistry {
 	 * open batch. Repositories whose connector could not be resolved or whose commit failed are omitted (logged).
 	 */
 	public List<RepoCommitResult> commit(String user, String message, String author, String email) {
-		GitCommitBatch batch = openBatches.remove(user);
+		GitCommitBatch batch = user == null ? null : openBatches.remove(user);
 		if (batch == null) {
 			LOGGER.warn("Tried to commit batch for user '{}' but no batch was open.", user);
 			return Collections.emptyList();
@@ -159,7 +165,7 @@ public class GitCommitBatchRegistry {
 	 * restored paths, so the caller can refresh page caches and Lucene for them. Empty if the user had no open batch.
 	 */
 	public List<RepoRollbackResult> rollback(String user) {
-		GitCommitBatch batch = openBatches.remove(user);
+		GitCommitBatch batch = user == null ? null : openBatches.remove(user);
 		if (batch == null) {
 			LOGGER.warn("Tried to roll back batch for user '{}' but no batch was open.", user);
 			return Collections.emptyList();
