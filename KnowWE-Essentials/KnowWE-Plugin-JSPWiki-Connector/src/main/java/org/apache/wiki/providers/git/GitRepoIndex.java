@@ -203,7 +203,10 @@ public class GitRepoIndex {
 	}
 
 	private BranchIndex buildFull(String gitHead) {
-		Map<String, List<GitFileRevision>> byFile = connector.log().revisionsByFile();
+		// walk from the pinned hash, not the symbolic HEAD: a branch switch between reading HEAD and walking can no
+		// longer bind this snapshot to a different branch's history. A stale branch-name binding (branch read raced a
+		// switch) is harmless, it is never served because serving requires the stored head to match the current HEAD.
+		Map<String, List<GitFileRevision>> byFile = connector.log().revisionsByFile(gitHead);
 		LOGGER.debug("Built full git index ({} file(s)) at HEAD {}.", byFile.size(), gitHead);
 		return new BranchIndex(gitHead, byFile);
 	}
