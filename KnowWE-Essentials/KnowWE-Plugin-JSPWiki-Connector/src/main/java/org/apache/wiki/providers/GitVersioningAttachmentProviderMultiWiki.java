@@ -376,6 +376,12 @@ public class GitVersioningAttachmentProviderMultiWiki extends BasicAttachmentPro
 			String user = oldParent.getAuthor();
 			GitCommitBatchRegistry registry = pageProvider().getBatchRegistry();
 			if (registry.isOpen(user)) {
+				// the moved-in files are untracked until staged; a pathspec commit cannot pick up untracked files,
+				// so without staging they would miss the batch commit (the moved-away paths are tracked deletions
+				// and need no staging)
+				for (String newPath : newPaths) {
+					history.stageForBatch(newPath);
+				}
 				registry.stage(user, history.repoKey(), oldPaths);
 				registry.stage(user, history.repoKey(), newPaths);
 			}

@@ -144,6 +144,11 @@ public class GitCommitBatchRegistry {
 			}
 			try {
 				String commitHash = connector.commit().commitPathsForUser(message, author, email, paths);
+				if (commitHash == null) {
+					// none of the staged paths had changes left to commit, nothing to report for this repo
+					LOGGER.info("Batch of user '{}' had no changes to commit in repo '{}'.", user, repoKey);
+					continue;
+				}
 				results.add(new RepoCommitResult(repoKey, commitHash, paths));
 			}
 			catch (Exception e) {

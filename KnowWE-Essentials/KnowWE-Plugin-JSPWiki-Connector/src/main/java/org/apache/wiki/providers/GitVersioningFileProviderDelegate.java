@@ -561,7 +561,11 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 
 		String commitHash = this.gitConnector.commit().commitPathsForUser(comment, username, email, this.openCommits.get(user));
-		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, this.openCommits.get(user), commitHash);
+		if (commitHash != null) {
+			// null means none of the staged paths had changes left to commit (e.g. all were already committed by
+			// in-transaction deletes), so there is no commit to announce
+			fireWikiEvent(GitVersioningWikiEvent.MOVED, user, this.openCommits.get(user), commitHash);
+		}
 
 		this.openCommits.remove(user);
 		final PageManager pm = getEnginePageManager();
