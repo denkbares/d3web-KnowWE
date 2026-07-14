@@ -56,6 +56,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.EventManager;
+import de.knowwe.event.GitCommitEvent;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
@@ -108,7 +110,11 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		for (String folder : folders) {
 			GitPageHistory history = historyByFolder.computeIfAbsent(folder, this::createHistory);
 			if (history != null) {
-				history.sweepUp("provider-startup");
+				String reconciliationHash = history.sweepUp("provider-startup");
+				if (reconciliationHash != null) {
+					EventManager.getInstance().fireEvent(new GitCommitEvent(history.repoKey(), reconciliationHash,
+							List.of(), "system", GitCommitEvent.Origin.RECONCILIATION));
+				}
 			}
 		}
 		LOGGER.info("Initialized {} with {} sub-wiki repo(s).", getClass().getSimpleName(), historyByRepoKey.size());
@@ -224,7 +230,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 			CommitUserData userData = getUserData(user, comment);
 			String commitHash = history.commitPut(file, userData);
 			if (commitHash != null) {
-				fireWikiEvent(GitVersioningWikiEvent.UPDATE, user, List.of(fullName), commitHash);
+				fireWikiEvent(GitVersioningWikiEvent.UPDATE, user, List.of(fullName), commitHash, history.repoKey());
 			}
 		}
 	}
@@ -444,7 +450,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		// delete within a bulk transaction is rare, keeping it immediate avoids staging a removal into the batch.
 		String commitHash = history.commitDelete(file, getUserData(author, comment));
 		if (commitHash != null) {
-			fireWikiEvent(GitVersioningWikiEvent.DELETE, author, List.of(fullName), commitHash);
+			fireWikiEvent(GitVersioningWikiEvent.DELETE, author, List.of(fullName), commitHash, history.repoKey());
 		}
 	}
 
@@ -474,7 +480,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		try {
 			String commitHash = history.commitMove(fromFile, toFile, getUserData(author, comment));
 			if (commitHash != null) {
-				fireWikiEvent(GitVersioningWikiEvent.MOVED, author, List.of(to), commitHash);
+				fireWikiEvent(GitVersioningWikiEvent.MOVED, author, List.of(to), commitHash, history.repoKey());
 			}
 		}
 		catch (IOException e) {
@@ -514,7 +520,7 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		List<GitCommitBatchRegistry.RepoCommitResult> results = batchRegistry.commit(user, userData.message, userData.user, userData.email);
 		for (GitCommitBatchRegistry.RepoCommitResult result : results) {
 			Collection<String> pages = globalPageNames(result.repoKey(), result.paths());
-			fireWikiEvent(GitVersioningWikiEvent.UPDATE, user, pages, result.commitHash());
+			fireWikiEvent(GitVersioningWikiEvent.UPDATE, user, pages, result.commitHash(), result.repoKey());
 			refreshCache(pages);
 		}
 	}
@@ -648,8 +654,15 @@ public class GitVersioningFileProviderMultiWiki extends AbstractMultiWikiFilePro
 		return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 	}
 
-	private void fireWikiEvent(int event, String author, Collection<String> pages, String commitHash) {
+	/**
+	 * Fires both commit notifications: the JSPWiki-bus {@link GitVersioningWikiEvent} for wiki-internal consumers and
+	 * the denkbares-bus {@link GitCommitEvent} carrying the repository, so cross-plugin consumers (e.g. the async
+	 * push listener) can route per repo without any further lookup.
+	 */
+	private void fireWikiEvent(int event, String author, Collection<String> pages, String commitHash, String repoPath) {
 		WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, event, author, pages, commitHash));
+		EventManager.getInstance()
+				.fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, GitCommitEvent.Origin.LOCAL_SAVE));
 	}
 
 	@Override

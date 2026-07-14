@@ -51,6 +51,8 @@ import org.apache.wiki.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.EventManager;
+import de.knowwe.event.GitCommitEvent;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 
@@ -155,7 +157,7 @@ public class GitVersioningAttachmentProviderMultiWiki extends BasicAttachmentPro
 			CommitUserData userData = pageProvider().resolveUserData(user, message(attachment));
 			String commitHash = history.commitFile(attFile, relPath, userData);
 			if (commitHash != null) {
-				fireEvent(GitVersioningWikiEvent.UPDATE, attachment, commitHash);
+				fireEvent(GitVersioningWikiEvent.UPDATE, attachment, commitHash, history);
 			}
 		}
 	}
@@ -332,7 +334,7 @@ public class GitVersioningAttachmentProviderMultiWiki extends BasicAttachmentPro
 		CommitUserData userData = pageProvider().resolveUserData(attachment.getAuthor(), message(attachment));
 		String commitHash = history.removeFile(attachmentPath(attachment), userData);
 		if (commitHash != null) {
-			fireEvent(GitVersioningWikiEvent.DELETE, attachment, commitHash);
+			fireEvent(GitVersioningWikiEvent.DELETE, attachment, commitHash, history);
 		}
 	}
 
@@ -384,6 +386,10 @@ public class GitVersioningAttachmentProviderMultiWiki extends BasicAttachmentPro
 				String commitHash = history.commitMovedPaths(oldPaths, newPaths, userData);
 				WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
 						user, eventPages, commitHash));
+				if (commitHash != null) {
+					EventManager.getInstance().fireEvent(new GitCommitEvent(history.repoKey(), commitHash,
+							eventPages, user, GitCommitEvent.Origin.LOCAL_SAVE));
+				}
 			}
 		}
 		catch (IOException e) {
@@ -403,8 +409,15 @@ public class GitVersioningAttachmentProviderMultiWiki extends BasicAttachmentPro
 		}
 	}
 
-	private void fireEvent(int type, Attachment attachment, String commitHash) {
+	/**
+	 * Fires both commit notifications, the JSPWiki-bus {@link GitVersioningWikiEvent} and the denkbares-bus
+	 * {@link GitCommitEvent} carrying the repository (see the page provider's equivalent).
+	 */
+	private void fireEvent(int type, Attachment attachment, String commitHash, GitPageHistory history) {
+		String page = attachment.getParentName() + "/" + attachment.getFileName();
 		WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type, attachment.getAuthor(),
-				attachment.getParentName() + "/" + attachment.getFileName(), commitHash));
+				page, commitHash));
+		EventManager.getInstance().fireEvent(new GitCommitEvent(history.repoKey(), commitHash, List.of(page),
+				attachment.getAuthor(), GitCommitEvent.Origin.LOCAL_SAVE));
 	}
 }
