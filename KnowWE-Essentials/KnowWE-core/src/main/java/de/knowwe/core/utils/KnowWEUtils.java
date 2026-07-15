@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +116,56 @@ public class KnowWEUtils {
 			}
 			index = buffer.indexOf(toReplace, index + 1);
 		}
+	}
+
+	/**
+	 * Returns the value of the given configuration property. The property is looked up in the wiki properties
+	 * (jspwiki[-custom].properties) first, then in the Java system properties under the same key, and finally in the
+	 * environment variables under the key transformed to environment variable style (upper case, dots replaced by
+	 * underscores, e.g. "key.subKey" becomes "KEY_SUBKEY"). Returns null if the property is not set anywhere.
+	 *
+	 * @param property the property key to get the value for
+	 * @return the property value or null if not set
+	 */
+	@Nullable
+	public static String getProperty(String property) {
+		String value = Environment.getInstance().getWikiConnector().getWikiProperty(property);
+		if (value == null) {
+			value = System.getProperty(property);
+		}
+		if (value == null) {
+			value = System.getenv(property.toUpperCase().replace(".", "_"));
+		}
+		return value;
+	}
+
+	/**
+	 * Returns the value of the given configuration property, looked up as in {@link #getProperty(String)}, or
+	 * the given default value if the property is not set anywhere.
+	 *
+	 * @param property     the property key to get the value for
+	 * @param defaultValue the value to return if the property is not set
+	 * @return the property value or the default value
+	 */
+	@NotNull
+	public static String getProperty(String property, @NotNull String defaultValue) {
+		String value = getProperty(property);
+		return value == null ? defaultValue : value;
+	}
+
+	/**
+	 * Returns the boolean value of the given configuration property, looked up as in
+	 * {@link #getProperty(String)}. Returns true only if the property is set to "true" (ignoring case and
+	 * surrounding whitespace), the given default value if the property is not set, and false otherwise.
+	 *
+	 * @param property     the property key to get the value for
+	 * @param defaultValue the value to return if the property is not set
+	 * @return the boolean property value or the default value
+	 */
+	public static boolean getPropertyFlag(String property, boolean defaultValue) {
+		String value = getProperty(property);
+		if (value == null) return defaultValue;
+		return "true".equalsIgnoreCase(value.trim());
 	}
 
 	/**
