@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.denkbares.utils.Stopwatch;
+
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
@@ -194,32 +196,7 @@ public class GitAutoUpdater {
 
 	@Nullable
 	private boolean getPullResult(GitConnector gitConnector) throws GitAPIException {
-
-		return gitConnector.pull().call(true);
-//		PullCommand pull = git.pull()
-//				.setRemote("origin")
-//				.setRemoteBranchName("master")
-//				.setStrategy(MergeStrategy.RESOLVE)
-//				.setRebase(true);
-//		PullResult pullResult = null;
-//		try {
-//			pullResult = pull.call();
-//		}
-//		catch (JGitInternalException ie) {
-//			LOGGER.error("internal jgit error", ie);
-//			try {
-//				switch (repository.getRepositoryState()) {
-//					case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
-//							.setOperation(RebaseCommand.Operation.ABORT)
-//							.call();
-//				}
-//				pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
-//			}
-//			catch (JGitInternalException ie2) {
-//				LOGGER.error("internal jgit error", ie);
-//			}
-//		}
-//		return pullResult;
+		return gitConnector.pull().allWithRebase();
 	}
 
 	private void postprocess(ArticleManager articleManager) {
