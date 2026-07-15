@@ -114,7 +114,7 @@ public final class DiffHtmlRenderer {
 	 * server endpoints that respond to the JS component's lazy-load fetch.
 	 */
 	@NotNull
-	static String renderTextDiffShadowContent(@NotNull TextDiff diff, @NotNull DiffRenderOptions options) {
+	public static String renderTextDiffShadowContent(@NotNull TextDiff diff, @NotNull DiffRenderOptions options) {
 		if (options.view() == DiffView.SIDE_BY_SIDE) {
 			throw new UnsupportedOperationException("SIDE_BY_SIDE view is not yet implemented");
 		}
