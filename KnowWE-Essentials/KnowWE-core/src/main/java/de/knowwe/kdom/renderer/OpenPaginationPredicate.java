@@ -69,6 +69,16 @@ final class OpenPaginationPredicate<T> implements Predicate<T> {
 	}
 
 	/**
+	 * Returns the number of logical matches encountered so far. If {@link #hasMore()} is
+	 * {@code false} after processing the complete input, this is the exact result size.
+	 *
+	 * @return number of logical matches encountered
+	 */
+	int getMatchCount() {
+		return matches;
+	}
+
+	/**
 	 * Returns whether another matching value exists after the current page.
 	 *
 	 * @return whether navigation to a subsequent page is possible

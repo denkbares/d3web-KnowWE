@@ -42,6 +42,7 @@ public class OpenPaginationPredicateTest {
 
 		assertThat(page, is(List.of(4, 5)));
 		assertThat(predicate.getDisplayedCount(), is(2));
+		assertThat(predicate.getMatchCount(), is(5));
 		assertThat(predicate.hasMore(), is(false));
 	}
 
@@ -56,6 +57,7 @@ public class OpenPaginationPredicateTest {
 		List<Integer> page = IntStream.rangeClosed(1, 10).boxed().filter(predicate).toList();
 
 		assertThat(page, is(List.of(3, 4)));
+		assertThat(predicate.getMatchCount(), is(4));
 		assertThat(predicate.hasMore(), is(false));
 		assertThat(evaluations.get(), is(4));
 	}

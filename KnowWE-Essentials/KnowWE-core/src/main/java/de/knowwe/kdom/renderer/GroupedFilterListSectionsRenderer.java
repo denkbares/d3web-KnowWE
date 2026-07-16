@@ -53,7 +53,7 @@ import de.knowwe.util.Icon;
 public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 	private static final int DEFAULT_COUNT = 50;
-	private static final int MINIMUM_RESULTS_FOR_PAGINATION = 20;
+	private static final int LOWER_PAGINATION_THRESHOLD = 20;
 	private static final int[] PAGINATION_COUNT_OPTIONS = { 10, 25, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
 	private static final Map<String, Integer> COUNT_OPTIONS = new TreeMap<>(NumberAwareComparator.CASE_SENSITIVE);
 	public static final Pattern SEARCH_PATTERN = Pattern.compile("([^\u00A0\\h\\s\\v]+?)([:<>=]+)[\u00A0\\h\\s\\v]*([^\u00A0\\h\\s\\v]+)");
@@ -304,15 +304,16 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				.children(listChildren.toArray(HtmlProvider[]::new));
 		if (renderControls) {
 			PaginationRenderer.setOpenResult(context, id, pagination.getDisplayedCount(), pagination.hasMore());
-			boolean showPagination = startRow > 1 || pagination.hasMore()
-					|| pagination.getDisplayedCount() >= MINIMUM_RESULTS_FOR_PAGINATION;
-			List<HtmlProvider> paginationChildren = new ArrayList<>();
-			if (showPagination) {
-				paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
-						id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
+			if (!pagination.hasMore()) {
+				PaginationRenderer.setResultSize(context, pagination.getMatchCount());
 			}
+			boolean showBottomPagination = startRow > 1 || pagination.hasMore()
+					|| pagination.getDisplayedCount() > LOWER_PAGINATION_THRESHOLD;
+			List<HtmlProvider> paginationChildren = new ArrayList<>();
+			paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
+					id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
 			paginationChildren.add(content);
-			if (showPagination) {
+			if (showBottomPagination) {
 				paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
 						id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
 			}
