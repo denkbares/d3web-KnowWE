@@ -31,6 +31,10 @@ import com.denkbares.utils.Predicates;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.Div;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.HtmlNode;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
@@ -262,24 +266,6 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 */
 	public void render(RenderResult page) {
 		boolean renderControls = !context.isRenderingPreview();
-		if (!context.isReRendering() && renderControls) {
-			if (searchHint != null) {
-				page.appendHtmlTag("div", "class", "grouped-list-search-hint");
-				page.appendHtml(searchHint);
-				page.appendHtmlTag("/div");
-			}
-			page.appendHtmlTag("div", "class", "grouped-list-section-wrapper");
-			appendFilterFields(page);
-		}
-		boolean requiresWrapper = ReRenderSectionMarkerRenderer.requiresWrapper(context);
-		if (requiresWrapper) ReRenderSectionMarkerRenderer.renderOpen(id, page);
-		if (renderControls) {
-			page.appendHtmlTag("div", "class", "knowwe-paginationWrapper list-sections-pagination", "id", id,
-					"sorting-mode", PaginationRenderer.SortingMode.off.name(), "filtering", "false",
-					"reset-start-row-on-count-change", "true");
-		}
-		RenderResult listResult = renderControls ? new RenderResult(page) : page;
-		listResult.appendHtmlTag("div", "class", "list-section-wrapper", "sectionId", id);
 		String searchPhrase = getFilterFromCookie();
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
 		Predicate<Section<T>> filter = Strings.isBlank(searchPhrase)
@@ -293,54 +279,84 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				count, maximumMatches);
 
 		// render the groups
-		boolean anyLines = false;
+		List<HtmlProvider> listChildren = new ArrayList<>();
 		for (Pair<String, ListSectionsRenderer<T>> rendererPair : renderers) {
 			searchPredicate.setRenderer(rendererPair.getB());
 			ListSectionsRenderer<T> filtered = rendererPair.getB().filter(pagination);
 			if (filtered.isEmpty()) continue;
-			anyLines = true;
 			String header = rendererPair.getA();
 			if (Strings.isNotBlank(header)) {
-				listResult.appendHtml(header);
+				listChildren.add(new HtmlNode(header));
 			}
-			filtered.render(listResult);
+			RenderResult renderedGroup = new RenderResult(page);
+			filtered.render(renderedGroup);
+			listChildren.add(result -> result.append(renderedGroup));
 		}
 
 		// render empty text if there are no items to be displayed
-		if (!anyLines) {
-			listResult.appendHtmlElement("div", emptyText, "class", "empty-list-sections");
+		if (listChildren.isEmpty()) {
+			listChildren.add(new Div().clazz("empty-list-sections").content(emptyText));
 		}
 
-		listResult.appendHtmlTag("/div");
+		HtmlProvider content = new Div()
+				.clazz("list-section-wrapper")
+				.attributes("sectionId", id)
+				.children(listChildren.toArray(HtmlProvider[]::new));
 		if (renderControls) {
 			PaginationRenderer.setOpenResult(context, id, pagination.getDisplayedCount(), pagination.hasMore());
 			boolean showPagination = startRow > 1 || pagination.hasMore()
 					|| pagination.getDisplayedCount() >= MINIMUM_RESULTS_FOR_PAGINATION;
+			List<HtmlProvider> paginationChildren = new ArrayList<>();
 			if (showPagination) {
-				PaginationRenderer.renderOpenPagination(id, context, page, defaultCount, PAGINATION_COUNT_OPTIONS);
+				paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
+						id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
 			}
-			page.append(listResult);
+			paginationChildren.add(content);
 			if (showPagination) {
-				PaginationRenderer.renderOpenPagination(id, context, page, defaultCount, PAGINATION_COUNT_OPTIONS);
+				paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
+						id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
 			}
-			page.appendHtmlTag("/div");
+			content = new Div()
+					.clazz("knowwe-paginationWrapper list-sections-pagination")
+					.id(id)
+					.attributes(
+							"sorting-mode", PaginationRenderer.SortingMode.off.name(),
+							"filtering", "false",
+							"reset-start-row-on-count-change", "true")
+					.children(paginationChildren.toArray(HtmlProvider[]::new));
 		}
-		if (requiresWrapper) ReRenderSectionMarkerRenderer.renderClose(page);
-		if (!context.isReRendering() && renderControls) page.appendHtmlTag("/div");
+
+		if (ReRenderSectionMarkerRenderer.requiresWrapper(context)) {
+			content = ReRenderSectionMarkerRenderer.createMarker(id, content);
+		}
+
+		if (!context.isReRendering() && renderControls) {
+			if (searchHint != null) {
+				page.append(new Div()
+						.clazz("grouped-list-search-hint")
+						.children(new HtmlNode(searchHint)));
+			}
+			content = new Div()
+					.clazz("grouped-list-section-wrapper")
+					.children(createFilterFields(), content);
+		}
+
+		page.append(content);
 	}
 
-	private void appendFilterFields(RenderResult page) {
-		StringBuilder filterBuilder = new StringBuilder();
-		filterBuilder.append("<div class='form-inline form-group cage filter-input'>")
-				.append("<input type='text' class='form-control filter-list-section-input'")
-				.append(" placeholder='").append(placeholder).append("'");
+	private HtmlElement createFilterFields() {
+		HtmlElement input = new HtmlElement("input")
+				.clazz("form-control filter-list-section-input")
+				.attributes("type", "text", "placeholder", placeholder);
 		String filter = getFilterFromCookie();
-		if (Strings.isNotBlank(filter)) filterBuilder.append(" value='").append(filter).append("'");
-		filterBuilder.append(">").append(Icon.DELETE.addClasses("clear-filter").toHtml());
+		if (Strings.isNotBlank(filter)) input.attributes("value", filter);
 
-		filterBuilder.append(Icon.INFO.addTitle(getInfoTitle()).toHtml());
-		filterBuilder.append("</div>");
-		page.appendHtml(filterBuilder.toString());
+		return new Div()
+				.clazz("form-inline form-group cage filter-input")
+				.children(
+						input,
+						new HtmlNode(Icon.DELETE.addClasses("clear-filter").toHtml()),
+						new HtmlNode(Icon.INFO.addTitle(getInfoTitle()).toHtml()));
 	}
 
 	private String getInfoTitle() {

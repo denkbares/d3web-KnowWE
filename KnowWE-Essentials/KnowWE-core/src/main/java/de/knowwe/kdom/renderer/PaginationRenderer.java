@@ -44,6 +44,13 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.A;
+import de.knowwe.core.kdom.rendering.elements.Button;
+import de.knowwe.core.kdom.rendering.elements.Div;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.HtmlNode;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.util.Icon;
 
@@ -251,16 +258,19 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	private void renderWithPagination(Section<?> section, UserContext user, RenderResult result, Consumer<RenderResult> renderFunction) {
-		result.appendHtmlTag("div", "class", "knowwe-paginationWrapper", "id", section.getID(),
-				"sorting-mode", sorting.name(), "filtering", this.supportFiltering ? "true" : "false");
 		RenderResult table = new RenderResult(user);
 		renderFunction.accept(table);
 
-		renderPaginationInternal(section, user, result);
-		result.append(table);
-		renderPaginationInternal(section, user, result);
-
-		result.appendHtml("</div>");
+		Div wrapper = new Div();
+		wrapper.clazz("knowwe-paginationWrapper")
+				.id(section.getID())
+				.attributes("sorting-mode", sorting.name(), "filtering", Boolean.toString(supportFiltering))
+				.children(
+						page -> renderPaginationInternal(section, user, page),
+						page -> page.append(table),
+						page -> renderPaginationInternal(section, user, page)
+				);
+		result.append(wrapper);
 	}
 
 	public static void renderPagination(Section<?> section, UserContext user, RenderResult result) {
@@ -289,7 +299,8 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	protected void renderPaginationInternal(Section<?> section, UserContext user, RenderResult result) {
-		renderPaginationInternal(section.getID(), user, result, COUNT_DEFAULT, COUNT_OPTIONS);
+		renderTableSizeSelector(section, user, result);
+		renderNavigation(section.getID(), user, result, COUNT_DEFAULT);
 		if (supportFiltering) renderFilter(section, user, result);
 	}
 
@@ -299,63 +310,78 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	protected void renderFilter(Section<?> section, UserContext user, RenderResult result) {
-		renderToolBarElement(section, result, () -> {
-			// generate unique id in case the filter is added multiple times
-			String id = "filter-activator-" + section.getID();
-			String activators = user.getRenderResultKeyValueStore().getAttribute(id);
-			if (activators == null) activators = "0";
-			String uniqueId = id + "-" + activators;
-			user.getRenderResultKeyValueStore().setAttribute(id, activators + 1);
+		// generate unique id in case the filter is added multiple times
+		String id = "filter-activator-" + section.getID();
+		String activators = user.getRenderResultKeyValueStore().getAttribute(id);
+		if (activators == null) activators = "0";
+		String uniqueId = id + "-" + activators;
+		user.getRenderResultKeyValueStore().setAttribute(id, activators + 1);
 
-			result.appendHtmlTag("input", "class", "filter-activator filter-style", "type", "checkbox", "id", uniqueId, "name", uniqueId);
-			result.appendHtmlElement("label", "Filter", "class", "fillText", "for", uniqueId);
-			result.appendHtml("<div class='filter-tools'>");
-			renderFilterTools(section, user, result);
-			result.appendHtml("</div>");
-		});
+		HtmlElement input = new HtmlElement("input")
+				.clazz("filter-activator filter-style")
+				.id(uniqueId)
+				.attributes("type", "checkbox", "name", uniqueId);
+		HtmlElement label = new HtmlElement("label")
+				.clazz("fillText")
+				.attributes("for", uniqueId)
+				.content("Filter");
+		RenderResult filterTools = new RenderResult(result);
+		renderFilterTools(section, user, filterTools);
+
+		result.append(toolBar(section.getID(), input, label,
+				new Div().clazz("filter-tools").children(page -> page.append(filterTools))));
 	}
 
 	protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
-		result.appendHtmlElement("button", "Columns", "class", "pagination-column-filter");
-		result.appendHtmlElement("button", "Clear Filter", "class", "clear-filter");
+		result.append(new Button("Columns").clazz("pagination-column-filter"));
+		result.append(new Button("Clear Filter").clazz("clear-filter"));
 	}
 
 	public static void renderToolSeparator(RenderResult navigation) {
-		navigation.appendHtml("<div class='knowwe-paginationToolSeparator'>");
+		navigation.append(new Div().clazz("knowwe-paginationToolSeparator"));
 	}
 
 	public static String getToolSeparator() {
-		return "<div class='knowwe-paginationToolSeparator'></div>";
+		return new Div().clazz("knowwe-paginationToolSeparator").toString();
 	}
 
 	/**
 	 * Renders the result size selector.
 	 */
 	protected void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
-		renderTableSizeSelector(sec.getID(), user, result, COUNT_DEFAULT, COUNT_OPTIONS);
+		renderTableSizeSelector(sec.getID(), user, result, COUNT_DEFAULT, COUNT_OPTIONS,
+				new HtmlNode(getResultSizeTag(sec, user)));
 	}
 
 	private void renderTableSizeSelector(String id, UserContext user, RenderResult result, int defaultCount, int[] countOptions) {
-		int count = getCount(user, defaultCount);
-		renderToolBarElement(id, result, () -> {
-			result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
+		renderTableSizeSelector(id, user, result, defaultCount, countOptions,
+				getResultSizeProvider(id, user, defaultCount));
+	}
 
-			boolean foundSelected = false;
-			for (int size : countOptions) {
-				boolean selected = count == size;
-				if (selected) foundSelected = true;
-				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
-				result.appendHtml("<option "
-								  + (setSelected ? "selected='selected' " : "")
-								  + "value='" + size + "'>"
-								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-								  + "</option>");
-			}
-			result.appendHtml("</select>");
-			result.appendHtml(getResultSizeTag(id, user, defaultCount));
-			result.appendHtml("<div class='toolSeparator'>");
-			result.appendHtml("</div>");
-		});
+	private void renderTableSizeSelector(String id, UserContext user, RenderResult result, int defaultCount,
+			int[] countOptions, HtmlProvider resultSize) {
+		int count = getCount(user, defaultCount);
+		List<HtmlProvider> options = new ArrayList<>();
+		boolean foundSelected = false;
+		for (int size : countOptions) {
+			boolean selected = count == size;
+			if (selected) foundSelected = true;
+			boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
+			HtmlElement option = new HtmlElement("option")
+					.attributes("value", String.valueOf(size))
+					.content(size == Integer.MAX_VALUE ? "All" : String.valueOf(size));
+			if (setSelected) option.attributes("selected", "selected");
+			options.add(option);
+		}
+
+		HtmlElement select = new HtmlElement("select")
+				.clazz("count")
+				.children(options.toArray(HtmlProvider[]::new));
+		result.append(toolBar(id,
+				new Span("Show ").clazz("fillText"),
+				select,
+				resultSize,
+				new Div().clazz("toolSeparator")));
 	}
 
 	/**
@@ -381,47 +407,38 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		StringBuilder fillString = new StringBuilder();
 		fillString.append("&nbsp;".repeat(Math.max(0, fill)));
 
-		renderToolBarElement(id, result, () -> {
-			if (count != Integer.MAX_VALUE) {
-				renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", (startRow > 1), result);
-				renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", (startRow > 1), result);
-				result.appendHtml("<span class=fillText> Rows </span>");
+		List<HtmlProvider> navigation = new ArrayList<>();
+		if (count != Integer.MAX_VALUE) {
+			navigation.add(toolbarButton(Icon.FIRST, navigationAction(id, "begin"), startRow > 1));
+			navigation.add(toolbarButton(Icon.PREVIOUS, navigationAction(id, "back"), startRow > 1));
+			navigation.add(new Span(" Rows ").clazz("fillText"));
+			navigation.add(new HtmlElement("input").clazz("startRow").attributes(
+					"size", String.valueOf(resultSizeStringLength),
+					"type", "field",
+					"value", String.valueOf(startRow)));
+			navigation.add(new Span().clazz("fillText").children(
+					new HtmlNode(" to " + fillString + endRow + "&nbsp;")));
 
-				result.appendHtml("<input size=").append(resultSizeStringLength)
-						.appendHtml(" class='startRow' type='field' value='")
-						.append(startRow).appendHtml("'>");
-
-				result.appendHtml("<span class=fillText> to ")
-						.append(fillString)
-						.append(endRow)
-						.appendHtml("&nbsp;</span>");
-
-				boolean forward = resultSize >= startRow + count;
-				renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", forward, result);
-				renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", forward, result);
-			}
-			if (count == Integer.MAX_VALUE) {
-				renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", false, result);
-				renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", false, result);
-				result.appendHtml("<span class=fillText> Lines </span>");
-				result.appendHtml("<input size=")
-						.append(resultSizeStringLength)
-						.appendHtml(" class='startRow' type='field' value='1'>");
-
-				if (resultSizeString.equals(UNKNOWN_RESULT_SIZE)) {
-					result.appendHtml("<span class=fillText> til end&nbsp;</span>");
-				}
-				else {
-					result.appendHtml("<span class=fillText> to ")
-							.append(fillString)
-							.append(endRow)
-							.appendHtml("&nbsp;</span>");
-				}
-
-				renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", false, result);
-				renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", false, result);
-			}
-		});
+			boolean forward = resultSize >= startRow + count;
+			navigation.add(toolbarButton(Icon.NEXT, navigationAction(id, "forward"), forward));
+			navigation.add(toolbarButton(Icon.LAST, navigationAction(id, "end"), forward));
+		}
+		else {
+			navigation.add(toolbarButton(Icon.FIRST, navigationAction(id, "begin"), false));
+			navigation.add(toolbarButton(Icon.PREVIOUS, navigationAction(id, "back"), false));
+			navigation.add(new Span(" Lines ").clazz("fillText"));
+			navigation.add(new HtmlElement("input").clazz("startRow").attributes(
+					"size", String.valueOf(resultSizeStringLength),
+					"type", "field",
+					"value", "1"));
+			String range = resultSizeString.equals(UNKNOWN_RESULT_SIZE)
+					? " til end&nbsp;"
+					: " to " + fillString + endRow + "&nbsp;";
+			navigation.add(new Span().clazz("fillText").children(new HtmlNode(range)));
+			navigation.add(toolbarButton(Icon.NEXT, navigationAction(id, "forward"), false));
+			navigation.add(toolbarButton(Icon.LAST, navigationAction(id, "end"), false));
+		}
+		result.append(toolBar(id, navigation.toArray(HtmlProvider[]::new)));
 	}
 
 	private void renderOpenNavigation(String id, UserContext user, RenderResult result, int count, int startRow) {
@@ -430,17 +447,16 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		int page = count == Integer.MAX_VALUE ? 1 : ((startRow - 1) / count) + 1;
 		int endRow = startRow + Math.max(0, displayedCount - 1);
 
-		renderToolBarElement(id, result, () -> {
-			renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", startRow > 1, result);
-			renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", startRow > 1, result);
-			result.appendHtml("<input class='startRow' type='hidden' value='").append(startRow).appendHtml("'>");
-			result.appendHtml("<span class='fillText'> Page ").append(page);
-			if (displayedCount > 0) {
-				result.appendHtml(" &middot; Rows ").append(startRow).appendHtml(" to ").append(endRow);
-			}
-			result.appendHtml("&nbsp;</span>");
-			renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", hasMore, result);
-		});
+		List<HtmlProvider> navigation = new ArrayList<>();
+		navigation.add(toolbarButton(Icon.FIRST, navigationAction(id, "begin"), startRow > 1));
+		navigation.add(toolbarButton(Icon.PREVIOUS, navigationAction(id, "back"), startRow > 1));
+		navigation.add(new HtmlElement("input").clazz("startRow").attributes(
+				"type", "hidden", "value", String.valueOf(startRow)));
+		String range = displayedCount > 0 ? " &middot; Rows " + startRow + " to " + endRow : "";
+		navigation.add(new Span().clazz("fillText").children(
+				new HtmlNode(" Page " + page + range + "&nbsp;")));
+		navigation.add(toolbarButton(Icon.NEXT, navigationAction(id, "forward"), hasMore));
+		result.append(toolBar(id, navigation.toArray(HtmlProvider[]::new)));
 	}
 
 	public static int getResultSize(UserContext user) {
@@ -465,18 +481,23 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		result.appendHtml("</div>");
 	}
 
-	private static void renderToolbarButton(Icon icon, String action, boolean enabled, RenderResult builder) {
-		if (enabled) {
-			builder.appendHtml("<a onclick=\"");
-			builder.appendHtml(action);
-			builder.appendHtml(";\">");
-		}
-		builder.appendHtml(icon.increaseSize(Icon.Percent.by33)
+	private static HtmlElement toolBar(String id, HtmlProvider... children) {
+		return new Div()
+				.clazz("knowwe-paginationToolbar noselect")
+				.attributes("pagination", id)
+				.children(children);
+	}
+
+	private static String navigationAction(String id, String direction) {
+		return "KNOWWE.core.plugin.pagination.navigate('" + id + "', '" + direction + "')";
+	}
+
+	private static HtmlProvider toolbarButton(Icon icon, String action, boolean enabled) {
+		HtmlNode iconHtml = new HtmlNode(icon.increaseSize(Icon.Percent.by33)
 				.addClasses("knowwe-paginationNavigationIcons")
 				.toHtml());
-		if (enabled) {
-			builder.appendHtml("</a>");
-		}
+		if (!enabled) return iconHtml;
+		return new A().attributes("onclick", action + ";").children(iconHtml);
 	}
 
 	private static JSONObject getPaginationSettings(UserContext user) {
@@ -612,24 +633,32 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	protected String getResultSizeTag(Section<?> sec, UserContext user) {
-		return getResultSizeTag(sec.getID(), user, COUNT_DEFAULT);
+		return getResultSizeElements(sec.getID(), user, COUNT_DEFAULT).stream()
+				.map(Object::toString)
+				.collect(Collectors.joining());
 	}
 
-	private String getResultSizeTag(String id, UserContext user, int defaultCount) {
+	private HtmlProvider getResultSizeProvider(String id, UserContext user, int defaultCount) {
+		List<HtmlProvider> elements = getResultSizeElements(id, user, defaultCount);
+		return result -> elements.forEach(result::append);
+	}
+
+	private List<HtmlProvider> getResultSizeElements(String id, UserContext user, int defaultCount) {
 		String resultSize = getResultSizeString(user);
-		String tag = "";
 		if (resultSize.equals(UNKNOWN_RESULT_SIZE)) {
-			tag += isOpenResult(user, id)
-					? "<span class=fillText> rows</span>"
-					: "<span class=fillText> rows (overall number unknown)</span>";
+			String text = isOpenResult(user, id) ? " rows" : " rows (overall number unknown)";
+			return List.of(new Span(text).clazz("fillText"));
 		}
-		else {
-			int resultSizeInt = Integer.parseInt(resultSize);
-			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
-			tag += "<span class=fillText>" + (getCount(user, defaultCount) == Integer.MAX_VALUE ? "" : " of");
-			tag += " " + resultSize + " " + Strings.pluralOf(resultSizeInt, "row", false) + "</span>";
-		}
-		return tag;
+
+		int resultSizeInt = Integer.parseInt(resultSize);
+		HtmlElement input = new HtmlElement("input")
+				.clazz("resultSize")
+				.style("display:none")
+				.attributes("value", resultSize);
+		String prefix = getCount(user, defaultCount) == Integer.MAX_VALUE ? " " : " of ";
+		Span label = new Span(prefix + resultSize + " " + Strings.pluralOf(resultSizeInt, "row", false));
+		label.clazz("fillText");
+		return List.of(input, label);
 	}
 
 	/**
