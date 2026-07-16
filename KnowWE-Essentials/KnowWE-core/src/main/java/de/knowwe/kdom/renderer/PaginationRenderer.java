@@ -96,10 +96,14 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	protected static final String UNKNOWN_RESULT_SIZE = "unknown";
 	private static final String START_ROW = "startRow";
 	private static final String RESULT_SIZE = "resultsize";
+	private static final String OPEN_RESULT = "openPaginationResult";
+	private static final String DISPLAYED_COUNT = "paginationDisplayedCount";
+	private static final String HAS_MORE = "paginationHasMore";
 	private static final String COUNT = "count";
 	private static final String START_ROW_DEFAULT = "1";
 	private static final String SORTING = "sorting";
 	private static final int COUNT_DEFAULT = 20;
+	private static final int[] COUNT_OPTIONS = { 10, 20, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
 	private static final String FILTER = "filter";
 
 	public enum SortingMode {
@@ -268,10 +272,30 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		paginationRenderer.renderPaginationInternal(section, user, result);
 	}
 
+	/**
+	 * Renders controls for an open-ended result whose total size is unknown. Before calling this
+	 * method, the caller must provide the current page information using
+	 * {@link #setOpenResult(UserContext, String, int, boolean)}.
+	 *
+	 * @param id            stable section ID used for client-side state and rerendering
+	 * @param user          current user context
+	 * @param result        render result receiving the controls
+	 * @param defaultCount  page size used when no client-side setting exists
+	 * @param countOptions  selectable page sizes, using {@link Integer#MAX_VALUE} for all rows
+	 */
+	public static void renderOpenPagination(String id, UserContext user, RenderResult result, int defaultCount, int... countOptions) {
+		PaginationRenderer paginationRenderer = new PaginationRenderer(null);
+		paginationRenderer.renderPaginationInternal(id, user, result, defaultCount, countOptions);
+	}
+
 	protected void renderPaginationInternal(Section<?> section, UserContext user, RenderResult result) {
-		renderTableSizeSelector(section, user, result);
-		renderNavigation(section, user, result);
+		renderPaginationInternal(section.getID(), user, result, COUNT_DEFAULT, COUNT_OPTIONS);
 		if (supportFiltering) renderFilter(section, user, result);
+	}
+
+	private void renderPaginationInternal(String id, UserContext user, RenderResult result, int defaultCount, int[] countOptions) {
+		renderTableSizeSelector(id, user, result, defaultCount, countOptions);
+		renderNavigation(id, user, result, defaultCount);
 	}
 
 	protected void renderFilter(Section<?> section, UserContext user, RenderResult result) {
@@ -308,13 +332,16 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 * Renders the result size selector.
 	 */
 	protected void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
-		int count = getCount(sec, user);
-		renderToolBarElement(sec, result, () -> {
-			int[] sizeArray = new int[] { 10, 20, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
+		renderTableSizeSelector(sec.getID(), user, result, COUNT_DEFAULT, COUNT_OPTIONS);
+	}
+
+	private void renderTableSizeSelector(String id, UserContext user, RenderResult result, int defaultCount, int[] countOptions) {
+		int count = getCount(user, defaultCount);
+		renderToolBarElement(id, result, () -> {
 			result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
 
 			boolean foundSelected = false;
-			for (int size : sizeArray) {
+			for (int size : countOptions) {
 				boolean selected = count == size;
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
@@ -325,7 +352,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 								  + "</option>");
 			}
 			result.appendHtml("</select>");
-			result.appendHtml(getResultSizeTag(sec, user));
+			result.appendHtml(getResultSizeTag(id, user, defaultCount));
 			result.appendHtml("<div class='toolSeparator'>");
 			result.appendHtml("</div>");
 		});
@@ -335,9 +362,16 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 * Renders the navigation icons.
 	 */
 	protected void renderNavigation(Section<?> sec, UserContext user, RenderResult result) {
-		String id = sec.getID();
-		int count = getCount(sec, user);
-		int startRow = getStartRow(sec, user);
+		renderNavigation(sec.getID(), user, result, COUNT_DEFAULT);
+	}
+
+	private void renderNavigation(String id, UserContext user, RenderResult result, int defaultCount) {
+		int count = getCount(user, defaultCount);
+		int startRow = getStartRow(user);
+		if (isOpenResult(user, id)) {
+			renderOpenNavigation(id, user, result, count, startRow);
+			return;
+		}
 		String resultSizeString = getResultSizeString(user);
 		int resultSize = getResultSize(user);
 		int resultSizeStringLength = Math.min(Math.max(2, ((int) Math.log10(resultSize)) + 1), 6);
@@ -347,7 +381,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		StringBuilder fillString = new StringBuilder();
 		fillString.append("&nbsp;".repeat(Math.max(0, fill)));
 
-		renderToolBarElement(sec, result, () -> {
+		renderToolBarElement(id, result, () -> {
 			if (count != Integer.MAX_VALUE) {
 				renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", (startRow > 1), result);
 				renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", (startRow > 1), result);
@@ -390,6 +424,25 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		});
 	}
 
+	private void renderOpenNavigation(String id, UserContext user, RenderResult result, int count, int startRow) {
+		int displayedCount = getDisplayedCount(user, id);
+		boolean hasMore = hasMore(user, id);
+		int page = count == Integer.MAX_VALUE ? 1 : ((startRow - 1) / count) + 1;
+		int endRow = startRow + Math.max(0, displayedCount - 1);
+
+		renderToolBarElement(id, result, () -> {
+			renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", startRow > 1, result);
+			renderToolbarButton(Icon.PREVIOUS, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'back')", startRow > 1, result);
+			result.appendHtml("<input class='startRow' type='hidden' value='").append(startRow).appendHtml("'>");
+			result.appendHtml("<span class='fillText'> Page ").append(page);
+			if (displayedCount > 0) {
+				result.appendHtml(" &middot; Rows ").append(startRow).appendHtml(" to ").append(endRow);
+			}
+			result.appendHtml("&nbsp;</span>");
+			renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", hasMore, result);
+		});
+	}
+
 	public static int getResultSize(UserContext user) {
 		String resultSizeString = getResultSizeString(user);
 		int resultSize = Integer.MAX_VALUE;
@@ -402,8 +455,12 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	protected void renderToolBarElement(Section<?> sec, RenderResult result, Runnable contentRenderer) {
+		renderToolBarElement(sec.getID(), result, contentRenderer);
+	}
+
+	private void renderToolBarElement(String id, RenderResult result, Runnable contentRenderer) {
 		result.appendHtml("<div class='knowwe-paginationToolbar noselect' pagination=")
-				.append(Strings.quoteSingle(sec.getID())).appendHtml(">");
+				.append(Strings.quoteSingle(id)).appendHtml(">");
 		contentRenderer.run();
 		result.appendHtml("</div>");
 	}
@@ -427,6 +484,16 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	public static int getStartRow(Section<?> sec, UserContext user) {
+		return getStartRow(user);
+	}
+
+	/**
+	 * Returns the one-based index of the first row selected for the current section.
+	 *
+	 * @param user current user context
+	 * @return one-based start row
+	 */
+	public static int getStartRow(UserContext user) {
 		try {
 			JSONObject jsonObject = getPaginationSettings(user);
 			if (jsonObject != null && jsonObject.has(START_ROW)) {
@@ -459,16 +526,27 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 * @created 22.01.2014
 	 */
 	public static int getCount(Section<?> sec, UserContext user) {
+		return getCount(user, COUNT_DEFAULT);
+	}
+
+	/**
+	 * Returns the selected page size, using the supplied default if no client-side setting exists.
+	 *
+	 * @param user         current user context
+	 * @param defaultCount page size to use without a stored setting
+	 * @return selected page size
+	 */
+	public static int getCount(UserContext user, int defaultCount) {
 		try {
 			JSONObject jsonObject = getPaginationSettings(user);
 			if (jsonObject != null && jsonObject.has(COUNT)) {
-				return jsonObject.optInt(COUNT, COUNT_DEFAULT);
+				return jsonObject.optInt(COUNT, defaultCount);
 			}
 		}
 		catch (JSONException e) {
 			LOGGER.warn("Exception while parsing count", e);
 		}
-		return COUNT_DEFAULT;
+		return defaultCount;
 	}
 
 	/**
@@ -534,15 +612,21 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	protected String getResultSizeTag(Section<?> sec, UserContext user) {
+		return getResultSizeTag(sec.getID(), user, COUNT_DEFAULT);
+	}
+
+	private String getResultSizeTag(String id, UserContext user, int defaultCount) {
 		String resultSize = getResultSizeString(user);
 		String tag = "";
 		if (resultSize.equals(UNKNOWN_RESULT_SIZE)) {
-			tag += "<span class=fillText> rows (overall number unknown)</span>";
+			tag += isOpenResult(user, id)
+					? "<span class=fillText> rows</span>"
+					: "<span class=fillText> rows (overall number unknown)</span>";
 		}
 		else {
 			int resultSizeInt = Integer.parseInt(resultSize);
 			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
-			tag += "<span class=fillText>" + (getCount(sec, user) == Integer.MAX_VALUE ? "" : " of");
+			tag += "<span class=fillText>" + (getCount(user, defaultCount) == Integer.MAX_VALUE ? "" : " of");
 			tag += " " + resultSize + " " + Strings.pluralOf(resultSizeInt, "row", false) + "</span>";
 		}
 		return tag;
@@ -556,5 +640,46 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 */
 	public static void setResultSize(UserContext context, int maxResult) {
 		context.getRenderResultKeyValueStore().setAttribute(RESULT_SIZE, Integer.toString(maxResult));
+	}
+
+	/**
+	 * Supplies information about a page whose overall result size has deliberately not been
+	 * calculated. The information is used to render correct forward navigation without an exact
+	 * total.
+	 *
+	 * @param context        current user context
+	 * @param id             stable section ID used by the pagination controls
+	 * @param displayedCount number of rows displayed on the current page
+	 * @param hasMore        whether at least one further matching row exists
+	 */
+	public static void setOpenResult(UserContext context, String id, int displayedCount, boolean hasMore) {
+		if (displayedCount < 0) throw new IllegalArgumentException("Displayed count must not be negative");
+		context.getRenderResultKeyValueStore().setAttribute(RESULT_SIZE, UNKNOWN_RESULT_SIZE);
+		context.getRenderResultKeyValueStore().setAttribute(key(OPEN_RESULT, id), Boolean.TRUE.toString());
+		context.getRenderResultKeyValueStore().setAttribute(key(DISPLAYED_COUNT, id), Integer.toString(displayedCount));
+		context.getRenderResultKeyValueStore().setAttribute(key(HAS_MORE, id), Boolean.toString(hasMore));
+	}
+
+	private static String key(String key, String id) {
+		return key + "." + id;
+	}
+
+	private static boolean isOpenResult(UserContext user, String id) {
+		return Boolean.parseBoolean(user.getRenderResultKeyValueStore().getAttribute(key(OPEN_RESULT, id)));
+	}
+
+	private static int getDisplayedCount(UserContext user, String id) {
+		String value = user.getRenderResultKeyValueStore().getAttribute(key(DISPLAYED_COUNT, id));
+		if (value == null) return 0;
+		try {
+			return Integer.parseInt(value);
+		}
+		catch (NumberFormatException ignored) {
+			return 0;
+		}
+	}
+
+	private static boolean hasMore(UserContext user, String id) {
+		return Boolean.parseBoolean(user.getRenderResultKeyValueStore().getAttribute(key(HAS_MORE, id)));
 	}
 }

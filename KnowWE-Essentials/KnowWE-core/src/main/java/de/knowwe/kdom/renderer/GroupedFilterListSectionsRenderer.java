@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoublePredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -50,6 +49,8 @@ import de.knowwe.util.Icon;
 public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 	private static final int DEFAULT_COUNT = 50;
+	private static final int MINIMUM_RESULTS_FOR_PAGINATION = 20;
+	private static final int[] PAGINATION_COUNT_OPTIONS = { 10, 25, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
 	private static final Map<String, Integer> COUNT_OPTIONS = new TreeMap<>(NumberAwareComparator.CASE_SENSITIVE);
 	public static final Pattern SEARCH_PATTERN = Pattern.compile("([^\u00A0\\h\\s\\v]+?)([:<>=]+)[\u00A0\\h\\s\\v]*([^\u00A0\\h\\s\\v]+)");
 	public static final Pattern QUOTES_PATTERN = Pattern.compile("\".+\"");
@@ -260,7 +261,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 * @see ListSectionsRenderer#render(RenderResult)
 	 */
 	public void render(RenderResult page) {
-		if (!context.isReRendering() && !context.isRenderingPreview()) {
+		boolean renderControls = !context.isRenderingPreview();
+		if (!context.isReRendering() && renderControls) {
 			if (searchHint != null) {
 				page.appendHtmlTag("div", "class", "grouped-list-search-hint");
 				page.appendHtml(searchHint);
@@ -271,35 +273,60 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		}
 		boolean requiresWrapper = ReRenderSectionMarkerRenderer.requiresWrapper(context);
 		if (requiresWrapper) ReRenderSectionMarkerRenderer.renderOpen(id, page);
-		page.appendHtmlTag("div", "class", "list-section-wrapper", "sectionId", id);
+		if (renderControls) {
+			page.appendHtmlTag("div", "class", "knowwe-paginationWrapper list-sections-pagination", "id", id,
+					"sorting-mode", PaginationRenderer.SortingMode.off.name(), "filtering", "false",
+					"reset-start-row-on-count-change", "true");
+		}
+		RenderResult listResult = renderControls ? new RenderResult(page) : page;
+		listResult.appendHtmlTag("div", "class", "list-section-wrapper", "sectionId", id);
 		String searchPhrase = getFilterFromCookie();
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
 		Predicate<Section<T>> filter = Strings.isBlank(searchPhrase)
-				? Predicates.limit(noFilterPredicate, (noFilterLimit == -1) ? getCountFromCookie() : noFilterLimit)
-				: Predicates.limit(searchPredicate.or(alwaysShowPredicate), getCountFromCookie());
+				? noFilterPredicate
+				: searchPredicate.or(alwaysShowPredicate);
+		int defaultCount = getDefaultCount();
+		int count = PaginationRenderer.getCount(context, defaultCount);
+		int startRow = count == Integer.MAX_VALUE ? 1 : PaginationRenderer.getStartRow(context);
+		int maximumMatches = Strings.isBlank(searchPhrase) ? noFilterLimit : -1;
+		OpenPaginationPredicate<Section<T>> pagination = new OpenPaginationPredicate<>(filter, startRow - 1,
+				count, maximumMatches);
 
 		// render the groups
-		AtomicBoolean anyLines = new AtomicBoolean(false);
-		renderers.forEach(rendererPair -> {
+		boolean anyLines = false;
+		for (Pair<String, ListSectionsRenderer<T>> rendererPair : renderers) {
 			searchPredicate.setRenderer(rendererPair.getB());
-			ListSectionsRenderer<T> filtered = rendererPair.getB().filter(filter);
-			if (filtered.isEmpty()) return;
-			anyLines.set(true);
+			ListSectionsRenderer<T> filtered = rendererPair.getB().filter(pagination);
+			if (filtered.isEmpty()) continue;
+			anyLines = true;
 			String header = rendererPair.getA();
 			if (Strings.isNotBlank(header)) {
-				page.appendHtml(header);
+				listResult.appendHtml(header);
 			}
-			filtered.render(page);
-		});
-
-		// render empty text if there are no items to be displayed
-		if (!anyLines.get()) {
-			page.appendHtmlElement("div", emptyText, "class", "empty-list-sections");
+			filtered.render(listResult);
 		}
 
-		page.appendHtmlTag("/div");
+		// render empty text if there are no items to be displayed
+		if (!anyLines) {
+			listResult.appendHtmlElement("div", emptyText, "class", "empty-list-sections");
+		}
+
+		listResult.appendHtmlTag("/div");
+		if (renderControls) {
+			PaginationRenderer.setOpenResult(context, id, pagination.getDisplayedCount(), pagination.hasMore());
+			boolean showPagination = startRow > 1 || pagination.hasMore()
+					|| pagination.getDisplayedCount() >= MINIMUM_RESULTS_FOR_PAGINATION;
+			if (showPagination) {
+				PaginationRenderer.renderOpenPagination(id, context, page, defaultCount, PAGINATION_COUNT_OPTIONS);
+			}
+			page.append(listResult);
+			if (showPagination) {
+				PaginationRenderer.renderOpenPagination(id, context, page, defaultCount, PAGINATION_COUNT_OPTIONS);
+			}
+			page.appendHtmlTag("/div");
+		}
 		if (requiresWrapper) ReRenderSectionMarkerRenderer.renderClose(page);
-		if (!context.isReRendering() && !context.isRenderingPreview()) page.appendHtmlTag("/div");
+		if (!context.isReRendering() && renderControls) page.appendHtmlTag("/div");
 	}
 
 	private void appendFilterFields(RenderResult page) {
@@ -311,14 +338,6 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		if (Strings.isNotBlank(filter)) filterBuilder.append(" value='").append(filter).append("'");
 		filterBuilder.append(">").append(Icon.DELETE.addClasses("clear-filter").toHtml());
 
-		filterBuilder.append("<select class='list-sections-filter-select'>");
-		int countFromCookie = getCountFromCookie();
-		for (String c : COUNT_OPTIONS.keySet()) {
-			filterBuilder.append("<option value='").append(c).append("'");
-			if (COUNT_OPTIONS.get(c) == countFromCookie) filterBuilder.append(" selected='selected'");
-			filterBuilder.append(">").append(c).append("</option>");
-		}
-		filterBuilder.append("</select>");
 		filterBuilder.append(Icon.INFO.addTitle(getInfoTitle()).toHtml());
 		filterBuilder.append("</div>");
 		page.appendHtml(filterBuilder.toString());
@@ -341,6 +360,11 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		String countFromCookie = getCookieContent("list-section.count." + id);
 		if (Strings.isBlank(countFromCookie) || !COUNT_OPTIONS.containsKey(countFromCookie)) return DEFAULT_COUNT;
 		return COUNT_OPTIONS.get(countFromCookie);
+	}
+
+	private int getDefaultCount() {
+		int legacyCount = getCountFromCookie();
+		return legacyCount == -1 ? Integer.MAX_VALUE : legacyCount;
 	}
 
 	private String getFilterFromCookie() {

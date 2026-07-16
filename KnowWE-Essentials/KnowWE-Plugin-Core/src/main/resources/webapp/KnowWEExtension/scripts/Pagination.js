@@ -44,7 +44,12 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function updateNode(id) {
-    jq$("#" + id).rerender({reason: "pagination"});
+    const $node = jq$("#" + id);
+    const options = {reason: "pagination"};
+    if ($node.is(".list-sections-pagination") && KNOWWE.plugin && KNOWWE.plugin.listSection) {
+      options.callback = KNOWWE.plugin.listSection.highlight;
+    }
+    $node.rerender(options);
   }
 
   function getSortingSymbol(naturalOrder, index) {
@@ -551,7 +556,9 @@ KNOWWE.core.plugin.pagination = function() {
 
     const $table = $paginationWrapper.find("table");
     if (!$table.exists()) {
-      $paginationWrapper.find(".knowwe-paginationToolbar").remove();
+      if (!$paginationWrapper.is(".list-sections-pagination")) {
+        $paginationWrapper.find(".knowwe-paginationToolbar").remove();
+      }
       $paginationWrapper.find(".download-tools").remove();
       return;
     }
@@ -871,9 +878,13 @@ KNOWWE.core.plugin.pagination = function() {
         return;
       }
 
-      if (count === "Max") {
+      if (jq$("#" + id).attr("reset-start-row-on-count-change") === "true") {
+        startRow = 1;
+      }
+
+      if (count === "Max" || count === "All" || parseInt(count) === 2147483647) {
         paginationState.startRow = 1;
-        paginationState.count = "Max";
+        paginationState.count = count;
       } else {
         if (startRow + lastCount === resultSize + 1) {
           startRow = resultSize - parseInt(count) + 1;
@@ -886,6 +897,12 @@ KNOWWE.core.plugin.pagination = function() {
       }
 
       setPaginationStateAndUpdateNode(paginationState, id);
+    },
+
+    resetStartRow: function(id) {
+      const paginationState = getPaginationState(id);
+      paginationState.startRow = 1;
+      setPaginationState(id, paginationState);
     },
 
     navigate: function(id, direction) {

@@ -427,12 +427,21 @@ KNOWWE.plugin.listFilter = function() {
 KNOWWE.plugin.listSection = function() {
 
   const COOKIE_LIST_SECTION_ID = "list-section.identifier.";
-  const COOKIE_LIST_SECTION_COUNT = "list-section.count.";
 
-  function setCookieAndRerender(cookie, value, element) {
-    const listWrapper = element.parent().next(".ReRenderSectionMarker").children(".list-section-wrapper");
-    const sectionId = listWrapper.attr("sectionid");
+  function getRerenderTarget(element) {
+    return element.parent()
+      .next(".ReRenderSectionMarker")
+      .children(".knowwe-paginationWrapper, .list-section-wrapper")
+      .first();
+  }
+
+  function setCookieAndRerender(cookie, value, element, resetPage = true) {
+    const listWrapper = getRerenderTarget(element);
+    const sectionId = listWrapper.attr("sectionid") || listWrapper.attr("id");
     jq$.cookie(cookie + sectionId, value);
+    if (resetPage && listWrapper.is(".knowwe-paginationWrapper")) {
+      KNOWWE.core.plugin.pagination.resetStartRow(sectionId);
+    }
     listWrapper.rerender({callback: highlight});
   }
 
@@ -456,7 +465,8 @@ KNOWWE.plugin.listSection = function() {
   }
 
   function getCookie(cookie, element) {
-    const sectionId = element.parent().next(".ReRenderSectionMarker").children(".list-section-wrapper").attr("sectionid");
+    const listWrapper = getRerenderTarget(element);
+    const sectionId = listWrapper.attr("sectionid") || listWrapper.attr("id");
     return jq$.cookie(cookie + sectionId);
   }
 
@@ -474,7 +484,7 @@ KNOWWE.plugin.listSection = function() {
         let lastValue = getCookie(COOKIE_LIST_SECTION_ID, $this);
         $this.val(lastValue);
         // make sure we rerender
-        setCookieAndRerender(COOKIE_LIST_SECTION_ID, lastValue, $this);
+        setCookieAndRerender(COOKIE_LIST_SECTION_ID, lastValue, $this, false);
       });
 
       // focus and highlight first input on page
@@ -495,18 +505,16 @@ KNOWWE.plugin.listSection = function() {
         setCookieAndRerender(COOKIE_LIST_SECTION_ID, inputText, jq$(this));
       });
 
-      // init drop down to select number of displayed list elements
-      jq$("select.list-sections-filter-select").change(function() {
-        const option = jq$(this).find("option:selected").attr("value");
-        setCookieAndRerender(COOKIE_LIST_SECTION_COUNT, option, jq$(this));
-      });
-
       // init 'clear' button
       jq$(".grouped-list-section-wrapper .clear-filter").on("click", function() {
         let $input = jq$(this).parents(".grouped-list-section-wrapper").find("input.filter-list-section-input");
         $input.val("");
         $input.trigger("change");
       });
+    },
+
+    highlight: function($wrapper) {
+      highlight($wrapper);
     }
   };
 }();
