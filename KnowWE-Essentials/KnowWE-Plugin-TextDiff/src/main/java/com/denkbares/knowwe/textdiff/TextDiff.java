@@ -31,16 +31,24 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 			@NotNull String text
 	) {
 		public enum Status {
-			/** Present unchanged on both sides. */
+			/**
+			 * Present unchanged on both sides.
+			 */
 			COMMON,
-			/** Present only on the new side. */
+			/**
+			 * Present only on the new side.
+			 */
 			ADDED,
-			/** Present only on the old side. */
+			/**
+			 * Present only on the old side.
+			 */
 			REMOVED
 		}
 	}
 
-	/** Computes the diff between two texts. Either side may be {@code null}. */
+	/**
+	 * Computes the diff between two texts. Either side may be {@code null}.
+	 */
 	public TextDiff(@Nullable String oldText, @Nullable String newText) {
 		this.lines = diff(oldText, newText);
 	}
@@ -49,12 +57,41 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 		this.lines = lines;
 	}
 
-	/** A diff with no lines — convenient for "no input" branches. */
+	/**
+	 * A diff with no lines — convenient for "no input" branches.
+	 */
 	public static TextDiff empty() {
 		return new TextDiff(Collections.emptyList());
 	}
 
-	/** The diff lines in display order (old-side common lines, then deltas, in source order). */
+	/**
+	 * Added/removed line counts of a diff, following GitHub semantics: a changed line counts as one removed plus one
+	 * added.
+	 */
+	public record Stats(int added, int removed) {
+	}
+
+	/**
+	 * Counts the ADDED and REMOVED lines in this diff. COMMON lines do not contribute.
+	 */
+	@NotNull
+	public Stats stats() {
+		int added = 0;
+		int removed = 0;
+		for (Line line : lines) {
+			switch (line.status()) {
+				case ADDED -> added++;
+				case REMOVED -> removed++;
+				case COMMON -> {
+				}
+			}
+		}
+		return new Stats(added, removed);
+	}
+
+	/**
+	 * The diff lines in display order (old-side common lines, then deltas, in source order).
+	 */
 	@NotNull
 	public List<Line> lines() {
 		return lines;

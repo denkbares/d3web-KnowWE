@@ -559,7 +559,8 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getAuthor(String title, int version) {
-		return getPageManager().getPage(title, version).getAuthor();
+		Page page = getPageManager().getPage(title, version);
+		return page == null ? null : page.getAuthor();
 	}
 
 	@Override
@@ -580,7 +581,8 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public Date getLastModifiedDate(String title, int version) {
-		return getPageManager().getPage(title, version).getLastModified();
+		Page page = getPageManager().getPage(title, version);
+		return page == null ? null : page.getLastModified();
 	}
 
 	@Override

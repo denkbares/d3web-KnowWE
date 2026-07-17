@@ -7,4 +7,5 @@ package de.knowwe.jspwiki.auth;
 public class KnowWEAuth {
 	public static final String PROP_AUTH_MANAGER = "knowwe.auth.authManager";
 	public static final String PROP_LOGIN_PAGE_FILTER = "knowwe.auth.loginPageFilter";
+	public static final String PROP_AUTH_FILTER = "knowwe.auth.authFilter";
 }

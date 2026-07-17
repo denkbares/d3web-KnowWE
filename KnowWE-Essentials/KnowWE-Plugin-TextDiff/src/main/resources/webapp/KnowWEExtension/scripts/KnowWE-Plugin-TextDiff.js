@@ -33,6 +33,16 @@
  *
  *      Or call el.load() to force a refresh.
  *
+ *   4. Endpoint driven (lazy). Set data-action-url to a backend action that derives the diff
+ *      from the URL itself (query parameters) and returns the rendered shadow content. No old
+ *      or new text is needed on the host:
+ *
+ *        <knowwe-text-diff data-action-url="action/MyDiffHtmlAction?file=..."></knowwe-text-diff>
+ *
+ *      Like the other lazy modes, the fetch is deferred until the element becomes visible near
+ *      the viewport. An element inside a collapsed (display none) container therefore loads
+ *      when it is expanded.
+ *
  * Attributes:
  *   - data-context-lines: number of unchanged lines to show around each hunk; -1 disables
  *                         elision. Defaults to 3.
@@ -87,6 +97,9 @@
 		_hasLazyInputs() {
 			if (this.querySelector(':scope > [slot="old"]') !== null) return true;
 			if (this.querySelector(':scope > [slot="new"]') !== null) return true;
+			// a custom action url means the endpoint derives the diff from the url itself,
+			// so the component is lazily loadable without any old or new text inputs
+			if (this.hasAttribute('data-action-url')) return true;
 			return this.hasAttribute('data-old-text')
 					|| this.hasAttribute('data-new-text')
 					|| this.hasAttribute('data-old-null')
@@ -239,6 +252,11 @@
  *   - data-additions: optional number of added lines
  *   - data-deletions: optional number of removed lines
  *   - data-collapsed: optional boolean attribute; collapses the body when present
+ *
+ * Events:
+ *   - toggle: dispatched (bubbling) when the user collapses or expands the body via the header.
+ *             detail.collapsed reflects the new state. Not dispatched for programmatic
+ *             attribute changes.
  */
 (function () {
 	if (customElements.get('knowwe-file-change')) return;
@@ -386,6 +404,10 @@
 		_toggleCollapsed() {
 			if (this.hasAttribute('data-empty-body')) return;
 			this.toggleAttribute('data-collapsed');
+			this.dispatchEvent(new CustomEvent('toggle', {
+				bubbles: true,
+				detail: { collapsed: this.hasAttribute('data-collapsed') },
+			}));
 		}
 
 		_onHeaderClick(event) {
