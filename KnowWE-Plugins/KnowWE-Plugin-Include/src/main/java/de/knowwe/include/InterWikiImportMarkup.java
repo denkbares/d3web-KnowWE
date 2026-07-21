@@ -508,6 +508,21 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		replacements.put(closingTag.getID(), initializedText);
 	}
 
+	/**
+	 * Routes generic update requests (e.g. from {@link de.knowwe.core.action.RecompileAction} or the
+	 * global "Update imports" admin tool) through the central {@code @latestChange}-aware poller
+	 * instead of the header/timestamp-based pipeline of {@link AttachmentUpdateMarkup}. The generic
+	 * pipeline stores a new attachment version even for unchanged content once the page is newer than
+	 * the attachment ({@code IMPORT_SECTION_CHANGED}) — that timestamp bump would re-activate already
+	 * acknowledged tracking diffs ({@code @trackingAcceptedAt}) on every forced recompile.
+	 */
+	@Override
+	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force, boolean allowWaitForOtherDownloads) {
+		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+		if (markup == null) return;
+		UPDATE_SERVICE.pollSingleMarkup(markup, force);
+	}
+
 	@Override
 	protected long getIntervalMillis(Section<? extends AttachmentUpdateMarkup> section) {
 		return Long.MAX_VALUE;

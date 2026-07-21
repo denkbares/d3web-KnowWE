@@ -809,6 +809,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return the URI for the given string
 	 */
 	public IRI createIRI(String value) {
+		if (value.contains("<") || value.contains(">")) {
+			throw new IllegalArgumentException("The given value contains an illegal character '<' or '>'.");
+		}
 		return getValueFactory().createIRI(Rdf2GoUtils.expandNamespace(this, value));
 	}
 

@@ -448,8 +448,26 @@ table.list-sections tr.highlighted {
 }
 
 .grouped-list-section-wrapper .filter-input .fa-circle-info {
-	margin: 0 10px;
+	margin: 0 10px 0 2.5em;
 	cursor: hand;
+}
+
+.list-sections-pagination {
+	padding-top: .5em;
+}
+
+.list-sections-pagination .list-section-wrapper + .knowwe-paginationToolbar {
+	margin-top: .5em;
+}
+
+.list-sections-pagination > .knowwe-paginationToolbar + .list-section-wrapper {
+	margin-top: .5em;
+}
+
+.list-sections-pagination table.list-sections {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 0;
 }
 
 .grouped-list-search-hint {
@@ -460,10 +478,6 @@ table.list-sections tr.highlighted {
 .filter-input .clear-filter {
 	margin: -1.5em;
 	cursor: pointer;
-}
-
-.list-sections-filter-select {
-	margin-left: 3em;
 }
 
 .knowwe-superscript {
@@ -1096,4 +1110,3 @@ table.knowwe-pagination th img.filter:hover {
 	border-radius: 10px;
 	padding: 2px;
 }
-

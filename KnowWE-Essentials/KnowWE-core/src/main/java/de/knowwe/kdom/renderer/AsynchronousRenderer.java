@@ -44,6 +44,10 @@ public class AsynchronousRenderer implements Renderer {
 		inline = false;
 	}
 
+	public Renderer getDecoratedRenderer() {
+		return decoratedRenderer;
+	}
+
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		if (shouldRenderPreview(section, user)) {
