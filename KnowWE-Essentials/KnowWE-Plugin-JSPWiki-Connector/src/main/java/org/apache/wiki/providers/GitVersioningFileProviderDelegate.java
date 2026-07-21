@@ -547,6 +547,13 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			LOGGER.warn("Tried to commit for user: " + user, " but there were no paths for her!");
 			return;
 		}
+		Set<String> committedPaths = this.openCommits.get(user);
+		if (committedPaths == null || committedPaths.isEmpty()) {
+			LOGGER.info("Skipping empty page transaction commit for user: {}", user);
+			this.openCommits.remove(user);
+			this.refreshCacheList.clear();
+			return;
+		}
 
 		String comment = gitCommentStrategy.getCommentForUser(user);
 		if (comment.isEmpty()) {
@@ -560,8 +567,14 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			email = userProfile.getEmail();
 		}
 
-		String commitHash = this.gitConnector.commit().commitPathsForUser(comment, username, email, this.openCommits.get(user));
-		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, this.openCommits.get(user), commitHash);
+		String commitHash = this.gitConnector.commit().commitPathsForUser(comment, username, email, committedPaths);
+		if (commitHash == null || commitHash.isBlank()) {
+			LOGGER.info("Skipping page transaction event for user {} because no commit hash was created", user);
+			this.openCommits.remove(user);
+			this.refreshCacheList.clear();
+			return;
+		}
+		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, committedPaths, commitHash);
 
 		this.openCommits.remove(user);
 		final PageManager pm = getEnginePageManager();

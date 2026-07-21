@@ -162,6 +162,34 @@ jq$(function SidebarResizer() {
 
   $handle.on("mousedown", function(e) {
     const sidebarRect = $sidebar[0].getBoundingClientRect();
+(function() {
+  // read and load the stored sidebar width asap
+  const value = localStorage.getItem(KNOWWE.SIDEBAR_STORAGE_KEY);
+  if (value) {
+    document.documentElement.style.setProperty("--sidebar-width", value + "px");
+  }
+})();
+
+jq$(function SidebarResizer() {
+  "use strict";
+
+  const $sidebar = jq$("#sidebar, .sidebar").first();
+  if (!$sidebar.length) return;
+
+  // read default values from css
+  const style = getComputedStyle($sidebar[0]);
+  const minWidth = parseInt(style.minWidth, 10);
+  const maxWidth = parseInt(style.maxWidth, 10);
+
+  // append the resize handler to the sidebar
+  const $handle = jq$("<div class=\"sidebar-handle\"></div>").appendTo($sidebar);
+
+  let dragging = false;
+  let startX = 0;
+  let startWidth = 0;
+
+  $handle.on("mousedown", function(e) {
+    const sidebarRect = $sidebar[0].getBoundingClientRect();
 
     dragging = true;
     startX = sidebarRect.right ?? 0;
@@ -181,6 +209,29 @@ jq$(function SidebarResizer() {
   jq$(document).on("mouseup", function() {
     if (!dragging) return;
 
+    dragging = true;
+    startX = sidebarRect.right ?? 0;
+    startWidth = sidebarRect.width ?? 0;
+    jq$("body").addClass("sidebar-resizing");
+  });
+
+  jq$(document).on("mousemove", function(e) {
+    if (!dragging) return;
+
+    const delta = e.clientX - startX;
+    let newWidth = startWidth + delta;
+    newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+    $sidebar.css("width", newWidth + "px");
+  });
+
+  jq$(document).on("mouseup", function() {
+    if (!dragging) return;
+
+    dragging = false;
+    jq$("body").removeClass("sidebar-resizing");
+    localStorage.setItem(KNOWWE.SIDEBAR_STORAGE_KEY, $sidebar[0].getBoundingClientRect().width ?? "0");
+  });
+});
     dragging = false;
     jq$("body").removeClass("sidebar-resizing");
     localStorage.setItem(KNOWWE.SIDEBAR_STORAGE_KEY, $sidebar[0].getBoundingClientRect().width ?? "0");

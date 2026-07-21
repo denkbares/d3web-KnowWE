@@ -142,6 +142,10 @@ public class JSPWikiAttachment implements WikiAttachment {
 		}
 	}
 
+	public void setVersion(int version) {
+		attachment.setVersion(version);
+	}
+
 	@Override
 	public int getVersion() {
 		return attachment.getVersion();
