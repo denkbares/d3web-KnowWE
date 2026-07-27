@@ -102,34 +102,6 @@
 	--diff-elide-hover-fg: #58a6ff;
 }
 
-@media (prefers-color-scheme: dark) {
-	:host(:not([data-theme])) {
-		--diff-fg: #f0f6fc;
-		--diff-fg-muted: #9198a1;
-		--diff-bg: #0d1117;
-		--diff-border: #3d444d;
-		--diff-shadow: 0 1px 0 rgba(1, 4, 9, 0.2);
-
-		--diff-num-fg: #9198a1;
-		--diff-num-bg: #151b23;
-
-		--diff-added-bg: rgba(46, 160, 67, 0.15);
-		--diff-added-num-bg: rgba(46, 160, 67, 0.3);
-		--diff-added-emph-bg: rgba(46, 160, 67, 0.4);
-		--diff-added-fg: #3fb950;
-
-		--diff-removed-bg: rgba(248, 81, 73, 0.15);
-		--diff-removed-num-bg: rgba(248, 81, 73, 0.3);
-		--diff-removed-emph-bg: rgba(248, 81, 73, 0.4);
-		--diff-removed-fg: #f85149;
-
-		--diff-elide-bg: #151b23;
-		--diff-elide-fg: #9198a1;
-		--diff-elide-hover-bg: rgba(56, 139, 253, 0.15);
-		--diff-elide-hover-fg: #58a6ff;
-	}
-}
-
 /* --- Card frame ---------------------------------------------------------- */
 
 .diff-frame {
@@ -303,23 +275,6 @@
 	--file-change-control-bg: #212830;
 	--file-change-control-hover-bg: #262c36;
 	--file-change-focus: #58a6ff;
-}
-
-@media (prefers-color-scheme: dark) {
-	:host(:not([data-theme])) {
-		--file-change-bg: #0d1117;
-		--file-change-header-bg: #151b23;
-		--file-change-fg: #f0f6fc;
-		--file-change-muted-fg: #9198a1;
-		--file-change-border: #3d444d;
-		--file-change-blue: #58a6ff;
-		--file-change-blue-bg: rgba(56, 139, 253, 0.15);
-		--file-change-purple: #bc8cff;
-		--file-change-purple-bg: rgba(163, 113, 247, 0.15);
-		--file-change-control-bg: #212830;
-		--file-change-control-hover-bg: #262c36;
-		--file-change-focus: #58a6ff;
-	}
 }
 
 .file-change {

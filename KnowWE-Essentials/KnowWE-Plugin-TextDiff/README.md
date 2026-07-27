@@ -135,8 +135,7 @@ attributes.
 ## Styling And Errors
 
 Both components use shadow DOM and expose CSS `part` attributes plus custom properties for
-theming. Set `data-theme="light"` or `data-theme="dark"` for an explicit theme; otherwise CSS uses
-`prefers-color-scheme`.
+theming. Set `data-theme="light"` or `data-theme="dark"` to explicitly overwrite the theme.
 
 `<knowwe-text-diff>` sets `data-status="loading"`, `ready`, or `error`. Fetch/backend errors render
 as a small status placeholder. `<knowwe-file-change>` is forgiving: unknown change types fall back

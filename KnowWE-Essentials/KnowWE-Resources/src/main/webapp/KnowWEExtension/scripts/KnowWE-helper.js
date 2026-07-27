@@ -89,6 +89,13 @@ KNOWWE.helper = function() {
     },
 
     /**
+     * Returns the wiki's display mode, "light" or "dark".
+     */
+    getDisplayMode: function() {
+      return document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    },
+
+    /**
      * Function: containsArr
      * Checks if a value is already in a array.
      *
