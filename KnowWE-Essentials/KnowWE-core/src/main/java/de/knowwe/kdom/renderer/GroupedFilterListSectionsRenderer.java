@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoublePredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -32,6 +31,10 @@ import com.denkbares.utils.Predicates;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.Div;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.HtmlNode;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
@@ -50,6 +53,8 @@ import de.knowwe.util.Icon;
 public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 	private static final int DEFAULT_COUNT = 50;
+	private static final int LOWER_PAGINATION_THRESHOLD = 20;
+	private static final int[] PAGINATION_COUNT_OPTIONS = { 10, 25, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
 	private static final Map<String, Integer> COUNT_OPTIONS = new TreeMap<>(NumberAwareComparator.CASE_SENSITIVE);
 	public static final Pattern SEARCH_PATTERN = Pattern.compile("([^\u00A0\\h\\s\\v]+?)([:<>=]+)[\u00A0\\h\\s\\v]*([^\u00A0\\h\\s\\v]+)");
 	public static final Pattern QUOTES_PATTERN = Pattern.compile("\".+\"");
@@ -260,68 +265,99 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 * @see ListSectionsRenderer#render(RenderResult)
 	 */
 	public void render(RenderResult page) {
-		if (!context.isReRendering() && !context.isRenderingPreview()) {
-			if (searchHint != null) {
-				page.appendHtmlTag("div", "class", "grouped-list-search-hint");
-				page.appendHtml(searchHint);
-				page.appendHtmlTag("/div");
-			}
-			page.appendHtmlTag("div", "class", "grouped-list-section-wrapper");
-			appendFilterFields(page);
-		}
-		boolean requiresWrapper = ReRenderSectionMarkerRenderer.requiresWrapper(context);
-		if (requiresWrapper) ReRenderSectionMarkerRenderer.renderOpen(id, page);
-		page.appendHtmlTag("div", "class", "list-section-wrapper", "sectionId", id);
+		boolean renderControls = !context.isRenderingPreview();
 		String searchPhrase = getFilterFromCookie();
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
 		Predicate<Section<T>> filter = Strings.isBlank(searchPhrase)
-				? Predicates.limit(noFilterPredicate, (noFilterLimit == -1) ? getCountFromCookie() : noFilterLimit)
-				: Predicates.limit(searchPredicate.or(alwaysShowPredicate), getCountFromCookie());
+				? noFilterPredicate
+				: searchPredicate.or(alwaysShowPredicate);
+		int defaultCount = getDefaultCount();
+		int count = PaginationRenderer.getCount(context, defaultCount);
+		int startRow = count == Integer.MAX_VALUE ? 1 : PaginationRenderer.getStartRow(context);
+		int maximumMatches = Strings.isBlank(searchPhrase) ? noFilterLimit : -1;
+		OpenPaginationPredicate<Section<T>> pagination = new OpenPaginationPredicate<>(filter, startRow - 1,
+				count, maximumMatches);
 
 		// render the groups
-		AtomicBoolean anyLines = new AtomicBoolean(false);
-		renderers.forEach(rendererPair -> {
+		List<HtmlProvider> listChildren = new ArrayList<>();
+		for (Pair<String, ListSectionsRenderer<T>> rendererPair : renderers) {
 			searchPredicate.setRenderer(rendererPair.getB());
-			ListSectionsRenderer<T> filtered = rendererPair.getB().filter(filter);
-			if (filtered.isEmpty()) return;
-			anyLines.set(true);
+			ListSectionsRenderer<T> filtered = rendererPair.getB().filter(pagination);
+			if (filtered.isEmpty()) continue;
 			String header = rendererPair.getA();
 			if (Strings.isNotBlank(header)) {
-				page.appendHtml(header);
+				listChildren.add(new HtmlNode(header));
 			}
-			filtered.render(page);
-		});
+			RenderResult renderedGroup = new RenderResult(page);
+			filtered.render(renderedGroup);
+			listChildren.add(result -> result.append(renderedGroup));
+		}
 
 		// render empty text if there are no items to be displayed
-		if (!anyLines.get()) {
-			page.appendHtmlElement("div", emptyText, "class", "empty-list-sections");
+		if (listChildren.isEmpty()) {
+			listChildren.add(new Div().clazz("empty-list-sections").content(emptyText));
 		}
 
-		page.appendHtmlTag("/div");
-		if (requiresWrapper) ReRenderSectionMarkerRenderer.renderClose(page);
-		if (!context.isReRendering() && !context.isRenderingPreview()) page.appendHtmlTag("/div");
+		HtmlProvider content = new Div()
+				.clazz("list-section-wrapper")
+				.attributes("sectionId", id)
+				.children(listChildren.toArray(HtmlProvider[]::new));
+		if (renderControls) {
+			PaginationRenderer.setOpenResult(context, id, pagination.getDisplayedCount(), pagination.hasMore());
+			if (!pagination.hasMore()) {
+				PaginationRenderer.setResultSize(context, pagination.getMatchCount());
+			}
+			boolean showBottomPagination = startRow > 1 || pagination.hasMore()
+					|| pagination.getDisplayedCount() > LOWER_PAGINATION_THRESHOLD;
+			List<HtmlProvider> paginationChildren = new ArrayList<>();
+			paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
+					id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
+			paginationChildren.add(content);
+			if (showBottomPagination) {
+				paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
+						id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
+			}
+			content = new Div()
+					.clazz("knowwe-paginationWrapper list-sections-pagination")
+					.id(id)
+					.attributes(
+							"sorting-mode", PaginationRenderer.SortingMode.off.name(),
+							"filtering", "false",
+							"reset-start-row-on-count-change", "true")
+					.children(paginationChildren.toArray(HtmlProvider[]::new));
+		}
+
+		if (ReRenderSectionMarkerRenderer.requiresWrapper(context)) {
+			content = ReRenderSectionMarkerRenderer.createMarker(id, content);
+		}
+
+		if (!context.isReRendering() && renderControls) {
+			if (searchHint != null) {
+				page.append(new Div()
+						.clazz("grouped-list-search-hint")
+						.children(new HtmlNode(searchHint)));
+			}
+			content = new Div()
+					.clazz("grouped-list-section-wrapper")
+					.children(createFilterFields(), content);
+		}
+
+		page.append(content);
 	}
 
-	private void appendFilterFields(RenderResult page) {
-		StringBuilder filterBuilder = new StringBuilder();
-		filterBuilder.append("<div class='form-inline form-group cage filter-input'>")
-				.append("<input type='text' class='form-control filter-list-section-input'")
-				.append(" placeholder='").append(placeholder).append("'");
+	private HtmlElement createFilterFields() {
+		HtmlElement input = new HtmlElement("input")
+				.clazz("form-control filter-list-section-input")
+				.attributes("type", "text", "placeholder", placeholder);
 		String filter = getFilterFromCookie();
-		if (Strings.isNotBlank(filter)) filterBuilder.append(" value='").append(filter).append("'");
-		filterBuilder.append(">").append(Icon.DELETE.addClasses("clear-filter").toHtml());
+		if (Strings.isNotBlank(filter)) input.attributes("value", filter);
 
-		filterBuilder.append("<select class='list-sections-filter-select'>");
-		int countFromCookie = getCountFromCookie();
-		for (String c : COUNT_OPTIONS.keySet()) {
-			filterBuilder.append("<option value='").append(c).append("'");
-			if (COUNT_OPTIONS.get(c) == countFromCookie) filterBuilder.append(" selected='selected'");
-			filterBuilder.append(">").append(c).append("</option>");
-		}
-		filterBuilder.append("</select>");
-		filterBuilder.append(Icon.INFO.addTitle(getInfoTitle()).toHtml());
-		filterBuilder.append("</div>");
-		page.appendHtml(filterBuilder.toString());
+		return new Div()
+				.clazz("form-inline form-group cage filter-input")
+				.children(
+						input,
+						new HtmlNode(Icon.DELETE.addClasses("clear-filter").toHtml()),
+						new HtmlNode(Icon.INFO.addTitle(getInfoTitle()).toHtml()));
 	}
 
 	private String getInfoTitle() {
@@ -341,6 +377,11 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		String countFromCookie = getCookieContent("list-section.count." + id);
 		if (Strings.isBlank(countFromCookie) || !COUNT_OPTIONS.containsKey(countFromCookie)) return DEFAULT_COUNT;
 		return COUNT_OPTIONS.get(countFromCookie);
+	}
+
+	private int getDefaultCount() {
+		int legacyCount = getCountFromCookie();
+		return legacyCount == -1 ? Integer.MAX_VALUE : legacyCount;
 	}
 
 	private String getFilterFromCookie() {

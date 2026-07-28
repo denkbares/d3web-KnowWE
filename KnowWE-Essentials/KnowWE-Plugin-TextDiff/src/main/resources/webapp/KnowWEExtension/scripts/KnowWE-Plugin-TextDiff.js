@@ -51,8 +51,7 @@
  *   - data-new-null:      send newText as null in lazy mode, meaning "deleted file/article".
  *   - data-status:        set by the component to 'loading' | 'ready' | 'error' so host pages
  *                         can style the loading and error placeholders via ::part or :host().
- *   - data-theme:         optional explicit 'light' | 'dark' theme override; otherwise CSS uses
- *                         prefers-color-scheme as fallback.
+ *   - data-theme:         optional explicit 'light' | 'dark' theme override
  *
  * Theming: every visual element exposes a CSS shadow part — see ::part(line added),
  * ::part(line removed), ::part(num old|new), ::part(sign), ::part(text), ::part(elided),
@@ -82,6 +81,7 @@
 
 	class KnowweTextDiff extends HTMLElement {
 		connectedCallback() {
+			if (!this.hasAttribute('data-theme')) this.setAttribute('data-theme', KNOWWE.helper.getDisplayMode());
 			if (this._hasShadowContent()) {
 				this._wireExpanders();
 				return;
@@ -252,6 +252,7 @@
  *   - data-additions: optional number of added lines
  *   - data-deletions: optional number of removed lines
  *   - data-collapsed: optional boolean attribute; collapses the body when present
+ *   - data-theme:     optional explicit 'light' | 'dark' theme override
  *
  * Events:
  *   - toggle: dispatched (bubbling) when the user collapses or expands the body via the header.
@@ -314,6 +315,7 @@
 		}
 
 		connectedCallback() {
+			if (!this.hasAttribute('data-theme')) this.setAttribute('data-theme', KNOWWE.helper.getDisplayMode());
 			if (!this.hasAttribute('role')) this.setAttribute('role', 'group');
 			this._ensureShadow();
 			this._update();
