@@ -375,12 +375,12 @@ public class CIRenderer {
 	}
 
 	public static void renderResultMessageDefault(UserContext context, String testObjectName, TestResult testResult, Message message, RenderResult renderResult) {
-		Class<?> testObjectClass = renderResultMessageHeader(context, message, testResult, renderResult);
+		Class<?> testObjectClass = renderResultMessageHeader(message, testResult, renderResult);
 		appendMessageText(context, message, renderResult);
 		renderResultMessageFooter(context, testObjectName, testObjectClass, message, renderResult);
 	}
 
-	public static Class<?> renderResultMessageHeader(UserContext context, Message message, TestResult testResult, RenderResult renderResult) {
+	public static Class<?> renderResultMessageHeader(Message message, TestResult testResult, RenderResult renderResult) {
 		Message.Type messageType = message.getType();
 		Test<?> test = TestManager.findTest(testResult.getTestName());
 		Class<?> testObjectClass = null;
