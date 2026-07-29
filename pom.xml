@@ -29,13 +29,13 @@
 
 	<properties>
 		<!-- project version -->
-		<revision>2026.6-SNAPSHOT</revision>
+		<revision>2026.6-KONAP-SNAPSHOT</revision>
 
 		<!-- cross-repo versions (default: same version) -->
 		<denkbares-Commons.version>${revision}</denkbares-Commons.version>
 		<denkbares-Maven-Plugins.version>${revision}</denkbares-Maven-Plugins.version>
-		<d3web.version>${revision}</d3web.version>
-		<d3web-DES.version>${revision}</d3web-DES.version>
+		<d3web.version>2026.6-SNAPSHOT</d3web.version>
+		<d3web-DES.version>2026.6-SNAPSHOT</d3web-DES.version>
 		<KnowWE-DES.version>${revision}</KnowWE-DES.version>
 		<Experimental.version>${revision}</Experimental.version>
 		<denkbares-Internals.version>${revision}</denkbares-Internals.version>
@@ -64,7 +64,7 @@
 		<java-diff-utils.version>4.15</java-diff-utils.version>
 
 		<!-- web -->
-		<jspwiki.version>2.12.8-SNAPSHOT</jspwiki.version>
+		<jspwiki.version>2026.6-KONAP-SNAPSHOT</jspwiki.version>
 		<tomcat.version>9.0.104</tomcat.version>
 		<stripes.version>1.7.0-async-beta</stripes.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
@@ -205,7 +205,7 @@
 					<dependency>
 						<groupId>com.denkbares.maven</groupId>
 						<artifactId>denkbares-Maven-EnforcerRules</artifactId>
-						<version>${denkbares-Maven-Plugins.version}</version>
+						<version>2026.6-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 				<executions>
