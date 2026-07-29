@@ -196,6 +196,10 @@ a.ci-daemon:hover {
 	padding: 0 5px 0 5px;
 }
 
+.ci-progress-duration {
+	color: var(--text-color-secondary);
+}
+
 div.ci-test-nav-outer {
 	margin-top: 5px;
 	width: 100%;

@@ -125,7 +125,7 @@ public class CIBuildManager implements EventListener {
 
 		private final CIDashboard dashboard;
 		private final TestExecutor testExecutor;
-		private final DefaultAjaxProgressListener listener;
+		private final CIBuildProgress progress;
 
 		public CIBuildCallable(CIDashboard dashboard) {
 			this.dashboard = dashboard;
@@ -134,12 +134,14 @@ public class CIBuildManager implements EventListener {
 			List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 			providers.addAll(pluggedProviders);
 
-			listener = new DefaultAjaxProgressListener();
-			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener, TEST_EXECUTOR_SERVICE, SUB_TEST_EXECUTOR_SERVICE, dashboard.getPriority());
+			progress = new CIBuildProgress();
+			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), progress.getListener(),
+					TEST_EXECUTOR_SERVICE, SUB_TEST_EXECUTOR_SERVICE, dashboard.getPriority());
 		}
 
 		@Override
 		public Void call() {
+			progress.markStarted();
 			LOGGER.info("Executing new CI build for dashboard '" + dashboard.getDashboardName() + "'");
 			try {
 				testExecutor.run();
@@ -332,7 +334,20 @@ public class CIBuildManager implements EventListener {
 	public static DefaultAjaxProgressListener getProgress(CIDashboard dashboard) {
 		CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
 		if (ciBuildFuture == null) return null;
-		return ciBuildFuture.ciBuildCallable.listener;
+		return ciBuildFuture.ciBuildCallable.progress.getListener();
+	}
+
+	/**
+	 * Returns an immutable snapshot of the currently queued or running build for the supplied dashboard.
+	 *
+	 * @param dashboard the dashboard whose current build status is requested
+	 * @return the current status, or {@code null} if no build is queued or running
+	 */
+	@Nullable
+	public static CIBuildStatus getBuildStatus(CIDashboard dashboard) {
+		CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
+		if (ciBuildFuture == null) return null;
+		return ciBuildFuture.ciBuildCallable.progress.getStatus();
 	}
 
 	@Override

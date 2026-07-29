@@ -189,9 +189,8 @@ KNOWWE.plugin.ci4ke = function() {
     },
 
     /*
-     * Repeatedly asks the state of the current build process and displays it. When
-     * 'finished' is responed as progress message, the loop terminates and a page
-     * reload is triggered.
+     * Repeatedly asks for and displays the state of the current build process.
+     * Once the state is FINISHED, the loop terminates and the build display is refreshed.
      */
     refreshBuildProgress: function(dashboardName) {
       const error = false;
@@ -205,19 +204,26 @@ KNOWWE.plugin.ci4ke = function() {
           action: "none",
           fn: function() {
             if (error) return;
-            const percent = JSON.parse(this.responseText).progress;
-            const message = JSON.parse(this.responseText).message;
+            const response = JSON.parse(this.responseText);
+            const percent = response.progress;
+            const message = response.message;
 
             const pv = document.getElementById(
               dashboardName + "_progress-value"
             );
-            if (pv) pv.innerHTML = percent + " %";
+            if (pv) pv.textContent = percent.trim() + "%";
             const pt = document.getElementById(
               dashboardName + "_progress-text"
             );
             if (pt) pt.innerHTML = message;
+            const duration = document.getElementById(
+              dashboardName + "_progress-duration"
+            );
+            if (duration) {
+              duration.textContent = response.elapsedDuration;
+            }
 
-            if (message !== "Finished") {
+            if (response.state !== "FINISHED") {
               jq$("[name=\"" + dashboardName + "\"]")
                 .find(".ci-progress-info")
                 .show();
@@ -259,8 +265,8 @@ KNOWWE.plugin.ci4ke = function() {
     },
 
     /**
-     * Repeatedly check whether the current build process is still running. When 'finished' is responded as progress
-     * message, the loop terminates and a refresh call of the state bubble is called.
+     * Repeatedly checks whether the current build process is still active. Once its state is FINISHED, the loop
+     * terminates and the state bubble is refreshed.
      *
      * @param dashboardName the name of the CI dashboard to display the daemon for
      * @param {undefined | (({dashboardName: string}) => void)} onFinish an optional callback to be called after
@@ -277,8 +283,8 @@ KNOWWE.plugin.ci4ke = function() {
           action: "none",
           fn: function() {
             if (this.status === 200) {
-              const message = JSON.parse(this.responseText).message;
-              if (message !== "Finished") {
+              const response = JSON.parse(this.responseText);
+              if (response.state !== "FINISHED") {
                 setTimeout(function() {
                   new _KA(options).send();
                 }, 1000);

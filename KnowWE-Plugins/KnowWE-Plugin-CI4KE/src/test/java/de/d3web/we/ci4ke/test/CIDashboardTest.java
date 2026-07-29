@@ -28,9 +28,15 @@ import utils.TestUtils;
 
 import com.denkbares.plugin.test.InitPluginManager;
 import com.denkbares.strings.Strings;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.renderer.KDOMRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * 
@@ -61,9 +67,17 @@ public class CIDashboardTest {
 	}
 
 	@Test
-	public void parsing() throws IOException {
+	public void parsing() throws IOException, InterruptedException {
 		Article article = loadArticle("Dashboard");
-		System.out.println(KDOMRenderer.renderPlain(article, new TestUserContext(article)));
+		article.getArticleManager().getCompilerManager().awaitTermination();
+		TestUserContext userContext = new TestUserContext(article);
+		KDOMRenderer.renderPlain(article, userContext);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(article.getArticleManager(), "dashname");
+
+		assertNotNull(dashboard);
+		RenderResult progressInfo = new RenderResult(userContext);
+		dashboard.getRenderer().renderProgressInfo(progressInfo);
+		assertTrue(progressInfo.toStringRaw().contains("dashname_progress-duration"));
 
 	}
 
