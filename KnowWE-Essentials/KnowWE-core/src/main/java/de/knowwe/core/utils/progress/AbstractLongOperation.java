@@ -126,6 +126,7 @@ public abstract class AbstractLongOperation implements LongOperation {
 		this.canceled = false;
 		this.progressListener.updateProgress(0, "");
 		this.progressListener.setError(null);
+		this.progressListener.setCancelRequested(false);
 		clearMessages();
 	}
 

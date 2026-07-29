@@ -81,6 +81,7 @@ public class GetProgressAction extends AbstractAction {
 				progress.put("report", getReport(context, operation));
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
+				progress.put("cancelRequested", listener.isCancelRequested());
 				result.put(progress);
 			}
 			result.write(context.getWriter());

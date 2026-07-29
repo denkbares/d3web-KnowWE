@@ -275,6 +275,14 @@ span.markupMenuItem {
 	font-weight: 900;
 }
 
+.defaultMarkupFrame .long-op-progress-container .long-progress-cancelling .long-progress-state:before {
+	color: var(--color-grey-medium);
+}
+
+.defaultMarkupFrame .long-op-progress-container .long-progress-cancelling .long-progress-bar-message {
+	font-style: italic;
+}
+
 .defaultMarkupFrame .long-op-progress-container .long-progress-error .long-progress-state {
 	background-image: none;
 }
