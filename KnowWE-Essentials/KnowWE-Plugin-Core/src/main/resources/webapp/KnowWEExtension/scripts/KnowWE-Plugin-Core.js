@@ -911,6 +911,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
 }();
 
 KNOWWE.core.plugin.stickyTableHeaders = function() {
+  let pageResizeObserver = null;
   return {
     init: function() {
       jq$(".haddock table.sticky-header, .haddock .wikitable").not(".renderKDOMTable").floatThead({
@@ -967,6 +968,29 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
         transitionOngoing = false;
         update();
       });
+
+      // The sidebar is resizable and toggles via display:none, both without a css transition on
+      // the sidebar itself, so the handlers above do not fire for it. Watch the width of the page
+      // instead, that way the headers are recalculated while and after the sidebar width changes.
+      if (window.ResizeObserver && !pageResizeObserver) {
+        let page = document.querySelector(".haddock .page");
+        if (page) {
+          let lastPageWidth = page.getBoundingClientRect().width;
+          let updateScheduled = false;
+          pageResizeObserver = new ResizeObserver(function() {
+            let width = page.getBoundingClientRect().width;
+            if (width === lastPageWidth) return; // height changes are already covered by contentChange
+            lastPageWidth = width;
+            if (updateScheduled) return; // coalesce, resizing produces one event per frame
+            updateScheduled = true;
+            window.requestAnimationFrame(function() {
+              updateScheduled = false;
+              update();
+            });
+          });
+          pageResizeObserver.observe(page);
+        }
+      }
     }
   };
 }();
