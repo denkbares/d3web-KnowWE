@@ -1369,8 +1369,16 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>des-plugins-public</id>
-			<url>https://repo.denkbares.com/plugins-public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<id>des-repo-public</id>
+			<name>Denkbares Public Repository</name>
+			<url>https://repo.denkbares.com/repo-public/</url>
 		</pluginRepository>
 		<pluginRepository>
 			<snapshots>
