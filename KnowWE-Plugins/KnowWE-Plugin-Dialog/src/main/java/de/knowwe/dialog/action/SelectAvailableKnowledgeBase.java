@@ -5,7 +5,7 @@ package de.knowwe.dialog.action;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;

@@ -18,8 +18,8 @@
  */
 package de.knowwe.diaflux;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;

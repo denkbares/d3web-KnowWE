@@ -29,7 +29,7 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.denkbares.progress.DummyProgressListener;
 import com.denkbares.strings.Locales;

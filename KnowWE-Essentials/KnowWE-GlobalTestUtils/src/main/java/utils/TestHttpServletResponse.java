@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class TestHttpServletResponse implements HttpServletResponse {
 
@@ -49,16 +49,6 @@ public class TestHttpServletResponse implements HttpServletResponse {
 
 	@Override
 	public String encodeRedirectURL(String s) {
-		return null;
-	}
-
-	@Override
-	public String encodeUrl(String s) {
-		return null;
-	}
-
-	@Override
-	public String encodeRedirectUrl(String s) {
 		return null;
 	}
 
@@ -110,11 +100,6 @@ public class TestHttpServletResponse implements HttpServletResponse {
 	@Override
 	public void setStatus(int statusCode) {
 		this.status = statusCode;
-	}
-
-	@Override
-	public void setStatus(int i, String s) {
-		setStatus(i);
 	}
 
 	@Override

@@ -20,7 +20,7 @@ package de.knowwe.jspwiki;
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.wiki.api.core.Context;
 import org.apache.wiki.auth.UserManager;

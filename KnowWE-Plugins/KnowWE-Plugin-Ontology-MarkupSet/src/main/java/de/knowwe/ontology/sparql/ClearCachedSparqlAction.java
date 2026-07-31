@@ -2,7 +2,7 @@ package de.knowwe.ontology.sparql;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.denkbares.strings.Strings;
 import org.slf4j.Logger;

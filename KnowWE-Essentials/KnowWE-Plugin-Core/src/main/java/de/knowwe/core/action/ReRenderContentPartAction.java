@@ -35,11 +35,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -311,22 +310,6 @@ public class ReRenderContentPartAction extends AbstractAction {
 			throw new UnsupportedOperationException();
 		}
 
-		@SuppressWarnings("deprecation")
-		@Override
-		public HttpSessionContext getSessionContext() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Object getValue(String name) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public String[] getValueNames() {
-			throw new UnsupportedOperationException();
-		}
-
 		@Override
 		public void invalidate() {
 			throw new UnsupportedOperationException();
@@ -338,17 +321,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		}
 
 		@Override
-		public void putValue(String name, Object value) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
 		public void removeAttribute(String name) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void removeValue(String name) {
 			throw new UnsupportedOperationException();
 		}
 

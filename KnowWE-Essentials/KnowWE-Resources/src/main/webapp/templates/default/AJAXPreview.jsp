@@ -30,7 +30,7 @@
 <%@ page import="de.knowwe.core.user.UserContextUtil" %>
 <%@ page import="org.apache.wiki.render.RenderingManager" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%! 
   public void jspInit()
   {

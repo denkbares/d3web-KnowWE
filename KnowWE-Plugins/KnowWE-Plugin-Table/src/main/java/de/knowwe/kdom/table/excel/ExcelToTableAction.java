@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletDiskFileUpload;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -50,9 +49,9 @@ public class ExcelToTableAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
+		JakartaServletDiskFileUpload upload = new JakartaServletDiskFileUpload();
 		try {
-			List<FileItem> potentialFiles = upload.parseRequest(context.getRequest());
+			List<DiskFileItem> potentialFiles = upload.parseRequest(context.getRequest());
 			var fileOptional = potentialFiles.stream().filter(field -> !field.isFormField()).findFirst();
 			fileOptional.ifPresent(file -> {
 				boolean hasXLSXExtension = file.getName() != null && file.getName().toLowerCase().endsWith(".xlsx");

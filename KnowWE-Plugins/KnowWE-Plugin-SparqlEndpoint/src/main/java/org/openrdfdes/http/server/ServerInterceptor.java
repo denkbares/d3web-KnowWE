@@ -3,10 +3,10 @@
  */
 package org.openrdfdes.http.server;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * Base class for single-use request interceptors. This implementation sets the
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  *
  * @author Herko ter Horst
  */
-public abstract class ServerInterceptor extends HandlerInterceptorAdapter {
+public abstract class ServerInterceptor implements HandlerInterceptor {
 
 	private String origThreadName;
 
@@ -29,7 +29,7 @@ public abstract class ServerInterceptor extends HandlerInterceptorAdapter {
 
 		setRequestAttributes(request);
 
-		return super.preHandle(request, response, handler);
+		return true;
 	}
 
 	@Override

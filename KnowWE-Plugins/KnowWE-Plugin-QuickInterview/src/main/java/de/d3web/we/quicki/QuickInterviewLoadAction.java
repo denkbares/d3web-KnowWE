@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.records.SessionConversionFactory;

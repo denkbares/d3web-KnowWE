@@ -6,7 +6,7 @@ package de.knowwe.jspwiki.changeannotations;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.providers.PageProvider;

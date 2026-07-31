@@ -7,7 +7,7 @@
 <%@ page import="org.apache.wiki.api.core.Context" %>
 <%@ page import="org.apache.wiki.api.core.Page" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%
 	Context changeAnnotationsContext = Context.findContext(pageContext);
 	Page changeAnnotationsPage = changeAnnotationsContext.getPage();

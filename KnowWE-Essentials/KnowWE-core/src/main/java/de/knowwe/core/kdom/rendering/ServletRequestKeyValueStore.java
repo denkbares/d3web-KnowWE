@@ -4,7 +4,7 @@
 
 package de.knowwe.core.kdom.rendering;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Default implementation for the render result key store

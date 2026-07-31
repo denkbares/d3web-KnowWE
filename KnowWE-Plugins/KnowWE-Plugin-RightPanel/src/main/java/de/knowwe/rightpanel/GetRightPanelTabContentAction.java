@@ -20,7 +20,7 @@ package de.knowwe.rightpanel;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;

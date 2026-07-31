@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.file.Path;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.denkbares.utils.ContentDisposition;
 import de.knowwe.core.user.AuthenticationManager;
@@ -165,7 +165,7 @@ public interface UserActionContext extends UserContext {
 
 	/**
 	 * Sends an HTTP error as response.
-	 * Constants starting with SC_ in {@link javax.servlet.http.HttpServletResponse} are available to set HTTP error codes.
+	 * Constants starting with SC_ in {@link jakarta.servlet.http.HttpServletResponse} are available to set HTTP error codes.
 	 *
 	 * @param sc HTTP status code
 	 * @param msg error message to display. If there's an error message configured in the servlet, this message is

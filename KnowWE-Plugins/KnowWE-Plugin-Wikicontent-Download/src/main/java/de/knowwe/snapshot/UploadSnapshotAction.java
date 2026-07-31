@@ -24,9 +24,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletDiskFileUpload;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
@@ -55,15 +54,15 @@ public class UploadSnapshotAction extends AbstractAction {
 			return;
 		}
 
-		if (!ServletFileUpload.isMultipartContent(context.getRequest())) {
+		if (!JakartaServletDiskFileUpload.isMultipartContent(context.getRequest())) {
 			context.sendError(500, "Request has no multipart content.");
 			return;
 		}
 
-		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
+		JakartaServletDiskFileUpload upload = new JakartaServletDiskFileUpload();
 		try {
 			// find file among all fields of the multipart form request
-			List<FileItem> potentialFiles = upload.parseRequest(context.getRequest());
+			List<DiskFileItem> potentialFiles = upload.parseRequest(context.getRequest());
 			var fileOptional = potentialFiles.stream().filter(field -> !field.isFormField()).findFirst();
 			fileOptional.ifPresent(file -> {
 				// check file
@@ -83,7 +82,7 @@ public class UploadSnapshotAction extends AbstractAction {
 				// store file
 				try {
 					File newSnapshotFile = new File(getSnapshotsPath(context.getEnvironment()), file.getName());
-					file.write(newSnapshotFile);
+					file.write(newSnapshotFile.toPath());
 				}
 				catch (Exception e) {
 					throw new RuntimeException(e.getMessage());
