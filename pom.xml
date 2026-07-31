@@ -936,6 +936,19 @@
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>d3web-Plugin-Persistence-Basic</artifactId>
 				<version>${d3web.version}</version>
+				<exclusions>
+					<!--
+					Xerces registers itself as the JAXP DocumentBuilderFactory, but its
+					implementation rejects the JAXP 1.5 secure-processing properties that
+					XMLConstants defines, so callers setting them get an
+					IllegalArgumentException. No code here uses the Xerces API directly;
+					the JDK's own parser serves every caller.
+					-->
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
