@@ -2,9 +2,9 @@ package de.knowwe.core.utils;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -22,7 +22,11 @@ import de.knowwe.core.utils.Scope.TypePath;
 public class ScopeExtensions {
 
 	private final Extension[] extensions;
-	private final Map<TypePath, List<Extension>> cache = new HashMap<>();
+
+	/**
+	 * Concurrent, because matches are requested from parallel request and compile threads.
+	 */
+	private final Map<TypePath, List<Extension>> cache = new ConcurrentHashMap<>();
 
 	/**
 	 * Creates a new {@link ScopeExtensions} instance for the specified extension point. The extensions matched by this
@@ -88,12 +92,7 @@ public class ScopeExtensions {
 	 * @created 30.11.2013
 	 */
 	public List<Extension> getMatches(TypePath typePath) {
-		List<Extension> list = cache.get(typePath);
-		if (list == null) {
-			list = Collections.unmodifiableList(createMatches(typePath));
-			cache.put(typePath, list);
-		}
-		return list;
+		return cache.computeIfAbsent(typePath, path -> Collections.unmodifiableList(createMatches(path)));
 	}
 
 	/**

@@ -25,6 +25,10 @@ import java.util.Map;
 
 /**
  * Caches the result of sparql tasks of the Rdf2GoCore.
+ * <p>
+ * All methods are synchronized on this cache instance. The backing maps are access ordered, so even reading mutates
+ * them and no access may happen unguarded. Callers that need multiple operations to be atomic have to synchronize on
+ * this instance themselves.
  *
  * @author Volker Belli (denkbares GmbH)
  * @created 21.03.2020
@@ -56,7 +60,7 @@ public class SparqlCache {
 		this.core = core;
 	}
 
-	public State getState(String query) {
+	public synchronized State getState(String query) {
 		SparqlTask sparqlTask = get(query);
 		if (sparqlTask != null && sparqlTask.isDone()) {
 			return State.available;
@@ -69,15 +73,15 @@ public class SparqlCache {
 		}
 	}
 
-	public SparqlTask get(String query) {
+	public synchronized SparqlTask get(String query) {
 		return cache.get(query);
 	}
 
-	public SparqlTask getOutdated(String query) {
+	public synchronized SparqlTask getOutdated(String query) {
 		return outdated.get(query);
 	}
 
-	public void put(String query, SparqlTask task) {
+	public synchronized void put(String query, SparqlTask task) {
 		cache.put(query, task);
 		checkCacheSize(this.cache);
 	}
@@ -89,11 +93,9 @@ public class SparqlCache {
 	 * @param query the query for which the cached result should be removed
 	 * @return true if a result was cached, false if not
 	 */
-	public boolean remove(String query) {
+	public synchronized boolean remove(String query) {
 		String completeQuery = core.prependPrefixesToQuery(core.getNamespaces(), query);
-		synchronized (this.cache) {
-			return this.cache.remove(completeQuery) != null;
-		}
+		return this.cache.remove(completeQuery) != null;
 	}
 
 	/**
@@ -112,21 +114,22 @@ public class SparqlCache {
 		this.cache.clear();
 	}
 
+	/**
+	 * Evicts the least recently used entries until the cache is small enough again. Requires the caller to hold this
+	 * cache's monitor.
+	 */
 	private void checkCacheSize(Map<String, SparqlTask> cache) {
 		int currentSize = cache.values().stream().mapToInt(SparqlTask::getSize).sum();
 		if (currentSize > DEFAULT_MAX_CACHE_SIZE) {
-			//noinspection SynchronizationOnLocalVariableOrMethodParameter
-			synchronized (cache) {
-				Iterator<Map.Entry<String, SparqlTask>> iterator = cache.entrySet().iterator();
-				while (iterator.hasNext() && currentSize > DEFAULT_MAX_CACHE_SIZE) {
-					Map.Entry<String, SparqlTask> next = iterator.next();
-					iterator.remove();
-					try {
-						currentSize -= next.getValue().getSize();
-					}
-					catch (Exception ignore) {
-						// nothing to do, cache size wasn't increase either
-					}
+			Iterator<Map.Entry<String, SparqlTask>> iterator = cache.entrySet().iterator();
+			while (iterator.hasNext() && currentSize > DEFAULT_MAX_CACHE_SIZE) {
+				Map.Entry<String, SparqlTask> next = iterator.next();
+				iterator.remove();
+				try {
+					currentSize -= next.getValue().getSize();
+				}
+				catch (Exception ignore) {
+					// nothing to do, cache size wasn't increase either
 				}
 			}
 		}
