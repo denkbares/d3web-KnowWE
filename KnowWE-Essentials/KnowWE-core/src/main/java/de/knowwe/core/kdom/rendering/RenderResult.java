@@ -216,9 +216,10 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends the specified string encoded as html entities, using {@link Strings#encodeHtml(String)}.
+	 * Appends the specified text so it renders literally as plain text, interpreted neither as HTML nor as JSPWiki
+	 * markup. The text is encoded as html entities, using {@link Strings#encodeHtml(String)}.
 	 */
-	public RenderResult appendEntityEncoded(String text) {
+	public RenderResult appendPlainText(String text) {
 		if (text == null) {
 			builder.append((String) null);
 			return this;

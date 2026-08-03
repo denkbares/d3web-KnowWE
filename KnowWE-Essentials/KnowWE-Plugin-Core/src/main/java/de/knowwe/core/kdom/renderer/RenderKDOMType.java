@@ -127,7 +127,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 			string.appendHtml("<td>").append(rendererEntry).appendHtml("</td>");
 
 			string.appendHtml("<td><div class='table_text'><div class='kdom_source'>");
-			string.append(Strings.encodeHtml(s.getText()) + "&#8203;");
+			string.appendPlainText(s.getText()).append("&#8203;");
 			string.appendHtml("</div></div></td>");
 			string.appendHtml("</tr>\n");
 

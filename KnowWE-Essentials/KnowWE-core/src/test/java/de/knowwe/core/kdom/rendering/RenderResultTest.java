@@ -212,9 +212,9 @@ public class RenderResultTest {
 	}
 
 	@Test
-	public void appendEntityEncoded() {
+	public void appendPlainText() {
 		RenderResult result = new RenderResult(user);
-		result.appendEntityEncoded("a<b & [c]");
+		result.appendPlainText("a<b & [c]");
 		assertEquals(Strings.encodeHtml("a<b & [c]"), result.toStringRaw());
 		assertEquals(Strings.encodeHtml("a<b & [c]"), result.toString());
 	}

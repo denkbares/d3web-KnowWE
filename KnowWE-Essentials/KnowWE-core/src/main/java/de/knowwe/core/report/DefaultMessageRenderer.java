@@ -65,7 +65,7 @@ public class DefaultMessageRenderer implements MessageRenderer {
 			if (source != null) {
 				tooltip = source + ": " + tooltip;
 			}
-			result.append(" title='").appendEntityEncoded(
+			result.append(" title='").appendPlainText(
 					tooltip.replace('\'', '"')).append("'");
 		}
 		result.append(" class='").append("tooltipster " + this.cssClass).append("'");

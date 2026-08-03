@@ -50,7 +50,7 @@ public class EncodedTurtleURI extends AbstractType implements URIProvider<Encode
 	public EncodedTurtleURI() {
 		this.setSectionFinder(new ExpressionInBracketsFinder('<', '>'));
 
-		Renderer renderer = (section, user, result) -> result.append(Strings.encodeHtml(section.getText()));
+		Renderer renderer = (section, user, result) -> result.appendPlainText(section.getText());
 
 		this.addChildType(new AnonymousType("LongURIOpeningType", new RegexSectionFinder(Pattern.compile("^<")), renderer));
 		this.addChildType(new AnonymousType("LongURIClosingType", new RegexSectionFinder(Pattern.compile(">$")), renderer));
