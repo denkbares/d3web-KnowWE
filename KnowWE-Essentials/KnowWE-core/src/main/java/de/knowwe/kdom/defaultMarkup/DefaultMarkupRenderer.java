@@ -178,6 +178,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		Collection<Compiler> compilers = new ArrayList<>(Compilers.getCompilers(rootSection, Compiler.class));
 		compilers.add(null);
 		for (Section<?> subTreeSection : Sections.successors(rootSection)) {
+			// fast path, the vast majority of sections has no messages at all
+			if (!Messages.hasMessages(subTreeSection, messageType)) continue;
 			Map<Message, Collection<Compiler>> compilersForMessage = new LinkedHashMap<>();
 			for (Compiler compiler : compilers) {
 				Collection<Message> messages = Messages.getMessages(compiler, subTreeSection, messageType);
