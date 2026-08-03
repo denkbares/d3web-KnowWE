@@ -20,16 +20,17 @@
 
 package de.knowwe.core.kdom.parsing;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiFunction;
 
 import org.jetbrains.annotations.NotNull;
@@ -86,8 +87,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	boolean isOrHasReusedSuccessor = false;
 
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
-
 	Article article;
 
 	/**
@@ -128,9 +127,26 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private int offsetInArticle = -1;
 
 	/**
-	 * Contains all the stored objects
+	 * Marks store entries that are independent of any compiler.
 	 */
-	private Map<Compiler, Map<String, Object>> store = null;
+	private static final Object NO_COMPILER = new Object();
+
+	/**
+	 * Canonical weak reference per compiler, so all section stores share a single reference object per compiler.
+	 * The value references its key only weakly, so it does not prevent the entry from being expunged.
+	 */
+	private static final Map<Compiler, WeakReference<Compiler>> COMPILER_REFS =
+			Collections.synchronizedMap(new WeakHashMap<>());
+
+	/**
+	 * Contains all the stored objects, as a flat array of (compiler holder, key, value) triples. The holder is
+	 * either {@link #NO_COMPILER} or a weak reference to the compiler, so stores never keep replaced compilers
+	 * alive. The array is replaced as a whole on every write (guarded by this section's monitor) and never
+	 * mutated afterward, so readers just take a consistent snapshot without any locking. Entries of collected
+	 * compilers are skipped by readers and compacted out by the next write. Sections typically hold very few
+	 * entries, making the linear scan faster than hashing and far smaller than the nested maps used before.
+	 */
+	private volatile Object[] store = null;
 
 	/**
 	 * Type of this node.
@@ -710,40 +726,41 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	@NotNull
 	public Map<Compiler, Object> getObjects(String key) {
-		lock.readLock().lock();
-		try {
-			if (store == null) return Collections.emptyMap();
-			Map<Compiler, Object> objects = new HashMap<>(store.size());
-			for (Map.Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
-				Compiler compiler = entry.getKey();
-				if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
-				Object object = entry.getValue().get(key);
-				if (object != null) objects.put(compiler, object);
+		Object[] store = this.store;
+		if (store == null) return Collections.emptyMap();
+		Map<Compiler, Object> objects = new HashMap<>();
+		for (int i = 0; i < store.length; i += 3) {
+			if (!Objects.equals(key, store[i + 1])) continue;
+			Object holder = store[i];
+			Compiler compiler = null;
+			if (holder != NO_COMPILER) {
+				compiler = (Compiler) ((WeakReference<?>) holder).get();
+				if (compiler == null) continue;
+				if (!compiler.getCompilerManager().contains(compiler)) continue;
 			}
-			return Collections.unmodifiableMap(objects);
+			Object object = store[i + 2];
+			if (object != null) objects.put(compiler, object);
 		}
-		finally {
-			lock.readLock().unlock();
-		}
+		return Collections.unmodifiableMap(objects);
 	}
 
 	/**
 	 * Returns all objects stored in this Section for the specified compiler. The {@link Map} maps the stored keys to
 	 * the stored object of that compiler. To get the objects that are stored without an {@link Compiler} (compiler
-	 * independent), specify <tt>null</tt> as the requested compiler.
+	 * independent), specify <tt>null</tt> as the requested compiler. The returned map is a snapshot, it does not
+	 * reflect later changes to this section's store.
 	 *
 	 * @param compiler the compiler to get the stored objects for, or null for compiler-independent stored objects
 	 */
 	@NotNull
 	public Map<String, Object> getObjects(Compiler compiler) {
-		lock.readLock().lock();
-		try {
-			Map<String, Object> store = getStoreForCompiler(compiler);
-			return (store == null) ? Collections.emptyMap() : Collections.unmodifiableMap(store);
+		Object[] store = this.store;
+		if (store == null) return Collections.emptyMap();
+		Map<String, Object> objects = new HashMap<>();
+		for (int i = 0; i < store.length; i += 3) {
+			if (matchesCompiler(store[i], compiler)) objects.put((String) store[i + 1], store[i + 2]);
 		}
-		finally {
-			lock.readLock().unlock();
-		}
+		return objects.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(objects);
 	}
 
 	/**
@@ -755,16 +772,15 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public <O> O getObject(@Nullable Compiler compiler, String key) {
 		if (compiler != null && compiler.getCompilerManager() != null && !compiler.getCompilerManager().contains(compiler)) return null;
-		lock.readLock().lock();
-		try {
-			Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
-			if (storeForArticle == null) return null;
-			//noinspection unchecked
-			return (O) storeForArticle.get(key);
+		Object[] store = this.store;
+		if (store == null) return null;
+		for (int i = 0; i < store.length; i += 3) {
+			if (matchesCompiler(store[i], compiler) && Objects.equals(key, store[i + 1])) {
+				//noinspection unchecked
+				return (O) store[i + 2];
+			}
 		}
-		finally {
-			lock.readLock().unlock();
-		}
+		return null;
 	}
 
 	/**
@@ -828,19 +844,35 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param object   the object to be stored
 	 * @created 08.07.2011
 	 */
-	public void storeObject(@Nullable Compiler compiler, String key, Object object) {
-		lock.writeLock().lock();
-		try {
-			Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
-			if (storeForCompiler == null) {
-				storeForCompiler = new HashMap<>(4);
-				putStoreForCompiler(compiler, storeForCompiler);
+	public synchronized void storeObject(@Nullable Compiler compiler, String key, Object object) {
+		Object[] store = this.store;
+		int length = (store == null) ? 0 : store.length;
+		Object[] copy = new Object[length + 3];
+		int out = 0;
+		boolean stored = false;
+		for (int i = 0; i < length; i += 3) {
+			Object holder = store[i];
+			// compact entries of collected compilers
+			if (isStale(holder)) continue;
+			copy[out] = holder;
+			if (!stored && matchesCompiler(holder, compiler) && Objects.equals(key, store[i + 1])) {
+				copy[out + 1] = key;
+				copy[out + 2] = object;
+				stored = true;
 			}
-			storeForCompiler.put(key, object);
+			else {
+				copy[out + 1] = store[i + 1];
+				copy[out + 2] = store[i + 2];
+			}
+			out += 3;
 		}
-		finally {
-			lock.writeLock().unlock();
+		if (!stored) {
+			copy[out] = holderFor(compiler);
+			copy[out + 1] = key;
+			copy[out + 2] = object;
+			out += 3;
 		}
+		this.store = (out == copy.length) ? copy : Arrays.copyOf(copy, out);
 	}
 
 	/**
@@ -860,16 +892,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public <C extends Compiler, O> O computeIfAbsent(@Nullable C compiler, String key, BiFunction<@Nullable C, @NotNull Section<T>, @NotNull O> mappingFunction) {
 		O object = getObject(compiler, key);
 		if (object == null) {
-			lock.writeLock().lock();
-			try {
+			synchronized (this) {
 				object = getObject(compiler, key);
 				if (object == null) {
 					object = mappingFunction.apply(compiler, this);
 					storeObject(compiler, key, object);
 				}
-			}
-			finally {
-				lock.writeLock().unlock();
 			}
 		}
 		return object;
@@ -886,32 +914,46 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the removed object for the compiler and key, or null
 	 * @created 16.03.2014
 	 */
-	public <O> O removeObject(Compiler compiler, String key) {
-		lock.writeLock().lock();
-		try {
-			Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
-			if (storeForCompiler == null) return null;
-			Object removed = storeForCompiler.remove(key);
-			if (storeForCompiler.isEmpty()) store.remove(compiler);
-			if (store.isEmpty()) store = null;
-			//noinspection unchecked
-			return (O) removed;
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
+	public synchronized <O> O removeObject(Compiler compiler, String key) {
+		Object[] store = this.store;
 		if (store == null) return null;
-		return store.get(compiler);
+		Object removed = null;
+		Object[] copy = new Object[store.length];
+		int out = 0;
+		for (int i = 0; i < store.length; i += 3) {
+			Object holder = store[i];
+			// compact entries of collected compilers
+			if (isStale(holder)) continue;
+			if (removed == null && matchesCompiler(holder, compiler) && Objects.equals(key, store[i + 1])) {
+				removed = store[i + 2];
+				continue;
+			}
+			copy[out] = holder;
+			copy[out + 1] = store[i + 1];
+			copy[out + 2] = store[i + 2];
+			out += 3;
+		}
+		this.store = (out == 0) ? null : (out == copy.length) ? copy : Arrays.copyOf(copy, out);
+		//noinspection unchecked
+		return (O) removed;
 	}
 
-	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
-		if (store == null) {
-			store = new WeakHashMap<>(4);
-		}
-		store.put(compiler, storeForCompiler);
+	/**
+	 * Returns true if the store entry belongs to the given compiler. Compilers are compared by identity, no
+	 * implementation overrides equals. A cleared reference matches no compiler, not even null, which denotes
+	 * the compiler independent entries.
+	 */
+	private static boolean matchesCompiler(Object holder, @Nullable Compiler compiler) {
+		if (compiler == null) return holder == NO_COMPILER;
+		return holder != NO_COMPILER && ((WeakReference<?>) holder).get() == compiler;
+	}
+
+	private static boolean isStale(Object holder) {
+		return holder != NO_COMPILER && ((WeakReference<?>) holder).get() == null;
+	}
+
+	private static Object holderFor(@Nullable Compiler compiler) {
+		return (compiler == null) ? NO_COMPILER : COMPILER_REFS.computeIfAbsent(compiler, WeakReference::new);
 	}
 
 	public boolean isEmpty() {
