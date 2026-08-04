@@ -106,14 +106,15 @@ public interface GitServerConnector {
 	 *
 	 * @param repositoryId
 	 * @param mergeRequestId
+	 * @param commitMessage
 	 * @return
 	 * @throws RuntimeException
 	 * @throws HttpException
 	 */
-	MergeRequest mergeMergeRequest(int repositoryId, int mergeRequestId) throws RuntimeException, HttpException;
+	MergeRequest mergeMergeRequest(int repositoryId, int mergeRequestId, String commitMessage) throws RuntimeException, HttpException;
 
 	record MergeRequest(int id, String name, String sourceBranch, String targetBranch, MergeRequestState state,
-						MergeRequestStatus mergeStatus, String url) {
+	                    MergeRequestStatus mergeStatus, String url) {
 	}
 
 	/**

@@ -53,7 +53,7 @@ import de.uniwue.d3web.gitConnector.GitConnector;
  * @author Josua Nürnberger, Markus Krug
  * @created 2019-01-02
  */
-public class GitVersioningFileProvider extends AbstractFileProvider implements WikiEventListener {
+public class GitVersioningFileProvider extends AbstractFileProvider implements WikiEventListener, GitVersioningProvider {
 
 	//only log timing if they exceed this threshold
 	private final int LOGGING_THRESHOLD_IN_MS = 10;
@@ -267,10 +267,12 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 		}
 	}
 
+	@Override
 	public void openCommit(final String user) {
 		this.delegate.openCommit(user);
 	}
 
+	@Override
 	public void commit(final String user, final String commitMsg) {
 		LOGGER.info("start commit");
 		try {
@@ -284,6 +286,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 		}
 	}
 
+	@Override
 	public void rollback(final String user) {
 		try {
 			canWriteFileLock();
