@@ -49,28 +49,15 @@ import de.uniwue.d3web.gitConnector.CommitUserData;
  * A page provider and its sibling attachment provider are meant to share one instance, so the attachment provider does
  * not have to reach back into the page provider for author resolution or the comment strategy.
  */
-public final class WikiGitContext {
+public record WikiGitContext(
+		Engine engine,
+		GitCommentStrategy commentStrategy
+) {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiGitContext.class);
 
-	private final Engine engine;
-	private final GitCommentStrategy commentStrategy;
-
 	public WikiGitContext(Engine engine, Properties properties) {
 		this(engine, GitCommentStrategy.fromProperties(properties));
-	}
-
-	public WikiGitContext(Engine engine, GitCommentStrategy commentStrategy) {
-		this.engine = engine;
-		this.commentStrategy = commentStrategy;
-	}
-
-	public Engine engine() {
-		return engine;
-	}
-
-	public GitCommentStrategy commentStrategy() {
-		return commentStrategy;
 	}
 
 	/**
@@ -120,8 +107,14 @@ public final class WikiGitContext {
 	 * Fires both commit notifications for a regular local change, see
 	 * {@link #fireCommitted(Object, int, String, Collection, String, String, GitCommitEvent.Origin)}.
 	 */
-	public void fireCommitted(Object source, int eventType, String author, Collection<String> pages,
-							  String commitHash, String repoPath) {
+	void fireCommitted(
+			Object source,
+			int eventType,
+			String author,
+			Collection<String> pages,
+			String commitHash,
+			String repoPath
+	) {
 		fireCommitted(source, eventType, author, pages, commitHash, repoPath, GitCommitEvent.Origin.LOCAL_SAVE);
 	}
 
@@ -135,8 +128,15 @@ public final class WikiGitContext {
 	 * @param repoPath  working tree path of the repository the commit was made in
 	 * @param origin    what produced the commit, e.g. {@link GitCommitEvent.Origin#RECONCILIATION} for a sweep-up
 	 */
-	public void fireCommitted(Object source, int eventType, String author, Collection<String> pages,
-							  String commitHash, String repoPath, GitCommitEvent.Origin origin) {
+	void fireCommitted(
+			Object source,
+			int eventType,
+			String author,
+			Collection<String> pages,
+			String commitHash,
+			String repoPath,
+			GitCommitEvent.Origin origin
+	) {
 		WikiEventManager.fireEvent(source, new GitVersioningWikiEvent(source, eventType, author, pages, commitHash));
 		EventManager.getInstance().fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, origin));
 	}
@@ -146,7 +146,7 @@ public final class WikiGitContext {
 	 * on disk state. Evicts directly via the {@link CachingManager} rather than through {@code PageManager}, whose
 	 * delegate call would reach the git providers' throwing {@code deleteVersion} and skip the history cache eviction.
 	 */
-	public void evictPages(Collection<String> pageNames) {
+	void evictPages(Collection<String> pageNames) {
 		CachingManager cachingManager = engine.getManager(CachingManager.class);
 		if (cachingManager == null) {
 			return;
