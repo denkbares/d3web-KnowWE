@@ -48,9 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
-import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
@@ -312,37 +310,6 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public String toGlobalArticleName(@NotNull String localArticleName, KnowWESubWikiContext context) {
-		if (Strings.isBlank(context.subWiki())) return localArticleName;
-		return context.subWiki() +
-				"&&" + localArticleName;
-	}
-
-	@Override
-	public String toExistingUniqueOrGlobalName(@NotNull String localArticleName) {
-		// TODO: any multi-wiki functionality required???
-		return localArticleName;
-	}
-
-	@Override
-	public String toLocalArticleName(@NotNull String globalArticleName, KnowWESubWikiContext context) {
-		// TODO: any multi-wiki functionality required???
-		return globalArticleName;
-	}
-
-	@Override
-	public String getSubWikiName(@NotNull String globalArticleName) {
-		// TODO: any multi-wiki functionality required???
-		return "";
-	}
-
-	@Override
-	public Set<String> findPages(@NotNull String localName) {
-		// TODO: any multi-wiki functionality required???
-		return Set.of(localName);
-	}
-
-	@Override
 	public String getChangeNote(String title, int version) {
 		warn("The used WikiConnector does not support change notes");
 		return this.dummyPageProvider.getChangeNote(title, version);
@@ -462,11 +429,6 @@ public class DummyConnector implements WikiConnector {
 	public boolean userIsMemberOfGroup(String groupname, UserContext r) {
 		warn("The used WikiConnector does not support user groups");
 		return false;
-	}
-
-	@Override
-	public List<String> getAllSubWikiFolders() {
-		return List.of("");
 	}
 
 	@Override

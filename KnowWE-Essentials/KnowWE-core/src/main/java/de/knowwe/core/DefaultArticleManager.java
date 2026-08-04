@@ -123,11 +123,9 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @param title the title of the article to return
 	 */
 	@Override
-	public Article getArticle(String title, KnowWESubWikiContext context) {
+	public Article getArticle(String title) {
 		if (title == null) return null;
-		String uniqueArticleName = context.toExistingUniqueOrGlobalName(title);
-		if (uniqueArticleName == null) return null;
-		return articleMap.get(uniqueArticleName.toLowerCase());
+		return articleMap.get(title.toLowerCase());
 	}
 
 	@Override
@@ -147,8 +145,8 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @created 20.12.2013
 	 */
 	@Override
-	public Article registerArticle(String title, String content, KnowWESubWikiContext context) {
-		Article article = Article.createArticle(content, title, this, context);
+	public Article registerArticle(String title, String content) {
+		Article article = Article.createArticle(content, title, this);
 		open();
 		try {
 			queueArticle(article);
@@ -232,23 +230,21 @@ public class DefaultArticleManager implements ArticleManager {
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
 	 *
-	 * @param globalArticleName The article to delete
+	 * @param title The article to delete
 	 */
 	@Override
-	public void deleteArticle(String globalArticleName, KnowWESubWikiContext context) {
-
-		// TOTO ; fix
+	public void deleteArticle(String title) {
 		open();
 		try {
-			registerArticle(globalArticleName, "");
+			registerArticle(title, "");
 
-			deleteAfterCompile.add(globalArticleName.toLowerCase());
+			deleteAfterCompile.add(title.toLowerCase());
 		}
 		finally {
 			commit();
 		}
 
-		LOGGER.info("-> Deleted article '" + globalArticleName + "'" + " from " + web);
+		LOGGER.info("-> Deleted article '" + title + "'" + " from " + web);
 	}
 
 	@NotNull

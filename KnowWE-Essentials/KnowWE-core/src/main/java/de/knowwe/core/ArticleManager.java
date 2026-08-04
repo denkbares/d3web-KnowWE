@@ -19,12 +19,8 @@
 package de.knowwe.core;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
@@ -36,8 +32,6 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface ArticleManager {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(ArticleManager.class);
-
 	CompilerManager getCompilerManager();
 
 	String getWeb();
@@ -45,48 +39,7 @@ public interface ArticleManager {
 	/**
 	 * Returns the Article for a given article name/title. The case of the article is ignored.
 	 */
-	default Article getArticle(String title) {
-		return getArticle(title, KnowWESubWikiContext.getDefaultContext());
-	}
-
-	/**
-	 * Finds articles with this local name within all available sub-wikis.
-	 *
-	 * @param localName local page name
-	 * @return all articles
-	 */
-	default Set<Article> findArticles(String localName) {
-		Set<String> pages = Environment.getInstance().getWikiConnector().findPages(localName);
-		Set<Article> articles = pages.stream().map(this::getArticle).collect(Collectors.toSet());
-		if(pages.size() != articles.size()) {
-			System.out.println("oha");
-		}
-		return articles;
-	}
-
-	/**
-	 * Finds articles with this local name within all available sub-wikis and returns randomly the first or else null.
-	 *
-	 * @param localName local page name
-	 * @return any matching article or null
-	 */
-	default Article findArticle(String localName) {
-		Set<Article> articles = findArticles(localName);
-		if (articles.isEmpty()) {
-			//LOGGER.warn("Article not found: " + localName); // often scanning of namespace is done -> spamming logs
-			return null;
-		}
-		else {
-			try {
-				return articles.stream().findAny().orElse(null);
-			} catch (NullPointerException e) {
-				System.out.println("NP");
-			}
-		}
-		return null;
-	}
-
-	Article getArticle(String title, KnowWESubWikiContext context);
+	Article getArticle(String title);
 
 	/**
 	 * Returns all articles currently registered in this ArticleManager. The returned collection is unmodifiable and is
@@ -99,22 +52,14 @@ public interface ArticleManager {
 	 * contains an
 	 * article with the same name/title, the existing article will be replaced by the new one.
 	 */
-	default Article registerArticle(String title, String content) {
-		return registerArticle(title, content, KnowWESubWikiContext.getDefaultContext());
-	}
-
-	Article registerArticle(String title, String content, KnowWESubWikiContext context);
+	Article registerArticle(String title, String content);
 
 	/**
 	 * Deletes the given article from this article manager
 	 *
 	 * @param title the article to delete
 	 */
-	default void deleteArticle(String title) {
-		deleteArticle(title, KnowWESubWikiContext.getDefaultContext());
-	}
-
-	void deleteArticle(String title, KnowWESubWikiContext context);
+	void deleteArticle(String title);
 
 	/**
 	 * De-compiles and removes all articles. ArticleManager is empty afterward.
