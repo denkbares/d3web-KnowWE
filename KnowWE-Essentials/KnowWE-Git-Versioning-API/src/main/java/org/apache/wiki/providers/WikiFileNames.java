@@ -22,12 +22,12 @@ package org.apache.wiki.providers;
 /**
  * Maps between a wiki page name and the file name it is stored under (mangling spaces and appending the {@code .txt}
  * extension, and the reverse). Used by the Versioning-Git plugin's revert/reset actions to translate between the page
- * names the wiki works with and the on-disk file paths git operates on.
+ * names the wiki works with and the on-disk file paths git operates on. Works on one repository and is provider
+ * agnostic.
  * <p>
- * Extracted verbatim from the former {@code GitPageProviderMultiWiki} stub (now removed). The mangling is intentionally
- * naive (space &lt;-&gt; '+', append/strip {@code .txt}) and matches the on-disk file naming the file-system providers
- * produce for these callers; the {@code TODO}s mark that it is not the full URL-encoding scheme of
- * {@code AbstractFileProvider}/{@code JSPUtils}.
+ * The mangling is intentionally naive (space to '+', append or strip {@code .txt}) and matches the on-disk file naming
+ * the file-system providers produce for these callers. The {@code TODO}s mark that it is not the full URL-encoding
+ * scheme of {@code AbstractFileProvider} or {@code JSPUtils}.
  */
 public final class WikiFileNames {
 
@@ -40,12 +40,11 @@ public final class WikiFileNames {
 	}
 
 	public static String mangleWikiFile(String pageName) {
-		String articleName = SubWikiUtils.getLocalPageName(pageName);
-		if (articleName.endsWith(".txt") && !articleName.contains(" ")) {
+		if (pageName.endsWith(".txt") && !pageName.contains(" ")) {
 			// is already mangled
-			return articleName;
+			return pageName;
 		}
 		// TODO: implement proper mangling mechanism
-		return articleName.replace(" ", "+") + ".txt";
+		return pageName.replace(" ", "+") + ".txt";
 	}
 }

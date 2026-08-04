@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import de.uniwue.d3web.gitConnector.GitConnector;
 
 /**
- * Holds the open {@link GitCommitBatch}es of the multi-wiki git provider, keyed by wiki user name. The user-name key
+ * Holds the open {@link GitCommitBatch}es of a git-backed page provider, keyed by wiki user name. The user-name key
  * matches the {@code WikiConnector} transaction API, which is keyed by user name only. Concurrent batches of different
  * users are independent.
  * <p>

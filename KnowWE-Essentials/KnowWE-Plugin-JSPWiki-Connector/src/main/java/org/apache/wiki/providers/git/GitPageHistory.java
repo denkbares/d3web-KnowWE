@@ -46,10 +46,10 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 /**
- * Per-repository git history component which owns one sub-wiki repository's {@link GitConnector} and performs the git
- * side of page operations on it: commit-on-save, version to commit mapping, text-at-version, delete and move, and the
- * sweep-up reconciliation. One instance lives per sub-wiki repo, the multi-wiki provider is a thin router that
- * strips the {@code Repo&&} prefix and delegates the resulting flat, single-repo operation here.
+ * Per-repository git history component which owns one repository's {@link GitConnector} and performs the git side of
+ * page operations on it: commit-on-save, version to commit mapping, text-at-version, delete and move, and the
+ * sweep-up reconciliation. One instance lives per repository, and it is provider agnostic, a provider delegates the
+ * flat, single-repository operation here.
  * <p>
  * The logic is ported from {@code GitVersioningFileProviderDelegate} but deliberately kept engine-free: it receives an
  * already-resolved {@link CommitUserData} (author, email, message) and returns engine-free {@link GitPageVersion}
@@ -108,7 +108,7 @@ public class GitPageHistory {
 	 */
 	@Nullable
 	public String commitPut(File pageFile, CommitUserData userData) {
-		// in a flat per-sub-wiki page repo the file name is the repo-relative path
+		// in a flat page repository the file name is the repo-relative path
 		return commitFile(pageFile, pageFile.getName(), userData);
 	}
 

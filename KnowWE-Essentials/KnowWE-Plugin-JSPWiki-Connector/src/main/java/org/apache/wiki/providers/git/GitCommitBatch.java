@@ -30,10 +30,10 @@ import java.util.TreeSet;
 /**
  * One open page/attachment transaction for a single wiki user. Collects the changed paths the user accumulates between
  * {@code openCommit} and {@code commit}/{@code rollback}, grouped per git repository so that closing the batch produces
- * one commit per touched repository (not one per page). A batch may span repositories, a bulk operation editing pages
- * in several sub-wikis stages into the same batch under different repo keys.
+ * one commit per touched repository (not one per page). A batch may span repositories, everything a user stages goes
+ * into the same batch under its repo key.
  * <p>
- * This is the multi-wiki replacement for the old delegates' shared {@code openCommits} map. It is pure state — only the
+ * This replaces the old delegates' shared {@code openCommits} map. It is pure state, only the
  * changed paths per repository, keyed by a stable repo key. It deliberately does not hold a {@code GitConnector}: the
  * connector for a repo is resolved at commit/rollback time by {@link GitCommitBatchRegistry}, so closing the batch
  * always uses the repo's current connector rather than whichever instance happened to be live when a path was staged.

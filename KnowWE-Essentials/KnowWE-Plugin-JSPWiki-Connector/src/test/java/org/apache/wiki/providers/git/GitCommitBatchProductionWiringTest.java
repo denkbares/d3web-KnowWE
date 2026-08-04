@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
 /**
- * Batch-commit tests against the exact connector wiring the multi-wiki provider builds in production
+ * Batch-commit tests against the exact connector wiring the git providers build in production
  * ({@code CachingGitConnector(JGitBackedGitConnector)}), guarding the seam a plain {@code BareGitConnector} test
  * cannot cover: the routing of {@code commitPathsForUser} inside the mixed connector. Historically that route ignored
  * the pathspec and committed the whole index (empty commits for modified pages, cross-user contamination), which the
@@ -63,7 +63,7 @@ public class GitCommitBatchProductionWiringTest {
 		repo = new File(base, "repo");
 		Files.createDirectories(repo.toPath());
 		RawGitExecutor.executeGitCommand(new String[] { "git", "init" }, repo.getAbsolutePath());
-		// the provider's production wiring, see GitVersioningFileProviderMultiWiki#createHistory
+		// the production wiring of the git providers
 		connector = new CachingGitConnector(JGitBackedGitConnector.fromPath(repo.getAbsolutePath()));
 		assumeTrue(connector.gitInstalledAndReady());
 		commitNewFile("Existing.txt", "original content");

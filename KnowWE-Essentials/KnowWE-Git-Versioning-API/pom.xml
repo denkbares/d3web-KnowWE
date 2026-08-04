@@ -38,15 +38,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.jspwiki</groupId>
-			<artifactId>jspwiki-multiwiki</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.jspwiki</groupId>
-			<artifactId>jspwiki-multiwiki</artifactId>
-			<type>test-jar</type>
-			<scope>test</scope>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
 		</dependency>
 
 		<dependency>
