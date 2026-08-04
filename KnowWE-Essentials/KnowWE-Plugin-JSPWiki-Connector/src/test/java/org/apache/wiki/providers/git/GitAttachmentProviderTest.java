@@ -51,6 +51,7 @@ import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
 
@@ -151,6 +152,26 @@ public class GitAttachmentProviderTest {
 		assertTrue(new File(pageDir, "After-att/doc.txt").exists());
 		assertEquals(1, commits("After-att/doc.txt"));
 		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
+	}
+
+	/**
+	 * The provider anchors attachments at the page repository, so a storage dir pointing anywhere else is a broken
+	 * configuration that must fail loudly at startup instead of scattering files across two directories.
+	 */
+	@Test
+	public void initializeRejectsAStorageDirOutsideThePageRepository() throws Exception {
+		Properties broken = new Properties();
+		broken.putAll(properties);
+		broken.put(AttachmentProvider.PROP_STORAGEDIR, new File(pageDir, "elsewhere").getAbsolutePath());
+
+		GitAttachmentProvider misconfigured = new GitAttachmentProvider();
+		try {
+			misconfigured.initialize(engine, broken);
+			fail("a storage dir outside the page repository must be rejected");
+		}
+		catch (IOException expected) {
+			assertTrue(expected.getMessage().contains(AttachmentProvider.PROP_STORAGEDIR));
+		}
 	}
 
 	/** BR5: a page edit and an attachment upload inside one transaction produce exactly one commit. */

@@ -21,14 +21,18 @@ package org.apache.wiki.providers.git;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
@@ -36,6 +40,7 @@ import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.event.GitVersioningWikiEvent;
+import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.providers.AbstractFileProvider;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.apache.wiki.providers.GitVersioningProvider;
@@ -44,7 +49,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import de.knowwe.event.GitCommitEvent;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
@@ -89,6 +93,12 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		// the base class resolves and creates the page directory, which is the repository's working tree
 		super.initialize(engine, properties);
 		this.context = new WikiGitContext(engine, properties);
+		if (!StandardCharsets.UTF_8.equals(Charset.forName(m_encoding))) {
+			// the git side (text-at-version, the mangled attachment paths) can only decode UTF-8, a different page
+			// encoding would corrupt every non-ASCII page name and history read in ways that look like git problems
+			LOGGER.error("The git-backed providers require '{}'=UTF-8, but it is '{}'. Fix the wiki properties.",
+					Engine.PROP_ENCODING, m_encoding);
+		}
 
 		String repoPath = new File(m_pageDirectory).getAbsolutePath();
 		if (!new File(repoPath, ".git").isDirectory()) {
@@ -99,14 +109,13 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		// build the commit-graph to accelerate git-log reads
 		connector.repo().executeCommitGraph();
 		this.history = new GitPageHistory(connector);
-		this.batchRegistry = new GitCommitBatchRegistry(
-				repoKey -> repoKey.equals(history.repoKey()) ? history : null);
+		this.batchRegistry = new GitCommitBatchRegistry(history);
 
 		// self-heal a dirty working tree (crash during a save) with one reconciliation commit
-		String reconciliationHash = history.sweepUp("provider-startup");
-		if (reconciliationHash != null) {
-			EventManager.getInstance().fireEvent(new GitCommitEvent(history.repoKey(), reconciliationHash,
-					List.of(), "system", GitCommitEvent.Origin.RECONCILIATION));
+		GitPageHistory.SweepUp sweepUp = history.sweepUp("provider-startup");
+		if (sweepUp != null) {
+			context.fireCommitted(this, GitVersioningWikiEvent.UPDATE, "system", wikiNames(sweepUp.paths()),
+					sweepUp.commitHash(), history.repoKey(), GitCommitEvent.Origin.RECONCILIATION);
 		}
 		LOGGER.info("Initialized {} on repository '{}'.", getClass().getSimpleName(), repoPath);
 	}
@@ -127,8 +136,11 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		catch (ProviderException e) {
 			throw e;
 		}
+		catch (IOException e) {
+			throw new ProviderException("Could not save page '" + page.getName() + "': " + e.getMessage(), e);
+		}
 		catch (Exception e) {
-			throw new ProviderException("Could not save page '" + page.getName() + "': " + e.getMessage());
+			throw new ProviderException("Could not save page '" + page.getName() + "': " + e);
 		}
 	}
 
@@ -146,7 +158,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 			if (addFile) {
 				history.stageForBatch(file.getName());
 			}
-			batchRegistry.stage(user, history.repoKey(), file.getName());
+			batchRegistry.stage(user, file.getName());
 		}
 		else {
 			// "use the page's change note, else this operation's default", same seam as delete/move. The default is
@@ -164,7 +176,9 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	}
 
 	private boolean sameTextContent(String text, File file) throws IOException {
-		return file.exists() && text != null && text.equals(Files.readString(file.toPath()));
+		// compare bytes, not decoded strings: the on-disk encoding is m_encoding, and a decode with the wrong charset
+		// would fail the save instead of just re-writing the file
+		return file.exists() && text != null && Arrays.equals(text.getBytes(m_encoding), Files.readAllBytes(file.toPath()));
 	}
 
 	// --- read path -----------------------------------------------------------
@@ -275,7 +289,8 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	 * All page changes since the given date, one entry per (page, commit) with that commit's author, change-note and
 	 * date, served from the index (one git walk). Replaces the inherited base, which returns an empty list, so Recent
 	 * Changes works on this provider. Attachment paths (those in a {@code <page>-att/} subdirectory) are skipped, only
-	 * page files are reported.
+	 * page files are reported. Deleted pages are deliberately included (the delete commit is a change and should show
+	 * up in Recent Changes), which diverges from the filesystem-only enumeration of {@link #getAllPages()}.
 	 */
 	@Override
 	public Collection<Page> getAllChangedSince(Date date) {
@@ -386,24 +401,21 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		if (comment.isEmpty()) {
 			comment = commitMessage;
 		}
-		CommitUserData userData = context.userData(user, comment);
-		List<GitCommitBatchRegistry.RepoCommitResult> results =
-				batchRegistry.commit(user, userData.message, userData.user, userData.email);
-		for (GitCommitBatchRegistry.RepoCommitResult result : results) {
-			Collection<String> pages = pageNames(result.paths());
-			context.fireCommitted(this, GitVersioningWikiEvent.UPDATE, user, pages, result.commitHash(), result.repoKey());
+		GitCommitBatchRegistry.CommitResult result = batchRegistry.commit(user, context.userData(user, comment));
+		if (result != null) {
+			Collection<String> pages = wikiNames(result.paths());
+			context.fireCommitted(this, GitVersioningWikiEvent.UPDATE, user, pages, result.commitHash(), history.repoKey());
 			context.evictPages(pages);
 		}
 	}
 
 	@Override
 	public void rollback(String user) {
-		List<GitCommitBatchRegistry.RepoRollbackResult> results = batchRegistry.rollback(user);
-		// the staged files were restored on disk, so the JSPWiki page cache and Lucene must drop the discarded edits
-		for (GitCommitBatchRegistry.RepoRollbackResult result : results) {
-			Collection<String> pages = pageNames(result.paths());
-			context.evictPages(pages);
-			LOGGER.info("Rolled back batch of user '{}' ({} path(s)).", user, result.paths().size());
+		Set<String> restored = batchRegistry.rollback(user);
+		if (!restored.isEmpty()) {
+			// the staged files were restored on disk, so the JSPWiki page cache and Lucene must drop the discarded edits
+			context.evictPages(wikiNames(restored));
+			LOGGER.info("Rolled back batch of user '{}' ({} path(s)).", user, restored.size());
 		}
 	}
 
@@ -433,17 +445,20 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 
 	/**
 	 * Maps repo-relative file paths back to wiki names: a flat {@code .txt} file to its page name, an attachment path
-	 * ({@code <page>-att/<file>}) to the JSPWiki attachment name {@code <page>/<file>}.
+	 * ({@code <page>-att/<file>}) to the JSPWiki attachment name {@code <page>/<file>}. The attachment layout
+	 * knowledge is deliberate: batch and sweep results genuinely contain attachment paths, and their names must be
+	 * mapped for the commit events and the cache eviction.
 	 */
-	private Collection<String> pageNames(Collection<String> paths) {
+	private Collection<String> wikiNames(Collection<String> paths) {
 		List<String> names = new ArrayList<>(paths.size());
 		for (String path : paths) {
 			File asFile = new File(path);
 			String dir = asFile.getParent();
 			if (dir != null && dir.endsWith(BasicAttachmentProvider.DIR_EXTENSION)) {
-				String parent = unmangleName(
+				// attachment paths were mangled by JSPUtils (hard UTF-8), so unmangle them the same way
+				String parent = JSPUtils.unmangleName(
 						dir.substring(0, dir.length() - BasicAttachmentProvider.DIR_EXTENSION.length()));
-				names.add(parent + "/" + unmangleName(asFile.getName()));
+				names.add(parent + "/" + JSPUtils.unmangleName(asFile.getName()));
 			}
 			else {
 				names.add(pageNameOfFile(asFile.getName()));

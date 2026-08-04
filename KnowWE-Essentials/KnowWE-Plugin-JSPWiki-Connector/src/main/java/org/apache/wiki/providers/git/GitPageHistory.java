@@ -310,7 +310,8 @@ public class GitPageHistory {
 
 	/**
 	 * Text of the page at the given version. The latest version is read from disk (fast), older versions are read from
-	 * git. Returns {@code null} if the page file does not exist.
+	 * git. Returns {@code null} if the page file does not exist. Text is decoded as UTF-8 on both paths (the git side
+	 * has no other choice), so providers on top of this class must ensure {@code jspwiki.encoding} is UTF-8.
 	 *
 	 * @param version a 1-based version number, or {@link WikiProvider#LATEST_VERSION} for the working-tree content
 	 */
@@ -334,12 +335,24 @@ public class GitPageHistory {
 	 */
 	@Nullable
 	public String commitDelete(File pageFile, CommitUserData userData) {
+		// in a flat page repository the file name is the repo-relative path
+		return commitDelete(pageFile, pageFile.getName(), userData);
+	}
+
+	/**
+	 * Deletes a file (working-tree file and from git history going forward) and commits the removal, returning the
+	 * commit hash. Disk deletion and commit happen under the commit lock, so no sweep can interleave and commit the
+	 * half-done delete under the wrong author. The repo-relative path is given explicitly because attachments live in
+	 * a {@code <page>-att/} subdirectory of the repo, unlike flat page files.
+	 */
+	@Nullable
+	public String commitDelete(File file, String repoRelativePath, CommitUserData userData) {
 		commitLock.lock();
 		try {
-			if (!pageFile.delete()) {
-				LOGGER.warn("Failed to delete page file on disk: {}", pageFile.getName());
+			if (!file.delete()) {
+				LOGGER.warn("Failed to delete file on disk: {}", repoRelativePath);
 			}
-			return removeFile(pageFile.getName(), userData);
+			return removeFile(repoRelativePath, userData);
 		}
 		finally {
 			commitLock.unlock();
@@ -395,7 +408,7 @@ public class GitPageHistory {
 	public String commitMove(File fromFile, File toFile, CommitUserData userData) throws IOException {
 		commitLock.lock();
 		try {
-			movePageOnFilesystem(fromFile, toFile);
+			moveCaseSafe(fromFile, toFile);
 			return connector.commit().moveFile(fromFile.toPath(), toFile.toPath(),
 					userData.user, userData.email, userData.message);
 		}
@@ -405,15 +418,30 @@ public class GitPageHistory {
 	}
 
 	/**
+	 * Moves a file or directory, bouncing case-only renames through a temp name so case-insensitive filesystems do not
+	 * no-op the move. Callers that commit the move afterwards must run both steps under {@link #withCommitLock}.
+	 */
+	public static void moveCaseSafe(File from, File to) throws IOException {
+		if (from.getName().equalsIgnoreCase(to.getName())) {
+			File tmp = new File(to.getParentFile(), to.getName() + "_tmp");
+			Files.move(from.toPath(), tmp.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Files.move(tmp.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+		else {
+			Files.move(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	/**
 	 * Self-heals a dirty working tree: stages everything currently changed/untracked/removed and commits it as a single
 	 * reconciliation commit. A no-op when the tree is clean. Run at provider startup and before branch operations
 	 * (switch/pull/merge), which require a clean tree.
 	 *
 	 * @param reason short description of why the sweep runs, used in the commit message
-	 * @return the reconciliation commit hash, or {@code null} if the tree was already clean
+	 * @return the reconciliation commit and the swept paths, or {@code null} if the tree was already clean
 	 */
 	@Nullable
-	public String sweepUp(String reason) {
+	public SweepUp sweepUp(String reason) {
 		commitLock.lock();
 		try {
 			GitStatusCommandResult status = connector.status().get();
@@ -427,12 +455,20 @@ public class GitPageHistory {
 			}
 			LOGGER.info("Sweep-up of '{}' ({}): reconciling {} dirty path(s).", repoPath, reason, affected.size());
 			connector.commit().addPaths(affected);
-			return connector.commit().commitForUser(
+			String commitHash = connector.commit().commitForUser(
 					new CommitUserData("system", "system@denkbares.com", "[reconciliation] " + reason));
+			return commitHash == null ? null : new SweepUp(commitHash, List.copyOf(affected));
 		}
 		finally {
 			commitLock.unlock();
 		}
+	}
+
+	/**
+	 * Outcome of a sweep-up reconciliation: the commit and the repo-relative paths it swept up, so the caller can fire
+	 * complete commit notifications for it.
+	 */
+	public record SweepUp(String commitHash, List<String> paths) {
 	}
 
 	private void untrackIgnoredFile(String path) {
@@ -451,18 +487,6 @@ public class GitPageHistory {
 			connector.commit().commitForUser(
 					new CommitUserData("system", "system@denkbares.com", "Untrack: " + path));
 			LOGGER.info("Untracked already-ignored file: {}", path);
-		}
-	}
-
-	private void movePageOnFilesystem(File fromFile, File toFile) throws IOException {
-		if (fromFile.getName().equalsIgnoreCase(toFile.getName())) {
-			// case-only rename: bounce through a temp file so case-insensitive filesystems don't no-op the move
-			File tmpFile = new File(toFile.getParentFile(), toFile.getName() + "_tmp");
-			Files.move(fromFile.toPath(), tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			Files.move(tmpFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}
-		else {
-			Files.move(fromFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 

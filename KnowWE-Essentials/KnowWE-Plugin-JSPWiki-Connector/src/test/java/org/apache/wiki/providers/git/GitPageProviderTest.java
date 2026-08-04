@@ -22,6 +22,7 @@ package org.apache.wiki.providers.git;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +46,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
+import de.knowwe.event.GitCommitEvent;
 import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
 
 import static org.junit.Assert.*;
@@ -262,17 +267,41 @@ public class GitPageProviderTest {
 	}
 
 	@Test
-	public void startupReconciliationSweepsUpADirtyTree() throws Exception {
+	public void startupReconciliationSweepsUpADirtyTreeAndFiresACompleteEvent() throws Exception {
 		// simulate a crash during a save: a written-but-never-committed page in an existing repo
 		putPage("Committed", "content");
 		FileUtils.writeStringToFile(new File(pageDir, "Orphan.txt"), "orphaned save", StandardCharsets.UTF_8);
 
 		// a fresh provider on the same directory must self-heal the dirty tree at startup (BR10)
-		GitPageProvider restarted = new GitPageProvider();
-		restarted.initialize(engine, properties);
+		List<GitCommitEvent> events = new ArrayList<>();
+		EventListener listener = new EventListener() {
+			@Override
+			public Collection<Class<? extends Event>> getEvents() {
+				return List.of(GitCommitEvent.class);
+			}
+
+			@Override
+			public void notify(Event event) {
+				events.add((GitCommitEvent) event);
+			}
+		};
+		EventManager.getInstance().registerListener(listener);
+		try {
+			GitPageProvider restarted = new GitPageProvider();
+			restarted.initialize(engine, properties);
+			assertEquals(1, restarted.getVersionHistory("Orphan").size());
+		}
+		finally {
+			EventManager.getInstance().unregister(listener);
+		}
 
 		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
-		assertEquals(1, restarted.getVersionHistory("Orphan").size());
+		// the reconciliation commit carries a complete event: origin and the swept pages (BR9)
+		assertEquals(1, events.size());
+		assertEquals(GitCommitEvent.Origin.RECONCILIATION, events.get(0).origin());
+		// compare canonical paths, the connector canonicalizes /var to /private/var on macOS
+		assertEquals(pageDir.getCanonicalPath(), new File(events.get(0).repoPath()).getCanonicalPath());
+		assertTrue("the swept page must be named in the event", events.get(0).pages().contains("Orphan"));
 	}
 
 	/**
@@ -305,8 +334,7 @@ public class GitPageProviderTest {
 
 		Thread committer = new Thread(() -> provider.commit("alice", "bulk save"));
 		committer.start();
-		committer.join(300);
-		assertTrue("batch close must wait for the commit lock", committer.isAlive());
+		GitPageHistoryTest.assertBlocked("batch close must wait for the commit lock", committer);
 		assertEquals(0, commitsForFile("AlicePage.txt"));
 
 		releaseBracket.countDown();

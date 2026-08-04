@@ -27,23 +27,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
+import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.pages.PageManager;
+import org.apache.wiki.providers.AbstractFileProvider;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.util.FileUtil;
@@ -51,7 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
-import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitFileRevision;
 
 /**
  * Git-backed attachment provider for a single-wiki instance, the sibling of {@link GitPageProvider}. Stores
@@ -67,6 +70,21 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitAttachmentProvider.class);
 
 	private GitPageProvider pageProvider;
+
+	@Override
+	public void initialize(Engine engine, Properties properties) throws NoRequiredPropertyException, IOException {
+		super.initialize(engine, properties);
+		// this provider anchors every path at the page repository and ignores m_storageDir, but inherited methods
+		// that are not overridden (notably listAllChanged, which Recent Changes calls) scan m_storageDir - the two
+		// must be the same directory, and a mismatch would fail in ways that look like git problems
+		String pageDir = new File(AbstractFileProvider.get_m_pageDirectory(properties)).getCanonicalPath();
+		String storageDir = new File(m_storageDir).getCanonicalPath();
+		if (!storageDir.equals(pageDir)) {
+			throw new IOException(getClass().getSimpleName() + " stores attachments inside the page repository: '"
+					+ PROP_STORAGEDIR + "' (" + storageDir + ") must equal '"
+					+ AbstractFileProvider.PROP_PAGEDIR + "' (" + pageDir + ").");
+		}
+	}
 
 	@Override
 	protected boolean isCreationDateBatchEnabled() {
@@ -151,8 +169,8 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	private void putAttachmentDataLocked(Attachment attachment, byte[] bytes, File attFile, String relPath,
 										 GitPageHistory history) throws ProviderException {
 		File dir = attFile.getParentFile();
-		if (!dir.exists()) {
-			dir.mkdirs();
+		if (!dir.exists() && !dir.mkdirs()) {
+			throw new ProviderException("Could not create attachment directory " + dir.getAbsolutePath());
 		}
 		// git creates no commit if no byte changed, and we also do not rewrite the file
 		if (contentEquals(attFile, bytes)) {
@@ -165,7 +183,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		GitCommitBatchRegistry registry = pageProvider().batchRegistry();
 		if (registry.isOpen(user)) {
 			history.stageForBatch(relPath);
-			registry.stage(user, history.repoKey(), relPath);
+			registry.stage(user, relPath);
 		}
 		else {
 			CommitUserData userData = context().userData(user, message(attachment));
@@ -257,31 +275,27 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			return null;
 		}
 		String relPath = attachmentPath(att);
-		GitConnector connector = history.connector();
 
 		// git-ignored attachments: serve metadata from the filesystem (single version)
-		if (connector.isIgnored(relPath)) {
+		if (history.connector().isIgnored(relPath)) {
 			return filesystemAttachment(att, attFile);
 		}
 
-		int realVersion = version;
-		String commitHash;
+		// the eager index covers attachment paths too, so this costs no git call per attachment
+		List<GitFileRevision> revisions = history.index().revisionsNewestFirst(relPath);
+		if (revisions.isEmpty()) {
+			// written but not yet committed (e.g. staged in an open batch)
+			return filesystemAttachment(att, attFile);
+		}
+		int count = revisions.size();
 		if (version == WikiProvider.LATEST_VERSION) {
-			List<String> commitHashes = connector.log().commitHashesForFile(relPath);
-			if (commitHashes.isEmpty()) {
-				// written but not yet committed (e.g. staged in an open batch)
-				return filesystemAttachment(att, attFile);
-			}
-			realVersion = commitHashes.size();
-			commitHash = commitHashes.get(commitHashes.size() - 1);
+			return fromRevision(att, count, revisions.get(0), relPath, history);
 		}
-		else {
-			commitHash = connector.log().commitHashForFileAndVersion(relPath, version);
-			if (commitHash == null) {
-				return null;
-			}
+		if (version < 1 || version > count) {
+			return null;
 		}
-		return fromCommit(att, realVersion, commitHash, relPath, connector);
+		// newest-first list: oldest-first version v is at index count - v
+		return fromRevision(att, version, revisions.get(count - version), relPath, history);
 	}
 
 	private Attachment filesystemAttachment(Attachment attachment, File attFile) {
@@ -291,18 +305,26 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		return attachment;
 	}
 
-	private Attachment fromCommit(Attachment attachment, int version, String commitHash, String relPath, GitConnector connector) {
-		CommitUserData userData = connector.log().commitUserDataFor(commitHash);
+	/**
+	 * Builds the attachment metadata from an index revision. Author/time/message come from the index (free after the
+	 * one walk); only the file size is fetched lazily (cached per commit+path by the connector).
+	 */
+	private Attachment fromRevision(Attachment attachment, int version, GitFileRevision revision, String relPath,
+									GitPageHistory history) {
 		Attachment result = new org.apache.wiki.attachment.Attachment(m_engine, attachment.getParentName(), attachment.getFileName());
 		result.setCacheable(false);
-		result.setAuthor(userData.user);
+		result.setAuthor(revision.userData().user);
 		result.setVersion(version);
-		result.setAttribute(WikiPage.CHANGENOTE, userData.message);
-		result.setSize(connector.log().getFilesizeForCommit(commitHash, relPath));
-		result.setLastModified(Date.from(Instant.ofEpochSecond(connector.log().commitTimeFor(commitHash))));
+		result.setAttribute(WikiPage.CHANGENOTE, revision.message());
+		result.setSize(history.connector().log().getFilesizeForCommit(revision.commitHash(), relPath));
+		result.setLastModified(Date.from(Instant.ofEpochSecond(revision.timeSeconds())));
 		return result;
 	}
 
+	/**
+	 * Newest version first, matching the {@link BasicAttachmentProvider} contract (the archived multi-wiki provider
+	 * returned oldest-first, a deliberate divergence-fix here).
+	 */
 	@Override
 	public List<Attachment> getVersionHistory(Attachment attachment) {
 		try {
@@ -312,16 +334,15 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 				return Collections.emptyList();
 			}
 			String relPath = attachmentPath(attachment);
-			GitConnector connector = history.connector();
-			if (connector.isIgnored(relPath)) {
+			if (history.connector().isIgnored(relPath)) {
 				attachment.setVersion(1);
 				return Collections.singletonList(attachment);
 			}
-			List<Attachment> result = new ArrayList<>();
-			int version = 1;
-			for (String commitHash : connector.log().commitHashesForFile(relPath)) {
-				result.add(fromCommit(attachment, version, commitHash, relPath, connector));
-				version++;
+			List<GitFileRevision> revisions = history.index().revisionsNewestFirst(relPath);
+			int count = revisions.size();
+			List<Attachment> result = new ArrayList<>(count);
+			for (int i = 0; i < count; i++) {
+				result.add(fromRevision(attachment, count - i, revisions.get(i), relPath, history));
 			}
 			return result;
 		}
@@ -340,11 +361,9 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			LOGGER.debug("Attachment {} was to be deleted but does not exist.", attachmentPath(attachment));
 			return;
 		}
-		if (!attFile.delete()) {
-			LOGGER.warn("Could not delete attachment file on disk: {}", attFile.getAbsolutePath());
-		}
+		// disk deletion and commit happen inside commitDelete under the commit lock, so no sweep can interleave
 		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
-		String commitHash = history.removeFile(attachmentPath(attachment), userData);
+		String commitHash = history.commitDelete(attFile, attachmentPath(attachment), userData);
 		if (commitHash != null) {
 			fireEvent(GitVersioningWikiEvent.DELETE, attachment, commitHash, history);
 		}
@@ -360,63 +379,56 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	@Override
 	public void moveAttachmentsForPage(Page oldParent, String newParent) throws ProviderException {
 		GitPageHistory history = history();
-		File oldDir = attachmentDir(history, oldParent.getName());
-		File newDir = attachmentDir(history, newParent);
-		File[] files = oldDir.listFiles();
-		if (files == null) {
-			return;
-		}
+		String user = oldParent.getAuthor();
+		List<String> eventPages = new ArrayList<>();
+		String commitHash;
+		// bracket the directory move and its commit (or staging), so no concurrent sweep can commit the half-done
+		// move as a reconciliation commit with the wrong author
 		try {
-			moveDirOnFilesystem(oldDir, newDir);
-			String oldRel = JSPUtils.getAttachmentDir(oldParent.getName());
-			String newRel = JSPUtils.getAttachmentDir(newParent);
-			List<String> oldPaths = new ArrayList<>();
-			List<String> newPaths = new ArrayList<>();
-			List<String> eventPages = new ArrayList<>();
-			for (File file : files) {
-				oldPaths.add(oldRel + "/" + file.getName());
-				newPaths.add(newRel + "/" + file.getName());
-				eventPages.add(oldParent.getName() + "/" + file.getName());
-				eventPages.add(newParent + "/" + file.getName());
-			}
-			String user = oldParent.getAuthor();
-			GitCommitBatchRegistry registry = pageProvider().batchRegistry();
-			if (registry.isOpen(user)) {
-				// the moved-in files are untracked until staged; a pathspec commit cannot pick up untracked files,
-				// so without staging they would miss the batch commit (the moved-away paths are tracked deletions
-				// and need no staging)
-				for (String newPath : newPaths) {
-					history.stageForBatch(newPath);
+			commitHash = history.withCommitLock(() -> {
+				File oldDir = attachmentDir(history, oldParent.getName());
+				File newDir = attachmentDir(history, newParent);
+				File[] files = oldDir.listFiles();
+				if (files == null) {
+					return null;
 				}
-				registry.stage(user, history.repoKey(), oldPaths);
-				registry.stage(user, history.repoKey(), newPaths);
-			}
-			else {
+				GitPageHistory.moveCaseSafe(oldDir, newDir);
+				String oldRel = JSPUtils.getAttachmentDir(oldParent.getName());
+				String newRel = JSPUtils.getAttachmentDir(newParent);
+				List<String> oldPaths = new ArrayList<>();
+				List<String> newPaths = new ArrayList<>();
+				for (File file : files) {
+					oldPaths.add(oldRel + "/" + file.getName());
+					newPaths.add(newRel + "/" + file.getName());
+					eventPages.add(oldParent.getName() + "/" + file.getName());
+					eventPages.add(newParent + "/" + file.getName());
+				}
+				GitCommitBatchRegistry registry = pageProvider().batchRegistry();
+				if (registry.isOpen(user)) {
+					// the moved-in files are untracked until staged; a pathspec commit cannot pick up untracked files,
+					// so without staging they would miss the batch commit (the moved-away paths are tracked deletions
+					// and need no staging)
+					for (String newPath : newPaths) {
+						history.stageForBatch(newPath);
+					}
+					registry.stage(user, oldPaths);
+					registry.stage(user, newPaths);
+					return null;
+				}
 				String comment = context().commentStrategy().getComment(oldParent,
 						"move attachments from " + oldParent.getName() + " to " + newParent);
-				CommitUserData userData = context().userData(user, comment);
-				String commitHash = history.commitMovedPaths(oldPaths, newPaths, userData);
-				if (commitHash != null) {
-					context().fireCommitted(this, GitVersioningWikiEvent.MOVED, user, eventPages,
-							commitHash, history.repoKey());
-				}
-			}
+				return history.commitMovedPaths(oldPaths, newPaths, context().userData(user, comment));
+			});
 		}
-		catch (IOException e) {
+		catch (ProviderException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			throw new ProviderException("Can't move attachments from " + oldParent.getName() + " to " + newParent
 					+ ": " + e.getMessage());
 		}
-	}
-
-	private void moveDirOnFilesystem(File oldDir, File newDir) throws IOException {
-		if (oldDir.getName().equalsIgnoreCase(newDir.getName())) {
-			// case-only rename: bounce through a temp dir so case-insensitive filesystems don't no-op the move
-			File tmpDir = new File(newDir.getParentFile(), newDir.getName() + "_tmp");
-			Files.move(oldDir.toPath(), tmpDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			Files.move(tmpDir.toPath(), newDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}
-		else {
-			Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		if (commitHash != null) {
+			context().fireCommitted(this, GitVersioningWikiEvent.MOVED, user, eventPages, commitHash, history.repoKey());
 		}
 	}
 

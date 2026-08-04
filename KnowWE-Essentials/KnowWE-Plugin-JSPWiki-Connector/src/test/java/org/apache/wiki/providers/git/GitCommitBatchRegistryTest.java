@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -33,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
 import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
@@ -41,34 +41,26 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
 /**
- * Standalone tests for {@link GitCommitBatchRegistry} / {@link GitCommitBatch} against two real temp git repositories,
- * no JSPWiki engine or provider involved.
+ * Standalone tests for {@link GitCommitBatchRegistry} / {@link GitCommitBatch} against a real temp git repository, no
+ * JSPWiki engine or provider involved.
  */
 public class GitCommitBatchRegistryTest {
 
 	private static final String AUTHOR = "Batch Tester";
 	private static final String EMAIL = "batch@test.invalid";
 
-	private File repo1;
-	private File repo2;
-	private GitConnector connector1;
-	private GitConnector connector2;
+	private File repo;
+	private GitConnector connector;
 	private GitCommitBatchRegistry registry;
 
 	@Before
 	public void setUp() throws IOException {
 		File base = new File(System.getProperty("java.io.tmpdir"), "GitCommitBatchRegistryTest");
 		FileUtils.deleteDirectory(base);
-		repo1 = initRepo(new File(base, "repo1"));
-		repo2 = initRepo(new File(base, "repo2"));
-		connector1 = BareGitConnector.fromPath(repo1.getAbsolutePath());
-		connector2 = BareGitConnector.fromPath(repo2.getAbsolutePath());
-		assumeTrue(connector1.gitInstalledAndReady());
-		// resolver maps each repo key to its history component, whose commit lock serializes the batch close
-		Map<String, GitPageHistory> histories = Map.of(
-				repo1.getAbsolutePath(), new GitPageHistory(connector1),
-				repo2.getAbsolutePath(), new GitPageHistory(connector2));
-		registry = new GitCommitBatchRegistry(histories::get);
+		repo = initRepo(new File(base, "repo"));
+		connector = BareGitConnector.fromPath(repo.getAbsolutePath());
+		assumeTrue(connector.gitInstalledAndReady());
+		registry = new GitCommitBatchRegistry(new GitPageHistory(connector));
 	}
 
 	@After
@@ -77,44 +69,28 @@ public class GitCommitBatchRegistryTest {
 	}
 
 	/**
-	 * A batch spanning two repos commits exactly once per repo, even when a repo has several staged files.
+	 * A batch with several staged files commits exactly once, and the result carries the hash and the paths.
 	 */
 	@Test
-	public void commitProducesOneCommitPerRepo() throws IOException {
+	public void commitProducesOneCommitForAllStagedPaths() throws IOException {
 		registry.open("alice");
+		stageNewFile("alice", "A.txt");
+		stageNewFile("alice", "B.txt");
 
-		// repo1 gets two files — they must end up in a single commit, not two.
-		stageNewFile(connector1, repo1, "alice", repo1Key(), "A.txt");
-		stageNewFile(connector1, repo1, "alice", repo1Key(), "B.txt");
-		// repo2 gets one file.
-		stageNewFile(connector2, repo2, "alice", repo2Key(), "C.txt");
+		GitCommitBatchRegistry.CommitResult result = registry.commit("alice", userData("bulk edit"));
 
-		List<GitCommitBatchRegistry.RepoCommitResult> results =
-				registry.commit("alice", "bulk edit", AUTHOR, EMAIL);
-
-		// one result per touched repo
-		assertEquals(2, results.size());
+		assertNotNull(result);
 		assertFalse("batch must be closed after commit", registry.isOpen("alice"));
 
-		// repo1: both files share the same single commit
-		List<String> a = connector1.log().commitHashesForFile("A.txt");
-		List<String> b = connector1.log().commitHashesForFile("B.txt");
+		// both files share the same single commit
+		List<String> a = connector.log().commitHashesForFile("A.txt");
+		List<String> b = connector.log().commitHashesForFile("B.txt");
 		assertEquals(1, a.size());
 		assertEquals(1, b.size());
-		assertEquals("the two repo1 files belong to one commit", a.get(0), b.get(0));
+		assertEquals("the two files belong to one commit", a.get(0), b.get(0));
 
-		// repo2: its own single commit, distinct from repo1's
-		List<String> c = connector2.log().commitHashesForFile("C.txt");
-		assertEquals(1, c.size());
-
-		// results carry the right repos, hashes and paths
-		GitCommitBatchRegistry.RepoCommitResult r1 = resultFor(results, repo1Key());
-		assertNotNull(r1);
-		assertEquals(a.get(0), r1.commitHash());
-		assertEquals(Set.of("A.txt", "B.txt"), r1.paths());
-		GitCommitBatchRegistry.RepoCommitResult r2 = resultFor(results, repo2Key());
-		assertNotNull(r2);
-		assertEquals(c.get(0), r2.commitHash());
+		assertEquals(a.get(0), result.commitHash());
+		assertEquals(Set.of("A.txt", "B.txt"), result.paths());
 	}
 
 	/**
@@ -123,16 +99,14 @@ public class GitCommitBatchRegistryTest {
 	@Test
 	public void rollbackDiscardsStagedPaths() throws IOException {
 		registry.open("bob");
-		stageNewFile(connector1, repo1, "bob", repo1Key(), "Draft.txt");
+		stageNewFile("bob", "Draft.txt");
 
-		List<GitCommitBatchRegistry.RepoRollbackResult> rolledBack = registry.rollback("bob");
+		Set<String> rolledBack = registry.rollback("bob");
 
-		assertEquals("one touched repo", 1, rolledBack.size());
-		assertEquals(repo1Key(), rolledBack.get(0).repoKey());
-		assertEquals("restored paths reported for cache refresh", Set.of("Draft.txt"), rolledBack.get(0).paths());
+		assertEquals("restored paths reported for cache refresh", Set.of("Draft.txt"), rolledBack);
 		assertFalse("batch must be closed after rollback", registry.isOpen("bob"));
 		assertEquals("rolled-back file must not be committed", 0,
-				connector1.log().commitHashesForFile("Draft.txt").size());
+				connector.log().commitHashesForFile("Draft.txt").size());
 	}
 
 	/**
@@ -141,11 +115,11 @@ public class GitCommitBatchRegistryTest {
 	@Test
 	public void stageWithoutOpenBatchSignalsCommitImmediately() {
 		assertFalse(registry.isOpen("carol"));
-		boolean staged = registry.stage("carol", repo1Key(), "Loose.txt");
+		boolean staged = registry.stage("carol", "Loose.txt");
 		assertFalse("stage without open batch must report commit-immediately", staged);
 
 		// committing a never-opened user is a harmless no-op
-		assertTrue(registry.commit("carol", "msg", AUTHOR, EMAIL).isEmpty());
+		assertNull(registry.commit("carol", userData("msg")));
 	}
 
 	/**
@@ -155,38 +129,30 @@ public class GitCommitBatchRegistryTest {
 	public void concurrentBatchesOfDifferentUsersDoNotInterfere() throws IOException {
 		registry.open("dave");
 		registry.open("erin");
-		stageNewFile(connector1, repo1, "dave", repo1Key(), "Dave.txt");
-		stageNewFile(connector1, repo1, "erin", repo1Key(), "Erin.txt");
+		stageNewFile("dave", "Dave.txt");
+		stageNewFile("erin", "Erin.txt");
 
 		// commit dave only
-		List<GitCommitBatchRegistry.RepoCommitResult> daveResults =
-				registry.commit("dave", "dave edit", AUTHOR, EMAIL);
-		assertEquals(1, daveResults.size());
-		assertEquals(1, connector1.log().commitHashesForFile("Dave.txt").size());
+		GitCommitBatchRegistry.CommitResult daveResult = registry.commit("dave", userData("dave edit"));
+		assertNotNull(daveResult);
+		assertEquals(1, connector.log().commitHashesForFile("Dave.txt").size());
 
 		// erin's batch is untouched and still open; her file is not committed yet
 		assertTrue(registry.isOpen("erin"));
 		assertFalse(registry.isOpen("dave"));
-		assertEquals(0, connector1.log().commitHashesForFile("Erin.txt").size());
+		assertEquals(0, connector.log().commitHashesForFile("Erin.txt").size());
 
 		// committing erin now picks up only her file in its own commit
-		registry.commit("erin", "erin edit", AUTHOR, EMAIL);
-		List<String> erinCommits = connector1.log().commitHashesForFile("Erin.txt");
-		assertEquals(1, erinCommits.size());
-		assertNotEquals(
-				"dave's and erin's commits are distinct",
-				erinCommits.get(0), connector1.log().commitHashesForFile("Dave.txt").get(0)
-		);
+		GitCommitBatchRegistry.CommitResult erinResult = registry.commit("erin", userData("erin edit"));
+		assertNotNull(erinResult);
+		assertEquals(Set.of("Erin.txt"), erinResult.paths());
+		assertNotEquals("dave's and erin's commits are distinct", daveResult.commitHash(), erinResult.commitHash());
 	}
 
 	// --- helpers -------------------------------------------------------------
 
-	private String repo1Key() {
-		return repo1.getAbsolutePath();
-	}
-
-	private String repo2Key() {
-		return repo2.getAbsolutePath();
+	private static CommitUserData userData(String message) {
+		return new CommitUserData(AUTHOR, EMAIL, message);
 	}
 
 	/**
@@ -207,13 +173,9 @@ public class GitCommitBatchRegistryTest {
 	 * Writes a new file, stages it in git (the provider's job at put-time), then registers its path
 	 * in the user's open batch — exactly the sequence the page provider performs while batching.
 	 */
-	private void stageNewFile(GitConnector connector, File repo, String user, String repoKey, String name) throws IOException {
+	private void stageNewFile(String user, String name) throws IOException {
 		FileUtils.writeStringToFile(new File(repo, name), "content of " + name, StandardCharsets.UTF_8);
 		connector.commit().addPath(name);
-		assertTrue(registry.stage(user, repoKey, name));
-	}
-
-	private static GitCommitBatchRegistry.RepoCommitResult resultFor(List<GitCommitBatchRegistry.RepoCommitResult> results, String repoKey) {
-		return results.stream().filter(r -> r.repoKey().equals(repoKey)).findFirst().orElse(null);
+		assertTrue(registry.stage(user, name));
 	}
 }

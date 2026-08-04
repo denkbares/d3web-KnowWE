@@ -20,24 +20,16 @@
 package org.apache.wiki.providers.git;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * One open page/attachment transaction for a single wiki user. Collects the changed paths the user accumulates between
- * {@code openCommit} and {@code commit}/{@code rollback}, grouped per git repository so that closing the batch produces
- * one commit per touched repository (not one per page). A batch may span repositories, everything a user stages goes
- * into the same batch under its repo key.
+ * One open page/attachment transaction for a single wiki user. Collects the repo-relative paths the user accumulates
+ * between {@code openCommit} and {@code commit}/{@code rollback}, so that closing the batch produces one commit (not
+ * one per page).
  * <p>
- * This replaces the old delegates' shared {@code openCommits} map. It is pure state, only the
- * changed paths per repository, keyed by a stable repo key. It deliberately does not hold a {@code GitPageHistory}:
- * the history for a repo is resolved at commit/rollback time by {@link GitCommitBatchRegistry}, so closing the batch
- * always uses the repo's current history component rather than whichever instance happened to be live when a path was
- * staged. Instances are owned by {@link GitCommitBatchRegistry}; callers use them only through the registry.
+ * This replaces the old delegates' shared {@code openCommits} map. It is pure state, only the changed paths of the
+ * wiki repository. Instances are owned by {@link GitCommitBatchRegistry}; callers use them only through the registry.
  *
  * @see GitCommitBatchRegistry
  */
@@ -45,8 +37,7 @@ public class GitCommitBatch {
 
 	private final String user;
 
-	// repo key -> staged paths, insertion-ordered for stable commit order
-	private final Map<String, SortedSet<String>> pathsByRepo = new LinkedHashMap<>();
+	private final SortedSet<String> paths = new TreeSet<>();
 
 	GitCommitBatch(String user) {
 		this.user = user;
@@ -57,29 +48,21 @@ public class GitCommitBatch {
 	}
 
 	/**
-	 * Records a changed path for the given repository.
-	 *
-	 * @param repoKey stable identifier of the repository (e.g. its absolute path)
-	 * @param path    the changed path, relative to the repository root
+	 * Records a changed path, relative to the repository root.
 	 */
-	synchronized void stage(String repoKey, String path) {
-		pathsByRepo.computeIfAbsent(repoKey, k -> new TreeSet<>()).add(path);
+	synchronized void stage(String path) {
+		paths.add(path);
 	}
 
-	synchronized void stage(String repoKey, Collection<String> paths) {
-		pathsByRepo.computeIfAbsent(repoKey, k -> new TreeSet<>()).addAll(paths);
+	synchronized void stage(Collection<String> paths) {
+		this.paths.addAll(paths);
 	}
 
-	synchronized Set<String> repoKeys() {
-		return new LinkedHashSet<>(pathsByRepo.keySet());
-	}
-
-	synchronized SortedSet<String> paths(String repoKey) {
-		SortedSet<String> paths = pathsByRepo.get(repoKey);
-		return paths == null ? new TreeSet<>() : new TreeSet<>(paths);
+	synchronized SortedSet<String> paths() {
+		return new TreeSet<>(paths);
 	}
 
 	synchronized boolean isEmpty() {
-		return pathsByRepo.isEmpty();
+		return paths.isEmpty();
 	}
 }

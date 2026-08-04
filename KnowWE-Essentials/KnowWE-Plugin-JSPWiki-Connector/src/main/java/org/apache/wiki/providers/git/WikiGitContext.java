@@ -117,6 +117,15 @@ public final class WikiGitContext {
 	}
 
 	/**
+	 * Fires both commit notifications for a regular local change, see
+	 * {@link #fireCommitted(Object, int, String, Collection, String, String, GitCommitEvent.Origin)}.
+	 */
+	public void fireCommitted(Object source, int eventType, String author, Collection<String> pages,
+							  String commitHash, String repoPath) {
+		fireCommitted(source, eventType, author, pages, commitHash, repoPath, GitCommitEvent.Origin.LOCAL_SAVE);
+	}
+
+	/**
 	 * Fires both commit notifications, the JSPWiki bus {@link GitVersioningWikiEvent} for wiki internal consumers and
 	 * the denkbares bus {@link GitCommitEvent} carrying the repository, so cross plugin consumers (for example the
 	 * async push listener) can route without any further lookup.
@@ -124,12 +133,12 @@ public final class WikiGitContext {
 	 * @param source    the provider firing the event, used as the JSPWiki event source
 	 * @param eventType one of the {@link GitVersioningWikiEvent} types
 	 * @param repoPath  working tree path of the repository the commit was made in
+	 * @param origin    what produced the commit, e.g. {@link GitCommitEvent.Origin#RECONCILIATION} for a sweep-up
 	 */
 	public void fireCommitted(Object source, int eventType, String author, Collection<String> pages,
-							  String commitHash, String repoPath) {
+							  String commitHash, String repoPath, GitCommitEvent.Origin origin) {
 		WikiEventManager.fireEvent(source, new GitVersioningWikiEvent(source, eventType, author, pages, commitHash));
-		EventManager.getInstance()
-				.fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, GitCommitEvent.Origin.LOCAL_SAVE));
+		EventManager.getInstance().fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, origin));
 	}
 
 	/**

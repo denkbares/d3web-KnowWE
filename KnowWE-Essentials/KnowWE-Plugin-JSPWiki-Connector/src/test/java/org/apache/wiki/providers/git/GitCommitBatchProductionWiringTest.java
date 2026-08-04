@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -72,7 +72,7 @@ public class GitCommitBatchProductionWiringTest {
 		assumeTrue(connector.gitInstalledAndReady());
 		commitNewFile("Existing.txt", "original content");
 		history = new GitPageHistory(connector);
-		registry = new GitCommitBatchRegistry(Map.of(repoKey(), history)::get);
+		registry = new GitCommitBatchRegistry(history);
 	}
 
 	@After
@@ -89,13 +89,13 @@ public class GitCommitBatchProductionWiringTest {
 	public void editingExistingPageInBatchCommitsTheChange() throws IOException {
 		registry.open("alice");
 		FileUtils.writeStringToFile(new File(repo, "Existing.txt"), "edited content", StandardCharsets.UTF_8);
-		assertTrue(registry.stage("alice", repoKey(), "Existing.txt"));
+		assertTrue(registry.stage("alice", "Existing.txt"));
 
-		List<GitCommitBatchRegistry.RepoCommitResult> results =
-				registry.commit("alice", "transaction edit", AUTHOR, EMAIL);
+		GitCommitBatchRegistry.CommitResult result =
+				registry.commit("alice", new CommitUserData(AUTHOR, EMAIL, "transaction edit"));
 
-		assertEquals(1, results.size());
-		String commitHash = results.get(0).commitHash();
+		assertNotNull("commit result must be reported", result);
+		String commitHash = result.commitHash();
 		assertNotNull("commit hash must be reported", commitHash);
 
 		// the commit is the file's second version and actually contains the change
@@ -124,19 +124,18 @@ public class GitCommitBatchProductionWiringTest {
 		registry.open("alice");
 		FileUtils.writeStringToFile(new File(repo, "AlicePage.txt"), "alice draft", StandardCharsets.UTF_8);
 		connector.commit().addPath("AlicePage.txt");
-		assertTrue(registry.stage("alice", repoKey(), "AlicePage.txt"));
+		assertTrue(registry.stage("alice", "AlicePage.txt"));
 
 		// bob edits an existing page in his own batch and commits first
 		registry.open("bob");
 		FileUtils.writeStringToFile(new File(repo, "Existing.txt"), "bob's edit", StandardCharsets.UTF_8);
-		assertTrue(registry.stage("bob", repoKey(), "Existing.txt"));
-		List<GitCommitBatchRegistry.RepoCommitResult> bobResults =
-				registry.commit("bob", "bob edit", AUTHOR, EMAIL);
+		assertTrue(registry.stage("bob", "Existing.txt"));
+		GitCommitBatchRegistry.CommitResult bobResult =
+				registry.commit("bob", new CommitUserData(AUTHOR, EMAIL, "bob edit"));
 
-		assertEquals(1, bobResults.size());
-		String bobCommit = bobResults.get(0).commitHash();
+		assertNotNull(bobResult);
 		assertEquals("bob's commit must contain only his page",
-				List.of("Existing.txt"), connector.log().listChangedFilesForHash(bobCommit));
+				List.of("Existing.txt"), connector.log().listChangedFilesForHash(bobResult.commitHash()));
 		assertEquals("alice's staged page must not be committed",
 				0, connector.log().commitHashesForFile("AlicePage.txt").size());
 		assertTrue(registry.isOpen("alice"));
@@ -150,13 +149,13 @@ public class GitCommitBatchProductionWiringTest {
 	public void batchWithoutChangesCommitsNothing() {
 		registry.open("carol");
 		// stage the tracked file without modifying it
-		assertTrue(registry.stage("carol", repoKey(), "Existing.txt"));
+		assertTrue(registry.stage("carol", "Existing.txt"));
 
 		String headBefore = connector.log().currentHEAD();
-		List<GitCommitBatchRegistry.RepoCommitResult> results =
-				registry.commit("carol", "no-op", AUTHOR, EMAIL);
+		GitCommitBatchRegistry.CommitResult result =
+				registry.commit("carol", new CommitUserData(AUTHOR, EMAIL, "no-op"));
 
-		assertTrue("no commit result for a change-less batch", results.isEmpty());
+		assertNull("no commit result for a change-less batch", result);
 		assertEquals("HEAD must not move", headBefore, connector.log().currentHEAD());
 		assertFalse(registry.isOpen("carol"));
 	}
@@ -168,10 +167,10 @@ public class GitCommitBatchProductionWiringTest {
 	@Test
 	public void nullUserIsToleratedByTheRegistry() {
 		assertFalse(registry.isOpen(null));
-		assertFalse(registry.stage(null, repoKey(), "Existing.txt"));
+		assertFalse(registry.stage(null, "Existing.txt"));
 		registry.open(null);
 		assertFalse(registry.isOpen(null));
-		assertTrue(registry.commit(null, "msg", AUTHOR, EMAIL).isEmpty());
+		assertNull(registry.commit(null, new CommitUserData(AUTHOR, EMAIL, "msg")));
 		assertTrue(registry.rollback(null).isEmpty());
 	}
 
@@ -184,7 +183,7 @@ public class GitCommitBatchProductionWiringTest {
 	public void batchCloseWaitsForTheRepositoryCommitLock() throws Exception {
 		registry.open("alice");
 		FileUtils.writeStringToFile(new File(repo, "Existing.txt"), "locked edit", StandardCharsets.UTF_8);
-		assertTrue(registry.stage("alice", repoKey(), "Existing.txt"));
+		assertTrue(registry.stage("alice", "Existing.txt"));
 
 		CountDownLatch lockHeld = new CountDownLatch(1);
 		CountDownLatch releaseLock = new CountDownLatch(1);
@@ -203,11 +202,11 @@ public class GitCommitBatchProductionWiringTest {
 		holder.start();
 		assertTrue(lockHeld.await(5, TimeUnit.SECONDS));
 
-		AtomicReference<List<GitCommitBatchRegistry.RepoCommitResult>> results = new AtomicReference<>();
-		Thread committer = new Thread(() -> results.set(registry.commit("alice", "locked commit", AUTHOR, EMAIL)));
+		AtomicReference<GitCommitBatchRegistry.CommitResult> result = new AtomicReference<>();
+		Thread committer = new Thread(() ->
+				result.set(registry.commit("alice", new CommitUserData(AUTHOR, EMAIL, "locked commit"))));
 		committer.start();
-		committer.join(300);
-		assertTrue("batch close must block while the commit lock is held", committer.isAlive());
+		GitPageHistoryTest.assertBlocked("batch close must block while the commit lock is held", committer);
 		assertEquals("no commit may happen while the lock is held",
 				1, connector.log().commitHashesForFile("Existing.txt").size());
 
@@ -215,15 +214,12 @@ public class GitCommitBatchProductionWiringTest {
 		committer.join(5000);
 		holder.join(5000);
 		assertFalse(committer.isAlive());
-		assertEquals(1, results.get().size());
+		assertNotNull(result.get());
+		assertEquals(Set.of("Existing.txt"), result.get().paths());
 		assertEquals(2, connector.log().commitHashesForFile("Existing.txt").size());
 	}
 
 	// --- helpers -------------------------------------------------------------
-
-	private String repoKey() {
-		return repo.getAbsolutePath();
-	}
 
 	private void commitNewFile(String name, String content) throws IOException {
 		FileUtils.writeStringToFile(new File(repo, name), content, StandardCharsets.UTF_8);

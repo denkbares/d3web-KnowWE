@@ -46,6 +46,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -163,8 +164,10 @@ public class GitPageHistoryTest {
 
 		// dirty the tree behind git's back: a written-but-never-committed page
 		writePage("Orphan", "written but not committed");
-		String reconHash = history.sweepUp("startup");
-		assertNotNull("dirty tree must be reconciled", reconHash);
+		GitPageHistory.SweepUp sweepUp = history.sweepUp("startup");
+		assertNotNull("dirty tree must be reconciled", sweepUp);
+		assertNotNull(sweepUp.commitHash());
+		assertEquals("the swept paths are reported for the commit events", List.of("Orphan.txt"), sweepUp.paths());
 		assertTrue("tree must be clean after sweep", connector.status().isClean());
 
 		// the reconciled file is now part of history
@@ -205,8 +208,7 @@ public class GitPageHistoryTest {
 
 		Thread sweeper = new Thread(() -> history.sweepUp("concurrent sweep"));
 		sweeper.start();
-		sweeper.join(300);
-		assertTrue("sweep must block while the bracket is held", sweeper.isAlive());
+		assertBlocked("sweep must block while the bracket is held", sweeper);
 
 		releaseBracket.countDown();
 		saver.join(5000);
@@ -223,6 +225,25 @@ public class GitPageHistoryTest {
 	}
 
 	// --- helpers -------------------------------------------------------------
+
+	/**
+	 * Waits (up to 5s) until the thread parks on the commit lock, instead of sleeping a fixed interval. A thread that
+	 * wrongly proceeds either terminates (failed here) or its effect is caught by the caller's follow-up asserts.
+	 */
+	static void assertBlocked(String message, Thread thread) throws InterruptedException {
+		long deadline = System.currentTimeMillis() + 5000;
+		while (System.currentTimeMillis() < deadline) {
+			switch (thread.getState()) {
+				case WAITING, TIMED_WAITING, BLOCKED -> {
+					assertTrue(message, thread.isAlive());
+					return;
+				}
+				case TERMINATED -> fail(message + " (thread finished instead of blocking)");
+				default -> Thread.sleep(10);
+			}
+		}
+		fail(message + " (thread never blocked)");
+	}
 
 	// Mirrors how AbstractFileProvider.findPage names files on disk (mangled page name + .txt). PageIdentifier's
 	// accordingFile() can't be used here because it returns null for files that don't exist yet.
