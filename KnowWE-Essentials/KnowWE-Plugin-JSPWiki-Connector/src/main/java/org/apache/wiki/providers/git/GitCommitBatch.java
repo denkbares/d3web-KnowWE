@@ -34,10 +34,10 @@ import java.util.TreeSet;
  * into the same batch under its repo key.
  * <p>
  * This replaces the old delegates' shared {@code openCommits} map. It is pure state, only the
- * changed paths per repository, keyed by a stable repo key. It deliberately does not hold a {@code GitConnector}: the
- * connector for a repo is resolved at commit/rollback time by {@link GitCommitBatchRegistry}, so closing the batch
- * always uses the repo's current connector rather than whichever instance happened to be live when a path was staged.
- * Instances are owned by {@link GitCommitBatchRegistry}; callers use them only through the registry.
+ * changed paths per repository, keyed by a stable repo key. It deliberately does not hold a {@code GitPageHistory}:
+ * the history for a repo is resolved at commit/rollback time by {@link GitCommitBatchRegistry}, so closing the batch
+ * always uses the repo's current history component rather than whichever instance happened to be live when a path was
+ * staged. Instances are owned by {@link GitCommitBatchRegistry}; callers use them only through the registry.
  *
  * @see GitCommitBatchRegistry
  */

@@ -25,6 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -54,6 +57,7 @@ public class GitCommitBatchProductionWiringTest {
 
 	private File repo;
 	private GitConnector connector;
+	private GitPageHistory history;
 	private GitCommitBatchRegistry registry;
 
 	@Before
@@ -67,7 +71,8 @@ public class GitCommitBatchProductionWiringTest {
 		connector = new CachingGitConnector(JGitBackedGitConnector.fromPath(repo.getAbsolutePath()));
 		assumeTrue(connector.gitInstalledAndReady());
 		commitNewFile("Existing.txt", "original content");
-		registry = new GitCommitBatchRegistry(Map.of(repoKey(), connector)::get);
+		history = new GitPageHistory(connector);
+		registry = new GitCommitBatchRegistry(Map.of(repoKey(), history)::get);
 	}
 
 	@After
@@ -168,6 +173,50 @@ public class GitCommitBatchProductionWiringTest {
 		assertFalse(registry.isOpen(null));
 		assertTrue(registry.commit(null, "msg", AUTHOR, EMAIL).isEmpty());
 		assertTrue(registry.rollback(null).isEmpty());
+	}
+
+	/**
+	 * Locking fix A: closing a batch goes through the repository's commit lock, so it is serialized against a
+	 * concurrent immediate commit (or sweep/delete/move) instead of relying on git's own {@code index.lock} retries.
+	 * The test holds the lock via {@code withCommitLock} and asserts the batch close waits for it.
+	 */
+	@Test
+	public void batchCloseWaitsForTheRepositoryCommitLock() throws Exception {
+		registry.open("alice");
+		FileUtils.writeStringToFile(new File(repo, "Existing.txt"), "locked edit", StandardCharsets.UTF_8);
+		assertTrue(registry.stage("alice", repoKey(), "Existing.txt"));
+
+		CountDownLatch lockHeld = new CountDownLatch(1);
+		CountDownLatch releaseLock = new CountDownLatch(1);
+		Thread holder = new Thread(() -> {
+			try {
+				history.withCommitLock(() -> {
+					lockHeld.countDown();
+					releaseLock.await();
+					return null;
+				});
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		holder.start();
+		assertTrue(lockHeld.await(5, TimeUnit.SECONDS));
+
+		AtomicReference<List<GitCommitBatchRegistry.RepoCommitResult>> results = new AtomicReference<>();
+		Thread committer = new Thread(() -> results.set(registry.commit("alice", "locked commit", AUTHOR, EMAIL)));
+		committer.start();
+		committer.join(300);
+		assertTrue("batch close must block while the commit lock is held", committer.isAlive());
+		assertEquals("no commit may happen while the lock is held",
+				1, connector.log().commitHashesForFile("Existing.txt").size());
+
+		releaseLock.countDown();
+		committer.join(5000);
+		holder.join(5000);
+		assertFalse(committer.isAlive());
+		assertEquals(1, results.get().size());
+		assertEquals(2, connector.log().commitHashesForFile("Existing.txt").size());
 	}
 
 	// --- helpers -------------------------------------------------------------

@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wiki.gitBridge.JSPUtils;
@@ -169,6 +172,54 @@ public class GitPageHistoryTest {
 
 		// a second sweep finds nothing to do
 		assertNull(history.sweepUp("startup"));
+	}
+
+	/**
+	 * The write+commit bracket: while a provider holds {@link GitPageHistory#withCommitLock}, a concurrent sweep-up
+	 * must wait, so it can never commit a half-finished save as a reconciliation commit with the wrong author. After
+	 * the bracket committed the save itself, the sweep finds a clean tree and does nothing.
+	 */
+	@Test
+	public void sweepUpCannotInterleaveWithACommitLockBracket() throws Exception {
+		CountDownLatch insideBracket = new CountDownLatch(1);
+		CountDownLatch releaseBracket = new CountDownLatch(1);
+		AtomicReference<String> bracketCommit = new AtomicReference<>();
+
+		Thread saver = new Thread(() -> {
+			try {
+				history.withCommitLock(() -> {
+					// the dirty window: file written, commit not made yet
+					writePage("Bracketed", "saved content");
+					insideBracket.countDown();
+					releaseBracket.await();
+					bracketCommit.set(history.commitPut(file("Bracketed"), userData("Alice", "bracketed save")));
+					return null;
+				});
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		saver.start();
+		assertTrue(insideBracket.await(5, TimeUnit.SECONDS));
+
+		Thread sweeper = new Thread(() -> history.sweepUp("concurrent sweep"));
+		sweeper.start();
+		sweeper.join(300);
+		assertTrue("sweep must block while the bracket is held", sweeper.isAlive());
+
+		releaseBracket.countDown();
+		saver.join(5000);
+		sweeper.join(5000);
+		assertFalse(saver.isAlive());
+		assertFalse(sweeper.isAlive());
+
+		// the save was committed by the bracket with the right author; the sweep found nothing left to reconcile
+		assertNotNull(bracketCommit.get());
+		List<GitPageVersion> versions = history.history("Bracketed");
+		assertEquals(1, versions.size());
+		assertEquals("Alice", versions.get(0).userData().user);
+		assertTrue(connector.status().isClean());
 	}
 
 	// --- helpers -------------------------------------------------------------

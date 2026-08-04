@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.wiki.api.providers.WikiProvider;
@@ -96,6 +98,58 @@ public class GitPageHistory {
 	 */
 	public GitConnector connector() {
 		return connector;
+	}
+
+	/**
+	 * Runs the given action while holding this repository's commit lock, so no commit, sweep, delete or move of this
+	 * component can interleave with it. This is the sanctioned "I need the repo quiescent" entry point. Providers
+	 * bracket a page's file write and its commit with it, so a concurrent sweep cannot commit a half-finished save
+	 * under the wrong author. A future pull/fetch+merge after a rejected push belongs here too, combined with
+	 * {@link #sweepUp} before the branch operation. The lock is reentrant, actions may call the commit methods of this
+	 * class.
+	 */
+	public <T> T withCommitLock(Callable<T> action) throws Exception {
+		commitLock.lock();
+		try {
+			return action.call();
+		}
+		finally {
+			commitLock.unlock();
+		}
+	}
+
+	/**
+	 * Commits the given already-staged/tracked paths as one commit, returning the commit hash, or {@code null} if none
+	 * of the paths had changes left to commit. This is the closing commit of a transaction batch, taken under the same
+	 * commit lock as the immediate commits, so a batch close cannot interleave with a concurrent save, delete, move or
+	 * sweep of this repository.
+	 *
+	 * @param paths    the repo-relative paths staged for the batch
+	 * @param userData resolved author, email and commit message
+	 */
+	@Nullable
+	public String commitBatch(Set<String> paths, CommitUserData userData) {
+		commitLock.lock();
+		try {
+			return connector.commit().commitPathsForUser(userData.message, userData.user, userData.email, paths);
+		}
+		finally {
+			commitLock.unlock();
+		}
+	}
+
+	/**
+	 * Restores the working-tree state of the given repo-relative paths, discarding their uncommitted changes. This is
+	 * the rollback of a transaction batch, taken under the commit lock for the same reason as {@link #commitBatch}.
+	 */
+	public void rollbackPaths(Set<String> paths) {
+		commitLock.lock();
+		try {
+			connector.rollback().rollbackPaths(paths);
+		}
+		finally {
+			commitLock.unlock();
+		}
 	}
 
 	/**

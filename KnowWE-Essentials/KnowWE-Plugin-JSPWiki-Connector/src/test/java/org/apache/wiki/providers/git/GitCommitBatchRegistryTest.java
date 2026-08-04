@@ -64,11 +64,11 @@ public class GitCommitBatchRegistryTest {
 		connector1 = BareGitConnector.fromPath(repo1.getAbsolutePath());
 		connector2 = BareGitConnector.fromPath(repo2.getAbsolutePath());
 		assumeTrue(connector1.gitInstalledAndReady());
-		// resolver maps each repo key to its connector, the seam that decouples the registry from the pool
-		Map<String, GitConnector> connectors = Map.of(
-				repo1.getAbsolutePath(), connector1,
-				repo2.getAbsolutePath(), connector2);
-		registry = new GitCommitBatchRegistry(connectors::get);
+		// resolver maps each repo key to its history component, whose commit lock serializes the batch close
+		Map<String, GitPageHistory> histories = Map.of(
+				repo1.getAbsolutePath(), new GitPageHistory(connector1),
+				repo2.getAbsolutePath(), new GitPageHistory(connector2));
+		registry = new GitCommitBatchRegistry(histories::get);
 	}
 
 	@After

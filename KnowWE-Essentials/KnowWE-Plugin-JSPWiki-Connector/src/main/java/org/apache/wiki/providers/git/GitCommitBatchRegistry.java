@@ -32,7 +32,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.CommitUserData;
 
 /**
  * Holds the open {@link GitCommitBatch}es of a git-backed page provider, keyed by wiki user name. The user-name key
@@ -42,10 +42,13 @@ import de.uniwue.d3web.gitConnector.GitConnector;
  * Replaces the old delegates' shared, externally-mutated {@code openCommits} map: callers stage and close batches only
  * through this API, nobody reaches into another class's mutable state.
  * <p>
- * The registry does not depend on the connector pool. It is given a connector resolver ({@code repoKey -> connector})
- * at construction (in production backed by the provider's per-repo {@code GitPageHistory}, which owns the pooled
- * connector, in tests a trivial lambda). Resolving lazily at commit/rollback time means a batch always uses the repo's
- * current connector, not whichever instance was live when a path was staged.
+ * The registry is given a history resolver ({@code repoKey -> GitPageHistory}) at construction (in production backed
+ * by the provider, in tests a trivial lambda). Closing a batch commits or rolls back through
+ * {@link GitPageHistory#commitBatch} and {@link GitPageHistory#rollbackPaths}, which take the repository's commit
+ * lock, so a batch close is serialized against concurrent immediate commits, sweeps, deletes and moves of the same
+ * repository instead of relying on git's own {@code index.lock} retries. Resolving lazily at commit/rollback time
+ * means a batch always uses the repo's current history component, not whichever instance was live when a path was
+ * staged.
  * <p>
  * Closing a batch produces one commit per touched repository. There is no cross-repo atomicity, since git cannot
  * provide it, so a failure committing one repository is logged and the remaining repositories are still committed.
@@ -55,15 +58,16 @@ public class GitCommitBatchRegistry {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitCommitBatchRegistry.class);
 
 	private final Map<String, GitCommitBatch> openBatches = new ConcurrentHashMap<>();
-	private final Function<String, GitConnector> connectorResolver;
+	private final Function<String, GitPageHistory> historyResolver;
 
 	/**
-	 * @param connectorResolver resolves a repo key to the {@link GitConnector} that commits/rolls back that
-	 *                          repository's staged paths. Called once per touched repo when a batch closes, may return
-	 *                          {@code null} for an unknown repo (that repo is then skipped with an error log).
+	 * @param historyResolver resolves a repo key to the {@link GitPageHistory} that commits/rolls back that
+	 *                        repository's staged paths under its commit lock. Called once per touched repo when a
+	 *                        batch closes, may return {@code null} for an unknown repo (that repo is then skipped with
+	 *                        an error log).
 	 */
-	public GitCommitBatchRegistry(Function<String, GitConnector> connectorResolver) {
-		this.connectorResolver = connectorResolver;
+	public GitCommitBatchRegistry(Function<String, GitPageHistory> historyResolver) {
+		this.historyResolver = historyResolver;
 	}
 
 	/**
@@ -123,7 +127,7 @@ public class GitCommitBatchRegistry {
 	 * and comment strategy) and applied to every repository's commit.
 	 *
 	 * @return one {@link RepoCommitResult} per repository that was committed successfully, empty if the user had no
-	 * open batch. Repositories whose connector could not be resolved or whose commit failed are omitted (logged).
+	 * open batch. Repositories whose history could not be resolved or whose commit failed are omitted (logged).
 	 */
 	public List<RepoCommitResult> commit(String user, String message, String author, String email) {
 		GitCommitBatch batch = user == null ? null : openBatches.remove(user);
@@ -134,16 +138,16 @@ public class GitCommitBatchRegistry {
 		List<RepoCommitResult> results = new ArrayList<>();
 		for (String repoKey : batch.repoKeys()) {
 			SortedSet<String> paths = batch.paths(repoKey);
-			GitConnector connector = connectorResolver.apply(repoKey);
-			if (connector == null) {
+			GitPageHistory history = historyResolver.apply(repoKey);
+			if (history == null) {
 				LOGGER.error(
-						"No connector for repo '{}' while committing batch of user '{}'; skipping it.",
+						"No history for repo '{}' while committing batch of user '{}'; skipping it.",
 						repoKey, user
 				);
 				continue;
 			}
 			try {
-				String commitHash = connector.commit().commitPathsForUser(message, author, email, paths);
+				String commitHash = history.commitBatch(paths, new CommitUserData(author, email, message));
 				if (commitHash == null) {
 					// none of the staged paths had changes left to commit, nothing to report for this repo
 					LOGGER.info("Batch of user '{}' had no changes to commit in repo '{}'.", user, repoKey);
@@ -180,16 +184,16 @@ public class GitCommitBatchRegistry {
 			SortedSet<String> paths = batch.paths(repoKey);
 			// recorded even if the rollback below fails, so the caller still refreshes caches for the affected paths
 			results.add(new RepoRollbackResult(repoKey, paths));
-			GitConnector connector = connectorResolver.apply(repoKey);
-			if (connector == null) {
+			GitPageHistory history = historyResolver.apply(repoKey);
+			if (history == null) {
 				LOGGER.error(
-						"No connector for repo '{}' while rolling back batch of user '{}'; skipping it.",
+						"No history for repo '{}' while rolling back batch of user '{}'; skipping it.",
 						repoKey, user
 				);
 				continue;
 			}
 			try {
-				connector.rollback().rollbackPaths(paths);
+				history.rollbackPaths(paths);
 			}
 			catch (Exception e) {
 				LOGGER.error(
