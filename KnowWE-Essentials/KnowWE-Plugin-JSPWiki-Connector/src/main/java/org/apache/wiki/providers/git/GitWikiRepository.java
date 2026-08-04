@@ -19,8 +19,10 @@
 
 package org.apache.wiki.providers.git;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -48,65 +50,66 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 /**
- * Per-repository git history component which owns one repository's {@link GitConnector} and performs the git side of
- * page operations on it: commit-on-save, version to commit mapping, text-at-version, delete and move, and the
- * sweep-up reconciliation. One instance lives per repository, and it is provider agnostic, a provider delegates the
- * flat, single-repository operation here.
+ * The gateway to the wiki's git repository: the one object through which the repository is read and mutated. It owns
+ * the repository's {@link GitConnector}, the commit lock that serializes every working-tree mutation (page and
+ * attachment commits, deletes, moves, batch closes, the sweep-up reconciliation), and the eager {@link GitRepoIndex}
+ * the lock-free history reads are served from.
  * <p>
  * The logic is ported from {@code GitVersioningFileProviderDelegate} but deliberately kept engine-free: it receives an
  * already-resolved {@link CommitUserData} (author, email, message) and returns engine-free {@link GitPageVersion}
  * values. User-profile lookup, comment-strategy resolution, JSPWiki {@code Page} construction, wiki-event firing and
- * cache refresh all stay in the provider. That keeps this class unit-testable against a bare temp repository, and is a
- * deliberate divergence from the old delegate (which mixed all of those concerns into one class).
+ * cache refresh all stay in the provider (see {@link WikiGitContext}). That keeps this class unit-testable against a
+ * bare temp repository, and is a deliberate divergence from the old delegate (which mixed all of those concerns into
+ * one class).
  * <p>
- * Batching is <em>not</em> handled here: when a user has an open transaction the provider stages paths into the
- * {@link GitCommitBatchRegistry} (using {@link #stageForBatch} for new files) and the registry commits per repo. This
- * class only performs the immediate, single-operation commits.
+ * Batching state is <em>not</em> held here: when a user has an open transaction the provider stages paths into the
+ * {@link GitCommitBatchRegistry}, which closes the batch through {@link #commitBatch}/{@link #rollbackPaths} under
+ * this repository's commit lock. This class only performs the immediate, single-operation commits.
  */
-public class GitPageHistory {
+public class GitWikiRepository {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GitPageHistory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitWikiRepository.class);
 
 	private final GitConnector connector;
 	private final String repoPath;
 	private final ReentrantLock commitLock = new ReentrantLock();
 	private final GitRepoIndex index;
 
-	public GitPageHistory(GitConnector connector) {
+	public GitWikiRepository(GitConnector connector) {
 		this.connector = connector;
 		this.repoPath = connector.repo().getGitDirectory();
 		this.index = new GitRepoIndex(connector);
 	}
 
 	/**
-	 * The eager per-repo index this component reads history and page info from. The provider uses it for the bulk
-	 * {@code getAllPages} / {@code getAllChangedSince} paths so those cost one git walk per repo, not one per page.
+	 * The eager index this repository reads history and page info from. The provider uses it for the bulk
+	 * {@code getAllPages} / {@code getAllChangedSince} paths so those cost one git walk, not one per page.
 	 */
 	public GitRepoIndex index() {
 		return index;
 	}
 
 	/**
-	 * Stable identifier of this repository (its working-tree path), used as the batch registry's repo key.
+	 * The working-tree path of this repository.
 	 */
-	public String repoKey() {
+	public String path() {
 		return repoPath;
 	}
 
 	/**
-	 * The connector this component owns; the provider exposes it to the batch registry's connector resolver.
+	 * The connector this repository owns. This is the sanctioned external access point (exposed by the provider as
+	 * {@code getGitConnector()}); internal callers should prefer the dedicated methods of this class.
 	 */
 	public GitConnector connector() {
 		return connector;
 	}
 
 	/**
-	 * Runs the given action while holding this repository's commit lock, so no commit, sweep, delete or move of this
-	 * component can interleave with it. This is the sanctioned "I need the repo quiescent" entry point. Providers
-	 * bracket a page's file write and its commit with it, so a concurrent sweep cannot commit a half-finished save
-	 * under the wrong author. A future pull/fetch+merge after a rejected push belongs here too, combined with
-	 * {@link #sweepUp} before the branch operation. The lock is reentrant, actions may call the commit methods of this
-	 * class.
+	 * Runs the given action while holding this repository's commit lock, so no commit, sweep, delete or move can
+	 * interleave with it. This is the sanctioned "I need the repo quiescent" entry point. Providers bracket a page's
+	 * file write and its commit with it, so a concurrent sweep cannot commit a half-finished save under the wrong
+	 * author. A future pull/fetch+merge after a rejected push belongs here too, combined with {@link #sweepUp} before
+	 * the branch operation. The lock is reentrant, actions may call the commit methods of this class.
 	 */
 	public <T> T withCommitLock(Callable<T> action) throws Exception {
 		commitLock.lock();
@@ -153,26 +156,13 @@ public class GitPageHistory {
 	}
 
 	/**
-	 * Commits a single just-written page file immediately, returning the resulting commit hash, or {@code null} if
-	 * there was nothing to commit (the content was unchanged, the same-content no-op). Callers that are batching must
+	 * Commits a single just-written file immediately (page or attachment), returning the commit hash, or {@code null}
+	 * if there was nothing to commit (unchanged content) or the path is git-ignored. Callers that are batching must
 	 * not use this; they stage into the registry instead.
 	 *
-	 * @param pageFile the page file on disk (already written by the provider)
-	 * @param userData resolved author, email and commit message
-	 */
-	@Nullable
-	public String commitPut(File pageFile, CommitUserData userData) {
-		// in a flat page repository the file name is the repo-relative path
-		return commitFile(pageFile, pageFile.getName(), userData);
-	}
-
-	/**
-	 * Commits a single just-written file immediately (page or attachment), returning the commit hash, or {@code null}
-	 * if there was nothing to commit (unchanged content) or the path is git-ignored. The repo-relative path is given
-	 * explicitly because attachments live in a {@code <page>-att/} subdirectory of the repo, unlike flat page files.
-	 *
 	 * @param file             the file on disk (already written by the caller)
-	 * @param repoRelativePath the file's path relative to the repository root (used for the ignore check)
+	 * @param repoRelativePath the file's path relative to the repository root, the flat file name for pages and
+	 *                         {@code <page>-att/<file>} for attachments
 	 * @param userData         resolved author, email and commit message
 	 */
 	@Nullable
@@ -193,14 +183,14 @@ public class GitPageHistory {
 	}
 
 	/**
-	 * Stages a newly created page file so a subsequent batch commit (one {@code commitPathsForUser} per repo) picks it
-	 * up. For files already tracked by git this is unnecessary, a batch commit by path includes tracked modifications,
-	 * so the provider calls this only when the file is new.
+	 * Stages a newly created file in the git index so a subsequent batch commit ({@code commitPathsForUser}) picks it
+	 * up. For files already tracked by git this is unnecessary, a batch commit by path includes tracked modifications.
+	 * Package-private: only {@link GitCommitBatchRegistry#stage} calls this, as part of staging a new file.
 	 */
-	public void stageForBatch(String fileName) {
+	void stageInIndex(String repoRelativePath) {
 		commitLock.lock();
 		try {
-			connector.commit().addPath(fileName);
+			connector.commit().addPath(repoRelativePath);
 		}
 		finally {
 			commitLock.unlock();
@@ -208,11 +198,35 @@ public class GitPageHistory {
 	}
 
 	/**
+	 * Whether the given repo-relative path is git-ignored. Ignored files exist on disk but have no git history, the
+	 * providers serve them from the filesystem.
+	 */
+	public boolean isIgnored(String repoRelativePath) {
+		return connector.isIgnored(repoRelativePath);
+	}
+
+	/**
+	 * The raw content of the file at the given version, read from git. Used for attachment data, which unlike page
+	 * text has no text encoding.
+	 */
+	public InputStream bytesAtVersion(String repoRelativePath, int version) {
+		return new ByteArrayInputStream(connector.log().getBytesForPath(repoRelativePath, version));
+	}
+
+	/**
+	 * The size in bytes of the file as of the given commit ({@code git cat-file -s}, cached per commit+path by the
+	 * connector). Fetched lazily because the {@code git log --name-status} index walk does not report sizes.
+	 */
+	public long fileSizeAt(String commitHash, String repoRelativePath) {
+		return connector.log().getFilesizeForCommit(commitHash, repoRelativePath);
+	}
+
+	/**
 	 * Full version history of the page, newest version first. Version numbers are branch-relative positions in the
 	 * file's git log, 1 = oldest. Returns an empty list if the file does not exist.
 	 */
-	public List<GitPageVersion> history(String localName) {
-		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, localName, -1);
+	public List<GitPageVersion> history(String pageName) {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, pageName, -1);
 		File file = id.accordingFile();
 		if (file == null || !file.exists()) {
 			return Collections.emptyList();
@@ -234,16 +248,14 @@ public class GitPageHistory {
 
 	/**
 	 * Maps an index revision to a {@link GitPageVersion}. Author/email/time/message come from the index (free after the
-	 * one walk); only the file size is fetched lazily here ({@code git cat-file -s}, cached per commit+path by the
-	 * connector) because the {@code git log --name-status} walk does not report sizes.
+	 * one walk); only the file size is fetched lazily via {@link #fileSizeAt}.
 	 */
 	private GitPageVersion buildVersion(String fileName, GitFileRevision revision, int version) {
-		long size = connector.log().getFilesizeForCommit(revision.commitHash(), fileName);
 		return new GitPageVersion(
 				version,
 				revision.commitHash(),
 				revision.userData(),
-				size,
+				fileSizeAt(revision.commitHash(), fileName),
 				Date.from(Instant.ofEpochSecond(revision.timeSeconds()))
 		);
 	}
@@ -256,8 +268,8 @@ public class GitPageHistory {
 	 * @param version a 1-based version number, or {@link WikiProvider#LATEST_VERSION} for the latest
 	 */
 	@Nullable
-	public GitPageVersion infoAt(String localName, int version) {
-		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, localName, version);
+	public GitPageVersion infoAt(String pageName, int version) {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, pageName, version);
 		if (!id.exists()) {
 			return null;
 		}
@@ -289,8 +301,8 @@ public class GitPageHistory {
 	/**
 	 * Number of committed versions of the page in git, 0 if none / not tracked.
 	 */
-	public int versionCount(String localName) {
-		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, localName, -1);
+	public int versionCount(String pageName) {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, pageName, -1);
 		if (!id.exists()) {
 			return 0;
 		}
@@ -298,8 +310,7 @@ public class GitPageHistory {
 	}
 
 	/**
-	 * Whole-repo revisionsByFile, repo-relative file path to its newest-first revisions, from one git walk per repo
-	 * (cached
+	 * Whole-repo revisionsByFile, repo-relative file path to its newest-first revisions, from one git walk (cached
 	 * with HEAD-diff invalidation). The provider drives both {@code getAllPages} (latest = first of each list, version
 	 * count = list size) and {@code getAllChangedSince} (revisions newer than a date) off this, so neither costs a
 	 * per-page git call.
@@ -316,11 +327,11 @@ public class GitPageHistory {
 	 * @param version a 1-based version number, or {@link WikiProvider#LATEST_VERSION} for the working-tree content
 	 */
 	@Nullable
-	public String textAtVersion(String localName, int version) throws IOException {
-		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, localName, version);
+	public String textAtVersion(String pageName, int version) throws IOException {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, pageName, version);
 		File pageFile = id.accordingFile();
 		if (pageFile == null || !pageFile.exists()) {
-			LOGGER.info("Page text requested for non-existing file '{}'.", localName);
+			LOGGER.info("Page text requested for non-existing file '{}'.", pageName);
 			return null;
 		}
 		if (version == WikiProvider.LATEST_VERSION) {
@@ -330,20 +341,9 @@ public class GitPageHistory {
 	}
 
 	/**
-	 * Deletes the page (working-tree file and from git history going forward), returning the commit hash. Removes the
-	 * file on disk, then {@code git rm} + {@code commit}. History of the deleted page is preserved in git.
-	 */
-	@Nullable
-	public String commitDelete(File pageFile, CommitUserData userData) {
-		// in a flat page repository the file name is the repo-relative path
-		return commitDelete(pageFile, pageFile.getName(), userData);
-	}
-
-	/**
 	 * Deletes a file (working-tree file and from git history going forward) and commits the removal, returning the
 	 * commit hash. Disk deletion and commit happen under the commit lock, so no sweep can interleave and commit the
-	 * half-done delete under the wrong author. The repo-relative path is given explicitly because attachments live in
-	 * a {@code <page>-att/} subdirectory of the repo, unlike flat page files.
+	 * half-done delete under the wrong author. History of the deleted file is preserved in git.
 	 */
 	@Nullable
 	public String commitDelete(File file, String repoRelativePath, CommitUserData userData) {
@@ -361,9 +361,8 @@ public class GitPageHistory {
 
 	/**
 	 * Removes an already-deleted path from git and commits, returning the commit hash (or {@code null} if the path is
-	 * git-ignored). The caller is responsible for having deleted the working-tree file. Used by the attachment
-	 * provider,
-	 * whose base class deletes the file on disk before the git side runs.
+	 * git-ignored). The caller is responsible for having deleted the working-tree file, inside a
+	 * {@link #withCommitLock} bracket that spans both steps.
 	 */
 	@Nullable
 	public String removeFile(String repoRelativePath, CommitUserData userData) {
@@ -381,7 +380,8 @@ public class GitPageHistory {
 
 	/**
 	 * Commits a set of moved paths as one commit: the (already-moved-on-disk) old paths are removed from the index and
-	 * the new paths added. Used by the attachment provider's {@code moveAttachmentsForPage}. Returns the commit hash.
+	 * the new paths added. Used by the attachment provider's {@code moveAttachmentsForPage}, which moves the directory
+	 * and commits inside one {@link #withCommitLock} bracket. Returns the commit hash.
 	 */
 	@Nullable
 	public String commitMovedPaths(List<String> removedRelPaths, List<String> addedRelPaths, CommitUserData userData) {
@@ -403,7 +403,7 @@ public class GitPageHistory {
 
 	/**
 	 * Moves/renames a page on disk and commits the move, returning the commit hash. History restarts at the rename
-	 * commit (no {@code --follow}), the accepted, pinned behavior of the single-wiki git provider.
+	 * commit (no {@code --follow}), the accepted, pinned behavior of the git providers.
 	 */
 	public String commitMove(File fromFile, File toFile, CommitUserData userData) throws IOException {
 		commitLock.lock();
@@ -493,6 +493,6 @@ public class GitPageHistory {
 	@NotNull
 	@Override
 	public String toString() {
-		return "GitPageHistory[" + repoPath + "]";
+		return "GitWikiRepository[" + repoPath + "]";
 	}
 }

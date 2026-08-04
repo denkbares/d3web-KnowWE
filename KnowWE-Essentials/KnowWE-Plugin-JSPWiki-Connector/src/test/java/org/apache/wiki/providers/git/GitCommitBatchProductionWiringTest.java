@@ -57,7 +57,7 @@ public class GitCommitBatchProductionWiringTest {
 
 	private File repo;
 	private GitConnector connector;
-	private GitPageHistory history;
+	private GitWikiRepository repository;
 	private GitCommitBatchRegistry registry;
 
 	@Before
@@ -71,8 +71,8 @@ public class GitCommitBatchProductionWiringTest {
 		connector = new CachingGitConnector(JGitBackedGitConnector.fromPath(repo.getAbsolutePath()));
 		assumeTrue(connector.gitInstalledAndReady());
 		commitNewFile("Existing.txt", "original content");
-		history = new GitPageHistory(connector);
-		registry = new GitCommitBatchRegistry(history);
+		repository = new GitWikiRepository(connector);
+		registry = new GitCommitBatchRegistry(repository);
 	}
 
 	@After
@@ -89,7 +89,7 @@ public class GitCommitBatchProductionWiringTest {
 	public void editingExistingPageInBatchCommitsTheChange() throws IOException {
 		registry.open("alice");
 		FileUtils.writeStringToFile(new File(repo, "Existing.txt"), "edited content", StandardCharsets.UTF_8);
-		assertTrue(registry.stage("alice", "Existing.txt"));
+		assertTrue(registry.stage("alice", "Existing.txt", false));
 
 		GitCommitBatchRegistry.CommitResult result =
 				registry.commit("alice", new CommitUserData(AUTHOR, EMAIL, "transaction edit"));
@@ -120,16 +120,15 @@ public class GitCommitBatchProductionWiringTest {
 	 */
 	@Test
 	public void concurrentOpenBatchIsNotSweptIntoOtherUsersCommit() throws IOException {
-		// alice has an open batch with a new page, already staged in the index (the provider stages new files)
+		// alice has an open batch with a new page (newFile = true stages it in the git index too)
 		registry.open("alice");
 		FileUtils.writeStringToFile(new File(repo, "AlicePage.txt"), "alice draft", StandardCharsets.UTF_8);
-		connector.commit().addPath("AlicePage.txt");
-		assertTrue(registry.stage("alice", "AlicePage.txt"));
+		assertTrue(registry.stage("alice", "AlicePage.txt", true));
 
 		// bob edits an existing page in his own batch and commits first
 		registry.open("bob");
 		FileUtils.writeStringToFile(new File(repo, "Existing.txt"), "bob's edit", StandardCharsets.UTF_8);
-		assertTrue(registry.stage("bob", "Existing.txt"));
+		assertTrue(registry.stage("bob", "Existing.txt", false));
 		GitCommitBatchRegistry.CommitResult bobResult =
 				registry.commit("bob", new CommitUserData(AUTHOR, EMAIL, "bob edit"));
 
@@ -149,7 +148,7 @@ public class GitCommitBatchProductionWiringTest {
 	public void batchWithoutChangesCommitsNothing() {
 		registry.open("carol");
 		// stage the tracked file without modifying it
-		assertTrue(registry.stage("carol", "Existing.txt"));
+		assertTrue(registry.stage("carol", "Existing.txt", false));
 
 		String headBefore = connector.log().currentHEAD();
 		GitCommitBatchRegistry.CommitResult result =
@@ -167,7 +166,7 @@ public class GitCommitBatchProductionWiringTest {
 	@Test
 	public void nullUserIsToleratedByTheRegistry() {
 		assertFalse(registry.isOpen(null));
-		assertFalse(registry.stage(null, "Existing.txt"));
+		assertFalse(registry.stage(null, "Existing.txt", false));
 		registry.open(null);
 		assertFalse(registry.isOpen(null));
 		assertNull(registry.commit(null, new CommitUserData(AUTHOR, EMAIL, "msg")));
@@ -183,13 +182,13 @@ public class GitCommitBatchProductionWiringTest {
 	public void batchCloseWaitsForTheRepositoryCommitLock() throws Exception {
 		registry.open("alice");
 		FileUtils.writeStringToFile(new File(repo, "Existing.txt"), "locked edit", StandardCharsets.UTF_8);
-		assertTrue(registry.stage("alice", "Existing.txt"));
+		assertTrue(registry.stage("alice", "Existing.txt", false));
 
 		CountDownLatch lockHeld = new CountDownLatch(1);
 		CountDownLatch releaseLock = new CountDownLatch(1);
 		Thread holder = new Thread(() -> {
 			try {
-				history.withCommitLock(() -> {
+				repository.withCommitLock(() -> {
 					lockHeld.countDown();
 					releaseLock.await();
 					return null;
@@ -206,7 +205,7 @@ public class GitCommitBatchProductionWiringTest {
 		Thread committer = new Thread(() ->
 				result.set(registry.commit("alice", new CommitUserData(AUTHOR, EMAIL, "locked commit"))));
 		committer.start();
-		GitPageHistoryTest.assertBlocked("batch close must block while the commit lock is held", committer);
+		GitWikiRepositoryTest.assertBlocked("batch close must block while the commit lock is held", committer);
 		assertEquals("no commit may happen while the lock is held",
 				1, connector.log().commitHashesForFile("Existing.txt").size());
 

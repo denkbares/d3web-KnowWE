@@ -56,9 +56,9 @@ The replacement is one instance per wiki, one content folder, one git repository
 The parts of the experiment that are about one git repository rather than about many wikis stayed in the tree, because
 the single-wiki git provider is built on them. They are per repository and provider agnostic by construction.
 
-- `org.apache.wiki.providers.git.GitPageHistory`, `GitPageVersion`, `GitRepoIndex`, `GitCommitBatch` and
-  `GitCommitBatchRegistry` in `KnowWE-Plugin-JSPWiki-Connector`, with their unit tests, which run against temporary
-  repositories and need no wiki.
+- `org.apache.wiki.providers.git.GitPageHistory` (since renamed to `GitWikiRepository`, the gateway to the one wiki
+  repository), `GitPageVersion`, `GitRepoIndex`, `GitCommitBatch` and `GitCommitBatchRegistry` in
+  `KnowWE-Plugin-JSPWiki-Connector`, with their unit tests, which run against temporary repositories and need no wiki.
 - `org.apache.wiki.providers.GitVersioningProvider`, the transaction capability that lets bulk saves batch into one
   commit.
 - `org.apache.wiki.providers.WikiFileNames`.

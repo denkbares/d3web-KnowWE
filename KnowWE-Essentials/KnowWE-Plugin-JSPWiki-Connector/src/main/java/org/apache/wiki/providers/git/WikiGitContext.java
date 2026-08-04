@@ -44,7 +44,7 @@ import de.uniwue.d3web.gitConnector.CommitUserData;
  * <p>
  * Everything a git provider needs from the wiki beyond plain file and git access goes through here, the commit author
  * from the user database, the two commit notifications and the page cache eviction. The per repository components
- * around it ({@link GitPageHistory}, {@link GitRepoIndex}, {@link GitCommitBatchRegistry}) stay engine free.
+ * around it ({@link GitWikiRepository}, {@link GitRepoIndex}, {@link GitCommitBatchRegistry}) stay engine free.
  * <p>
  * A page provider and its sibling attachment provider are meant to share one instance, so the attachment provider does
  * not have to reach back into the page provider for author resolution or the comment strategy.

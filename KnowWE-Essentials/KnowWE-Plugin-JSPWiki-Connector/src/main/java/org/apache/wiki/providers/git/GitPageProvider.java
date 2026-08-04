@@ -60,14 +60,14 @@ import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 /**
  * Git-backed page provider for a single-wiki instance: the page directory is one flat git repository, every save is
  * one commit authored by the saving user, and history is served from git log instead of the {@code OLD/} directory
- * mechanism. The provider composes the per-repository components of this package, one {@link GitPageHistory} for the
+ * mechanism. The provider composes the per-repository components of this package, one {@link GitWikiRepository} for the
  * git side of every operation, one {@link GitCommitBatchRegistry} for transaction batching, and one
  * {@link WikiGitContext} for everything engine facing (commit author resolution, comment strategy, event firing,
  * cache eviction). It commits but never pushes; push policy belongs to the async push listener driven by the
  * {@link GitCommitEvent}s fired here.
  * <p>
  * All repository mutations run under the repository's commit lock. A page save brackets the file write and its commit
- * in {@link GitPageHistory#withCommitLock}, so no sweep, delete or move can interleave between the two, and closing a
+ * in {@link GitWikiRepository#withCommitLock}, so no sweep, delete or move can interleave between the two, and closing a
  * transaction batch commits through the same lock. A dirty working tree (crash during a save) is self-healed at
  * startup by a sweep-up reconciliation commit.
  * <p>
@@ -76,7 +76,7 @@ import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
  * round-trip into the next commit), delete and move commit immediately even inside an open transaction, and
  * {@code getAllChangedSince} works.
  *
- * @see GitPageHistory
+ * @see GitWikiRepository
  * @see GitCommitBatchRegistry
  * @see GitAttachmentProvider
  */
@@ -84,9 +84,10 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitPageProvider.class);
 
-	private GitPageHistory history;
+	private GitWikiRepository repository;
 	private GitCommitBatchRegistry batchRegistry;
 	private WikiGitContext context;
+	private GitWikiBackend backend;
 
 	@Override
 	public void initialize(Engine engine, Properties properties) throws NoRequiredPropertyException, IOException {
@@ -108,14 +109,15 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		GitConnector connector = new CachingGitConnector(JGitBackedGitConnector.fromPath(repoPath));
 		// build the commit-graph to accelerate git-log reads
 		connector.repo().executeCommitGraph();
-		this.history = new GitPageHistory(connector);
-		this.batchRegistry = new GitCommitBatchRegistry(history);
+		this.repository = new GitWikiRepository(connector);
+		this.batchRegistry = new GitCommitBatchRegistry(repository);
+		this.backend = new GitWikiBackend(repository, batchRegistry, context);
 
 		// self-heal a dirty working tree (crash during a save) with one reconciliation commit
-		GitPageHistory.SweepUp sweepUp = history.sweepUp("provider-startup");
+		GitWikiRepository.SweepUp sweepUp = repository.sweepUp("provider-startup");
 		if (sweepUp != null) {
 			context.fireCommitted(this, GitVersioningWikiEvent.UPDATE, "system", wikiNames(sweepUp.paths()),
-					sweepUp.commitHash(), history.repoKey(), GitCommitEvent.Origin.RECONCILIATION);
+					sweepUp.commitHash(), repository.path(), GitCommitEvent.Origin.RECONCILIATION);
 		}
 		LOGGER.info("Initialized {} on repository '{}'.", getClass().getSimpleName(), repoPath);
 	}
@@ -128,7 +130,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		// bracket the file write and its commit, so no concurrent sweep, delete or move can interleave in between
 		// (a sweep would otherwise commit the half-finished save as a reconciliation commit with the wrong author)
 		try {
-			history.withCommitLock(() -> {
+			repository.withCommitLock(() -> {
 				putPageTextLocked(page, text, file);
 				return null;
 			});
@@ -153,24 +155,19 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		page.setSize(file.length());
 
 		String user = page.getAuthor();
-		if (batchRegistry.isOpen(user)) {
-			// part of an open transaction: stage, the batch commits once on commit()
-			if (addFile) {
-				history.stageForBatch(file.getName());
-			}
-			batchRegistry.stage(user, file.getName());
-		}
-		else {
+		// staging (batch bookkeeping plus, for new files, the git index) is one registry call; false means no open
+		// transaction, so the change is committed immediately
+		if (!batchRegistry.stage(user, file.getName(), addFile)) {
 			// "use the page's change note, else this operation's default", same seam as delete/move. The default is
 			// a meaningful message (not the connector's catch-all "Added page" for every put), a custom
 			// GitCommentStrategy can override it (e.g. to prefix the branch).
 			String comment = context.commentStrategy()
 					.getComment(page, addFile ? "Added page" : "Edited " + page.getName());
 			CommitUserData userData = context.userData(user, comment);
-			String commitHash = history.commitPut(file, userData);
+			String commitHash = repository.commitFile(file, file.getName(), userData);
 			if (commitHash != null) {
 				context.fireCommitted(this, GitVersioningWikiEvent.UPDATE, user, List.of(page.getName()),
-						commitHash, history.repoKey());
+						commitHash, repository.path());
 			}
 		}
 	}
@@ -185,7 +182,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 
 	@Override
 	public List<Page> getVersionHistory(String pageName) throws ProviderException {
-		List<GitPageVersion> versions = history.history(pageName);
+		List<GitPageVersion> versions = repository.history(pageName);
 		List<Page> result = new ArrayList<>(versions.size());
 		for (GitPageVersion v : versions) {
 			result.add(WikiPageProxy.fromUserData(pageName, v.version(), v.userData(), v.size(), v.date(), m_engine));
@@ -196,7 +193,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	@Override
 	public String getPageText(String pageName, int version) throws ProviderException {
 		try {
-			return history.textAtVersion(pageName, version);
+			return repository.textAtVersion(pageName, version);
 		}
 		catch (IOException e) {
 			throw new ProviderException("Could not read text of '" + pageName + "' v" + version + ": " + e.getMessage());
@@ -205,7 +202,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 
 	@Override
 	public Page getPageInfo(String pageName, int version) throws ProviderException {
-		GitPageVersion gitVersion = history.infoAt(pageName, version);
+		GitPageVersion gitVersion = repository.infoAt(pageName, version);
 		if (gitVersion != null) {
 			Page page = WikiPageProxy.fromUserData(pageName, gitVersion.version(), gitVersion.userData(),
 					gitVersion.size(), gitVersion.date(), m_engine);
@@ -222,7 +219,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		File file = findPage(pageName);
 		if (file.exists()) {
 			WikiPageProxy page = new WikiPageProxy(m_engine, pageName);
-			page.setHistoryProvider(history.connector());
+			page.setHistoryProvider(repository.connector());
 			page.setVersion(WikiProvider.LATEST_VERSION);
 			page.setSize(file.length());
 			page.setLastModified(new Date(file.lastModified()));
@@ -239,7 +236,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		if (version == WikiProvider.LATEST_VERSION) {
 			return true;
 		}
-		int count = history.versionCount(page);
+		int count = repository.versionCount(page);
 		return version > 0 && version <= count;
 	}
 
@@ -249,11 +246,11 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	 * Lists all pages with their latest author/date/version, enriched from the eager index instead of the inherited
 	 * base which calls the git-backed {@link #getPageInfo} once per page (an O(pages) git-process storm at startup).
 	 * Pages are enumerated from the filesystem (so deleted pages are correctly absent) and the repository's history is
-	 * read once via {@link GitPageHistory#revisionsByFile()}, so the cost is O(1) git walks, not O(pages).
+	 * read once via {@link GitWikiRepository#revisionsByFile()}, so the cost is O(1) git walks, not O(pages).
 	 */
 	@Override
 	public Collection<Page> getAllPages() throws ProviderException {
-		Map<String, List<GitFileRevision>> revisionsByFile = history.revisionsByFile();
+		Map<String, List<GitFileRevision>> revisionsByFile = repository.revisionsByFile();
 		File[] wikiFiles = new File(m_pageDirectory).listFiles(new WikiFileFilter());
 		if (wikiFiles == null) {
 			throw new ProviderException("Page directory does not exist: " + m_pageDirectory);
@@ -278,7 +275,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 					Date.from(Instant.ofEpochSecond(latest.timeSeconds())), m_engine);
 		}
 		WikiPageProxy page = new WikiPageProxy(m_engine, pageName);
-		page.setHistoryProvider(history.connector());
+		page.setHistoryProvider(repository.connector());
 		page.setVersion(WikiProvider.LATEST_VERSION);
 		page.setSize(wikiFile.length());
 		page.setLastModified(new Date(wikiFile.lastModified()));
@@ -296,7 +293,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	public Collection<Page> getAllChangedSince(Date date) {
 		long sinceSeconds = date.getTime() / 1000L;
 		List<Page> changed = new ArrayList<>();
-		for (Map.Entry<String, List<GitFileRevision>> fileEntry : history.revisionsByFile().entrySet()) {
+		for (Map.Entry<String, List<GitFileRevision>> fileEntry : repository.revisionsByFile().entrySet()) {
 			String path = fileEntry.getKey();
 			if (path.contains("/") || !path.endsWith(FILE_EXT)) {
 				// only top-level page files; attachments live in a <page>-att/ subdirectory
@@ -340,10 +337,10 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		String comment = context.commentStrategy().getComment(page, "Removed page");
 		// Deletes commit immediately, even inside an open transaction (documented divergence from batching). A page
 		// delete within a bulk transaction is rare, keeping it immediate avoids staging a removal into the batch.
-		String commitHash = history.commitDelete(file, context.userData(author, comment));
+		String commitHash = repository.commitDelete(file, file.getName(), context.userData(author, comment));
 		if (commitHash != null) {
 			context.fireCommitted(this, GitVersioningWikiEvent.DELETE, author, List.of(pageName),
-					commitHash, history.repoKey());
+					commitHash, repository.path());
 		}
 	}
 
@@ -362,10 +359,10 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		String author = authorOrLatest(from);
 		String comment = context.commentStrategy().getComment(from, "Renamed page " + fromName + " to " + to);
 		try {
-			String commitHash = history.commitMove(fromFile, toFile, context.userData(author, comment));
+			String commitHash = repository.commitMove(fromFile, toFile, context.userData(author, comment));
 			if (commitHash != null) {
 				context.fireCommitted(this, GitVersioningWikiEvent.MOVED, author, List.of(to),
-						commitHash, history.repoKey());
+						commitHash, repository.path());
 			}
 		}
 		catch (IOException e) {
@@ -379,7 +376,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	private String authorOrLatest(Page page) {
 		String author = page.getAuthor();
 		if (author == null) {
-			GitPageVersion latest = history.infoAt(page.getName(), WikiProvider.LATEST_VERSION);
+			GitPageVersion latest = repository.infoAt(page.getName(), WikiProvider.LATEST_VERSION);
 			if (latest != null) {
 				author = latest.userData().user;
 				page.setAuthor(author);
@@ -404,7 +401,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		GitCommitBatchRegistry.CommitResult result = batchRegistry.commit(user, context.userData(user, comment));
 		if (result != null) {
 			Collection<String> pages = wikiNames(result.paths());
-			context.fireCommitted(this, GitVersioningWikiEvent.UPDATE, user, pages, result.commitHash(), history.repoKey());
+			context.fireCommitted(this, GitVersioningWikiEvent.UPDATE, user, pages, result.commitHash(), repository.path());
 			context.evictPages(pages);
 		}
 	}
@@ -419,20 +416,13 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		}
 	}
 
-	// --- accessors shared with the attachment provider -----------------------
-	// The git attachment provider routes to the SAME GitPageHistory, batch registry and context, so that attachment
-	// changes share the repository, the commit lock, and (within a transaction) the same commit.
-
-	GitPageHistory history() {
-		return history;
-	}
-
-	GitCommitBatchRegistry batchRegistry() {
-		return batchRegistry;
-	}
-
-	WikiGitContext context() {
-		return context;
+	/**
+	 * The backend shared with the sibling attachment provider, so attachment changes go through the same repository
+	 * (and its commit lock), the same open transactions and the same engine context. Within a transaction, page and
+	 * attachment changes end up in the same commit.
+	 */
+	GitWikiBackend backend() {
+		return backend;
 	}
 
 	/**
@@ -440,7 +430,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	 * JGit repository accessor by design).
 	 */
 	public GitConnector getGitConnector() {
-		return history.connector();
+		return repository.connector();
 	}
 
 	/**

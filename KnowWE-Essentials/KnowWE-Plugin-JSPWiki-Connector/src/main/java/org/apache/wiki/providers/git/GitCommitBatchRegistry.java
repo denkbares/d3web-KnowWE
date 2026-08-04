@@ -40,9 +40,9 @@ import de.uniwue.d3web.gitConnector.CommitUserData;
  * Replaces the old delegates' shared, externally-mutated {@code openCommits} map: callers stage and close batches only
  * through this API, nobody reaches into another class's mutable state.
  * <p>
- * The registry serves the one wiki repository, represented by the {@link GitPageHistory} it is constructed with.
- * Closing a batch commits or rolls back through {@link GitPageHistory#commitBatch} and
- * {@link GitPageHistory#rollbackPaths}, which take the repository's commit lock, so a batch close is serialized
+ * The registry serves the one wiki repository, represented by the {@link GitWikiRepository} it is constructed with.
+ * Closing a batch commits or rolls back through {@link GitWikiRepository#commitBatch} and
+ * {@link GitWikiRepository#rollbackPaths}, which take the repository's commit lock, so a batch close is serialized
  * against concurrent immediate commits, sweeps, deletes and moves instead of relying on git's own {@code index.lock}
  * retries.
  */
@@ -51,13 +51,13 @@ public class GitCommitBatchRegistry {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitCommitBatchRegistry.class);
 
 	private final Map<String, GitCommitBatch> openBatches = new ConcurrentHashMap<>();
-	private final GitPageHistory history;
+	private final GitWikiRepository repository;
 
 	/**
-	 * @param history the history component of the wiki repository, whose commit lock serializes the batch close
+	 * @param repository the wiki repository, whose commit lock serializes the batch close
 	 */
-	public GitCommitBatchRegistry(GitPageHistory history) {
-		this.history = history;
+	public GitCommitBatchRegistry(GitWikiRepository repository) {
+		this.repository = repository;
 	}
 
 	/**
@@ -82,17 +82,22 @@ public class GitCommitBatchRegistry {
 	}
 
 	/**
-	 * Stages a changed repo-relative path for the user. If the user has an open batch, the path is added to it and
-	 * {@code true} is returned. If the user has no open batch, nothing is recorded and {@code false} is returned, the
-	 * caller must commit the change immediately.
+	 * Stages a changed repo-relative path for the user. If the user has an open batch, the path is added to it (and,
+	 * for a new file, staged in the git index, since the closing pathspec commit picks up tracked modifications but
+	 * not untracked files) and {@code true} is returned. If the user has no open batch, nothing is recorded and
+	 * {@code false} is returned, the caller must commit the change immediately.
 	 *
+	 * @param newFile whether the file is new to git (untracked); tracked modifications need no index staging
 	 * @return {@code true} if the path was added to an open batch, {@code false} if there is no open batch and the
 	 * caller should commit immediately
 	 */
-	public boolean stage(String user, String path) {
+	public boolean stage(String user, String path, boolean newFile) {
 		GitCommitBatch batch = user == null ? null : openBatches.get(user);
 		if (batch == null) {
 			return false;
+		}
+		if (newFile) {
+			repository.stageInIndex(path);
 		}
 		batch.stage(path);
 		return true;
@@ -100,12 +105,17 @@ public class GitCommitBatchRegistry {
 
 	/**
 	 * Stages several changed paths for the user (e.g. the from/to paths of a move). Semantics match
-	 * {@link #stage(String, String)}.
+	 * {@link #stage(String, String, boolean)}.
 	 */
-	public boolean stage(String user, Collection<String> paths) {
+	public boolean stage(String user, Collection<String> paths, boolean newFiles) {
 		GitCommitBatch batch = user == null ? null : openBatches.get(user);
 		if (batch == null) {
 			return false;
+		}
+		if (newFiles) {
+			for (String path : paths) {
+				repository.stageInIndex(path);
+			}
 		}
 		batch.stage(paths);
 		return true;
@@ -128,7 +138,7 @@ public class GitCommitBatchRegistry {
 		}
 		SortedSet<String> paths = batch.paths();
 		try {
-			String commitHash = history.commitBatch(paths, userData);
+			String commitHash = repository.commitBatch(paths, userData);
 			if (commitHash == null) {
 				// none of the staged paths had changes left to commit
 				LOGGER.info("Batch of user '{}' had no changes to commit.", user);
@@ -156,7 +166,7 @@ public class GitCommitBatchRegistry {
 		}
 		SortedSet<String> paths = batch.paths();
 		try {
-			history.rollbackPaths(paths);
+			repository.rollbackPaths(paths);
 		}
 		catch (Exception e) {
 			LOGGER.error("Failed to roll back batch for user '{}'.", user, e);

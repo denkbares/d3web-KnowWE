@@ -319,7 +319,7 @@ public class GitPageProviderTest {
 		CountDownLatch releaseBracket = new CountDownLatch(1);
 		Thread saver = new Thread(() -> {
 			try {
-				provider.history().withCommitLock(() -> {
+				provider.backend().repository().withCommitLock(() -> {
 					insideBracket.countDown();
 					releaseBracket.await();
 					return null;
@@ -334,7 +334,7 @@ public class GitPageProviderTest {
 
 		Thread committer = new Thread(() -> provider.commit("alice", "bulk save"));
 		committer.start();
-		GitPageHistoryTest.assertBlocked("batch close must wait for the commit lock", committer);
+		GitWikiRepositoryTest.assertBlocked("batch close must wait for the commit lock", committer);
 		assertEquals(0, commitsForFile("AlicePage.txt"));
 
 		releaseBracket.countDown();

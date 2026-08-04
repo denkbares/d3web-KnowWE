@@ -27,8 +27,8 @@ import de.uniwue.d3web.gitConnector.CommitUserData;
  * One version of a page as seen by git: a branch-relative version number, the backing commit, the commit's user data
  * (author, email, change note) and the file's size and timestamp at that commit.
  * <p>
- * This is the engine-free value object {@link GitPageHistory} produces. The provider maps it to a JSPWiki {@code Page},
- * which is where the JSPWiki engine dependency lives, keeping {@code GitPageHistory} testable against a bare git
+ * This is the engine-free value object {@link GitWikiRepository} produces. The provider maps it to a JSPWiki {@code Page},
+ * which is where the JSPWiki engine dependency lives, keeping {@code GitWikiRepository} testable against a bare git
  * repository without a wiki engine.
  *
  * @param version    branch-relative position of this version in the file's git log, 1 = oldest

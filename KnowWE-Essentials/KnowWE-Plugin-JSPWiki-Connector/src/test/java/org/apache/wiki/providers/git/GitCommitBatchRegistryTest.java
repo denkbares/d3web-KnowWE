@@ -60,7 +60,7 @@ public class GitCommitBatchRegistryTest {
 		repo = initRepo(new File(base, "repo"));
 		connector = BareGitConnector.fromPath(repo.getAbsolutePath());
 		assumeTrue(connector.gitInstalledAndReady());
-		registry = new GitCommitBatchRegistry(new GitPageHistory(connector));
+		registry = new GitCommitBatchRegistry(new GitWikiRepository(connector));
 	}
 
 	@After
@@ -115,7 +115,7 @@ public class GitCommitBatchRegistryTest {
 	@Test
 	public void stageWithoutOpenBatchSignalsCommitImmediately() {
 		assertFalse(registry.isOpen("carol"));
-		boolean staged = registry.stage("carol", "Loose.txt");
+		boolean staged = registry.stage("carol", "Loose.txt", false);
 		assertFalse("stage without open batch must report commit-immediately", staged);
 
 		// committing a never-opened user is a harmless no-op
@@ -170,12 +170,11 @@ public class GitCommitBatchRegistryTest {
 	}
 
 	/**
-	 * Writes a new file, stages it in git (the provider's job at put-time), then registers its path
-	 * in the user's open batch — exactly the sequence the page provider performs while batching.
+	 * Writes a new file and stages it in the user's open batch. newFile = true makes the registry stage the git index
+	 * too — exactly the call the page provider performs while batching.
 	 */
 	private void stageNewFile(String user, String name) throws IOException {
 		FileUtils.writeStringToFile(new File(repo, name), "content of " + name, StandardCharsets.UTF_8);
-		connector.commit().addPath(name);
-		assertTrue(registry.stage(user, name));
+		assertTrue(registry.stage(user, name, true));
 	}
 }
