@@ -195,6 +195,64 @@ public class GitAttachmentProviderTest {
 		assertEquals("page and attachment must be in the same commit", pageCommit, attCommit);
 	}
 
+	// --- legacy BasicAttachmentProvider layout (<page>-att/<file>-dir/<version>.<ext>) ---
+
+	/** Content saved by the plain BasicAttachmentProvider before the git providers took over is still served. */
+	@Test
+	public void legacyVersionDirAttachmentsAreServed() throws Exception {
+		createLegacyAttachment("Topic", "pic.jpg", "old-v1", "old-v2");
+
+		Attachment info = attachmentProvider.getAttachmentInfo(new WikiPage(engine, "Topic"), "pic.jpg",
+				WikiProvider.LATEST_VERSION);
+		assertEquals(2, info.getVersion());
+		assertEquals("old-v2", readVersion("Topic", "pic.jpg", WikiProvider.LATEST_VERSION));
+		assertEquals("old-v1", readVersion("Topic", "pic.jpg", 1));
+
+		Attachment query = new org.apache.wiki.attachment.Attachment(engine, "Topic", "pic.jpg");
+		assertEquals(2, attachmentProvider.getVersionHistory(query).size());
+
+		List<Attachment> attachments = attachmentProvider.listAttachments(new WikiPage(engine, "Topic"));
+		assertEquals(1, attachments.size());
+		assertEquals("pic.jpg", attachments.get(0).getFileName());
+	}
+
+	@Test
+	public void savingOverALegacyAttachmentWritesTheFlatFileWhichTakesPrecedence() throws Exception {
+		createLegacyAttachment("Topic", "pic.jpg", "old-v1");
+		putAttachment("Topic", "pic.jpg", "new-content");
+
+		assertTrue(new File(pageDir, "Topic-att/pic.jpg").exists());
+		assertEquals("new-content", readVersion("Topic", "pic.jpg", WikiProvider.LATEST_VERSION));
+		// no duplicate listing: the flat file wins over the still-existing legacy directory
+		assertEquals(1, attachmentProvider.listAttachments(new WikiPage(engine, "Topic")).size());
+	}
+
+	@Test
+	public void deletingALegacyAttachmentRemovesItsVersionDirectoryAndCommits() throws Exception {
+		createLegacyAttachment("Topic", "pic.jpg", "old-v1", "old-v2");
+
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "Topic", "pic.jpg");
+		att.setAuthor(AUTHOR);
+		attachmentProvider.deleteAttachment(att);
+
+		assertFalse(new File(pageDir, "Topic-att/pic.jpg-dir").exists());
+		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
+	}
+
+	/** Builds and commits the legacy layout, as a real pre-git repository would carry it. */
+	private void createLegacyAttachment(String page, String fileName, String... versions) throws Exception {
+		File dir = new File(pageDir, page + "-att/" + fileName + "-dir");
+		assertTrue(dir.mkdirs());
+		String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
+		for (int i = 0; i < versions.length; i++) {
+			FileUtils.writeStringToFile(new File(dir, (i + 1) + "." + ext), versions[i], StandardCharsets.UTF_8);
+		}
+		BareGitConnector connector = BareGitConnector.fromPath(pageDir.getAbsolutePath());
+		connector.commit().addPath(page + "-att");
+		connector.commit().commitForUser(new de.uniwue.d3web.gitConnector.CommitUserData(
+				"legacy", "legacy@test.invalid", "pre-git content"));
+	}
+
 	// --- helpers -------------------------------------------------------------
 
 	private void putPage(String name, String text) throws Exception {

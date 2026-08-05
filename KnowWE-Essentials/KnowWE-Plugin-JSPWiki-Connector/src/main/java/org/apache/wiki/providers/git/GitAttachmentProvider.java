@@ -27,13 +27,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
@@ -147,6 +152,14 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		return new File(repository.path(), attachmentPath(attachment));
 	}
 
+	/**
+	 * The legacy {@link BasicAttachmentProvider} version directory of the attachment
+	 * ({@code <page>-att/<file>-dir}), constructed exactly like the inherited lookup does.
+	 */
+	private File legacyVersionDir(String parentName, String fileName) throws ProviderException {
+		return new File(findPageDir(parentName), mangleName(fileName + ATTDIR_EXTENSION));
+	}
+
 	// --- write path ----------------------------------------------------------
 
 	@Override
@@ -235,6 +248,9 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		GitWikiRepository repository = repository();
 		File attFile = attachmentFile(repository, attachment);
 		if (!attFile.exists()) {
+			if (legacyVersionDir(attachment.getParentName(), attachment.getFileName()).exists()) {
+				return super.getAttachmentData(attachment);
+			}
 			throw new ProviderException("Attachment file " + attachment.getFileName() + " does not exist");
 		}
 		String relPath = attachmentPath(attachment);
@@ -252,14 +268,22 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			return Collections.emptyList();
 		}
 		List<Attachment> result = new ArrayList<>();
-		File[] files = dir.listFiles(file -> !file.isHidden());
+		Set<String> seen = new HashSet<>();
+		File[] files = dir.listFiles(file -> !file.isHidden() && !file.isDirectory());
 		if (files != null) {
 			for (File file : files) {
 				Attachment info = getAttachmentInfo(page, JSPUtils.unmangleName(file.getName()),
 						WikiProvider.LATEST_VERSION);
 				if (info != null) {
 					result.add(info);
+					seen.add(info.getFileName());
 				}
+			}
+		}
+		// legacy version directories (<file>-dir); a flat file of the same name takes precedence
+		for (Attachment legacy : super.listAttachments(page)) {
+			if (seen.add(legacy.getFileName())) {
+				result.add(legacy);
 			}
 		}
 		return result;
@@ -272,7 +296,8 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		att.setVersion(version);
 		File attFile = attachmentFile(repository, att);
 		if (!attFile.exists()) {
-			return null;
+			// legacy layout: the inherited lookup serves <page>-att/<file>-dir content, and returns null if absent
+			return super.getAttachmentInfo(page, name, version);
 		}
 		String relPath = attachmentPath(att);
 
@@ -331,6 +356,9 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			GitWikiRepository repository = repository();
 			File attFile = attachmentFile(repository, attachment);
 			if (!attFile.exists()) {
+				if (legacyVersionDir(attachment.getParentName(), attachment.getFileName()).exists()) {
+					return super.getVersionHistory(attachment);
+				}
 				return Collections.emptyList();
 			}
 			String relPath = attachmentPath(attachment);
@@ -358,12 +386,52 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		GitWikiRepository repository = repository();
 		File attFile = attachmentFile(repository, attachment);
 		if (!attFile.exists()) {
-			LOGGER.debug("Attachment {} was to be deleted but does not exist.", attachmentPath(attachment));
+			deleteLegacyAttachment(attachment, repository);
 			return;
 		}
 		// disk deletion and commit happen inside commitDelete under the commit lock, so no sweep can interleave
 		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
 		String commitHash = repository.commitDelete(attFile, attachmentPath(attachment), userData);
+		if (commitHash != null) {
+			fireEvent(GitVersioningWikiEvent.DELETE, attachment, commitHash, repository);
+		}
+	}
+
+	/**
+	 * Deletes a legacy-layout attachment (its {@code <page>-att/<file>-dir} version directory) and commits the
+	 * removal. A silent no-op if the attachment does not exist in either layout.
+	 */
+	private void deleteLegacyAttachment(Attachment attachment, GitWikiRepository repository) throws ProviderException {
+		File legacyDir = legacyVersionDir(attachment.getParentName(), attachment.getFileName());
+		if (!legacyDir.exists()) {
+			LOGGER.debug("Attachment {} was to be deleted but does not exist.", attachmentPath(attachment));
+			return;
+		}
+		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
+		String commitHash;
+		try {
+			// disk deletion and commit share one lock bracket, like the flat delete path
+			commitHash = repository.withCommitLock(() -> {
+				Path repoRoot = new File(repository.path()).toPath();
+				List<String> relPaths = new ArrayList<>();
+				try (Stream<Path> walk = Files.walk(legacyDir.toPath())) {
+					for (Path path : walk.sorted(Comparator.reverseOrder()).toList()) {
+						if (Files.isRegularFile(path)) {
+							relPaths.add(repoRoot.relativize(path).toString().replace(File.separatorChar, '/'));
+						}
+						Files.delete(path);
+					}
+				}
+				return repository.commitRemovedPaths(relPaths, userData);
+			});
+		}
+		catch (ProviderException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new ProviderException("Could not delete legacy attachment '" + attachmentPath(attachment)
+					+ "': " + e.getMessage());
+		}
 		if (commitHash != null) {
 			fireEvent(GitVersioningWikiEvent.DELETE, attachment, commitHash, repository);
 		}

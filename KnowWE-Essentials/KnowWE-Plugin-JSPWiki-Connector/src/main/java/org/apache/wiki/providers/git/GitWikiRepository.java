@@ -402,6 +402,23 @@ public class GitWikiRepository {
 	}
 
 	/**
+	 * Commits the removal of paths whose working-tree files the caller has already deleted (inside the same
+	 * {@link #withCommitLock} bracket that deleted them), as one commit. Returns the commit hash, or {@code null} if
+	 * none of the paths was tracked.
+	 */
+	@Nullable
+	public String commitRemovedPaths(List<String> removedRelPaths, CommitUserData userData) {
+		commitLock.lock();
+		try {
+			// deletePaths stages the removals and commits them itself (cached = the files are already gone on disk)
+			return connector.commit().deletePaths(removedRelPaths, userData, true);
+		}
+		finally {
+			commitLock.unlock();
+		}
+	}
+
+	/**
 	 * Moves/renames a page on disk and commits the move, returning the commit hash. History restarts at the rename
 	 * commit (no {@code --follow}), the accepted, pinned behavior of the git providers.
 	 */
