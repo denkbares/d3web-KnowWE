@@ -78,7 +78,10 @@ public class GitAttachmentProviderTest {
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, pageDir.getAbsolutePath());
 		properties.put(AttachmentProvider.PROP_STORAGEDIR, pageDir.getAbsolutePath()); // attachments inside the page repo
 
-		assumeTrue(BareGitConnector.fromPath(System.getProperty("java.io.tmpdir")).gitInstalledAndReady());
+		// probe git availability in a directory this test owns: fromPath initializes a git repository at the
+		// given path, so it must never point at the shared temp root
+		assumeTrue(BareGitConnector.fromPath(new File(pageDir, "git-probe").getAbsolutePath()).gitInstalledAndReady());
+		FileUtils.deleteDirectory(pageDir);
 
 		pageProvider = new GitPageProvider();
 		engine = mockEngine(); // wires PageManager.getProvider() -> pageProvider

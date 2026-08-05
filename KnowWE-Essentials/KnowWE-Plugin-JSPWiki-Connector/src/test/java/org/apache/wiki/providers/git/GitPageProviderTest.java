@@ -79,7 +79,10 @@ public class GitPageProviderTest {
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, pageDir.getAbsolutePath());
 
 		engine = mockEngine();
-		assumeTrue(BareGitConnector.fromPath(System.getProperty("java.io.tmpdir")).gitInstalledAndReady());
+		// probe git availability in a directory this test owns: fromPath initializes a git repository at the
+		// given path, so it must never point at the shared temp root
+		assumeTrue(BareGitConnector.fromPath(new File(pageDir, "git-probe").getAbsolutePath()).gitInstalledAndReady());
+		FileUtils.deleteDirectory(pageDir);
 
 		provider = new GitPageProvider();
 		provider.initialize(engine, properties);
