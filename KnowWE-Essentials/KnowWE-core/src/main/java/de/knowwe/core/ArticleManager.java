@@ -57,11 +57,7 @@ public interface ArticleManager {
 	 */
 	default Set<Article> findArticles(String localName) {
 		Set<String> pages = Environment.getInstance().getWikiConnector().findPages(localName);
-		Set<Article> articles = pages.stream().map(this::getArticle).collect(Collectors.toSet());
-		if(pages.size() != articles.size()) {
-			System.out.println("oha");
-		}
-		return articles;
+		return pages.stream().map(this::getArticle).collect(Collectors.toSet());
 	}
 
 	/**
@@ -77,13 +73,8 @@ public interface ArticleManager {
 			return null;
 		}
 		else {
-			try {
-				return articles.stream().findAny().orElse(null);
-			} catch (NullPointerException e) {
-				System.out.println("NP");
-			}
+			return articles.stream().findAny().orElse(null);
 		}
-		return null;
 	}
 
 	Article getArticle(String title, KnowWESubWikiContext context);
