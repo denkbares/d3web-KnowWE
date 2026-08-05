@@ -1059,17 +1059,6 @@
 				<version>${jspwiki.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.jspwiki</groupId>
-				<artifactId>jspwiki-multiwiki</artifactId>
-				<version>${jspwiki.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jspwiki</groupId>
-				<artifactId>jspwiki-multiwiki</artifactId>
-				<version>${jspwiki.version}</version>
-				<type>test-jar</type>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-annotations-api</artifactId>
 				<version>${tomcat.version}</version>
