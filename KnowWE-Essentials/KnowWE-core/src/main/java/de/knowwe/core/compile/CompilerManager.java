@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -62,7 +61,7 @@ import de.knowwe.event.DeInitEvent;
 public class CompilerManager implements EventListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompilerManager.class);
 
-	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
+	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new ConcurrentHashMap<>();
 	private static final String KNOWWE_COMPILER_THREADS_COUNT = "knowwe.compiler.threads.count";
 	private static final String KNOWWE_COMPILER_ACTIVE_PATTERN = "knowwe.compiler.active.pattern";
 	// number of threads that are not used for compilers themselves, but for operational handling of compilation process
@@ -84,8 +83,9 @@ public class CompilerManager implements EventListener {
 	private final Set<Compiler> awaitedCompilers = new CountingSet<>();
 	private static final AtomicLong compileThreadNumber = new AtomicLong(1);
 	private static final Set<Thread> compileThreads = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+	private volatile String pendingCompileMessage = null;
 	private volatile String compileMessage = null;
-	private Date lastCompilationStart;
+	private volatile Date lastCompilationStart;
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
@@ -97,13 +97,14 @@ public class CompilerManager implements EventListener {
 	}
 
 	/**
-	 * Set an optional message giving context for the current compilation. Can be shown to the user and is helpful for
-	 * debugging.
+	 * Set an optional message giving context for the next compilation. The message is picked up when the next
+	 * compilation starts and can then be retrieved via {@link #getCompileMessage()} while that compilation is running.
+	 * Can be shown to the user and is helpful for debugging.
 	 *
-	 * @param commitMessage the message to set
+	 * @param compileMessage the message to set
 	 */
-	public void setCompileMessage(String commitMessage) {
-		this.compileMessage = commitMessage;
+	public void setCompileMessage(String compileMessage) {
+		this.pendingCompileMessage = compileMessage;
 	}
 
 	/**
@@ -154,7 +155,8 @@ public class CompilerManager implements EventListener {
 	}
 
 	/**
-	 * Get the currently set compile message.
+	 * Get the compile message of the currently running compilation, or <tt>null</tt> if no compilation is running or
+	 * no message was set for it.
 	 *
 	 * @return the compile message
 	 */
@@ -229,11 +231,8 @@ public class CompilerManager implements EventListener {
 
 	public static <C extends Compiler> ScriptManager<C> getScriptManager(Class<C> compilerClass) {
 		@SuppressWarnings("unchecked")
-		ScriptManager<C> result = (ScriptManager<C>) scriptManagers.get(compilerClass);
-		if (result == null) {
-			result = new ScriptManager<>(compilerClass);
-			scriptManagers.put(compilerClass, result);
-		}
+		ScriptManager<C> result = (ScriptManager<C>) scriptManagers.computeIfAbsent(compilerClass,
+				clazz -> new ScriptManager<>(compilerClass));
 		return result;
 	}
 
@@ -271,15 +270,20 @@ public class CompilerManager implements EventListener {
 	 */
 	public void compile(List<Section<?>> added, List<Section<?>> removed) {
 		synchronized (lock) {
+			boolean interrupted = false;
 			while (running != null || compilationBlockers > 0) {
 				try {
 					lock.wait();
 				}
 				catch (InterruptedException e) {
 					LOGGER.warn("Caught InterruptedException while waiting to compile.", e);
+					interrupted = true;
 				}
 			}
+			if (interrupted) Thread.currentThread().interrupt();
 			lastCompilationStart = new Date();
+			compileMessage = pendingCompileMessage;
+			pendingCompileMessage = null;
 			setCompiling(added);
 			setCompiling(removed);
 			running = compilers.groupIterator();
@@ -302,6 +306,7 @@ public class CompilerManager implements EventListener {
 				EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
 				synchronized (lock) {
 					running = null;
+					compileMessage = null;
 					currentlyCompiledArticles.clear();
 					currentlyCompiledPriority.clear();
 					logCompilation(added, removed, stopwatch);
@@ -669,18 +674,18 @@ public class CompilerManager implements EventListener {
 	 * @created 31.10.2013
 	 */
 	public void removeCompiler(Compiler compiler) {
-		// debug code: check that we only remove items
-		// that already have been added
-		if (!compilers.contains(compiler)) {
-			if (isActiveCompiler(compiler)) {
-				throw new NoSuchElementException("Removing non-existing compiler instance.");
-			}
-			else {
-				return; // was never added, just ignore
-			}
-		}
 		// remove the compiler, being thread-save
 		synchronized (lock) {
+			// debug code: check that we only remove items
+			// that already have been added
+			if (!compilers.contains(compiler)) {
+				if (isActiveCompiler(compiler)) {
+					throw new NoSuchElementException("Removing non-existing compiler instance.");
+				}
+				else {
+					return; // was never added, just ignore
+				}
+			}
 			currentlyCompiledPriority.remove(compiler);
 			compilerCache.remove(compiler);
 			compilers.remove(compiler);
