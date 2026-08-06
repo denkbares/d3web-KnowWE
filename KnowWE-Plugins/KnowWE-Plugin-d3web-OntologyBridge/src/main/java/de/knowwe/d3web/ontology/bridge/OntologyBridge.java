@@ -138,6 +138,7 @@ public class OntologyBridge {
 			compiler.getCompilerManager().awaitCompilePriorityCompleted(compiler, priorityToAwait);
 		}
 		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			if (CompilerManager.isCompileThread()) {
 				LOGGER.error("Interrupted while waiting", e);
 			} else {
