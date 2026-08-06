@@ -242,6 +242,28 @@ public class GitAttachmentProviderTest {
 		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
 	}
 
+	/**
+	 * Renaming a page moves its legacy version directories along. Git refuses to unstage a directory path, so the
+	 * commit has to name the files inside it, otherwise the old paths stay tracked next to the moved-in ones.
+	 */
+	@Test
+	public void moveAttachmentsForPageMovesTheLegacyLayoutInOneCommit() throws Exception {
+		createLegacyAttachment("Before", "pic.jpg", "old-v1", "old-v2");
+
+		WikiPage oldParent = new WikiPage(engine, "Before");
+		oldParent.setAuthor(AUTHOR);
+		attachmentProvider.moveAttachmentsForPage(oldParent, "After");
+
+		assertFalse(new File(pageDir, "Before-att").exists());
+		assertTrue(new File(pageDir, "After-att/pic.jpg-dir/2.jpg").exists());
+		// the move is complete in git as well, nothing of the old location is left tracked or unstaged
+		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
+		assertEquals(0, commits("Before-att/pic.jpg-dir/1.jpg"));
+		assertEquals(1, commits("After-att/pic.jpg-dir/1.jpg"));
+		// the attachment is still served from its new parent
+		assertEquals("old-v2", readVersion("After", "pic.jpg", WikiProvider.LATEST_VERSION));
+	}
+
 	/** Builds and commits the legacy layout, as a real pre-git repository would carry it. */
 	private void createLegacyAttachment(String page, String fileName, String... versions) throws Exception {
 		File dir = new File(pageDir, page + "-att/" + fileName + "-dir");

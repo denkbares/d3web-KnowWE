@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -456,20 +457,24 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			commitHash = repository.withCommitLock(() -> {
 				File oldDir = attachmentDir(repository, oldParent.getName());
 				File newDir = attachmentDir(repository, newParent);
-				File[] files = oldDir.listFiles();
-				if (files == null) {
+				if (!oldDir.isDirectory()) {
 					return null;
 				}
+				List<String> movedFiles = attachmentFilesRelative(oldDir);
 				GitWikiRepository.moveCaseSafe(oldDir, newDir);
 				String oldRel = JSPUtils.getAttachmentDir(oldParent.getName());
 				String newRel = JSPUtils.getAttachmentDir(newParent);
 				List<String> oldPaths = new ArrayList<>();
 				List<String> newPaths = new ArrayList<>();
-				for (File file : files) {
-					oldPaths.add(oldRel + "/" + file.getName());
-					newPaths.add(newRel + "/" + file.getName());
-					eventPages.add(oldParent.getName() + "/" + file.getName());
-					eventPages.add(newParent + "/" + file.getName());
+				Set<String> movedAttachments = new LinkedHashSet<>();
+				for (String movedFile : movedFiles) {
+					oldPaths.add(oldRel + "/" + movedFile);
+					newPaths.add(newRel + "/" + movedFile);
+					movedAttachments.add(attachmentNameOf(movedFile));
+				}
+				for (String attachmentName : movedAttachments) {
+					eventPages.add(oldParent.getName() + "/" + attachmentName);
+					eventPages.add(newParent + "/" + attachmentName);
 				}
 				// the moved-in files are untracked (newFiles = true stages them in the git index, a pathspec commit
 				// cannot pick up untracked files); the moved-away paths are tracked deletions and need no staging
@@ -493,6 +498,30 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		if (commitHash != null) {
 			context().fireCommitted(this, GitVersioningWikiEvent.MOVED, user, eventPages, commitHash, repository.path());
 		}
+	}
+
+	/**
+	 * The files of an attachment directory as paths relative to it. The legacy layout keeps the versions of an
+	 * attachment inside a {@code <file>-dir} directory, and staging a directory path removes nothing from the index,
+	 * so a move has to name the files themselves.
+	 */
+	private static List<String> attachmentFilesRelative(File attachmentDir) throws IOException {
+		Path root = attachmentDir.toPath();
+		try (Stream<Path> walk = Files.walk(root)) {
+			return walk.filter(Files::isRegularFile)
+					.map(path -> root.relativize(path).toString().replace(File.separatorChar, '/'))
+					.sorted()
+					.toList();
+		}
+	}
+
+	/**
+	 * The attachment a moved file belongs to, which is the file itself in the flat layout and the owner of the
+	 * version directory in the legacy one.
+	 */
+	private static String attachmentNameOf(String relativePath) {
+		String name = JSPUtils.unmangleName(relativePath.split("/", 2)[0]);
+		return name.endsWith(ATTDIR_EXTENSION) ? name.substring(0, name.length() - ATTDIR_EXTENSION.length()) : name;
 	}
 
 	/**
