@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +40,9 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 public class OntologyBridge {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyBridge.class);
 
+	private static final ReentrantReadWriteLock MAPPING_LOCK = new ReentrantReadWriteLock();
+	private static final Lock MAPPING_READ_LOCK = MAPPING_LOCK.readLock();
+	private static final Lock MAPPING_WRITE_LOCK = MAPPING_LOCK.writeLock();
 	private static final MultiMap<String, String> mapping = new N2MMap<>();
 
 	/**
@@ -51,11 +56,43 @@ public class OntologyBridge {
 	private static final ConcurrentMap<String, AtomicLong> suppressedSinceLastLog = new ConcurrentHashMap<>();
 
 	public static void registerBridge(String d3webCompileSectionID, String ontologyCompileSectionID) {
-		mapping.put(d3webCompileSectionID, ontologyCompileSectionID);
+		MAPPING_WRITE_LOCK.lock();
+		try {
+			mapping.put(d3webCompileSectionID, ontologyCompileSectionID);
+		}
+		finally {
+			MAPPING_WRITE_LOCK.unlock();
+		}
 	}
 
 	public static void unregisterBridge(String d3webCompileSectionID) {
-		mapping.removeKey(d3webCompileSectionID);
+		MAPPING_WRITE_LOCK.lock();
+		try {
+			mapping.removeKey(d3webCompileSectionID);
+		}
+		finally {
+			MAPPING_WRITE_LOCK.unlock();
+		}
+	}
+
+	static String getMappedOntologySectionId(String d3webCompileSectionId) {
+		MAPPING_READ_LOCK.lock();
+		try {
+			return mapping.getAnyValue(d3webCompileSectionId);
+		}
+		finally {
+			MAPPING_READ_LOCK.unlock();
+		}
+	}
+
+	static String getMappedD3webSectionId(String ontologyCompileSectionId) {
+		MAPPING_READ_LOCK.lock();
+		try {
+			return mapping.getAnyKey(ontologyCompileSectionId);
+		}
+		finally {
+			MAPPING_READ_LOCK.unlock();
+		}
 	}
 
 	/**
@@ -124,7 +161,7 @@ public class OntologyBridge {
 	@NotNull
 	public static OntologyCompiler getOntology(@NotNull D3webCompiler d3webCompiler, Priority priorityToAwait) {
 		String d3webSectionId = d3webCompiler.getCompileSection().getID();
-		String ontologyId = mapping.getAnyValue(d3webSectionId);
+		String ontologyId = getMappedOntologySectionId(d3webSectionId);
 		if (ontologyId == null) {
 			logBridgeFailure("getOntology - no ontology linked", d3webCompiler, d3webSectionId, null);
 			throw new IllegalArgumentException("No ontology linked to the given d3web compiler: " + Compilers.getCompilerName(d3webCompiler));
@@ -163,7 +200,7 @@ public class OntologyBridge {
 	 */
 	public static boolean hasOntology(D3webCompiler d3webCompiler) {
 		if (d3webCompiler == null) return false;
-		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
+		String ontologyId = getMappedOntologySectionId(d3webCompiler.getCompileSection().getID());
 		return ontologyId != null && getOntologyCompilerCached(d3webCompiler, ontologyId) != null;
 	}
 
@@ -185,7 +222,7 @@ public class OntologyBridge {
 	@NotNull
 	public static D3webCompiler getCompiler(@NotNull OntologyCompiler ontologyCompiler) {
 		String ontologySectionId = ontologyCompiler.getCompileSection().getID();
-		String d3webId = mapping.getAnyKey(ontologySectionId);
+		String d3webId = getMappedD3webSectionId(ontologySectionId);
 		if (d3webId == null) {
 			logBridgeFailure("getCompiler - ontology not linked", ontologyCompiler, ontologySectionId, null);
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler: " + Compilers.getCompilerName(ontologyCompiler));
@@ -246,8 +283,14 @@ public class OntologyBridge {
 					.append(" (").append(describeSection(mappedSection)).append(")\n");
 			sb.append("  thread             = ").append(thread.getName())
 					.append(" (compileThread=").append(isCompileThread).append(")\n");
-			sb.append("  mapping size       = ").append(mapping.size()).append('\n');
-			sb.append("  mapping entries    = ").append(mapping.entrySet()).append('\n');
+			MAPPING_READ_LOCK.lock();
+			try {
+				sb.append("  mapping size       = ").append(mapping.size()).append('\n');
+				sb.append("  mapping entries    = ").append(mapping.entrySet()).append('\n');
+			}
+			finally {
+				MAPPING_READ_LOCK.unlock();
+			}
 			CompilerManager cm = caller instanceof Compiler c ? c.getCompilerManager() : null;
 			if (cm != null) {
 				// figure out which of caller/mapped is the d3web side and which is the ontology side
