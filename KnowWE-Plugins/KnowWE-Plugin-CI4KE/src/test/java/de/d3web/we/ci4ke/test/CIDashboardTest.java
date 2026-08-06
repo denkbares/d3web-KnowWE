@@ -45,10 +45,12 @@ public class CIDashboardTest {
 	@Before
 	public void setUp() throws Exception {
 		InitPluginManager.init();
-		// RootType.getInstance().addChildType(new CIDashboardType());
-		DummyConnector connector = new DummyConnector();
-		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-		Environment.initInstance(connector);
+		if (!Environment.isInitialized()) {
+			// RootType.getInstance().addChildType(new CIDashboardType());
+			DummyConnector connector = new DummyConnector();
+			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+			Environment.initInstance(connector);
+		}
 		env = Environment.getInstance();
 	}
 
