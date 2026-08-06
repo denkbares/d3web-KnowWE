@@ -23,8 +23,13 @@ public class RenderResult {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RenderResult.class);
 
 	private static final String storeKey = RenderResult.class.getName();
+	// character sequences that JSPWiki would interpret as markup: they are masked in everything appended
+	// via appendHtml*, so JSPWiki passes the HTML through untouched, and unmasked after JSPWiki rendering.
+	// This must include the tokens that are active mid-text (e.g. __bold__, {{monospace}}, %%style) —
+	// otherwise JSPWiki injects tags like <b> into the HTML, even inside attribute values.
+	// Longer tokens must precede their prefixes ({{{ before {{).
 	private static final String[] HTML = new String[] {
-			"[{", "}]", "\\\\", "\"", "'", ">", "<", "[", "]" };
+			"[{", "}]", "\\\\", "\"", "'", ">", "<", "[", "]", "{{{", "}}}", "{{", "}}", "__", "%%" };
 
 	private final String maskKey;
 	private final String[] maskedHtml;
