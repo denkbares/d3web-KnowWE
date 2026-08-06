@@ -240,7 +240,8 @@ public class GitWikiRepository {
 			versions.add(buildVersion(id.fileName(), revisions.get(i), count - i));
 		}
 		if (versions.isEmpty()) {
-			LOGGER.error("File '{}' exists but git reports no version of it.", id.fileName());
+			// the normal state of a git-ignored page and of a file staged in an open batch, both handled elsewhere
+			LOGGER.debug("File '{}' exists but git reports no version of it.", id.fileName());
 		}
 		// already newest-first (revisions were newest-first)
 		return versions;
