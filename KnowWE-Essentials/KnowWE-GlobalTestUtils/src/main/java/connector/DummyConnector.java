@@ -155,6 +155,11 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public void invalidatePageCache(Collection<String> titles) {
+		// the dummy wiki serves its pages from a map, there is nothing cached beside it
+	}
+
+	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) {
 		if (getArticleText(title) == null) return Collections.emptyList();
 		return Collections.singletonList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1), null));

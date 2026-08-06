@@ -652,6 +652,21 @@ public class JSPWikiConnector implements WikiConnector {
 		WikiEventManager.fireEvent(engine, new WikiEngineEvent(engine, WikiEngineEvent.INITIALIZED));
 	}
 
+	@Override
+	public void invalidatePageCache(Collection<String> titles) {
+		CachingManager cachingManager = engine.getManager(CachingManager.class);
+		if (cachingManager == null) {
+			return;
+		}
+		// removing through the CachingManager rather than the PageManager, whose delegate call would reach the git
+		// providers' throwing deleteVersion and skip the history cache
+		for (String title : titles) {
+			cachingManager.remove(CACHE_PAGES, title);
+			cachingManager.remove(CACHE_PAGES_TEXT, title);
+			cachingManager.remove(CACHE_PAGES_HISTORY, title);
+		}
+	}
+
 	private void reinitReferenceManager() throws WikiException {
 		if (engine instanceof WikiEngine wikiEngine) {
 			wikiEngine.initReferenceManager(true);

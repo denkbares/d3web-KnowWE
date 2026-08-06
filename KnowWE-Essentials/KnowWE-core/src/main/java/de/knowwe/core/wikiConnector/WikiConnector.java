@@ -61,6 +61,14 @@ public interface WikiConnector {
 	void reinitializeWikiEngine() throws IOException;
 
 	/**
+	 * Drops the cached copies of the given pages, so the next read returns what is on the file system. Needed by
+	 * components that change page files directly, without the normal wiki-save-process.
+	 *
+	 * @param titles the titles of the pages to drop
+	 */
+	void invalidatePageCache(Collection<String> titles);
+
+	/**
 	 * Returns the list with all available versions of the wiki page with the given title, starting with the most
 	 * recent.
 	 *
