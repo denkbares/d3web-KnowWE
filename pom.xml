@@ -89,6 +89,10 @@
 		<hamcrest.version>1.3</hamcrest.version>
 
 		<!-- other -->
+		<!-- guava wird nur transitiv gebraucht; der Eintrag uebersteuert die Version-Range
+			[15.0,19.0) von org.eclipse.elk 0.3.0 (via SemanticServiceCore-Plugin-IES ->
+			CircuitLayouting -> Praline), die sonst guava 19.0-rc3 in den WAR zieht -->
+		<guava.version>33.6.0-jre</guava.version>
 		<antlr4.version>4.13.1</antlr4.version>
 		<rdf4j.version>4.3.15</rdf4j.version>
 		<poi.version>5.5.0</poi.version>
@@ -1235,6 +1239,11 @@
 			</dependency>
 
 			<!-- ===== Third-party: other ===== -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
