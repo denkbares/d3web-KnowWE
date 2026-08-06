@@ -5,8 +5,10 @@ package de.knowwe.core.kdom.rendering;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +25,17 @@ public class RenderResult {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RenderResult.class);
 
 	private static final String storeKey = RenderResult.class.getName();
-	// character sequences that JSPWiki would interpret as markup: they are masked in everything appended
-	// via appendHtml*, so JSPWiki passes the HTML through untouched, and unmasked after JSPWiki rendering.
-	// This must include the tokens that are active mid-text (e.g. __bold__, {{monospace}}, %%style) —
-	// otherwise JSPWiki injects tags like <b> into the HTML, even inside attribute values.
-	// Longer tokens must precede their prefixes ({{{ before {{).
-	private static final String[] HTML = new String[] {
-			"[{", "}]", "\\\\", "\"", "'", ">", "<", "[", "]", "{{{", "}}}", "{{", "}}", "__", "%%" };
+	// Everything appended via appendHtml* must be hidden from the JSPWiki renderer: the HTML-structural
+	// characters (tag brackets, quotes, plugin syntax) plus all JSPWiki markup tokens (single source of
+	// truth: KnowWEUtils#JSPWIKI_TOKENS) — otherwise JSPWiki injects tags like <b> for __bold__ into the
+	// HTML, even inside attribute values. Masking is reverted byte-exact by unmask() after JSPWiki
+	// rendering. Sorted longest-first so no token is shadowed by one of its prefixes ({{{ before {{).
+	private static final String[] HTML = Stream.concat(
+			Stream.of("[{", "}]", "\"", "'", ">", "<"),
+			KnowWEUtils.JSPWIKI_TOKENS.stream())
+			.distinct()
+			.sorted(Comparator.comparingInt(String::length).reversed())
+			.toArray(String[]::new);
 
 	private final String maskKey;
 	private final String[] maskedHtml;

@@ -42,13 +42,13 @@ public class RenderResultMaskTest {
 	}
 
 	@Test
-	public void maskHidesMidTextJSPWikiTokens() {
-		// __bold__, {{monospace}}, %%style — JSPWiki interprets these even mid-text / inside attribute values
-		String masked = RenderResult.mask("<span data-file=\"a__b__c {{x}} 50%%\">", STORE);
-		assertFalse(masked.contains("__"));
-		assertFalse(masked.contains("{{"));
-		assertFalse(masked.contains("}}"));
-		assertFalse(masked.contains("%%"));
+	public void maskHidesAllJSPWikiTokens() {
+		// JSPWiki must see none of its markup tokens in HTML — some are active even mid-text / inside
+		// attribute values (__bold__, {{monospace}}, %%style), others at line starts (||, ----)
+		String masked = RenderResult.mask("<span data-file=\"a__b__c {{x}} 50%% e|f||g ---- h\\i [j]\">", STORE);
+		for (String token : de.knowwe.core.utils.KnowWEUtils.JSPWIKI_TOKENS) {
+			assertFalse("token still visible to JSPWiki: " + token, masked.contains(token));
+		}
 		assertFalse(masked.contains("<"));
 		assertFalse(masked.contains("\""));
 	}
@@ -59,5 +59,6 @@ public class RenderResultMaskTest {
 		assertRoundTrip("plain text without any tokens");
 		assertRoundTrip("nested braces {{{code}}} and {{mono}} and [{plugin}]");
 		assertRoundTrip("style %%red text/% and \\\\ linebreak");
+		assertRoundTrip("|| table | syntax and ---- ruler and C:\\path\\file");
 	}
 }
