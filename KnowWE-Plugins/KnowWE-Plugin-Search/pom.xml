@@ -82,6 +82,14 @@
 			<artifactId>lucene-highlighter</artifactId>
 		</dependency>
 
+		<!-- org.apache.wiki.api.core.Context referenziert javax.servlet.jsp.PageContext.
+			 In KnowWE-core steht das ebenfalls auf provided und ist damit nicht transitiv. -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jsp-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
