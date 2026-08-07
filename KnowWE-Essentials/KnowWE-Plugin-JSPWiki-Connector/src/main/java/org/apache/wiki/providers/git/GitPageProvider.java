@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -440,21 +441,31 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	 * mapped for the commit events and the cache eviction.
 	 */
 	private Collection<String> wikiNames(Collection<String> paths) {
-		List<String> names = new ArrayList<>(paths.size());
+		// the version files of one legacy attachment all map to the same name
+		Collection<String> names = new LinkedHashSet<>();
 		for (String path : paths) {
-			File asFile = new File(path);
-			String dir = asFile.getParent();
-			if (dir != null && dir.endsWith(BasicAttachmentProvider.DIR_EXTENSION)) {
-				// attachment paths were mangled by JSPUtils (hard UTF-8), so unmangle them the same way
-				String parent = JSPUtils.unmangleName(
-						dir.substring(0, dir.length() - BasicAttachmentProvider.DIR_EXTENSION.length()));
-				names.add(parent + "/" + JSPUtils.unmangleName(asFile.getName()));
-			}
-			else {
-				names.add(pageNameOfFile(asFile.getName()));
-			}
+			names.add(wikiName(path));
 		}
 		return names;
+	}
+
+	/**
+	 * The wiki name of a single repo-relative path. Both attachment layouts start with the {@code <page>-att}
+	 * directory, the legacy one keeps the versions of an attachment in a {@code <file>-dir} directory below it.
+	 */
+	private String wikiName(String path) {
+		String[] segments = path.replace(File.separatorChar, '/').split("/");
+		if (segments.length >= 2 && segments[0].endsWith(BasicAttachmentProvider.DIR_EXTENSION)) {
+			// attachment paths were mangled by JSPUtils (hard UTF-8), so unmangle them the same way
+			String parent = JSPUtils.unmangleName(
+					segments[0].substring(0, segments[0].length() - BasicAttachmentProvider.DIR_EXTENSION.length()));
+			String file = JSPUtils.unmangleName(segments[1]);
+			if (file.endsWith(BasicAttachmentProvider.ATTDIR_EXTENSION)) {
+				file = file.substring(0, file.length() - BasicAttachmentProvider.ATTDIR_EXTENSION.length());
+			}
+			return parent + "/" + file;
+		}
+		return pageNameOfFile(segments[segments.length - 1]);
 	}
 
 	private String pageNameOfFile(String fileName) {
