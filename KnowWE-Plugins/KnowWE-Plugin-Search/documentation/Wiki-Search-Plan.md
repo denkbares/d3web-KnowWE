@@ -336,7 +336,9 @@ Drei Stufen, absichtlich von leicht nach schwer:
 
 ## Umsetzungsnotizen — wo die Realität den Plan korrigiert hat
 
-Stand: Stufen 0–2 fertig, Stufe 3/4 teilweise (Index, Query, Anker). 68 Tests grün.
+**Stand:** Stufen 0–2 fertig. Der komplette Suchkern steht und ist getestet (80 Tests): Chunking, Textextraktion, Analyzer, Dokumentmodell, Lucene-Index mit Schema-Absicherung, Query-Aufbau, Anker-Auflösung, Snippets, Relaxation.
+
+**Was noch fehlt, und alles davon braucht das laufende Wiki:** die Anbindung an die KnowWE-Events und den Index-Ort über `Engine.getWorkDir()` (`WikiSearchService`), die ACL-Felder samt Filterklausel, die `WikiSearchAction`, und die Oberfläche. Bis dahin ist die Suche nur über Tests erreichbar, nicht im Browser.
 
 **Die KDOM-Struktur ist anders als im Plan angenommen.** Prosa liegt in `ParagraphType › WikiTextType`, **nicht** in `PlainText`. Der geplante „nur `PlainText`-Blätter"-Extraktor hätte nichts gefunden. Umgekehrt tragen die `PlainText`-Kinder eines Markups die `%%`- und `%`-Delimiter, die er mit indiziert hätte. Beides ist jetzt gegen die tatsächliche Struktur geschrieben.
 
