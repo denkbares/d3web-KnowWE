@@ -78,8 +78,6 @@ public final class SearchFields {
 	 * across a reparse or a restart.
 	 */
 	public static final String SECTION_PATH = "sectionPath";
-	/** The chunk's heading anchor for deep linking into the page. */
-	public static final String ANCHOR = "anchor";
 	/** Position of the chunk within its page; stable tie breaker. */
 	public static final String ORDINAL = "ordinal";
 
