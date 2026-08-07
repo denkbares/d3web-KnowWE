@@ -109,12 +109,15 @@ public class WikiSearchService implements EventListener {
 	private static Path defaultIndexPath() {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
 		if (connector instanceof JSPWikiConnector jspWiki) {
-			return Path.of(jspWiki.getEngine().getWorkDir())
-					.resolve(INDEX_DIRECTORY).resolve(SearchFields.SCHEMA_VERSION);
+			Path workDir = Path.of(jspWiki.getEngine().getWorkDir());
+			if (workDir.isAbsolute()) return workDir.resolve(INDEX_DIRECTORY).resolve(SearchFields.SCHEMA_VERSION);
 		}
-		// no wiki engine, for instance in a headless run: next to the page directory, never inside it
-		return Path.of(connector.getSavePath())
-				.resolveSibling(INDEX_DIRECTORY).resolve(SearchFields.SCHEMA_VERSION);
+		// No wiki engine, so this is a test or a headless run. Never derive a path from getSavePath() here: with the
+		// test connector it is relative, and the index then materialises inside whatever directory the process was
+		// started in -- which is how one ended up committed into the source tree.
+		Path temporary = Path.of(System.getProperty("java.io.tmpdir"), INDEX_DIRECTORY, SearchFields.SCHEMA_VERSION);
+		LOGGER.info("No wiki engine available, keeping the search index under {}", temporary);
+		return temporary;
 	}
 
 	/** Opens the index without touching the singleton, so tests can drive a service on a temporary directory. */

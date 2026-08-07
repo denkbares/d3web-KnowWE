@@ -33,6 +33,7 @@ import de.knowwe.search.query.SearchHit;
 import de.knowwe.search.query.SearchRequest;
 import de.knowwe.search.query.SearchResults;
 import de.knowwe.search.query.WikiSearcher;
+import de.knowwe.search.render.SearchResultRenderer;
 
 /**
  * The JSON endpoint of the section search, at {@code /action/WikiSearchAction}.
@@ -51,8 +52,12 @@ public class WikiSearchAction extends AbstractAction {
 	public static final String PARAM_PARTIAL = "partial";
 	public static final String PARAM_OFFSET = "offset";
 	public static final String PARAM_LIMIT = "limit";
+	/** The quick search switches previews off; a rendered section would not fit into a dropdown. */
+	public static final String PARAM_PREVIEW = "preview";
 
 	private static final int MAX_LIMIT = 50;
+
+	private final SearchResultRenderer renderer = new SearchResultRenderer();
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -84,12 +89,22 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("relaxed", results.relaxed());
 		answer.put("unmatched", new JSONArray(results.unmatched()));
 
+		boolean withPreview = !"false".equals(context.getParameter(PARAM_PREVIEW, "true"));
 		JSONArray hits = new JSONArray();
 		for (SearchHit hit : results.hits()) {
 			Article article = context.getArticleManager().getArticle(hit.title());
 			// a hit whose page vanished or may not be read must not leave the server
 			if (article == null || !KnowWEUtils.canView(article, context)) continue;
-			hits.put(toJson(hit));
+			JSONObject json = toJson(hit);
+			// only for the hits actually shown: rendering costs a wiki-syntax pass each
+			if (withPreview) {
+				SearchResultRenderer.Rendered rendered = renderer.render(hit.anchor(), context);
+				if (rendered != null) {
+					json.put("previewHtml", rendered.html());
+					if (rendered.stale()) json.put("stale", true);
+				}
+			}
+			hits.put(json);
 		}
 		answer.put("hits", hits);
 
