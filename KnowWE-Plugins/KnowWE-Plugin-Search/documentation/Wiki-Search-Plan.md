@@ -334,6 +334,28 @@ Drei Stufen, absichtlich von leicht nach schwer:
 **Was ich selbständig tue:** Code und Tests schreiben, `mvn -am test`/`package` laufen lassen, HeadlessApp starten, ab Stufe 5 den Server hochfahren und die Suchseite durchklicken.
 **Was ich nicht tue:** in `Main` schreiben · ins geteilte `~/.m2` installieren · committen oder pushen ohne Rückfrage · echte Kundenwikis verändern.
 
+## Umsetzungsnotizen — wo die Realität den Plan korrigiert hat
+
+Stand: Stufen 0–2 fertig, Stufe 3/4 teilweise (Index, Query, Anker). 68 Tests grün.
+
+**Die KDOM-Struktur ist anders als im Plan angenommen.** Prosa liegt in `ParagraphType › WikiTextType`, **nicht** in `PlainText`. Der geplante „nur `PlainText`-Blätter"-Extraktor hätte nichts gefunden. Umgekehrt tragen die `PlainText`-Kinder eines Markups die `%%`- und `%`-Delimiter, die er mit indiziert hätte. Beides ist jetzt gegen die tatsächliche Struktur geschrieben.
+
+**Chunk-Grenze ist auch das Markup, nicht nur die Überschrift.** Viele Seiten haben gar keine Überschriften; dort sind ein `%%`-Block und die Prosa drumherum die Einheiten, die ein Leser erkennt — und jeder Block hat ohnehin seinen eigenen `PreviewRenderer`. Der Splitter heißt deshalb `ArticleChunker`, um klarzustellen, dass er nichts am Parsen ändert: er liest nur `article.getRootSection().getChildren()`.
+
+**Überschriftenebenen sind invertiert** (`!!!` = Ebene 1), und der Breadcrumb muss unbenutzte Ebenen überspringen — Seiten beginnen üblicherweise bei `!!`, nicht bei `!!!`. Ohne das bleibt der Breadcrumb leer.
+
+**Query nach Position, nicht nach Token.** Die Analyzer geben absichtlich mehrere Tokens an derselben Position aus (ungestemmt neben gestemmt, ganzer Bezeichner neben seinen Teilen). Die flache Tokenliste als Wortliste zu behandeln hat drei Dinge gleichzeitig kaputtgemacht: eine Ein-Wort-Anfrage verlangte zwei Treffer, der As-you-type-Prefix landete auf der gestemmten Form statt auf dem Getippten, und eine Drei-Wort-Phrase wurde zu einer Fünf-Term-Phrase, die nie matchen kann. `QueryTokens` gruppiert nach Position, Phrasen bauen auf Lucenes `QueryBuilder` auf.
+
+**Markup gehört in die Disjunktion, nicht daneben.** Als reiner `SHOULD`-Bonus konnte ein Block, dessen einziger Treffer sein Markup-Name ist, die Anfrage nie erfüllen.
+
+**Lucene 10:** `setRewriteMethod` gibt es nicht mehr, die Rewrite-Methode ist Konstruktor-Argument.
+
+**Reihenfolge im `MarkupTokenAnalyzer`:** Word-Delimiter-Splitting muss **vor** dem Lowercasing laufen, sonst hat `SPLIT_ON_CASE_CHANGE` keine Groß-/Kleinschreibung mehr und `%%KnowledgeBase` bleibt ein Token.
+
+**Gemessen:** 121 Seiten → 569 Dokumente in 2,5 s, ~20 ms/Seite inklusive KDOM-Parsen. Hochgerechnet ~17 min für 50k Seiten; der Löwenanteil ist das Parsen, nicht Lucene.
+
+**Noch offen und bewusst zurückgestellt:** eine kurze Anfrage, bei der ein Wort nicht vorkommt, liefert null Treffer (`leere Batterie` findet nichts, obwohl `Batterie` fünf Treffer hat). Das ist die Regel „bis 3 Wörter müssen alle matchen". Vorschlag für den Service: strikt suchen, und nur bei null Treffern relaxiert nachfassen.
+
 ## Verifikation
 
 - `KdomSectionSplitterTest` / `KdomTextExtractorTest`: Fixture-Artikel → erwartete Chunks, Breadcrumbs, markupfreier `body`; `%%Question` landet als `%%question` **und** `question` im `markup`-Feld, `@file` ebenso.
