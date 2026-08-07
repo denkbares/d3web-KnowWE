@@ -18,11 +18,12 @@
  */
 
 /**
- * The section search page.
+ * The section search: the full page, and the quick search in the header.
  *
- * First iteration on purpose: breadcrumb plus highlighted text snippet, so the ranking can be judged against a real
- * wiki. The rendered section preview follows and replaces the snippet on this page; the snippet stays for the quick
- * search dropdown, where a preview would not fit.
+ * Both talk to the same endpoint, which is the point of doing it this way -- the dropdown is not a second, weaker
+ * search but the same ranking with a smaller window. The page shows breadcrumb plus highlighted snippet for now; the
+ * rendered section preview replaces the snippet there later, while the dropdown keeps the snippet because a preview
+ * would not fit into it.
  */
 (function () {
 	'use strict';
@@ -173,10 +174,144 @@
 		return match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : '';
 	}
 
+	/* ---------------------------------------------------------------- quick search in the header */
+
+	var QUICK_LIMIT = 8;
+	var QUICK_DEBOUNCE_MS = 200;
+
+	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '' };
+
+	function initQuickSearch() {
+		quick.input = document.querySelector('.knowwe-quicksearch-input');
+		quick.panel = document.getElementById('knowwe-quicksearch-panel');
+		if (!quick.input || !quick.panel) return;
+
+		quick.input.addEventListener('input', function () {
+			window.clearTimeout(quick.pending);
+			quick.pending = window.setTimeout(askQuick, QUICK_DEBOUNCE_MS);
+		});
+		quick.input.addEventListener('keydown', onQuickKey);
+		quick.input.addEventListener('focus', function () {
+			if (quick.hits.length) showQuick();
+		});
+		document.addEventListener('click', function (event) {
+			if (!quick.panel.contains(event.target) && event.target !== quick.input) hideQuick();
+		});
+	}
+
+	function askQuick() {
+		var query = quick.input.value;
+		quick.query = query;
+		if (query.trim().length < 2) {
+			hideQuick();
+			return;
+		}
+		jq$.ajax({
+			url: 'action/WikiSearchAction',
+			data: { query: query, limit: QUICK_LIMIT, partial: true },
+			dataType: 'json',
+			cache: false
+		}).done(function (answer) {
+			if (quick.query !== query) return; // a newer keystroke already won
+			renderQuick(answer);
+		}).fail(hideQuick);
+	}
+
+	function renderQuick(answer) {
+		quick.hits = answer.hits || [];
+		quick.active = -1;
+		quick.panel.innerHTML = '';
+
+		if (!quick.hits.length) {
+			var empty = document.createElement('div');
+			empty.className = 'knowwe-quicksearch-empty';
+			empty.textContent = answer.indexing ? 'Index wird aufgebaut …' : 'Keine Treffer';
+			quick.panel.appendChild(empty);
+			showQuick();
+			return;
+		}
+
+		quick.hits.forEach(function (hit, position) {
+			var entry = document.createElement('a');
+			entry.className = 'knowwe-quicksearch-hit';
+			entry.href = hit.url;
+			entry.addEventListener('mouseenter', function () {
+				highlightQuick(position);
+			});
+
+			var crumb = document.createElement('div');
+			crumb.className = 'knowwe-quicksearch-crumb';
+			crumb.textContent = hit.breadcrumb || hit.title;
+			entry.appendChild(crumb);
+
+			var snippet = document.createElement('div');
+			snippet.className = 'knowwe-quicksearch-snippet';
+			// safe: the server escapes the body and only adds its own <mark> tags around the matches
+			snippet.innerHTML = hit.snippet || '';
+			entry.appendChild(snippet);
+
+			quick.panel.appendChild(entry);
+		});
+
+		var all = document.createElement('a');
+		all.className = 'knowwe-quicksearch-all';
+		all.href = 'Search.jsp?query=' + encodeURIComponent(quick.query);
+		all.textContent = 'Alle ' + answer.total + (answer.exact ? '' : '+') + ' Treffer anzeigen';
+		quick.panel.appendChild(all);
+
+		showQuick();
+	}
+
+	function onQuickKey(event) {
+		if (event.key === 'Escape') {
+			hideQuick();
+			return;
+		}
+		if (!quick.hits.length || quick.panel.hidden) return;
+
+		if (event.key === 'ArrowDown') {
+			event.preventDefault();
+			highlightQuick(quick.active + 1 >= quick.hits.length ? 0 : quick.active + 1);
+		}
+		else if (event.key === 'ArrowUp') {
+			event.preventDefault();
+			highlightQuick(quick.active <= 0 ? quick.hits.length - 1 : quick.active - 1);
+		}
+		else if (event.key === 'Enter' && quick.active >= 0) {
+			// without a selection Enter submits the form and lands on the full search page
+			event.preventDefault();
+			window.location.href = quick.hits[quick.active].url;
+		}
+	}
+
+	function highlightQuick(position) {
+		var entries = quick.panel.querySelectorAll('.knowwe-quicksearch-hit');
+		if (quick.active >= 0 && entries[quick.active]) entries[quick.active].classList.remove('active');
+		quick.active = position;
+		if (entries[position]) {
+			entries[position].classList.add('active');
+			entries[position].scrollIntoView({ block: 'nearest' });
+		}
+	}
+
+	function showQuick() {
+		quick.panel.hidden = false;
+	}
+
+	function hideQuick() {
+		quick.panel.hidden = true;
+		quick.active = -1;
+	}
+
+	function start() {
+		init();
+		initQuickSearch();
+	}
+
 	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', init);
+		document.addEventListener('DOMContentLoaded', start);
 	}
 	else {
-		init();
+		start();
 	}
 })();
