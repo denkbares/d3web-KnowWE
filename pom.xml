@@ -72,6 +72,11 @@
 		<httpcore.version>4.4</httpcore.version>
 		<httpclient.version>4.5.13</httpclient.version>
 
+		<!-- search -->
+		<!-- muss zu denkbares-Internals und dem jspwiki-Fork passen, sonst liegen zwei
+			 Lucene-Versionen im WAR -->
+		<lucene.version>10.4.0</lucene.version>
+
 		<!-- apache commons -->
 		<commons-csv.version>1.4</commons-csv.version>
 		<commons-text.version>1.10.0</commons-text.version>
@@ -488,6 +493,11 @@
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Search</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -610,6 +620,39 @@
 				<groupId>com.denkbares</groupId>
 				<artifactId>denkbares-Git-Essentials</artifactId>
 				<version>${denkbares-Internals.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-LuceneUtils</artifactId>
+				<version>${denkbares-Internals.version}</version>
+			</dependency>
+
+			<!-- Lucene: bisher nur transitiv ueber jspwiki-knowwe-main im Classpath.
+				 KnowWE-Plugin-Search haengt direkt daran, also hier festnageln. -->
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-core</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analysis-common</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queries</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queryparser</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-highlighter</artifactId>
+				<version>${lucene.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
