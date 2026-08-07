@@ -136,7 +136,9 @@ public class WikiSearcher {
 		try {
 			UnifiedHighlighter highlighter = UnifiedHighlighter
 					.builder(searcher, WikiAnalyzers.forQuerying())
-					.withFormatter(new DefaultPassageFormatter("<mark>", "</mark>", " … ", false))
+					// escape=true is not optional: the body is wiki text, and without escaping anything a page
+					// contains would be injected into the result list as markup
+					.withFormatter(new DefaultPassageFormatter("<mark>", "</mark>", " … ", true))
 					.build();
 			Map<String, String[]> fields = highlighter.highlightFields(
 					new String[]{ SearchFields.BODY }, query, topDocs, new int[]{ SNIPPET_PASSAGES });
@@ -178,10 +180,15 @@ public class WikiSearcher {
 		return last < 0 ? null : breadcrumb.substring(last + 3);
 	}
 
+	/**
+	 * The fallback when highlighting produced nothing. Escaped like the highlighted variant: both end up as HTML in
+	 * the result list, and the body is wiki text that may contain anything.
+	 */
 	private static String shorten(String body) {
 		if (body == null) return "";
 		String single = body.replace('\n', ' ').trim();
-		return single.length() <= SNIPPET_LENGTH ? single : single.substring(0, SNIPPET_LENGTH) + " …";
+		String cut = single.length() <= SNIPPET_LENGTH ? single : single.substring(0, SNIPPET_LENGTH) + " …";
+		return cut.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
 	}
 
 	private static long millisSince(long startNanos) {

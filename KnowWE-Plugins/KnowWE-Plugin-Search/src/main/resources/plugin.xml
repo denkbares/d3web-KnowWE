@@ -35,14 +35,29 @@
 	</runtime>
 
 	<!--
-		Ausgelieferte Web-Ressourcen muessen mit der Plugin-ID beginnen, sonst verwirft
-		KnowWEPlugin.includeDOMResources() sie stillschweigend mit einer ERROR-Zeile.
-
-		Die Extensions folgen mit den jeweiligen Stufen:
-		  Stufe 3  EventListener  WikiSearchIndexListener
-		           Instantiation  WikiSearchInstantiation
-		  Stufe 4  Action         WikiSearchAction
-		  Stufe 5  dazu die Parameter script/css fuer KnowWE-Plugin-Search.js/.css
+		Opens the index and registers the service for the article events. Runs before any article exists,
+		which is fine: the index is filled once InitializedArticlesEvent reports them compiled.
 	-->
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation" id="WikiSearchInstantiation">
+		<parameter id="class" value="de.knowwe.search.WikiSearchInstantiation" />
+		<parameter id="name" value="WikiSearchInstantiation" />
+		<parameter id="description" value="Starts the section based wiki search and keeps its index in step." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<!--
+		The JSON endpoint at /action/WikiSearchAction. Web resources must be named after the plugin id,
+		otherwise KnowWEPlugin.includeDOMResources() drops them with an ERROR line.
+	-->
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="WikiSearchAction">
+		<parameter id="class" value="de.knowwe.search.action.WikiSearchAction" />
+		<parameter id="name" value="WikiSearchAction" />
+		<parameter id="description" value="Searches the wiki by section and answers with breadcrumb, snippet and anchors." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Search.js" />
+		<parameter id="css" value="KnowWE-Plugin-Search.css" />
+	</extension>
 
 </plugin>

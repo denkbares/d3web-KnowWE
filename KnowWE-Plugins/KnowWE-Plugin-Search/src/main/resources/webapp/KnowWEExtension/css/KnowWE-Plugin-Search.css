@@ -1,0 +1,106 @@
+/*
+ * Copyright (C) 2026 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+/* Colours come from variables.css only, so light and dark mode both work without a second rule set. */
+
+#knowwe-search {
+	max-width: 60em;
+}
+
+.knowwe-search-bar input[type="search"] {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.6em 0.8em;
+	font-size: 1.1em;
+	color: var(--text-color-primary);
+	background: var(--bg-color-primary);
+	border: 1px solid var(--border-color, #ccc);
+	border-radius: 4px;
+}
+
+.knowwe-search-status {
+	margin: 0.6em 0 1em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+}
+
+.knowwe-search-results {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.knowwe-search-hit {
+	padding: 0.9em 0;
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-hit:first-child {
+	border-top: none;
+}
+
+.knowwe-search-breadcrumb {
+	display: block;
+	font-size: 1.05em;
+	text-decoration: none;
+	color: var(--text-color-primary-link);
+}
+
+.knowwe-search-breadcrumb:hover span {
+	text-decoration: underline;
+}
+
+.knowwe-search-breadcrumb .knowwe-search-separator {
+	margin: 0 0.45em;
+	color: var(--text-color-secondary);
+}
+
+.knowwe-search-breadcrumb .knowwe-search-separator:hover {
+	text-decoration: none;
+}
+
+.knowwe-search-snippet {
+	margin-top: 0.3em;
+	line-height: 1.5;
+	color: var(--text-color-primary-light);
+}
+
+.knowwe-search-snippet mark {
+	padding: 0 0.1em;
+	background: var(--highlight-color-faint-yellow);
+	color: inherit;
+}
+
+.knowwe-search-more {
+	margin: 1.2em 0;
+	text-align: center;
+}
+
+.knowwe-search-more button {
+	padding: 0.4em 1.2em;
+	color: var(--text-color-secondary-shade);
+	background: transparent;
+	border: 1px solid var(--bg-color-secondary-shade);
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.knowwe-search-more button:hover {
+	background: var(--bg-color-secondary);
+}
