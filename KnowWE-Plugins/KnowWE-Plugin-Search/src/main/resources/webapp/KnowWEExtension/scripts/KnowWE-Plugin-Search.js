@@ -161,12 +161,60 @@
 		});
 		li.appendChild(link);
 
-		var snippet = document.createElement('div');
-		snippet.className = 'knowwe-search-snippet';
-		// safe: the server escapes the body and only adds its own <mark> tags around the matches
-		snippet.innerHTML = hit.snippet || '';
-		li.appendChild(snippet);
+		if (hit.stale) {
+			var warning = document.createElement('div');
+			warning.className = 'knowwe-search-stale';
+			warning.textContent = 'Die Seite wurde seit der Indizierung geändert.';
+			li.appendChild(warning);
+		}
+
+		if (hit.previewHtml) {
+			// the wiki's own rendering of the section: real tables, real markup boxes
+			var preview = document.createElement('div');
+			preview.className = 'knowwe-search-preview';
+			preview.innerHTML = hit.previewHtml;
+			li.appendChild(preview);
+			markMatches(preview);
+		}
+		else {
+			var snippet = document.createElement('div');
+			snippet.className = 'knowwe-search-snippet';
+			// safe: the server escapes the body and only adds its own <mark> tags around the matches
+			snippet.innerHTML = hit.snippet || '';
+			li.appendChild(snippet);
+		}
 		return li;
+	}
+
+	/**
+	 * Highlights the query words inside a rendered preview. Done here rather than on the server because wrapping
+	 * matches in already rendered HTML would cut through tags; walking text nodes cannot.
+	 */
+	function markMatches(container) {
+		var words = state.query.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (word) {
+			return word.length > 2;
+		});
+		if (!words.length) return;
+
+		var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+		var nodes = [];
+		while (walker.nextNode()) nodes.push(walker.currentNode);
+
+		nodes.forEach(function (node) {
+			var text = node.nodeValue;
+			var lower = text.toLowerCase();
+			var hitAt = -1, hitWord = null;
+			words.forEach(function (word) {
+				var at = lower.indexOf(word);
+				if (at >= 0 && (hitAt < 0 || at < hitAt)) { hitAt = at; hitWord = word; }
+			});
+			if (hitAt < 0) return;
+			var mark = document.createElement('mark');
+			mark.textContent = text.substr(hitAt, hitWord.length);
+			var after = node.splitText(hitAt);
+			after.nodeValue = after.nodeValue.substring(hitWord.length);
+			node.parentNode.insertBefore(mark, after);
+		});
 	}
 
 	function parameter(name) {

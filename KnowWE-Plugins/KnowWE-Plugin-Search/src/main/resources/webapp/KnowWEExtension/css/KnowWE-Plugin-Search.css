@@ -182,3 +182,45 @@
 .knowwe-quicksearch-all:hover {
 	background: var(--bg-color-secondary);
 }
+
+/* ------------------------------------------------------------------ rendered section preview */
+
+/*
+ * The wiki renders the section itself, so a hit shows real tables and markup boxes. Capped at a fifth of the
+ * viewport with a fade, because a long section must not push the next hit off the screen.
+ */
+.knowwe-search-preview {
+	position: relative;
+	max-height: 20vh;
+	margin-top: 0.4em;
+	overflow: hidden;
+	font-size: 0.95em;
+}
+
+.knowwe-search-preview::after {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 2.5em;
+	content: "";
+	background: linear-gradient(to bottom, transparent, var(--bg-color-primary));
+	pointer-events: none;
+}
+
+/* the preview brings the wiki's own spacing; strip the outer margins so hits stay compact */
+.knowwe-search-preview > :first-child {
+	margin-top: 0;
+}
+
+.knowwe-search-preview mark {
+	padding: 0 0.1em;
+	background: var(--highlight-color-faint-yellow);
+	color: inherit;
+}
+
+.knowwe-search-stale {
+	margin-top: 0.2em;
+	font-size: 0.8em;
+	color: var(--text-color-secondary);
+}
