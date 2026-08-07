@@ -392,10 +392,59 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		}
 		// disk deletion and commit happen inside commitDelete under the commit lock, so no sweep can interleave
 		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
-		String commitHash = repository.commitDelete(attFile, attachmentPath(attachment), userData);
+		File legacyDir = legacyVersionDir(attachment.getParentName(), attachment.getFileName());
+		String commitHash = legacyDir.exists()
+				? deleteBothLayouts(attachment, repository, attFile, legacyDir, userData)
+				: repository.commitDelete(attFile, attachmentPath(attachment), userData);
 		if (commitHash != null) {
 			fireEvent(GitVersioningWikiEvent.DELETE, attachment, commitHash, repository);
 		}
+	}
+
+	/**
+	 * Deletes an attachment that exists in both layouts. Saving over a legacy attachment leaves its version directory
+	 * in place next to the new flat file, and every read path falls back to that directory once the flat file is gone,
+	 * so removing only the flat file would serve the pre-git content again.
+	 */
+	private String deleteBothLayouts(Attachment attachment, GitWikiRepository repository, File attFile, File legacyDir,
+									 CommitUserData userData) throws ProviderException {
+		try {
+			return repository.withCommitLock(() -> {
+				List<String> relPaths = new ArrayList<>();
+				if (!repository.isIgnored(attachmentPath(attachment))) {
+					relPaths.add(attachmentPath(attachment));
+				}
+				if (!attFile.delete()) {
+					LOGGER.warn("Failed to delete attachment file on disk: {}", attFile.getAbsolutePath());
+				}
+				relPaths.addAll(deleteLegacyVersionDir(repository, legacyDir));
+				return repository.commitRemovedPaths(relPaths, userData);
+			});
+		}
+		catch (ProviderException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new ProviderException("Could not delete attachment '" + attachmentPath(attachment)
+					+ "': " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Deletes the files of a legacy version directory from disk and returns their repo-relative paths.
+	 */
+	private static List<String> deleteLegacyVersionDir(GitWikiRepository repository, File legacyDir) throws IOException {
+		Path repoRoot = new File(repository.path()).toPath();
+		List<String> relPaths = new ArrayList<>();
+		try (Stream<Path> walk = Files.walk(legacyDir.toPath())) {
+			for (Path path : walk.sorted(Comparator.reverseOrder()).toList()) {
+				if (Files.isRegularFile(path)) {
+					relPaths.add(repoRoot.relativize(path).toString().replace(File.separatorChar, '/'));
+				}
+				Files.delete(path);
+			}
+		}
+		return relPaths;
 	}
 
 	/**
@@ -412,19 +461,8 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		String commitHash;
 		try {
 			// disk deletion and commit share one lock bracket, like the flat delete path
-			commitHash = repository.withCommitLock(() -> {
-				Path repoRoot = new File(repository.path()).toPath();
-				List<String> relPaths = new ArrayList<>();
-				try (Stream<Path> walk = Files.walk(legacyDir.toPath())) {
-					for (Path path : walk.sorted(Comparator.reverseOrder()).toList()) {
-						if (Files.isRegularFile(path)) {
-							relPaths.add(repoRoot.relativize(path).toString().replace(File.separatorChar, '/'));
-						}
-						Files.delete(path);
-					}
-				}
-				return repository.commitRemovedPaths(relPaths, userData);
-			});
+			commitHash = repository.withCommitLock(
+					() -> repository.commitRemovedPaths(deleteLegacyVersionDir(repository, legacyDir), userData));
 		}
 		catch (ProviderException e) {
 			throw e;

@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -372,7 +373,7 @@ public class GitWikiRepository {
 			if (connector.isIgnored(repoRelativePath)) {
 				return null;
 			}
-			return connector.commit().deletePath(repoRelativePath, userData, false);
+			return commitRemovedPaths(List.of(repoRelativePath), userData);
 		}
 		finally {
 			commitLock.unlock();
@@ -388,14 +389,18 @@ public class GitWikiRepository {
 	public String commitMovedPaths(List<String> removedRelPaths, List<String> addedRelPaths, CommitUserData userData) {
 		commitLock.lock();
 		try {
-			if (!removedRelPaths.isEmpty()) {
-				// cached = index only; the working-tree files were already moved by the caller
-				connector.commit().deletePaths(removedRelPaths, userData, true);
-			}
 			if (!addedRelPaths.isEmpty()) {
+				// the moved-in files are untracked, a pathspec commit cannot pick those up unstaged
 				connector.commit().addPaths(addedRelPaths);
 			}
-			return connector.commit().commitForUser(userData);
+			// the moved-away files are tracked and gone from the working tree, so the pathspec commit records them as
+			// deletions on its own. A pathspec is what keeps the commit from taking the whole index along
+			Set<String> paths = new LinkedHashSet<>(removedRelPaths);
+			paths.addAll(addedRelPaths);
+			if (paths.isEmpty()) {
+				return null;
+			}
+			return connector.commit().commitPathsForUser(userData.message, userData.user, userData.email, paths);
 		}
 		finally {
 			commitLock.unlock();
@@ -411,8 +416,13 @@ public class GitWikiRepository {
 	public String commitRemovedPaths(List<String> removedRelPaths, CommitUserData userData) {
 		commitLock.lock();
 		try {
-			// deletePaths stages the removals and commits them itself (cached = the files are already gone on disk)
-			return connector.commit().deletePaths(removedRelPaths, userData, true);
+			if (removedRelPaths.isEmpty()) {
+				return null;
+			}
+			// the files are already gone from the working tree, so a pathspec commit records them as deletions. The
+			// pathspec is what keeps the commit from taking concurrently staged index entries along
+			return connector.commit()
+					.commitPathsForUser(userData.message, userData.user, userData.email, new LinkedHashSet<>(removedRelPaths));
 		}
 		finally {
 			commitLock.unlock();

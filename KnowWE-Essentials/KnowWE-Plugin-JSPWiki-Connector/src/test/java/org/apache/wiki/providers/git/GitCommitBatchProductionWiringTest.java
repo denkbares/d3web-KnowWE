@@ -141,6 +141,30 @@ public class GitCommitBatchProductionWiringTest {
 	}
 
 	/**
+	 * The same isolation for the immediate-save route: an ordinary save commits one file, so a new page another user
+	 * has pre-staged in a still-open batch must not travel along with it.
+	 */
+	@Test
+	public void concurrentOpenBatchIsNotSweptIntoAnImmediateCommit() throws IOException {
+		// alice has an open batch with a new page (newFile = true stages it in the git index too)
+		registry.open("alice");
+		FileUtils.writeStringToFile(new File(repo, "AlicePage.txt"), "alice draft", StandardCharsets.UTF_8);
+		assertTrue(registry.stage("alice", "AlicePage.txt", true));
+
+		// bob saves an existing page without a transaction, which commits immediately
+		File bobFile = new File(repo, "Existing.txt");
+		FileUtils.writeStringToFile(bobFile, "bob's edit", StandardCharsets.UTF_8);
+		String commitHash = repository.commitFile(bobFile, "Existing.txt", new CommitUserData(AUTHOR, EMAIL, "bob save"));
+
+		assertNotNull(commitHash);
+		assertEquals("the immediate commit must contain only the saved page",
+				List.of("Existing.txt"), connector.log().listChangedFilesForHash(commitHash));
+		assertEquals("alice's staged page must not be committed",
+				0, connector.log().commitHashesForFile("AlicePage.txt").size());
+		assertTrue(registry.isOpen("alice"));
+	}
+
+	/**
 	 * A batch whose staged paths have no changes left (e.g. the edit was reverted on disk) commits nothing and
 	 * reports no result, instead of producing an empty commit or logging a failure.
 	 */

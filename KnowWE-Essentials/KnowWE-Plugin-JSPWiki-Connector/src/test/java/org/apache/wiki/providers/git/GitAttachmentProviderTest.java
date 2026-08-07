@@ -243,17 +243,39 @@ public class GitAttachmentProviderTest {
 	}
 
 	/**
+	 * Deleting an attachment that was saved over a legacy one has to remove both layouts. The legacy version directory
+	 * stays next to the new flat file, and every read path falls back to it once the flat file is gone.
+	 */
+	@Test
+	public void deletingAnAttachmentThatExistsInBothLayoutsRemovesBoth() throws Exception {
+		createLegacyAttachment("Topic", "pic.jpg", "old-v1");
+		putAttachment("Topic", "pic.jpg", "new-content");
+
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "Topic", "pic.jpg");
+		att.setAuthor(AUTHOR);
+		attachmentProvider.deleteAttachment(att);
+
+		assertFalse(new File(pageDir, "Topic-att/pic.jpg").exists());
+		assertFalse("the legacy version directory must go with the flat file",
+				new File(pageDir, "Topic-att/pic.jpg-dir").exists());
+		assertTrue(attachmentProvider.listAttachments(new WikiPage(engine, "Topic")).isEmpty());
+		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
+	}
+
+	/**
 	 * Renaming a page moves its legacy version directories along. Git refuses to unstage a directory path, so the
 	 * commit has to name the files inside it, otherwise the old paths stay tracked next to the moved-in ones.
 	 */
 	@Test
 	public void moveAttachmentsForPageMovesTheLegacyLayoutInOneCommit() throws Exception {
 		createLegacyAttachment("Before", "pic.jpg", "old-v1", "old-v2");
+		int commitsBefore = commitsOnBranch();
 
 		WikiPage oldParent = new WikiPage(engine, "Before");
 		oldParent.setAuthor(AUTHOR);
 		attachmentProvider.moveAttachmentsForPage(oldParent, "After");
 
+		assertEquals("the move must be one commit", commitsBefore + 1, commitsOnBranch());
 		assertFalse(new File(pageDir, "Before-att").exists());
 		assertTrue(new File(pageDir, "After-att/pic.jpg-dir/2.jpg").exists());
 		// the move is complete in git as well, nothing of the old location is left tracked or unstaged
@@ -308,6 +330,11 @@ public class GitAttachmentProviderTest {
 
 	private int commits(String relPath) {
 		return BareGitConnector.fromPath(pageDir.getAbsolutePath()).log().commitHashesForFile(relPath).size();
+	}
+
+	private int commitsOnBranch() {
+		BareGitConnector connector = BareGitConnector.fromPath(pageDir.getAbsolutePath());
+		return connector.log().listCommitsForBranch(connector.branches().currentBranch()).size();
 	}
 
 	private String headCommitFor(String relPath) {
