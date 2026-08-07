@@ -20,9 +20,11 @@
 package de.knowwe.search.query;
 
 import java.io.IOException;
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.uhighlight.DefaultPassageFormatter;
+import org.apache.lucene.search.uhighlight.LengthGoalBreakIterator;
 import org.apache.lucene.search.uhighlight.UnifiedHighlighter;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,8 +58,13 @@ import de.knowwe.search.index.WikiSearchIndex;
 public class WikiSearcher {
 
 	/** How many passages of the section to stitch together into a snippet. */
-	private static final int SNIPPET_PASSAGES = 2;
-	private static final int SNIPPET_LENGTH = 160;
+	private static final int SNIPPET_PASSAGES = 3;
+	/**
+	 * Characters a single passage should aim for. Without this the highlighter uses whole sentences, and wiki text
+	 * full of markup and lists often has no sentence end for a screenful, so one "passage" swallows the entire block.
+	 */
+	private static final int PASSAGE_LENGTH = 120;
+	private static final int SNIPPET_LENGTH = 240;
 
 	private final WikiSearchIndex index;
 	private final WikiQueryBuilder queryBuilder;
@@ -139,6 +147,11 @@ public class WikiSearcher {
 					// escape=true is not optional: the body is wiki text, and without escaping anything a page
 					// contains would be injected into the result list as markup
 					.withFormatter(new DefaultPassageFormatter("<mark>", "</mark>", " … ", true))
+					// a line iterator as the base, not a sentence one: LengthGoalBreakIterator only accumulates
+					// whole segments of its base, and a "sentence" of wiki text without punctuation can be the
+					// entire block -- which is exactly how a snippet ends up two thousand characters long
+					.withBreakIterator(() -> LengthGoalBreakIterator.createClosestToLength(
+							BreakIterator.getLineInstance(Locale.GERMAN), PASSAGE_LENGTH, 0.4f))
 					.build();
 			Map<String, String[]> fields = highlighter.highlightFields(
 					new String[]{ SearchFields.BODY }, query, topDocs, new int[]{ SNIPPET_PASSAGES });

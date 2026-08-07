@@ -23,6 +23,9 @@
     exactly that selector, so leaving it out means those never attach and there is nothing to unhook. The dropdown is
     filled by KnowWE-Plugin-Search.js.
 
+    Also without Haddock's "searchbox" class: it belongs to that icon-and-dropdown layout and stretched the plain
+    input across the full width of the header.
+
     The form still posts to Search.jsp, so Enter without a selected suggestion lands on the full search page, and the
     box keeps working with JavaScript disabled.
 --%>
@@ -32,7 +35,7 @@
 <fmt:setBundle basename="templates.default"/>
 
 <form action="<wiki:Link jsp='Search.jsp' format='url'/>"
-	  class="searchbox knowwe-quicksearch"
+	  class="knowwe-quicksearch"
 	  id="searchForm" role="search"
 	  accept-charset="<wiki:ContentEncoding />">
 	<wiki:CsrfProtection/>
