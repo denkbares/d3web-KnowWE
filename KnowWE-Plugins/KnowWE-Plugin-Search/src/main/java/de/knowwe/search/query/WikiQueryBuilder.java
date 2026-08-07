@@ -88,6 +88,19 @@ public class WikiQueryBuilder {
 	private static final Pattern EXPLICIT_MARKUP = Pattern.compile("(^|\\s)[%@]+\\S");
 
 	public @NotNull Query build(@NotNull SearchRequest request) {
+		return build(request, false);
+	}
+
+	/**
+	 * Same query, but every word optional. Used only as a second attempt when the strict interpretation found nothing:
+	 * asking for two words and getting zero hits because one of them is missing is a worse answer than showing what
+	 * matched the other.
+	 */
+	public @NotNull Query buildRelaxed(@NotNull SearchRequest request) {
+		return build(request, true);
+	}
+
+	private Query build(@NotNull SearchRequest request, boolean relaxed) {
 		if (request.isBlank()) return new MatchNoDocsQuery();
 
 		List<String> phrases = new ArrayList<>();
@@ -100,14 +113,14 @@ public class WikiQueryBuilder {
 
 		BooleanQuery.Builder query = new BooleanQuery.Builder();
 		if (!positions.isEmpty()) {
-			query.add(scorePositions(positions, request.partial()), BooleanClause.Occur.MUST);
+			query.add(scorePositions(positions, request.partial(), relaxed), BooleanClause.Occur.MUST);
 		}
 		Query explicitMarkup = explicitMarkup(freeText, request.query());
 		if (explicitMarkup != null) {
 			query.add(explicitMarkup, BooleanClause.Occur.SHOULD);
 		}
 		for (String phrase : phrases) {
-			query.add(phrase(phrase), BooleanClause.Occur.MUST);
+			query.add(phrase(phrase), relaxed ? BooleanClause.Occur.SHOULD : BooleanClause.Occur.MUST);
 		}
 		return query.build();
 	}
@@ -116,13 +129,13 @@ public class WikiQueryBuilder {
 	 * Every word must contribute, but a long query may miss one without collapsing to nothing — that is what turns a
 	 * five word question from zero hits into useful ones.
 	 */
-	private Query scorePositions(List<List<String>> positions, boolean partial) {
+	private Query scorePositions(List<List<String>> positions, boolean partial, boolean relaxed) {
 		BooleanQuery.Builder builder = new BooleanQuery.Builder();
 		for (int i = 0; i < positions.size(); i++) {
 			boolean last = i == positions.size() - 1;
 			builder.add(scorePosition(positions.get(i), partial && last), BooleanClause.Occur.SHOULD);
 		}
-		builder.setMinimumNumberShouldMatch(minimumShouldMatch(positions.size()));
+		builder.setMinimumNumberShouldMatch(relaxed ? 1 : minimumShouldMatch(positions.size()));
 		return builder.build();
 	}
 
