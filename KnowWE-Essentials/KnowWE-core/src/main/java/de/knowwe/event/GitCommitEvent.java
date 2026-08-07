@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import com.denkbares.events.Event;
 
 /**
- * Signals that a commit was created in one of the wiki's git repositories. Fired once per repository commit by the
- * git-backed page and attachment providers, carrying everything a consumer needs to react without further lookups,
- * most notably which repository was committed to (multi-wiki setups hold one repository per sub-wiki folder).
+ * Signals that a commit was created in the wiki's git repository. Fired once per repository commit by the git-backed
+ * page and attachment providers, carrying everything a consumer needs to react without further lookups, most notably
+ * which repository was committed to.
  * <p>
  * Unlike {@link ArticleUpdateEvent}, which signals a content-level page change, this event means exactly "a local
  * commit exists now". Consumers that mirror commits to a remote (e.g. an async push listener) should listen to this
@@ -47,9 +47,9 @@ public record GitCommitEvent(
 	}
 
 	/**
-	 * @param repoPath   absolute path of the repository's working tree (the sub-wiki folder)
+	 * @param repoPath   absolute path of the repository's working tree
 	 * @param commitHash hash of the created commit
-	 * @param pages      global (prefixed) page names contained in the commit, may be empty for reconciliation commits
+	 * @param pages      names of the pages contained in the commit, may be empty for reconciliation commits
 	 * @param author     author of the commit, may be null
 	 * @param origin     what produced the commit
 	 */

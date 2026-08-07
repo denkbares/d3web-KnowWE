@@ -103,11 +103,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.jspwiki</groupId>
-			<artifactId>jspwiki-multiwiki</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>

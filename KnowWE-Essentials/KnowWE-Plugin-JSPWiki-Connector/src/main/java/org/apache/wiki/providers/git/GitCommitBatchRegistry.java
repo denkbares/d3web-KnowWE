@@ -19,51 +19,45 @@
 
 package org.apache.wiki.providers.git;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.CommitUserData;
 
 /**
- * Holds the open {@link GitCommitBatch}es of the multi-wiki git provider, keyed by wiki user name. The user-name key
+ * Holds the open {@link GitCommitBatch}es of the git-backed providers, keyed by wiki user name. The user-name key
  * matches the {@code WikiConnector} transaction API, which is keyed by user name only. Concurrent batches of different
  * users are independent.
  * <p>
  * Replaces the old delegates' shared, externally-mutated {@code openCommits} map: callers stage and close batches only
  * through this API, nobody reaches into another class's mutable state.
  * <p>
- * The registry does not depend on the connector pool. It is given a connector resolver ({@code repoKey -> connector})
- * at construction (in production backed by the provider's per-repo {@code GitPageHistory}, which owns the pooled
- * connector, in tests a trivial lambda). Resolving lazily at commit/rollback time means a batch always uses the repo's
- * current connector, not whichever instance was live when a path was staged.
- * <p>
- * Closing a batch produces one commit per touched repository. There is no cross-repo atomicity, since git cannot
- * provide it, so a failure committing one repository is logged and the remaining repositories are still committed.
+ * The registry serves the one wiki repository, represented by the {@link GitWikiRepository} it is constructed with.
+ * Closing a batch commits or rolls back through {@link GitWikiRepository#commitBatch} and
+ * {@link GitWikiRepository#rollbackPaths}, which take the repository's commit lock, so a batch close is serialized
+ * against concurrent immediate commits, sweeps, deletes and moves instead of relying on git's own {@code index.lock}
+ * retries.
  */
 public class GitCommitBatchRegistry {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitCommitBatchRegistry.class);
 
 	private final Map<String, GitCommitBatch> openBatches = new ConcurrentHashMap<>();
-	private final Function<String, GitConnector> connectorResolver;
+	private final GitWikiRepository repository;
 
 	/**
-	 * @param connectorResolver resolves a repo key to the {@link GitConnector} that commits/rolls back that
-	 *                          repository's staged paths. Called once per touched repo when a batch closes, may return
-	 *                          {@code null} for an unknown repo (that repo is then skipped with an error log).
+	 * @param repository the wiki repository, whose commit lock serializes the batch close
 	 */
-	public GitCommitBatchRegistry(Function<String, GitConnector> connectorResolver) {
-		this.connectorResolver = connectorResolver;
+	public GitCommitBatchRegistry(GitWikiRepository repository) {
+		this.repository = repository;
 	}
 
 	/**
@@ -88,131 +82,103 @@ public class GitCommitBatchRegistry {
 	}
 
 	/**
-	 * Stages a changed path for the user. If the user has an open batch, the path is added to it and {@code true} is
-	 * returned. If the user has no open batch, nothing is recorded and {@code false} is returned, the caller must
-	 * commit the change immediately.
+	 * Stages a changed repo-relative path for the user. If the user has an open batch, the path is added to it (and,
+	 * for a new file, staged in the git index, since the closing pathspec commit picks up tracked modifications but
+	 * not untracked files) and {@code true} is returned. If the user has no open batch, nothing is recorded and
+	 * {@code false} is returned, the caller must commit the change immediately.
 	 *
+	 * @param newFile whether the file is new to git (untracked); tracked modifications need no index staging
 	 * @return {@code true} if the path was added to an open batch, {@code false} if there is no open batch and the
 	 * caller should commit immediately
 	 */
-	public boolean stage(String user, String repoKey, String path) {
+	public boolean stage(String user, String path, boolean newFile) {
 		GitCommitBatch batch = user == null ? null : openBatches.get(user);
 		if (batch == null) {
 			return false;
 		}
-		batch.stage(repoKey, path);
+		if (newFile) {
+			repository.stageInIndex(path);
+		}
+		batch.stage(path);
 		return true;
 	}
 
 	/**
-	 * Stages several changed paths of the same repository for the user (e.g. the from/to paths of a move). Semantics
-	 * match {@link #stage(String, String, String)}.
+	 * Stages several changed paths for the user (e.g. the from/to paths of a move). Semantics match
+	 * {@link #stage(String, String, boolean)}.
 	 */
-	public boolean stage(String user, String repoKey, Collection<String> paths) {
+	public boolean stage(String user, Collection<String> paths, boolean newFiles) {
 		GitCommitBatch batch = user == null ? null : openBatches.get(user);
 		if (batch == null) {
 			return false;
 		}
-		batch.stage(repoKey, paths);
+		if (newFiles) {
+			for (String path : paths) {
+				repository.stageInIndex(path);
+			}
+		}
+		batch.stage(paths);
 		return true;
 	}
 
 	/**
-	 * Commits all paths staged for the user since {@link #open}, producing one commit per touched repository, and
-	 * closes the batch. The author/email/message are resolved by the caller (the provider, via its user-profile lookup
-	 * and comment strategy) and applied to every repository's commit.
+	 * Commits all paths staged for the user since {@link #open} as one commit and closes the batch. The
+	 * author/email/message are resolved by the caller (the provider, via its user-profile lookup and comment
+	 * strategy).
 	 *
-	 * @return one {@link RepoCommitResult} per repository that was committed successfully, empty if the user had no
-	 * open batch. Repositories whose connector could not be resolved or whose commit failed are omitted (logged).
+	 * @return the commit and the paths that went into it, or {@code null} if the user had no open batch, none of the
+	 * staged paths had changes left to commit, or the commit failed (logged)
 	 */
-	public List<RepoCommitResult> commit(String user, String message, String author, String email) {
+	@Nullable
+	public CommitResult commit(String user, CommitUserData userData) {
 		GitCommitBatch batch = user == null ? null : openBatches.remove(user);
 		if (batch == null) {
 			LOGGER.warn("Tried to commit batch for user '{}' but no batch was open.", user);
-			return Collections.emptyList();
+			return null;
 		}
-		List<RepoCommitResult> results = new ArrayList<>();
-		for (String repoKey : batch.repoKeys()) {
-			SortedSet<String> paths = batch.paths(repoKey);
-			GitConnector connector = connectorResolver.apply(repoKey);
-			if (connector == null) {
-				LOGGER.error(
-						"No connector for repo '{}' while committing batch of user '{}'; skipping it.",
-						repoKey, user
-				);
-				continue;
+		SortedSet<String> paths = batch.paths();
+		try {
+			String commitHash = repository.commitBatch(paths, userData);
+			if (commitHash == null) {
+				// none of the staged paths had changes left to commit
+				LOGGER.info("Batch of user '{}' had no changes to commit.", user);
+				return null;
 			}
-			try {
-				String commitHash = connector.commit().commitPathsForUser(message, author, email, paths);
-				if (commitHash == null) {
-					// none of the staged paths had changes left to commit, nothing to report for this repo
-					LOGGER.info("Batch of user '{}' had no changes to commit in repo '{}'.", user, repoKey);
-					continue;
-				}
-				results.add(new RepoCommitResult(repoKey, commitHash, paths));
-			}
-			catch (Exception e) {
-				LOGGER.error(
-						"Failed to commit batch for user '{}' in repo '{}', continuing with the remaining repos.",
-						user, repoKey, e
-				);
-			}
+			return new CommitResult(commitHash, paths);
 		}
-		return results;
+		catch (Exception e) {
+			LOGGER.error("Failed to commit batch for user '{}'.", user, e);
+			return null;
+		}
 	}
 
 	/**
-	 * Discards all paths staged for the user since {@link #open}, restoring the affected files in each touched
-	 * repository, and closes the batch. A failure rolling back one repository is logged and the remaining repositories
-	 * are still rolled back.
+	 * Discards all paths staged for the user since {@link #open}, restoring the affected files, and closes the batch.
 	 *
-	 * @return one {@link RepoRollbackResult} per touched repository (regardless of per-repo failures), carrying the
-	 * restored paths, so the caller can refresh page caches and Lucene for them. Empty if the user had no open batch.
+	 * @return the restored paths, so the caller can refresh page caches and Lucene for them (the on-disk files were
+	 * reverted, so any cached version of the discarded edit must be evicted). Empty if the user had no open batch.
 	 */
-	public List<RepoRollbackResult> rollback(String user) {
+	public Set<String> rollback(String user) {
 		GitCommitBatch batch = user == null ? null : openBatches.remove(user);
 		if (batch == null) {
 			LOGGER.warn("Tried to roll back batch for user '{}' but no batch was open.", user);
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
-		List<RepoRollbackResult> results = new ArrayList<>();
-		for (String repoKey : batch.repoKeys()) {
-			SortedSet<String> paths = batch.paths(repoKey);
-			// recorded even if the rollback below fails, so the caller still refreshes caches for the affected paths
-			results.add(new RepoRollbackResult(repoKey, paths));
-			GitConnector connector = connectorResolver.apply(repoKey);
-			if (connector == null) {
-				LOGGER.error(
-						"No connector for repo '{}' while rolling back batch of user '{}'; skipping it.",
-						repoKey, user
-				);
-				continue;
-			}
-			try {
-				connector.rollback().rollbackPaths(paths);
-			}
-			catch (Exception e) {
-				LOGGER.error(
-						"Failed to roll back batch for user '{}' in repo '{}', continuing with the remaining repos.",
-						user, repoKey, e
-				);
-			}
+		SortedSet<String> paths = batch.paths();
+		try {
+			repository.rollbackPaths(paths);
 		}
-		return results;
+		catch (Exception e) {
+			LOGGER.error("Failed to roll back batch for user '{}'.", user, e);
+		}
+		// reported even if the rollback failed, so the caller still refreshes caches for the affected paths
+		return paths;
 	}
 
 	/**
-	 * Outcome of committing one repository's share of a batch: the repo key, the resulting commit hash, and the paths
-	 * that went into the commit. The provider uses this to fire wiki events and refresh caches for the committed paths.
+	 * Outcome of committing a batch: the resulting commit hash and the paths that went into the commit. The provider
+	 * uses this to fire wiki events and refresh caches for the committed paths.
 	 */
-	public record RepoCommitResult(String repoKey, String commitHash, Set<String> paths) {
-	}
-
-	/**
-	 * Outcome of rolling back one repository's share of a batch: the repo key and the paths whose working-tree state
-	 * was restored. The provider uses this to refresh page caches and Lucene for the restored paths (the on-disk files
-	 * were reverted, so any cached version of the discarded edit must be evicted).
-	 */
-	public record RepoRollbackResult(String repoKey, Set<String> paths) {
+	public record CommitResult(String commitHash, Set<String> paths) {
 	}
 }

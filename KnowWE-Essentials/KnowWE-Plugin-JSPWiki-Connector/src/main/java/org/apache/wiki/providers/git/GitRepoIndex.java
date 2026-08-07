@@ -55,7 +55,7 @@ import de.uniwue.d3web.gitConnector.GitFileRevision;
  * <p>
  * Per-file lists are <b>newest-first</b> (matching {@code revisionsByFile}); version numbers exposed to callers are
  * 1-based <b>oldest-first</b> ({@code version 1 = oldest}, {@link WikiProvider#LATEST_VERSION} = newest), the same
- * convention {@link GitPageHistory} and the providers use.
+ * convention {@link GitWikiRepository} and the providers use.
  */
 public class GitRepoIndex {
 
@@ -97,7 +97,7 @@ public class GitRepoIndex {
 		static final BranchIndex EMPTY = new BranchIndex(null, Collections.emptyMap());
 	}
 
-	// --- public read API (consumed by GitPageHistory) ------------------------
+	// --- public read API (consumed by GitWikiRepository) ------------------------
 
 	/**
 	 * Newest-first revisions of the given repo-relative file, or an empty list if the file has no committed history.

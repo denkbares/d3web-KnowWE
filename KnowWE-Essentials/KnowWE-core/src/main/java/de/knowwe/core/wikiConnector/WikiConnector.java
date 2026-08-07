@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.Attributes;
-import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -61,6 +59,14 @@ public interface WikiConnector {
 	 *
 	 */
 	void reinitializeWikiEngine() throws IOException;
+
+	/**
+	 * Drops the cached copies of the given pages, so the next read returns what is on the file system. Needed by
+	 * components that change page files directly, without the normal wiki-save-process.
+	 *
+	 * @param titles the titles of the pages to drop
+	 */
+	void invalidatePageCache(Collection<String> titles);
 
 	/**
 	 * Returns the list with all available versions of the wiki page with the given title, starting with the most
@@ -285,50 +291,6 @@ public interface WikiConnector {
 	String getArticleText(String title);
 
 	/**
-	 * Returns the global page name for a local page name and context.
-	 *
-	 * @param localArticleName local page name
-	 * @param context context
-	 * @return global page name
-	 */
-	String toGlobalArticleName(@NotNull String localArticleName, KnowWESubWikiContext context);
-
-	/**
-	 * Returns the global name if the page is (uniquely) existing in a sub-wiki.
-	 * Returns null if no page for the name can be found.
-	 * Returns also null if multiple 'competing' pages in different sub-wikis are found.
-	 *
-	 * @param localArticleName local page title
-	 * @return global name or null, of no unique page could be found
-	 */
-	String toExistingUniqueOrGlobalName(@NotNull String localArticleName);
-
-	/**
-	 * Returns the global page name for a local page name and context.
-	 *
-	 * @param globalArticleName global page name
-	 * @param context context
-	 * @return local page name
-	 */
-	String toLocalArticleName(@NotNull String globalArticleName, KnowWESubWikiContext context);
-
-	/**
-	 * Returns a KnowWESubWikiContext for a global page name
-	 *
-	 * @param globalArticleName global page name
-	 * @return KnowWESubWikiContext
-	 */
-	String getSubWikiName(@NotNull String globalArticleName);
-
-	/**
-	 * Searches over all sub-wikis for pages with the given local name
-	 *
-	 * @param localName local name
-	 * @return pages (global names)
-	 */
-	Set<String> findPages(@NotNull String localName);
-
-	/**
 	 * Returns the change note of the given version of the article with the given title. If the article or the version
 	 * do not exist, <tt>null</tt> is returned. To get the latest version, pass -1 as the version attribute.
 	 *
@@ -535,14 +497,6 @@ public interface WikiConnector {
 	 * @param context   the request of the user to check
 	 */
 	boolean userIsMemberOfGroup(String groupname, UserContext context);
-
-	/**
-	 * Returns the list of all sub wiki currently active in the running wiki instance.
-	 * If the non-sub-wiki mode is used, 'List.of("")' is returned referring directly to the save path.
-	 *
-	 * @return list of sub-wiki folders
-	 */
-	Collection<String> getAllSubWikiFolders();
 
 	/**
 	 * Returns the mail address of this user (if some is registered).

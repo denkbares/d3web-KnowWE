@@ -56,14 +56,15 @@ The replacement is one instance per wiki, one content folder, one git repository
 The parts of the experiment that are about one git repository rather than about many wikis stayed in the tree, because
 the single-wiki git provider is built on them. They are per repository and provider agnostic by construction.
 
-- `org.apache.wiki.providers.git.GitPageHistory`, `GitPageVersion`, `GitRepoIndex`, `GitCommitBatch` and
-  `GitCommitBatchRegistry` in `KnowWE-Plugin-JSPWiki-Connector`, with their unit tests, which run against temporary
-  repositories and need no wiki.
+- `org.apache.wiki.providers.git.GitPageHistory` (since renamed to `GitWikiRepository`, the gateway to the one wiki
+  repository), `GitPageVersion`, `GitRepoIndex`, `GitCommitBatch` and `GitCommitBatchRegistry` in
+  `KnowWE-Plugin-JSPWiki-Connector`, with their unit tests, which run against temporary repositories and need no wiki.
 - `org.apache.wiki.providers.GitVersioningProvider`, the transaction capability that lets bulk saves batch into one
   commit.
 - `org.apache.wiki.providers.WikiFileNames`.
-- The engine coupled helpers of the deleted providers (user data lookup, comment strategy resolution, event firing,
-  page cache eviction), extracted into a shared class of the same package before the deletion.
+- The engine coupled helpers of the deleted providers (user data lookup, comment strategy resolution through
+  `GitCommentStrategy.fromProperties`, event firing, page cache eviction), extracted into
+  `org.apache.wiki.providers.git.WikiGitContext` before the deletion.
 - `de.knowwe.event.GitCommitEvent`, fired once per repository commit and consumed by the async push listener.
 
 ## What was removed and is not coming back on its own
