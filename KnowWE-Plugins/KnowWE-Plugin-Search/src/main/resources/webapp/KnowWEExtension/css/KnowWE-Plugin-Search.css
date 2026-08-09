@@ -66,6 +66,13 @@
 	text-decoration: underline;
 }
 
+.knowwe-search-breadcrumb mark,
+.knowwe-quicksearch-crumb mark {
+	padding: 0 0.1em;
+	background: var(--highlight-color-faint-yellow);
+	color: inherit;
+}
+
 .knowwe-search-breadcrumb .knowwe-search-separator {
 	margin: 0 0.45em;
 	color: var(--text-color-secondary);

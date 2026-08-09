@@ -161,6 +161,7 @@
 			span.textContent = part;
 			link.appendChild(span);
 		});
+		markMatches(link, state.query);
 		li.appendChild(link);
 
 		if (hit.stale) {
@@ -175,6 +176,7 @@
 			var preview = document.createElement('div');
 			preview.className = 'knowwe-search-preview';
 			preview.innerHTML = hit.previewHtml;
+			dropDuplicateHeading(preview, hit.breadcrumb);
 			li.appendChild(preview);
 			markMatches(preview, state.query);
 		}
@@ -186,6 +188,22 @@
 			li.appendChild(snippet);
 		}
 		return li;
+	}
+
+	/**
+	 * Removes the preview's own heading when the breadcrumb above it already says the same.
+	 *
+	 * The preview renderer includes the heading, which is right on the object info page but here it repeats the last
+	 * breadcrumb segment -- and in the dropdown that costs one of seven lines. Only an exact match is dropped, so a
+	 * heading that says something else stays.
+	 */
+	function dropDuplicateHeading(container, breadcrumb) {
+		var heading = container.querySelector('h1, h2, h3, h4, h5, h6');
+		if (!heading) return;
+		var parts = (breadcrumb || '').split(' › ');
+		var last = parts[parts.length - 1].trim().toLowerCase();
+		if (!last || heading.textContent.trim().toLowerCase() !== last) return;
+		heading.remove();
 	}
 
 	/**
@@ -313,12 +331,14 @@
 			var crumb = document.createElement('div');
 			crumb.className = 'knowwe-quicksearch-crumb';
 			crumb.textContent = hit.breadcrumb || hit.title;
+			markMatches(crumb, quick.query);
 			entry.appendChild(crumb);
 
 			if (hit.previewHtml) {
 				var preview = document.createElement('div');
 				preview.className = 'knowwe-quicksearch-preview';
 				preview.innerHTML = hit.previewHtml;
+				dropDuplicateHeading(preview, hit.breadcrumb);
 				entry.appendChild(preview);
 				markMatches(preview, quick.query);
 			}
