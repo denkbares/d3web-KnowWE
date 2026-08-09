@@ -147,6 +147,8 @@
 	width: 34em;
 	max-width: 90vw;
 	max-height: 70vh;
+	/* a gap, so the panel's top edge reads as its own and not as a line hanging under the search field */
+	margin-top: 4px;
 	overflow: hidden;
 	background: var(--bg-color-primary);
 	border: 1px solid var(--bg-color-secondary-shade);
@@ -154,9 +156,14 @@
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
 
+/*
+ * Only up and down. A rendered preview can hold a table far wider than the dropdown, and two pixels of overflow are
+ * enough for a horizontal scrollbar that costs more height than the sliver it reveals.
+ */
 .knowwe-quicksearch-list {
 	flex: 1 1 auto;
 	min-height: 0;
+	overflow-x: hidden;
 	overflow-y: auto;
 }
 

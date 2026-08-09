@@ -210,6 +210,11 @@
 		return wrapper;
 	}
 
+	/** A button in the dropdown must not take the focus away from the field the user is typing in. */
+	function keepFocus(event) {
+		event.preventDefault();
+	}
+
 	/*
 	 * A preview is capped so one long section cannot push the next hit off the screen. Where that cap actually cuts
 	 * something off, a triangle lifts it -- measured after the preview is in the document, because a preview that is
@@ -219,6 +224,7 @@
 		var button = document.createElement('button');
 		button.type = 'button';
 		button.className = 'knowwe-search-grow';
+		button.addEventListener('mousedown', keepFocus);
 		gutter.appendChild(button);
 
 		// a section whose preview fits keeps the mark, so the rows stay in line -- it just has nothing to lift
@@ -487,6 +493,11 @@
 		document.addEventListener('click', function (event) {
 			if (!quick.panel.contains(event.target) && event.target !== quick.input) hideQuick();
 		});
+		// on the document, not on the field: clicking a button in the panel moves the focus there, and Escape
+		// would then never reach the field that used to listen for it
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape' && !quick.panel.hidden) hideQuick();
+		});
 	}
 
 	function askQuick() {
@@ -588,6 +599,7 @@
 		var button = document.createElement('button');
 		button.type = 'button';
 		button.className = 'knowwe-quicksearch-more';
+		button.addEventListener('mousedown', keepFocus);
 		button.textContent = hit.folded + (hit.folded === 1 ? ' weiterer Treffer' : ' weitere Treffer')
 			+ ' auf dieser Seite';
 
