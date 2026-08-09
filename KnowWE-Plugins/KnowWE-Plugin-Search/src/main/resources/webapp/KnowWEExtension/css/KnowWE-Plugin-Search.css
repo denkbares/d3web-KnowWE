@@ -213,7 +213,7 @@
 	pointer-events: none;
 }
 
-.knowwe-quicksearch-preview::after {
+.knowwe-quicksearch-preview.is-clipped::after {
 	position: absolute;
 	right: 0;
 	bottom: 0;
@@ -231,7 +231,7 @@
 }
 
 .knowwe-quicksearch-hit.active .knowwe-quicksearch-preview::after,
-.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview::after {
+.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview.is-clipped::after {
 	background: linear-gradient(to bottom, transparent, var(--bg-color-secondary));
 }
 
@@ -329,7 +329,7 @@
 	pointer-events: none;
 }
 
-.knowwe-search-preview::after {
+.knowwe-search-preview.is-clipped::after {
 	position: absolute;
 	right: 0;
 	bottom: 0;
@@ -599,11 +599,11 @@
 	max-height: 21em;
 }
 
-/* the fade says "there is more below" and so it stays until there is not */
-.knowwe-search-preview.is-complete::after,
-.knowwe-quicksearch-preview.is-complete::after {
-	content: none;
-}
+/*
+ * The fade is the edge of the window, not decoration: it says "this is cut off, the rest is on the page". Drawn on a
+ * preview that fits, it whites out the last line of a section that is complete and reads as if something were missing.
+ * Hence the class, set from the measuring pass and again whenever the cap changes.
+ */
 
 /*
  * A dropdown hit is one big link, so its rendered preview inherits the link colour and the whole section reads as if

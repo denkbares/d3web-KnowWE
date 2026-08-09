@@ -229,10 +229,12 @@
 
 		// a section whose preview fits keeps the mark, so the rows stay in line -- it just has nothing to lift
 		if (!preview || preview.scrollHeight <= preview.clientHeight + 4) {
+			if (preview) preview.classList.remove('is-clipped');
 			button.classList.add('is-static');
 			button.disabled = true;
 			return;
 		}
+		preview.classList.add('is-clipped');
 		button.title = 'Abschnitt ganz anzeigen';
 		button.addEventListener('click', function (event) {
 			event.preventDefault();
@@ -240,7 +242,7 @@
 			var open = preview.classList.toggle('is-expanded');
 			button.classList.toggle('is-open', open);
 			// three times the cap does not always reach the end, so the fade stays wherever it still cuts off
-			preview.classList.toggle('is-complete', open && preview.scrollHeight <= preview.clientHeight + 4);
+			preview.classList.toggle('is-clipped', preview.scrollHeight > preview.clientHeight + 4);
 			button.title = open ? 'Abschnitt wieder einklappen' : 'Abschnitt ganz anzeigen';
 		});
 	}
