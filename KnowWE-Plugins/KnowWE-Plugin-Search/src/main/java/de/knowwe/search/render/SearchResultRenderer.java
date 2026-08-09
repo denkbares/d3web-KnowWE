@@ -82,9 +82,25 @@ public class SearchResultRenderer {
 	 * follows an annotation.
 	 */
 	private static String toHtml(RenderResult result, UserContext user) {
-		String markup = Environment.getInstance().getWikiConnector()
-				.renderWikiSyntax(result.toStringRaw().replaceAll("@!!!", "@\n!!!"));
+		String raw = result.toStringRaw().replaceAll("@!!!", "@\n!!!");
+		String markup = Environment.getInstance().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw));
 		return RenderResult.unmask(markup, user);
+	}
+
+	/**
+	 * Turns the newlines that sit between two already rendered tags into explicit breaks.
+	 * <p>
+	 * Renderers put one element per line, and JSPWiki's parser turns every such line into a paragraph: a rule block
+	 * that is a single inline element on the page arrives here as twelve paragraphs, and because a paragraph cannot
+	 * live inside a span the browser then tears the block apart. The article itself never shows this, because there
+	 * the whole markup is one rendered block.
+	 * <p>
+	 * Masking is character based -- {@code >} and {@code <} each become their own token -- so a newline strictly
+	 * between two tags matches this pattern, while a newline in running text never does.
+	 */
+	static String joinRenderedLines(String maskedHtml) {
+		// keep the visual break the page has, as a <br> built from the same mask key, so the parser sees no line
+		return maskedHtml.replaceAll("(@@(\\w+)_5@@)\\s*\\n\\s*(@@\\w+_6@@)", "$1@@$2_6@@br/@@$2_5@@$3");
 	}
 
 	/**
