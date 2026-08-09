@@ -20,6 +20,8 @@
 package de.knowwe.search.action;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,6 +31,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.search.WikiSearchService;
+import de.knowwe.search.query.HitGrouping;
 import de.knowwe.search.query.SearchHit;
 import de.knowwe.search.query.SearchRequest;
 import de.knowwe.search.query.SearchResults;
@@ -54,8 +57,19 @@ public class WikiSearchAction extends AbstractAction {
 	public static final String PARAM_LIMIT = "limit";
 	/** The quick search switches previews off; a rendered section would not fit into a dropdown. */
 	public static final String PARAM_PREVIEW = "preview";
+	/** Answers with the hits folded away under one page instead of a result list -- used when unfolding them. */
+	public static final String PARAM_EXPAND = "expand";
 
 	private static final int MAX_LIMIT = 50;
+
+	/**
+	 * How many hits to look at to build one page of entries. Folding needs the weaker hits of a page even when they
+	 * rank far below the entry they belong to, so a page of entries cannot be read off the top of the result list.
+	 * Beyond this window a page's counter can undercount; the alternative would be scanning the whole result set on
+	 * every keystroke.
+	 */
+	private static final int SCAN_FACTOR = 8;
+	private static final int MAX_SCAN = 300;
 
 	private final SearchResultRenderer renderer = new SearchResultRenderer();
 
@@ -74,11 +88,15 @@ public class WikiSearchAction extends AbstractAction {
 			return;
 		}
 
+		String expand = context.getParameter(PARAM_EXPAND);
+		int offset = parseInt(context.getParameter(PARAM_OFFSET), 0);
+		int limit = Math.min(parseInt(context.getParameter(PARAM_LIMIT), SearchRequest.DEFAULT_LIMIT), MAX_LIMIT);
+
+		// grouping needs a window rather than just this page's worth of hits, see SCAN_FACTOR
 		SearchRequest request = new SearchRequest(
 				context.getParameter(PARAM_QUERY, ""),
 				Boolean.parseBoolean(context.getParameter(PARAM_PARTIAL, "false")),
-				parseInt(context.getParameter(PARAM_OFFSET), 0),
-				Math.min(parseInt(context.getParameter(PARAM_LIMIT), SearchRequest.DEFAULT_LIMIT), MAX_LIMIT));
+				0, Math.min((offset + limit) * SCAN_FACTOR, MAX_SCAN));
 
 		SearchResults results = searcher.search(request);
 
@@ -89,30 +107,59 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("relaxed", results.relaxed());
 		answer.put("unmatched", new JSONArray(results.unmatched()));
 
-		boolean withPreview = !"false".equals(context.getParameter(PARAM_PREVIEW, "true"));
-		JSONArray hits = new JSONArray();
+		List<SearchHit> readable = new ArrayList<>();
 		for (SearchHit hit : results.hits()) {
 			Article article = context.getArticleManager().getArticle(hit.title());
 			// a hit whose page vanished or may not be read must not leave the server
 			if (article == null || !KnowWEUtils.canView(article, context)) continue;
-			JSONObject json = toJson(hit);
-			// only for the hits actually shown: rendering costs a wiki-syntax pass each
-			if (withPreview) {
-				SearchResultRenderer.Rendered rendered = renderer.render(hit.anchor(), context);
-				if (rendered != null) {
-					json.put("previewHtml", rendered.html());
-					if (rendered.stale()) json.put("stale", true);
+			readable.add(hit);
+		}
+		List<HitGrouping.Group> groups = HitGrouping.group(readable);
+
+		boolean withPreview = !"false".equals(context.getParameter(PARAM_PREVIEW, "true"));
+		JSONArray hits = new JSONArray();
+
+		if (expand != null) {
+			// the same grouping the entry was built from, so the unfolded hits are exactly the ones it counted
+			for (HitGrouping.Group group : groups) {
+				if (!group.primary().title().equalsIgnoreCase(expand)) continue;
+				for (SearchHit folded : group.folded()) {
+					hits.put(toJson(folded, withPreview, context));
 				}
 			}
+			answer.put("hits", hits);
+			write(context, answer);
+			return;
+		}
+
+		for (int i = offset; i < Math.min(offset + limit, groups.size()); i++) {
+			HitGrouping.Group group = groups.get(i);
+			JSONObject json = toJson(group.primary(), withPreview, context);
+			if (!group.folded().isEmpty()) json.put("folded", group.folded().size());
 			hits.put(json);
 		}
+		answer.put("hasMore", groups.size() > offset + limit);
 		answer.put("hits", hits);
 
 		write(context, answer);
 	}
 
+	private JSONObject toJson(SearchHit hit, boolean withPreview, UserActionContext context) {
+		JSONObject json = toJson(hit);
+		// only for the hits actually shown: rendering costs a wiki-syntax pass each
+		if (withPreview) {
+			SearchResultRenderer.Rendered rendered = renderer.render(hit.anchor(), context);
+			if (rendered != null) {
+				json.put("previewHtml", rendered.html());
+				if (rendered.stale()) json.put("stale", true);
+			}
+		}
+		return json;
+	}
+
 	private static JSONObject toJson(SearchHit hit) {
 		JSONObject json = new JSONObject();
+		json.put("page", hit.title());
 		json.put("title", hit.title());
 		json.put("breadcrumb", hit.breadcrumb());
 		json.put("snippet", hit.snippet());

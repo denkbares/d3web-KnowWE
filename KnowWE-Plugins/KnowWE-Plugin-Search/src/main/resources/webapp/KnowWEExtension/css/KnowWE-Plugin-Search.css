@@ -388,3 +388,61 @@
 	box-shadow: 0 0 0 0.12em var(--highlight-color-faint-yellow);
 	background-color: var(--highlight-color-faint-yellow);
 }
+
+/* ------------------------------------------------------------------ folded hits of the same page */
+
+/*
+ * A page's weaker sections sit behind one line instead of filling the list. It reads as a link rather than a button:
+ * it leads somewhere, it does not perform anything.
+ */
+.knowwe-search-folded-toggle,
+.knowwe-quicksearch-more {
+	display: block;
+	padding: 0.15em 0;
+	font-size: 0.9em;
+	color: var(--text-color-primary-link);
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.knowwe-search-folded-toggle:hover,
+.knowwe-quicksearch-more:hover {
+	text-decoration: underline;
+}
+
+.knowwe-search-folded-toggle::before,
+.knowwe-quicksearch-more::before {
+	display: inline-block;
+	margin-right: 0.4em;
+	content: "▸";
+}
+
+.knowwe-search-folded-toggle.is-open::before {
+	content: "▾";
+}
+
+.knowwe-search-folded-toggle:disabled,
+.knowwe-quicksearch-more:disabled {
+	color: var(--text-color-secondary);
+	cursor: default;
+}
+
+.knowwe-search-folded-hits {
+	list-style: none;
+	margin: 0.3em 0 0;
+	padding: 0;
+}
+
+/* unfolded hits belong to the entry above them, so they are indented and separated more quietly */
+.knowwe-search-folded-hits .knowwe-search-hit {
+	padding: 0.6em 0;
+	border-top: 1px dotted var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-more {
+	padding-left: 2.9em;
+	text-align: left;
+	border-bottom: 1px solid var(--bg-color-secondary-shade);
+	width: 100%;
+}

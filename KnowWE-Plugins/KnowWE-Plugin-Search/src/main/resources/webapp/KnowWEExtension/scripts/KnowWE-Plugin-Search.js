@@ -117,7 +117,7 @@
 		// only now are the previews laid out and can be measured
 		nodes.results.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
 
-		if (state.hits.length < (answer.total || 0)) {
+		if (answer.hasMore) {
 			var button = document.createElement('button');
 			button.type = 'button';
 			button.textContent = 'Mehr laden';
@@ -162,6 +162,53 @@
 		return icon;
 	}
 
+	/*
+	 * The weaker sections of the same page, one click away. They are fetched rather than delivered with the entry:
+	 * each one costs a rendering pass on the server, and most of them are never looked at.
+	 */
+	function expander(hit) {
+		var wrapper = document.createElement('div');
+		wrapper.className = 'knowwe-search-folded';
+
+		var button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'knowwe-search-folded-toggle';
+		button.textContent = hit.folded + (hit.folded === 1 ? ' weiterer Treffer' : ' weitere Treffer')
+			+ ' auf dieser Seite';
+		wrapper.appendChild(button);
+
+		var list = document.createElement('ul');
+		list.className = 'knowwe-search-folded-hits';
+		list.hidden = true;
+		wrapper.appendChild(list);
+
+		button.addEventListener('click', function () {
+			if (list.childNodes.length) {
+				// already fetched, so this is just the way back
+				list.hidden = !list.hidden;
+				button.classList.toggle('is-open', !list.hidden);
+				return;
+			}
+			button.disabled = true;
+			jq$.ajax({
+				url: 'action/WikiSearchAction',
+				data: { query: state.query, expand: hit.page || hit.title, limit: PAGE_SIZE },
+				dataType: 'json',
+				cache: false
+			}).done(function (answer) {
+				(answer.hits || []).forEach(function (folded) {
+					list.appendChild(item(folded));
+				});
+				list.hidden = false;
+				button.classList.add('is-open');
+				list.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
+			}).always(function () {
+				button.disabled = false;
+			});
+		});
+		return wrapper;
+	}
+
 	function item(hit) {
 		var li = document.createElement('li');
 		li.className = 'knowwe-search-hit';
@@ -187,6 +234,7 @@
 		});
 		markMatches(link, state.query);
 		body.appendChild(link);
+		if (hit.folded) body.appendChild(expander(hit));
 
 		if (hit.stale) {
 			var warning = document.createElement('div');
@@ -364,6 +412,85 @@
 		}).fail(hideQuick);
 	}
 
+	function quickEntry(hit) {
+		var entry = document.createElement('a');
+		entry.className = 'knowwe-quicksearch-hit';
+		entry.href = hit.url;
+		entry.addEventListener('mouseenter', function () {
+			highlightQuick(quickEntries().indexOf(entry));
+		});
+		entry.appendChild(resultIcon());
+
+		var qbody = document.createElement('div');
+		qbody.className = 'knowwe-search-body';
+		entry.appendChild(qbody);
+
+		var crumb = document.createElement('div');
+		crumb.className = 'knowwe-quicksearch-crumb';
+		crumb.textContent = hit.breadcrumb || hit.title;
+		markMatches(crumb, quick.query);
+		qbody.appendChild(crumb);
+
+		if (hit.previewHtml) {
+			var preview = document.createElement('div');
+			preview.className = 'knowwe-quicksearch-preview';
+			preview.innerHTML = hit.previewHtml;
+			dropDuplicateHeading(preview, hit.breadcrumb);
+			qbody.appendChild(preview);
+			markMatches(preview, quick.query);
+		}
+		else {
+			var snippet = document.createElement('div');
+			snippet.className = 'knowwe-quicksearch-snippet';
+			// safe: the server escapes the body and only adds its own <mark> tags around the matches
+			snippet.innerHTML = hit.snippet || '';
+			qbody.appendChild(snippet);
+		}
+		return entry;
+	}
+
+	function quickEntries() {
+		return Array.prototype.slice.call(quick.panel.querySelectorAll('.knowwe-quicksearch-hit'));
+	}
+
+	/*
+	 * Same as on the search page, but the expander cannot live inside the entry: the entry is a link, and a button
+	 * inside a link is neither valid nor clickable. So it is a sibling, and unfolding splices the new entries into
+	 * quick.hits as well, otherwise the arrow keys would walk past them.
+	 */
+	function quickExpander(hit, entry) {
+		var button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'knowwe-quicksearch-more';
+		button.textContent = hit.folded + (hit.folded === 1 ? ' weiterer Treffer' : ' weitere Treffer')
+			+ ' auf dieser Seite';
+		button.addEventListener('click', function (event) {
+			event.preventDefault();
+			button.disabled = true;
+			jq$.ajax({
+				url: 'action/WikiSearchAction',
+				data: { query: quick.query, expand: hit.page || hit.title, limit: QUICK_LIMIT, partial: true },
+				dataType: 'json',
+				cache: false
+			}).done(function (answer) {
+				var added = answer.hits || [];
+				var after = button;
+				added.forEach(function (folded) {
+					var node = quickEntry(folded);
+					after.parentNode.insertBefore(node, after.nextSibling);
+					after = node;
+				});
+				var at = quick.hits.indexOf(hit);
+				if (at >= 0) quick.hits.splice.apply(quick.hits, [at + 1, 0].concat(added));
+				button.remove();
+				quick.panel.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
+			}).fail(function () {
+				button.disabled = false;
+			});
+		});
+		return button;
+	}
+
 	function renderQuick(answer) {
 		quick.hits = answer.hits || [];
 		quick.active = -1;
@@ -380,42 +507,10 @@
 			return;
 		}
 
-		quick.hits.forEach(function (hit, position) {
-			var entry = document.createElement('a');
-			entry.className = 'knowwe-quicksearch-hit';
-			entry.href = hit.url;
-			entry.addEventListener('mouseenter', function () {
-				highlightQuick(position);
-			});
-			entry.appendChild(resultIcon());
-
-			var qbody = document.createElement('div');
-			qbody.className = 'knowwe-search-body';
-			entry.appendChild(qbody);
-
-			var crumb = document.createElement('div');
-			crumb.className = 'knowwe-quicksearch-crumb';
-			crumb.textContent = hit.breadcrumb || hit.title;
-			markMatches(crumb, quick.query);
-			qbody.appendChild(crumb);
-
-			if (hit.previewHtml) {
-				var preview = document.createElement('div');
-				preview.className = 'knowwe-quicksearch-preview';
-				preview.innerHTML = hit.previewHtml;
-				dropDuplicateHeading(preview, hit.breadcrumb);
-				qbody.appendChild(preview);
-				markMatches(preview, quick.query);
-			}
-			else {
-				var snippet = document.createElement('div');
-				snippet.className = 'knowwe-quicksearch-snippet';
-				// safe: the server escapes the body and only adds its own <mark> tags around the matches
-				snippet.innerHTML = hit.snippet || '';
-				qbody.appendChild(snippet);
-			}
-
+		quick.hits.forEach(function (hit) {
+			var entry = quickEntry(hit);
 			list.appendChild(entry);
+			if (hit.folded) list.appendChild(quickExpander(hit, entry));
 		});
 		quick.panel.appendChild(list);
 
