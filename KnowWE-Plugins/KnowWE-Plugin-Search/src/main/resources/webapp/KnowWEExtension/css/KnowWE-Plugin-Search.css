@@ -180,21 +180,30 @@
 	pointer-events: none;
 }
 
-.knowwe-quicksearch-hit.active .knowwe-quicksearch-preview::after,
+/* the fades sit on the entry's background, so they follow it when it is hovered or selected */
+.knowwe-quicksearch-hit.active .knowwe-quicksearch-preview.is-scrolled::before,
 .knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview.is-scrolled::before {
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	z-index: 1;
-	height: 1.2em;
-	content: "";
-	background: linear-gradient(to top, transparent, var(--bg-color-primary));
-	pointer-events: none;
+	background: linear-gradient(to top, transparent, var(--bg-color-secondary));
 }
 
-.knowwe-quicksearch-preview::after {
+.knowwe-quicksearch-hit.active .knowwe-quicksearch-preview::after,
+.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview::after {
 	background: linear-gradient(to bottom, transparent, var(--bg-color-secondary));
+}
+
+/*
+ * The whole entry is one link, so hovering underlines everything including the rendered preview. Only the breadcrumb
+ * should react; the preview is content, not a label.
+ */
+.knowwe-quicksearch-hit:hover .knowwe-quicksearch-crumb {
+	text-decoration: underline;
+}
+
+.knowwe-quicksearch-preview,
+.knowwe-quicksearch-preview *,
+.knowwe-quicksearch-snippet,
+.knowwe-quicksearch-snippet * {
+	text-decoration: none !important;
 }
 
 .knowwe-quicksearch-preview p,
