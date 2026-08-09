@@ -143,9 +143,33 @@
 		return text;
 	}
 
+	/*
+	 * A document mark in front of every hit. It gives the list a fixed left edge to indent against, so where one
+	 * result ends and the next begins is visible at a glance instead of having to be read.
+	 *
+	 * The markup is a constant, so assigning it is safe -- nothing from the query or the wiki goes in here.
+	 */
+	function resultIcon() {
+		var icon = document.createElement('span');
+		icon.className = 'knowwe-search-icon';
+		icon.setAttribute('aria-hidden', 'true');
+		icon.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18">'
+			+ '<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h5.2a6 6 0 0 1-1-2H6V4h7v5h5v1.3'
+			+ 'a6 6 0 0 1 2 1.5V8l-6-6z"/>'
+			+ '<path fill="currentColor" d="M16.5 12a4.5 4.5 0 1 0 2.6 8.2l2.1 2.1 1.4-1.4-2.1-2.1A4.5 4.5 0 0 0 '
+			+ '16.5 12zm0 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/>'
+			+ '</svg>';
+		return icon;
+	}
+
 	function item(hit) {
 		var li = document.createElement('li');
 		li.className = 'knowwe-search-hit';
+		li.appendChild(resultIcon());
+
+		var body = document.createElement('div');
+		body.className = 'knowwe-search-body';
+		li.appendChild(body);
 
 		var link = document.createElement('a');
 		link.className = 'knowwe-search-breadcrumb';
@@ -162,13 +186,13 @@
 			link.appendChild(span);
 		});
 		markMatches(link, state.query);
-		li.appendChild(link);
+		body.appendChild(link);
 
 		if (hit.stale) {
 			var warning = document.createElement('div');
 			warning.className = 'knowwe-search-stale';
 			warning.textContent = 'Die Seite wurde seit der Indizierung geändert.';
-			li.appendChild(warning);
+			body.appendChild(warning);
 		}
 
 		if (hit.previewHtml) {
@@ -177,7 +201,7 @@
 			preview.className = 'knowwe-search-preview';
 			preview.innerHTML = hit.previewHtml;
 			dropDuplicateHeading(preview, hit.breadcrumb);
-			li.appendChild(preview);
+			body.appendChild(preview);
 			markMatches(preview, state.query);
 		}
 		else {
@@ -185,7 +209,7 @@
 			snippet.className = 'knowwe-search-snippet';
 			// safe: the server escapes the body and only adds its own <mark> tags around the matches
 			snippet.innerHTML = hit.snippet || '';
-			li.appendChild(snippet);
+			body.appendChild(snippet);
 		}
 		return li;
 	}
@@ -363,19 +387,24 @@
 			entry.addEventListener('mouseenter', function () {
 				highlightQuick(position);
 			});
+			entry.appendChild(resultIcon());
+
+			var qbody = document.createElement('div');
+			qbody.className = 'knowwe-search-body';
+			entry.appendChild(qbody);
 
 			var crumb = document.createElement('div');
 			crumb.className = 'knowwe-quicksearch-crumb';
 			crumb.textContent = hit.breadcrumb || hit.title;
 			markMatches(crumb, quick.query);
-			entry.appendChild(crumb);
+			qbody.appendChild(crumb);
 
 			if (hit.previewHtml) {
 				var preview = document.createElement('div');
 				preview.className = 'knowwe-quicksearch-preview';
 				preview.innerHTML = hit.previewHtml;
 				dropDuplicateHeading(preview, hit.breadcrumb);
-				entry.appendChild(preview);
+				qbody.appendChild(preview);
 				markMatches(preview, quick.query);
 			}
 			else {
@@ -383,7 +412,7 @@
 				snippet.className = 'knowwe-quicksearch-snippet';
 				// safe: the server escapes the body and only adds its own <mark> tags around the matches
 				snippet.innerHTML = hit.snippet || '';
-				entry.appendChild(snippet);
+				qbody.appendChild(snippet);
 			}
 
 			list.appendChild(entry);

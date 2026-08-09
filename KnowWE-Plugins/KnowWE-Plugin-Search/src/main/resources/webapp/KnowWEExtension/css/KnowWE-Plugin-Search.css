@@ -46,9 +46,28 @@
 	padding: 0;
 }
 
+/*
+ * Icon in a column of its own, everything else indented against it: the mark gives the eye a fixed left edge, so the
+ * boundary between two results is visible without reading them. Same layout in the dropdown, hence the shared body
+ * class.
+ */
 .knowwe-search-hit {
-	padding: 0.9em 0;
+	display: grid;
+	grid-template-columns: 1.7em 1fr;
+	column-gap: 0.6em;
+	padding: 1em 0;
 	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-body {
+	min-width: 0;
+}
+
+.knowwe-search-icon {
+	display: flex;
+	justify-content: center;
+	padding-top: 0.15em;
+	color: var(--text-color-secondary);
 }
 
 .knowwe-search-hit:first-child {
@@ -144,10 +163,12 @@
 }
 
 .knowwe-quicksearch-hit {
-	display: block;
-	padding: 0.5em 0.8em;
+	display: grid;
+	grid-template-columns: 1.7em 1fr;
+	column-gap: 0.6em;
+	padding: 0.6em 0.8em;
 	text-decoration: none;
-	border-bottom: 1px solid var(--bg-color-secondary);
+	border-bottom: 1px solid var(--bg-color-secondary-shade);
 }
 
 .knowwe-quicksearch-hit.active,
