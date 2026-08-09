@@ -52,9 +52,7 @@
  * class.
  */
 .knowwe-search-hit {
-	display: grid;
-	grid-template-columns: 1.7em 1fr;
-	column-gap: 0.6em;
+	display: block;
 	padding: 1em 0;
 	border-top: 1px solid var(--bg-color-secondary-shade);
 }
@@ -163,10 +161,8 @@
 }
 
 .knowwe-quicksearch-hit {
-	display: grid;
-	grid-template-columns: 1.7em 1fr;
-	column-gap: 0.6em;
-	padding: 0.6em 0.8em;
+	display: block;
+	padding: 0.15em 0.8em 0.45em 2.94em;
 	text-decoration: none;
 	border-bottom: 1px solid var(--bg-color-secondary-shade);
 }
@@ -442,7 +438,7 @@
 }
 
 .knowwe-quicksearch-more {
-	padding-left: 2.9em;
+	padding-left: 2.94em;
 	text-align: left;
 	border-bottom: 1px solid var(--bg-color-secondary-shade);
 	width: 100%;
@@ -454,9 +450,13 @@
  * The page name is said once, as the heading of the block; the sections below it carry only their own path. Repeating
  * the page in front of every section is what made a page with several hits read as several unrelated results.
  */
+/* icon in a column of its own, page name and everything under it indented against it */
 .knowwe-search-page,
 .knowwe-quicksearch-page {
-	display: block;
+	display: grid;
+	grid-template-columns: 1.7em 1fr;
+	column-gap: 0.6em;
+	align-items: baseline;
 	font-weight: bold;
 	color: var(--text-color-primary-link);
 	text-decoration: none;
@@ -472,7 +472,7 @@
 }
 
 .knowwe-quicksearch-page {
-	padding: 0.5em 0.8em 0.1em 2.9em;
+	padding: 0.55em 0.8em 0.15em;
 	font-size: 0.95em;
 }
 
@@ -502,4 +502,10 @@
 .knowwe-search-section.is-continuation + .knowwe-search-section,
 .knowwe-search-section + .knowwe-search-section.is-continuation {
 	margin-top: 0.25em;
+}
+
+.knowwe-search-sections,
+.knowwe-search-folded,
+.knowwe-search-stale {
+	margin-left: 2.3em;
 }

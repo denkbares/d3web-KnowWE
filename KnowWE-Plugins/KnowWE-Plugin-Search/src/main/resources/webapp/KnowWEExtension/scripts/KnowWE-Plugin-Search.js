@@ -220,7 +220,11 @@
 		var link = document.createElement('a');
 		link.className = className;
 		link.href = 'Wiki.jsp?page=' + (hit.page || hit.title).replace(/ /g, '+');
-		link.textContent = hit.page || hit.title;
+		link.appendChild(resultIcon());
+		// a span rather than the link's own text, so setting the name cannot wipe the icon again
+		var name = document.createElement('span');
+		name.textContent = hit.page || hit.title;
+		link.appendChild(name);
 		markMatches(link, query);
 		return link;
 	}
@@ -228,7 +232,6 @@
 	function item(hit) {
 		var li = document.createElement('li');
 		li.className = 'knowwe-search-hit';
-		li.appendChild(resultIcon());
 
 		var body = document.createElement('div');
 		body.className = 'knowwe-search-body';
