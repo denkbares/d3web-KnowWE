@@ -367,3 +367,33 @@ Drei Stufen, absichtlich von leicht nach schwer:
 - ACL-Tests mit anonymer / angemeldeter / Gruppen- / Admin-Session gegen Fixtures mit `[{ALLOW view …}]` und `[{ALLOW delete …}]`.
 - **Ende-zu-Ende:** `KnowWE-App` bauen und starten, Wiki mit ≥ 1 000 Seiten, `Search.jsp?query=…` öffnen und prüfen: Breadcrumb korrekt, Preview gerendert (Tabellen und `%%`-Boxen sichtbar), Deep-Link springt zur Überschrift, `%%Question` findet Question-Markups, ACL-geschützte Seite fehlt für unberechtigte Nutzer, Dark-Mode stimmt.
 - Build-Kontext: `JAVA_HOME=/usr/lib/jvm/zulu-25-amd64`; am Ende **kein** `mvn clean` (`target/dependencies/output.txt` wird für IDE-Testläufe gebraucht).
+
+---
+
+## Offen (Stand 2026-08-09, Ende der GUI-Runde)
+
+1. **Kaputtes HTML aus dem Parser-Recovery — wiegt am schwersten.**
+   Ein frisch gerendertes Preview-Paket löst pro Suche mit ~34 Previews 8× die Warnung
+   `JSPWikiMarkupParser - Line is longer than maximum allowed size (10240 characters)` aus. Das gelieferte HTML endet
+   dann z.B. auf `<p></div</p>` — ein Tag mitten durchgeschnitten, ein `<div>` bleibt offen.
+   Ursache ist `SearchResultRenderer.joinRenderedLines`: es ersetzt die Zeilenumbrüche zwischen zwei gerenderten Tags
+   durch maskierte `<br/>` und macht damit aus einem ganzen Markup-Block **eine** Zeile; maskierte Zeichen sind lange
+   Token, also reißt ein tabellenreicher Block die Grenze.
+   Richtung: Absatzbildung unterbinden, ohne alles in eine Zeile zu ziehen (Umbrüche portionsweise stehen lassen), oder
+   rein gerenderte Fragmente gar nicht erst durch `renderWikiSyntax` schicken. Ein Block-Wrapper hilft **nicht**, das ist
+   gemessen. Test: `SearchResultRendererTest` plus neuer Fall „langer Block bleibt unter der Parser-Grenze".
+
+2. **Verlauf am unteren Rand ist zu kurz.**
+   95 px Preview, 21,75 px Verlauf, ~19 px Zeilenhöhe: der Verlauf deckt gerade eine Zeile und blendet deren untere
+   Hälfte weg — sieht aus wie ein waagerechter Schnitt durch die Buchstaben. Auf ~3 em verlängern.
+
+3. **Preview-Cache: Invalidierung nicht am laufenden Wiki geprüft.**
+   `PreviewCacheTest` deckt die Logik ab, die Verdrahtung in `WikiSearchService.flush()` ist eine Zeile. Ein veraltetes
+   Preview nach einer Seitenänderung wäre sichtbar — einmal an einer echten Bearbeitung nachmessen.
+
+4. **ACL-Filterklausel (Stufe 4 Rest)** — weiterhin das einzige echte Release-Gate, siehe oben.
+
+5. **Expand-Modus im `PreviewRenderer`.** Das Preview zeigt den Preview-*Vorfahren* des Treffers, nicht den Abschnitt
+   selbst; beim Aufklappen erscheint deshalb Material darüber und darunter. Der Deckel begrenzt nur das Fenster.
+
+Siebzehn Commits auf `wikisearch` (KnowWE), keiner gepusht — Push ist jeweils einzeln abzustimmen.
