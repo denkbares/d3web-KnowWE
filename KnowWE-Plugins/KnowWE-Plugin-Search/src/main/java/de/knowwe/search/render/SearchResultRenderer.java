@@ -61,6 +61,12 @@ public class SearchResultRenderer {
 		if (section == null) return null;
 		if (!KnowWEUtils.canView(section, user)) return null;
 
+		// the query is not part of this: the matches are marked in the browser, so the same section renders the same
+		// html for every keystroke of the same search
+		String cacheKey = section.getID();
+		String cached = PreviewCache.getInstance().get(anchor.title(), cacheKey, user.getUserName());
+		if (cached != null) return new Rendered(cached, resolution.stale());
+
 		try {
 			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
 			if (previewSection == null) previewSection = section;
@@ -69,7 +75,9 @@ public class SearchResultRenderer {
 
 			RenderResult result = new RenderResult(user);
 			renderer.render(previewSection, List.of(section), user, result);
-			return new Rendered(toHtml(result, user), resolution.stale());
+			String html = toHtml(result, user);
+			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
+			return new Rendered(html, resolution.stale());
 		}
 		catch (RuntimeException e) {
 			// one badly rendering markup must not take down the whole result list

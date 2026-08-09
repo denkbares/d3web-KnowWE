@@ -54,6 +54,7 @@ import de.knowwe.search.index.SearchFields;
 import de.knowwe.search.index.SectionDocumentBuilder;
 import de.knowwe.search.index.WikiSearchIndex;
 import de.knowwe.search.query.WikiSearcher;
+import de.knowwe.search.render.PreviewCache;
 
 /**
  * Keeps the section index in step with the wiki.
@@ -178,9 +179,11 @@ public class WikiSearchService implements EventListener {
 		}
 		else if (event instanceof ArticleDeletedEvent deleted) {
 			String title = deleted.getArticle().getTitle();
+			PreviewCache.getInstance().invalidate(title);
 			submit(() -> index.removePage(title));
 		}
 		else if (event instanceof FullParseEvent fullParse) {
+			PreviewCache.getInstance().clear();
 			reindex(fullParse.getArticles());
 		}
 	}
@@ -200,6 +203,8 @@ public class WikiSearchService implements EventListener {
 		List<PageUpdate> updates = new ArrayList<>(titles.size());
 		for (String title : titles) {
 			Article article = articleManager.getArticle(title);
+			// its sections are about to change, so a preview rendered from the old text must not survive
+			PreviewCache.getInstance().invalidate(title);
 			updates.add(new PageUpdate(title, article == null ? List.of() : documents.build(article)));
 		}
 		submit(() -> {
