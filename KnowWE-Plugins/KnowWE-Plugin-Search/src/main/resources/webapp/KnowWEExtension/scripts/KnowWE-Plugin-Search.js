@@ -202,8 +202,20 @@
 		if (!heading) return;
 		var parts = (breadcrumb || '').split(' › ');
 		var last = parts[parts.length - 1].trim().toLowerCase();
-		if (!last || heading.textContent.trim().toLowerCase() !== last) return;
+		if (!last || headingText(heading) !== last) return;
 		heading.remove();
+	}
+
+	/**
+	 * The heading's text without the anchor link the wiki appends to it -- its content is a "#", so comparing the
+	 * raw textContent never matches and the heading would always survive.
+	 */
+	function headingText(heading) {
+		var copy = heading.cloneNode(true);
+		copy.querySelectorAll('a').forEach(function (anchor) {
+			anchor.remove();
+		});
+		return copy.textContent.replace(/[#\s]+$/, '').trim().toLowerCase();
 	}
 
 	/**

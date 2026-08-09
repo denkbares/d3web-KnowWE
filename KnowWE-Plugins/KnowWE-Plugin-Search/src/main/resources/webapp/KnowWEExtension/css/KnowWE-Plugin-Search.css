@@ -66,13 +66,6 @@
 	text-decoration: underline;
 }
 
-.knowwe-search-breadcrumb mark,
-.knowwe-quicksearch-crumb mark {
-	padding: 0 0.1em;
-	background: var(--highlight-color-faint-yellow);
-	color: inherit;
-}
-
 .knowwe-search-breadcrumb .knowwe-search-separator {
 	margin: 0 0.45em;
 	color: var(--text-color-secondary);
@@ -86,12 +79,6 @@
 	margin-top: 0.3em;
 	line-height: 1.5;
 	color: var(--text-color-primary-light);
-}
-
-.knowwe-search-snippet mark {
-	padding: 0 0.1em;
-	background: var(--highlight-color-faint-yellow);
-	color: inherit;
 }
 
 .knowwe-search-more {
@@ -231,11 +218,6 @@
 	overflow: visible !important;
 }
 
-.knowwe-quicksearch-preview mark {
-	background: var(--highlight-color-faint-yellow);
-	color: inherit;
-}
-
 .knowwe-quicksearch-snippet {
 	display: -webkit-box;
 	overflow: hidden;
@@ -244,11 +226,6 @@
 	color: var(--text-color-secondary-shade);
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 3;
-}
-
-.knowwe-quicksearch-snippet mark {
-	background: var(--highlight-color-faint-yellow);
-	color: inherit;
 }
 
 .knowwe-quicksearch-empty,
@@ -337,14 +314,27 @@
 	overflow: visible !important;
 }
 
-.knowwe-search-preview mark {
-	padding: 0 0.1em;
-	background: var(--highlight-color-faint-yellow);
-	color: inherit;
-}
-
 .knowwe-search-stale {
 	margin-top: 0.2em;
 	font-size: 0.8em;
 	color: var(--text-color-secondary);
+}
+
+/* ------------------------------------------------------------------ highlighting */
+
+/*
+ * A background over the full line height touches the line above and below wherever lines sit close together, which
+ * in a dense preview is most of the time. A lighter tint on a box that does not grow with the line keeps the marks
+ * legible without them running into each other.
+ */
+#knowwe-search mark,
+.knowwe-quicksearch-panel mark {
+	display: inline;
+	padding: 0 0.15em;
+	line-height: 1;
+	color: inherit;
+	background: transparent;
+	border-radius: 2px;
+	box-shadow: 0 0 0 0.12em var(--highlight-color-faint-yellow);
+	background-color: var(--highlight-color-faint-yellow);
 }
