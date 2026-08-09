@@ -117,18 +117,30 @@
 	border-radius: 3px;
 }
 
+/*
+ * A column with a scrolling list and a footer that stays put: only the hits scroll, so the way to the full result
+ * list is always one click away no matter how far down one has scrolled.
+ */
 .knowwe-quicksearch-panel {
 	position: absolute;
 	right: 0;
 	z-index: 1000;
+	display: flex;
+	flex-direction: column;
 	width: 34em;
 	max-width: 90vw;
 	max-height: 70vh;
-	overflow-y: auto;
+	overflow: hidden;
 	background: var(--bg-color-primary);
 	border: 1px solid var(--bg-color-secondary-shade);
 	border-radius: 4px;
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.knowwe-quicksearch-list {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
 }
 
 .knowwe-quicksearch-hit {
@@ -238,6 +250,11 @@
 	color: var(--text-color-secondary-shade);
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 3;
+}
+
+.knowwe-quicksearch-all {
+	flex: 0 0 auto;
+	border-top: 1px solid var(--bg-color-secondary-shade);
 }
 
 .knowwe-quicksearch-empty,

@@ -226,14 +226,25 @@
 	 * the class tells the styling to fade at the top as well, so it stays visible that something is above.
 	 */
 	function revealFirstMatch(container) {
-		var mark = container.querySelector('mark');
-		if (!mark) return;
 		var margin = 12;
 		// bounding rects, not offsetTop: the offset parent is not necessarily the container
 		var box = container.getBoundingClientRect();
-		var target = mark.getBoundingClientRect();
-		var delta = target.top - box.top;
-		if (delta >= 0 && delta + target.height <= container.clientHeight - margin) return;
+		var target = null;
+		var delta = 0;
+
+		// not simply the first mark: a match can sit in a tooltip or another element outside the flow, which then
+		// measures far above the container and scrolling to it does nothing
+		var marks = container.querySelectorAll('mark');
+		for (var i = 0; i < marks.length; i++) {
+			var offset = marks[i].getBoundingClientRect().top - box.top + container.scrollTop;
+			if (offset >= 0 && offset <= container.scrollHeight) {
+				target = marks[i];
+				delta = offset - container.scrollTop;
+				break;
+			}
+		}
+		if (!target) return;
+		if (delta >= 0 && delta + target.getBoundingClientRect().height <= container.clientHeight - margin) return;
 		container.scrollTop += delta - margin;
 		if (container.scrollTop > 0) container.classList.add('is-scrolled');
 	}
@@ -248,7 +259,17 @@
 		});
 		if (!words.length) return;
 
-		var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+		// Not inside form controls and the like: a mark in an <option> is never visible, and its position cannot be
+		// measured, so scrolling to it would fail silently.
+		var skip = /^(OPTION|SELECT|TEXTAREA|SCRIPT|STYLE|INPUT)$/;
+		var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+			acceptNode: function (node) {
+				for (var p = node.parentElement; p && p !== container; p = p.parentElement) {
+					if (skip.test(p.tagName)) return NodeFilter.FILTER_REJECT;
+				}
+				return NodeFilter.FILTER_ACCEPT;
+			}
+		});
 		var nodes = [];
 		while (walker.nextNode()) nodes.push(walker.currentNode);
 
@@ -276,8 +297,9 @@
 
 	/* ---------------------------------------------------------------- quick search in the header */
 
-	// each preview costs a rendering pass on the server, so the dropdown asks for fewer hits than the page
-	var QUICK_LIMIT = 6;
+	// the whole panel scrolls, footer included, so it can hold more than fits on screen. Each preview still costs
+	// a rendering pass on the server, which is what limits this rather than the space.
+	var QUICK_LIMIT = 20;
 	var QUICK_DEBOUNCE_MS = 200;
 
 	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '' };
@@ -322,6 +344,8 @@
 		quick.hits = answer.hits || [];
 		quick.active = -1;
 		quick.panel.innerHTML = '';
+		var list = document.createElement('div');
+		list.className = 'knowwe-quicksearch-list';
 
 		if (!quick.hits.length) {
 			var empty = document.createElement('div');
@@ -362,8 +386,9 @@
 				entry.appendChild(snippet);
 			}
 
-			quick.panel.appendChild(entry);
+			list.appendChild(entry);
 		});
+		quick.panel.appendChild(list);
 
 		var all = document.createElement('a');
 		all.className = 'knowwe-quicksearch-all';
