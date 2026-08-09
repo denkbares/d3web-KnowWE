@@ -62,7 +62,7 @@
 	color: var(--text-color-primary-link);
 }
 
-.knowwe-search-breadcrumb:hover span {
+.knowwe-search-breadcrumb:hover > span:first-child {
 	text-decoration: underline;
 }
 
