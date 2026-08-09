@@ -504,9 +504,8 @@
 	margin-top: 0.25em;
 }
 
-.knowwe-search-sections,
-.knowwe-search-folded,
-.knowwe-search-stale {
+/* the line under the sections lines up with their text, not with the triangles */
+.knowwe-search-folded {
 	margin-left: 2.3em;
 }
 
@@ -516,15 +515,16 @@
  * Every section keeps a triangle in a gutter of its own: it marks the row the way the document icon marks the page,
  * and where the capped preview actually cuts something off it lifts the cap.
  */
+/* same two columns as the page heading above, so the triangles line up with its icon */
 .knowwe-search-section,
 .knowwe-quicksearch-section {
 	display: grid;
-	grid-template-columns: 1.1em 1fr;
-	column-gap: 0.4em;
+	grid-template-columns: 1.7em 1fr;
+	column-gap: 0.6em;
 }
 
 .knowwe-quicksearch-section {
-	padding-left: 2.94em;
+	padding-left: 0.8em;
 }
 
 /* without this the column takes its content's width and a wide preview pushes the whole row past the panel */
@@ -533,18 +533,32 @@
 	min-width: 0;
 }
 
+/* the gutter runs the height of the whole section, the target must not -- it would swallow clicks beside the preview */
 .knowwe-search-gutter {
-	padding-top: 0.15em;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
 }
 
+/*
+ * The glyph is small but the target must not be: it fills the width of the gutter and is padded to roughly finger
+ * height, while staying on the row it belongs to.
+ */
 .knowwe-search-grow {
-	padding: 0;
-	font-size: 0.85em;
+	width: 100%;
+	padding: 0.35em 0;
+	font-size: 1em;
 	line-height: 1;
 	color: var(--text-color-primary-link);
+	text-align: center;
 	background: none;
 	border: none;
 	cursor: pointer;
+}
+
+.knowwe-search-grow:hover:not(:disabled) {
+	background: var(--bg-color-secondary);
+	border-radius: 3px;
 }
 
 .knowwe-search-grow::before {
