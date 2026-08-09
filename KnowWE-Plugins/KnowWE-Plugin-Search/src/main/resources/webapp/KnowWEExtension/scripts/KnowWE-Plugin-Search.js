@@ -114,6 +114,8 @@
 		hits.forEach(function (hit) {
 			nodes.results.appendChild(item(hit));
 		});
+		// only now are the previews laid out and can be measured
+		nodes.results.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
 
 		if (state.hits.length < (answer.total || 0)) {
 			var button = document.createElement('button');
@@ -184,6 +186,26 @@
 			li.appendChild(snippet);
 		}
 		return li;
+	}
+
+	/**
+	 * Brings the first match into view inside a capped preview.
+	 *
+	 * A preview cut at a fixed height shows the beginning of the section, which is not necessarily where the match is
+	 * -- a result would then show everything except the reason it is a result. Scrolling to the first mark fixes that;
+	 * the class tells the styling to fade at the top as well, so it stays visible that something is above.
+	 */
+	function revealFirstMatch(container) {
+		var mark = container.querySelector('mark');
+		if (!mark) return;
+		var margin = 12;
+		// bounding rects, not offsetTop: the offset parent is not necessarily the container
+		var box = container.getBoundingClientRect();
+		var target = mark.getBoundingClientRect();
+		var delta = target.top - box.top;
+		if (delta >= 0 && delta + target.height <= container.clientHeight - margin) return;
+		container.scrollTop += delta - margin;
+		if (container.scrollTop > 0) container.classList.add('is-scrolled');
 	}
 
 	/**
@@ -318,6 +340,7 @@
 		quick.panel.appendChild(all);
 
 		showQuick();
+		quick.panel.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
 	}
 
 	function onQuickKey(event) {

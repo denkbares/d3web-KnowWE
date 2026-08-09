@@ -163,6 +163,18 @@
 	line-height: 1.4;
 }
 
+.knowwe-quicksearch-preview.is-scrolled::before {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 1;
+	height: 1.2em;
+	content: "";
+	background: linear-gradient(to top, transparent, var(--bg-color-primary));
+	pointer-events: none;
+}
+
 .knowwe-quicksearch-preview::after {
 	position: absolute;
 	right: 0;
@@ -175,7 +187,19 @@
 }
 
 .knowwe-quicksearch-hit.active .knowwe-quicksearch-preview::after,
-.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview::after {
+.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview.is-scrolled::before {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 1;
+	height: 1.2em;
+	content: "";
+	background: linear-gradient(to top, transparent, var(--bg-color-primary));
+	pointer-events: none;
+}
+
+.knowwe-quicksearch-preview::after {
 	background: linear-gradient(to bottom, transparent, var(--bg-color-secondary));
 }
 
@@ -248,6 +272,18 @@
 	font-size: 0.95em;
 }
 
+.knowwe-search-preview.is-scrolled::before {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 1;
+	height: 1.6em;
+	content: "";
+	background: linear-gradient(to top, transparent, var(--bg-color-primary));
+	pointer-events: none;
+}
+
 .knowwe-search-preview::after {
 	position: absolute;
 	right: 0;
@@ -283,8 +319,8 @@
 	font-size: 1em;
 }
 
-.knowwe-search-preview p:empty,
-.knowwe-search-preview br + br {
+/* a second break is a blank line the source has, e.g. between two rules -- it must stay */
+.knowwe-search-preview p:empty {
 	display: none;
 }
 

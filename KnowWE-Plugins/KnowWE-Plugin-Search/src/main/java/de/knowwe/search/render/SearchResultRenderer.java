@@ -105,8 +105,16 @@ public class SearchResultRenderer {
 		String tagEnd = RenderResult.mask(">", result);
 		String tagStart = RenderResult.mask("<", result);
 		String lineBreak = RenderResult.mask("<br/>", result);
-		return maskedHtml.replaceAll(
-				Pattern.quote(tagEnd) + "\\s*\\n\\s*" + Pattern.quote(tagStart),
+		String end = Pattern.quote(tagEnd);
+		String start = Pattern.quote(tagStart);
+
+		// A blank line separates one rule from the next and has to stay visible, so it becomes two breaks. Matching
+		// it first matters: the single line pattern would otherwise swallow it and every rule would look alike.
+		String joined = maskedHtml.replaceAll(
+				end + "[ \\t]*\\n[ \\t]*\\n\\s*" + start,
+				Matcher.quoteReplacement(tagEnd + lineBreak + lineBreak + tagStart));
+		return joined.replaceAll(
+				end + "[ \\t]*\\n[ \\t]*" + start,
 				Matcher.quoteReplacement(tagEnd + lineBreak + tagStart));
 	}
 
