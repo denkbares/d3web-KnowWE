@@ -20,6 +20,8 @@
 package de.knowwe.search.render;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,24 +85,29 @@ public class SearchResultRenderer {
 	 */
 	private static String toHtml(RenderResult result, UserContext user) {
 		String raw = result.toStringRaw().replaceAll("@!!!", "@\n!!!");
-		String markup = Environment.getInstance().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw));
+		String markup = Environment.getInstance().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
 		return RenderResult.unmask(markup, user);
 	}
 
 	/**
 	 * Turns the newlines that sit between two already rendered tags into explicit breaks.
 	 * <p>
-	 * Renderers put one element per line, and JSPWiki's parser turns every such line into a paragraph: a rule block
-	 * that is a single inline element on the page arrives here as twelve paragraphs, and because a paragraph cannot
-	 * live inside a span the browser then tears the block apart. The article itself never shows this, because there
-	 * the whole markup is one rendered block.
+	 * A markup renderer writes one element per line, and JSPWiki's parser makes a paragraph out of every such line.
+	 * A rule block that is one inline element in the article arrives here as twelve paragraphs -- inside a span, where
+	 * a paragraph may not be, so the browser tears the block apart while parsing. Wrapping the fragment in a block of
+	 * its own does not help; the parser paragraphs inside a div just the same (measured, not assumed).
 	 * <p>
-	 * Masking is character based -- {@code >} and {@code <} each become their own token -- so a newline strictly
-	 * between two tags matches this pattern, while a newline in running text never does.
+	 * The tokens are asked for rather than assumed: {@link RenderResult#mask(String, RenderResult)} uses the result's
+	 * own masking key, so nothing here depends on how masking is encoded. A newline in running text has no tag on
+	 * either side and is left alone, which is what keeps prose previews their paragraphs.
 	 */
-	static String joinRenderedLines(String maskedHtml) {
-		// keep the visual break the page has, as a <br> built from the same mask key, so the parser sees no line
-		return maskedHtml.replaceAll("(@@(\\w+)_5@@)\\s*\\n\\s*(@@\\w+_6@@)", "$1@@$2_6@@br/@@$2_5@@$3");
+	static String joinRenderedLines(String maskedHtml, RenderResult result) {
+		String tagEnd = RenderResult.mask(">", result);
+		String tagStart = RenderResult.mask("<", result);
+		String lineBreak = RenderResult.mask("<br/>", result);
+		return maskedHtml.replaceAll(
+				Pattern.quote(tagEnd) + "\\s*\\n\\s*" + Pattern.quote(tagStart),
+				Matcher.quoteReplacement(tagEnd + lineBreak + tagStart));
 	}
 
 	/**
