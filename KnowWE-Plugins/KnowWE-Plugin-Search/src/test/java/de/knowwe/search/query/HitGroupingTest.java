@@ -40,7 +40,18 @@ public class HitGroupingTest {
 		List<HitGrouping.Group> groups = HitGrouping.group(List.of(
 				hit("Montage", "Schritt 1", 1.0f), hit("Pruefung", "Sichtpruefung", 0.2f)));
 		assertEquals(2, groups.size());
-		assertTrue(groups.stream().allMatch(group -> group.folded().isEmpty()));
+		assertTrue(groups.stream().allMatch(group -> group.rest().isEmpty()));
+	}
+
+	@Test
+	public void aPageAppearsOnceHoweverManySectionsItHits() {
+		// otherwise a page's second section ranks somewhere else entirely while a line above it claims to count it
+		List<HitGrouping.Group> groups = HitGrouping.group(List.of(
+				hit("Montage", "A", 1.0f), hit("Pruefung", "X", 0.95f), hit("Montage", "B", 0.9f)));
+		assertEquals(2, groups.size());
+		assertEquals("Montage", groups.get(0).primary().title());
+		assertEquals(List.of("B"), groups.get(0).shown().stream().map(h -> h.anchor().heading()).toList());
+		assertEquals("Pruefung", groups.get(1).primary().title());
 	}
 
 	@Test
@@ -49,6 +60,7 @@ public class HitGroupingTest {
 				hit("Montage", "Schritt 1", 1.0f), hit("Montage", "Anhang", 0.3f)));
 		assertEquals(1, groups.size());
 		assertEquals(1, groups.get(0).folded().size());
+		assertTrue(groups.get(0).shown().isEmpty());
 		assertEquals("Anhang", groups.get(0).folded().get(0).anchor().heading());
 	}
 
@@ -57,8 +69,9 @@ public class HitGroupingTest {
 		// the point of the threshold: a second good section is a find, not a footnote to the first
 		List<HitGrouping.Group> groups = HitGrouping.group(List.of(
 				hit("Montage", "Schritt 1", 1.0f), hit("Montage", "Schritt 2", 0.9f)));
-		assertEquals(2, groups.size());
-		assertTrue(groups.stream().allMatch(group -> group.folded().isEmpty()));
+		assertEquals(1, groups.size());
+		assertEquals(1, groups.get(0).shown().size());
+		assertTrue(groups.get(0).folded().isEmpty());
 	}
 
 	@Test
@@ -66,20 +79,22 @@ public class HitGroupingTest {
 		List<HitGrouping.Group> groups = HitGrouping.group(List.of(
 				hit("Montage", "A", 1.0f), hit("Montage", "B", 0.99f),
 				hit("Montage", "C", 0.98f), hit("Montage", "D", 0.97f)));
-		assertEquals(3, groups.size());
+		assertEquals(1, groups.size());
+		assertEquals(2, groups.get(0).shown().size());
 		assertEquals(1, groups.get(0).folded().size());
 		assertEquals("D", groups.get(0).folded().get(0).anchor().heading());
 	}
 
 	@Test
-	public void everythingFoldedHangsUnderThePagesBestEntry() {
-		// not under whichever entry happens to be the latest, otherwise the counter lands on the wrong row
+	public void whatIsShownAndWhatIsFoldedKeepsTheScoreOrder() {
 		List<HitGrouping.Group> groups = HitGrouping.group(List.of(
 				hit("Montage", "A", 1.0f), hit("Montage", "B", 0.9f),
 				hit("Montage", "C", 0.1f), hit("Montage", "D", 0.05f)));
-		assertEquals(2, groups.size());
+		assertEquals(1, groups.size());
+		assertEquals(List.of("B", "C", "D"),
+				groups.get(0).rest().stream().map(h -> h.anchor().heading()).toList());
+		assertEquals(1, groups.get(0).shown().size());
 		assertEquals(2, groups.get(0).folded().size());
-		assertTrue(groups.get(1).folded().isEmpty());
 	}
 
 	@Test

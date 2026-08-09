@@ -447,3 +447,59 @@
 	border-bottom: 1px solid var(--bg-color-secondary-shade);
 	width: 100%;
 }
+
+/* ------------------------------------------------------------------ one block per page */
+
+/*
+ * The page name is said once, as the heading of the block; the sections below it carry only their own path. Repeating
+ * the page in front of every section is what made a page with several hits read as several unrelated results.
+ */
+.knowwe-search-page,
+.knowwe-quicksearch-page {
+	display: block;
+	font-weight: bold;
+	color: var(--text-color-primary-link);
+	text-decoration: none;
+}
+
+.knowwe-search-page:hover,
+.knowwe-quicksearch-page:hover {
+	text-decoration: underline;
+}
+
+.knowwe-search-page {
+	font-size: 1.05em;
+}
+
+.knowwe-quicksearch-page {
+	padding: 0.5em 0.8em 0.1em 2.9em;
+	font-size: 0.95em;
+}
+
+.knowwe-search-section + .knowwe-search-section,
+.knowwe-search-folded-hits .knowwe-search-section {
+	margin-top: 0.6em;
+}
+
+.knowwe-search-breadcrumb {
+	font-size: 0.95em;
+}
+
+/* a page and its sections are one block, so the line goes between blocks and not between the sections */
+.knowwe-quicksearch-group + .knowwe-quicksearch-group {
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-group .knowwe-quicksearch-hit {
+	border-bottom: none;
+}
+
+.knowwe-quicksearch-group .knowwe-quicksearch-more {
+	border-bottom: none;
+}
+
+/* a block continuing the heading above it belongs to it, so it sits closer than a new section would */
+.knowwe-search-section.is-continuation + .knowwe-search-section,
+.knowwe-search-section + .knowwe-search-section.is-continuation {
+	margin-top: 0.25em;
+}

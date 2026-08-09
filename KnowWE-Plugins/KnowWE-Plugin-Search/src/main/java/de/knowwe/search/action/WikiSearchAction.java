@@ -135,6 +135,12 @@ public class WikiSearchAction extends AbstractAction {
 		for (int i = offset; i < Math.min(offset + limit, groups.size()); i++) {
 			HitGrouping.Group group = groups.get(i);
 			JSONObject json = toJson(group.primary(), withPreview, context);
+			// the page's further sections travel with it: they belong under this entry, not somewhere further down
+			JSONArray sections = new JSONArray();
+			for (SearchHit section : group.shown()) {
+				sections.put(toJson(section, withPreview, context));
+			}
+			if (!sections.isEmpty()) json.put("sections", sections);
 			if (!group.folded().isEmpty()) json.put("folded", group.folded().size());
 			hits.put(json);
 		}

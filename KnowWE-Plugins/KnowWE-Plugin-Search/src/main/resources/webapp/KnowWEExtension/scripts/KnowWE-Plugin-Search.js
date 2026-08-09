@@ -166,7 +166,7 @@
 	 * The weaker sections of the same page, one click away. They are fetched rather than delivered with the entry:
 	 * each one costs a rendering pass on the server, and most of them are never looked at.
 	 */
-	function expander(hit) {
+	function expander(hit, sections) {
 		var wrapper = document.createElement('div');
 		wrapper.className = 'knowwe-search-folded';
 
@@ -177,10 +177,10 @@
 			+ ' auf dieser Seite';
 		wrapper.appendChild(button);
 
-		var list = document.createElement('ul');
+		var list = document.createElement('div');
 		list.className = 'knowwe-search-folded-hits';
 		list.hidden = true;
-		wrapper.appendChild(list);
+		sections.appendChild(list);
 
 		button.addEventListener('click', function () {
 			if (list.childNodes.length) {
@@ -196,8 +196,9 @@
 				dataType: 'json',
 				cache: false
 			}).done(function (answer) {
+				var seen = { path: null };
 				(answer.hits || []).forEach(function (folded) {
-					list.appendChild(item(folded));
+					list.appendChild(section(folded, seen));
 				});
 				list.hidden = false;
 				button.classList.add('is-open');
@@ -209,6 +210,21 @@
 		return wrapper;
 	}
 
+	/** The page name is the group's heading, so the sections below it only carry what comes after it. */
+	function headingPath(hit) {
+		var parts = (hit.breadcrumb || hit.title).split(' › ');
+		return parts.length > 1 ? parts.slice(1) : [];
+	}
+
+	function pageLink(hit, className, query) {
+		var link = document.createElement('a');
+		link.className = className;
+		link.href = 'Wiki.jsp?page=' + (hit.page || hit.title).replace(/ /g, '+');
+		link.textContent = hit.page || hit.title;
+		markMatches(link, query);
+		return link;
+	}
+
 	function item(hit) {
 		var li = document.createElement('li');
 		li.className = 'knowwe-search-hit';
@@ -217,30 +233,61 @@
 		var body = document.createElement('div');
 		body.className = 'knowwe-search-body';
 		li.appendChild(body);
+		body.appendChild(pageLink(hit, 'knowwe-search-page', state.query));
 
-		var link = document.createElement('a');
-		link.className = 'knowwe-search-breadcrumb';
-		link.href = hit.url;
-		(hit.breadcrumb || hit.title).split(' › ').forEach(function (part, index) {
-			if (index > 0) {
-				var separator = document.createElement('span');
-				separator.className = 'knowwe-search-separator';
-				separator.textContent = '›';
-				link.appendChild(separator);
-			}
-			var span = document.createElement('span');
-			span.textContent = part;
-			link.appendChild(span);
+		var sections = document.createElement('div');
+		sections.className = 'knowwe-search-sections';
+		body.appendChild(sections);
+		var seen = { path: null };
+		sections.appendChild(section(hit, seen));
+		(hit.sections || []).forEach(function (further) {
+			sections.appendChild(section(further, seen));
 		});
-		markMatches(link, state.query);
-		body.appendChild(link);
-		if (hit.folded) body.appendChild(expander(hit));
+
+		if (hit.folded) body.appendChild(expander(hit, sections));
+		return li;
+	}
+
+	/**
+	 * One matching section of the page above it -- its heading path, then what the wiki makes of it.
+	 * <p>
+	 * Several blocks can sit under one heading (running text and a markup block are indexed apart), and repeating that
+	 * heading for each of them reads as if the same section were found three times. The repeat is dropped instead, the
+	 * same way the page name is only said once.
+	 */
+	function section(hit, seen) {
+		var wrapper = document.createElement('div');
+		wrapper.className = 'knowwe-search-section';
+
+		var path = headingPath(hit);
+		var repeated = seen && seen.path === path.join(' › ');
+		if (seen) seen.path = path.join(' › ');
+		if (repeated) wrapper.classList.add('is-continuation');
+
+		if (path.length && !repeated) {
+			var link = document.createElement('a');
+			link.className = 'knowwe-search-breadcrumb';
+			link.href = hit.url;
+			path.forEach(function (part, index) {
+				if (index > 0) {
+					var separator = document.createElement('span');
+					separator.className = 'knowwe-search-separator';
+					separator.textContent = '›';
+					link.appendChild(separator);
+				}
+				var span = document.createElement('span');
+				span.textContent = part;
+				link.appendChild(span);
+			});
+			markMatches(link, state.query);
+			wrapper.appendChild(link);
+		}
 
 		if (hit.stale) {
 			var warning = document.createElement('div');
 			warning.className = 'knowwe-search-stale';
 			warning.textContent = 'Die Seite wurde seit der Indizierung geändert.';
-			body.appendChild(warning);
+			wrapper.appendChild(warning);
 		}
 
 		if (hit.previewHtml) {
@@ -249,7 +296,7 @@
 			preview.className = 'knowwe-search-preview';
 			preview.innerHTML = hit.previewHtml;
 			dropDuplicateHeading(preview, hit.breadcrumb);
-			body.appendChild(preview);
+			wrapper.appendChild(preview);
 			markMatches(preview, state.query);
 		}
 		else {
@@ -257,9 +304,9 @@
 			snippet.className = 'knowwe-search-snippet';
 			// safe: the server escapes the body and only adds its own <mark> tags around the matches
 			snippet.innerHTML = hit.snippet || '';
-			body.appendChild(snippet);
+			wrapper.appendChild(snippet);
 		}
-		return li;
+		return wrapper;
 	}
 
 	/**
@@ -412,24 +459,28 @@
 		}).fail(hideQuick);
 	}
 
-	function quickEntry(hit) {
+	function quickEntry(hit, seen) {
 		var entry = document.createElement('a');
 		entry.className = 'knowwe-quicksearch-hit';
 		entry.href = hit.url;
 		entry.addEventListener('mouseenter', function () {
 			highlightQuick(quickEntries().indexOf(entry));
 		});
-		entry.appendChild(resultIcon());
 
 		var qbody = document.createElement('div');
 		qbody.className = 'knowwe-search-body';
 		entry.appendChild(qbody);
 
-		var crumb = document.createElement('div');
-		crumb.className = 'knowwe-quicksearch-crumb';
-		crumb.textContent = hit.breadcrumb || hit.title;
-		markMatches(crumb, quick.query);
-		qbody.appendChild(crumb);
+		var path = headingPath(hit);
+		var repeated = seen && seen.path === path.join(' › ');
+		if (seen) seen.path = path.join(' › ');
+		if (path.length && !repeated) {
+			var crumb = document.createElement('div');
+			crumb.className = 'knowwe-quicksearch-crumb';
+			crumb.textContent = path.join(' › ');
+			markMatches(crumb, quick.query);
+			qbody.appendChild(crumb);
+		}
 
 		if (hit.previewHtml) {
 			var preview = document.createElement('div');
@@ -461,7 +512,13 @@
 	 * keys walk quick.hits by index while the highlight walks the entries in the panel -- the two have to describe
 	 * the same list at all times.
 	 */
-	function quickExpander(hit, entry) {
+	function quickExpander(hit) {
+		// the unfolded ones join the list behind the group's sections, which is where they appear on screen too
+		function position() {
+			var at = quick.hits.indexOf(hit);
+			return at < 0 ? -1 : at + 1 + (hit.sections ? hit.sections.length : 0);
+		}
+
 		var button = document.createElement('button');
 		button.type = 'button';
 		button.className = 'knowwe-quicksearch-more';
@@ -472,13 +529,13 @@
 		var open = false;
 
 		function insert() {
-			var after = button;
+			var after = button.previousSibling;
 			loaded.forEach(function (node) {
 				after.parentNode.insertBefore(node, after.nextSibling);
 				after = node;
 			});
-			var at = quick.hits.indexOf(hit);
-			if (at >= 0) quick.hits.splice.apply(quick.hits, [at + 1, 0].concat(loaded.map(function (node) {
+			var at = position();
+			if (at >= 0) quick.hits.splice.apply(quick.hits, [at, 0].concat(loaded.map(function (node) {
 				return node.searchHit;
 			})));
 			open = true;
@@ -489,8 +546,8 @@
 		function collapse() {
 			// the selection would otherwise point at a removed entry, and the next arrow key at the wrong one
 			highlightQuick(-1);
-			var at = quick.hits.indexOf(hit);
-			if (at >= 0) quick.hits.splice(at + 1, loaded.length);
+			var at = position();
+			if (at >= 0) quick.hits.splice(at, loaded.length);
 			loaded.forEach(function (node) {
 				node.remove();
 			});
@@ -545,10 +602,23 @@
 			return;
 		}
 
-		quick.hits.forEach(function (hit) {
-			var entry = quickEntry(hit);
-			list.appendChild(entry);
-			if (hit.folded) list.appendChild(quickExpander(hit, entry));
+		// one block per page: its name once as a heading, the matching sections underneath it
+		var groups = quick.hits;
+		quick.hits = [];
+		groups.forEach(function (hit) {
+			var group = document.createElement('div');
+			group.className = 'knowwe-quicksearch-group';
+			group.appendChild(pageLink(hit, 'knowwe-quicksearch-page', quick.query));
+			list.appendChild(group);
+
+			var seen = { path: null };
+			group.appendChild(quickEntry(hit, seen));
+			quick.hits.push(hit);
+			(hit.sections || []).forEach(function (further) {
+				group.appendChild(quickEntry(further, seen));
+				quick.hits.push(further);
+			});
+			if (hit.folded) group.appendChild(quickExpander(hit, group));
 		});
 		quick.panel.appendChild(list);
 
