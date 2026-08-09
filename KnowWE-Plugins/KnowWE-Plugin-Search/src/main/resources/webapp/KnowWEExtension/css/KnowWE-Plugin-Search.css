@@ -418,7 +418,8 @@
 	content: "▸";
 }
 
-.knowwe-search-folded-toggle.is-open::before {
+.knowwe-search-folded-toggle.is-open::before,
+.knowwe-quicksearch-more.is-open::before {
 	content: "▾";
 }
 

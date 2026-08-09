@@ -455,8 +455,11 @@
 
 	/*
 	 * Same as on the search page, but the expander cannot live inside the entry: the entry is a link, and a button
-	 * inside a link is neither valid nor clickable. So it is a sibling, and unfolding splices the new entries into
-	 * quick.hits as well, otherwise the arrow keys would walk past them.
+	 * inside a link is neither valid nor clickable. So it is a sibling.
+	 *
+	 * Unfolding splices the new entries into quick.hits as well and folding takes them back out, because the arrow
+	 * keys walk quick.hits by index while the highlight walks the entries in the panel -- the two have to describe
+	 * the same list at all times.
 	 */
 	function quickExpander(hit, entry) {
 		var button = document.createElement('button');
@@ -464,8 +467,48 @@
 		button.className = 'knowwe-quicksearch-more';
 		button.textContent = hit.folded + (hit.folded === 1 ? ' weiterer Treffer' : ' weitere Treffer')
 			+ ' auf dieser Seite';
+
+		var loaded = null;
+		var open = false;
+
+		function insert() {
+			var after = button;
+			loaded.forEach(function (node) {
+				after.parentNode.insertBefore(node, after.nextSibling);
+				after = node;
+			});
+			var at = quick.hits.indexOf(hit);
+			if (at >= 0) quick.hits.splice.apply(quick.hits, [at + 1, 0].concat(loaded.map(function (node) {
+				return node.searchHit;
+			})));
+			open = true;
+			button.classList.add('is-open');
+			quick.panel.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
+		}
+
+		function collapse() {
+			// the selection would otherwise point at a removed entry, and the next arrow key at the wrong one
+			highlightQuick(-1);
+			var at = quick.hits.indexOf(hit);
+			if (at >= 0) quick.hits.splice(at + 1, loaded.length);
+			loaded.forEach(function (node) {
+				node.remove();
+			});
+			open = false;
+			button.classList.remove('is-open');
+		}
+
 		button.addEventListener('click', function (event) {
 			event.preventDefault();
+			if (open) {
+				collapse();
+				return;
+			}
+			if (loaded) {
+				// fetched once, folding and unfolding again costs nothing
+				insert();
+				return;
+			}
 			button.disabled = true;
 			jq$.ajax({
 				url: 'action/WikiSearchAction',
@@ -473,18 +516,13 @@
 				dataType: 'json',
 				cache: false
 			}).done(function (answer) {
-				var added = answer.hits || [];
-				var after = button;
-				added.forEach(function (folded) {
+				loaded = (answer.hits || []).map(function (folded) {
 					var node = quickEntry(folded);
-					after.parentNode.insertBefore(node, after.nextSibling);
-					after = node;
+					node.searchHit = folded;
+					return node;
 				});
-				var at = quick.hits.indexOf(hit);
-				if (at >= 0) quick.hits.splice.apply(quick.hits, [at + 1, 0].concat(added));
-				button.remove();
-				quick.panel.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
-			}).fail(function () {
+				insert();
+			}).always(function () {
 				button.disabled = false;
 			});
 		});
