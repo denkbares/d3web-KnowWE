@@ -220,6 +220,26 @@
 	 * something off, a triangle lifts it -- measured after the preview is in the document, because a preview that is
 	 * not laid out yet reports no height at all.
 	 */
+	/*
+	 * The first measurement is not the last word: the wiki's own scripts lay out tables inside a preview after it is
+	 * in the document, and a preview measured while that is still happening reports a width it will not keep. So the
+	 * check is repeated a few times while things settle -- cheap, and it converges.
+	 */
+	function remeasure(root, selector) {
+		[250, 800, 2000].forEach(function (delay) {
+			window.setTimeout(function () {
+				root.querySelectorAll(selector).forEach(markClipping);
+			}, delay);
+		});
+	}
+
+	function markClipping(preview) {
+		if (!preview) return false;
+		// a wide table or a long line is cut at the right edge just as a long section is cut at the bottom
+		preview.classList.toggle('is-clipped-right', preview.scrollWidth > preview.clientWidth + 2);
+		return preview.scrollHeight > preview.clientHeight + 4;
+	}
+
 	function addGrowToggle(preview, gutter) {
 		var button = document.createElement('button');
 		button.type = 'button';
@@ -228,7 +248,7 @@
 		gutter.appendChild(button);
 
 		// a section whose preview fits keeps the mark, so the rows stay in line -- it just has nothing to lift
-		if (!preview || preview.scrollHeight <= preview.clientHeight + 4) {
+		if (!markClipping(preview)) {
 			if (preview) preview.classList.remove('is-clipped');
 			button.classList.add('is-static');
 			button.disabled = true;
@@ -242,7 +262,7 @@
 			var open = preview.classList.toggle('is-expanded');
 			button.classList.toggle('is-open', open);
 			// three times the cap does not always reach the end, so the fade stays wherever it still cuts off
-			preview.classList.toggle('is-clipped', preview.scrollHeight > preview.clientHeight + 4);
+			preview.classList.toggle('is-clipped', markClipping(preview));
 			button.title = open ? 'Abschnitt wieder einklappen' : 'Abschnitt ganz anzeigen';
 		});
 	}
@@ -394,6 +414,7 @@
 	 * the class tells the styling to fade at the top as well, so it stays visible that something is above.
 	 */
 	function measureSections(root) {
+		remeasure(root, '.knowwe-search-preview');
 		root.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
 		root.querySelectorAll('.knowwe-search-section').forEach(function (wrapper) {
 			if (!wrapper.firstChild.childNodes.length) addGrowToggle(wrapper.growable, wrapper.firstChild);
@@ -534,7 +555,7 @@
 		var entry = document.createElement('a');
 		entry.className = 'knowwe-quicksearch-hit';
 		entry.href = hit.url;
-		entry.addEventListener('mouseenter', function () {
+		wrapper.addEventListener('mouseenter', function () {
 			highlightQuick(quickEntries().indexOf(entry));
 		});
 
@@ -575,6 +596,7 @@
 	}
 
 	function measureQuickSections(root) {
+		remeasure(root, '.knowwe-quicksearch-preview');
 		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
 		root.querySelectorAll('.knowwe-quicksearch-section').forEach(function (wrapper) {
 			if (!wrapper.firstChild.childNodes.length) addGrowToggle(wrapper.growable, wrapper.firstChild);

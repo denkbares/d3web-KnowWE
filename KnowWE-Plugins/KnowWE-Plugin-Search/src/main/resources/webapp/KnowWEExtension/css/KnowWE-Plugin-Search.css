@@ -183,7 +183,7 @@
 }
 
 .knowwe-quicksearch-hit.active,
-.knowwe-quicksearch-hit:hover {
+.knowwe-quicksearch-section:hover {
 	background: var(--bg-color-secondary);
 }
 
@@ -226,7 +226,7 @@
 
 /* the fades sit on the entry's background, so they follow it when it is hovered or selected */
 .knowwe-quicksearch-hit.active .knowwe-quicksearch-preview.is-scrolled::before,
-.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview.is-scrolled::before {
+.knowwe-quicksearch-section:hover .knowwe-quicksearch-preview.is-scrolled::before {
 	background: linear-gradient(to top, transparent, var(--bg-color-secondary));
 }
 
@@ -248,7 +248,7 @@
 	text-decoration: none;
 }
 
-.knowwe-quicksearch-hit:hover .knowwe-quicksearch-crumb,
+.knowwe-quicksearch-section:hover .knowwe-quicksearch-crumb,
 .knowwe-quicksearch-hit.active .knowwe-quicksearch-crumb {
 	text-decoration: underline;
 }
@@ -539,6 +539,10 @@
 }
 
 .knowwe-quicksearch-section {
+	grid-template-columns: 2.5em 1fr;
+}
+
+.knowwe-quicksearch-section > .knowwe-search-gutter {
 	padding-left: 0.8em;
 }
 
@@ -614,4 +618,15 @@
 .knowwe-search-preview,
 .knowwe-search-snippet {
 	color: var(--text-color-primary);
+}
+
+/*
+ * The same edge, sideways: a wiki table is often wider than a result and gets cut mid-cell, which without a fade reads
+ * as a line that simply stops. Top and bottom already use both pseudo elements of the preview, so this one fades the
+ * element itself out -- which also works over a table's own background, where an overlay in the page colour would not.
+ */
+.knowwe-search-preview.is-clipped-right,
+.knowwe-quicksearch-preview.is-clipped-right {
+	-webkit-mask-image: linear-gradient(to left, transparent 0, black 2.5em);
+	mask-image: linear-gradient(to left, transparent 0, black 2.5em);
 }
