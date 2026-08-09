@@ -531,10 +531,15 @@
 	content: "▾";
 }
 
-/* nothing to lift here, so it is only a mark and says so by not reacting */
+/* nothing to lift here, so it is a plain mark: a dot promises nothing, a triangle would */
 .knowwe-search-grow.is-static {
 	color: var(--text-color-secondary);
 	cursor: default;
+}
+
+.knowwe-search-grow.is-static::before {
+	font-size: 0.85em;
+	content: "\2022";
 }
 
 /* three times the capped height, not the whole section: one hit must not push the rest of the list off the screen */
