@@ -490,14 +490,16 @@
 		quick.input.addEventListener('focus', function () {
 			if (quick.hits.length) showQuick();
 		});
-		document.addEventListener('click', function (event) {
+		// capture phase: the wiki's own menus stop clicks from bubbling, and a click that never reaches the document
+		// would leave the panel standing open
+		document.addEventListener('mousedown', function (event) {
 			if (!quick.panel.contains(event.target) && event.target !== quick.input) hideQuick();
-		});
+		}, true);
 		// on the document, not on the field: clicking a button in the panel moves the focus there, and Escape
 		// would then never reach the field that used to listen for it
 		document.addEventListener('keydown', function (event) {
 			if (event.key === 'Escape' && !quick.panel.hidden) hideQuick();
-		});
+		}, true);
 	}
 
 	function askQuick() {

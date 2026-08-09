@@ -160,6 +160,14 @@
  * Only up and down. A rendered preview can hold a table far wider than the dropdown, and two pixels of overflow are
  * enough for a horizontal scrollbar that costs more height than the sliver it reveals.
  */
+/*
+ * A class sets display, so it beats the browser's own [hidden] rule and hiding the panel stopped hiding it: open it
+ * stayed open, closed it left its two pixels of border under the field as a stray line.
+ */
+.knowwe-quicksearch-panel[hidden] {
+	display: none;
+}
+
 .knowwe-quicksearch-list {
 	flex: 1 1 auto;
 	min-height: 0;
