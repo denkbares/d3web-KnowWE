@@ -174,7 +174,7 @@
 			preview.className = 'knowwe-search-preview';
 			preview.innerHTML = hit.previewHtml;
 			li.appendChild(preview);
-			markMatches(preview);
+			markMatches(preview, state.query);
 		}
 		else {
 			var snippet = document.createElement('div');
@@ -190,8 +190,8 @@
 	 * Highlights the query words inside a rendered preview. Done here rather than on the server because wrapping
 	 * matches in already rendered HTML would cut through tags; walking text nodes cannot.
 	 */
-	function markMatches(container) {
-		var words = state.query.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (word) {
+	function markMatches(container, query) {
+		var words = (query || state.query).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (word) {
 			return word.length > 2;
 		});
 		if (!words.length) return;
@@ -224,7 +224,8 @@
 
 	/* ---------------------------------------------------------------- quick search in the header */
 
-	var QUICK_LIMIT = 8;
+	// each preview costs a rendering pass on the server, so the dropdown asks for fewer hits than the page
+	var QUICK_LIMIT = 6;
 	var QUICK_DEBOUNCE_MS = 200;
 
 	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '' };
@@ -256,7 +257,7 @@
 		}
 		jq$.ajax({
 			url: 'action/WikiSearchAction',
-			data: { query: query, limit: QUICK_LIMIT, partial: true },
+			data: { query: query, limit: QUICK_LIMIT, partial: true, preview: true },
 			dataType: 'json',
 			cache: false
 		}).done(function (answer) {
@@ -292,11 +293,20 @@
 			crumb.textContent = hit.breadcrumb || hit.title;
 			entry.appendChild(crumb);
 
-			var snippet = document.createElement('div');
-			snippet.className = 'knowwe-quicksearch-snippet';
-			// safe: the server escapes the body and only adds its own <mark> tags around the matches
-			snippet.innerHTML = hit.snippet || '';
-			entry.appendChild(snippet);
+			if (hit.previewHtml) {
+				var preview = document.createElement('div');
+				preview.className = 'knowwe-quicksearch-preview';
+				preview.innerHTML = hit.previewHtml;
+				entry.appendChild(preview);
+				markMatches(preview, quick.query);
+			}
+			else {
+				var snippet = document.createElement('div');
+				snippet.className = 'knowwe-quicksearch-snippet';
+				// safe: the server escapes the body and only adds its own <mark> tags around the matches
+				snippet.innerHTML = hit.snippet || '';
+				entry.appendChild(snippet);
+			}
 
 			quick.panel.appendChild(entry);
 		});

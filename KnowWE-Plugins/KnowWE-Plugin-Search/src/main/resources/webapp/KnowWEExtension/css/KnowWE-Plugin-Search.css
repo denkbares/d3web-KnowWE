@@ -154,6 +154,57 @@
 	color: var(--text-color-primary-link);
 }
 
+.knowwe-quicksearch-preview {
+	position: relative;
+	max-height: 7em;
+	margin-top: 0.2em;
+	overflow: hidden;
+	font-size: 0.85em;
+	line-height: 1.4;
+}
+
+.knowwe-quicksearch-preview::after {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1.6em;
+	content: "";
+	background: linear-gradient(to bottom, transparent, var(--bg-color-primary));
+	pointer-events: none;
+}
+
+.knowwe-quicksearch-hit.active .knowwe-quicksearch-preview::after,
+.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview::after {
+	background: linear-gradient(to bottom, transparent, var(--bg-color-secondary));
+}
+
+.knowwe-quicksearch-preview p,
+.knowwe-quicksearch-preview ul,
+.knowwe-quicksearch-preview ol,
+.knowwe-quicksearch-preview pre,
+.knowwe-quicksearch-preview table {
+	margin: 0 0 0.25em;
+}
+
+.knowwe-quicksearch-preview h1,
+.knowwe-quicksearch-preview h2,
+.knowwe-quicksearch-preview h3,
+.knowwe-quicksearch-preview h4 {
+	margin: 0;
+	font-size: 1em;
+}
+
+.knowwe-quicksearch-preview * {
+	max-height: none !important;
+	overflow: visible !important;
+}
+
+.knowwe-quicksearch-preview mark {
+	background: var(--highlight-color-faint-yellow);
+	color: inherit;
+}
+
 .knowwe-quicksearch-snippet {
 	display: -webkit-box;
 	overflow: hidden;
@@ -208,9 +259,39 @@
 	pointer-events: none;
 }
 
-/* the preview brings the wiki's own spacing; strip the outer margins so hits stay compact */
+/*
+ * The wiki's own spacing is meant for a full page: a paragraph per line, generous margins, and the odd empty
+ * paragraph from the markup. Inside a result list that turns into a column of gaps, so it is tightened here.
+ */
 .knowwe-search-preview > :first-child {
 	margin-top: 0;
+}
+
+.knowwe-search-preview p,
+.knowwe-search-preview ul,
+.knowwe-search-preview ol,
+.knowwe-search-preview pre,
+.knowwe-search-preview table {
+	margin: 0 0 0.35em;
+}
+
+.knowwe-search-preview h1,
+.knowwe-search-preview h2,
+.knowwe-search-preview h3,
+.knowwe-search-preview h4 {
+	margin: 0 0 0.25em;
+	font-size: 1em;
+}
+
+.knowwe-search-preview p:empty,
+.knowwe-search-preview br + br {
+	display: none;
+}
+
+/* an inner scroll area inside an already capped preview just traps the wheel */
+.knowwe-search-preview * {
+	max-height: none !important;
+	overflow: visible !important;
 }
 
 .knowwe-search-preview mark {
