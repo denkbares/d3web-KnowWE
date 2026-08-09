@@ -192,18 +192,21 @@
 }
 
 /*
- * The whole entry is one link, so hovering underlines everything including the rendered preview. Only the breadcrumb
- * should react; the preview is content, not a label.
+ * The whole entry is one link, so hovering underlines everything inside it including the rendered preview.
+ *
+ * It has to be switched off on the link itself: a text decoration is drawn through the descendants and cannot be
+ * taken back there, so "text-decoration: none" on the preview -- even with !important -- does nothing. Only the
+ * breadcrumb then opts back in; the preview is content, not a label.
  */
-.knowwe-quicksearch-hit:hover .knowwe-quicksearch-crumb {
-	text-decoration: underline;
+.knowwe-quicksearch-hit:hover,
+.knowwe-quicksearch-hit.active,
+.knowwe-quicksearch-hit:focus {
+	text-decoration: none;
 }
 
-.knowwe-quicksearch-preview,
-.knowwe-quicksearch-preview *,
-.knowwe-quicksearch-snippet,
-.knowwe-quicksearch-snippet * {
-	text-decoration: none !important;
+.knowwe-quicksearch-hit:hover .knowwe-quicksearch-crumb,
+.knowwe-quicksearch-hit.active .knowwe-quicksearch-crumb {
+	text-decoration: underline;
 }
 
 .knowwe-quicksearch-preview p,
