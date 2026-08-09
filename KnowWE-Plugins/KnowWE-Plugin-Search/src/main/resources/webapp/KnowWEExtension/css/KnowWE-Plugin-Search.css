@@ -201,40 +201,6 @@
 	line-height: 1.4;
 }
 
-.knowwe-quicksearch-preview.is-scrolled::before {
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	z-index: 1;
-	height: 1.2em;
-	content: "";
-	background: linear-gradient(to top, transparent, var(--bg-color-primary));
-	pointer-events: none;
-}
-
-.knowwe-quicksearch-preview.is-clipped::after {
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	height: 1.6em;
-	content: "";
-	background: linear-gradient(to bottom, transparent, var(--bg-color-primary));
-	pointer-events: none;
-}
-
-/* the fades sit on the entry's background, so they follow it when it is hovered or selected */
-.knowwe-quicksearch-hit.active .knowwe-quicksearch-preview.is-scrolled::before,
-.knowwe-quicksearch-section:hover .knowwe-quicksearch-preview.is-scrolled::before {
-	background: linear-gradient(to top, transparent, var(--bg-color-secondary));
-}
-
-.knowwe-quicksearch-hit.active .knowwe-quicksearch-preview::after,
-.knowwe-quicksearch-hit:hover .knowwe-quicksearch-preview.is-clipped::after {
-	background: linear-gradient(to bottom, transparent, var(--bg-color-secondary));
-}
-
 /*
  * The whole entry is one link, so hovering underlines everything inside it including the rendered preview.
  *
@@ -315,29 +281,6 @@
 	margin-top: 0.4em;
 	overflow: hidden;
 	font-size: 0.95em;
-}
-
-.knowwe-search-preview.is-scrolled::before {
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	z-index: 1;
-	height: 1.6em;
-	content: "";
-	background: linear-gradient(to top, transparent, var(--bg-color-primary));
-	pointer-events: none;
-}
-
-.knowwe-search-preview.is-clipped::after {
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	height: 2.5em;
-	content: "";
-	background: linear-gradient(to bottom, transparent, var(--bg-color-primary));
-	pointer-events: none;
 }
 
 /*
@@ -625,8 +568,47 @@
  * as a line that simply stops. Top and bottom already use both pseudo elements of the preview, so this one fades the
  * element itself out -- which also works over a table's own background, where an overlay in the page colour would not.
  */
+/*
+ * The three fades are one mask, not overlays.
+ *
+ * An overlay is a child of the preview, and the preview scrolls: revealFirstMatch moves it down to the match, and an
+ * absolutely positioned child moves with the content, so the fade ended up in the middle of the text while the real
+ * edge stayed sharp. A mask applies to the element's own box and does not care where the content sits inside it.
+ *
+ * It also composites over whatever is behind -- a hovered row, a table with its own background -- where an overlay had
+ * to repaint the exact background colour to look right.
+ *
+ * All three layers are always present; the ones that are not wanted end at 0 and therefore cover nothing.
+ */
+.knowwe-search-preview,
+.knowwe-quicksearch-preview {
+	--fade-top: 0px;
+	--fade-bottom: 0px;
+	--fade-right: 0px;
+	-webkit-mask-image:
+		linear-gradient(to top, transparent 0, black var(--fade-bottom)),
+		linear-gradient(to bottom, transparent 0, black var(--fade-top)),
+		linear-gradient(to left, transparent 0, black var(--fade-right));
+	mask-image:
+		linear-gradient(to top, transparent 0, black var(--fade-bottom)),
+		linear-gradient(to bottom, transparent 0, black var(--fade-top)),
+		linear-gradient(to left, transparent 0, black var(--fade-right));
+	-webkit-mask-composite: source-in;
+	mask-composite: intersect;
+}
+
+/* two lines, so a cut never falls through the middle of a single one */
+.knowwe-search-preview.is-clipped,
+.knowwe-quicksearch-preview.is-clipped {
+	--fade-bottom: 3em;
+}
+
+.knowwe-search-preview.is-scrolled,
+.knowwe-quicksearch-preview.is-scrolled {
+	--fade-top: 2em;
+}
+
 .knowwe-search-preview.is-clipped-right,
 .knowwe-quicksearch-preview.is-clipped-right {
-	-webkit-mask-image: linear-gradient(to left, transparent 0, black 2.5em);
-	mask-image: linear-gradient(to left, transparent 0, black 2.5em);
+	--fade-right: 2.5em;
 }
