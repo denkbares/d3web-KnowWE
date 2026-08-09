@@ -393,7 +393,9 @@
 		var all = document.createElement('a');
 		all.className = 'knowwe-quicksearch-all';
 		all.href = 'Search.jsp?query=' + encodeURIComponent(quick.query);
-		all.textContent = 'Alle ' + answer.total + (answer.exact ? '' : '+') + ' Treffer anzeigen';
+		// "auf Suchseite", because below the limit the dropdown already shows them all and "alle anzeigen"
+		// would promise nothing new
+		all.textContent = 'Alle ' + answer.total + (answer.exact ? '' : '+') + ' Treffer auf Suchseite anzeigen';
 		quick.panel.appendChild(all);
 
 		showQuick();
