@@ -510,7 +510,7 @@
 	width: 100%;
 	padding: 0.35em 0;
 	font-size: 1em;
-	line-height: 1;
+	line-height: 1em;
 	color: var(--text-color-primary-link);
 	text-align: center;
 	background: none;
@@ -538,7 +538,7 @@
 }
 
 .knowwe-search-grow.is-static::before {
-	font-size: 0.85em;
+	font-size: 1.3em;
 	content: "\2022";
 }
 
