@@ -162,7 +162,7 @@
 
 .knowwe-quicksearch-hit {
 	display: block;
-	padding: 0.15em 0.8em 0.45em 2.94em;
+	padding: 0.15em 0.8em 0.45em 0;
 	text-decoration: none;
 	border-bottom: 1px solid var(--bg-color-secondary-shade);
 }
@@ -508,4 +508,81 @@
 .knowwe-search-folded,
 .knowwe-search-stale {
 	margin-left: 2.3em;
+}
+
+/* ------------------------------------------------------------------ a section inside a page block */
+
+/*
+ * Every section keeps a triangle in a gutter of its own: it marks the row the way the document icon marks the page,
+ * and where the capped preview actually cuts something off it lifts the cap.
+ */
+.knowwe-search-section,
+.knowwe-quicksearch-section {
+	display: grid;
+	grid-template-columns: 1.1em 1fr;
+	column-gap: 0.4em;
+}
+
+.knowwe-quicksearch-section {
+	padding-left: 2.94em;
+}
+
+/* without this the column takes its content's width and a wide preview pushes the whole row past the panel */
+.knowwe-search-section-body,
+.knowwe-quicksearch-section > .knowwe-quicksearch-hit {
+	min-width: 0;
+}
+
+.knowwe-search-gutter {
+	padding-top: 0.15em;
+}
+
+.knowwe-search-grow {
+	padding: 0;
+	font-size: 0.85em;
+	line-height: 1;
+	color: var(--text-color-primary-link);
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.knowwe-search-grow::before {
+	content: "▸";
+}
+
+.knowwe-search-grow.is-open::before {
+	content: "▾";
+}
+
+/* nothing to lift here, so it is only a mark and says so by not reacting */
+.knowwe-search-grow.is-static {
+	color: var(--text-color-secondary);
+	cursor: default;
+}
+
+/* three times the capped height, not the whole section: one hit must not push the rest of the list off the screen */
+.knowwe-search-preview.is-expanded {
+	max-height: 60vh;
+}
+
+.knowwe-quicksearch-preview.is-expanded {
+	max-height: 21em;
+}
+
+/* the fade says "there is more below" and so it stays until there is not */
+.knowwe-search-preview.is-complete::after,
+.knowwe-quicksearch-preview.is-complete::after {
+	content: none;
+}
+
+/*
+ * A dropdown hit is one big link, so its rendered preview inherits the link colour and the whole section reads as if
+ * it were clickable text. Only the breadcrumb is a label; the preview is content and keeps the normal text colour.
+ */
+.knowwe-quicksearch-preview,
+.knowwe-quicksearch-snippet,
+.knowwe-search-preview,
+.knowwe-search-snippet {
+	color: var(--text-color-primary);
 }

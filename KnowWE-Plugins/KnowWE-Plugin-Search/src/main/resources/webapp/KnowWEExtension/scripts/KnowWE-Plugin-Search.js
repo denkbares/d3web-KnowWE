@@ -115,7 +115,7 @@
 			nodes.results.appendChild(item(hit));
 		});
 		// only now are the previews laid out and can be measured
-		nodes.results.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
+		measureSections(nodes.results);
 
 		if (answer.hasMore) {
 			var button = document.createElement('button');
@@ -202,12 +202,41 @@
 				});
 				list.hidden = false;
 				button.classList.add('is-open');
-				list.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
+				measureSections(list);
 			}).always(function () {
 				button.disabled = false;
 			});
 		});
 		return wrapper;
+	}
+
+	/*
+	 * A preview is capped so one long section cannot push the next hit off the screen. Where that cap actually cuts
+	 * something off, a triangle lifts it -- measured after the preview is in the document, because a preview that is
+	 * not laid out yet reports no height at all.
+	 */
+	function addGrowToggle(preview, gutter) {
+		var button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'knowwe-search-grow';
+		gutter.appendChild(button);
+
+		// a section whose preview fits keeps the mark, so the rows stay in line -- it just has nothing to lift
+		if (!preview || preview.scrollHeight <= preview.clientHeight + 4) {
+			button.classList.add('is-static');
+			button.disabled = true;
+			return;
+		}
+		button.title = 'Abschnitt ganz anzeigen';
+		button.addEventListener('click', function (event) {
+			event.preventDefault();
+			event.stopPropagation();
+			var open = preview.classList.toggle('is-expanded');
+			button.classList.toggle('is-open', open);
+			// three times the cap does not always reach the end, so the fade stays wherever it still cuts off
+			preview.classList.toggle('is-complete', open && preview.scrollHeight <= preview.clientHeight + 4);
+			button.title = open ? 'Abschnitt wieder einklappen' : 'Abschnitt ganz anzeigen';
+		});
 	}
 
 	/** The page name is the group's heading, so the sections below it only carry what comes after it. */
@@ -262,6 +291,14 @@
 		var wrapper = document.createElement('div');
 		wrapper.className = 'knowwe-search-section';
 
+		var gutter = document.createElement('div');
+		gutter.className = 'knowwe-search-gutter';
+		wrapper.appendChild(gutter);
+
+		var content = document.createElement('div');
+		content.className = 'knowwe-search-section-body';
+		wrapper.appendChild(content);
+
 		var path = headingPath(hit);
 		var repeated = seen && seen.path === path.join(' › ');
 		if (seen) seen.path = path.join(' › ');
@@ -283,14 +320,14 @@
 				link.appendChild(span);
 			});
 			markMatches(link, state.query);
-			wrapper.appendChild(link);
+			content.appendChild(link);
 		}
 
 		if (hit.stale) {
 			var warning = document.createElement('div');
 			warning.className = 'knowwe-search-stale';
 			warning.textContent = 'Die Seite wurde seit der Indizierung geändert.';
-			wrapper.appendChild(warning);
+			content.appendChild(warning);
 		}
 
 		if (hit.previewHtml) {
@@ -299,7 +336,8 @@
 			preview.className = 'knowwe-search-preview';
 			preview.innerHTML = hit.previewHtml;
 			dropDuplicateHeading(preview, hit.breadcrumb);
-			wrapper.appendChild(preview);
+			content.appendChild(preview);
+			wrapper.growable = preview;
 			markMatches(preview, state.query);
 		}
 		else {
@@ -307,7 +345,7 @@
 			snippet.className = 'knowwe-search-snippet';
 			// safe: the server escapes the body and only adds its own <mark> tags around the matches
 			snippet.innerHTML = hit.snippet || '';
-			wrapper.appendChild(snippet);
+			content.appendChild(snippet);
 		}
 		return wrapper;
 	}
@@ -347,6 +385,13 @@
 	 * -- a result would then show everything except the reason it is a result. Scrolling to the first mark fixes that;
 	 * the class tells the styling to fade at the top as well, so it stays visible that something is above.
 	 */
+	function measureSections(root) {
+		root.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
+		root.querySelectorAll('.knowwe-search-section').forEach(function (wrapper) {
+			if (!wrapper.firstChild.childNodes.length) addGrowToggle(wrapper.growable, wrapper.firstChild);
+		});
+	}
+
 	function revealFirstMatch(container) {
 		var margin = 12;
 		// bounding rects, not offsetTop: the offset parent is not necessarily the container
@@ -463,12 +508,22 @@
 	}
 
 	function quickEntry(hit, seen) {
+		// the triangle has to sit beside the link, not inside it: a button inside a link is neither valid nor clickable
+		var wrapper = document.createElement('div');
+		wrapper.className = 'knowwe-quicksearch-section';
+
+		var gutter = document.createElement('div');
+		gutter.className = 'knowwe-search-gutter';
+		wrapper.appendChild(gutter);
+
 		var entry = document.createElement('a');
 		entry.className = 'knowwe-quicksearch-hit';
 		entry.href = hit.url;
 		entry.addEventListener('mouseenter', function () {
 			highlightQuick(quickEntries().indexOf(entry));
 		});
+
+		wrapper.appendChild(entry);
 
 		var qbody = document.createElement('div');
 		qbody.className = 'knowwe-search-body';
@@ -492,6 +547,7 @@
 			dropDuplicateHeading(preview, hit.breadcrumb);
 			qbody.appendChild(preview);
 			markMatches(preview, quick.query);
+			wrapper.growable = preview;
 		}
 		else {
 			var snippet = document.createElement('div');
@@ -500,7 +556,14 @@
 			snippet.innerHTML = hit.snippet || '';
 			qbody.appendChild(snippet);
 		}
-		return entry;
+		return wrapper;
+	}
+
+	function measureQuickSections(root) {
+		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
+		root.querySelectorAll('.knowwe-quicksearch-section').forEach(function (wrapper) {
+			if (!wrapper.firstChild.childNodes.length) addGrowToggle(wrapper.growable, wrapper.firstChild);
+		});
 	}
 
 	function quickEntries() {
@@ -543,7 +606,7 @@
 			})));
 			open = true;
 			button.classList.add('is-open');
-			quick.panel.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
+			measureQuickSections(quick.panel);
 		}
 
 		function collapse() {
@@ -634,7 +697,7 @@
 		quick.panel.appendChild(all);
 
 		showQuick();
-		quick.panel.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
+		measureQuickSections(quick.panel);
 	}
 
 	function onQuickKey(event) {
