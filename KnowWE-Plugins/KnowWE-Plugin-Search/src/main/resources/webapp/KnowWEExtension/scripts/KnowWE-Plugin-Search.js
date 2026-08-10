@@ -29,6 +29,8 @@
 	'use strict';
 
 	var PAGE_SIZE = 10;
+	// Erst ab hier zeigen wir, dass gesucht wird: bei 20 ms Antwort waere ein Balken nur ein Zucken.
+	var BUSY_AFTER_MS = 300;
 	var DEBOUNCE_MS = 300;
 
 	var state = { query: '', offset: 0, hits: [], total: 0, pending: null };
@@ -48,6 +50,7 @@
 			'<div class="knowwe-search-more" id="knowwe-search-more"></div>';
 
 		nodes.input = document.getElementById('knowwe-search-input');
+		nodes.root = mount;
 		nodes.status = document.getElementById('knowwe-search-status');
 		nodes.results = document.getElementById('knowwe-search-results');
 		nodes.more = document.getElementById('knowwe-search-more');
@@ -88,6 +91,9 @@
 			return;
 		}
 		nodes.status.textContent = 'Suche …';
+		var busy = window.setTimeout(function () {
+			nodes.root.classList.add('is-busy');
+		}, BUSY_AFTER_MS);
 
 		jq$.ajax({
 			url: 'action/WikiSearchAction',
@@ -99,6 +105,9 @@
 			render(answer, append);
 		}).fail(function () {
 			nodes.status.textContent = 'Die Suche ist gerade nicht erreichbar.';
+		}).always(function () {
+			window.clearTimeout(busy);
+			nodes.root.classList.remove('is-busy');
 		});
 	}
 
@@ -585,6 +594,19 @@
 			hideQuick();
 			return;
 		}
+		var busy = window.setTimeout(function () {
+			quick.panel.classList.add('is-busy');
+			// beim ersten Tastendruck ist noch nichts zu sehen -- dann sagt eine Zeile, dass etwas passiert
+			if (quick.panel.hidden) {
+				quick.panel.innerHTML = '';
+				var wait = document.createElement('div');
+				wait.className = 'knowwe-quicksearch-busy';
+				wait.textContent = 'Suche …';
+				quick.panel.appendChild(wait);
+				showQuick();
+			}
+		}, BUSY_AFTER_MS);
+
 		jq$.ajax({
 			url: 'action/WikiSearchAction',
 			data: { query: query, limit: QUICK_LIMIT, partial: true, preview: true },
@@ -593,7 +615,10 @@
 		}).done(function (answer) {
 			if (quick.query !== query) return; // a newer keystroke already won
 			renderQuick(answer);
-		}).fail(hideQuick);
+		}).fail(hideQuick).always(function () {
+			window.clearTimeout(busy);
+			quick.panel.classList.remove('is-busy');
+		});
 	}
 
 	function quickEntry(hit, seen) {

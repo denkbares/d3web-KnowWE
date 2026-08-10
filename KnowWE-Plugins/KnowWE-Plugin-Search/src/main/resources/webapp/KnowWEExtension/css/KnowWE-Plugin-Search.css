@@ -331,8 +331,13 @@
  * in a dense preview is most of the time. A lighter tint on a box that does not grow with the line keeps the marks
  * legible without them running into each other.
  */
+/*
+ * Both by id, not by class: skin.css carries ".haddock mark { background: var(--highlight-color-dark) }", and against
+ * a class selector that rule wins simply by being loaded later. The search page happened to win through its id, the
+ * dropdown did not -- which is why only one of the two looked changed.
+ */
 #knowwe-search mark,
-.knowwe-quicksearch-panel mark {
+#knowwe-quicksearch-panel mark {
 	display: inline;
 	padding: 0 0.15em;
 	line-height: 1;
@@ -620,4 +625,40 @@
 .knowwe-search-preview.is-clipped-right,
 .knowwe-quicksearch-preview.is-clipped-right {
 	--fade-right: 2.5em;
+}
+
+/* ------------------------------------------------------------------ while a search is running */
+
+/*
+ * Only shown when the answer takes long enough to notice -- see BUSY_AFTER_MS. A bar rather than a spinner in the
+ * middle: it does not move the results that are already on screen, and it sits where the new ones will appear.
+ */
+#knowwe-search.is-busy::before,
+#knowwe-quicksearch-panel.is-busy::before {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 2;
+	height: 2px;
+	content: "";
+	background: linear-gradient(to right, transparent, var(--text-color-primary-link), transparent);
+	animation: knowwe-search-busy 1.1s linear infinite;
+}
+
+#knowwe-search {
+	position: relative;
+}
+
+@keyframes knowwe-search-busy {
+	from { transform: translateX(-100%); }
+	to { transform: translateX(100%); }
+}
+
+.knowwe-quicksearch-busy {
+	display: block;
+	padding: 0.6em 0.8em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+	text-align: center;
 }
