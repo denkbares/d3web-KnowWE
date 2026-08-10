@@ -333,7 +333,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			JsonObject requestDto = new JsonObject();
 			requestDto.addProperty("source_branch", sourceBranch);
 			requestDto.addProperty("target_branch", targetBranch);
-			requestDto.addProperty("squash", false);
+			requestDto.addProperty("squash", true);
 			String prefix = "";
 			if (sourceBranch.startsWith("Task")) prefix = String.format("[%s] ", sourceBranch);
 			requestDto.addProperty("title", String.format(prefix + "Merge Request from %s to %s", sourceBranch, targetBranch));
@@ -363,7 +363,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	}
 
 	@Override
-	public MergeRequest mergeMergeRequest(int repositoryId, int mergeRequestIid) throws RuntimeException, HttpException {
+	public MergeRequest mergeMergeRequest(int repositoryId, int mergeRequestIid, String commitMessage) throws RuntimeException, HttpException {
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPut request = new HttpPut(
 					this.serverApiURL + "/projects/" + repositoryId + "/merge_requests/" + mergeRequestIid + "/merge"
@@ -374,6 +374,8 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			// The auto_merge property is currently not working. It should be set to false by default, but it is working as it is set to true.
 			// Maybe in the next Gitlab version the behavior is fixed again.
 			// dto.addProperty("auto_merge", true);
+
+			dto.addProperty("squash_commit_message", commitMessage);
 
 			// TODO could be changed to true if everything works as expected
 			dto.addProperty("should_remove_source_branch", false);

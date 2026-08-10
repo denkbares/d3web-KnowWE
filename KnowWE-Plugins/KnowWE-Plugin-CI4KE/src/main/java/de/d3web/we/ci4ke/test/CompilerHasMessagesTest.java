@@ -54,18 +54,27 @@ import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Abstract test to check of Messages in Compilers.
+ * <p>
+ * Ignores without a prefix are interpreted as regular expressions for the message text. To ignore all messages from
+ * matching article titles, prefix the regular expression with {@value #ARTICLE_IGNORE_PREFIX}, for example
+ * {@code ignore: "article:Solution.*"}.
  *
  * @author Veronika Sehne (denkbares GmbH)
  * @created 22.10.20
  */
 public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompiler> implements ResultRenderer {
 
+	/**
+	 * Prefix for ignore entries that should match against article titles instead of message verbalizations.
+	 */
+	private static final String ARTICLE_IGNORE_PREFIX = "article:";
+
 	private final Message.Type type;
 
 	public CompilerHasMessagesTest(Message.Type type) {
 		this.type = type;
 		this.addIgnoreParameter("allowed-message-regex", TestParameter.Type.Regex, TestParameter.Mode.Optional,
-				"Specify regular expression of messages that are ignored by this test");
+				"Specify regular expression of messages that are ignored by this test. Prefix with 'article:' to ignore all messages from matching article titles.");
 	}
 
 	@Override
@@ -79,12 +88,9 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 				.getPackagesToCompile(compiler.getCompileSection());
 		Collection<Section<?>> sectionsOfPackage = compiler.getPackageManager().getSectionsOfPackage(packagesToCompile);
 
-		List<Pattern> ignorePatterns = Stream.of(specification.getIgnores())
-				.flatMap(Stream::of)
-				.map(Strings::unquote)
-				.map(Pattern::compile)
-				.collect(Collectors.toList());
+		IgnorePatterns ignorePatterns = compileIgnores(specification.getIgnores());
 
+		//noinspection DataFlowIssue
 		Map<String, List<Section<?>>> sectionsByTitle = sectionsOfPackage.stream()
 				.distinct()
 				.collect(Collectors.groupingBy(Section::getTitle));
@@ -128,16 +134,15 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		}
 	}
 
-	private List<Message> getMessages(PackageCompiler compiler, Collection<Section<?>> sectionsOfPackage, List<Pattern> ignorePatterns) {
+	private List<Message> getMessages(PackageCompiler compiler, Collection<Section<?>> sectionsOfPackage, IgnorePatterns ignorePatterns) {
 		Map<Section<?>, Collection<Message>> allMessagesMap = sectionsOfPackage.stream().distinct()
 				.collect(Collectors.toMap(s -> s, s -> new ConcatenateCollection<>(Messages.getMessagesFromSubtree(compiler, s, type), Messages
 						.getMessagesFromSubtree(s, type))));
 
-		return allMessagesMap.values()
+		return allMessagesMap.entrySet()
 				.stream()
-				.flatMap(Collection::stream)
-				.filter(m -> !(m.getSource() instanceof Class<?> classSource) || !Test.class.isAssignableFrom(classSource))
-				.filter(m -> ignorePatterns.stream().noneMatch(p -> p.matcher(m.getVerbalization()).find()))
+				.flatMap(e -> e.getValue().stream()
+						.filter(m -> shouldReport(m, e.getKey(), ignorePatterns)))
 				.collect(Collectors.toList());
 	}
 
@@ -153,7 +158,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		CIRenderer.renderResultMessageFooter(context, testObjectName, testObjectClass, message, renderResult);
 	}
 
-	private void appendMessages(PackageCompiler compiler, Map<String, List<Section<?>>> sectionsByTitle, int totalNumberOfMessages, List<Pattern> ignorePatterns, StringBuilder buffer) {
+	private void appendMessages(PackageCompiler compiler, Map<String, List<Section<?>>> sectionsByTitle, int totalNumberOfMessages, IgnorePatterns ignorePatterns, StringBuilder buffer) {
 		ArrayList<String> titles = new ArrayList<>(sectionsByTitle.keySet());
 		titles.sort(NumberAwareComparator.CASE_INSENSITIVE);
 		for (String title : titles) {
@@ -161,8 +166,8 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 			Map<? extends Section<?>, List<Message>> messagesBySection = sections
 					.stream()
 					.collect(Collectors.toMap(s -> s, s -> new ConcatenateCollection<>(Messages.getMessagesFromSubtree(compiler, s, type),
-							Messages.getMessagesFromSubtree(s, type)).stream().filter(m -> ignorePatterns.stream()
-									.noneMatch(p -> p.matcher(m.getVerbalization()).find()))
+							Messages.getMessagesFromSubtree(s, type)).stream()
+							.filter(m -> shouldReport(m, s, ignorePatterns))
 							.collect(Collectors.toList())));
 
 			List<Map.Entry<? extends Section<?>, List<Message>>> messagesBySectionSorted = sortMessagesBySection(messagesBySection);
@@ -267,6 +272,70 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		}
 		else {
 			return verbalization;
+		}
+	}
+
+	/**
+	 * Splits ignore declarations into message-text patterns and article-title patterns. This keeps existing message
+	 * ignores backward-compatible while allowing article-wide message suppression through prefixed ignore entries.
+	 */
+	private static IgnorePatterns compileIgnores(String[][] ignores) {
+		List<Pattern> messagePatterns = new ArrayList<>();
+		List<Pattern> articlePatterns = new ArrayList<>();
+		Stream.of(ignores)
+				.flatMap(Stream::of)
+				.map(Strings::unquote)
+				.forEach(ignore -> addIgnorePattern(ignore, messagePatterns, articlePatterns));
+		return new IgnorePatterns(messagePatterns, articlePatterns);
+	}
+
+	/**
+	 * Adds an ignore declaration to the appropriate pattern list. Prefixed declarations target article titles; all
+	 * other declarations keep the historical behavior and target message verbalization.
+	 */
+	private static void addIgnorePattern(String ignore, List<Pattern> messagePatterns, List<Pattern> articlePatterns) {
+		String articleRegex = removeArticlePrefix(ignore);
+		if (articleRegex != null && !articleRegex.isBlank()) {
+			articlePatterns.add(Pattern.compile(articleRegex));
+		}
+		else {
+			messagePatterns.add(Pattern.compile(ignore));
+		}
+	}
+
+	/**
+	 * Removes the specified prefix case-insensitively and returns {@code null} if the text does not start with it.
+	 */
+	private static String removeArticlePrefix(String text) {
+		if (text.regionMatches(true, 0, CompilerHasMessagesTest.ARTICLE_IGNORE_PREFIX, 0, CompilerHasMessagesTest.ARTICLE_IGNORE_PREFIX.length())) {
+			return text.substring(CompilerHasMessagesTest.ARTICLE_IGNORE_PREFIX.length());
+		}
+		return null;
+	}
+
+	/**
+	 * Returns whether a compiler message should be shown after excluding test-internal messages and configured ignores.
+	 */
+	private static boolean shouldReport(Message message, Section<?> section, IgnorePatterns ignorePatterns) {
+		if (message.getSource() instanceof Class<?> classSource && Test.class.isAssignableFrom(classSource)) return false;
+		return !ignorePatterns.isIgnored(message, section);
+	}
+
+	/**
+	 * Compiled ignore patterns for the two supported matching targets.
+	 */
+	private record IgnorePatterns(List<Pattern> messagePatterns, List<Pattern> articlePatterns) {
+
+		/**
+		 * Checks article-title ignores before message-text ignores, because an article ignore suppresses all messages
+		 * produced below the matched section title.
+		 */
+		private boolean isIgnored(Message message, Section<?> section) {
+			String title = section.getTitle();
+			if (title != null && articlePatterns.stream().anyMatch(p -> p.matcher(title).find())) return true;
+
+			String verbalization = message.getVerbalization();
+			return verbalization != null && messagePatterns.stream().anyMatch(p -> p.matcher(verbalization).find());
 		}
 	}
 }

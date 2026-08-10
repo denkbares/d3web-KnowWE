@@ -150,12 +150,12 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 			return;
 		}
 
-		result.appendEntityEncoded(nodeSection.getText());
+		result.appendPlainText(nodeSection.getText());
 	}
 
 	private void renderPrefixedXMLContent(String prefix, Section<?> section, UserContext user, RenderResult result) {
 		result.append(prefix);
-		result.appendEntityEncoded(section.getText());
+		result.appendPlainText(section.getText());
 	}
 
 }

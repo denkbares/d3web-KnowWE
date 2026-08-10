@@ -254,7 +254,13 @@ public final class StyleRenderer implements Renderer {
 			string.appendJSPWikiMarkup(builder);
 		}
 		else if (ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
-			string.append(encodeHtml(builder));
+			String text = builder.toStringRaw();
+			if (Strings.isQuoted(text)) {
+				string.append('"').appendPlainText(Strings.unquote(text)).append('"');
+			}
+			else {
+				string.appendPlainText(text);
+			}
 		}
 		else {
 			string.append(builder);

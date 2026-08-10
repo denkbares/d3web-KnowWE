@@ -310,7 +310,7 @@ public class QuickInterviewRenderer {
 		sb.appendHtml("<div "
 				+ "class='alreadyDefined' style='margin-left: " + margin
 				+ "px; display: block;' >");
-		sb.append(Strings.encodeHtml(getLabel(element)) + " is already defined!");
+		sb.appendPlainText(getLabel(element)).append(" is already defined!");
 		sb.appendHtml("</div>");
 	}
 
@@ -355,7 +355,7 @@ public class QuickInterviewRenderer {
 			buffi.appendHtml(caretDown.addStyle("display: none").toHtml());
 			buffi.appendHtml(caretRight.addStyle("display: flex").toHtml());
 		}
-		buffi.append(Strings.encodeHtml(getLabel(container)));
+		buffi.appendPlainText(getLabel(container));
 		buffi.appendHtml("</div>\n");
 
 		if (container.getChildren().length == 0) {
@@ -653,7 +653,7 @@ public class QuickInterviewRenderer {
 
 	private void appendUnit(Question q, RenderResult sb) {
 		String unit = getUnit(q);
-		sb.appendHtml("<div class='unit'>").append(Strings.encodeHtml(unit)).appendHtml("</div>");
+		sb.appendHtml("<div class='unit'>").appendPlainText(unit).appendHtml("</div>");
 	}
 
 	private String getUnit(Question q) {
@@ -866,7 +866,7 @@ public class QuickInterviewRenderer {
 			result.appendHtml(" class='" + cssclass + "'");
 		}
 		result.appendHtml(">");
-		result.append(Strings.encodeHtml(text));
+		result.appendPlainText(text);
 		result.appendHtml("</" + tag + ">");
 	}
 

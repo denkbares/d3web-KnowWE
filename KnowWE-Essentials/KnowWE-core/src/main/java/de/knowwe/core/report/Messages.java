@@ -315,13 +315,35 @@ public final class Messages {
 	 * @created 06.02.2014
 	 */
 	public static boolean hasMessages(Section<? extends Type> section, Message.Type... types) {
-		if (types.length == 0) types = Message.Type.values();
+		if (types.length == 0) return hasMessages(section);
 		for (Message.Type type : types) {
-			if (sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section)) {
-				return true;
-			}
+			if (hasMessages(section, type)) return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Checks if there are any messages of any type, for any compiler and/or independent of any compiler.
+	 *
+	 * @param section the section to be checked
+	 * @return if there are any such messages
+	 */
+	public static boolean hasMessages(Section<? extends Type> section) {
+		for (Set<Section<?>> sections : sectionsWithMessages.values()) {
+			if (sections.contains(section)) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if there are any messages of the specified type, for any compiler and/or independent of any compiler.
+	 *
+	 * @param section the section to be checked
+	 * @param type    the type of messages to be considered
+	 * @return if there are any such messages
+	 */
+	public static boolean hasMessages(Section<? extends Type> section, Message.Type type) {
+		return sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section);
 	}
 
 	/**

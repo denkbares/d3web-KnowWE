@@ -20,7 +20,6 @@ package de.knowwe.kdom.export;
 
 import java.util.Map;
 
-import com.denkbares.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -51,7 +50,7 @@ public class RootTypeExportButtonHandler extends AbstractTagHandler {
 		html.appendHtml(jsAction);
 		html.appendHtml(";void(0);\" ");
 		html.appendHtml("\" title=\"");
-		html.append(Strings.encodeHtml(description));
+		html.appendPlainText(description);
 		html.appendHtml("\" class=\"onte-button left small\">");
 		html.appendHtml("<img src=\"KnowWEExtension/images/disk.png\" style=\"");
 		html.appendHtml("background: url('").appendHtml("KnowWEExtension/images/disk.png").appendHtml(

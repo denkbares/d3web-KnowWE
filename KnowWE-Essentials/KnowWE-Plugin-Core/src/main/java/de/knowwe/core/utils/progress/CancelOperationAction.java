@@ -27,6 +27,9 @@ public class CancelOperationAction extends OperationAction {
 
 	@Override
 	public void execute(UserActionContext context, Section<?> section, LongOperation operation) throws IOException {
+		// remember the request independently of the operation, because many operations can only stop at certain
+		// points of their execution, so the user has to be informed that his request has been received
+		operation.getProgressListener().setCancelRequested(true);
 		operation.cancel();
 	}
 

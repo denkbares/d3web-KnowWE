@@ -87,9 +87,8 @@ import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
-import org.apache.wiki.providers.GitVersioningFileProvider;
+import org.apache.wiki.providers.GitVersioningProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
-import org.apache.wiki.providers.SubWikiUtils;
 import org.apache.wiki.references.ReferenceManager;
 import org.apache.wiki.render.RenderingManager;
 import org.apache.wiki.search.SearchManager;
@@ -105,7 +104,6 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Environment;
-import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.AuthenticationManager;
@@ -239,29 +237,12 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean doesArticleExist(String title) {
-
-		if (SubWikiUtils.isGlobalName(title)) {
-			try {
-				return getPageManager().pageExists(title);
-			}
-			catch (ProviderException e) {
-				LOGGER.error("Exception while checking page status", e);
-				return false;
-			}
+		try {
+			return getPageManager().pageExists(title);
 		}
-		else {
-			Set<String> pages = findPages(title);
-			if (pages.size() == 1) {
-				return true;
-			}
-			else if (pages.isEmpty()) {
-				return false;
-			}
-			else {
-				String message = "Local page name " + title + " is not unique in the current multi-wiki setup: " + pages;
-				LOGGER.error(message);
-				throw new IllegalStateException(message);
-			}
+		catch (ProviderException e) {
+			LOGGER.error("Exception while checking page status", e);
+			return false;
 		}
 	}
 
@@ -632,66 +613,6 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public String toGlobalArticleName(@NotNull String localArticleName, KnowWESubWikiContext context) {
-		if (SubWikiUtils.isGlobalName(localArticleName)) return localArticleName;
-		return SubWikiUtils.concatSubWikiAndLocalPageName(context.subWiki(), localArticleName, getWikiProperties());
-	}
-
-	@Override
-	public String toExistingUniqueOrGlobalName(@NotNull String localArticleName) {
-		if (SubWikiUtils.isGlobalName(localArticleName)) return localArticleName; // being a global page name already
-		Set<String> pages = findPages(localArticleName);
-		if (pages.isEmpty()) return localArticleName;
-		if (pages.size() == 1) {
-			return pages.stream().findFirst().get();
-		}
-		else {
-			LOGGER.warn("There are multiple pages of name: " + localArticleName + " which cannot be uniquely ambiguated: " + pages);
-			return null;
-		}
-	}
-
-	@Override
-	public String toLocalArticleName(@NotNull String globalArticleName, KnowWESubWikiContext context) {
-		return SubWikiUtils.getLocalPageName(globalArticleName);
-	}
-
-	@Override
-	public String getSubWikiName(@NotNull String globalArticleName) {
-		return SubWikiUtils.getSubFolderNameOfPage(globalArticleName, getWikiProperties());
-	}
-
-	@Override
-	public Set<String> findPages(@NotNull String localName) {
-		if (SubWikiUtils.isGlobalName(localName)) {
-			// case of stupid input -> stupid output
-			if (this.doesArticleExist(localName)) {
-				return Set.of(localName);
-			}
-		}
-		Collection<String> allSubWikiFolders = SubWikiUtils.getAllSubWikiFoldersInclMain(getEngine());
-		Set<String> result = allSubWikiFolders.stream()
-				.map(subWikiName -> SubWikiUtils.concatSubWikiAndLocalPageName(subWikiName, localName, getWikiProperties()))
-				.filter(this::askPageManagerForExistence)
-				.collect(Collectors.toSet());
-		String mainWikiFolder = SubWikiUtils.getMainWikiFolder(getWikiProperties());
-		if (askPageManagerForExistence(localName) && !result.contains(SubWikiUtils.concatSubWikiAndLocalPageName(mainWikiFolder, localName, getWikiProperties()))) {
-			result.add(localName);
-		}
-		return result;
-	}
-
-	private boolean askPageManagerForExistence(@NotNull String title) {
-		try {
-			return getPageManager().pageExists(title);
-		}
-		catch (ProviderException e) {
-			LOGGER.error("Could not ask PageManager if page exists: " + title);
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
 	public String getArticleText(String title, int version) {
 		String pageText;
 		if (title.contains("/")) {
@@ -729,6 +650,21 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 
 		WikiEventManager.fireEvent(engine, new WikiEngineEvent(engine, WikiEngineEvent.INITIALIZED));
+	}
+
+	@Override
+	public void invalidatePageCache(Collection<String> titles) {
+		CachingManager cachingManager = engine.getManager(CachingManager.class);
+		if (cachingManager == null) {
+			return;
+		}
+		// removing through the CachingManager rather than the PageManager, whose delegate call would reach the git
+		// providers' throwing deleteVersion and skip the history cache
+		for (String title : titles) {
+			cachingManager.remove(CACHE_PAGES, title);
+			cachingManager.remove(CACHE_PAGES_TEXT, title);
+			cachingManager.remove(CACHE_PAGES_HISTORY, title);
+		}
 	}
 
 	private void reinitReferenceManager() throws WikiException {
@@ -824,26 +760,35 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public void openPageTransaction(String user) {
-		PageProvider realProvider = getRealPageProvider();
-		if (realProvider instanceof GitVersioningFileProvider) {
-			((GitVersioningFileProvider) realProvider).openCommit(user);
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		if (gitProvider != null) {
+			gitProvider.openCommit(user);
 		}
 	}
 
 	@Override
 	public void commitPageTransaction(String user, String commitMsg) {
-		PageProvider realProvider = getRealPageProvider();
-		if (realProvider instanceof GitVersioningFileProvider) {
-			((GitVersioningFileProvider) realProvider).commit(user, commitMsg);
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		if (gitProvider != null) {
+			gitProvider.commit(user, commitMsg);
 		}
 	}
 
 	@Override
 	public void rollbackPageTransaction(String user) {
-		PageProvider realProvider = getRealPageProvider();
-		if (realProvider instanceof GitVersioningFileProvider) {
-			((GitVersioningFileProvider) realProvider).rollback(user);
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		if (gitProvider != null) {
+			gitProvider.rollback(user);
 		}
+	}
+
+	/**
+	 * Resolves the {@link GitVersioningProvider} capability of the configured page provider. Returns null if the
+	 * configured provider is not git-backed.
+	 */
+	@Nullable
+	private GitVersioningProvider getGitVersioningProvider() {
+		return getRealPageProvider() instanceof GitVersioningProvider provider ? provider : null;
 	}
 
 	public PageProvider getRealPageProvider() {
@@ -859,7 +804,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean hasRollbackPageProvider() {
-		return getRealPageProvider() instanceof GitVersioningFileProvider;
+		return getGitVersioningProvider() != null;
 	}
 
 	/**
@@ -1132,11 +1077,6 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 
 		return false;
-	}
-
-	@Override
-	public Collection<String> getAllSubWikiFolders() {
-		return SubWikiUtils.getAllSubWikiFoldersInclMain(this.engine);
 	}
 
 	@Override

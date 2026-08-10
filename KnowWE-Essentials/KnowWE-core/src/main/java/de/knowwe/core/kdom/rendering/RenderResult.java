@@ -6,7 +6,7 @@ package de.knowwe.core.kdom.rendering;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +23,15 @@ public class RenderResult {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RenderResult.class);
 
 	private static final String storeKey = RenderResult.class.getName();
+	// unmask parses mask token indices as a single digit, so HTML must never exceed 10 entries
 	private static final String[] HTML = new String[] {
 			"[{", "}]", "\\\\", "\"", "'", ">", "<", "[", "]" };
+	private static final int MASK_QUOTE = 3;
+	private static final int MASK_GT = 5;
+	private static final int MASK_LT = 6;
 
 	private final String maskKey;
+	private final String maskPrefix;
 	private final String[] maskedHtml;
 	private final StringBuilder builder = new StringBuilder();
 
@@ -39,7 +44,8 @@ public class RenderResult {
 
 	private RenderResult(RenderResultKeyValueStore keyStore) {
 		this.maskKey = createMaskKey(keyStore);
-		this.maskedHtml = createMaskHtml(maskKey);
+		this.maskPrefix = "@@" + maskKey + "_";
+		this.maskedHtml = createMaskHtml(maskPrefix);
 	}
 
 	/**
@@ -51,6 +57,7 @@ public class RenderResult {
 	 */
 	public RenderResult(RenderResult parent) {
 		this.maskKey = parent.maskKey;
+		this.maskPrefix = parent.maskPrefix;
 		this.maskedHtml = parent.maskedHtml; // NOSONAR
 		this.customRenderers = parent.customRenderers;
 	}
@@ -69,7 +76,7 @@ public class RenderResult {
 			if (storedMaskKey != null) return storedMaskKey;
 		}
 
-		int rnd = Math.abs(new Random().nextInt());
+		int rnd = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
 		String maskKey = Integer.toString(rnd, Character.MAX_RADIX);
 		if (keyStore != null) {
 			keyStore.setAttribute(storeKey, maskKey);
@@ -77,10 +84,10 @@ public class RenderResult {
 		return maskKey;
 	}
 
-	private String[] createMaskHtml(String maskKey) {
+	private String[] createMaskHtml(String maskPrefix) {
 		String[] maskedHtml = new String[HTML.length];
 		for (int i = 0; i < HTML.length; i++) {
-			maskedHtml[i] = "@@" + maskKey + "_" + i + "@@";
+			maskedHtml[i] = maskPrefix + i + "@@";
 		}
 		return maskedHtml;
 	}
@@ -195,20 +202,29 @@ public class RenderResult {
 	}
 
 	public RenderResult appendHtml(RenderResult html) {
-		builder.append(mask(html.toStringRaw()));
+		maskInto(html.builder, 0, builder);
 		return this;
 	}
 
 	public RenderResult appendHtml(String html) {
-		builder.append(mask(html));
+		if (html == null) {
+			builder.append((String) null);
+			return this;
+		}
+		maskInto(html, 0, builder);
 		return this;
 	}
 
 	/**
-	 * Appends the specified string encoded as html entities, using {@link Strings#encodeHtml(String)}.
+	 * Appends the specified text so it renders literally as plain text, interpreted neither as HTML nor as JSPWiki
+	 * markup. The text is encoded as html entities, using {@link Strings#encodeHtml(String)}.
 	 */
-	public RenderResult appendEntityEncoded(String text) {
-		builder.append(Strings.encodeHtml(text));
+	public RenderResult appendPlainText(String text) {
+		if (text == null) {
+			builder.append((String) null);
+			return this;
+		}
+		Strings.encodeHtml(text, builder);
 		return this;
 	}
 
@@ -338,13 +354,61 @@ public class RenderResult {
 		return builder.length();
 	}
 
+	/**
+	 * Masks the given text in a single pass. If nothing requires masking, the given string instance is returned
+	 * unchanged.
+	 */
 	private String mask(String html) {
-		for (int i = 0; i < HTML.length; i++) {
-			// somehow this is way faster for large strings than
-			// StringUtils.replaceEach(String, String[], String[]).
-			html = org.apache.commons.lang3.Strings.CS.replace(html, HTML[i], maskedHtml[i]);
+		if (html == null) return null;
+		int length = html.length();
+		int first = 0;
+		while (first < length && maskPatternAt(html, first) < 0) first++;
+		if (first == length) return html;
+		StringBuilder result = new StringBuilder(length + 64);
+		result.append(html, 0, first);
+		maskInto(html, first, result);
+		return result.toString();
+	}
+
+	/**
+	 * Masks the given text in a single pass, appending the masked text directly to the given string builder.
+	 */
+	private void maskInto(CharSequence html, int from, StringBuilder result) {
+		int length = html.length();
+		int plainStart = from;
+		int i = from;
+		while (i < length) {
+			int pattern = maskPatternAt(html, i);
+			if (pattern >= 0) {
+				result.append(html, plainStart, i).append(maskedHtml[pattern]);
+				i += HTML[pattern].length();
+				plainStart = i;
+			}
+			else {
+				i++;
+			}
 		}
-		return html;
+		result.append(html, plainStart, length);
+	}
+
+	/**
+	 * Returns the index of the HTML pattern starting at the given position, or -1 if there is none. Two-char patterns
+	 * take precedence over their one-char prefixes, matching the replacement order of the HTML array.
+	 */
+	private static int maskPatternAt(CharSequence html, int index) {
+		char c = html.charAt(index);
+		boolean hasNext = index + 1 < html.length();
+		return switch (c) {
+			case '[' -> (hasNext && html.charAt(index + 1) == '{') ? 0 : 7;
+			case '}' -> (hasNext && html.charAt(index + 1) == ']') ? 1 : -1;
+			case '\\' -> (hasNext && html.charAt(index + 1) == '\\') ? 2 : -1;
+			case '"' -> MASK_QUOTE;
+			case '\'' -> 4;
+			case '>' -> MASK_GT;
+			case '<' -> MASK_LT;
+			case ']' -> 8;
+			default -> -1;
+		};
 	}
 
 	public static String mask(String string, UserContext context) {
@@ -401,13 +465,31 @@ public class RenderResult {
 		return builder.toString();
 	}
 
+	/**
+	 * Unmasks the given text in a single pass. If it contains no mask token, the given string instance is returned
+	 * unchanged.
+	 */
 	private String unmask(String string) {
-		for (int i = 0; i < maskedHtml.length; i++) {
-			// somehow this is way faster for large strings than
-			// StringUtils.replaceEach(String, String[], String[]).
-			string = org.apache.commons.lang3.Strings.CS.replace(string, maskedHtml[i], HTML[i]);
+		if (string == null) return null;
+		int index = string.indexOf(maskPrefix);
+		if (index < 0) return string;
+		StringBuilder result = new StringBuilder(string.length());
+		int plainStart = 0;
+		while (index >= 0) {
+			int digitIndex = index + maskPrefix.length();
+			int pattern = digitIndex < string.length() ? string.charAt(digitIndex) - '0' : -1;
+			if (pattern >= 0 && pattern < HTML.length && string.startsWith("@@", digitIndex + 1)) {
+				result.append(string, plainStart, index).append(HTML[pattern]);
+				plainStart = digitIndex + 3;
+				index = string.indexOf(maskPrefix, plainStart);
+			}
+			else {
+				// not a valid mask token, keep it verbatim and continue scanning behind its first char
+				index = string.indexOf(maskPrefix, index + 1);
+			}
 		}
-		return string;
+		result.append(string, plainStart, string.length());
+		return result.toString();
 	}
 
 	public static String unmask(String string, UserContext context) {
@@ -451,24 +533,28 @@ public class RenderResult {
 	 * @created 05.02.2013
 	 */
 	public RenderResult appendHtmlTag(String tag, boolean encode, String... attributes) {
-		StringBuilder html = new StringBuilder();
-		html.append("<").append(tag);
+		// emit the mask tokens of the tag structure directly, so the text we assemble here is never scanned;
+		// encoded attribute values need no masking, because encodeHtml encodes every maskable character
+		builder.append(maskedHtml[MASK_LT]);
+		maskInto(tag, 0, builder);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
 			String attributeName = attributes[i];
 			String attributeValue = attributes[i + 1];
 			if (attributeName == null) continue;
 			if (attributeValue == null) continue;
-			html.append(getAttribute(encode, attributeName, attributeValue));
+			builder.append(' ');
+			maskInto(attributeName, 0, builder);
+			builder.append('=').append(maskedHtml[MASK_QUOTE]);
+			if (encode) {
+				Strings.encodeHtml(attributeValue, builder);
+			}
+			else {
+				maskInto(attributeValue, 0, builder);
+			}
+			builder.append(maskedHtml[MASK_QUOTE]);
 		}
-		html.append(">");
-		appendHtml(html.toString());
+		builder.append(maskedHtml[MASK_GT]);
 		return this;
-	}
-
-	private static String getAttribute(boolean encode, String attributeName, String attribute) {
-		return " " + attributeName + "=\""
-			   + (encode ? Strings.encodeHtml(attribute) : attribute)
-			   + "\"";
 	}
 
 	/**
