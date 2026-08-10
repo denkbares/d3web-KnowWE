@@ -39,7 +39,14 @@ public record SearchHit(@NotNull String title,
 						@NotNull String breadcrumb,
 						@NotNull String snippet,
 						@NotNull SectionAnchor anchor,
-						float score) {
+						float score,
+						boolean attachment) {
+
+	/** A hit in a page, which is everything the section index holds. */
+	public SearchHit(@NotNull String title, @NotNull String breadcrumb, @NotNull String snippet,
+					 @NotNull SectionAnchor anchor, float score) {
+		this(title, breadcrumb, snippet, anchor, score, false);
+	}
 
 	/** The heading part of the breadcrumb, or null on a hit that is the page itself. */
 	public @Nullable String heading() {

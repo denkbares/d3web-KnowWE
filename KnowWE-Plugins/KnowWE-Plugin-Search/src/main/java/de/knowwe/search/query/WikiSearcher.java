@@ -126,12 +126,13 @@ public class WikiSearcher {
 			String snippet = snippets != null && i < snippets.length && snippets[i] != null
 					? snippets[i]
 					: shorten(document.get(SearchFields.BODY));
+			boolean attachment = SearchFields.TYPE_ATTACHMENT.equals(document.get(SearchFields.TYPE));
 			hits.add(new SearchHit(title, breadcrumb, snippet,
 					new SectionAnchor(title,
 							document.get(SearchFields.SECTION_ID),
 							document.get(SearchFields.SECTION_PATH),
 							headingOf(breadcrumb)),
-					scoreDocs[i].score));
+					scoreDocs[i].score, attachment));
 		}
 		return hits;
 	}

@@ -177,6 +177,16 @@ public class WikiSearchAction extends AbstractAction {
 
 	private JSONObject toJson(SearchHit hit, boolean withPreview, UserActionContext context) {
 		JSONObject json = toJson(hit);
+		if (hit.attachment()) {
+			// the wiki's own attachment view of the page -- Upload.jsp, what AttachmentTab.jsp links to as
+			// context='upload'. It lists every attachment with its versions and a "click to view", which is more use
+			// than handing over the bytes of one file.
+			String view = "Upload.jsp?page=" + hit.title().replace(" ", "+");
+			json.put("pageUrl", view);
+			json.put("url", view);
+			json.put("attachment", true);
+			return json;
+		}
 		String rendering = renderingArticle(hit, context);
 		// beides dorthin, wo der Inhalt tatsaechlich zu sehen ist -- der Abschnittsanker des Anhangs gilt dort nicht
 		json.put("pageUrl", rendering != null ? rendering : "Wiki.jsp?page=" + hit.title().replace(" ", "+"));

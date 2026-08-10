@@ -123,11 +123,11 @@ public class WikiQueryBuilder {
 		for (String phrase : phrases) {
 			query.add(phrase(phrase), relaxed ? BooleanClause.Occur.SHOULD : BooleanClause.Occur.MUST);
 		}
-		if (request.attachmentsOnly()) {
-			// a filter, not a scoring clause: it decides what may match, it does not make anything rank higher
-			query.add(new TermQuery(new Term(SearchFields.TYPE, SearchFields.TYPE_ATTACHMENT)),
-					BooleanClause.Occur.FILTER);
-		}
+		// A filter, not a scoring clause: it decides what may match, it does not make anything rank higher. Attachments
+		// stay out unless they are asked for -- a search for a word in the wiki means the wiki's pages.
+		query.add(new TermQuery(new Term(SearchFields.TYPE,
+						request.attachmentsOnly() ? SearchFields.TYPE_ATTACHMENT : SearchFields.TYPE_SECTION)),
+				BooleanClause.Occur.FILTER);
 		return query.build();
 	}
 
