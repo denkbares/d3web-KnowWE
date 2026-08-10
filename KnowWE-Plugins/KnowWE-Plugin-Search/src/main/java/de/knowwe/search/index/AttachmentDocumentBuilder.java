@@ -77,6 +77,7 @@ public class AttachmentDocumentBuilder {
 		document.add(new StoredField(SearchFields.TITLE, page));
 		document.add(new TextField(SearchFields.TITLE_TEXT, page, Field.Store.NO));
 		document.add(new TextField(SearchFields.TITLE_GRAM, page, Field.Store.NO));
+		document.add(new StringField(SearchFields.TITLE_EXACT, SectionDocumentBuilder.exactKey(page), Field.Store.NO));
 
 		// the file name takes the place of the heading, so a hit reads as "page > file" like any other
 		document.add(new TextField(SearchFields.HEADING, file, Field.Store.NO));

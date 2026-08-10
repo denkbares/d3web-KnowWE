@@ -34,7 +34,7 @@ public final class SearchFields {
 	 * Bump whenever fields, their types or the analyzers change. The index directory carries this, and it is written
 	 * into the commit user data, so a mismatch forces a rebuild instead of returning quietly wrong results.
 	 */
-	public static final String SCHEMA_VERSION = "v2";
+	public static final String SCHEMA_VERSION = "v3";
 
 	/**
 	 * Lower cased page title. This is the <b>update and delete key</b>: replacing a page means replacing all of its
@@ -63,6 +63,15 @@ public final class SearchFields {
 	public static final String TITLE_TEXT = "titleText";
 	/** Page title, edge grammed for as-you-type. */
 	public static final String TITLE_GRAM = "titleGram";
+
+	/**
+	 * The whole page name as one key, not split into words.
+	 * <p>
+	 * Everything else about the title is tokenised, and after that "Cable Nr-24" and "Cable Nr-24 Overview" differ only
+	 * by field length. This field is what tells the two apart: a query that <em>is</em> the page name matches it, and
+	 * nothing else does. Index and query have to agree on the spelling, hence {@link SectionDocumentBuilder#exactKey}.
+	 */
+	public static final String TITLE_EXACT = "titleExact";
 
 	/** The heading of this chunk alone. */
 	public static final String HEADING = "heading";

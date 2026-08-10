@@ -61,6 +61,18 @@ public class SectionDocumentBuilder {
 	}
 
 	/** The key under which every document of this page is stored, and by which they are all replaced. */
+	/**
+	 * A page name reduced to what a reader typing it would produce: lower case, and any run of punctuation or spaces as
+	 * a single space. So "Cable Nr-24", "cable nr 24" and "Cable  Nr-24" all arrive as the same key, while
+	 * "Cable Nr-24 Overview" does not.
+	 * <p>
+	 * Used for {@link SearchFields#TITLE_EXACT} on both sides -- if the index and the query normalised differently, the
+	 * field would simply never match and nobody would notice.
+	 */
+	public static @NotNull String exactKey(@NotNull String title) {
+		return title.toLowerCase(Locale.ROOT).replaceAll("[^\\p{L}\\p{N}]+", " ").trim();
+	}
+
 	public static @NotNull String pageKey(@NotNull String title) {
 		return title.toLowerCase(Locale.ROOT);
 	}
@@ -92,6 +104,7 @@ public class SectionDocumentBuilder {
 		document.add(new StoredField(SearchFields.TITLE, title));
 		document.add(new TextField(SearchFields.TITLE_TEXT, title, Field.Store.NO));
 		document.add(new TextField(SearchFields.TITLE_GRAM, title, Field.Store.NO));
+		document.add(new StringField(SearchFields.TITLE_EXACT, exactKey(title), Field.Store.NO));
 
 		if (chunk.heading() != null) {
 			document.add(new TextField(SearchFields.HEADING, chunk.heading(), Field.Store.NO));

@@ -147,6 +147,25 @@ public class WikiSearcherTest {
 	}
 
 	@Test
+	public void thePageThatIsNamedTheQueryComesFirst() throws IOException {
+		page("Cable Nr-24", "!! Beschreibung\nDieses Kabel verbindet die Steuerung mit dem Aktor.\n");
+		page("Cable Nr-24 Uebersicht", "!! Liste\nHier steht Cable Nr-24 mehrfach: Cable Nr-24, Cable Nr-24.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("Cable Nr-24"));
+		assertEquals("Cable Nr-24 › Beschreibung", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
+	public void theNameIsRecognisedHoweverItIsTyped() throws IOException {
+		// the key is punctuation blind on both sides, so a reader need not reproduce the hyphen
+		page("Cable Nr-24", "!! Beschreibung\nEin Kabel.\n");
+		page("Anderes", "!! Text\nHier steht cable nr 24 nur im Fliesstext, mehrfach: cable nr 24.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("cable nr 24"));
+		assertEquals("Cable Nr-24 › Beschreibung", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
 	public void wordsStandingTogetherOutrankWordsScattered() throws IOException {
 		// rescoring, not a clause of the search: the words apart still match, they just rank below the words together
 		page("Zusammen", "!! Angabe\nHier steht Steckverbinder Montage als zusammenhaengende Angabe.\n");
