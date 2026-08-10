@@ -30,12 +30,18 @@ import org.jetbrains.annotations.NotNull;
  * @param limit   how many hits to return
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
-public record SearchRequest(@NotNull String query, boolean partial, int offset, int limit) {
+public record SearchRequest(@NotNull String query, boolean partial, int offset, int limit, boolean titleOnly,
+							boolean attachmentsOnly) {
 
 	public static final int DEFAULT_LIMIT = 10;
 
 	public SearchRequest(@NotNull String query) {
-		this(query, false, 0, DEFAULT_LIMIT);
+		this(query, false, 0, DEFAULT_LIMIT, false, false);
+	}
+
+	/** Searches everywhere, which is what everything but the filtered search page wants. */
+	public SearchRequest(@NotNull String query, boolean partial, int offset, int limit) {
+		this(query, partial, offset, limit, false, false);
 	}
 
 	public boolean isBlank() {

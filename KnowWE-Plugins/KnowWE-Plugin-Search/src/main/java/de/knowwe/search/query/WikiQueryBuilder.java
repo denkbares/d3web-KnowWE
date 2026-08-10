@@ -113,7 +113,8 @@ public class WikiQueryBuilder {
 
 		BooleanQuery.Builder query = new BooleanQuery.Builder();
 		if (!positions.isEmpty()) {
-			query.add(scorePositions(positions, request.partial(), relaxed), BooleanClause.Occur.MUST);
+			query.add(scorePositions(positions, request.partial(), relaxed, request.titleOnly()),
+					BooleanClause.Occur.MUST);
 		}
 		Query explicitMarkup = explicitMarkup(freeText, request.query());
 		if (explicitMarkup != null) {
@@ -122,6 +123,11 @@ public class WikiQueryBuilder {
 		for (String phrase : phrases) {
 			query.add(phrase(phrase), relaxed ? BooleanClause.Occur.SHOULD : BooleanClause.Occur.MUST);
 		}
+		if (request.attachmentsOnly()) {
+			// a filter, not a scoring clause: it decides what may match, it does not make anything rank higher
+			query.add(new TermQuery(new Term(SearchFields.TYPE, SearchFields.TYPE_ATTACHMENT)),
+					BooleanClause.Occur.FILTER);
+		}
 		return query.build();
 	}
 
@@ -129,11 +135,11 @@ public class WikiQueryBuilder {
 	 * Every word must contribute, but a long query may miss one without collapsing to nothing — that is what turns a
 	 * five word question from zero hits into useful ones.
 	 */
-	private Query scorePositions(List<List<String>> positions, boolean partial, boolean relaxed) {
+	private Query scorePositions(List<List<String>> positions, boolean partial, boolean relaxed, boolean titleOnly) {
 		BooleanQuery.Builder builder = new BooleanQuery.Builder();
 		for (int i = 0; i < positions.size(); i++) {
 			boolean last = i == positions.size() - 1;
-			builder.add(scorePosition(positions.get(i), partial && last), BooleanClause.Occur.SHOULD);
+			builder.add(scorePosition(positions.get(i), partial && last, titleOnly), BooleanClause.Occur.SHOULD);
 		}
 		builder.setMinimumNumberShouldMatch(relaxed ? 1 : minimumShouldMatch(positions.size()));
 		return builder.build();
@@ -145,10 +151,17 @@ public class WikiQueryBuilder {
 	}
 
 	/** One clause per word, matching whichever of its forms and fields scores best. */
-	private Query scorePosition(List<String> alternatives, boolean asPrefix) {
+	private Query scorePosition(List<String> alternatives, boolean asPrefix, boolean titleOnly) {
 		List<Query> options = new ArrayList<>();
 		for (String term : alternatives) {
 			options.add(boosted(new TermQuery(new Term(SearchFields.TITLE_TEXT, term)), BOOST_TITLE));
+			if (titleOnly) {
+				// only the page name -- for looking up a page one knows the name of, without its text getting in the way
+				if (asPrefix && term.length() >= MIN_PREFIX_LENGTH) {
+					options.add(boosted(new TermQuery(new Term(SearchFields.TITLE_GRAM, term)), BOOST_PREFIX_TITLE));
+				}
+				continue;
+			}
 			options.add(boosted(new TermQuery(new Term(SearchFields.HEADING, term)), BOOST_HEADING));
 			options.add(boosted(new TermQuery(new Term(SearchFields.BREADCRUMB, term)), BOOST_BREADCRUMB));
 			options.add(boosted(new TermQuery(new Term(SearchFields.BODY, term)), BOOST_BODY));

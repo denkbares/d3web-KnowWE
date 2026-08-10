@@ -35,6 +35,26 @@
 	border-radius: 4px;
 }
 
+/* neben dem Suchschlitz, damit sie als dessen Einstellungen gelesen werden und nicht als Teil der Trefferliste */
+.knowwe-search-filters {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 1em;
+	margin-left: 1em;
+}
+
+.knowwe-search-filter {
+	font-size: 0.9em;
+	color: var(--text-color-secondary-shade);
+	white-space: nowrap;
+	cursor: help;
+}
+
+.knowwe-search-filter input {
+	margin-right: 0.15em;
+	cursor: pointer;
+}
+
 .knowwe-search-status {
 	margin: 0.6em 0 1em;
 	font-size: 0.9em;

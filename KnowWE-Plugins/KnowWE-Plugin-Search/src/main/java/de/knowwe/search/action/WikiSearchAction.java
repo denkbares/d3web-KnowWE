@@ -28,12 +28,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingCompiler;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.search.WikiSearchService;
 import de.knowwe.search.query.HitGrouping;
 import de.knowwe.search.query.SearchHit;
@@ -61,6 +66,10 @@ public class WikiSearchAction extends AbstractAction {
 	public static final String PARAM_LIMIT = "limit";
 	/** The quick search switches previews off; a rendered section would not fit into a dropdown. */
 	public static final String PARAM_PREVIEW = "preview";
+	/** Search page filters. The quick search sends none of them and gets everything, ordered. */
+	public static final String PARAM_TITLE_ONLY = "titleOnly";
+	public static final String PARAM_ATTACHMENTS_ONLY = "attachmentsOnly";
+	public static final String PARAM_OTHER_VARIANTS = "otherVariants";
 	/** Answers with the hits folded away under one page instead of a result list -- used when unfolding them. */
 	public static final String PARAM_EXPAND = "expand";
 
@@ -100,7 +109,9 @@ public class WikiSearchAction extends AbstractAction {
 		SearchRequest request = new SearchRequest(
 				context.getParameter(PARAM_QUERY, ""),
 				Boolean.parseBoolean(context.getParameter(PARAM_PARTIAL, "false")),
-				0, Math.min((offset + limit) * SCAN_FACTOR, MAX_SCAN));
+				0, Math.min((offset + limit) * SCAN_FACTOR, MAX_SCAN),
+				Boolean.parseBoolean(context.getParameter(PARAM_TITLE_ONLY, "false")),
+				Boolean.parseBoolean(context.getParameter(PARAM_ATTACHMENTS_ONLY, "false")));
 
 		SearchResults results = searcher.search(request);
 
@@ -110,6 +121,8 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("tookMs", results.tookMs());
 		answer.put("relaxed", results.relaxed());
 		answer.put("unmatched", new JSONArray(results.unmatched()));
+		// bis der Anhangs-Index existiert, kann dieser Filter nichts finden -- das soll die Oberflaeche sagen duerfen
+		answer.put("attachmentsIndexed", false);
 
 		List<SearchHit> readable = new ArrayList<>();
 		for (SearchHit hit : results.hits()) {
@@ -118,7 +131,13 @@ public class WikiSearchAction extends AbstractAction {
 			if (article == null || !KnowWEUtils.canView(article, context)) continue;
 			readable.add(hit);
 		}
-		List<HitGrouping.Group> groups = HitGrouping.group(readable);
+		// The quick search shows everything and only sorts; the search page has a switch and then really leaves it out.
+		boolean otherVariants = !"false".equals(context.getParameter(PARAM_OTHER_VARIANTS, "true"));
+		List<HitGrouping.Group> grouped = HitGrouping.group(readable);
+		PackageCompiler mine = defaultCompiler(context);
+		List<HitGrouping.Group> groups = otherVariants
+				? byDefaultCompilerFirst(grouped, offset + limit, mine, context)
+				: onlyDefaultCompiler(grouped, mine, context);
 
 		boolean withPreview = !"false".equals(context.getParameter(PARAM_PREVIEW, "true"));
 		JSONArray hits = new JSONArray();
@@ -184,6 +203,73 @@ public class WikiSearchAction extends AbstractAction {
 		json.put("url", "Wiki.jsp?page=" + hit.title().replace(" ", "+")
 						+ (hit.anchor().sectionId() == null ? "" : "#" + hit.anchor().sectionId()));
 		return json;
+	}
+
+	/**
+	 * Puts what the current default compiler compiles first, the rest after it.
+	 * <p>
+	 * The wiki already greys out a markup that another compiler owns, because it is not what the reader is working on
+	 * right now. The same thing should not sit above what they are working on. Sorting is stable, so within each of the
+	 * two parts the ranking stays untouched.
+	 * <p>
+	 * This cannot go into the index: {@link DefaultMarkupRenderer#isInCurrentDefaultCompiler} asks the user's context
+	 * which compiler is theirs, so the answer differs per reader and per moment.
+	 */
+	/**
+	 * The user's default compiler, asked for once.
+	 * <p>
+	 * {@link DefaultMarkupRenderer#isInCurrentDefaultCompiler} answers the same question per section, but it derives
+	 * the default compiler again on every call -- and every hit would pay for that. Asked once, the remaining question
+	 * per hit is a single {@link Compiler#isCompiling}.
+	 *
+	 * @return null when nothing groups this wiki, in which case every hit belongs to the reader's view
+	 */
+	private static @Nullable PackageCompiler defaultCompiler(UserActionContext context) {
+		if (Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class).isEmpty()) return null;
+		for (PackageCompiler compiler : Compilers.getCompilers(context.getArticleManager(), PackageCompiler.class)) {
+			if (Compilers.isDefaultCompiler(context, compiler)) return compiler;
+		}
+		return null;
+	}
+
+	private static List<HitGrouping.Group> byDefaultCompilerFirst(List<HitGrouping.Group> groups, int needed,
+																  @Nullable PackageCompiler mine,
+																  UserActionContext context) {
+		List<HitGrouping.Group> ours = new ArrayList<>(needed);
+		List<HitGrouping.Group> others = new ArrayList<>();
+		int asked = 0;
+		for (HitGrouping.Group group : groups) {
+			// Asking costs a section lookup and a walk through the compilers, so we stop as soon as the page is full:
+			// what follows cannot reach it any more, and the next page asks again from further in.
+			if (ours.size() >= needed) break;
+			asked++;
+			(isDefaultCompiled(group.primary(), mine, context) ? ours : others).add(group);
+		}
+		ours.addAll(others);
+		ours.addAll(groups.subList(asked, groups.size()));
+		return ours;
+	}
+
+	private static List<HitGrouping.Group> onlyDefaultCompiler(List<HitGrouping.Group> groups,
+															  @Nullable PackageCompiler mine,
+															  UserActionContext context) {
+		if (mine == null) return groups;
+		List<HitGrouping.Group> ours = new ArrayList<>(groups.size());
+		for (HitGrouping.Group group : groups) {
+			if (isDefaultCompiled(group.primary(), mine, context)) ours.add(group);
+		}
+		return ours;
+	}
+
+	private static boolean isDefaultCompiled(SearchHit hit, @Nullable PackageCompiler mine,
+											 UserActionContext context) {
+		if (mine == null) return true;
+		Section<?> section = hit.anchor().resolve(context.getArticleManager()).section();
+		// a section we cannot resolve is not pushed down for it -- that would punish a stale index twice
+		if (section == null) return true;
+		if (mine.isCompiling(section)) return true;
+		// a section nobody compiles belongs to everybody: no package statement, no other variant it could belong to
+		return Compilers.getCompilers(section, PackageCompiler.class).isEmpty();
 	}
 
 	/**

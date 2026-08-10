@@ -31,6 +31,28 @@
 	var PAGE_SIZE = 10;
 	// Erst ab hier zeigen wir, dass gesucht wird: bei 20 ms Antwort waere ein Balken nur ein Zucken.
 	var BUSY_AFTER_MS = 300;
+
+	/*
+	 * Die Filter der Suchseite. Die Schnellsuche schickt keinen davon und bekommt alles, nur sortiert.
+	 *
+	 * "Other Variants" ist der einzige, der etwas hinzunimmt: aus bedeutet, nur was der aktuelle DefaultCompiler
+	 * kompiliert -- dasselbe, was das Wiki bei fremden Markups ausgraut. Die anderen beiden schraenken ein.
+	 */
+	var FILTERS = [
+		{
+			name: 'attachmentsOnly', label: 'Attachments',
+			hint: 'Nur in Anhängen suchen, nicht in den Seiten selbst.'
+		},
+		{
+			name: 'otherVariants', label: 'All Variants', on: true,
+			hint: 'Alle Varianten durchsuchen. Aus: nur was der aktuelle Compiler kompiliert – die übrigen graut das '
+				+ 'Wiki auch sonst aus, weil sie zu einer anderen Variante gehören.'
+		},
+		{
+			name: 'titleOnly', label: 'Page Name only',
+			hint: 'Nur Seitennamen durchsuchen, den Seiteninhalt nicht.'
+		}
+	];
 	var DEBOUNCE_MS = 300;
 
 	var state = { query: '', offset: 0, hits: [], total: 0, pending: null, loading: false, watcher: null };
@@ -44,6 +66,7 @@
 			'<div class="knowwe-search-bar">' +
 			'  <input type="search" id="knowwe-search-input" autocomplete="off" spellcheck="false"' +
 			'         placeholder="' + mount.getAttribute('data-placeholder') + '" />' +
+			'  <span class="knowwe-search-filters" id="knowwe-search-filters"></span>' +
 			'</div>' +
 			'<div class="knowwe-search-status" id="knowwe-search-status"></div>' +
 			'<ol class="knowwe-search-results" id="knowwe-search-results"></ol>' +
@@ -51,6 +74,8 @@
 
 		nodes.input = document.getElementById('knowwe-search-input');
 		nodes.root = mount;
+		nodes.filters = document.getElementById('knowwe-search-filters');
+		buildFilters();
 		nodes.status = document.getElementById('knowwe-search-status');
 		nodes.results = document.getElementById('knowwe-search-results');
 		nodes.more = document.getElementById('knowwe-search-more');
@@ -83,6 +108,35 @@
 		}, DEBOUNCE_MS);
 	}
 
+	function buildFilters() {
+		FILTERS.forEach(function (filter) {
+			var label = document.createElement('label');
+			label.className = 'knowwe-search-filter tooltipster';
+			label.title = filter.hint;
+
+			var box = document.createElement('input');
+			box.type = 'checkbox';
+			box.checked = !!filter.on;
+			box.dataset.filter = filter.name;
+			box.addEventListener('change', function () {
+				run(state.query, 0, false);
+			});
+			label.appendChild(box);
+			label.appendChild(document.createTextNode(' ' + filter.label));
+			nodes.filters.appendChild(label);
+		});
+		// die Erklärungen kommen von tooltipster, wie überall im Wiki
+		if (window.jq$ && jq$.fn.tooltipster) jq$(nodes.filters).find('.tooltipster').tooltipster();
+	}
+
+	function filterValues() {
+		var values = {};
+		nodes.filters.querySelectorAll('input[type="checkbox"]').forEach(function (box) {
+			values[box.dataset.filter] = box.checked;
+		});
+		return values;
+	}
+
 	function run(query, offset, append) {
 		state.query = query;
 		state.offset = offset;
@@ -98,7 +152,7 @@
 
 		jq$.ajax({
 			url: 'action/WikiSearchAction',
-			data: { query: query, offset: offset, limit: PAGE_SIZE },
+			data: Object.assign({ query: query, offset: offset, limit: PAGE_SIZE }, filterValues()),
 			dataType: 'json',
 			cache: false
 		}).done(function (answer) {
@@ -171,6 +225,9 @@
 
 	function describe(answer) {
 		if (answer.error) return answer.error;
+		if (filterValues().attachmentsOnly && answer.attachmentsIndexed === false) {
+			return 'Anhänge sind noch nicht indiziert – dieser Filter findet daher nichts.';
+		}
 		if (answer.indexing) return 'Der Suchindex wird gerade aufgebaut, die Trefferliste ist noch unvollständig.';
 		if (!state.query.trim()) return '';
 		if (!answer.total) {
