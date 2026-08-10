@@ -160,7 +160,6 @@ public class CIBuildManager implements EventListener {
 
 		private final CIDashboard dashboard;
 		private final TestExecutor testExecutor;
-		private final DefaultAjaxProgressListener listener;
 		private final Map<CIDashboard, CIBuildFuture> ciBuildQueue;
 		private final CIBuildProgress progress;
 
@@ -217,8 +216,8 @@ public class CIBuildManager implements EventListener {
 	/**
 	 * Registers builds for the specified dashboards and schedules them in descending priority order without waiting on
 	 * the calling thread. Builds of one priority group may run in parallel; the next group is considered only after all
-	 * builds of the previous group have terminated. If a dashboard already has a registered build, it is aborted and its
-	 * replacement waits asynchronously for that predecessor before being submitted.
+	 * builds of the previous group have terminated. If a dashboard already has a registered build, it is aborted and
+	 * its replacement waits asynchronously for that predecessor before being submitted.
 	 *
 	 * @param dashboardsToTrigger dashboards for which new builds should be registered
 	 */
@@ -280,7 +279,7 @@ public class CIBuildManager implements EventListener {
 	 * Schedules the predecessor wait on the trigger executor. The successor remains registered while waiting, which
 	 * allows a later compilation to abort or supersede it before it reaches the build executor.
 	 *
-	 * @param ciBuildFuture successor to submit after the predecessor terminates
+	 * @param ciBuildFuture  successor to submit after the predecessor terminates
 	 * @param precedingBuild previous build of the same dashboard, or {@code null} if there is none
 	 */
 	private void scheduleAfterTermination(CIBuildFuture ciBuildFuture, @Nullable CIBuildFuture precedingBuild) {
@@ -303,7 +302,7 @@ public class CIBuildManager implements EventListener {
 		synchronized (ciBuildQueue) {
 			CIDashboard dashboard = ciBuildFuture.ciBuildCallable.dashboard;
 			if (ciBuildQueue.get(dashboard) != ciBuildFuture
-				|| ciBuildFuture.ciBuildCallable.testExecutor.isAborted()) {
+					|| ciBuildFuture.ciBuildCallable.testExecutor.isAborted()) {
 				return false;
 			}
 			ciBuildExecutor.execute(ciBuildFuture);
@@ -341,9 +340,9 @@ public class CIBuildManager implements EventListener {
 	}
 
 	/**
-	 * Requests immediate shutdown of the build registered for the given dashboard, if there is one. This method does not
-	 * wait for already running tests to terminate. Tests that disallow interruption may therefore continue until their
-	 * natural end. A successor will still wait for the enclosing build future to terminate before it can start.
+	 * Requests immediate shutdown of the build registered for the given dashboard, if there is one. This method does
+	 * not wait for already running tests to terminate. Tests that disallow interruption may therefore continue until
+	 * their natural end. A successor will still wait for the enclosing build future to terminate before it can start.
 	 *
 	 * @param dashboard dashboard whose registered build should be aborted
 	 */
@@ -464,7 +463,7 @@ public class CIBuildManager implements EventListener {
 	 */
 	@Nullable
 	public static CIBuildStatus getBuildStatus(CIDashboard dashboard) {
-		CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
+		CIBuildFuture ciBuildFuture = CI_BUILD_QUEUE.get(dashboard);
 		if (ciBuildFuture == null) return null;
 		return ciBuildFuture.ciBuildCallable.progress.getStatus();
 	}
@@ -480,8 +479,8 @@ public class CIBuildManager implements EventListener {
 
 	/**
 	 * Handles build lifecycle events. A compilation start only requests shutdown and registers affected dashboards for
-	 * the next trigger; it never waits on the compilation thread. When the next trigger starts a replacement, the normal
-	 * predecessor handover ensures that it cannot overlap the terminating build.
+	 * the next trigger; it never waits on the compilation thread. When the next trigger starts a replacement, the
+	 * normal predecessor handover ensures that it cannot overlap the terminating build.
 	 *
 	 * @param event lifecycle event to handle
 	 */
