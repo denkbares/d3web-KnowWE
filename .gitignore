@@ -28,3 +28,6 @@ rebel.xml
 fontconfig/
 rebel.xml
 .DS_Store
+
+# Lucene index of the wiki search; must never live in the source tree
+knowwe-search/

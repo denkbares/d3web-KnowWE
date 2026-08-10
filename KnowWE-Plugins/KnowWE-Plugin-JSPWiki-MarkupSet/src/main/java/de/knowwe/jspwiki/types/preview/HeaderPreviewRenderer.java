@@ -51,6 +51,6 @@ public class HeaderPreviewRenderer extends AbstractPreviewRenderer {
 		for (Section<?> content : contentSections) {
 			result.append(content, user);
 		}
-		result.appendHtml("</div");
+		result.appendHtml("</div>");
 	}
 }

@@ -678,6 +678,11 @@
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-CBX</artifactId>
 				</dependency>
+				<!-- CBX zieht es ohnehin transitiv, aber Plugins stehen hier explizit -->
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Search</artifactId>
+				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-OntologyBridge</artifactId>

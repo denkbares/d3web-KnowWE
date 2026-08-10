@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+  ~ Copyright (C) 2026 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>KnowWE-Plugins</artifactId>
+		<groupId>de.uniwue.d3web</groupId>
+		<version>${revision}</version>
+	</parent>
+	<artifactId>KnowWE-Plugin-Search</artifactId>
+
+	<description>
+		Abschnittsweise Volltextsuche über das KDOM. Ersetzt den seitenweisen Index von
+		JSPWikis LuceneSearchProvider durch ein Lucene-Dokument je Überschriften-Abschnitt
+		über bereinigtem Text, und liefert Treffer als gerenderte KnowWE-Preview aus.
+		Siehe documentation/Wiki-Search-Plan.md.
+	</description>
+
+	<build>
+		<plugins>
+			<!-- Generate JPF dependency lists; configuration is done in parent pom -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- KDOM, Sections, ArticleManager, Events -->
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-core</artifactId>
+		</dependency>
+		<!-- PreviewManager/PreviewRenderer, RenderPreviewAction, ObjectInfoRenderer -->
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-Core</artifactId>
+		</dependency>
+		<!-- HeaderType, JSPWikiMarkupUtils, HeaderPreviewRenderer -->
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
+		</dependency>
+		<!-- JSPWiki-SPI, ActionAllowListChecker, JSPWikiConnector -->
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
+		</dependency>
+		<!-- Analyzer-Bausteine, SearcherContext, DisjunctionMaxRewrite, LuceneUtils -->
+		<dependency>
+			<groupId>com.denkbares</groupId>
+			<artifactId>denkbares-LuceneUtils</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analysis-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+		</dependency>
+
+		<!-- org.apache.wiki.api.core.Context referenziert javax.servlet.jsp.PageContext.
+			 In KnowWE-core steht das ebenfalls auf provided und ist damit nicht transitiv. -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jsp-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- DummyConnector + TestUtils, damit Environment und JPF im Test hochkommen -->
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-GlobalTestUtils</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
