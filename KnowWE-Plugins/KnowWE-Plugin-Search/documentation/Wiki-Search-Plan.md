@@ -465,3 +465,17 @@ Zwei Ursachen, die erste gesichert, die zweite noch nicht zu Ende verfolgt:
   dann startet das Wiki nicht (gemessen). Diese Kopplung ist noch offen.
 - Score-Erklaerung auf Wunsch: `-Dknowwe.search.explain=true` schreibt Lucenes eigene Rechnung fuer die ersten fuenf
   Treffer ins Log.
+
+### Rueckmeldung aus dem grossen Wiki (2026-08-10, offen)
+
+1. **Suche deutlich langsamer.** Verdaechtig ist `adjacent()` auf `SearchFields.BODY`: eine `MultiPhraseQuery` muss
+   Positionslisten fuer jede Wortform an jeder Position durchgehen, und das waechst mit der Indexgroesse. Lokal (121
+   Seiten) kostet es 80–160 ms, dort offenbar erheblich mehr. Zwei Hebel, beide nicht gemessen:
+   - die Phrase nur auf `TITLE_TEXT` (kurzes Feld, billig) — behaelt den Gewinn fuer den exakten Seitennamen, verliert
+     ihn fuer zusammenhaengende Nennungen im Text;
+   - oder die Anzahl der Alternativen je Position begrenzen, bevor die Phrase gebaut wird.
+2. **Exakter Seitenname rankt weiter nicht oben.** Ohne die Zahlen aus dem Wiki ist das nicht zu klaeren:
+   `-Dknowwe.search.explain=true` setzen, suchen, und die fuenf `Scores for "…"`-Bloecke aus dem Log lesen. Sie zeigen je
+   Treffer, welches Feld mit welchem Gewicht, welcher Termfrequenz und welcher Feldlaenge beigetragen hat.
+3. **Highlighting markierte nur `Cable`** — behoben: `matchCandidates` hatte Woerter mit bis zu zwei Zeichen verworfen,
+   damit fielen `Nr` und `24` weg und die Wortfolge war nicht mehr bildbar. Jetzt ab zwei Zeichen.

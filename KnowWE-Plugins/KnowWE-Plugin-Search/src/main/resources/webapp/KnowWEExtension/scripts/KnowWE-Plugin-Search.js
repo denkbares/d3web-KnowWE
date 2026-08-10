@@ -586,7 +586,9 @@
 	 */
 	function matchCandidates(query) {
 		var words = query.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (word) {
-			return word.length > 2;
+			// Zwei Zeichen zählen: "Nr" und "24" sind der halbe Name in "Cable Nr-24", und wer sie wegwirft, kann die
+			// Wortfolge nicht mehr markieren. Einzelne Buchstaben bleiben draußen, die markieren sonst halbe Wörter.
+			return word.length > 1;
 		});
 		var candidates = [];
 		for (var length = words.length; length >= 1; length--) {
