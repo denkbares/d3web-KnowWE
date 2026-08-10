@@ -241,10 +241,16 @@ public class WikiSearchAction extends AbstractAction {
 	 */
 	private static @Nullable PackageCompiler defaultCompiler(UserActionContext context) {
 		if (Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class).isEmpty()) return null;
+		PackageCompiler found = null;
 		for (PackageCompiler compiler : Compilers.getCompilers(context.getArticleManager(), PackageCompiler.class)) {
-			if (Compilers.isDefaultCompiler(context, compiler)) return compiler;
+			if (!Compilers.isDefaultCompiler(context, compiler)) continue;
+			// Careful: isDefaultCompiler answers true for *every* compiler when no default is set -- "every compiler is
+			// the default compiler per definition". Taking the first one that agrees would pick an arbitrary compiler
+			// and push everything it does not compile to the end of the list, which is precisely what happened.
+			if (found != null) return null;
+			found = compiler;
 		}
-		return null;
+		return found;
 	}
 
 	private static List<HitGrouping.Group> byDefaultCompilerFirst(List<HitGrouping.Group> groups, int needed,
