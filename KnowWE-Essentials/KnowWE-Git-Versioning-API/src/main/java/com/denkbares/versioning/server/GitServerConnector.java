@@ -85,6 +85,8 @@ public interface GitServerConnector {
 	 */
 	int getRepositoryId(String repoName, String httpUrl) throws HttpException;
 
+	String getBranchURL(GitConnector gitConnector);
+
 	List<MergeRequest> listMergeRequests(int repositoryId, String sourceBranch) throws HttpException;
 
 	List<MergeRequest> listMergeRequests(int repositoryId) throws HttpException;

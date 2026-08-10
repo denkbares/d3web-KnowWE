@@ -43,6 +43,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
 	private final String gitRemoteURL, encodedGroupPath, gitUserName, serverApiURL, serverToken;
+	private static final String GITLAB_BRANCH_PATH = "/-/tree/";
 
 	public GitLabGitServerConnector(String url, String groupPath, String gitUserName, String serverApiURL, String serverToken) {
 		// make sure that gitRemoteURL always ends with / to prevent bugs
@@ -273,6 +274,13 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			LOGGER.warn("Failed to find GitLab repository '{}'.", repoName, e);
 			throw new HttpException("Failed to find repository", e);
 		}
+	}
+
+	@Override
+	public String getBranchURL(GitConnector gitConnector) {
+		return gitConnector.repo()
+				.repoUrl()
+				.replace(".git", GITLAB_BRANCH_PATH + gitConnector.branches().currentBranch());
 	}
 
 	@Override
