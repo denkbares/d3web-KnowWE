@@ -35,12 +35,15 @@
 	border-radius: 4px;
 }
 
-/* neben dem Suchschlitz, damit sie als dessen Einstellungen gelesen werden und nicht als Teil der Trefferliste */
+/*
+ * Unter dem Suchschlitz, gleich weit von ihm entfernt wie vom linken Rand: so lesen sie sich als seine Einstellungen
+ * und nicht als erste Zeile der Trefferliste.
+ */
 .knowwe-search-filters {
-	display: inline-flex;
+	display: flex;
 	flex-wrap: wrap;
-	gap: 1em;
-	margin-left: 2.5em;
+	gap: 1.2em;
+	margin: 0.6em 0 0 0.6em;
 }
 
 .knowwe-search-filter {
