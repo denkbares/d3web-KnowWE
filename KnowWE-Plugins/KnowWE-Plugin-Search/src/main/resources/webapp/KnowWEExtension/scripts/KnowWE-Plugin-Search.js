@@ -33,7 +33,7 @@
 	var BUSY_AFTER_MS = 300;
 	var DEBOUNCE_MS = 300;
 
-	var state = { query: '', offset: 0, hits: [], total: 0, pending: null };
+	var state = { query: '', offset: 0, hits: [], total: 0, pending: null, loading: false, watcher: null };
 	var nodes = {};
 
 	function init() {
@@ -86,6 +86,7 @@
 	function run(query, offset, append) {
 		state.query = query;
 		state.offset = offset;
+		if (!append && state.watcher) state.watcher.disconnect();
 		if (!query.trim()) {
 			render({ hits: [], total: 0 }, false);
 			return;
@@ -108,6 +109,7 @@
 		}).always(function () {
 			window.clearTimeout(busy);
 			nodes.root.classList.remove('is-busy');
+			state.loading = false;
 		});
 	}
 
@@ -126,15 +128,45 @@
 		// only now are the previews laid out and can be measured
 		measureSections(nodes.results);
 
-		if (answer.hasMore) {
-			var button = document.createElement('button');
-			button.type = 'button';
-			button.textContent = 'Mehr laden';
-			button.addEventListener('click', function () {
-				run(state.query, state.offset + PAGE_SIZE, true);
-			});
-			nodes.more.appendChild(button);
+		if (answer.hasMore) watchForMore();
+	}
+
+	/*
+	 * Loads the next pages while scrolling, as long as the server says there are more.
+	 *
+	 * The observer watches a marker below the last hit rather than the scroll position: it fires once, before the marker
+	 * is actually reached, and it does not care which element scrolls -- the wiki's layout scrolls the page in some
+	 * skins and a container in others. A button stays as the way out if a page is loaded and the marker never appears.
+	 */
+	function watchForMore() {
+		var marker = document.createElement('div');
+		marker.className = 'knowwe-search-more-marker';
+		marker.textContent = 'Weitere Treffer werden geladen …';
+		nodes.more.appendChild(marker);
+
+		if (state.watcher) state.watcher.disconnect();
+		if (!window.IntersectionObserver) {
+			addMoreButton();
+			return;
 		}
+		state.watcher = new IntersectionObserver(function (entries) {
+			if (!entries[0].isIntersecting || state.loading) return;
+			state.loading = true;
+			state.watcher.disconnect();
+			run(state.query, state.offset + PAGE_SIZE, true);
+		}, { rootMargin: '400px' });
+		state.watcher.observe(marker);
+	}
+
+	function addMoreButton() {
+		var button = document.createElement('button');
+		button.type = 'button';
+		button.textContent = 'Mehr laden';
+		button.addEventListener('click', function () {
+			run(state.query, state.offset + PAGE_SIZE, true);
+		});
+		nodes.more.innerHTML = '';
+		nodes.more.appendChild(button);
 	}
 
 	function describe(answer) {
