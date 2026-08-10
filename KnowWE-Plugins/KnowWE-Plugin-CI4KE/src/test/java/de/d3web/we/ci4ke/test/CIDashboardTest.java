@@ -28,9 +28,15 @@ import utils.TestUtils;
 
 import com.denkbares.plugin.test.InitPluginManager;
 import com.denkbares.strings.Strings;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.renderer.KDOMRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * 
@@ -40,7 +46,6 @@ import de.knowwe.core.kdom.renderer.KDOMRenderer;
 public class CIDashboardTest {
 
 	private Environment env;
-	private final String web = Environment.DEFAULT_WEB;
 
 	@Before
 	public void setUp() throws Exception {
@@ -54,18 +59,27 @@ public class CIDashboardTest {
 		env = Environment.getInstance();
 	}
 
-	private Article loadArticle(String title) {
+	private Article loadArticle() {
 		String text = Strings.readStream(
-				getClass().getResourceAsStream("/" + title + ".txt"));
+				getClass().getResourceAsStream("/" + "Dashboard" + ".txt"));
 		// create article with the new content
-		env.getArticleManager(web).registerArticle(title, text);
-		return env.getArticle(web, title);
+		String web = Environment.DEFAULT_WEB;
+		env.getArticleManager(web).registerArticle("Dashboard", text);
+		return env.getArticle(web, "Dashboard");
 	}
 
 	@Test
-	public void parsing() throws IOException {
-		Article article = loadArticle("Dashboard");
-		System.out.println(KDOMRenderer.renderPlain(article, new TestUserContext(article)));
+	public void parsing() throws IOException, InterruptedException {
+		Article article = loadArticle();
+		article.getArticleManager().getCompilerManager().awaitTermination();
+		TestUserContext userContext = new TestUserContext(article);
+		KDOMRenderer.renderPlain(article, userContext);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(article.getArticleManager(), "dashname");
+
+		assertNotNull(dashboard);
+		RenderResult progressInfo = new RenderResult(userContext);
+		dashboard.getRenderer().renderProgressInfo(progressInfo);
+		assertTrue(progressInfo.toStringRaw().contains("dashname_progress-duration"));
 
 	}
 

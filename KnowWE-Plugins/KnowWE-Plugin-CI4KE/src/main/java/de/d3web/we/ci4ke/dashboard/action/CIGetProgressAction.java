@@ -20,6 +20,8 @@
 package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,11 +30,12 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.build.CIBuildManager;
+import de.d3web.we.ci4ke.build.CIBuildStatus;
+import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 
 /**
  * This action handles the ajax upate request of the ci-build progress bar on
@@ -48,18 +51,29 @@ public class CIGetProgressAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String name = Strings.decodeURL(context.getParameter("name"));
 		CIDashboard dashboard = CIDashboardManager.getDashboard(context.getArticleManager(), name);
-		DefaultAjaxProgressListener listener = CIBuildManager.getProgress(dashboard);
+		CIBuildStatus status = CIBuildManager.getBuildStatus(dashboard);
 
 		float progress;
 		String message;
-		if (listener == null) {
-			// build done, progress listener no longer available
+		String state;
+		String startedAt;
+		String elapsedDuration;
+		if (status == null) {
+			// build done, live status no longer available
 			progress = 1;
 			message = "Finished";
+			state = "FINISHED";
+			startedAt = null;
+			elapsedDuration = "";
 		}
 		else {
-			progress = listener.getProgress();
-			message = listener.getMessage();
+			progress = status.progress();
+			message = status.message();
+			state = status.state().name();
+			startedAt = status.startedAt() == null ? null : status.startedAt().toString();
+			elapsedDuration = status.startedAt() == null
+					? ""
+					: CIRenderer.formatElapsedDuration(Duration.between(status.startedAt(), Instant.now()));
 		}
 
 		int progressTwoDigits = (int) (progress * 100);
@@ -71,6 +85,9 @@ public class CIGetProgressAction extends AbstractAction {
 		try {
 			result.put("progress", percentString);
 			result.put("message", message);
+			result.put("state", state);
+			result.put("startedAt", startedAt == null ? JSONObject.NULL : startedAt);
+			result.put("elapsedDuration", elapsedDuration);
 			result.write(context.getWriter());
 		}
 		catch (JSONException e) {

@@ -19,6 +19,8 @@
 package de.d3web.we.ci4ke.build;
 
 import java.text.DateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -373,12 +375,12 @@ public class CIRenderer {
 	}
 
 	public static void renderResultMessageDefault(UserContext context, String testObjectName, TestResult testResult, Message message, RenderResult renderResult) {
-		Class<?> testObjectClass = renderResultMessageHeader(context, message, testResult, renderResult);
+		Class<?> testObjectClass = renderResultMessageHeader(message, testResult, renderResult);
 		appendMessageText(context, message, renderResult);
 		renderResultMessageFooter(context, testObjectName, testObjectClass, message, renderResult);
 	}
 
-	public static Class<?> renderResultMessageHeader(UserContext context, Message message, TestResult testResult, RenderResult renderResult) {
+	public static Class<?> renderResultMessageHeader(Message message, TestResult testResult, RenderResult renderResult) {
 		Message.Type messageType = message.getType();
 		Test<?> test = TestManager.findTest(testResult.getTestName());
 		Class<?> testObjectClass = null;
@@ -655,16 +657,36 @@ public class CIRenderer {
 	}
 
 	public void renderProgressInfo(RenderResult string) {
+		CIBuildStatus status = CIBuildManager.getBuildStatus(dashboard);
+		String initialMessage = status != null && status.state() == CIBuildStatus.State.QUEUED
+				? status.message()
+				: "Build running...";
+		String elapsedDuration = status != null && status.startedAt() != null
+				? formatElapsedDuration(Duration.between(status.startedAt(), Instant.now()))
+				: "";
 
 		string.appendHtml("<span " +
 						  "class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>");
 		appendAbortButton(string);
 		string.appendHtml("<span class='ci-progress-value-wrap'><span class='ci-progress-value' id='"
-						  + dashboardNameEncoded + "_progress-value'>0 %");
-		string.appendHtml("</span></span>");
+						  + dashboardNameEncoded + "_progress-value'>0%");
+		string.appendHtml("</span> <span class='ci-progress-duration' id='"
+						  + dashboardNameEncoded + "_progress-duration'>")
+				.append(elapsedDuration)
+				.appendHtml("</span></span>");
 		string.appendHtml("<span class='ci-progess-text' id='"
-						  + dashboardNameEncoded + "_progress-text'>Build running...</span>");
+						  + dashboardNameEncoded + "_progress-text'>")
+				.append(initialMessage)
+				.appendHtml("</span>");
 		string.appendHtml("</span>");
+	}
+
+	/**
+	 * Formats an elapsed build duration using the application's shared duration representation. Negative durations
+	 * are treated as zero to tolerate small clock adjustments.
+	 */
+	public static String formatElapsedDuration(Duration duration) {
+		return "after " + Stopwatch.getDisplay(Math.max(0, duration.toMillis()));
 	}
 
 	private void appendAbortButton(RenderResult string) {
