@@ -59,6 +59,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	private String username = null;
 	private final Article article;
 	private final Map<String, String> parameterMap = new HashMap<>();
+	private final Map<String, String> headers = new HashMap<>();
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 	private final Writer writer = new NonClosingWriterWrapper(new OutputStreamWriter(out, StandardCharsets.UTF_8));
@@ -236,8 +237,14 @@ public class TestUserContext implements UserContext, UserActionContext {
 
 	@Override
 	public void setHeader(String name, String value) throws IOException {
-		// TODO Auto-generated method stub
+		headers.put(name, value);
+	}
 
+	/**
+	 * Returns the response header the action set, or null if it set none of that name.
+	 */
+	public String getHeader(String name) {
+		return headers.get(name);
 	}
 
 	@Override
