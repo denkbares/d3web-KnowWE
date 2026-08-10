@@ -44,7 +44,7 @@
 			hint: 'Search the attachments instead of the pages themselves.'
 		},
 		{
-			name: 'otherVariants', label: 'All Variants', on: true,
+			name: 'otherVariants', label: 'All Variants', on: true, onlyWithVariants: true,
 			hint: 'Search every variant. Off: only what the current variant contains – the wiki greys the others '
 				+ 'out anyway.'
 		},
@@ -127,14 +127,35 @@
 		});
 		// die Erklärungen kommen von tooltipster, wie überall im Wiki
 		if (window.jq$ && jq$.fn.tooltipster) jq$(nodes.filters).find('.tooltipster').tooltipster();
+
+		// Ob es überhaupt Varianten gibt, weiß nur der Server. Einmal fragen, damit der Filter dafür nicht erst
+		// erscheint und nach der ersten Suche wieder verschwindet.
+		jq$.ajax({ url: 'action/WikiSearchAction', data: { query: '' }, dataType: 'json', cache: false })
+				.done(showApplicableFilters);
+	}
+
+	function showApplicableFilters(answer) {
+		FILTERS.forEach(function (filter) {
+			if (!filter.onlyWithVariants) return;
+			var box = nodes.filters.querySelector('input[data-filter="' + filter.name + '"]');
+			if (box) box.parentNode.hidden = answer.variants === false;
+		});
 	}
 
 	function filterValues() {
 		var values = {};
 		nodes.filters.querySelectorAll('input[type="checkbox"]').forEach(function (box) {
-			values[box.dataset.filter] = box.checked;
+			// ein ausgeblendeter Filter darf nichts einschränken, sonst filtert etwas, das niemand sehen kann
+			values[box.dataset.filter] = box.parentNode.hidden ? !!boxDefault(box) : box.checked;
 		});
 		return values;
+	}
+
+	function boxDefault(box) {
+		for (var i = 0; i < FILTERS.length; i++) {
+			if (FILTERS[i].name === box.dataset.filter) return FILTERS[i].on;
+		}
+		return false;
 	}
 
 	function run(query, offset, append) {
@@ -174,6 +195,7 @@
 		var hits = answer.hits || [];
 		if (append) state.hits = state.hits.concat(hits); else state.hits = hits;
 
+		showApplicableFilters(answer);
 		nodes.status.textContent = describe(answer);
 
 		// der Balken bleibt, solange die Anhaenge noch dazukommen und danach gefiltert wird

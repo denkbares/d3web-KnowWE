@@ -125,6 +125,9 @@ public class WikiSearchAction extends AbstractAction {
 		// Oberflaeche sagen duerfen, statt eine leere Liste als Ergebnis auszugeben
 		answer.put("attachmentsIndexed", service.isAttachmentsIndexed());
 		answer.put("attachmentsIndexing", service.isAttachmentsIndexing());
+		// mit einer oder keiner Gruppierung gibt es nichts zu waehlen -- dann soll der Filter dafuer gar nicht erscheinen
+		answer.put("variants",
+				Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class).size() > 1);
 
 		List<SearchHit> readable = new ArrayList<>();
 		for (SearchHit hit : results.hits()) {
