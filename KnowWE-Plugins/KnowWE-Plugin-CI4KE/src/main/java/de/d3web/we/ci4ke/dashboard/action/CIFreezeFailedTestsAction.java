@@ -305,10 +305,16 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 		return text.replaceAll("\\b(\\d+)\\b(?!.*\\b\\d+\\b)", String.valueOf(newNumber));
 	}
 
+	/**
+	 * Creates a stable key for matching frozen report blocks. The rendered headers contain live
+	 * counts and status words, so "1 warning was" and "2 warnings were" must still match the
+	 * same frozen block.
+	 */
 	public static String normalizeHeader(String header) {
 		header = normalizeLink(header);
-		return header.replaceAll("\\b\\d+\\b(?!.*\\b\\d+\\b)", "REMOVE")
-				.replaceAll("REMOVE\\s+\\S+", "")
+		return header.replaceAll("\\b\\d+\\b", "")
+				.replaceAll("(?i)\\b(was|were)\\b", "")
+				.replaceAll("(?i)\\b(success|successes|failure|failures|warning|warnings|error|errors|aborted|skipped)\\b", "")
 				.replaceAll("\\s{2,}", " ")
 				.trim();
 	}

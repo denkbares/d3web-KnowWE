@@ -20,9 +20,11 @@
 package de.d3web.we.ci4ke.build;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -127,7 +129,15 @@ class CIBuildFrozenTestAdjuster {
 		return false;
 	}
 
-	private static Pair<Message, Message> splitText(Message message, String fileText, String testObject) {
+	/**
+	 * Splits a rendered test-object message into the still active part and the frozen part.
+	 * Headers are matched by a normalized key because rendered report headers contain changing
+	 * counts and singular/plural wording. The original header text is kept for output.
+	 * Wiki list depth is significant inside a matched header block: parent list items are context
+	 * for nested findings. Such context is emitted to the normal or frozen side only when that side
+	 * still contains a matching child finding.
+	 */
+	static Pair<Message, Message> splitText(Message message, String fileText, String testObject) {
 
 		List<String> messageLines = List.of(message.getText().split("\\R"));
 		messageLines = messageLines.stream()
@@ -136,77 +146,155 @@ class CIBuildFrozenTestAdjuster {
 
 		StringBuilder normalTest = new StringBuilder();
 		StringBuilder frozenTest = new StringBuilder();
-		boolean fullyFrozen = true;
-		boolean fullyNormal = true;
-
-		String currentHeader = null;
-		List<String> currentNormalContent = new ArrayList<>();
-		List<String> currentFrozenContent = new ArrayList<>();
+		boolean hasNormalContent = false;
+		boolean hasFrozenContent = false;
 
 		Map<String, List<String>> frozenContent = extractMatchingFileSection(fileText, testObject);
 
-		List<String> currentList = null;
+		String currentHeader = null;
+		String currentHeaderKey = null;
+		List<String> currentContent = new ArrayList<>();
 
-		//match headers as keys from frozenContent, split weather frozenContent contains line
+		// A non-list line starts a new report block. List lines are split only within that block.
 		for (String messageLine : messageLines) {
-			boolean isHeader = !messageLine.startsWith("*");
-			boolean isSectionHeader = isHeader && messageLines.indexOf(messageLine) < messageLines.size() - 1 && !messageLines.get(messageLines.indexOf(messageLine) + 1).startsWith("*");
-			if (isHeader) {
-				if (isSectionHeader) {
-					normalTest.append(System.lineSeparator());//.append(System.lineSeparator()).append(messageLine).append(System.lineSeparator());
-					frozenTest.append(System.lineSeparator());//.append(System.lineSeparator()).append(messageLine).append(System.lineSeparator());
-					//continue;
-				}
+			if (!messageLine.startsWith("*")) {
 				if (currentHeader != null) {
-					flushBlock(normalTest, currentNormalContent, currentHeader);
-					flushBlock(frozenTest, currentFrozenContent, currentHeader);
+					BlockSplit blockSplit = splitBlock(currentContent, frozenContent.get(currentHeaderKey));
+					hasNormalContent |= flushBlock(normalTest, blockSplit.normalContent(), currentHeader);
+					hasFrozenContent |= flushBlock(frozenTest, blockSplit.frozenContent(), currentHeader);
 				}
-				currentNormalContent.clear();
-				currentFrozenContent.clear();
-				currentList = frozenContent.get(normalizeHeader(messageLine));
+				currentContent.clear();
 				currentHeader = messageLine;
-			} else {
-				if (currentList != null) {
-					if (currentList.contains(normalizeLink(messageLine))) {
-						currentFrozenContent.add(messageLine);
-						fullyNormal = false;
-					} else {
-						currentNormalContent.add(messageLine);
-						fullyFrozen = false;
-					}
-				} else {
-					currentNormalContent.add(messageLine);
-					fullyFrozen = false;
-				}
+				currentHeaderKey = normalizeHeader(messageLine);
+				continue;
 			}
+			currentContent.add(messageLine);
 		}
 
 		if (currentHeader != null) {
-			flushBlock(normalTest, currentNormalContent, currentHeader);
-			flushBlock(frozenTest, currentFrozenContent, currentHeader);
-		}
-
-		if (fullyNormal) {
-			frozenTest = new StringBuilder();
-		}
-		if (fullyFrozen) {
-			normalTest = new StringBuilder();
+			BlockSplit blockSplit = splitBlock(currentContent, frozenContent.get(currentHeaderKey));
+			hasNormalContent |= flushBlock(normalTest, blockSplit.normalContent(), currentHeader);
+			hasFrozenContent |= flushBlock(frozenTest, blockSplit.frozenContent(), currentHeader);
 		}
 
 		return new Pair<>(
-				new Message(message.getType(), adjustHeaderCounts(normalTest.toString()).trim()),
-				new Message(message.getType(), adjustHeaderCounts(frozenTest.toString()).trim())
+				new Message(message.getType(), hasNormalContent ? adjustHeaderCounts(normalTest.toString()).trim() : ""),
+				new Message(message.getType(), hasFrozenContent ? adjustHeaderCounts(frozenTest.toString()).trim() : "")
 		);
 	}
 
-	private static void flushBlock(StringBuilder builder, List<String> newContent, String header) {
+	/**
+	 * Appends a header block only if this side of the split has content. Empty blocks are skipped
+	 * so fully frozen/fully normal sections do not leave orphan headers behind.
+	 *
+	 * @return true if a block was appended
+	 */
+	private static boolean flushBlock(StringBuilder builder, List<String> newContent, String header) {
 		if  (newContent.isEmpty()) {
-			return;
+			return false;
 		}
 		builder.append(System.lineSeparator()).append(header).append(System.lineSeparator());
 		for (String line : newContent) {
 			builder.append(line).append(System.lineSeparator());
 		}
+		return true;
+	}
+
+	/**
+	 * Splits all list content below one report header into normal and frozen lines. The frozen
+	 * content comes from the freeze attachment and is normalized before matching against the
+	 * current rendered message.
+	 */
+	private static BlockSplit splitBlock(List<String> content, List<String> frozenContent) {
+		Set<String> frozenLines = new HashSet<>();
+		if (frozenContent != null) {
+			// Generated wiki-link anchors can change; compare the stable link text instead.
+			frozenContent.stream().map(CIFreezeFailedTestsAction::normalizeLink).forEach(frozenLines::add);
+		}
+
+		BlockSplit result = new BlockSplit();
+		for (MessageLine root : parseMessageLines(content)) {
+			SplitMessageLine split = splitMessageLine(root, frozenLines);
+			result.normalContent().addAll(split.normalLines());
+			result.frozenContent().addAll(split.frozenLines());
+		}
+		return result;
+	}
+
+	/**
+	 * Converts wiki list lines into a tree by their leading-star depth. This lets the adjuster keep
+	 * parent list items as context for nested findings instead of treating every rendered line as an
+	 * independent finding.
+	 */
+	private static List<MessageLine> parseMessageLines(List<String> lines) {
+		List<MessageLine> roots = new ArrayList<>();
+		Deque<MessageLine> stack = new ArrayDeque<>();
+		for (String line : lines) {
+			MessageLine current = new MessageLine(line, getListDepth(line));
+			while (!stack.isEmpty() && stack.peek().depth() >= current.depth()) {
+				stack.pop();
+			}
+			if (stack.isEmpty()) {
+				roots.add(current);
+			}
+			else {
+				stack.peek().children().add(current);
+			}
+			stack.push(current);
+		}
+		return roots;
+	}
+
+	/**
+	 * Splits one wiki-list subtree. Leaf lines are the findings that can be frozen independently.
+	 * Branch lines are context and follow their normal/frozen children. If a previously frozen
+	 * child disappeared, the branch is not emitted to the frozen result by itself.
+	 */
+	private static SplitMessageLine splitMessageLine(MessageLine line, Set<String> frozenLines) {
+		SplitMessageLine result = new SplitMessageLine();
+		for (MessageLine child : line.children()) {
+			SplitMessageLine childSplit = splitMessageLine(child, frozenLines);
+			result.normalChildren().addAll(childSplit.normalLines());
+			result.frozenChildren().addAll(childSplit.frozenLines());
+		}
+
+		boolean lineFrozen = frozenLines.contains(normalizeLink(line.line()));
+		if (!line.children().isEmpty()) {
+			if (!result.normalChildren().isEmpty()) {
+				result.normalLines().add(line.line());
+				result.normalLines().addAll(result.normalChildren());
+			}
+			else if (!lineFrozen) {
+				result.normalLines().add(line.line());
+			}
+			if (!result.frozenChildren().isEmpty()) {
+				result.frozenLines().add(line.line());
+				result.frozenLines().addAll(result.frozenChildren());
+			}
+			return result;
+		}
+
+		if (!lineFrozen || !result.normalChildren().isEmpty()) {
+			result.normalLines().add(line.line());
+			result.normalLines().addAll(result.normalChildren());
+		}
+		if (lineFrozen || !result.frozenChildren().isEmpty()) {
+			result.frozenLines().add(line.line());
+			result.frozenLines().addAll(result.frozenChildren());
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the wiki-list nesting level encoded by leading stars. Examples: "* item" has depth 1,
+	 * "** detail" has depth 2, and a non-list line has depth 0.
+	 */
+	private static int getListDepth(String line) {
+		int depth = 0;
+		while (depth < line.length() && line.charAt(depth) == '*') {
+			depth++;
+		}
+		return depth;
 	}
 
 	private static Map<String, List<String>> extractMatchingFileSection(String fileText, String testObject) {
@@ -247,7 +335,7 @@ class CIBuildFrozenTestAdjuster {
 						if (frozenContent.containsKey(currentHeader)) {
 							frozenContent.get(currentHeader).addAll(currentContent);
 						} else {
-							frozenContent.put(currentHeader, new ArrayList<String>(currentContent));
+							frozenContent.put(currentHeader, new ArrayList<>(currentContent));
 						}
 					}
 					currentContent.clear();
@@ -260,7 +348,7 @@ class CIBuildFrozenTestAdjuster {
 		if (frozenContent.containsKey(currentHeader)) {
 			frozenContent.get(currentHeader).addAll(currentContent);
 		} else {
-			frozenContent.put(currentHeader, new ArrayList<String>(currentContent));
+			frozenContent.put(currentHeader, new ArrayList<>(currentContent));
 		}
 
 		return frozenContent;
@@ -285,7 +373,7 @@ class CIBuildFrozenTestAdjuster {
 				// flush previous block
 				if (currentHeader != null) {
 
-					int count = currentContent.size();
+					int count = countMessages(currentContent);
 					totalCount += count;
 
 					if (!isFirstHeader) {
@@ -309,7 +397,7 @@ class CIBuildFrozenTestAdjuster {
 		// flush last block
 		if (currentHeader != null) {
 
-			int count = currentContent.size();
+			int count = countMessages(currentContent);
 			totalCount += count;
 
 			if (!isFirstHeader) {
@@ -327,6 +415,44 @@ class CIBuildFrozenTestAdjuster {
 		}
 
 		return String.join(System.lineSeparator(), result);
+	}
+
+	/**
+	 * Counts report findings inside a header block. Context parent lines are not counted as
+	 * separate findings when they only group nested list entries.
+	 */
+	private static int countMessages(List<String> content) {
+		return parseMessageLines(content).stream().mapToInt(CIBuildFrozenTestAdjuster::countLeaves).sum();
+	}
+
+	/**
+	 * Header counts should describe findings, not context lines. For grouped wiki lists this means
+	 * counting the deepest lines; for flat lists each root line is one finding.
+	 */
+	private static int countLeaves(MessageLine line) {
+		if (line.children().isEmpty()) return 1;
+		return line.children().stream().mapToInt(CIBuildFrozenTestAdjuster::countLeaves).sum();
+	}
+
+	private record BlockSplit(List<String> normalContent, List<String> frozenContent) {
+
+		private BlockSplit() {
+			this(new ArrayList<>(), new ArrayList<>());
+		}
+	}
+
+	private record MessageLine(String line, int depth, List<MessageLine> children) {
+
+		private MessageLine(String line, int depth) {
+			this(line, depth, new ArrayList<>());
+		}
+	}
+
+	private record SplitMessageLine(List<String> normalLines, List<String> frozenLines, List<String> normalChildren, List<String> frozenChildren) {
+
+		private SplitMessageLine() {
+			this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		}
 	}
 
 	private static void mergeDuplicates(BuildResult buildResult) {
