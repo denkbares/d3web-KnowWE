@@ -45,8 +45,8 @@
 		},
 		{
 			name: 'otherVariants', label: 'All Variants', on: true,
-			hint: 'Search every variant. Off: only what the current compiler compiles – the wiki greys the others '
-				+ 'out anyway, because they belong to a different variant.'
+			hint: 'Search every variant. Off: only what the current variant contains – the wiki greys the others '
+				+ 'out anyway.'
 		},
 		{
 			name: 'titleOnly', label: 'Page Name only',
