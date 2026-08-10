@@ -415,6 +415,7 @@
 	 * the class tells the styling to fade at the top as well, so it stays visible that something is above.
 	 */
 	function measureSections(root) {
+		root.querySelectorAll('.knowwe-search-preview').forEach(pruneTables);
 		remeasure(root, '.knowwe-search-preview');
 		root.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
 		root.querySelectorAll('.knowwe-search-section').forEach(function (wrapper) {
@@ -469,6 +470,38 @@
 			}
 		}
 		return candidates;
+	}
+
+	/*
+	 * A table is rendered whole and pruned here, where the matches are known.
+	 *
+	 * No match anywhere in it: the table says nothing about this hit and goes. Otherwise every row without a match goes
+	 * and the first row stays -- it is the header and tells the remaining rows what they mean. A match in the header
+	 * alone therefore leaves exactly the header, which is the answer to "which table is this".
+	 *
+	 * Deciding this on the server would mean rendering per query and giving up the preview cache.
+	 */
+	function pruneTables(container) {
+		if (container.dataset.pruned) return; // der Messdurchlauf wiederholt sich, das Aufraeumen nicht
+		container.dataset.pruned = 'yes';
+		container.querySelectorAll('table').forEach(function (table) {
+			if (!table.isConnected) return; // an outer table may already have taken it
+			if (!table.querySelector('mark')) {
+				var wrapper = table.parentElement;
+				table.remove();
+				// KnowWE wraps its tables in a scrolling div; an empty one would leave a gap
+				if (wrapper && wrapper.tagName === 'DIV' && !wrapper.textContent.trim()
+					&& !wrapper.querySelector('table, img')) {
+					wrapper.remove();
+				}
+				return;
+			}
+			var rows = table.querySelectorAll(':scope > tbody > tr, :scope > tr, :scope > thead > tr');
+			rows.forEach(function (row, index) {
+				if (index === 0) return;
+				if (!row.querySelector('mark')) row.remove();
+			});
+		});
 	}
 
 	function markMatches(container, query) {
@@ -616,6 +649,7 @@
 	}
 
 	function measureQuickSections(root) {
+		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(pruneTables);
 		remeasure(root, '.knowwe-quicksearch-preview');
 		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
 		root.querySelectorAll('.knowwe-quicksearch-section').forEach(function (wrapper) {

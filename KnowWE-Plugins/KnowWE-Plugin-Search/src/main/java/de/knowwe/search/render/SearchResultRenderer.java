@@ -19,6 +19,8 @@
 
 package de.knowwe.search.render;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.preview.PreviewManager;
 import de.knowwe.core.preview.PreviewRenderer;
@@ -85,7 +88,7 @@ public class SearchResultRenderer {
 			if (renderer == null) return null;
 
 			RenderResult result = new RenderResult(user);
-			renderer.render(previewSection, List.of(section), user, result);
+			renderer.render(previewSection, everything(section), user, result);
 			String html = toHtml(result, user);
 			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
 			return new Rendered(html, resolution.stale());
@@ -95,6 +98,21 @@ public class SearchResultRenderer {
 			LOGGER.warn("Could not render a preview for {}", anchor.title(), e);
 			return null;
 		}
+	}
+
+	/**
+	 * Everything inside the hit, so a renderer that shows only the "relevant" parts shows the whole block.
+	 * <p>
+	 * {@link de.knowwe.kdom.table.TablePreviewRenderer} keeps the header row plus the rows that one of these sections
+	 * belongs to, and drops the rest for a placeholder. Handing it the hit alone -- a whole markup block, never a single
+	 * row -- left every table as a header over "...". Which rows actually matter cannot be decided here without knowing
+	 * the query, and knowing it would make the preview query-dependent and the cache useless; the browser knows where
+	 * the matches are and prunes the table there.
+	 */
+	private static Collection<Section<?>> everything(Section<?> section) {
+		List<Section<?>> sections = new ArrayList<>(Sections.successors(section));
+		sections.add(section);
+		return sections;
 	}
 
 	/**

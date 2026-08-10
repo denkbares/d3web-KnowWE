@@ -337,10 +337,14 @@
 	padding: 0 0.15em;
 	line-height: 1;
 	color: inherit;
-	background: transparent;
-	border-radius: 2px;
-	box-shadow: 0 0 0 0.12em var(--highlight-color-faint-yellow);
 	background-color: var(--highlight-color-faint-yellow);
+	border-radius: 2px;
+	/*
+	 * A ring, not a border: a border on an inline element adds width and pushes the text around it. The tint stays
+	 * faint and the ring does the pointing -- in dark mode the tint is almost nothing, so there it carries the mark
+	 * on its own.
+	 */
+	box-shadow: 0 0 0 1px var(--highlight-color-dark);
 }
 
 /* ------------------------------------------------------------------ folded hits of the same page */
