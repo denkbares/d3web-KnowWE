@@ -23,11 +23,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.basicType.AttachmentCompileType;
+import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.search.WikiSearchService;
@@ -152,6 +156,10 @@ public class WikiSearchAction extends AbstractAction {
 
 	private JSONObject toJson(SearchHit hit, boolean withPreview, UserActionContext context) {
 		JSONObject json = toJson(hit);
+		String rendering = renderingArticle(hit, context);
+		// beides dorthin, wo der Inhalt tatsaechlich zu sehen ist -- der Abschnittsanker des Anhangs gilt dort nicht
+		json.put("pageUrl", rendering != null ? rendering : "Wiki.jsp?page=" + hit.title().replace(" ", "+"));
+		if (rendering != null) json.put("url", rendering);
 		// only for the hits actually shown: rendering costs a wiki-syntax pass each
 		if (withPreview) {
 			SearchResultRenderer.Rendered rendered = renderer.render(hit.anchor(), context);
@@ -176,6 +184,25 @@ public class WikiSearchAction extends AbstractAction {
 		json.put("url", "Wiki.jsp?page=" + hit.title().replace(" ", "+")
 						+ (hit.anchor().sectionId() == null ? "" : "#" + hit.anchor().sectionId()));
 		return json;
+	}
+
+	/**
+	 * Where a click should land.
+	 * <p>
+	 * The content of an attachment can be compiled into an article of its own -- the {@code %%Attachment} markup does
+	 * that -- and a hit inside it belongs to that article, not to the file. Linking to the file would hand the user a
+	 * download of something they were reading. So the link goes to the markup that pulls the attachment in, and to its
+	 * section, which is where the text they searched for is actually rendered.
+	 */
+	private static @Nullable String renderingArticle(SearchHit hit, UserActionContext context) {
+		Article article = context.getArticleManager().getArticle(hit.title());
+		if (article == null || !KnowWEUtils.isAttachmentArticle(article)) return null;
+		if (!(context.getArticleManager() instanceof DefaultArticleManager manager)) return null;
+		for (Section<AttachmentCompileType> compiling :
+				manager.getAttachmentManager().getCompilingAttachmentSections(article)) {
+			return "Wiki.jsp?page=" + compiling.getTitle().replace(" ", "+") + "#" + compiling.getID();
+		}
+		return null;
 	}
 
 	private static void write(UserActionContext context, JSONObject answer) throws IOException {

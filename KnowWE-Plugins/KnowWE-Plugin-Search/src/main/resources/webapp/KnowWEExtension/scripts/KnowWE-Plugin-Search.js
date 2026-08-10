@@ -318,7 +318,8 @@
 	function pageLink(hit, className, query) {
 		var link = document.createElement('a');
 		link.className = className;
-		link.href = 'Wiki.jsp?page=' + (hit.page || hit.title).replace(/ /g, '+');
+		// pageUrl kommt vom Server: bei einem Anhangs-Artikel zeigt es auf den Artikel, der ihn rendert
+		link.href = hit.pageUrl || ('Wiki.jsp?page=' + (hit.page || hit.title).replace(/ /g, '+'));
 		link.appendChild(resultIcon());
 		// a span rather than the link's own text, so setting the name cannot wipe the icon again
 		var name = document.createElement('span');
@@ -872,7 +873,11 @@
 	}
 
 	function highlightQuick(position) {
-		var entries = quick.panel.querySelectorAll('.knowwe-quicksearch-hit');
+		// die Markierung sitzt auf dem ganzen Abschnitt, nicht auf dem Link darin: das Dreieck steht neben dem Link,
+		// und markierte man nur ihn, blieben Zeile und Dreieck unterschiedlich hinterlegt
+		var entries = quickEntries().map(function (entry) {
+			return entry.closest('.knowwe-quicksearch-section') || entry;
+		});
 		if (quick.active >= 0 && entries[quick.active]) entries[quick.active].classList.remove('active');
 		quick.active = position;
 		if (entries[position]) {

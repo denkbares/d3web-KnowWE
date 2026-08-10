@@ -183,7 +183,7 @@
 	border-bottom: 1px solid var(--bg-color-secondary-shade);
 }
 
-.knowwe-quicksearch-hit.active,
+.knowwe-quicksearch-section.active,
 .knowwe-quicksearch-section:hover {
 	background: var(--bg-color-secondary);
 }
@@ -212,13 +212,13 @@
  * breadcrumb then opts back in; the preview is content, not a label.
  */
 .knowwe-quicksearch-hit:hover,
-.knowwe-quicksearch-hit.active,
+.knowwe-quicksearch-section.active .knowwe-quicksearch-hit,
 .knowwe-quicksearch-hit:focus {
 	text-decoration: none;
 }
 
 .knowwe-quicksearch-section:hover .knowwe-quicksearch-crumb,
-.knowwe-quicksearch-hit.active .knowwe-quicksearch-crumb {
+.knowwe-quicksearch-section.active .knowwe-quicksearch-crumb {
 	text-decoration: underline;
 }
 
