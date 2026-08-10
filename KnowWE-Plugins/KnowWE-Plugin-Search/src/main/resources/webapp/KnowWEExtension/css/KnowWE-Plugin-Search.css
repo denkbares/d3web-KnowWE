@@ -195,7 +195,9 @@
 .knowwe-quicksearch-preview {
 	position: relative;
 	max-height: 7em;
-	margin-top: 0.2em;
+	/* siehe .knowwe-search-preview: Platz fuer den Ring, aussen wieder abgezogen */
+	margin: 0.2em -2px 0;
+	padding: 2px;
 	overflow: hidden;
 	font-size: 0.85em;
 	line-height: 1.4;
@@ -275,10 +277,16 @@
  * The wiki renders the section itself, so a hit shows real tables and markup boxes. Capped at a fifth of the
  * viewport with a fade, because a long section must not push the next hit off the screen.
  */
+/*
+ * The two pixels of padding are room for the ring around a match: the box has to clip (we scroll inside it to reach the
+ * match, and only a scrollable box can be scrolled), so a mark sitting against an edge would lose the side of its ring.
+ * The negative margin gives the room back, so nothing moves.
+ */
 .knowwe-search-preview {
 	position: relative;
 	max-height: 20vh;
-	margin-top: 0.4em;
+	margin: 0.4em -2px 0;
+	padding: 2px;
 	overflow: hidden;
 	font-size: 0.95em;
 }
