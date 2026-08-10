@@ -180,7 +180,8 @@
 		var list = document.createElement('div');
 		list.className = 'knowwe-search-folded-hits';
 		list.hidden = true;
-		sections.appendChild(list);
+		// unter der Zeile, damit sie oben stehen bleibt und das Dreieck nach unten zeigt, wo etwas aufgeht
+		wrapper.appendChild(list);
 
 		button.addEventListener('click', function () {
 			if (list.childNodes.length) {
@@ -652,7 +653,7 @@
 		var open = false;
 
 		function insert() {
-			var after = button.previousSibling;
+			var after = button;
 			loaded.forEach(function (node) {
 				after.parentNode.insertBefore(node, after.nextSibling);
 				after = node;
