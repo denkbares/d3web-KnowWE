@@ -397,3 +397,33 @@ Drei Stufen, absichtlich von leicht nach schwer:
    selbst; beim Aufklappen erscheint deshalb Material darüber und darunter. Der Deckel begrenzt nur das Fenster.
 
 Siebzehn Commits auf `wikisearch` (KnowWE), keiner gepusht — Push ist jeweils einzeln abzustimmen.
+
+## Nachtrag 2026-08-10
+
+### Tabellen im Preview: Kopf ohne Zeilen
+
+`TablePreviewRenderer.renderTable()` rendert die erste Zeile plus jede Zeile, die zu den uebergebenen
+`relevantSubSections` gehoert; passt keine, kommt eine Platzhalterzeile `...`. `SearchResultRenderer` uebergibt
+`List.of(section)` — den Treffer-Abschnitt, also den ganzen Markup-Block, nie eine `TableLine`. Deshalb bleibt immer nur
+der Kopf stehen.
+
+Gewuenschtes Verhalten (Albrecht): Tabelle ohne Treffer ganz weglassen; Tabelle mit Treffer in einer Zeile → diese Zeile
+zeigen; Treffer im Kopf → Kopf genuegt.
+
+Zwei Wege mit Zielkonflikt:
+
+- **Anfrage in den Renderer geben** — die Zeilen mit Suchbegriff als `relevantSubSections` uebergeben. Kleine Previews,
+  aber das Preview haengt dann von der Anfrage ab und der `PreviewCache` verliert seine Wirkung (jeder Tastendruck ein
+  anderes Preview: 20 ms → 120 ms).
+- **Ganze Tabelle rendern, im Browser aufraeumen** — nach dem Hervorheben ist bekannt, wo die Treffer stehen. Cache
+  bleibt wirksam, aber die Previews werden groesser und verschaerfen damit den offenen Parser-Fehler (10240 Zeichen).
+
+Empfehlung: erst den Parser-Fehler (Punkt 1 oben) beheben, dann den zweiten Weg.
+
+### Highlighting bevorzugt den laengsten Treffer
+
+`matchCandidates()` in `KnowWE-Plugin-Search.js` bildet aus der Anfrage alle zusammenhaengenden Wortfolgen, laengste
+zuerst; pro Textknoten gewinnt die erste, die passt. „Unit A40" markiert also `Unit A40` bzw. `Unit-A40` als Ganzes und
+faellt nur dort auf einzelne Woerter zurueck, wo die Folge nicht vorkommt. Anfuehrungszeichen aendern nichts. Zwischen
+zwei Woertern sind 0 bis 3 Nicht-Wortzeichen erlaubt, damit auch `TestCase` von „test case" getroffen wird.
+Mit Node gegen neun Faelle geprueft, im Browser noch **nicht**.

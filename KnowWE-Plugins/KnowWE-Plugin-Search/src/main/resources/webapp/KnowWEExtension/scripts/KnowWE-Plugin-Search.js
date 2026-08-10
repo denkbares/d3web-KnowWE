@@ -449,11 +449,30 @@
 	 * Highlights the query words inside a rendered preview. Done here rather than on the server because wrapping
 	 * matches in already rendered HTML would cut through tags; walking text nodes cannot.
 	 */
-	function markMatches(container, query) {
-		var words = (query || state.query).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (word) {
+	/*
+	 * The candidates a query offers, longest first: the whole thing, then every shorter run of neighbouring words, and
+	 * single words last. Searching for "Unit A40" should mark "Unit A40" where it stands together, and fall back to the
+	 * separate words only where it does not -- marking both words everywhere makes a page full of "unit" look like a
+	 * hit when only the number matters.
+	 */
+	function matchCandidates(query) {
+		var words = query.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (word) {
 			return word.length > 2;
 		});
-		if (!words.length) return;
+		var candidates = [];
+		for (var length = words.length; length >= 1; length--) {
+			for (var start = 0; start + length <= words.length; start++) {
+				// anything may sit between two words in the text, or nothing at all: a space, a hyphen, a slash --
+				// or no separator, because half the names here are written TestCase and PageProvider
+				candidates.push(new RegExp(words.slice(start, start + length).join('[^\\p{L}\\p{N}]{0,3}'), 'iu'));
+			}
+		}
+		return candidates;
+	}
+
+	function markMatches(container, query) {
+		var candidates = matchCandidates(query || state.query);
+		if (!candidates.length) return;
 
 		// Not inside form controls and the like: a mark in an <option> is never visible, and its position cannot be
 		// measured, so scrolling to it would fail silently.
@@ -471,17 +490,16 @@
 
 		nodes.forEach(function (node) {
 			var text = node.nodeValue;
-			var lower = text.toLowerCase();
-			var hitAt = -1, hitWord = null;
-			words.forEach(function (word) {
-				var at = lower.indexOf(word);
-				if (at >= 0 && (hitAt < 0 || at < hitAt)) { hitAt = at; hitWord = word; }
-			});
-			if (hitAt < 0) return;
+			var found = null;
+			for (var i = 0; i < candidates.length; i++) {
+				found = candidates[i].exec(text);
+				if (found) break;
+			}
+			if (!found) return;
 			var mark = document.createElement('mark');
-			mark.textContent = text.substr(hitAt, hitWord.length);
-			var after = node.splitText(hitAt);
-			after.nodeValue = after.nodeValue.substring(hitWord.length);
+			mark.textContent = found[0];
+			var after = node.splitText(found.index);
+			after.nodeValue = after.nodeValue.substring(found[0].length);
 			node.parentNode.insertBefore(mark, after);
 		});
 	}
