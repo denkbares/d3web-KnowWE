@@ -645,15 +645,15 @@
 	mask-composite: intersect;
 }
 
-/* two lines, so a cut never falls through the middle of a single one */
+/* only the last line goes: everything above it should be readable, the fade is an edge and not a curtain */
 .knowwe-search-preview.is-clipped,
 .knowwe-quicksearch-preview.is-clipped {
-	--fade-bottom: 3em;
+	--fade-bottom: 1.2em;
 }
 
 .knowwe-search-preview.is-scrolled,
 .knowwe-quicksearch-preview.is-scrolled {
-	--fade-top: 2em;
+	--fade-top: 1em;
 }
 
 .knowwe-search-preview.is-clipped-right,

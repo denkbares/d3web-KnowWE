@@ -39,6 +39,8 @@ import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.uhighlight.DefaultPassageFormatter;
 import org.apache.lucene.search.uhighlight.LengthGoalBreakIterator;
 import org.apache.lucene.search.uhighlight.UnifiedHighlighter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.search.analysis.WikiAnalyzers;
@@ -56,6 +58,11 @@ import de.knowwe.search.index.WikiSearchIndex;
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
 public class WikiSearcher {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(WikiSearcher.class);
+
+	/** How many hits an explanation covers -- enough to see why the top few are in that order. */
+	private static final int EXPLAINED_HITS = 5;
 
 	/** How many passages of the section to stitch together into a snippet. */
 	private static final int SNIPPET_PASSAGES = 3;
@@ -103,11 +110,36 @@ public class WikiSearcher {
 		return index.search(searcher -> {
 			int window = Math.max(1, request.offset() + request.limit());
 			TopDocs topDocs = searcher.search(query, window);
+			explain(searcher, query, topDocs, request);
 			List<SearchHit> hits = collect(searcher, query, topDocs, request);
 			return new SearchResults(hits, topDocs.totalHits.value(),
 					topDocs.totalHits.relation() == TotalHits.Relation.EQUAL_TO, millisSince(start),
 					relaxed && !hits.isEmpty(), List.of());
 		});
+	}
+
+	/**
+	 * Writes Lucene's own account of the top scores into the log, if asked for with
+	 * {@code -Dknowwe.search.explain=true}.
+	 * <p>
+	 * There is no other way to answer "why is this hit above that one": the score is a sum over fields, boosts, term
+	 * frequencies and document lengths, and guessing at it from the outside is how one ends up believing the wrong
+	 * cause. Off by default -- an explanation costs about as much as the search itself.
+	 */
+	private static void explain(IndexSearcher searcher, Query query, TopDocs topDocs, SearchRequest request) {
+		if (!Boolean.getBoolean("knowwe.search.explain")) return;
+		try {
+			LOGGER.info("Scores for \"{}\":", request.query());
+			for (int i = 0; i < Math.min(EXPLAINED_HITS, topDocs.scoreDocs.length); i++) {
+				ScoreDoc hit = topDocs.scoreDocs[i];
+				String title = searcher.storedFields().document(hit.doc).get(SearchFields.BREADCRUMB);
+				LOGGER.info("  {}. {} — {}\n{}", i + 1, hit.score, title,
+						searcher.explain(query, hit.doc));
+			}
+		}
+		catch (IOException | RuntimeException e) {
+			LOGGER.warn("Could not explain the scores", e);
+		}
 	}
 
 	private List<SearchHit> collect(IndexSearcher searcher, Query query, TopDocs topDocs, SearchRequest request)

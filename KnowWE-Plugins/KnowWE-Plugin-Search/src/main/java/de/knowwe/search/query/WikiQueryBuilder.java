@@ -33,6 +33,7 @@ import org.apache.lucene.search.BoostQuery;
 import org.apache.lucene.search.DisjunctionMaxQuery;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.MatchNoDocsQuery;
+import org.apache.lucene.search.MultiPhraseQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
@@ -72,6 +73,16 @@ public class WikiQueryBuilder {
 
 	/** Markup names are searchable but must not drown out prose. */
 	private static final float BOOST_MARKUP = 0.3f;
+
+	/**
+	 * What it is worth that the words stand together.
+	 * <p>
+	 * Without this, "Cable Nr-24" is three independent words and a page called exactly that ranks by the same rules as
+	 * one that happens to contain all three somewhere. Standing next to each other is the strongest evidence a query
+	 * gives, and in the page name it is as good as an exact answer -- hence the weight above every single field.
+	 */
+	private static final float BOOST_PHRASE_TITLE = 20f;
+	private static final float BOOST_PHRASE_BODY = 6f;
 	/**
 	 * Unless the user spelled out the sigil. Typing {@code %%Question} is a deliberate request for the markup, not for
 	 * pages that happen to contain the word.
@@ -115,6 +126,13 @@ public class WikiQueryBuilder {
 		if (!positions.isEmpty()) {
 			query.add(scorePositions(positions, request.partial(), relaxed, request.titleOnly()),
 					BooleanClause.Occur.MUST);
+		}
+		if (positions.size() > 1) {
+			// a bonus, never a requirement: the words apart still match, they just rank below the words together
+			query.add(adjacent(positions, SearchFields.TITLE_TEXT, BOOST_PHRASE_TITLE), BooleanClause.Occur.SHOULD);
+			if (!request.titleOnly()) {
+				query.add(adjacent(positions, SearchFields.BODY, BOOST_PHRASE_BODY), BooleanClause.Occur.SHOULD);
+			}
 		}
 		Query explicitMarkup = explicitMarkup(freeText, request.query());
 		if (explicitMarkup != null) {
@@ -216,6 +234,25 @@ public class WikiQueryBuilder {
 	 * Built by Lucene's own {@link QueryBuilder}, which lays the terms out by position and produces a multi phrase
 	 * query where the analyzer offered alternatives. Assembling a phrase from a flat token list cannot match.
 	 */
+	/**
+	 * The query's words in order, in one field, with every form a word may take at its position.
+	 * <p>
+	 * A {@link MultiPhraseQuery} because the analyzer offers alternatives -- "Nr-24" arrives as {@code nr}, {@code 24}
+	 * and {@code nr24}, and the phrase has to match whichever of them the text used.
+	 */
+	private static Query adjacent(List<List<String>> positions, String field, float boost) {
+		MultiPhraseQuery.Builder phrase = new MultiPhraseQuery.Builder();
+		for (int i = 0; i < positions.size(); i++) {
+			List<String> alternatives = positions.get(i);
+			Term[] terms = new Term[alternatives.size()];
+			for (int t = 0; t < alternatives.size(); t++) {
+				terms[t] = new Term(field, alternatives.get(t));
+			}
+			phrase.add(terms, i);
+		}
+		return boosted(phrase.build(), boost);
+	}
+
 	private Query phrase(String phrase) {
 		Query query = new QueryBuilder(WikiAnalyzers.forQuerying()).createPhraseQuery(SearchFields.BODY, phrase);
 		return query == null ? new MatchNoDocsQuery() : query;

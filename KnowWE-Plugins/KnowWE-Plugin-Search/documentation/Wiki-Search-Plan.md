@@ -427,3 +427,41 @@ zuerst; pro Textknoten gewinnt die erste, die passt. „Unit A40" markiert also 
 faellt nur dort auf einzelne Woerter zurueck, wo die Folge nicht vorkommt. Anfuehrungszeichen aendern nichts. Zwischen
 zwei Woertern sind 0 bis 3 Nicht-Wortzeichen erlaubt, damit auch `TestCase` von „test case" getroffen wird.
 Mit Node gegen neun Faelle geprueft, im Browser noch **nicht**.
+
+## Nachtrag 2026-08-10, zweite Runde
+
+### Phrasensuche ist kaputt — der naechste Punkt
+
+Gemessen an einer Seite, die `Cable Nr-24` **heisst**, deren Text die Zeichenfolge aber nicht enthaelt:
+
+| Anfrage | Ergebnis |
+|---|---|
+| `Cable Nr-24` | 5 Treffer, exakte Seite oben mit Score 325 |
+| `"Cable Nr-24"` | `total: 3`, aber **0 Treffer ausgeliefert** |
+
+Zwei Ursachen, die erste gesichert, die zweite noch nicht zu Ende verfolgt:
+
+1. **`WikiQueryBuilder.phrase()` sucht nur in `SearchFields.BODY`.** Eine Seite, die exakt so heisst, ist mit
+   Anfuehrungszeichen nicht findbar. Fix: Dis-Max ueber `TITLE_TEXT`, `HEADING`, `BREADCRUMB`, `BODY` mit den ueblichen
+   Gewichten (Titel deutlich hoeher), analog zu `adjacent()`.
+2. **`total` und ausgelieferte Trefferliste weichen ab** (3 gegen 0). Zwischen Lucene-Treffer und JSON faellt etwas weg:
+   in Frage kommen der ACL-Nachfilter in `WikiSearchAction` (`getArticle(hit.title())` null?), das Fenster in
+   `WikiSearcher.search`, oder `collect()` mit `request.offset()`. Muss gemessen werden, nicht geraten.
+3. **Entspannung darf eine Phrase nicht fallen lassen.** `build()` haengt die Phrase bei `relaxed` als `SHOULD` an;
+   damit werden aus null Treffern beliebige. Wer Anfuehrungszeichen setzt, meint sie — eine leere Antwort ist dann die
+   ehrliche.
+
+### Was in dieser Runde fertig wurde
+
+- Nachbarschaft wird belohnt (`adjacent()`, `MultiPhraseQuery` ueber alle Wortformen je Position, Titel 20 / Text 6).
+  Gemessen: exakter Seitenname 66 → 338, drei Woerter verstreut unveraendert 12, Seite mit 121x "cable" 8 → 47.
+- Anhangs-Index als eigener Durchlauf nach den Seiten; Filter `Attachments` sucht nur darin, Treffer oeffnen
+  `Upload.jsp?page=…`. Standard bleiben die Seiten.
+- Suchseiten-Filter (`Attachments`, `All Variants`, `Page Name only`) mit tooltipster-Erklaerungen; `All Variants`
+  erscheint nur bei mehr als einem `GroupingCompiler`.
+- Varianten-Sortierung: DefaultCompiler einmal je Anfrage ermitteln, dann `isCompiling` je Treffer (erste Suche 500 → 80 ms).
+- `FindContent.jsp` und `SearchBox.jsp` liegen jetzt im Plugin, nicht mehr in KnowWE-Resources. Ohne das Plugin bleibt
+  JSPWikis eigene Suche — **ausser** `jspwiki.searchProvider` nennt `com.denkbares.knowwe.jspwiki.NGramLuceneSearchProvider`,
+  dann startet das Wiki nicht (gemessen). Diese Kopplung ist noch offen.
+- Score-Erklaerung auf Wunsch: `-Dknowwe.search.explain=true` schreibt Lucenes eigene Rechnung fuer die ersten fuenf
+  Treffer ins Log.
