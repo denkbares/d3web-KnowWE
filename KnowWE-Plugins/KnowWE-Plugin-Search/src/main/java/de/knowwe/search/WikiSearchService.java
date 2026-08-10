@@ -53,6 +53,10 @@ import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.search.index.SearchFields;
 import de.knowwe.search.index.SectionDocumentBuilder;
 import de.knowwe.search.index.WikiSearchIndex;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.event.AttachmentDeletedEvent;
+import de.knowwe.event.AttachmentStoredEvent;
+import de.knowwe.search.index.AttachmentDocumentBuilder;
 import de.knowwe.search.query.WikiSearcher;
 import de.knowwe.search.render.PreviewCache;
 
@@ -88,6 +92,10 @@ public class WikiSearchService implements EventListener {
 	private volatile WikiSearchIndex index;
 	private volatile WikiSearcher searcher;
 	private volatile boolean building;
+	/** Attachments are a pass of their own, started once the pages are in; until then the filter for them finds nothing. */
+	private volatile boolean attachmentsIndexed;
+	private volatile boolean attachmentsIndexing;
+	private final AttachmentDocumentBuilder attachmentDocuments = new AttachmentDocumentBuilder();
 
 	WikiSearchService(@NotNull Path indexPath) {
 		this.indexPath = indexPath;
@@ -148,6 +156,14 @@ public class WikiSearchService implements EventListener {
 	}
 
 	/** Whether the initial build is still running, so the interface can say "still indexing" instead of "no hits". */
+	public boolean isAttachmentsIndexed() {
+		return attachmentsIndexed;
+	}
+
+	public boolean isAttachmentsIndexing() {
+		return attachmentsIndexing;
+	}
+
 	public boolean isBuilding() {
 		return building;
 	}
@@ -159,7 +175,9 @@ public class WikiSearchService implements EventListener {
 				ArticleRegisteredEvent.class,
 				ArticleManagerCommitDoneEvent.class,
 				ArticleDeletedEvent.class,
-				FullParseEvent.class);
+				FullParseEvent.class,
+				AttachmentStoredEvent.class,
+				AttachmentDeletedEvent.class);
 	}
 
 	@Override
@@ -181,6 +199,23 @@ public class WikiSearchService implements EventListener {
 			String title = deleted.getArticle().getTitle();
 			PreviewCache.getInstance().invalidate(title);
 			submit(() -> index.removePage(title));
+		}
+		else if (event instanceof AttachmentStoredEvent stored) {
+			submit(() -> {
+				WikiAttachment attachment = Environment.getInstance().getWikiConnector()
+						.getAttachment(stored.getPath());
+				if (attachment != null) {
+					index.replaceAttachment(attachment.getPath(), attachmentDocuments.build(attachment));
+					index.commit();
+				}
+			});
+		}
+		else if (event instanceof AttachmentDeletedEvent deleted) {
+			String path = deleted.getPath();
+			submit(() -> {
+				index.removeAttachment(path);
+				index.commit();
+			});
 		}
 		else if (event instanceof FullParseEvent fullParse) {
 			PreviewCache.getInstance().clear();
@@ -238,6 +273,42 @@ public class WikiSearchService implements EventListener {
 			}
 			finally {
 				building = false;
+			}
+		});
+		indexAttachments();
+	}
+
+	/**
+	 * The attachments, after the pages.
+	 * <p>
+	 * A pass of its own, queued behind the pages: reading files is slower than walking KDOMs, and the search is useful
+	 * long before it is done. It runs on the same single worker, so it cannot compete with an edit being indexed.
+	 */
+	private void indexAttachments() {
+		attachmentsIndexing = true;
+		submit(() -> {
+			try {
+				Stopwatch stopwatch = new Stopwatch();
+				int indexed = 0;
+				int withText = 0;
+				for (WikiAttachment attachment : Environment.getInstance().getWikiConnector().getAttachments()) {
+					try {
+						Document document = attachmentDocuments.build(attachment);
+						index.replaceAttachment(attachment.getPath(), document);
+						indexed++;
+						if (!document.get(SearchFields.BODY).isEmpty()) withText++;
+					}
+					catch (IOException | RuntimeException e) {
+						// one unreadable file must not stop the pass
+						LOGGER.warn("Could not index attachment {}", attachment.getPath(), e);
+					}
+				}
+				index.commit();
+				attachmentsIndexed = true;
+				stopwatch.log(LOGGER, "Indexed " + indexed + " attachments, " + withText + " of them with text");
+			}
+			finally {
+				attachmentsIndexing = false;
 			}
 		});
 	}

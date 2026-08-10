@@ -176,6 +176,10 @@
 
 		nodes.status.textContent = describe(answer);
 
+		// der Balken bleibt, solange die Anhaenge noch dazukommen und danach gefiltert wird
+		nodes.root.classList.toggle('is-busy',
+				!!(answer.attachmentsIndexing && filterValues().attachmentsOnly));
+
 		hits.forEach(function (hit) {
 			nodes.results.appendChild(item(hit));
 		});
@@ -226,7 +230,9 @@
 	function describe(answer) {
 		if (answer.error) return answer.error;
 		if (filterValues().attachmentsOnly && answer.attachmentsIndexed === false) {
-			return 'Anhänge sind noch nicht indiziert – dieser Filter findet daher nichts.';
+			return answer.attachmentsIndexing
+					? 'Die Anhänge werden gerade indiziert – die Liste ist noch unvollständig.'
+					: 'Anhänge sind noch nicht indiziert – dieser Filter findet daher nichts.';
 		}
 		if (answer.indexing) return 'Der Suchindex wird gerade aufgebaut, die Trefferliste ist noch unvollständig.';
 		if (!state.query.trim()) return '';

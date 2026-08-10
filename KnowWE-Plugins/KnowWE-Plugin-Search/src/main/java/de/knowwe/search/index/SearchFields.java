@@ -34,7 +34,7 @@ public final class SearchFields {
 	 * Bump whenever fields, their types or the analyzers change. The index directory carries this, and it is written
 	 * into the commit user data, so a mismatch forces a rebuild instead of returning quietly wrong results.
 	 */
-	public static final String SCHEMA_VERSION = "v1";
+	public static final String SCHEMA_VERSION = "v2";
 
 	/**
 	 * Lower cased page title. This is the <b>update and delete key</b>: replacing a page means replacing all of its
@@ -45,6 +45,15 @@ public final class SearchFields {
 
 	/** {@code section} or {@code attachment}. */
 	public static final String TYPE = "type";
+
+	/**
+	 * What a write replaces, as opposed to what a document belongs to.
+	 * <p>
+	 * A section's is its page: re-indexing a page replaces its sections. An attachment's is its own path, because
+	 * re-indexing the page it hangs on must not delete it -- it shares the page key for permissions and grouping, and
+	 * deleting by that key would take the attachments with it.
+	 */
+	public static final String REPLACE_KEY = "replaceKey";
 	public static final String TYPE_SECTION = "section";
 	public static final String TYPE_ATTACHMENT = "attachment";
 

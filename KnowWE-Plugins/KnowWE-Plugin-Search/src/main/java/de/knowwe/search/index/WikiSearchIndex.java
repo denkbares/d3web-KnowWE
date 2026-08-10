@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -91,17 +93,43 @@ public class WikiSearchIndex implements AutoCloseable {
 	 * the page is missing from the results.
 	 */
 	public void replacePage(@NotNull String title, @NotNull List<Document> documents) throws IOException {
-		Term key = new Term(SearchFields.PAGE_KEY, SectionDocumentBuilder.pageKey(title));
+		Term key = new Term(SearchFields.REPLACE_KEY, SectionDocumentBuilder.pageKey(title));
 		if (documents.isEmpty()) {
 			writer.deleteDocuments(key);
 		}
 		else {
-			writer.updateDocuments(key, documents);
+			writer.updateDocuments(key, stamped(documents, key));
 		}
 	}
 
+	/**
+	 * Marks what this write replaces.
+	 * <p>
+	 * Set here rather than by whoever builds the document: it says what the write does, not what the document is, and a
+	 * builder that forgot it would leave documents that can never be replaced -- they would quietly pile up on every
+	 * re-index.
+	 */
+	private static List<Document> stamped(List<Document> documents, Term key) {
+		for (Document document : documents) {
+			document.removeFields(key.field());
+			document.add(new StringField(key.field(), key.text(), Field.Store.NO));
+		}
+		return documents;
+	}
+
 	public void removePage(@NotNull String title) throws IOException {
+		// by page key, not by replace key: this takes the attachments of the page with it, which is what a deleted
+		// page means
 		writer.deleteDocuments(new Term(SearchFields.PAGE_KEY, SectionDocumentBuilder.pageKey(title)));
+	}
+
+	public void replaceAttachment(@NotNull String path, @NotNull Document document) throws IOException {
+		Term key = new Term(SearchFields.REPLACE_KEY, AttachmentDocumentBuilder.replaceKey(path));
+		writer.updateDocument(key, stamped(List.of(document), key).get(0));
+	}
+
+	public void removeAttachment(@NotNull String path) throws IOException {
+		writer.deleteDocuments(new Term(SearchFields.REPLACE_KEY, AttachmentDocumentBuilder.replaceKey(path)));
 	}
 
 	/** Makes everything written so far visible to searchers, without the cost of a commit. */

@@ -121,8 +121,10 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("tookMs", results.tookMs());
 		answer.put("relaxed", results.relaxed());
 		answer.put("unmatched", new JSONArray(results.unmatched()));
-		// bis der Anhangs-Index existiert, kann dieser Filter nichts finden -- das soll die Oberflaeche sagen duerfen
-		answer.put("attachmentsIndexed", false);
+		// solange der Anhangs-Durchlauf noch laeuft, findet der Filter dafuer noch nicht alles -- das soll die
+		// Oberflaeche sagen duerfen, statt eine leere Liste als Ergebnis auszugeben
+		answer.put("attachmentsIndexed", service.isAttachmentsIndexed());
+		answer.put("attachmentsIndexing", service.isAttachmentsIndexing());
 
 		List<SearchHit> readable = new ArrayList<>();
 		for (SearchHit hit : results.hits()) {
