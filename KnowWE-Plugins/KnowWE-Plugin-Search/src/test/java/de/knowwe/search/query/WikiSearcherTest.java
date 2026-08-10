@@ -37,6 +37,7 @@ import de.knowwe.search.index.WikiSearchIndex;
 import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -143,6 +144,31 @@ public class WikiSearcherTest {
 
 		assertTrue(results.isEmpty());
 		assertEquals(0, results.total());
+	}
+
+	@Test
+	public void wordsStandingTogetherOutrankWordsScattered() throws IOException {
+		// rescoring, not a clause of the search: the words apart still match, they just rank below the words together
+		page("Zusammen", "!! Angabe\nHier steht Steckverbinder Montage als zusammenhaengende Angabe.\n");
+		page("Verstreut", "!! Angabe\nMontage steht hier. Weiter unten und ganz woanders steht Steckverbinder.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("Steckverbinder Montage"));
+		assertEquals("Zusammen › Angabe", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
+	public void theWrongOrderRanksBelowTheRightOne() throws IOException {
+		page("Richtig", "!! Angabe\nDer Steckverbinder Montage Hinweis steht so da.\n");
+		page("Verdreht", "!! Angabe\nDer Montage Steckverbinder Hinweis steht verdreht da.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("Steckverbinder Montage"));
+		assertEquals("Richtig › Angabe", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
+	public void aSingleWordHasNothingToBeNear() throws IOException {
+		// nothing to rescore, and asking for a phrase of one word would be a query that always matches
+		assertNull(new WikiQueryBuilder().nearInBody(new SearchRequest("Steckverbinder")));
 	}
 
 	private void page(String title, String content) throws IOException {

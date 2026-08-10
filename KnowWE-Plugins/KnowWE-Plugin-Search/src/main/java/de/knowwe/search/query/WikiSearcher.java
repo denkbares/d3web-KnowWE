@@ -34,6 +34,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.QueryRescorer;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.uhighlight.DefaultPassageFormatter;
@@ -60,6 +62,17 @@ import de.knowwe.search.index.WikiSearchIndex;
 public class WikiSearcher {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiSearcher.class);
+
+	/**
+	 * Up to here the number of hits is exact, beyond it the answer says "100+".
+	 * <p>
+	 * The point is not the number, it is what the number costs: while Lucene has to count exactly it may not skip any
+	 * match, however hopeless its score.
+	 */
+	private static final int COUNT_EXACTLY_UP_TO = 100;
+
+	/** What the proximity rescoring is worth against the original score. */
+	private static final double PROXIMITY_WEIGHT = 1.0;
 
 	/** How many hits an explanation covers -- enough to see why the top few are in that order. */
 	private static final int EXPLAINED_HITS = 5;
@@ -109,13 +122,33 @@ public class WikiSearcher {
 
 		return index.search(searcher -> {
 			int window = Math.max(1, request.offset() + request.limit());
-			TopDocs topDocs = searcher.search(query, window);
+			// Counting exactly is what forbids Lucene to skip: below this threshold it must visit every match, above it
+			// it may drop whole blocks that cannot reach the top (block-max WAND). We do not need an exact count -- the
+			// answer says "100+" and nobody pages that far.
+			TopDocs topDocs = searcher.search(query,
+					new TopScoreDocCollectorManager(window, null, COUNT_EXACTLY_UP_TO));
+			topDocs = closeTogetherFirst(searcher, query, topDocs, request, window);
 			explain(searcher, query, topDocs, request);
 			List<SearchHit> hits = collect(searcher, query, topDocs, request);
 			return new SearchResults(hits, topDocs.totalHits.value(),
 					topDocs.totalHits.relation() == TotalHits.Relation.EQUAL_TO, millisSince(start),
 					relaxed && !hits.isEmpty(), List.of());
 		});
+	}
+
+	/**
+	 * Adds what the words standing close together in the text are worth -- but only for the hits already found.
+	 * <p>
+	 * As a clause in the query this would have to walk position lists across every document in the index; measured in a
+	 * wiki of 96.000 sections that was the one change that made the search noticeably slower. Rescoring asks the same
+	 * question of a few hundred documents instead, so its cost hangs on the window and not on the wiki.
+	 */
+	private TopDocs closeTogetherFirst(IndexSearcher searcher, Query query, TopDocs topDocs,
+									   SearchRequest request, int window) throws IOException {
+		if (request.titleOnly() || topDocs.scoreDocs.length == 0) return topDocs;
+		Query near = queryBuilder.nearInBody(request);
+		if (near == null) return topDocs;
+		return QueryRescorer.rescore(searcher, topDocs, near, PROXIMITY_WEIGHT, window);
 	}
 
 	/**

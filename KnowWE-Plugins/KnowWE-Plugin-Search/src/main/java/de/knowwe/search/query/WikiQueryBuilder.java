@@ -82,6 +82,7 @@ public class WikiQueryBuilder {
 	 * gives, and in the page name it is as good as an exact answer -- hence the weight above every single field.
 	 */
 	private static final float BOOST_PHRASE_TITLE = 20f;
+	private static final float BOOST_PHRASE_BODY = 6f;
 	/**
 	 * Unless the user spelled out the sigil. Typing {@code %%Question} is a deliberate request for the markup, not for
 	 * pages that happen to contain the word.
@@ -234,6 +235,21 @@ public class WikiQueryBuilder {
 	 * Built by Lucene's own {@link QueryBuilder}, which lays the terms out by position and produces a multi phrase
 	 * query where the analyzer offered alternatives. Assembling a phrase from a flat token list cannot match.
 	 */
+	/**
+	 * The words of the query standing close together in the text, or null when the query has fewer than two words.
+	 * <p>
+	 * Used to rescore the hits already found, never as a clause of the search itself -- see
+	 * {@code WikiSearcher.closeTogetherFirst}.
+	 */
+	public @Nullable Query nearInBody(@NotNull SearchRequest request) {
+		List<String> phrases = new ArrayList<>();
+		String freeText = extractPhrases(request.query(), phrases);
+		List<List<String>> positions =
+				QueryTokens.byPosition(WikiAnalyzers.forQuerying(), SearchFields.BODY, freeText);
+		if (positions.size() < 2) return null;
+		return adjacent(positions, SearchFields.BODY, BOOST_PHRASE_BODY);
+	}
+
 	/**
 	 * The query's words in order, in one field, with every form a word may take at its position.
 	 * <p>
