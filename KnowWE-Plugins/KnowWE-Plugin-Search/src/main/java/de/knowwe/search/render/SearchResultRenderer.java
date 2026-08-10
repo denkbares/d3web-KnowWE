@@ -53,6 +53,17 @@ public class SearchResultRenderer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SearchResultRenderer.class);
 
 	/**
+	 * How long a joined line may get.
+	 * <p>
+	 * {@code MarkupParser.PUSHBACK_BUFFER_SIZE} is 10*1024 and not configurable, and {@code peekAheadLine()} does not
+	 * wrap a longer line -- it pushes back the first 10239 characters and <b>drops the rest</b>. A preview whose joined
+	 * line went over that lost its tail mid-tag, which arrived in the browser as {@code <p></div</p>} and tore the rest
+	 * of the section off. Masked characters count here, and each one is a token of a good dozen characters, so the
+	 * budget is spent much faster than the visible text suggests.
+	 */
+	private static final int MAX_LINE_LENGTH = 8000;
+
+	/**
 	 * @return the rendered section, or null when it cannot be rendered — the caller then falls back to the snippet
 	 */
 	public @Nullable Rendered render(@NotNull SectionAnchor anchor, @NotNull UserContext user) {
@@ -108,22 +119,46 @@ public class SearchResultRenderer {
 	 * The tokens are asked for rather than assumed: {@link RenderResult#mask(String, RenderResult)} uses the result's
 	 * own masking key, so nothing here depends on how masking is encoded. A newline in running text has no tag on
 	 * either side and is left alone, which is what keeps prose previews their paragraphs.
+	 * <p>
+	 * Joining has a hard limit, see {@link #MAX_LINE_LENGTH}: the last newline before it is reached stays a newline.
 	 */
 	static String joinRenderedLines(String maskedHtml, RenderResult result) {
 		String tagEnd = RenderResult.mask(">", result);
 		String tagStart = RenderResult.mask("<", result);
 		String lineBreak = RenderResult.mask("<br/>", result);
-		String end = Pattern.quote(tagEnd);
-		String start = Pattern.quote(tagStart);
 
-		// A blank line separates one rule from the next and has to stay visible, so it becomes two breaks. Matching
-		// it first matters: the single line pattern would otherwise swallow it and every rule would look alike.
-		String joined = maskedHtml.replaceAll(
-				end + "[ \\t]*\\n[ \\t]*\\n\\s*" + start,
-				Matcher.quoteReplacement(tagEnd + lineBreak + lineBreak + tagStart));
-		return joined.replaceAll(
-				end + "[ \\t]*\\n[ \\t]*" + start,
-				Matcher.quoteReplacement(tagEnd + lineBreak + tagStart));
+		// one pattern for both cases, so the longer one cannot be swallowed by the shorter: group 1 is the blank line
+		Pattern between = Pattern.compile(Pattern.quote(tagEnd)
+										  + "[ \\t]*\\n[ \\t]*(\\n\\s*)?"
+										  + Pattern.quote(tagStart));
+		Matcher matcher = between.matcher(maskedHtml);
+		StringBuilder joined = new StringBuilder(maskedHtml.length());
+		int copiedUpTo = 0;
+		int lineLength = 0;
+
+		while (matcher.find()) {
+			joined.append(maskedHtml, copiedUpTo, matcher.start());
+			lineLength += matcher.start() - copiedUpTo;
+			copiedUpTo = matcher.end();
+
+			joined.append(tagEnd);
+			if (lineLength < MAX_LINE_LENGTH) {
+				// A blank line separates one rule from the next and has to stay visible, so it becomes two breaks.
+				joined.append(lineBreak);
+				if (matcher.group(1) != null) joined.append(lineBreak);
+				lineLength += tagEnd.length() + lineBreak.length() * (matcher.group(1) == null ? 1 : 2);
+			}
+			else {
+				// Beyond the limit the parser does not wrap the line, it throws the rest of it away. One stray
+				// paragraph per ten kilobytes is the cheaper damage.
+				joined.append('\n');
+				lineLength = 0;
+			}
+			joined.append(tagStart);
+			lineLength += tagStart.length();
+		}
+		joined.append(maskedHtml, copiedUpTo, maskedHtml.length());
+		return joined.toString();
 	}
 
 	/**

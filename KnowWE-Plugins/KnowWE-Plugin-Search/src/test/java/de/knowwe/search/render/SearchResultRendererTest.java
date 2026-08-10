@@ -32,6 +32,7 @@ import utils.TestUserContext;
 import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Guards the rule that keeps a rendered markup block in one piece.
@@ -100,6 +101,34 @@ public class SearchResultRendererTest {
 	public void textNextToATagIsLeftAlone() {
 		assertEquals(tagEnd + "Text\n" + tagStart, join(tagEnd + "Text\n" + tagStart));
 		assertEquals(tagEnd + "\nText" + tagStart, join(tagEnd + "\nText" + tagStart));
+	}
+
+	@Test
+	public void aLongBlockKeepsItsLinesUnderTheParserLimit() {
+		// the parser does not wrap a longer line, it drops everything past 10239 characters
+		StringBuilder block = new StringBuilder();
+		for (int i = 0; i < 2000; i++) {
+			block.append(tagEnd).append("\n").append(tagStart).append("Zeile ").append(i);
+		}
+		String joined = join(block.toString());
+		int longest = 0;
+		for (String line : joined.split("\n", -1)) {
+			longest = Math.max(longest, line.length());
+		}
+		assertTrue("laengste Zeile: " + longest, longest < 10 * 1024);
+	}
+
+	@Test
+	public void nothingIsLostWhileJoining() {
+		// every line of the block has to survive, whether it was joined or left on a line of its own
+		StringBuilder block = new StringBuilder();
+		for (int i = 0; i < 2000; i++) {
+			block.append(tagEnd).append("\n").append(tagStart).append("Zeile ").append(i);
+		}
+		String joined = join(block.toString());
+		for (int i = 0; i < 2000; i++) {
+			assertTrue("Zeile " + i + " fehlt", joined.contains("Zeile " + i));
+		}
 	}
 
 	@Test
