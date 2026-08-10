@@ -45,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import com.denkbares.util.lucene.DisjunctionMaxRewrite;
 import de.knowwe.search.analysis.WikiAnalyzers;
 import de.knowwe.search.index.SearchFields;
+import de.knowwe.search.index.SectionDocumentBuilder;
 
 /**
  * Builds the Lucene query from what the user typed.
@@ -82,6 +83,15 @@ public class WikiQueryBuilder {
 	 * gives, and in the page name it is as good as an exact answer -- hence the weight above every single field.
 	 */
 	private static final float BOOST_PHRASE_TITLE = 20f;
+
+	/**
+	 * What it is worth that the query <em>is</em> the page name.
+	 * <p>
+	 * Above every other signal, and deliberately so: someone typing a page name in full is not describing a topic, they
+	 * are naming a page, and no amount of prose elsewhere should outrank it.
+	 */
+	private static final float BOOST_TITLE_EXACT = 60f;
+	private static final float BOOST_PHRASE_BODY = 6f;
 	/**
 	 * Unless the user spelled out the sigil. Typing {@code %%Question} is a deliberate request for the markup, not for
 	 * pages that happen to contain the word.
@@ -125,6 +135,10 @@ public class WikiQueryBuilder {
 		if (!positions.isEmpty()) {
 			query.add(scorePositions(positions, request.partial(), relaxed, request.titleOnly()),
 					BooleanClause.Occur.MUST);
+		}
+		Query exactTitle = exactTitle(request.query());
+		if (exactTitle != null) {
+			query.add(exactTitle, BooleanClause.Occur.SHOULD);
 		}
 		if (positions.size() > 1) {
 			// A bonus, never a requirement: the words apart still match, they just rank below the words together.
@@ -234,6 +248,33 @@ public class WikiQueryBuilder {
 	 * Built by Lucene's own {@link QueryBuilder}, which lays the terms out by position and produces a multi phrase
 	 * query where the analyzer offered alternatives. Assembling a phrase from a flat token list cannot match.
 	 */
+	/**
+	 * The whole query as the whole page name, or null for an empty query.
+	 * <p>
+	 * Not analysed on either side: the field holds one key per page and the query is reduced to a key the same way, so
+	 * this either matches the page that is named that or nothing at all.
+	 */
+	private static @Nullable Query exactTitle(String query) {
+		String key = SectionDocumentBuilder.exactKey(query.replace("\"", " "));
+		if (key.isEmpty()) return null;
+		return boosted(new TermQuery(new Term(SearchFields.TITLE_EXACT, key)), BOOST_TITLE_EXACT);
+	}
+
+	/**
+	 * The words of the query standing close together in the text, or null when the query has fewer than two words.
+	 * <p>
+	 * Used to rescore the hits already found, never as a clause of the search itself -- see
+	 * {@code WikiSearcher.closeTogetherFirst}.
+	 */
+	public @Nullable Query nearInBody(@NotNull SearchRequest request) {
+		List<String> phrases = new ArrayList<>();
+		String freeText = extractPhrases(request.query(), phrases);
+		List<List<String>> positions =
+				QueryTokens.byPosition(WikiAnalyzers.forQuerying(), SearchFields.BODY, freeText);
+		if (positions.size() < 2) return null;
+		return adjacent(positions, SearchFields.BODY, BOOST_PHRASE_BODY);
+	}
+
 	/**
 	 * The query's words in order, in one field, with every form a word may take at its position.
 	 * <p>

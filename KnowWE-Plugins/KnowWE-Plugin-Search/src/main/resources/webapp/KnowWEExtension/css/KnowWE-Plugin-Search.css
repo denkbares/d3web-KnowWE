@@ -218,7 +218,8 @@
 
 .knowwe-quicksearch-preview {
 	position: relative;
-	max-height: 7em;
+	/* half again as much as before, but only where the section actually fills it -- a short preview stays short */
+	max-height: 10.5em;
 	/* siehe .knowwe-search-preview: Platz fuer den Ring, aussen wieder abgezogen */
 	margin: 0.2em -2px 0;
 	padding: 2px;
@@ -591,7 +592,7 @@
 }
 
 .knowwe-quicksearch-preview.is-expanded {
-	max-height: 21em;
+	max-height: 31.5em;
 }
 
 /*

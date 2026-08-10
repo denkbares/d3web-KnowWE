@@ -37,6 +37,7 @@ import de.knowwe.search.index.WikiSearchIndex;
 import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -143,6 +144,50 @@ public class WikiSearcherTest {
 
 		assertTrue(results.isEmpty());
 		assertEquals(0, results.total());
+	}
+
+	@Test
+	public void thePageThatIsNamedTheQueryComesFirst() throws IOException {
+		page("Cable Nr-24", "!! Beschreibung\nDieses Kabel verbindet die Steuerung mit dem Aktor.\n");
+		page("Cable Nr-24 Uebersicht", "!! Liste\nHier steht Cable Nr-24 mehrfach: Cable Nr-24, Cable Nr-24.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("Cable Nr-24"));
+		assertEquals("Cable Nr-24 › Beschreibung", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
+	public void theNameIsRecognisedHoweverItIsTyped() throws IOException {
+		// the key is punctuation blind on both sides, so a reader need not reproduce the hyphen
+		page("Cable Nr-24", "!! Beschreibung\nEin Kabel.\n");
+		page("Anderes", "!! Text\nHier steht cable nr 24 nur im Fliesstext, mehrfach: cable nr 24.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("cable nr 24"));
+		assertEquals("Cable Nr-24 › Beschreibung", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
+	public void wordsStandingTogetherOutrankWordsScattered() throws IOException {
+		// rescoring, not a clause of the search: the words apart still match, they just rank below the words together
+		page("Zusammen", "!! Angabe\nHier steht Steckverbinder Montage als zusammenhaengende Angabe.\n");
+		page("Verstreut", "!! Angabe\nMontage steht hier. Weiter unten und ganz woanders steht Steckverbinder.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("Steckverbinder Montage"));
+		assertEquals("Zusammen › Angabe", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
+	public void theWrongOrderRanksBelowTheRightOne() throws IOException {
+		page("Richtig", "!! Angabe\nDer Steckverbinder Montage Hinweis steht so da.\n");
+		page("Verdreht", "!! Angabe\nDer Montage Steckverbinder Hinweis steht verdreht da.\n");
+
+		SearchResults results = searcher.search(new SearchRequest("Steckverbinder Montage"));
+		assertEquals("Richtig › Angabe", results.hits().get(0).breadcrumb());
+	}
+
+	@Test
+	public void aSingleWordHasNothingToBeNear() throws IOException {
+		// nothing to rescore, and asking for a phrase of one word would be a query that always matches
+		assertNull(new WikiQueryBuilder().nearInBody(new SearchRequest("Steckverbinder")));
 	}
 
 	private void page(String title, String content) throws IOException {
