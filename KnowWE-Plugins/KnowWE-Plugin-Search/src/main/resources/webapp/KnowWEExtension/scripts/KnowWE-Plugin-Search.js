@@ -513,7 +513,8 @@
 
 	// the whole panel scrolls, footer included, so it can hold more than fits on screen. Each preview still costs
 	// a rendering pass on the server, which is what limits this rather than the space.
-	var QUICK_LIMIT = 20;
+	// Seiten, nicht Treffer: jede bringt bis zu drei eigene Abschnitte mit, aus 10 werden also bis zu 30 Zeilen
+	var QUICK_LIMIT = 10;
 	var QUICK_DEBOUNCE_MS = 200;
 
 	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '' };
