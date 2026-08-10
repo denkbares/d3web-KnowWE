@@ -41,16 +41,16 @@
 	var FILTERS = [
 		{
 			name: 'attachmentsOnly', label: 'Attachments',
-			hint: 'Nur in Anhängen suchen, nicht in den Seiten selbst.'
+			hint: 'Search the attachments instead of the pages themselves.'
 		},
 		{
 			name: 'otherVariants', label: 'All Variants', on: true,
-			hint: 'Alle Varianten durchsuchen. Aus: nur was der aktuelle Compiler kompiliert – die übrigen graut das '
-				+ 'Wiki auch sonst aus, weil sie zu einer anderen Variante gehören.'
+			hint: 'Search every variant. Off: only what the current compiler compiles – the wiki greys the others '
+				+ 'out anyway, because they belong to a different variant.'
 		},
 		{
 			name: 'titleOnly', label: 'Page Name only',
-			hint: 'Nur Seitennamen durchsuchen, den Seiteninhalt nicht.'
+			hint: 'Search the page names only, not the page content.'
 		}
 	];
 	var DEBOUNCE_MS = 300;
