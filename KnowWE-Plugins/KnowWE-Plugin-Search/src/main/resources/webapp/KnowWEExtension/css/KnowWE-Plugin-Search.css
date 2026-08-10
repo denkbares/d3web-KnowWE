@@ -342,12 +342,14 @@
 	padding: 0 0.15em;
 	line-height: 1;
 	color: inherit;
+	/* the plain tint first, for browsers without color-mix; the mixed one wins where it is understood */
 	background-color: var(--highlight-color-faint-yellow);
+	background-color: color-mix(in srgb, var(--highlight-color-faint-yellow) 45%, var(--bg-color-primary));
 	border-radius: 2px;
 	/*
-	 * A ring, not a border: a border on an inline element adds width and pushes the text around it. The tint stays
-	 * faint and the ring does the pointing -- in dark mode the tint is almost nothing, so there it carries the mark
-	 * on its own.
+	 * A ring, not a border: a border on an inline element adds width and pushes the text around it. The tint only has
+	 * to hint, the ring does the pointing -- in dark mode the tint is almost nothing anyway and the ring carries the
+	 * mark on its own.
 	 */
 	box-shadow: 0 0 0 1px var(--highlight-color-dark);
 }
