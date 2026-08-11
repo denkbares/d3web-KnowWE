@@ -66,14 +66,19 @@ public class DescriptionMarkup extends DefaultMarkupType {
 		m = new DefaultMarkup("Description");
 		m.addContentType(new DescriptionTextType());
 		m.addAnnotation(ANNOTATION_OBJECT, true);
-		m.addAnnotation(ANNOTATION_PLACE, false, "above", "below");
 		m.addAnnotation(ANNOTATION_SEVERITY, true, false, severity.caution.name(), severity.cautionSevere.name(), severity.note.name());
+		m.addAnnotation(ANNOTATION_PLACE, false, "above", "below");
 		m.addAnnotation(ANNOTATION_LOCALE, false);
 		LocaleType localeType = new LocaleType();
 		localeType.addChildType(new LocaleNameDisplay());
 		m.addAnnotationContentType(ANNOTATION_LOCALE, localeType);
 		m.addAnnotationContentType(ANNOTATION_OBJECT, new DescriptionObjectReference());
 		PackageManager.addPackageAnnotation(m);
+		m.getAnnotation(ANNOTATION_OBJECT).setDocumentation("Name of the object in \", which gets the description attached to it");
+		m.getAnnotation(ANNOTATION_SEVERITY).setDocumentation("Severity in which the text should be styled in");
+		m.getAnnotation(ANNOTATION_PLACE).setDocumentation("Places text above/below reference, below by default");
+		m.getAnnotation(ANNOTATION_LOCALE).setDocumentation("Attaches description with specified locale, unspecified locale by default");
+		m.setDocumentation("Adds description/descriptionAbove Property to a named object");
 	}
 
 	public DescriptionMarkup() {
