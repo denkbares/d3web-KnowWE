@@ -36,8 +36,8 @@
 }
 
 /*
- * Unter dem Suchschlitz, gleich weit von ihm entfernt wie vom linken Rand: so lesen sie sich als seine Einstellungen
- * und nicht als erste Zeile der Trefferliste.
+ * Below the search box, as far from it as from the left edge: that way they read as its settings and not as the
+ * first line of the result list.
  */
 .knowwe-search-filters {
 	display: flex;
@@ -220,7 +220,7 @@
 	position: relative;
 	/* half again as much as before, but only where the section actually fills it -- a short preview stays short */
 	max-height: 10.5em;
-	/* siehe .knowwe-search-preview: Platz fuer den Ring, aussen wieder abgezogen */
+	/* see .knowwe-search-preview: room for the ring, taken off again on the outside */
 	margin: 0.2em -2px 0;
 	padding: 2px;
 	overflow: hidden;
@@ -712,9 +712,14 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1em;
-	align-items: baseline;
+	/*
+	 * Centred, not on the baseline: the checkbox is an inline-block, so its baseline is its bottom edge, which drags
+	 * the label's first baseline down and made the whole row five pixels taller than the line above it.
+	 */
+	align-items: center;
 	justify-content: center;
-	padding: 0.6em 0.8em;
+	/* the same metrics as the line above it (.knowwe-quicksearch-all), so the two read as one footer */
+	padding: 0.5em 0.8em;
 	font-size: 0.9em;
 	border-top: 1px solid var(--bg-color-secondary-shade);
 }
@@ -729,12 +734,26 @@
 }
 
 .knowwe-search-create-clone {
+	/*
+	 * The template styles every form label for a form: bold, with a bottom margin that reserves room for the field
+	 * below it. Here the label sits in a line of running text, and that margin made the row taller than the line
+	 * above it -- five pixels that read as a step in the footer.
+	 */
+	margin: 0;
+	font-weight: normal;
 	color: var(--text-color-secondary-shade);
 	white-space: nowrap;
 	cursor: help;
 }
 
 .knowwe-search-create-clone input {
-	margin-right: 0.15em;
+	/*
+	 * A checkbox at its own size drags the line box open below the baseline, and the row grew ten pixels taller than
+	 * the line above it. Held to the text size and centred, both rows are the same height.
+	 */
+	width: 0.95em;
+	height: 0.95em;
+	margin: 0 0.25em 0 0;
+	vertical-align: middle;
 	cursor: pointer;
 }

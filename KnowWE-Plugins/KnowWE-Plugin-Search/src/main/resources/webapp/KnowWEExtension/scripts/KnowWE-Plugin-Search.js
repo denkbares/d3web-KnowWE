@@ -29,14 +29,14 @@
 	'use strict';
 
 	var PAGE_SIZE = 10;
-	// Erst ab hier zeigen wir, dass gesucht wird: bei 20 ms Antwort waere ein Balken nur ein Zucken.
+	// Only from here on do we say that a search is running: at a 20 ms answer an indicator is a mere flicker.
 	var BUSY_AFTER_MS = 300;
 
 	/*
-	 * Die Filter der Suchseite. Die Schnellsuche schickt keinen davon und bekommt alles, nur sortiert.
+	 * The filters of the search page. The quick search sends none of them and gets everything, only sorted.
 	 *
-	 * "Other Variants" ist der einzige, der etwas hinzunimmt: aus bedeutet, nur was der aktuelle DefaultCompiler
-	 * kompiliert -- dasselbe, was das Wiki bei fremden Markups ausgraut. Die anderen beiden schraenken ein.
+	 * "All Variants" is the only one that adds something: off means only what the current default compiler compiles
+	 * -- the same thing the wiki greys out on foreign markup. The other two narrow the search down.
 	 */
 	var FILTERS = [
 		{
@@ -123,13 +123,13 @@
 		var link = document.createElement('a');
 		link.className = 'knowwe-search-create-link';
 		link.href = 'Edit.jsp?page=' + encodeURIComponent(name);
-		link.textContent = 'Create page "' + name + '"?';
+		link.textContent = "Create page '" + name + "'?";
 		offer.appendChild(link);
 
 		if (current && current.content) {
 			var label = document.createElement('label');
 			label.className = 'knowwe-search-create-clone tooltipster';
-			label.title = 'Start from the text of "' + current.content + '" instead of an empty page.';
+			label.title = "Start from the text of '" + current.content + "' instead of an empty page.";
 
 			var box = document.createElement('input');
 			box.type = 'checkbox';
@@ -166,11 +166,11 @@
 			label.appendChild(document.createTextNode(' ' + filter.label));
 			nodes.filters.appendChild(label);
 		});
-		// die Erklärungen kommen von tooltipster, wie überall im Wiki
+		// the explanations come from tooltipster, as everywhere else in the wiki
 		if (window.jq$ && jq$.fn.tooltipster) jq$(nodes.filters).find('.tooltipster').tooltipster();
 
-		// Ob es überhaupt Varianten gibt, weiß nur der Server. Einmal fragen, damit der Filter dafür nicht erst
-		// erscheint und nach der ersten Suche wieder verschwindet.
+		// Only the server knows whether there are variants at all. Asked once, so that the filter for them does not
+		// appear first and disappear again after the first search.
 		jq$.ajax({ url: 'action/WikiSearchAction', data: { query: '' }, dataType: 'json', cache: false })
 				.done(showApplicableFilters);
 	}
@@ -186,7 +186,7 @@
 	function filterValues() {
 		var values = {};
 		nodes.filters.querySelectorAll('input[type="checkbox"]').forEach(function (box) {
-			// ein ausgeblendeter Filter darf nichts einschränken, sonst filtert etwas, das niemand sehen kann
+			// a hidden filter must not narrow anything down, or something filters that nobody can see
 			values[box.dataset.filter] = box.parentNode.hidden ? !!boxDefault(box) : box.checked;
 		});
 		return values;
@@ -239,7 +239,7 @@
 		showApplicableFilters(answer);
 		nodes.status.textContent = describe(answer);
 
-		// der Balken bleibt, solange die Anhaenge noch dazukommen und danach gefiltert wird
+		// the indicator stays while the attachments are still arriving and the search is filtered to them
 		nodes.root.classList.toggle('is-busy',
 				!!(answer.attachmentsIndexing && filterValues().attachmentsOnly));
 
@@ -348,7 +348,7 @@
 		var list = document.createElement('div');
 		list.className = 'knowwe-search-folded-hits';
 		list.hidden = true;
-		// unter der Zeile, damit sie oben stehen bleibt und das Dreieck nach unten zeigt, wo etwas aufgeht
+		// below the line, so that it keeps its place and the triangle points down, to where something opens up
 		wrapper.appendChild(list);
 
 		button.addEventListener('click', function () {
@@ -445,7 +445,7 @@
 	function pageLink(hit, className, query) {
 		var link = document.createElement('a');
 		link.className = className;
-		// pageUrl kommt vom Server: bei einem Anhangs-Artikel zeigt es auf den Artikel, der ihn rendert
+		// pageUrl comes from the server: for an attachment article it points at the article that renders it
 		link.href = hit.pageUrl || ('Wiki.jsp?page=' + (hit.page || hit.title).replace(/ /g, '+'));
 		link.appendChild(resultIcon());
 		// a span rather than the link's own text, so setting the name cannot wipe the icon again
@@ -629,8 +629,8 @@
 	 */
 	function matchCandidates(query) {
 		var words = query.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(function (word) {
-			// Zwei Zeichen zählen: "Nr" und "24" sind der halbe Name in "Cable Nr-24", und wer sie wegwirft, kann die
-			// Wortfolge nicht mehr markieren. Einzelne Buchstaben bleiben draußen, die markieren sonst halbe Wörter.
+			// Two characters count: "Nr" and "24" are half the name in "Cable Nr-24", and dropping them leaves the
+			// word sequence unmarkable. Single letters stay out, they would mark halves of words.
 			return word.length > 1;
 		});
 		var candidates = [];
@@ -734,7 +734,7 @@
 
 	// the whole panel scrolls, footer included, so it can hold more than fits on screen. Each preview still costs
 	// a rendering pass on the server, which is what limits this rather than the space.
-	// Seiten, nicht Treffer: jede bringt bis zu drei eigene Abschnitte mit, aus 10 werden also bis zu 30 Zeilen
+	// pages, not results: each brings up to three sections of its own, so 10 become up to 30 lines
 	var QUICK_LIMIT = 10;
 	var QUICK_DEBOUNCE_MS = 200;
 
@@ -774,7 +774,7 @@
 		}
 		var busy = window.setTimeout(function () {
 			quick.panel.classList.add('is-busy');
-			// beim ersten Tastendruck ist noch nichts zu sehen -- dann sagt eine Zeile, dass etwas passiert
+			// on the first keystroke there is nothing to see yet -- then a line says that something is happening
 			if (quick.panel.hidden) {
 				quick.panel.innerHTML = '';
 				var wait = document.createElement('div');
@@ -1020,8 +1020,8 @@
 	}
 
 	function highlightQuick(position) {
-		// die Markierung sitzt auf dem ganzen Abschnitt, nicht auf dem Link darin: das Dreieck steht neben dem Link,
-		// und markierte man nur ihn, blieben Zeile und Dreieck unterschiedlich hinterlegt
+		// the marking sits on the whole section, not on the link inside it: the triangle stands beside the link, and
+		// marking only the link would leave the line and the triangle differently shaded
 		var entries = quickEntries().map(function (entry) {
 			return entry.closest('.knowwe-quicksearch-section') || entry;
 		});

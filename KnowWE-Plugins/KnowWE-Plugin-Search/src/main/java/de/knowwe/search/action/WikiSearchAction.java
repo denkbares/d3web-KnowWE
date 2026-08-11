@@ -137,11 +137,11 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("tookMs", results.tookMs());
 		answer.put("relaxed", results.relaxed());
 		answer.put("unmatched", new JSONArray(results.unmatched()));
-		// solange der Anhangs-Durchlauf noch laeuft, findet der Filter dafuer noch nicht alles -- das soll die
-		// Oberflaeche sagen duerfen, statt eine leere Liste als Ergebnis auszugeben
+		// while the attachment pass is still running, the filter for them does not find everything yet -- the
+		// interface may say so, rather than presenting an empty list as the answer
 		answer.put("attachmentsIndexed", service.isAttachmentsIndexed());
 		answer.put("attachmentsIndexing", service.isAttachmentsIndexing());
-		// mit einer oder keiner Gruppierung gibt es nichts zu waehlen -- dann soll der Filter dafuer gar nicht erscheinen
+		// with one grouping or none there is nothing to choose -- then the filter for it should not appear at all
 		// Offering to create a page only makes sense while there is none of that name. Asked of the article manager
 		// rather than of the index: a page created a second ago is not indexed yet, and offering to create it again
 		// would be the one answer that is certainly wrong.
@@ -207,7 +207,7 @@ public class WikiSearchAction extends AbstractAction {
 			return json;
 		}
 		String rendering = renderingArticle(hit, context);
-		// beides dorthin, wo der Inhalt tatsaechlich zu sehen ist -- der Abschnittsanker des Anhangs gilt dort nicht
+		// both of them to where the content is actually visible -- the attachment's own section anchor does not hold there
 		json.put("pageUrl", rendering != null ? rendering : "Wiki.jsp?page=" + hit.title().replace(" ", "+"));
 		if (rendering != null) json.put("url", rendering);
 		// only for the hits actually shown: rendering costs a wiki-syntax pass each
