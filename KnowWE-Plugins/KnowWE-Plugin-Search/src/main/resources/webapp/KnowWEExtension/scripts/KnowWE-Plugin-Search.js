@@ -249,7 +249,9 @@
 		// only now are the previews laid out and can be measured
 		measureSections(nodes.results);
 
-		if (answer.createPage) nodes.more.appendChild(createPageOffer(answer.createPage));
+		// above the hits, not below them: whoever searched for a page name that does not exist wants to read this
+		// first. It scrolls away with the rest, so it is out of the way once the reader is in the list.
+		if (answer.createPage) nodes.results.insertBefore(createPageOffer(answer.createPage), nodes.results.firstChild);
 		if (answer.hasMore) watchForMore();
 	}
 
@@ -584,6 +586,7 @@
 	 * the class tells the styling to fade at the top as well, so it stays visible that something is above.
 	 */
 	function measureSections(root) {
+		loadAsynchronousParts(root);
 		root.querySelectorAll('.knowwe-search-preview').forEach(pruneEmptyParagraphs);
 		root.querySelectorAll('.knowwe-search-preview').forEach(pruneTables);
 		remeasure(root, '.knowwe-search-preview');
@@ -591,6 +594,22 @@
 		root.querySelectorAll('.knowwe-search-section').forEach(function (wrapper) {
 			if (!wrapper.firstChild.childNodes.length) addGrowToggle(wrapper.growable, wrapper.firstChild);
 		});
+	}
+
+	/*
+	 * A preview can carry a part the wiki renders asynchronously -- a visualization, a wiring diagram. On a page, those
+	 * placeholders are picked up when the page loads; a result arrives long after that, so nothing would ever replace
+	 * them and the spinner would turn for good.
+	 *
+	 * Handing them over rather than loading them here, because the wiki fetches them only once they are on screen: what
+	 * sits behind one can cost a graph layout, and a page of ten results must not order ten of those for content nobody
+	 * has scrolled to yet.
+	 */
+	function loadAsynchronousParts(root) {
+		if (window.KNOWWE && KNOWWE.core && KNOWWE.core.rerendercontent
+				&& KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible) {
+			KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible(root);
+		}
 	}
 
 	function revealFirstMatch(container) {
@@ -852,6 +871,7 @@
 	}
 
 	function measureQuickSections(root) {
+		loadAsynchronousParts(root);
 		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(pruneEmptyParagraphs);
 		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(pruneTables);
 		remeasure(root, '.knowwe-quicksearch-preview');
@@ -955,14 +975,18 @@
 		list.className = 'knowwe-quicksearch-list';
 
 		if (!quick.hits.length) {
+			if (answer.createPage) quick.panel.appendChild(createPageOffer(answer.createPage));
 			var empty = document.createElement('div');
 			empty.className = 'knowwe-quicksearch-empty';
 			empty.textContent = answer.indexing ? 'Building the index …' : 'No results';
 			quick.panel.appendChild(empty);
-			if (answer.createPage) quick.panel.appendChild(createPageOffer(answer.createPage));
 			showQuick();
 			return;
 		}
+
+		// at the top, inside the scrolling part: it is the answer to a page name that does not exist, and it gets out
+		// of the way as soon as the reader scrolls into the hits
+		if (answer.createPage) list.appendChild(createPageOffer(answer.createPage));
 
 		// one block per page: its name once as a heading, the matching sections underneath it
 		var groups = quick.hits;

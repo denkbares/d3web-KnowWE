@@ -101,9 +101,10 @@ public class SearchResultRenderer {
 				renderChunk(section, user, result);
 			}
 			String html = toHtml(result, user);
-			if (!hasVisibleText(html)) html = markupContents(section, user);
+			// a placeholder has nothing to read yet and still is not empty -- its content arrives when it is on screen
+			if (!hasVisibleText(html) && !isAsynchronous(html)) html = markupContents(section, user);
 			// an empty frame says less than the indexed text, and it looks like something failed to load
-			if (!hasVisibleText(html)) return null;
+			if (!hasVisibleText(html) && !isAsynchronous(html)) return null;
 			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
 			return new Rendered(html, resolution.stale());
 		}
@@ -224,6 +225,21 @@ public class SearchResultRenderer {
 		raw = TABLE_OF_CONTENTS.matcher(raw).replaceAll("");
 		String markup = Environment.getInstance().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
 		return RenderResult.unmask(markup, user);
+	}
+
+	/**
+	 * A placeholder of {@code AsynchronousRenderer} is left in place: it carries the section id, and the browser fetches
+	 * the real rendering for it once the preview is actually on screen -- see
+	 * {@code KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible}, which the result list calls for every preview it
+	 * inserts. Without that call nothing would ever replace it, because the page's own pass over the placeholders
+	 * happened long before these previews existed.
+	 * <p>
+	 * That is also why they must not be loaded eagerly here: what sits behind such a placeholder can cost a graph layout
+	 * ({@code %%WiringViewer}) or a query, and a page of ten results would order ten of them for content the reader may
+	 * never scroll to.
+	 */
+	private static boolean isAsynchronous(String html) {
+		return html.contains("asynchronRenderer");
 	}
 
 	/**
