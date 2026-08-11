@@ -156,6 +156,10 @@
 	min-width: 0;
 }
 
+.knowwe-search-body .border {
+	border: none;
+}
+
 .knowwe-search-icon {
 	display: flex;
 	justify-content: center;
@@ -217,6 +221,10 @@
 	position: relative;
 	float: right;
 	margin: 0.4em 0 0 1em;
+}
+
+.knowwe-quicksearch .border {
+	border: none;
 }
 
 .knowwe-quicksearch-input {
