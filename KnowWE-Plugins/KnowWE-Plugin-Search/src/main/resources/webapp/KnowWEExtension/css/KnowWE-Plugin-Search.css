@@ -357,6 +357,37 @@
  * its own. A preview is a fragment, so the sentence following a table can end up as a bare text node -- and next to an
  * inline-block it then reads beside the table instead of below it. As a block, the order is the article's again.
  */
+/*
+ * A paginated table shows its rows here, not its controls.
+ *
+ * "Show n entries", the page arrows, the filter and the column buttons all act on a table the reader is only looking at:
+ * a preview is capped in height and keeps the rows that matched, so there is nothing to page through or sort. Every such
+ * table brought three of those bars, which took more room than the rows they framed.
+ */
+.knowwe-search-preview .knowwe-paginationToolbar,
+.knowwe-quicksearch-preview .knowwe-paginationToolbar {
+	display: none;
+}
+
+/*
+ * And no way to download what is being previewed.
+ *
+ * Offering the export of a table from a search result is an answer to a question nobody asked there; the reader wants to
+ * see whether this is the right page. The whole control goes, not just its icon, or an empty clickable box would be left
+ * behind -- hence the :has(), which is also why the icon classes are listed rather than a single one: the wiki spells a
+ * download as fa-download, fa-arrow-down-to-line or fa-arrow-down-to-bracket, depending on where it is used.
+ */
+.knowwe-search-preview :is(a, button):has(> i[class*="fa-download"], > i[class*="fa-arrow-down-to"]),
+.knowwe-quicksearch-preview :is(a, button):has(> i[class*="fa-download"], > i[class*="fa-arrow-down-to"]),
+.knowwe-search-preview :is(a, button)[title*="ownload"],
+.knowwe-quicksearch-preview :is(a, button)[title*="ownload"],
+.knowwe-search-preview :is(a, button)[class*="download"],
+.knowwe-quicksearch-preview :is(a, button)[class*="download"],
+.knowwe-search-preview :is(a, button)[class*="export"],
+.knowwe-quicksearch-preview :is(a, button)[class*="export"] {
+	display: none;
+}
+
 .knowwe-search-preview .tablePopupParent,
 .knowwe-quicksearch-preview .tablePopupParent {
 	display: block;
