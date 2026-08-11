@@ -60,6 +60,13 @@
 .knowwe-search-filter input {
 	width: 0.95em;
 	height: 0.95em;
+	/*
+	 * "middle" puts the box on half the x-height, which leaves its centre a little over a pixel below the centre of the
+	 * text beside it. In a row standing on its own under the search box that shows; lifted by that much, box and label
+	 * are centred on the same line.
+	 */
+	position: relative;
+	top: -0.085em;
 	margin: 0 0.25em 0 0;
 	vertical-align: middle;
 	cursor: pointer;
