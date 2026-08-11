@@ -160,6 +160,16 @@ public class SearchResultRenderer {
 			copiedUpTo = matcher.end();
 
 			joined.append(tagEnd);
+			// A block element already starts on its own line. Adding a break between two of them -- </div><div>, one
+			// table row and the next -- produces a blank line, and since the renderer is handed the whole block there
+			// are many such boundaries. Only inline neighbours need the break.
+			boolean betweenBlocks = isBlock(lastTagName(maskedHtml, matcher.start(), tagStart))
+									|| isBlock(nextTagName(maskedHtml, copiedUpTo, tagStart));
+			if (betweenBlocks) {
+				lineLength += tagEnd.length() + tagStart.length();
+				joined.append(tagStart);
+				continue;
+			}
 			if (lineLength < MAX_LINE_LENGTH) {
 				// A blank line separates one rule from the next and has to stay visible, so it becomes two breaks.
 				joined.append(lineBreak);
@@ -177,6 +187,35 @@ public class SearchResultRenderer {
 		}
 		joined.append(maskedHtml, copiedUpTo, maskedHtml.length());
 		return joined.toString();
+	}
+
+	/** Elements that occupy a line of their own, so a break beside them shows as an empty line. */
+	private static final java.util.Set<String> BLOCK_ELEMENTS = java.util.Set.of(
+			"div", "p", "table", "thead", "tbody", "tfoot", "tr", "td", "th", "ul", "ol", "li", "dl", "dt", "dd",
+			"h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote", "form", "fieldset", "section", "article", "hr");
+
+	private static boolean isBlock(@Nullable String tagName) {
+		return tagName != null && BLOCK_ELEMENTS.contains(tagName);
+	}
+
+	/** The name of the tag that ends right before {@code end}, or null when that is not a tag at all. */
+	private static @Nullable String lastTagName(String masked, int end, String tagStart) {
+		int open = masked.lastIndexOf(tagStart, end);
+		return open < 0 ? null : tagNameAt(masked, open + tagStart.length());
+	}
+
+	/** The name of the tag that starts at {@code from}, where {@code from} sits behind a masked "&lt;". */
+	private static @Nullable String nextTagName(String masked, int from, String tagStart) {
+		int open = masked.indexOf(tagStart, Math.max(0, from - tagStart.length()));
+		return open < 0 ? null : tagNameAt(masked, open + tagStart.length());
+	}
+
+	private static @Nullable String tagNameAt(String masked, int at) {
+		int end = at;
+		if (end < masked.length() && masked.charAt(end) == '/') end++;
+		int start = end;
+		while (end < masked.length() && (Character.isLetterOrDigit(masked.charAt(end)))) end++;
+		return end == start ? null : masked.substring(start, end).toLowerCase(java.util.Locale.ROOT);
 	}
 
 	/**

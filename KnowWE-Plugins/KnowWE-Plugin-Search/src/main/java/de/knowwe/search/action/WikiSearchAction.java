@@ -105,19 +105,35 @@ public class WikiSearchAction extends AbstractAction {
 		int offset = parseInt(context.getParameter(PARAM_OFFSET), 0);
 		int limit = Math.min(parseInt(context.getParameter(PARAM_LIMIT), SearchRequest.DEFAULT_LIMIT), MAX_LIMIT);
 
-		// grouping needs a window rather than just this page's worth of hits, see SCAN_FACTOR
-		SearchRequest request = new SearchRequest(
-				context.getParameter(PARAM_QUERY, ""),
-				Boolean.parseBoolean(context.getParameter(PARAM_PARTIAL, "false")),
-				0, Math.min((offset + limit) * SCAN_FACTOR, MAX_SCAN),
-				Boolean.parseBoolean(context.getParameter(PARAM_TITLE_ONLY, "false")),
-				Boolean.parseBoolean(context.getParameter(PARAM_ATTACHMENTS_ONLY, "false")));
+		String query = context.getParameter(PARAM_QUERY, "");
+		boolean partial = Boolean.parseBoolean(context.getParameter(PARAM_PARTIAL, "false"));
+		boolean titleOnly = Boolean.parseBoolean(context.getParameter(PARAM_TITLE_ONLY, "false"));
+		boolean attachmentsOnly = Boolean.parseBoolean(context.getParameter(PARAM_ATTACHMENTS_ONLY, "false"));
 
-		SearchResults results = searcher.search(request);
+		// Fetch, drop what this reader may not see, and fetch deeper while that leaves the page short -- otherwise a
+		// page of ten arrives holding three. Grouping needs a window rather than this page's worth anyway, see
+		// SCAN_FACTOR.
+		int needed = offset + limit;
+		int scan = Math.min(needed * SCAN_FACTOR, MAX_SCAN);
+		SearchResults results;
+		List<SearchHit> readable;
+		boolean exhausted;
+		while (true) {
+			results = searcher.search(new SearchRequest(query, partial, 0, scan, titleOnly, attachmentsOnly));
+			readable = readableOf(results, context);
+			// fewer hits back than asked for means Lucene had nothing more to give
+			exhausted = results.hits().size() < scan;
+			if (readable.size() >= needed || exhausted || scan >= MAX_SCAN) break;
+			scan = Math.min(scan * 4, MAX_SCAN);
+		}
+		int hidden = results.hits().size() - readable.size();
 
-		answer.put("query", request.query());
-		answer.put("total", results.total());
-		answer.put("exact", results.exact());
+		answer.put("query", query);
+		// While nothing was hidden, Lucene's count is the truth. Once something was, it is not -- it counted pages this
+		// reader never gets to see. Then we say how many we know we may show, and mark it as a lower bound.
+		answer.put("total", hidden == 0 ? results.total() : readable.size());
+		answer.put("hidden", hidden);
+		answer.put("exact", hidden == 0 ? results.exact() : exhausted);
 		answer.put("tookMs", results.tookMs());
 		answer.put("relaxed", results.relaxed());
 		answer.put("unmatched", new JSONArray(results.unmatched()));
@@ -129,13 +145,6 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("variants",
 				Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class).size() > 1);
 
-		List<SearchHit> readable = new ArrayList<>();
-		for (SearchHit hit : results.hits()) {
-			Article article = context.getArticleManager().getArticle(hit.title());
-			// a hit whose page vanished or may not be read must not leave the server
-			if (article == null || !KnowWEUtils.canView(article, context)) continue;
-			readable.add(hit);
-		}
 		// The quick search shows everything and only sorts; the search page has a switch and then really leaves it out.
 		boolean otherVariants = !"false".equals(context.getParameter(PARAM_OTHER_VARIANTS, "true"));
 		List<HitGrouping.Group> grouped = HitGrouping.group(readable);
@@ -269,6 +278,23 @@ public class WikiSearchAction extends AbstractAction {
 		ours.addAll(others);
 		ours.addAll(groups.subList(asked, groups.size()));
 		return ours;
+	}
+
+	/**
+	 * The hits this reader may see.
+	 * <p>
+	 * The permission is decided here and deliberately not in the index: the wiki knows who may read what, and it knows
+	 * it now rather than at the time the page was indexed.
+	 */
+	private static List<SearchHit> readableOf(SearchResults results, UserActionContext context) {
+		List<SearchHit> readable = new ArrayList<>();
+		for (SearchHit hit : results.hits()) {
+			Article article = context.getArticleManager().getArticle(hit.title());
+			// a hit whose page vanished or may not be read must not leave the server
+			if (article == null || !KnowWEUtils.canView(article, context)) continue;
+			readable.add(hit);
+		}
+		return readable;
 	}
 
 	private static List<HitGrouping.Group> onlyDefaultCompiler(List<HitGrouping.Group> groups,
