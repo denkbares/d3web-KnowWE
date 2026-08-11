@@ -112,6 +112,51 @@ public class KdomTextExtractorTest {
 		assertEquals("first line\nsecond line", text.body());
 	}
 
+	@Test
+	public void aPluginCallIsMarkupAndNotProse() {
+		// left in the body, this made every page with a table of contents a hit for "table", and the snippet of such a
+		// page was the call itself -- source code where the reader expects text
+		ExtractedText text = extractOnly("Plugin", """
+				[{TableOfContents }]
+				Real text about connectors.
+				""");
+
+		assertEquals("Real text about connectors.", text.body());
+		assertTrue("the plugin has to stay findable", text.markupTokens().contains("TableOfContents"));
+	}
+
+	@Test
+	public void quotedParametersOfAPluginCallStayInTheBody() {
+		// a caption or a title is what the plugin puts on the page, so it is text a reader can search for
+		ExtractedText text = extractOnly("Plugin Params", """
+				[{Image src='wiring.png' caption='Wiring of the connector'}]
+				""");
+
+		assertTrue("the caption is visible on the page: " + text.body(),
+				text.body().contains("Wiring of the connector"));
+		assertFalse("the call itself is not text", text.body().contains("[{"));
+		assertTrue(text.markupTokens().contains("Image"));
+	}
+
+	@Test
+	public void anAccessRuleIsNotContent() {
+		ExtractedText text = extractOnly("Acl", """
+				[{ALLOW view Authenticated}]
+				The page itself.
+				""");
+
+		assertEquals("The page itself.", text.body());
+	}
+
+	@Test
+	public void aChunkOfNothingButAPluginCallHasNoBody() {
+		// SectionDocumentBuilder drops such a chunk, see thereIsNoDocumentForAChunkWithoutReadableText: a hit on it
+		// could show nothing at all
+		ExtractedText text = extractOnly("Only Plugin", "[{TableOfContents}]\n");
+
+		assertTrue("body: " + text.body(), text.body().isBlank());
+	}
+
 	/** Extracts the single chunk of an article that has exactly one. */
 	private ExtractedText extractOnly(String title, String content) {
 		List<IndexChunk> chunks = chunk(title, content);

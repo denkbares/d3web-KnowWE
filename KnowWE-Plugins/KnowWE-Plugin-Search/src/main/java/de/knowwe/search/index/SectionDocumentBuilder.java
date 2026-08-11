@@ -89,6 +89,10 @@ public class SectionDocumentBuilder {
 			ExtractedText text = extractor.extract(chunk.sections());
 			// a heading is worth a document for its title alone, anything else needs content
 			if (text.isEmpty() && chunk.heading() == null) continue;
+			// A markup block stays findable by its name even when it carries no text -- %%Question with nothing in it is
+			// still a question block. Running text is not: a chunk that is nothing but a plugin call has a markup token
+			// and no readable text, so it would answer a search with a hit that cannot show anything at all.
+			if (text.body().isBlank() && chunk.heading() == null && chunk.kind() != IndexChunk.Kind.MARKUP) continue;
 			documents.add(build(title, chunk, text, lastModified));
 		}
 		return documents;

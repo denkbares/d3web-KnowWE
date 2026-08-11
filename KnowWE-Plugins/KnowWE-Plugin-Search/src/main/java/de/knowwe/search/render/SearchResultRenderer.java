@@ -40,6 +40,8 @@ import de.knowwe.core.preview.PreviewManager;
 import de.knowwe.core.preview.PreviewRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.search.index.ArticleChunker;
 import de.knowwe.search.index.IndexChunk;
 import de.knowwe.search.index.SectionAnchor;
@@ -99,6 +101,9 @@ public class SearchResultRenderer {
 				renderChunk(section, user, result);
 			}
 			String html = toHtml(result, user);
+			if (!hasVisibleText(html)) html = markupContents(section, user);
+			// an empty frame says less than the indexed text, and it looks like something failed to load
+			if (!hasVisibleText(html)) return null;
 			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
 			return new Rendered(html, resolution.stale());
 		}
@@ -127,6 +132,43 @@ public class SearchResultRenderer {
 		if (previewSection == null) return null;
 		return PreviewManager.getInstance().getPreviewRenderer(previewSection);
 	}
+
+	/**
+	 * What a markup block has to say when its preview renders nothing: its own content and annotations.
+	 * <p>
+	 * {@code DefaultMarkupPreviewRenderer} shows the sub sections a markup registered as worth previewing, and a markup
+	 * that registered none renders an empty frame -- measured on the local wiki for footnote and "related pages" blocks,
+	 * an empty {@code markupAnnotations} div and nothing else. The same is true of every markup that draws itself
+	 * asynchronously: {@code %%WiringViewer} paints a spinner on the page and the wiring diagram arrives from a separate
+	 * action, which no result list should wait for -- but its content, the TSM ids and regular expressions that made it
+	 * match, is right there in the block.
+	 * <p>
+	 * Note that the preview path never invokes the markup's own renderer anyway: {@code DefaultMarkupPreviewRenderer}
+	 * renders through a plain {@link DefaultMarkupRenderer}, so a spinner cannot reach a preview in the first place.
+	 *
+	 * @return the rendered contents and annotations, or an empty string when the hit is not in a markup block
+	 */
+	private static String markupContents(Section<?> section, UserContext user) {
+		Section<DefaultMarkupType> markup = section.get() instanceof DefaultMarkupType
+				? Sections.cast(section, DefaultMarkupType.class)
+				: Sections.ancestor(section, DefaultMarkupType.class);
+		if (markup == null) return "";
+		RenderResult result = new RenderResult(user);
+		MARKUP_RENDERER.renderContentsAndAnnotations(markup, user, result);
+		return toHtml(result, user);
+	}
+
+	/**
+	 * Whether anything would be readable, rather than whether anything was produced. Anchors, empty divs and the frame
+	 * of a markup are all output, and all of them are invisible.
+	 */
+	private static boolean hasVisibleText(String html) {
+		return !TAGS.matcher(html).replaceAll("").replace("&nbsp;", " ").isBlank();
+	}
+
+	private static final Pattern TAGS = Pattern.compile("<[^>]*>");
+
+	private static final DefaultMarkupRenderer MARKUP_RENDERER = new DefaultMarkupRenderer();
 
 	/**
 	 * Renders the piece of the article the hit stands for, section by section, the way the article renders it.

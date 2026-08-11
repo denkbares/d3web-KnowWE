@@ -177,6 +177,31 @@ public class SectionDocumentBuilderTest {
 				hit.get(SearchFields.SECTION_PATH).matches("\\d+(\\.\\d+)*"));
 	}
 
+	@Test
+	public void thereIsNoDocumentForAChunkWithoutReadableText() {
+		// a page opening with a plugin call and nothing else: the call is markup, so the chunk keeps a markup token but
+		// no text. Indexed, it would answer a search with a hit that has nothing to show -- no preview, no snippet.
+		List<Document> documents = builder.build(register("Plugin Only", """
+				[{TableOfContents}]
+
+				!! Real Heading
+				real text
+				"""));
+
+		assertEquals(List.of("Plugin Only › Real Heading"), breadcrumbs(documents));
+	}
+
+	@Test
+	public void anEmptyMarkupBlockStaysFindableByItsName() {
+		// the counter case: a block carries meaning through its name alone
+		List<Document> documents = builder.build(register("Empty Markup", """
+				%%Question
+				%
+				"""));
+
+		assertEquals(1, documents.size());
+	}
+
 	private void index(String title, String content) throws IOException {
 		writer.addDocuments(builder.build(register(title, content)));
 	}

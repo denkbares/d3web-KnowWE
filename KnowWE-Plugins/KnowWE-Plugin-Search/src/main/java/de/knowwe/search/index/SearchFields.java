@@ -34,7 +34,7 @@ public final class SearchFields {
 	 * Bump whenever fields, their types or the analyzers change. The index directory carries this, and it is written
 	 * into the commit user data, so a mismatch forces a rebuild instead of returning quietly wrong results.
 	 */
-	public static final String SCHEMA_VERSION = "v3";
+	public static final String SCHEMA_VERSION = "v4";
 
 	/**
 	 * Lower cased page title. This is the <b>update and delete key</b>: replacing a page means replacing all of its

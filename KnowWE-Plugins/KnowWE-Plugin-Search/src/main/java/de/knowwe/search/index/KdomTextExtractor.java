@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -55,7 +57,9 @@ public class KdomTextExtractor {
 		for (Section<?> section : sections) {
 			visit(section, body, markupTokens);
 		}
-		return new ExtractedText(normalize(body), Set.copyOf(markupTokens));
+		// on the assembled text, not per section: a plugin call can be spread over several leaves of the KDOM --
+		// "[{KnowWEPlugin", "renamingtool", "}]" -- and then no single leaf holds enough of it to be recognised
+		return new ExtractedText(normalize(withoutPluginCalls(body.toString(), markupTokens)), Set.copyOf(markupTokens));
 	}
 
 	private void visit(Section<?> section, StringBuilder body, Set<String> markupTokens) {
@@ -100,10 +104,44 @@ public class KdomTextExtractor {
 	}
 
 	/**
+	 * A JSPWiki plugin call is markup, not prose, and gets the same treatment as a {@code %%} block: its name becomes a
+	 * low weighted markup token, the call itself does not become body text.
+	 * <p>
+	 * Left in the body, {@code [{TableOfContents}]} made every page carrying one a hit for "table", and the snippet of
+	 * such a page was the call itself -- the reader saw source code where the text should be. What a plugin call does
+	 * show on the page is its quoted parameters, a caption or a title, so those stay.
+	 * <p>
+	 * {@code [{ALLOW view ...}]} disappears with the rest, which is the point: access rules are not content.
+	 */
+	private static String withoutPluginCalls(String text, Set<String> markupTokens) {
+		Matcher matcher = PLUGIN_CALL.matcher(text);
+		StringBuilder cleaned = new StringBuilder(text.length());
+		int copiedUpTo = 0;
+		while (matcher.find()) {
+			cleaned.append(text, copiedUpTo, matcher.start());
+			copiedUpTo = matcher.end();
+			markupTokens.add(matcher.group(1));
+			// the parameter values a reader gets to see, for example the caption of an image
+			Matcher quoted = QUOTED_VALUE.matcher(matcher.group(2));
+			while (quoted.find()) {
+				cleaned.append(quoted.group(1) == null ? quoted.group(2) : quoted.group(1)).append(' ');
+			}
+		}
+		cleaned.append(text, copiedUpTo, text.length());
+		return cleaned.toString();
+	}
+
+	/** {@code [{Name params}]}, including the {@code INSERT} spelling and variables such as {@code [{$pagename}]}. */
+	private static final Pattern PLUGIN_CALL =
+			Pattern.compile("\\[\\{\\s*(?:INSERT\\s+)?([$\\w.]+)([^}]*)}]", Pattern.CASE_INSENSITIVE);
+
+	private static final Pattern QUOTED_VALUE = Pattern.compile("'([^']*)'|\"([^\"]*)\"");
+
+	/**
 	 * Collapses the whitespace that the line by line collection leaves behind, so snippets do not start with blank
 	 * lines and term positions stay meaningful.
 	 */
-	private static String normalize(StringBuilder body) {
-		return body.toString().replaceAll("[ \\t]+", " ").replaceAll("\\s*\\n\\s*", "\n").trim();
+	private static String normalize(String body) {
+		return body.replaceAll("[ \\t]+", " ").replaceAll("\\s*\\n\\s*", "\n").trim();
 	}
 }
