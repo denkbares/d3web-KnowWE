@@ -149,7 +149,46 @@
 		return offer;
 	}
 
+	/*
+	 * The filters are remembered per reader and per wiki, and the two surfaces remember them separately: what one wants
+	 * from a dropdown while typing is not what one wants from the search page, so a filter set in one must not silently
+	 * apply in the other.
+	 *
+	 * A cookie on the wiki's own path -- several wikis run in one Tomcat, and their settings have no business mixing.
+	 * That makes it per browser, which is not quite the same as per account: it does not follow the reader to another
+	 * machine. Storing it server side would, and would cost a round trip and a place to put it.
+	 */
+	var FILTER_COOKIE = { page: 'knowwe.search.filters', quick: 'knowwe.quicksearch.filters' };
+
+	function storedFilters(scope) {
+		var stored = {};
+		try {
+			var raw = window.jq$ && jq$.cookie ? jq$.cookie(FILTER_COOKIE[scope]) : null;
+			if (raw) stored = JSON.parse(raw);
+		}
+		catch (ignored) {
+			stored = {}; // a cookie from an older shape is not worth a broken search box
+		}
+		var values = {};
+		FILTERS.forEach(function (filter) {
+			values[filter.name] = typeof stored[filter.name] === 'boolean' ? stored[filter.name] : !!filter.on;
+		});
+		return values;
+	}
+
+	function storeFilters(scope, values) {
+		if (!(window.jq$ && jq$.cookie)) return;
+		jq$.cookie(FILTER_COOKIE[scope], JSON.stringify(values), { path: wikiPath(), expires: 365 });
+	}
+
+	/** The wiki's context path, so the setting holds on every page of this wiki and on no other. */
+	function wikiPath() {
+		var first = location.pathname.split('/')[1];
+		return first ? '/' + first : '/';
+	}
+
 	function buildFilters() {
+		var remembered = storedFilters('page');
 		FILTERS.forEach(function (filter) {
 			var label = document.createElement('label');
 			label.className = 'knowwe-search-filter tooltipster';
@@ -157,9 +196,10 @@
 
 			var box = document.createElement('input');
 			box.type = 'checkbox';
-			box.checked = !!filter.on;
+			box.checked = !!remembered[filter.name];
 			box.dataset.filter = filter.name;
 			box.addEventListener('change', function () {
+				storeFilters('page', filterValues());
 				run(state.query, 0, false);
 			});
 			label.appendChild(box);
@@ -768,15 +808,7 @@
 	 * the wiki as a whole -- with one variant or none, that filter is not shown at all.
 	 */
 	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '',
-		filters: quickFilterDefaults(), variants: true };
-
-	function quickFilterDefaults() {
-		var values = {};
-		FILTERS.forEach(function (filter) {
-			values[filter.name] = !!filter.on;
-		});
-		return values;
-	}
+		filters: storedFilters('quick'), variants: true, settingsOpen: false };
 
 	/** What the dropdown asks for: a filter it does not show must not narrow anything down. */
 	function quickFilterValues() {
@@ -806,6 +838,7 @@
 			label.addEventListener('mousedown', keepFocus);
 			box.addEventListener('change', function () {
 				quick.filters[filter.name] = box.checked;
+				storeFilters('quick', quick.filters);
 				askQuick();
 			});
 			label.appendChild(box);
@@ -814,6 +847,44 @@
 		});
 		if (window.jq$ && jq$.fn.tooltipster) jq$(row).find('.tooltipster').tooltipster();
 		return row;
+	}
+
+	/*
+	 * The foot of the dropdown: the way to the search page on the left, the settings on the right.
+	 *
+	 * The filters used to sit here as a row of their own, which cost a line of the panel for something a reader touches
+	 * rarely. Behind a triangle they cost nothing until they are wanted, and whether they are open survives the next
+	 * keystroke -- the panel is rebuilt for every answer.
+	 *
+	 * @param main the element that fills the left side: the link to all results, or the line saying there are none
+	 */
+	function quickFooter(main) {
+		var foot = document.createElement('div');
+		foot.className = 'knowwe-quicksearch-foot';
+		foot.appendChild(main);
+
+		var toggle = document.createElement('button');
+		toggle.type = 'button';
+		toggle.className = 'knowwe-quicksearch-settings tooltipster';
+		toggle.title = 'What the quick search searches. Kept separately from the settings of the search page.';
+		toggle.textContent = 'Settings';
+		toggle.classList.toggle('is-open', quick.settingsOpen);
+		toggle.addEventListener('mousedown', keepFocus);
+		foot.appendChild(toggle);
+
+		var row = quickFilterRow();
+		row.hidden = !quick.settingsOpen;
+		toggle.addEventListener('click', function () {
+			quick.settingsOpen = !quick.settingsOpen;
+			row.hidden = !quick.settingsOpen;
+			toggle.classList.toggle('is-open', quick.settingsOpen);
+		});
+
+		var block = document.createDocumentFragment();
+		block.appendChild(foot);
+		block.appendChild(row);
+		if (window.jq$ && jq$.fn.tooltipster) jq$(foot).find('.tooltipster').tooltipster();
+		return block;
 	}
 
 	function initQuickSearch() {
@@ -1040,9 +1111,8 @@
 			var empty = document.createElement('div');
 			empty.className = 'knowwe-quicksearch-empty';
 			empty.textContent = answer.indexing ? 'Building the index …' : 'No results';
-			quick.panel.appendChild(empty);
 			// also without hits, and especially then: a filter may be the reason, and it has to be reachable to undo
-			quick.panel.appendChild(quickFilterRow());
+			quick.panel.appendChild(quickFooter(empty));
 			showQuick();
 			return;
 		}
@@ -1077,10 +1147,7 @@
 		// "on the search page", because below the limit the dropdown already shows them all and "show all"
 		// would promise nothing new
 		all.textContent = 'Show all ' + answer.total + (answer.exact ? '' : '+') + ' results on the search page';
-		quick.panel.appendChild(all);
-		// last row, below the way to the search page: the same three filters as there, so a reader who needs one does
-		// not have to leave the dropdown for it
-		quick.panel.appendChild(quickFilterRow());
+		quick.panel.appendChild(quickFooter(all));
 
 		showQuick();
 		measureQuickSections(quick.panel);

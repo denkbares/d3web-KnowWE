@@ -294,20 +294,74 @@
 }
 
 /*
- * The filter row of the dropdown, the same three as under the search box.
+ * The foot of the dropdown: the way to the search page on the left, the settings on the right.
  *
- * Metrics of the row above it, so the foot of the panel reads as one block. The labels have their form styling taken
- * off: the template makes every label bold and gives it a bottom margin for the field beneath it, and there is none.
+ * The two rows above it carry the border, so the foot needs none of its own -- and the link keeps the full width it had
+ * as a block, so the whole row still highlights on hover.
+ */
+.knowwe-quicksearch-foot {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-foot .knowwe-quicksearch-all,
+.knowwe-quicksearch-foot .knowwe-quicksearch-empty {
+	flex: 1 1 auto;
+	min-width: 0;
+	border-top: none;
+}
+
+/*
+ * A setting is not a result: quiet, on the right, and it says what it opens rather than showing it. The triangle turns
+ * the way it does on a folded hit, so the same gesture reads the same way everywhere in the panel.
+ */
+.knowwe-quicksearch-settings {
+	flex: 0 0 auto;
+	padding: 0.5em 0.8em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+	white-space: nowrap;
+	cursor: pointer;
+	background: none;
+	border: none;
+}
+
+.knowwe-quicksearch-settings::before {
+	content: "▸";
+	display: inline-block;
+	margin-right: 0.35em;
+	font-size: 0.85em;
+	transition: transform 0.1s ease-out;
+}
+
+.knowwe-quicksearch-settings.is-open::before {
+	transform: rotate(90deg);
+}
+
+.knowwe-quicksearch-settings:hover {
+	color: var(--text-color-primary);
+	background: var(--bg-color-secondary);
+}
+
+/*
+ * The filters themselves, the same three as under the search box, hidden until the settings are opened. Metrics of the
+ * row above, so the foot of the panel reads as one block. The labels have their form styling taken off: the template
+ * makes every label bold and gives it a bottom margin for the field beneath it, and there is none.
  */
 .knowwe-quicksearch-filters {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.9em;
 	align-items: center;
-	padding: 0.5em 0.8em;
+	padding: 0.2em 0.8em 0.6em;
 	font-size: 0.9em;
 	color: var(--text-color-secondary);
-	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-filters[hidden] {
+	display: none;
 }
 
 .knowwe-quicksearch-filter {
