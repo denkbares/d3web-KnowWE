@@ -123,7 +123,7 @@
 		var link = document.createElement('a');
 		link.className = 'knowwe-search-create-link';
 		link.href = 'Edit.jsp?page=' + encodeURIComponent(name);
-		link.textContent = "Create page '" + name + "'?";
+		link.textContent = "Create page '" + name + "'";
 		offer.appendChild(link);
 
 		if (current && current.content) {

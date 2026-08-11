@@ -79,7 +79,15 @@ public record SectionAnchor(@NotNull String title, @Nullable String sectionId, @
 	/** The fast path, but only when the section it finds really is the one that was indexed. */
 	private @Nullable Section<?> byId(Article article) {
 		if (sectionId == null || sectionId.isBlank()) return null;
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section;
+		try {
+			section = Sections.get(sectionId);
+		}
+		catch (RuntimeException e) {
+			// an id is read as a hexadecimal number, so anything else in the index -- a value from an older schema,
+			// a truncated field -- throws rather than answering null. One such id must not fail the whole search.
+			return null;
+		}
 		if (section == null || !Sections.isLive(section)) return null;
 		if (!section.getTitle().equalsIgnoreCase(title)) return null;
 		return section;

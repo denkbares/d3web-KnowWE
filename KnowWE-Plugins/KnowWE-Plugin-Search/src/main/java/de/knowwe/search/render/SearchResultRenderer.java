@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -38,6 +40,8 @@ import de.knowwe.core.preview.PreviewManager;
 import de.knowwe.core.preview.PreviewRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.search.index.ArticleChunker;
+import de.knowwe.search.index.IndexChunk;
 import de.knowwe.search.index.SectionAnchor;
 
 /**
@@ -66,6 +70,9 @@ public class SearchResultRenderer {
 	 */
 	private static final int MAX_LINE_LENGTH = 8000;
 
+	/** The same rule that cut the article into index documents, so a preview shows exactly what was indexed. */
+	private final ArticleChunker chunker = new ArticleChunker();
+
 	/**
 	 * @return the rendered section, or null when it cannot be rendered — the caller then falls back to the snippet
 	 */
@@ -82,13 +89,15 @@ public class SearchResultRenderer {
 		if (cached != null) return new Rendered(cached, resolution.stale());
 
 		try {
-			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
-			if (previewSection == null) previewSection = section;
-			PreviewRenderer renderer = PreviewManager.getInstance().getPreviewRenderer(previewSection);
-			if (renderer == null) return null;
-
 			RenderResult result = new RenderResult(user);
-			renderer.render(previewSection, everything(section), user, result);
+			PreviewRenderer renderer = previewRendererFor(section);
+			if (renderer != null) {
+				Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
+				renderer.render(previewSection == null ? section : previewSection, everything(section), user, result);
+			}
+			else {
+				renderChunk(section, user, result);
+			}
 			String html = toHtml(result, user);
 			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
 			return new Rendered(html, resolution.stale());
@@ -98,6 +107,54 @@ public class SearchResultRenderer {
 			LOGGER.warn("Could not render a preview for {}", anchor.title(), e);
 			return null;
 		}
+	}
+
+	/**
+	 * The renderer the wiki has for this hit, or null when the hit has to be rendered as a chunk of its own.
+	 * <p>
+	 * Two cases end up in {@link #renderChunk}. A hit before the first heading has no preview ancestor at all: the only
+	 * renderer registered above it is the one for the whole article, and that one only accepts the root section itself
+	 * (see {@code ArticlePreviewRenderer.matches}). And a hit that resolved all the way up to the root -- the last step
+	 * of the anchor cascade -- would render as the single link "Go to article", which says less than the beginning of
+	 * the article does.
+	 * <p>
+	 * Everything else keeps the wiki's own renderer: a heading brings its section along, a markup block renders as the
+	 * box it is on the page.
+	 */
+	private static @Nullable PreviewRenderer previewRendererFor(Section<?> section) {
+		if (section.get() instanceof RootType) return null;
+		Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
+		if (previewSection == null) return null;
+		return PreviewManager.getInstance().getPreviewRenderer(previewSection);
+	}
+
+	/**
+	 * Renders the piece of the article the hit stands for, section by section, the way the article renders it.
+	 * <p>
+	 * Which sections those are is not decided here: the chunker that cut the article into index documents is asked
+	 * again, and the chunk anchored at this section is the one that was indexed. Deriving the range a second time in
+	 * this class would let preview and index drift apart -- the preview would show text that never matched, or leave
+	 * out the text that did.
+	 * <p>
+	 * Chunking is a read only walk over the finished KDOM of a single article, and every preview is cached, so asking
+	 * again is cheaper than keeping a second copy of the rule.
+	 */
+	private void renderChunk(Section<?> section, UserContext user, RenderResult result) {
+		for (Section<?> content : chunkSections(section)) {
+			result.append(content, user);
+		}
+	}
+
+	private List<Section<?>> chunkSections(Section<?> section) {
+		Article article = section.getArticle();
+		if (article == null) return List.of(section);
+		List<IndexChunk> chunks = chunker.chunk(article);
+		for (IndexChunk chunk : chunks) {
+			if (chunk.anchor() == section) return chunk.sections();
+		}
+		// the anchor is the root section, or a section this chunker does not anchor at: the first chunk is the
+		// beginning of the article, which is the most useful thing left to show
+		return chunks.isEmpty() ? List.of(section) : chunks.get(0).sections();
 	}
 
 	/**
@@ -122,9 +179,19 @@ public class SearchResultRenderer {
 	 */
 	private static String toHtml(RenderResult result, UserContext user) {
 		String raw = result.toStringRaw().replaceAll("@!!!", "@\n!!!");
+		raw = TABLE_OF_CONTENTS.matcher(raw).replaceAll("");
 		String markup = Environment.getInstance().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
 		return RenderResult.unmask(markup, user);
 	}
+
+	/**
+	 * A table of contents is navigation for a whole page, and the wiki builds it for the page the <i>request</i> is
+	 * for, not for the page being previewed. A hit on a page that opens with {@code [{TableOfContents}]} therefore
+	 * showed the headings of whatever page the reader happened to be on -- content from somewhere else entirely, inside
+	 * a search result. A preview of a passage has no use for it either way.
+	 */
+	private static final Pattern TABLE_OF_CONTENTS =
+			Pattern.compile("\\[\\{\\s*(?:INSERT\\s+)?TableOfContents\\b[^}]*}]\\s*", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * Turns the newlines that sit between two already rendered tags into explicit breaks.

@@ -351,6 +351,16 @@
 	overflow: visible !important;
 }
 
+/*
+ * The wiki wraps every table in an inline-block, which is fine on a page where the text around it sits in paragraphs of
+ * its own. A preview is a fragment, so the sentence following a table can end up as a bare text node -- and next to an
+ * inline-block it then reads beside the table instead of below it. As a block, the order is the article's again.
+ */
+.knowwe-search-preview .tablePopupParent,
+.knowwe-quicksearch-preview .tablePopupParent {
+	display: block;
+}
+
 .knowwe-search-stale {
 	margin-top: 0.2em;
 	font-size: 0.8em;
@@ -725,7 +735,16 @@
 }
 
 .knowwe-search-create-link {
+	/*
+	 * A page name has no length limit, and a search string is a page name here. Left to grow, it pushed the checkbox
+	 * out of the row and the dropdown into a horizontal scrollbar, so the name gives way first and the offer to clone
+	 * stays where it is.
+	 */
+	min-width: 3em;
+	overflow: hidden;
 	color: var(--text-color-primary-link);
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	text-decoration: none;
 }
 
