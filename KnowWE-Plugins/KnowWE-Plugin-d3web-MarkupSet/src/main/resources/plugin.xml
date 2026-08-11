@@ -213,6 +213,17 @@
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="DescriptionMarkup">
+		<parameter id="class" value="de.knowwe.d3web.property.DescriptionMarkup" />
+		<parameter id="name" value="DescriptionMarkup" />
+		<parameter id="description"
+		           value="Markup to add Descriptions" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ResourceType">
 		<parameter id="class" value="de.knowwe.d3web.resource.ResourceType" />
 		<parameter id="name" value="Resource" />

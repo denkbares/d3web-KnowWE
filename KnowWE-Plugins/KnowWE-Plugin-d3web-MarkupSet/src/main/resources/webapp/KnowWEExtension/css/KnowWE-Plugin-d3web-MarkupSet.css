@@ -179,3 +179,47 @@ to make the distinction between border and underlying color easier */
 .CompositeCondition.conditionUnknown.hoverIntent {
 	border: 1px solid cornflowerblue;
 }
+
+/* -- Description Markup -- */
+
+.description-note,
+.description-caution,
+.description-cautionSevere {
+	padding: 12px;
+}
+
+.description-note {
+	color: #01579B;
+	background-color: #B3E5FC;
+}
+
+.description-caution {
+	color: #F57F17;
+	background-color: #FFF9C4;
+}
+
+.description-cautionSevere {
+	color: #B71C1C;
+	background-color: #FFCDD2;
+}
+
+.description-note > *:first-child:before {
+	content: "\f05a";
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
+	margin-right: 0.6em;
+}
+
+.description-caution > *:first-child:before {
+	content: "\f071";
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
+	margin-right: 0.6em;
+}
+
+.description-cautionSevere > *:first-child:before {
+	content: "\f071";
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
+	margin-right: 0.6em;
+}
