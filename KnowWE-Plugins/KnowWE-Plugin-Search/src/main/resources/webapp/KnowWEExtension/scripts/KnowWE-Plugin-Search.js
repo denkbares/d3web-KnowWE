@@ -606,10 +606,15 @@
 	 * has scrolled to yet.
 	 */
 	function loadAsynchronousParts(root) {
-		if (window.KNOWWE && KNOWWE.core && KNOWWE.core.rerendercontent
-				&& KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible) {
+		if (!window.KNOWWE) return;
+		if (KNOWWE.core && KNOWWE.core.rerendercontent && KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible) {
 			KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible(root);
 		}
+		// Not every markup that fills itself later goes through AsynchronousRenderer. %%WiringViewer, for one, draws a
+		// box of its own and has its plugin's script fetch the diagram -- and that script looks for its boxes when the
+		// page loads, which is long before a result exists. "afterRerender" is the signal the wiki already uses for
+		// "this part of the document is new", so whoever cares gets to hear about our previews too.
+		if (KNOWWE.helper && KNOWWE.helper.observer) KNOWWE.helper.observer.notify('afterRerender', root);
 	}
 
 	function revealFirstMatch(container) {
@@ -1011,11 +1016,10 @@
 		var all = document.createElement('a');
 		all.className = 'knowwe-quicksearch-all';
 		all.href = 'Search.jsp?query=' + encodeURIComponent(quick.query);
-		// "auf Suchseite", because below the limit the dropdown already shows them all and "alle anzeigen"
+		// "on the search page", because below the limit the dropdown already shows them all and "show all"
 		// would promise nothing new
 		all.textContent = 'Show all ' + answer.total + (answer.exact ? '' : '+') + ' results on the search page';
 		quick.panel.appendChild(all);
-		if (answer.createPage) quick.panel.appendChild(createPageOffer(answer.createPage));
 
 		showQuick();
 		measureQuickSections(quick.panel);

@@ -728,10 +728,10 @@
 	 */
 	align-items: center;
 	justify-content: center;
-	/* the same metrics as the line above it (.knowwe-quicksearch-all), so the two read as one footer */
+	/* the same metrics as the one line rows of the result list, and a line below it against the first hit */
 	padding: 0.5em 0.8em;
 	font-size: 0.9em;
-	border-top: 1px solid var(--bg-color-secondary-shade);
+	border-bottom: 1px solid var(--bg-color-secondary-shade);
 }
 
 .knowwe-search-create-link {
