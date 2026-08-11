@@ -47,14 +47,21 @@
 }
 
 .knowwe-search-filter {
+	/* the template styles every label for a form: bold, with room reserved for the field below it. This one is a switch
+	   in a line of its own, and the same three read plain in the dropdown */
+	margin: 0;
 	font-size: 0.9em;
+	font-weight: normal;
 	color: var(--text-color-secondary-shade);
 	white-space: nowrap;
 	cursor: help;
 }
 
 .knowwe-search-filter input {
-	margin-right: 0.15em;
+	width: 0.95em;
+	height: 0.95em;
+	margin: 0 0.25em 0 0;
+	vertical-align: middle;
 	cursor: pointer;
 }
 
