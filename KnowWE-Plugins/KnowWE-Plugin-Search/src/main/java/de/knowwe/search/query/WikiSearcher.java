@@ -145,7 +145,8 @@ public class WikiSearcher {
 	 */
 	private TopDocs closeTogetherFirst(IndexSearcher searcher, Query query, TopDocs topDocs,
 									   SearchRequest request, int window) throws IOException {
-		if (request.titleOnly() || topDocs.scoreDocs.length == 0) return topDocs;
+		// nothing to weigh in the text when the text is not being searched
+		if (!request.inContent() || topDocs.scoreDocs.length == 0) return topDocs;
 		Query near = queryBuilder.nearInBody(request);
 		if (near == null) return topDocs;
 		return QueryRescorer.rescore(searcher, topDocs, near, PROXIMITY_WEIGHT, window);

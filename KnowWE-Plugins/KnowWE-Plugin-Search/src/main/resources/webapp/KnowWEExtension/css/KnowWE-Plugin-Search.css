@@ -55,8 +55,18 @@
 .knowwe-search-settings {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 1.2em;
+	gap: 0.6em 1.2em;
 	align-items: center;
+}
+
+.knowwe-search-settings-caption {
+	font-size: 0.9em;
+	color: var(--text-color-secondary-shade);
+}
+
+/* the caption belongs to the segments, not to the switch behind them */
+.knowwe-search-settings-caption + .knowwe-search-scope {
+	margin-left: -0.8em;
 }
 
 .knowwe-search-scope {

@@ -21,7 +21,9 @@ package de.knowwe.search.action;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -66,9 +68,8 @@ public class WikiSearchAction extends AbstractAction {
 	public static final String PARAM_LIMIT = "limit";
 	/** The quick search switches previews off; a rendered section would not fit into a dropdown. */
 	public static final String PARAM_PREVIEW = "preview";
-	/** Search page filters. The quick search sends none of them and gets everything, ordered. */
-	public static final String PARAM_TITLE_ONLY = "titleOnly";
-	public static final String PARAM_ATTACHMENTS_ONLY = "attachmentsOnly";
+	/** Where to search, as a comma separated list of {@link SearchRequest.Scope}; empty means pages by name and text. */
+	public static final String PARAM_SCOPES = "scopes";
 	public static final String PARAM_OTHER_VARIANTS = "otherVariants";
 	/** Answers with the hits folded away under one page instead of a result list -- used when unfolding them. */
 	public static final String PARAM_EXPAND = "expand";
@@ -107,8 +108,7 @@ public class WikiSearchAction extends AbstractAction {
 
 		String query = context.getParameter(PARAM_QUERY, "");
 		boolean partial = Boolean.parseBoolean(context.getParameter(PARAM_PARTIAL, "false"));
-		boolean titleOnly = Boolean.parseBoolean(context.getParameter(PARAM_TITLE_ONLY, "false"));
-		boolean attachmentsOnly = Boolean.parseBoolean(context.getParameter(PARAM_ATTACHMENTS_ONLY, "false"));
+		Set<SearchRequest.Scope> scopes = scopes(context);
 
 		// Fetch, drop what this reader may not see, and fetch deeper while that leaves the page short -- otherwise a
 		// page of ten arrives holding three. Grouping needs a window rather than this page's worth anyway, see
@@ -119,7 +119,7 @@ public class WikiSearchAction extends AbstractAction {
 		List<SearchHit> readable;
 		boolean exhausted;
 		while (true) {
-			results = searcher.search(new SearchRequest(query, partial, 0, scan, titleOnly, attachmentsOnly));
+			results = searcher.search(new SearchRequest(query, partial, 0, scan, scopes));
 			readable = readableOf(results, context);
 			// fewer hits back than asked for means Lucene had nothing more to give
 			exhausted = results.hits().size() < scan;
@@ -192,6 +192,22 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("hits", hits);
 
 		write(context, answer);
+	}
+
+	/**
+	 * Where to search, as the interface asked. Anything unknown is left out rather than refused: an old page in a
+	 * browser tab should search the pages, not fail.
+	 */
+	private static Set<SearchRequest.Scope> scopes(UserActionContext context) {
+		String asked = context.getParameter(PARAM_SCOPES);
+		if (asked == null || asked.isBlank()) return SearchRequest.DEFAULT_SCOPES;
+		Set<SearchRequest.Scope> scopes = EnumSet.noneOf(SearchRequest.Scope.class);
+		for (String name : asked.split(",")) {
+			for (SearchRequest.Scope scope : SearchRequest.Scope.values()) {
+				if (scope.name().equalsIgnoreCase(name.trim())) scopes.add(scope);
+			}
+		}
+		return scopes.isEmpty() ? SearchRequest.DEFAULT_SCOPES : scopes;
 	}
 
 	private JSONObject toJson(SearchHit hit, boolean withPreview, UserActionContext context) {

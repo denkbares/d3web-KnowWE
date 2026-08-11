@@ -33,18 +33,18 @@
 	var BUSY_AFTER_MS = 300;
 
 	/*
-	 * What is being searched: one of three, never two of them.
+	 * Where to search: any combination of the three, names and content by default.
 	 *
-	 * These were two checkboxes, which said the wrong thing about them -- a reader could tick both, and that even did
-	 * something (attachments, searched by name only) that no label ever mentioned. One choice of three is what the
-	 * search actually offers.
+	 * These were two checkboxes that excluded each other in meaning but not in the interface -- a reader could tick
+	 * both, which meant something no label mentioned, while the useful combinations could not be said at all: the pages
+	 * together with the attachments, or the text without the names.
 	 *
 	 * The short words carry the row; the sentence a reader may need is in the tooltip.
 	 */
 	var SCOPES = [
-		{ name: 'content', label: 'Content', hint: 'Search the page names and everything on the pages.' },
-		{ name: 'names', label: 'Names', hint: 'Search the page names only, not what is on the pages.' },
-		{ name: 'attachments', label: 'Attachments', hint: 'Search the attachments instead of the pages themselves.' }
+		{ name: 'titles', label: 'Titles', on: true, hint: 'Search the page names, and the file names of attachments.' },
+		{ name: 'content', label: 'Content', on: true, hint: 'Search what is written on the pages: their text, their headings and their markup.' },
+		{ name: 'attachments', label: 'Attachments', hint: 'Search the attachments as well, or on their own.' }
 	];
 
 	/**
@@ -164,7 +164,10 @@
 	var SETTINGS_COOKIE = { page: 'knowwe.search.filters', quick: 'knowwe.quicksearch.filters' };
 
 	function defaultSettings() {
-		return { scope: SCOPES[0].name, otherVariants: true };
+		return {
+			scopes: SCOPES.filter(function (scope) { return scope.on; }).map(function (scope) { return scope.name; }),
+			otherVariants: true
+		};
 	}
 
 	function storedSettings(surface) {
@@ -177,12 +180,21 @@
 			stored = {}; // a cookie from an older shape is not worth a broken search box
 		}
 		var settings = defaultSettings();
-		if (SCOPES.some(function (scope) { return scope.name === stored.scope; })) settings.scope = stored.scope;
-		// the two checkboxes this replaced, so nobody's setting is lost by the change
-		else if (stored.attachmentsOnly === true) settings.scope = 'attachments';
-		else if (stored.titleOnly === true) settings.scope = 'names';
+		var known = Array.isArray(stored.scopes) ? stored.scopes.filter(isScope) : [];
+		if (known.length) settings.scopes = known;
+		// the shapes this replaced, so nobody's setting is lost by the change
+		else if (stored.scope === 'attachments' || stored.attachmentsOnly === true) settings.scopes = ['attachments'];
+		else if (stored.scope === 'names' || stored.titleOnly === true) settings.scopes = ['titles'];
 		if (typeof stored.otherVariants === 'boolean') settings.otherVariants = stored.otherVariants;
 		return settings;
+	}
+
+	function searchesAttachments(settings) {
+		return settings.scopes.indexOf('attachments') >= 0;
+	}
+
+	function isScope(name) {
+		return SCOPES.some(function (scope) { return scope.name === name; });
 	}
 
 	function storeSettings(surface, settings) {
@@ -196,14 +208,10 @@
 		return first ? '/' + first : '/';
 	}
 
-	/**
-	 * What the server is asked for. The three scopes are one choice here and two flags there, so the action and the
-	 * index stay as they are.
-	 */
+	/** What the server is asked for. */
 	function searchParams(settings, hasVariants) {
 		return {
-			titleOnly: settings.scope === 'names',
-			attachmentsOnly: settings.scope === 'attachments',
+			scopes: settings.scopes.join(','),
 			// a switch nobody can see must not narrow anything down
 			otherVariants: hasVariants ? settings.otherVariants : true
 		};
@@ -222,6 +230,11 @@
 		var root = document.createElement('div');
 		root.className = 'knowwe-search-settings';
 
+		var caption = document.createElement('span');
+		caption.className = 'knowwe-search-settings-caption';
+		caption.textContent = 'Search in:';
+		root.appendChild(caption);
+
 		var scopes = document.createElement('div');
 		scopes.className = 'knowwe-search-scope';
 		scopes.setAttribute('role', 'group');
@@ -232,17 +245,18 @@
 			option.title = scope.hint;
 			option.textContent = scope.label;
 			option.dataset.scope = scope.name;
-			option.classList.toggle('is-active', settings.scope === scope.name);
-			option.setAttribute('aria-pressed', String(settings.scope === scope.name));
+			var chosen = settings.scopes.indexOf(scope.name) >= 0;
+			option.classList.toggle('is-active', chosen);
+			option.setAttribute('aria-pressed', String(chosen));
 			if (keepOpen) option.addEventListener('mousedown', keepFocus);
 			option.addEventListener('click', function () {
-				if (settings.scope === scope.name) return;
-				settings.scope = scope.name;
-				scopes.querySelectorAll('.knowwe-search-scope-option').forEach(function (other) {
-					var active = other === option;
-					other.classList.toggle('is-active', active);
-					other.setAttribute('aria-pressed', String(active));
-				});
+				var at = settings.scopes.indexOf(scope.name);
+				// the last one stays on: with nothing chosen there is nowhere left to search
+				if (at >= 0 && settings.scopes.length === 1) return;
+				if (at >= 0) settings.scopes.splice(at, 1); else settings.scopes.push(scope.name);
+				var active = settings.scopes.indexOf(scope.name) >= 0;
+				option.classList.toggle('is-active', active);
+				option.setAttribute('aria-pressed', String(active));
 				onChange();
 			});
 			scopes.appendChild(option);
@@ -345,9 +359,9 @@
 		}
 		nodes.status.textContent = describe(answer);
 
-		// the indicator stays while the attachments are still arriving and the search is filtered to them
+		// the indicator stays while the attachments are still arriving and the search covers them
 		nodes.root.classList.toggle('is-busy',
-				!!(answer.attachmentsIndexing && filterValues().attachmentsOnly));
+				!!(answer.attachmentsIndexing && searchesAttachments(state.settings)));
 
 		hits.forEach(function (hit) {
 			nodes.results.appendChild(item(hit));
@@ -401,10 +415,10 @@
 
 	function describe(answer) {
 		if (answer.error) return answer.error;
-		if (filterValues().attachmentsOnly && answer.attachmentsIndexed === false) {
+		if (searchesAttachments(state.settings) && answer.attachmentsIndexed === false) {
 			return answer.attachmentsIndexing
 					? 'The attachments are being indexed – this list is still incomplete.'
-					: 'The attachments are not indexed yet, so this filter finds nothing.';
+					: 'The attachments are not indexed yet, so nothing is found in them.';
 		}
 		if (answer.indexing) return 'The search index is being built, so this list is still incomplete.';
 		if (!state.query.trim()) return '';

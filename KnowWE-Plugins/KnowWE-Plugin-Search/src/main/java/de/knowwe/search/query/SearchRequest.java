@@ -19,6 +19,8 @@
 
 package de.knowwe.search.query;
 
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,20 +30,74 @@ import org.jetbrains.annotations.NotNull;
  * @param partial whether the user is still typing, in which case the last word is treated as a prefix
  * @param offset  first hit to return
  * @param limit   how many hits to return
+ * @param scopes  where to look, see {@link Scope}; any combination, never empty
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
-public record SearchRequest(@NotNull String query, boolean partial, int offset, int limit, boolean titleOnly,
-							boolean attachmentsOnly) {
+public record SearchRequest(@NotNull String query, boolean partial, int offset, int limit,
+							@NotNull Set<Scope> scopes) {
+
+	/**
+	 * The places a search can look, freely combinable.
+	 * <p>
+	 * {@link #TITLES} and {@link #CONTENT} say which <i>part</i> of a document is searched, {@link #ATTACHMENTS} says
+	 * which <i>documents</i> take part. That is why attachments alone still searches their name and their text: with
+	 * neither part chosen, all of them are meant.
+	 */
+	public enum Scope {
+		/** Page names, and the file names of attachments. */
+		TITLES,
+		/** What is written on the page: its text, its headings and its markup. */
+		CONTENT,
+		/** The attachments, next to the pages or instead of them. */
+		ATTACHMENTS
+	}
 
 	public static final int DEFAULT_LIMIT = 10;
 
-	public SearchRequest(@NotNull String query) {
-		this(query, false, 0, DEFAULT_LIMIT, false, false);
+	/** Pages, by name and by text -- what a search means unless it says otherwise. */
+	public static final Set<Scope> DEFAULT_SCOPES = Set.of(Scope.TITLES, Scope.CONTENT);
+
+	public SearchRequest {
+		// an empty choice would find nothing anywhere, which no caller can mean
+		scopes = scopes.isEmpty() ? DEFAULT_SCOPES : Set.copyOf(scopes);
 	}
 
-	/** Searches everywhere, which is what everything but the filtered search page wants. */
+	public SearchRequest(@NotNull String query) {
+		this(query, false, 0, DEFAULT_LIMIT, DEFAULT_SCOPES);
+	}
+
+	/** Searches the pages, which is what everything but the filtered search page wants. */
 	public SearchRequest(@NotNull String query, boolean partial, int offset, int limit) {
-		this(query, partial, offset, limit, false, false);
+		this(query, partial, offset, limit, DEFAULT_SCOPES);
+	}
+
+	public boolean titles() {
+		return scopes.contains(Scope.TITLES);
+	}
+
+	public boolean content() {
+		return scopes.contains(Scope.CONTENT);
+	}
+
+	public boolean attachments() {
+		return scopes.contains(Scope.ATTACHMENTS);
+	}
+
+	/** Whether the pages of the wiki take part at all, as opposed to the attachments alone. */
+	public boolean pages() {
+		return titles() || content();
+	}
+
+	/**
+	 * Which fields to look at. With neither part of a document chosen -- attachments alone -- everything about it is
+	 * meant, otherwise a search for attachments would have nowhere to match.
+	 */
+	public boolean inTitles() {
+		return titles() || !pages();
+	}
+
+	public boolean inContent() {
+		return content() || !pages();
 	}
 
 	public boolean isBlank() {
