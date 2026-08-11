@@ -33,29 +33,32 @@
 	var BUSY_AFTER_MS = 300;
 
 	/*
-	 * The filters, used by both surfaces: as a row under the search box, and as the last row of the dropdown.
+	 * What is being searched: one of three, never two of them.
 	 *
-	 * "All Variants" is the only one that adds something: off means only what the current default compiler compiles
-	 * -- the same thing the wiki greys out on foreign markup. The other two narrow the search down.
+	 * These were two checkboxes, which said the wrong thing about them -- a reader could tick both, and that even did
+	 * something (attachments, searched by name only) that no label ever mentioned. One choice of three is what the
+	 * search actually offers.
+	 *
+	 * The short words carry the row; the sentence a reader may need is in the tooltip.
 	 */
-	var FILTERS = [
-		{
-			name: 'attachmentsOnly', label: 'Attachments',
-			hint: 'Search the attachments instead of the pages themselves.'
-		},
-		{
-			name: 'otherVariants', label: 'All Variants', on: true, onlyWithVariants: true,
-			hint: 'Search every variant. Off: only what the current variant contains – the wiki greys the others '
-				+ 'out anyway.'
-		},
-		{
-			name: 'titleOnly', label: 'Page Name only',
-			hint: 'Search the page names only, not the page content.'
-		}
+	var SCOPES = [
+		{ name: 'content', label: 'Content', hint: 'Search the page names and everything on the pages.' },
+		{ name: 'names', label: 'Names', hint: 'Search the page names only, not what is on the pages.' },
+		{ name: 'attachments', label: 'Attachments', hint: 'Search the attachments instead of the pages themselves.' }
 	];
+
+	/**
+	 * Independent of the scope: with it off, only what the current variant contains -- the same thing the wiki greys
+	 * out on foreign markup. Shown only where a wiki has variants at all.
+	 */
+	var VARIANTS = {
+		name: 'otherVariants', label: 'All Variants',
+		hint: 'Search every variant. Off: only what the current variant contains – the wiki greys the others out anyway.'
+	};
 	var DEBOUNCE_MS = 300;
 
-	var state = { query: '', offset: 0, hits: [], total: 0, pending: null, loading: false, watcher: null };
+	var state = { query: '', offset: 0, hits: [], total: 0, pending: null, loading: false, watcher: null,
+		settings: defaultSettings(), variants: true };
 	var nodes = {};
 
 	function init() {
@@ -158,27 +161,33 @@
 	 * That makes it per browser, which is not quite the same as per account: it does not follow the reader to another
 	 * machine. Storing it server side would, and would cost a round trip and a place to put it.
 	 */
-	var FILTER_COOKIE = { page: 'knowwe.search.filters', quick: 'knowwe.quicksearch.filters' };
+	var SETTINGS_COOKIE = { page: 'knowwe.search.filters', quick: 'knowwe.quicksearch.filters' };
 
-	function storedFilters(scope) {
+	function defaultSettings() {
+		return { scope: SCOPES[0].name, otherVariants: true };
+	}
+
+	function storedSettings(surface) {
 		var stored = {};
 		try {
-			var raw = window.jq$ && jq$.cookie ? jq$.cookie(FILTER_COOKIE[scope]) : null;
+			var raw = window.jq$ && jq$.cookie ? jq$.cookie(SETTINGS_COOKIE[surface]) : null;
 			if (raw) stored = JSON.parse(raw);
 		}
 		catch (ignored) {
 			stored = {}; // a cookie from an older shape is not worth a broken search box
 		}
-		var values = {};
-		FILTERS.forEach(function (filter) {
-			values[filter.name] = typeof stored[filter.name] === 'boolean' ? stored[filter.name] : !!filter.on;
-		});
-		return values;
+		var settings = defaultSettings();
+		if (SCOPES.some(function (scope) { return scope.name === stored.scope; })) settings.scope = stored.scope;
+		// the two checkboxes this replaced, so nobody's setting is lost by the change
+		else if (stored.attachmentsOnly === true) settings.scope = 'attachments';
+		else if (stored.titleOnly === true) settings.scope = 'names';
+		if (typeof stored.otherVariants === 'boolean') settings.otherVariants = stored.otherVariants;
+		return settings;
 	}
 
-	function storeFilters(scope, values) {
+	function storeSettings(surface, settings) {
 		if (!(window.jq$ && jq$.cookie)) return;
-		jq$.cookie(FILTER_COOKIE[scope], JSON.stringify(values), { path: wikiPath(), expires: 365 });
+		jq$.cookie(SETTINGS_COOKIE[surface], JSON.stringify(settings), { path: wikiPath(), expires: 365 });
 	}
 
 	/** The wiki's context path, so the setting holds on every page of this wiki and on no other. */
@@ -187,56 +196,109 @@
 		return first ? '/' + first : '/';
 	}
 
-	function buildFilters() {
-		var remembered = storedFilters('page');
-		FILTERS.forEach(function (filter) {
+	/**
+	 * What the server is asked for. The three scopes are one choice here and two flags there, so the action and the
+	 * index stay as they are.
+	 */
+	function searchParams(settings, hasVariants) {
+		return {
+			titleOnly: settings.scope === 'names',
+			attachmentsOnly: settings.scope === 'attachments',
+			// a switch nobody can see must not narrow anything down
+			otherVariants: hasVariants ? settings.otherVariants : true
+		};
+	}
+
+	/*
+	 * The settings control, the same one in both surfaces: the scope as one choice of three, and beside it the variants
+	 * switch, which is a different kind of question and looks like one.
+	 *
+	 * @param settings     the values to show, changed in place when the reader picks something
+	 * @param hasVariants  whether this wiki has more than one variant at all
+	 * @param onChange     called after a change, to search again and to remember it
+	 * @param keepOpen     for the dropdown: keep the focus in the search field, or the panel closes under the click
+	 */
+	function settingsControl(settings, hasVariants, onChange, keepOpen) {
+		var root = document.createElement('div');
+		root.className = 'knowwe-search-settings';
+
+		var scopes = document.createElement('div');
+		scopes.className = 'knowwe-search-scope';
+		scopes.setAttribute('role', 'group');
+		SCOPES.forEach(function (scope) {
+			var option = document.createElement('button');
+			option.type = 'button';
+			option.className = 'knowwe-search-scope-option tooltipster';
+			option.title = scope.hint;
+			option.textContent = scope.label;
+			option.dataset.scope = scope.name;
+			option.classList.toggle('is-active', settings.scope === scope.name);
+			option.setAttribute('aria-pressed', String(settings.scope === scope.name));
+			if (keepOpen) option.addEventListener('mousedown', keepFocus);
+			option.addEventListener('click', function () {
+				if (settings.scope === scope.name) return;
+				settings.scope = scope.name;
+				scopes.querySelectorAll('.knowwe-search-scope-option').forEach(function (other) {
+					var active = other === option;
+					other.classList.toggle('is-active', active);
+					other.setAttribute('aria-pressed', String(active));
+				});
+				onChange();
+			});
+			scopes.appendChild(option);
+		});
+		root.appendChild(scopes);
+
+		if (hasVariants) {
 			var label = document.createElement('label');
 			label.className = 'knowwe-search-filter tooltipster';
-			label.title = filter.hint;
+			label.title = VARIANTS.hint;
 
 			var box = document.createElement('input');
 			box.type = 'checkbox';
-			box.checked = !!remembered[filter.name];
-			box.dataset.filter = filter.name;
+			box.checked = !!settings.otherVariants;
+			box.dataset.filter = VARIANTS.name;
+			if (keepOpen) {
+				box.addEventListener('mousedown', keepFocus);
+				label.addEventListener('mousedown', keepFocus);
+			}
 			box.addEventListener('change', function () {
-				storeFilters('page', filterValues());
-				run(state.query, 0, false);
+				settings.otherVariants = box.checked;
+				onChange();
 			});
 			label.appendChild(box);
-			label.appendChild(document.createTextNode(' ' + filter.label));
-			nodes.filters.appendChild(label);
-		});
-		// the explanations come from tooltipster, as everywhere else in the wiki
-		if (window.jq$ && jq$.fn.tooltipster) jq$(nodes.filters).find('.tooltipster').tooltipster();
+			label.appendChild(document.createTextNode(' ' + VARIANTS.label));
+			root.appendChild(label);
+		}
 
-		// Only the server knows whether there are variants at all. Asked once, so that the filter for them does not
-		// appear first and disappear again after the first search.
-		jq$.ajax({ url: 'action/WikiSearchAction', data: { query: '' }, dataType: 'json', cache: false })
-				.done(showApplicableFilters);
+		// the explanations come from tooltipster, as everywhere else in the wiki
+		if (window.jq$ && jq$.fn.tooltipster) jq$(root).find('.tooltipster').tooltipster();
+		return root;
 	}
 
-	function showApplicableFilters(answer) {
-		FILTERS.forEach(function (filter) {
-			if (!filter.onlyWithVariants) return;
-			var box = nodes.filters.querySelector('input[data-filter="' + filter.name + '"]');
-			if (box) box.parentNode.hidden = answer.variants === false;
-		});
+	function buildFilters() {
+		state.settings = storedSettings('page');
+		renderFilters();
+
+		// Only the server knows whether there are variants at all. Asked once, so that the switch for them does not
+		// appear first and disappear again after the first search.
+		jq$.ajax({ url: 'action/WikiSearchAction', data: { query: '' }, dataType: 'json', cache: false })
+				.done(function (answer) {
+					state.variants = answer.variants !== false;
+					renderFilters();
+				});
+	}
+
+	function renderFilters() {
+		nodes.filters.innerHTML = '';
+		nodes.filters.appendChild(settingsControl(state.settings, state.variants, function () {
+			storeSettings('page', state.settings);
+			run(state.query, 0, false);
+		}, false));
 	}
 
 	function filterValues() {
-		var values = {};
-		nodes.filters.querySelectorAll('input[type="checkbox"]').forEach(function (box) {
-			// a hidden filter must not narrow anything down, or something filters that nobody can see
-			values[box.dataset.filter] = box.parentNode.hidden ? !!boxDefault(box) : box.checked;
-		});
-		return values;
-	}
-
-	function boxDefault(box) {
-		for (var i = 0; i < FILTERS.length; i++) {
-			if (FILTERS[i].name === box.dataset.filter) return FILTERS[i].on;
-		}
-		return false;
+		return searchParams(state.settings, state.variants);
 	}
 
 	function run(query, offset, append) {
@@ -276,7 +338,11 @@
 		var hits = answer.hits || [];
 		if (append) state.hits = state.hits.concat(hits); else state.hits = hits;
 
-		showApplicableFilters(answer);
+		// every answer says again whether this wiki has variants; the switch for them appears or goes with it
+		if (answer.variants !== undefined && state.variants !== (answer.variants !== false)) {
+			state.variants = answer.variants !== false;
+			renderFilters();
+		}
 		nodes.status.textContent = describe(answer);
 
 		// the indicator stays while the attachments are still arriving and the search is filtered to them
@@ -803,49 +869,24 @@
 	var QUICK_DEBOUNCE_MS = 200;
 
 	/*
-	 * The dropdown keeps its filters here rather than in its markup: the panel is built anew for every answer, so a
-	 * checkbox in it would forget what it was set to with the next keystroke. "variants" is what the server said about
-	 * the wiki as a whole -- with one variant or none, that filter is not shown at all.
+	 * The dropdown keeps its settings here rather than in its markup: the panel is built anew for every answer, so a
+	 * control in it would forget what it was set to with the next keystroke. "variants" is what the server said about
+	 * the wiki as a whole -- with one variant or none, that switch is not shown at all.
 	 */
 	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '',
-		filters: storedFilters('quick'), variants: true, settingsOpen: false };
+		settings: storedSettings('quick'), variants: true, settingsOpen: false };
 
-	/** What the dropdown asks for: a filter it does not show must not narrow anything down. */
 	function quickFilterValues() {
-		var values = {};
-		FILTERS.forEach(function (filter) {
-			var shown = !filter.onlyWithVariants || quick.variants;
-			values[filter.name] = shown ? quick.filters[filter.name] : !!filter.on;
-		});
-		return values;
+		return searchParams(quick.settings, quick.variants);
 	}
 
 	function quickFilterRow() {
 		var row = document.createElement('div');
 		row.className = 'knowwe-quicksearch-filters';
-		FILTERS.forEach(function (filter) {
-			if (filter.onlyWithVariants && !quick.variants) return;
-			var label = document.createElement('label');
-			label.className = 'knowwe-quicksearch-filter tooltipster';
-			label.title = filter.hint;
-
-			var box = document.createElement('input');
-			box.type = 'checkbox';
-			box.checked = !!quick.filters[filter.name];
-			box.dataset.filter = filter.name;
-			// the field keeps the focus, so the arrow keys still walk the hits and the panel stays open
-			box.addEventListener('mousedown', keepFocus);
-			label.addEventListener('mousedown', keepFocus);
-			box.addEventListener('change', function () {
-				quick.filters[filter.name] = box.checked;
-				storeFilters('quick', quick.filters);
-				askQuick();
-			});
-			label.appendChild(box);
-			label.appendChild(document.createTextNode(' ' + filter.label));
-			row.appendChild(label);
-		});
-		if (window.jq$ && jq$.fn.tooltipster) jq$(row).find('.tooltipster').tooltipster();
+		row.appendChild(settingsControl(quick.settings, quick.variants, function () {
+			storeSettings('quick', quick.settings);
+			askQuick();
+		}, true));
 		return row;
 	}
 

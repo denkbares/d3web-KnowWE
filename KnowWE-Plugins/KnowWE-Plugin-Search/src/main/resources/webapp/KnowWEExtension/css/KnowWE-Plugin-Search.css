@@ -46,6 +46,53 @@
 	margin: 0.6em 0 0 0.6em;
 }
 
+/*
+ * The settings, one component in both surfaces: what is searched, and beside it the variants switch.
+ *
+ * The scope is one choice of three, so it looks like one -- three segments of a single control, the chosen one filled
+ * in. As two checkboxes it read as two independent switches, which they never were.
+ */
+.knowwe-search-settings {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.2em;
+	align-items: center;
+}
+
+.knowwe-search-scope {
+	display: inline-flex;
+	overflow: hidden;
+	border: 1px solid var(--bg-color-secondary-shade);
+	border-radius: 3px;
+}
+
+.knowwe-search-scope-option {
+	margin: 0;
+	padding: 0.15em 0.7em;
+	font-size: 0.9em;
+	font-weight: normal;
+	color: var(--text-color-secondary-shade);
+	cursor: pointer;
+	background: none;
+	border: none;
+	/* a line between the segments, but none on the outer edges: the frame is already there */
+	border-left: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-scope-option:first-child {
+	border-left: none;
+}
+
+.knowwe-search-scope-option:hover {
+	color: var(--text-color-primary);
+	background: var(--bg-color-secondary);
+}
+
+.knowwe-search-scope-option.is-active {
+	color: var(--text-color-primary);
+	background: var(--bg-color-secondary-shade);
+}
+
 .knowwe-search-filter {
 	/* the template styles every label for a form: bold, with room reserved for the field below it. This one is a switch
 	   in a line of its own, and the same three read plain in the dropdown */
