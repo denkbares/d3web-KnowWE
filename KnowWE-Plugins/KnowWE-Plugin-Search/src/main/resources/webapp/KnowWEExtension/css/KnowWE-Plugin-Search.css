@@ -288,7 +288,8 @@
 	padding: 0.5em 0.8em;
 	font-size: 0.9em;
 	color: var(--text-color-secondary);
-	text-align: center;
+	/* on the left edge, where the page names are: centred, it read as a caption of the list rather than a way out of it */
+	text-align: left;
 	text-decoration: none;
 }
 
@@ -727,7 +728,8 @@
 	 * the label's first baseline down and made the whole row five pixels taller than the line above it.
 	 */
 	align-items: center;
-	justify-content: center;
+	/* left, on the same edge as the hits below it, so the eye follows one line down the list */
+	justify-content: flex-start;
 	/* the same metrics as the one line rows of the result list, and a line below it against the first hit */
 	padding: 0.5em 0.8em;
 	font-size: 0.9em;
