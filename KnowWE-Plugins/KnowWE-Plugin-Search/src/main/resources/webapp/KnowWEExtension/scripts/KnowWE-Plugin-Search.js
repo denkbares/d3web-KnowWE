@@ -542,6 +542,7 @@
 	 * the class tells the styling to fade at the top as well, so it stays visible that something is above.
 	 */
 	function measureSections(root) {
+		root.querySelectorAll('.knowwe-search-preview').forEach(pruneEmptyParagraphs);
 		root.querySelectorAll('.knowwe-search-preview').forEach(pruneTables);
 		remeasure(root, '.knowwe-search-preview');
 		root.querySelectorAll('.knowwe-search-preview').forEach(revealFirstMatch);
@@ -610,6 +611,21 @@
 	 *
 	 * Deciding this on the server would mean rendering per query and giving up the preview cache.
 	 */
+	/*
+	 * Drops the paragraphs that carry nothing.
+	 *
+	 * The wiki's parser leaves a "<p />" wherever the source had a blank line, and CSS cannot help here: ":empty" does
+	 * not match a paragraph holding a single space, and "<p />" arrives as an open paragraph rather than an empty one.
+	 * Done here it also covers the dropdown, where the stylesheet rule never applied in the first place.
+	 */
+	function pruneEmptyParagraphs(container) {
+		container.querySelectorAll('p').forEach(function (paragraph) {
+			if (paragraph.textContent.trim()) return;
+			if (paragraph.querySelector('img, table, input, select, canvas, svg, iframe')) return;
+			paragraph.remove();
+		});
+	}
+
 	function pruneTables(container) {
 		if (container.dataset.pruned) return; // der Messdurchlauf wiederholt sich, das Aufraeumen nicht
 		container.dataset.pruned = 'yes';
@@ -794,6 +810,7 @@
 	}
 
 	function measureQuickSections(root) {
+		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(pruneEmptyParagraphs);
 		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(pruneTables);
 		remeasure(root, '.knowwe-quicksearch-preview');
 		root.querySelectorAll('.knowwe-quicksearch-preview').forEach(revealFirstMatch);
