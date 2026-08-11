@@ -319,6 +319,9 @@
  */
 .knowwe-quicksearch-settings {
 	flex: 0 0 auto;
+	/* the template gives every button two pixels of margin, which left a white edge against the panel that the link on
+	   the other side does not have -- and both are the same kind of row here */
+	margin: 0;
 	padding: 0.5em 0.8em;
 	font-size: 0.9em;
 	color: var(--text-color-secondary);
