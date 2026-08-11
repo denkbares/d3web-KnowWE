@@ -33,7 +33,7 @@
 	var BUSY_AFTER_MS = 300;
 
 	/*
-	 * The filters of the search page. The quick search sends none of them and gets everything, only sorted.
+	 * The filters, used by both surfaces: as a row under the search box, and as the last row of the dropdown.
 	 *
 	 * "All Variants" is the only one that adds something: off means only what the current default compiler compiles
 	 * -- the same thing the wiki greys out on foreign markup. The other two narrow the search down.
@@ -762,7 +762,59 @@
 	var QUICK_LIMIT = 10;
 	var QUICK_DEBOUNCE_MS = 200;
 
-	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '' };
+	/*
+	 * The dropdown keeps its filters here rather than in its markup: the panel is built anew for every answer, so a
+	 * checkbox in it would forget what it was set to with the next keystroke. "variants" is what the server said about
+	 * the wiki as a whole -- with one variant or none, that filter is not shown at all.
+	 */
+	var quick = { input: null, panel: null, pending: null, hits: [], active: -1, query: '',
+		filters: quickFilterDefaults(), variants: true };
+
+	function quickFilterDefaults() {
+		var values = {};
+		FILTERS.forEach(function (filter) {
+			values[filter.name] = !!filter.on;
+		});
+		return values;
+	}
+
+	/** What the dropdown asks for: a filter it does not show must not narrow anything down. */
+	function quickFilterValues() {
+		var values = {};
+		FILTERS.forEach(function (filter) {
+			var shown = !filter.onlyWithVariants || quick.variants;
+			values[filter.name] = shown ? quick.filters[filter.name] : !!filter.on;
+		});
+		return values;
+	}
+
+	function quickFilterRow() {
+		var row = document.createElement('div');
+		row.className = 'knowwe-quicksearch-filters';
+		FILTERS.forEach(function (filter) {
+			if (filter.onlyWithVariants && !quick.variants) return;
+			var label = document.createElement('label');
+			label.className = 'knowwe-quicksearch-filter tooltipster';
+			label.title = filter.hint;
+
+			var box = document.createElement('input');
+			box.type = 'checkbox';
+			box.checked = !!quick.filters[filter.name];
+			box.dataset.filter = filter.name;
+			// the field keeps the focus, so the arrow keys still walk the hits and the panel stays open
+			box.addEventListener('mousedown', keepFocus);
+			label.addEventListener('mousedown', keepFocus);
+			box.addEventListener('change', function () {
+				quick.filters[filter.name] = box.checked;
+				askQuick();
+			});
+			label.appendChild(box);
+			label.appendChild(document.createTextNode(' ' + filter.label));
+			row.appendChild(label);
+		});
+		if (window.jq$ && jq$.fn.tooltipster) jq$(row).find('.tooltipster').tooltipster();
+		return row;
+	}
 
 	function initQuickSearch() {
 		quick.input = document.querySelector('.knowwe-quicksearch-input');
@@ -811,7 +863,8 @@
 
 		jq$.ajax({
 			url: 'action/WikiSearchAction',
-			data: { query: query, limit: QUICK_LIMIT, partial: true, preview: true },
+			data: Object.assign({ query: query, limit: QUICK_LIMIT, partial: true, preview: true },
+					quickFilterValues()),
 			dataType: 'json',
 			cache: false
 		}).done(function (answer) {
@@ -955,7 +1008,9 @@
 			button.disabled = true;
 			jq$.ajax({
 				url: 'action/WikiSearchAction',
-				data: { query: quick.query, expand: hit.page || hit.title, limit: QUICK_LIMIT, partial: true },
+				// the same filters as the search that produced the hit, or the folded sections come from another search
+			data: Object.assign({ query: quick.query, expand: hit.page || hit.title, limit: QUICK_LIMIT, partial: true },
+					quickFilterValues()),
 				dataType: 'json',
 				cache: false
 			}).done(function (answer) {
@@ -975,6 +1030,7 @@
 	function renderQuick(answer) {
 		quick.hits = answer.hits || [];
 		quick.active = -1;
+		if (answer.variants !== undefined) quick.variants = answer.variants !== false;
 		quick.panel.innerHTML = '';
 		var list = document.createElement('div');
 		list.className = 'knowwe-quicksearch-list';
@@ -985,6 +1041,8 @@
 			empty.className = 'knowwe-quicksearch-empty';
 			empty.textContent = answer.indexing ? 'Building the index …' : 'No results';
 			quick.panel.appendChild(empty);
+			// also without hits, and especially then: a filter may be the reason, and it has to be reachable to undo
+			quick.panel.appendChild(quickFilterRow());
 			showQuick();
 			return;
 		}
@@ -1020,6 +1078,9 @@
 		// would promise nothing new
 		all.textContent = 'Show all ' + answer.total + (answer.exact ? '' : '+') + ' results on the search page';
 		quick.panel.appendChild(all);
+		// last row, below the way to the search page: the same three filters as there, so a reader who needs one does
+		// not have to leave the dropdown for it
+		quick.panel.appendChild(quickFilterRow());
 
 		showQuick();
 		measureQuickSections(quick.panel);
