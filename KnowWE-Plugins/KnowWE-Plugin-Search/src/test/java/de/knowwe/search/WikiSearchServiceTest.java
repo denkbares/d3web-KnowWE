@@ -20,6 +20,7 @@
 package de.knowwe.search;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,14 +33,17 @@ import connector.DummyConnector;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.event.ArticleDeletedEvent;
+import de.knowwe.search.render.PreviewCache;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.InitializedArticlesEvent;
+import de.knowwe.search.query.SearchHit;
 import de.knowwe.search.query.SearchRequest;
 import de.knowwe.search.query.SearchResults;
 import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -75,13 +79,13 @@ public class WikiSearchServiceTest {
 	@Test
 	public void theInitialEventIndexesEverythingThatIsAlreadyThere() throws Exception {
 		write("Kabelbaum", "!! Montage\nEnthaelt Quetschhuelse.\n");
-		write("Prüfplan", "!! Turnus\nEnthaelt Ruettelpruefung.\n");
+		write("Prüfplan", "!! Turnus\nEnthaelt Xylofonhalter.\n");
 
 		service.notify(new InitializedArticlesEvent(manager()));
 		service.awaitIdle();
 
 		assertEquals("Kabelbaum › Montage", firstHit("Quetschhuelse"));
-		assertEquals("Prüfplan › Turnus", firstHit("Ruettelpruefung"));
+		assertEquals("Prüfplan › Turnus", firstHit("Xylofonhalter"));
 	}
 
 	@Test
@@ -138,6 +142,51 @@ public class WikiSearchServiceTest {
 		service.awaitIdle();
 
 		assertTrue(search("Loetstuetzpunkt").isEmpty());
+	}
+
+	@Test
+	public void renamingAPageMovesItInTheIndex() throws Exception {
+		// The word has to be one no fixture uses, and "ue" is not enough to make it so: the German normalisation maps
+		// "ue" and "ü" to the same thing, so "Ruettelpruefung" collided with a "Rüttelprüfung" of another test.
+		//
+		// Nothing listens for ArticleRenamedEvent, and nothing has to: KnowWEUtils.renameArticle deletes the old
+		// article and registers the new one inside one open()/commit(), so the rename arrives as the two events we
+		// already handle. This test is here because that is a property of renameArticle, not of our code.
+		write("Alter Name", "!! Kapitel\nEnthaelt Xylofonhalter.\n");
+		service.notify(new InitializedArticlesEvent(manager()));
+		service.awaitIdle();
+		assertEquals("Alter Name › Kapitel", firstHit("Xylofonhalter"));
+
+		service.notify(new ArticleDeletedEvent(article("Alter Name")));
+		write("Neuer Name", "!! Kapitel\nEnthaelt Xylofonhalter.\n");
+		service.notify(new ArticleRegisteredEvent(article("Neuer Name")));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), true));
+		service.awaitIdle();
+
+		// asked as presence, not as rank: what ranks where is decided elsewhere, and the shared Environment holds the
+		// pages of every other test in this JVM -- one of them answers this word fuzzily and would sit in front
+		List<String> found = search("Xylofonhalter").hits().stream().map(SearchHit::breadcrumb).toList();
+		assertTrue("the page under its new name must be there, was " + found,
+				found.contains("Neuer Name › Kapitel"));
+		assertTrue("the old title must be gone, was " + found,
+				found.stream().noneMatch(hit -> hit.startsWith("Alter Name")));
+	}
+
+	@Test
+	public void anEditForgetsTheRenderedPreviewOfThatPage() throws Exception {
+		// The preview does not depend on the query, so it is cached -- and a cached preview of text that has just been
+		// edited would be shown as if it were current. The cache is invalidated in flush(), which is what this pins.
+		write("Zwischengespeichert", "!! Kapitel\nEnthaelt Buendelschelle.\n");
+		service.notify(new InitializedArticlesEvent(manager()));
+		service.awaitIdle();
+
+		PreviewCache.getInstance().put("Zwischengespeichert", "s1", "albrecht", "<p>alter Stand</p>");
+		service.notify(new ArticleRegisteredEvent(article("Zwischengespeichert")));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), true));
+		service.awaitIdle();
+
+		assertNull("an edited page must not answer with the preview of its former text",
+				PreviewCache.getInstance().get("Zwischengespeichert", "s1", "albrecht"));
 	}
 
 	@Test

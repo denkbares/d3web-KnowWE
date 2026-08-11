@@ -479,3 +479,29 @@ Zwei Ursachen, die erste gesichert, die zweite noch nicht zu Ende verfolgt:
    Treffer, welches Feld mit welchem Gewicht, welcher Termfrequenz und welcher Feldlaenge beigetragen hat.
 3. **Highlighting markierte nur `Cable`** — behoben: `matchCandidates` hatte Woerter mit bis zu zwei Zeichen verworfen,
    damit fielen `Nr` und `24` weg und die Wortfolge war nicht mehr bildbar. Jetzt ab zwei Zeichen.
+
+
+## Nachtrag: Reindizieren, Stand 2026-08-11
+
+Abgedeckt: Erstaufbau, Bearbeitung (alter Inhalt verschwindet), Commit-Grenze, Loeschen, Commit ohne Aenderung,
+Ersetzen auf Indexebene, Gross-/Kleinschreibung des Schluessels, Schema-Wiederverwendung und -Verwerfen, kaputtes
+Verzeichnis. Neu dazu:
+
+- **Umbenennen** braucht keinen eigenen Zweig. `KnowWEUtils.renameArticle` macht `deleteArticle` + `registerArticle`
+  innerhalb eines `open()`/`commit()`, kommt bei uns also als die zwei Ereignisse an, die wir schon behandeln.
+  `renamingAPageMovesItInTheIndex` haelt das fest -- als Eigenschaft von `renameArticle`, nicht von unserem Code.
+- **Preview-Cache** wird beim Bearbeiten der Seite vergessen (`anEditForgetsTheRenderedPreviewOfThatPage`).
+- **Anhaenge** ueberleben ein Neuindizieren ihrer Seite und verschwinden mit ihr
+  (`anAttachmentIsReplacedWithoutTouchingItsPage`, `deletingAPageTakesItsAttachmentsWithIt`).
+
+Weiter offen: die **Verdrahtung** der Anhangs-Ereignisse (`AttachmentStoredEvent`/`AttachmentDeletedEvent`) ist nicht
+getestet -- dafuer muesste der `DummyConnector` eine `WikiAttachment` zurueckgeben, was er ohne eigenes Geruest nicht tut.
+Geprueft ist damit, was die Ereignisse ausloesen, nicht dass sie ausgeloest werden.
+
+Zwei Beobachtungen aus dem Schreiben dieser Tests, beide keine Fehler, aber gut zu wissen:
+
+- `GermanNormalizationFilter` bildet **"ue" und "ü" auf dasselbe** ab. Ein Testwort mit "ue" ist also nicht
+  automatisch eindeutig -- "Ruettelpruefung" kollidierte mit dem "Rüttelprüfung" einer anderen Testklasse.
+- Das `Environment` ist ein Singleton pro JVM: der Index eines Tests enthaelt die Seiten aller anderen Tests. Tests
+  sollten daher nach **Vorhandensein** fragen, nicht nach Rang -- eine fremde Seite kann eine Anfrage unscharf
+  beantworten und davor stehen.

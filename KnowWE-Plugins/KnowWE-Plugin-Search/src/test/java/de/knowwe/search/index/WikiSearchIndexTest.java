@@ -104,6 +104,41 @@ public class WikiSearchIndexTest {
 	}
 
 	@Test
+	public void anAttachmentIsReplacedWithoutTouchingItsPage() throws IOException {
+		// they share the page key, so re-indexing the page must not take its attachments with it
+		try (WikiSearchIndex index = open()) {
+			index.replacePage("Montage", List.of(document("Montage", "erster Abschnitt"),
+					document("Montage", "zweiter Abschnitt")));
+			index.replaceAttachment("Montage/plan.xml", attachment("Montage"));
+			index.refresh();
+			assertEquals(3, index.documentCount());
+
+			index.replacePage("Montage", List.of(document("Montage", "nur noch einer")));
+			index.refresh();
+			assertEquals("the attachment has to survive a re-index of its page", 2, index.documentCount());
+
+			index.replaceAttachment("Montage/plan.xml", attachment("Montage"));
+			index.refresh();
+			assertEquals("replacing it must not add a second one", 2, index.documentCount());
+		}
+	}
+
+	@Test
+	public void deletingAPageTakesItsAttachmentsWithIt() throws IOException {
+		try (WikiSearchIndex index = open()) {
+			index.replacePage("Montage", List.of(document("Montage", "ein Abschnitt")));
+			index.replaceAttachment("Montage/plan.xml", attachment("Montage"));
+			index.removeAttachment("Montage/nichtda.xml");
+			index.refresh();
+			assertEquals("removing an attachment that is not there changes nothing", 2, index.documentCount());
+
+			index.removePage("Montage");
+			index.refresh();
+			assertEquals("a deleted page leaves nothing of itself behind", 0, index.documentCount());
+		}
+	}
+
+	@Test
 	public void anIndexOfTheSameSchemaIsReused() throws IOException {
 		Path path = folder.getRoot().toPath().resolve("index");
 		try (WikiSearchIndex index = new WikiSearchIndex(path)) {
@@ -146,6 +181,14 @@ public class WikiSearchIndexTest {
 
 	private WikiSearchIndex open() throws IOException {
 		return new WikiSearchIndex(folder.getRoot().toPath().resolve("index"));
+	}
+
+	/** An attachment is filed under its page, so only its type tells it apart from a section. */
+	private static Document attachment(String page) {
+		Document document = new Document();
+		document.add(new StringField(SearchFields.PAGE_KEY, SectionDocumentBuilder.pageKey(page), Field.Store.NO));
+		document.add(new StringField(SearchFields.TYPE, SearchFields.TYPE_ATTACHMENT, Field.Store.YES));
+		return document;
 	}
 
 	private static Document document(String title, String body) {
