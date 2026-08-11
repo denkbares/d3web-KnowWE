@@ -505,3 +505,30 @@ Zwei Beobachtungen aus dem Schreiben dieser Tests, beide keine Fehler, aber gut 
 - Das `Environment` ist ein Singleton pro JVM: der Index eines Tests enthaelt die Seiten aller anderen Tests. Tests
   sollten daher nach **Vorhandensein** fragen, nicht nach Rang -- eine fremde Seite kann eine Anfrage unscharf
   beantworten und davor stehen.
+
+
+## Naechste Iteration: Sonderzeichen und eigene Syntax
+
+Wunsch (Albrecht): KnowWE und CBX haben eigene Syntax, die die Suche verstehen und nicht wegputzen sollte.
+
+**Stand heute, gemessen am lokalen Wiki:**
+
+| Anfrage | Treffer | woran es liegt |
+|---|---|---|
+| `%%Question` | 114 | `MarkupTokenAnalyzer` haelt `%%name` und `name` an derselben Position, plus Bonus fuer die explizite Form |
+| `[{TableOfContents}]` | 34 | Klammern fallen weg, es bleibt das Wort -- gefunden, aber die Syntax bedeutet nichts |
+| `Doc.TestCase` | 32 | Punkt trennt, `doc` und `testcase` werden zwei Positionen; die Identitaet des Namens geht verloren |
+
+Also: Markup-Namen (`%%`, `@`) sind verstanden, alles andere wird zu Woertern zermahlen. Das ist fuer Prosa richtig und
+fuer Bezeichner falsch.
+
+**Woran zu drehen waere**, in der Reihenfolge des Nutzens:
+
+1. Ein Feld fuer **Bezeichner wie sie stehen** (analog `TITLE_EXACT`, aber fuer Woerter im Text): `Doc.TestCase`,
+   `X1.2`, `A40-1` als ein Token, damit ein gesuchter Bezeichner den Vorrang vor seinen Bestandteilen bekommt.
+2. **JSPWiki- und KnowWE-Syntax als Struktur** statt als Text: `[{Plugin}]`, `[Link|Ziel]`, `~escape`. Heute liefert
+   der `KdomTextExtractor` bereits nur Inhalt und keine Markup-Rahmen -- zu pruefen ist, was davon in `body` landet.
+3. Die **Analyzer-Kette dokumentieren und testen**, Zeichen fuer Zeichen: was `WordDelimiterGraphFilter` mit `-`, `.`,
+   `_`, `/`, `%`, `@`, `$`, `:` macht. Es gibt Token-Stream-Tests, aber nicht als vollstaendige Tabelle.
+
+Vorher kommen: Phrasensuche (siehe oben), ACL-Filterklausel, und die Kopplung ueber `NGramLuceneSearchProvider`.
