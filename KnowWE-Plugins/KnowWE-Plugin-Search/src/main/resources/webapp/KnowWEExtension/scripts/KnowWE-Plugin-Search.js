@@ -108,6 +108,47 @@
 		}, DEBOUNCE_MS);
 	}
 
+	/*
+	 * The way out when the search found no page of that name: create it.
+	 *
+	 * The old search had this and it is the more useful answer to a query that names something not there yet. Cloning
+	 * takes the page the reader is on as the template, which is what "[{clone}]" means to the wiki's own editor -- see
+	 * the wikiCloneUrl meta tag in commonheader.jsp.
+	 */
+	function createPageOffer(name) {
+		var current = document.querySelector('meta[name="wikiPageName"]');
+		var offer = document.createElement('div');
+		offer.className = 'knowwe-search-create';
+
+		var link = document.createElement('a');
+		link.className = 'knowwe-search-create-link';
+		link.href = 'Edit.jsp?page=' + encodeURIComponent(name);
+		link.textContent = 'Seite „' + name + '" anlegen?';
+		offer.appendChild(link);
+
+		if (current && current.content) {
+			var label = document.createElement('label');
+			label.className = 'knowwe-search-create-clone tooltipster';
+			label.title = 'Start from the text of "' + current.content + '" instead of an empty page.';
+
+			var box = document.createElement('input');
+			box.type = 'checkbox';
+			box.addEventListener('change', function () {
+				link.href = 'Edit.jsp?page=' + encodeURIComponent(name)
+						+ (box.checked ? '&clone=' + encodeURIComponent(current.content) : '');
+			});
+			// the label must not carry the click to the link beside it
+			label.addEventListener('click', function (event) {
+				event.stopPropagation();
+			});
+			label.appendChild(box);
+			label.appendChild(document.createTextNode(' diese Seite klonen'));
+			offer.appendChild(label);
+		}
+		if (window.jq$ && jq$.fn.tooltipster) jq$(offer).find('.tooltipster').tooltipster();
+		return offer;
+	}
+
 	function buildFilters() {
 		FILTERS.forEach(function (filter) {
 			var label = document.createElement('label');
@@ -208,6 +249,7 @@
 		// only now are the previews laid out and can be measured
 		measureSections(nodes.results);
 
+		if (answer.createPage) nodes.more.appendChild(createPageOffer(answer.createPage));
 		if (answer.hasMore) watchForMore();
 	}
 
@@ -918,6 +960,7 @@
 			empty.className = 'knowwe-quicksearch-empty';
 			empty.textContent = answer.indexing ? 'Index wird aufgebaut …' : 'Keine Treffer';
 			quick.panel.appendChild(empty);
+			if (answer.createPage) quick.panel.appendChild(createPageOffer(answer.createPage));
 			showQuick();
 			return;
 		}
@@ -949,6 +992,7 @@
 		// would promise nothing new
 		all.textContent = 'Alle ' + answer.total + (answer.exact ? '' : '+') + ' Treffer auf Suchseite anzeigen';
 		quick.panel.appendChild(all);
+		if (answer.createPage) quick.panel.appendChild(createPageOffer(answer.createPage));
 
 		showQuick();
 		measureQuickSections(quick.panel);

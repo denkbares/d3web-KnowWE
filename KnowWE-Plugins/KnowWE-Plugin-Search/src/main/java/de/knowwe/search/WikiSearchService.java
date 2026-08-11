@@ -116,17 +116,33 @@ public class WikiSearchService implements EventListener {
 	 * incompatible index is simply not found rather than being repaired.
 	 */
 	private static Path defaultIndexPath() {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		if (connector instanceof JSPWikiConnector jspWiki) {
+		Path base = null;
+		if (Environment.getInstance().getWikiConnector() instanceof JSPWikiConnector jspWiki) {
 			Path workDir = Path.of(jspWiki.getEngine().getWorkDir());
-			if (workDir.isAbsolute()) return workDir.resolve(INDEX_DIRECTORY).resolve(SearchFields.SCHEMA_VERSION);
+			// a relative work dir would put the index wherever the server happens to have been started
+			if (workDir.isAbsolute()) base = workDir;
 		}
-		// No wiki engine, so this is a test or a headless run. Never derive a path from getSavePath() here: with the
-		// test connector it is relative, and the index then materialises inside whatever directory the process was
-		// started in -- which is how one ended up committed into the source tree.
-		Path temporary = Path.of(System.getProperty("java.io.tmpdir"), INDEX_DIRECTORY, SearchFields.SCHEMA_VERSION);
-		LOGGER.info("No wiki engine available, keeping the search index under {}", temporary);
-		return temporary;
+		if (base == null) base = Path.of(System.getProperty("java.io.tmpdir"));
+		return base.resolve(INDEX_DIRECTORY).resolve(SearchFields.SCHEMA_VERSION).resolve(wikiDirectoryName());
+	}
+
+	/**
+	 * A name of its own for every wiki, because many of them can live in one Tomcat and Lucene grants the write lock to
+	 * exactly one process per directory. Sharing it, the second wiki to start finds the index locked and searches
+	 * nothing at all -- which is what happened.
+	 * <p>
+	 * Built the same way {@code RepositoryInitializer} builds SemanticCore's temp directory: the name of the wiki's
+	 * content directory, plus a hash of the application root path. The name alone is not enough -- two wikis may hold
+	 * the same content directory name under different paths -- and the hash alone says nothing to whoever has to look
+	 * at the folder.
+	 */
+	private static String wikiDirectoryName() {
+		WikiConnector connector = Environment.getInstance().getWikiConnector();
+		String basedir = connector.getWikiProperty("var.basedir");
+		if (basedir == null || basedir.isBlank()) basedir = "wiki";
+		String rootPath = connector.getApplicationRootPath();
+		String hash = Integer.toHexString(rootPath == null ? 0 : rootPath.hashCode());
+		return Path.of(basedir).getFileName() + "_" + hash;
 	}
 
 	/** Opens the index without touching the singleton, so tests can drive a service on a temporary directory. */

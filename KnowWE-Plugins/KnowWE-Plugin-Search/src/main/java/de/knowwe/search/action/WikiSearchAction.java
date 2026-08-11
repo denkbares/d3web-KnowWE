@@ -142,6 +142,13 @@ public class WikiSearchAction extends AbstractAction {
 		answer.put("attachmentsIndexed", service.isAttachmentsIndexed());
 		answer.put("attachmentsIndexing", service.isAttachmentsIndexing());
 		// mit einer oder keiner Gruppierung gibt es nichts zu waehlen -- dann soll der Filter dafuer gar nicht erscheinen
+		// Offering to create a page only makes sense while there is none of that name. Asked of the article manager
+		// rather than of the index: a page created a second ago is not indexed yet, and offering to create it again
+		// would be the one answer that is certainly wrong.
+		String wanted = query.trim();
+		if (!wanted.isEmpty() && context.getArticleManager().getArticle(wanted) == null) {
+			answer.put("createPage", wanted);
+		}
 		answer.put("variants",
 				Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class).size() > 1);
 

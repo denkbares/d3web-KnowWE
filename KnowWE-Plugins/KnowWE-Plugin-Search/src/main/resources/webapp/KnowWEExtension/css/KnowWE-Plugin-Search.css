@@ -701,3 +701,40 @@
 	color: var(--text-color-secondary);
 	text-align: center;
 }
+
+/* ------------------------------------------------------------------ create the page that is missing */
+
+/*
+ * Sits where the way to the full result list sits, and reads as an offer rather than as a result: the search is done,
+ * this is what one can do about it.
+ */
+.knowwe-search-create {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1em;
+	align-items: baseline;
+	justify-content: center;
+	padding: 0.6em 0.8em;
+	font-size: 0.9em;
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-create-link {
+	color: var(--text-color-primary-link);
+	text-decoration: none;
+}
+
+.knowwe-search-create-link:hover {
+	text-decoration: underline;
+}
+
+.knowwe-search-create-clone {
+	color: var(--text-color-secondary-shade);
+	white-space: nowrap;
+	cursor: help;
+}
+
+.knowwe-search-create-clone input {
+	margin-right: 0.15em;
+	cursor: pointer;
+}
