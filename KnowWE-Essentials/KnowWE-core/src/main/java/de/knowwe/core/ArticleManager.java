@@ -76,8 +76,10 @@ public interface ArticleManager {
 	Collection<Article> getQueuedArticles();
 
 	/**
-	 * Opens the manager for registration of articles. Only after calling the method {@link ArticleManager#commit()}
-	 * the added articles will be compiled. Make sure to always call commit in an try-finally block!<p>
+	 * Opens the manager for registration of articles. The outermost registration frame waits for a preceding
+	 * compilation to finish, so its live article sections cannot be replaced while they are still being compiled. Only
+	 * after calling the method {@link ArticleManager#commit()} the added articles will be compiled. Make sure to always
+	 * call commit in an try-finally block!<p>
 	 * <b>Attention:</b> Do not call this method synchronously using a compilation thread, because it will cause a dead
 	 * lock waiting for the compilation to finish.
 	 *

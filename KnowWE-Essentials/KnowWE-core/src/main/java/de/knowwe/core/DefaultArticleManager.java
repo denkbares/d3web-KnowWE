@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -66,6 +67,7 @@ public class DefaultArticleManager implements ArticleManager {
 	private final AttachmentManager attachmentManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
+	private volatile boolean registrationFrameOpen;
 	private final Set<Article> added = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final Set<Article> removed = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -146,15 +148,15 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 	@Override
 	public Article registerArticle(String title, String content) {
-		Article article = Article.createArticle(content, title, this);
 		open();
 		try {
+			Article article = Article.createArticle(content, title, this);
 			queueArticle(article);
+			return article;
 		}
 		finally {
 			commit();
 		}
-		return article;
 	}
 
 	@Override
@@ -185,7 +187,32 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 
 	public void queueArticle(String title, String content) {
+		requireOpenRegistrationFrame();
 		queueArticle(Article.createArticle(content, title, this));
+	}
+
+	/**
+	 * Recreates the supplied articles in parallel and queues the new versions sequentially. Recreating them is required
+	 * for recompilation because the supplied instances already contain their previously sectionized KDOM. It deliberately
+	 * happens inside the registration frame, after the preceding compilation has finished. Sequential queueing keeps
+	 * {@link ArticleRegisteredEvent}s on the thread owning the frame, so their listeners may safely perform reentrant
+	 * article operations.
+	 */
+	public void recreateAndQueueArticles(Collection<Article> articles) {
+		requireOpenRegistrationFrame();
+		if (!mainLock.isHeldByCurrentThread()) {
+			throw new IllegalStateException("Only the registration frame owner can queue an article batch");
+		}
+		List<Article> sectionizedArticles = articles.parallelStream()
+				.map(article -> Article.createArticle(article.getText(), article.getTitle(), this))
+				.toList();
+		sectionizedArticles.forEach(this::queueArticle);
+	}
+
+	private void requireOpenRegistrationFrame() {
+		if (!registrationFrameOpen) {
+			throw new IllegalStateException("Cannot queue articles outside an open registration frame");
+		}
 	}
 
 	private void queueArticle(Article article) {
@@ -254,8 +281,9 @@ public class DefaultArticleManager implements ArticleManager {
 	}
 
 	/**
-	 * Opens the manager for registration of articles. Only after calling the method {@link ArticleManager#commit()}
-	 * the added articles will be compiled. Make sure to always call commit in an try-finally block!<p>
+	 * Opens the manager for registration of articles, waiting for a preceding compilation before opening the outermost
+	 * frame. Only after calling the method {@link ArticleManager#commit()} the added articles will be compiled. Make sure
+	 * to always call commit in an try-finally block!<p>
 	 * <b>Attention:</b> Do not call this method synchronously from within a compilation thread.
 	 */
 	@Override
@@ -263,8 +291,30 @@ public class DefaultArticleManager implements ArticleManager {
 		if (CompilerManager.isCompileThread()) {
 			throw new IllegalStateException("Cannot register articles during compilation");
 		}
-		//noinspection LockAcquiredButNotSafelyReleased
-		mainLock.lock();
+		if (mainLock.isHeldByCurrentThread()) {
+			//noinspection LockAcquiredButNotSafelyReleased
+			mainLock.lock();
+			return;
+		}
+		while (true) {
+			//noinspection LockAcquiredButNotSafelyReleased
+			mainLock.lock();
+			if (!compilerManager.isCompiling()) {
+				registrationFrameOpen = true;
+				return;
+			}
+			// Do not hold mainLock while waiting. A compiler may wait for work on another thread, and that work must not
+			// be prevented from taking the ArticleManager lock. Once awakened, retry under mainLock to close the race with
+			// another registration frame that may have started a new compilation in the meantime.
+			mainLock.unlock();
+			try {
+				compilerManager.awaitTermination();
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Interrupted while waiting to register articles", e);
+			}
+		}
 	}
 
 	/**
@@ -285,6 +335,7 @@ public class DefaultArticleManager implements ArticleManager {
 		boolean changesCommitted = false;
 		try {
 			if (outermostCommit) {
+				registrationFrameOpen = false;
 				EventManager.getInstance().fireEvent(new ArticleManagerCommitStartEvent(this));
 				ArrayList<Section<?>> addedSections = new ArrayList<>();
 				ArrayList<Section<?>> removedSections = new ArrayList<>();
@@ -345,6 +396,7 @@ public class DefaultArticleManager implements ArticleManager {
 	public void rollback() {
 		try {
 			if (mainLock.getHoldCount() == 1) {
+				registrationFrameOpen = false;
 				synchronized (added) {
 					synchronized (originalArticleMap) {
 						if (!originalArticleMap.isEmpty()) {
