@@ -331,7 +331,10 @@
 .knowwe-quicksearch-settings::before {
 	content: "▸";
 	display: inline-block;
-	margin-right: 0.35em;
+	/* the glyph sits low in its own box, and rotating it must stay the only thing the transform does */
+	position: relative;
+	top: -0.1em;
+	margin-right: 0.55em;
 	font-size: 0.85em;
 	transition: transform 0.1s ease-out;
 }
