@@ -29,6 +29,6 @@
 <div class="page-content">
 	<div id="knowwe-search" data-placeholder="<fmt:message key='find.input'/>"></div>
 	<noscript>
-		<p class="warning">Die Wiki-Suche braucht JavaScript.</p>
+		<p class="warning">The wiki search needs JavaScript.</p>
 	</noscript>
 </div>

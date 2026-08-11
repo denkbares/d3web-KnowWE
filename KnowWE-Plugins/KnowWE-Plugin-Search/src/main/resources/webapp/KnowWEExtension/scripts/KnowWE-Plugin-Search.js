@@ -123,7 +123,7 @@
 		var link = document.createElement('a');
 		link.className = 'knowwe-search-create-link';
 		link.href = 'Edit.jsp?page=' + encodeURIComponent(name);
-		link.textContent = 'Seite „' + name + '" anlegen?';
+		link.textContent = 'Create page "' + name + '"?';
 		offer.appendChild(link);
 
 		if (current && current.content) {
@@ -142,7 +142,7 @@
 				event.stopPropagation();
 			});
 			label.appendChild(box);
-			label.appendChild(document.createTextNode(' diese Seite klonen'));
+			label.appendChild(document.createTextNode(' clone this page'));
 			offer.appendChild(label);
 		}
 		if (window.jq$ && jq$.fn.tooltipster) jq$(offer).find('.tooltipster').tooltipster();
@@ -207,7 +207,7 @@
 			render({ hits: [], total: 0 }, false);
 			return;
 		}
-		nodes.status.textContent = 'Suche …';
+		nodes.status.textContent = 'Searching …';
 		var busy = window.setTimeout(function () {
 			nodes.root.classList.add('is-busy');
 		}, BUSY_AFTER_MS);
@@ -221,7 +221,7 @@
 			if (state.query !== query) return; // a newer query already won
 			render(answer, append);
 		}).fail(function () {
-			nodes.status.textContent = 'Die Suche ist gerade nicht erreichbar.';
+			nodes.status.textContent = 'The search is not reachable at the moment.';
 		}).always(function () {
 			window.clearTimeout(busy);
 			nodes.root.classList.remove('is-busy');
@@ -263,7 +263,7 @@
 	function watchForMore() {
 		var marker = document.createElement('div');
 		marker.className = 'knowwe-search-more-marker';
-		marker.textContent = 'Weitere Treffer werden geladen …';
+		marker.textContent = 'Loading more results …';
 		nodes.more.appendChild(marker);
 
 		if (state.watcher) state.watcher.disconnect();
@@ -283,7 +283,7 @@
 	function addMoreButton() {
 		var button = document.createElement('button');
 		button.type = 'button';
-		button.textContent = 'Mehr laden';
+		button.textContent = 'Load more';
 		button.addEventListener('click', function () {
 			run(state.query, state.offset + PAGE_SIZE, true);
 		});
@@ -295,19 +295,20 @@
 		if (answer.error) return answer.error;
 		if (filterValues().attachmentsOnly && answer.attachmentsIndexed === false) {
 			return answer.attachmentsIndexing
-					? 'Die Anhänge werden gerade indiziert – die Liste ist noch unvollständig.'
-					: 'Anhänge sind noch nicht indiziert – dieser Filter findet daher nichts.';
+					? 'The attachments are being indexed – this list is still incomplete.'
+					: 'The attachments are not indexed yet, so this filter finds nothing.';
 		}
-		if (answer.indexing) return 'Der Suchindex wird gerade aufgebaut, die Trefferliste ist noch unvollständig.';
+		if (answer.indexing) return 'The search index is being built, so this list is still incomplete.';
 		if (!state.query.trim()) return '';
 		if (!answer.total) {
 			if (answer.unmatched && answer.unmatched.length) {
-				return 'Keine Treffer. Nicht gefunden: ' + answer.unmatched.join(', ');
+				return 'No results. Not found: ' + answer.unmatched.join(', ');
 			}
-			return 'Keine Treffer.';
+			return 'No results.';
 		}
-		var text = answer.total + (answer.exact ? '' : '+') + ' Treffer · ' + answer.tookMs + ' ms';
-		if (answer.relaxed) text += ' · nicht alle Wörter kommen vor, es wird nach einzelnen gesucht';
+		var text = answer.total + (answer.exact ? '' : '+')
+				+ (answer.total === 1 ? ' result · ' : ' results · ') + answer.tookMs + ' ms';
+		if (answer.relaxed) text += ' · not every word occurs, searching for them separately';
 		return text;
 	}
 
@@ -341,8 +342,7 @@
 		var button = document.createElement('button');
 		button.type = 'button';
 		button.className = 'knowwe-search-folded-toggle';
-		button.textContent = hit.folded + (hit.folded === 1 ? ' weiterer Treffer' : ' weitere Treffer')
-			+ ' auf dieser Seite';
+		button.textContent = hit.folded + (hit.folded === 1 ? ' more result' : ' more results') + ' on this page';
 		wrapper.appendChild(button);
 
 		var list = document.createElement('div');
@@ -424,7 +424,7 @@
 			return;
 		}
 		preview.classList.add('is-clipped');
-		button.title = 'Abschnitt ganz anzeigen';
+		button.title = 'Show the whole section';
 		button.addEventListener('click', function (event) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -432,7 +432,7 @@
 			button.classList.toggle('is-open', open);
 			// three times the cap does not always reach the end, so the fade stays wherever it still cuts off
 			preview.classList.toggle('is-clipped', markClipping(preview));
-			button.title = open ? 'Abschnitt wieder einklappen' : 'Abschnitt ganz anzeigen';
+			button.title = open ? 'Collapse the section again' : 'Show the whole section';
 		});
 	}
 
@@ -524,7 +524,7 @@
 		if (hit.stale) {
 			var warning = document.createElement('div');
 			warning.className = 'knowwe-search-stale';
-			warning.textContent = 'Die Seite wurde seit der Indizierung geändert.';
+			warning.textContent = 'The page has changed since it was indexed.';
 			content.appendChild(warning);
 		}
 
@@ -779,7 +779,7 @@
 				quick.panel.innerHTML = '';
 				var wait = document.createElement('div');
 				wait.className = 'knowwe-quicksearch-busy';
-				wait.textContent = 'Suche …';
+				wait.textContent = 'Searching …';
 				quick.panel.appendChild(wait);
 				showQuick();
 			}
@@ -884,8 +884,7 @@
 		button.type = 'button';
 		button.className = 'knowwe-quicksearch-more';
 		button.addEventListener('mousedown', keepFocus);
-		button.textContent = hit.folded + (hit.folded === 1 ? ' weiterer Treffer' : ' weitere Treffer')
-			+ ' auf dieser Seite';
+		button.textContent = hit.folded + (hit.folded === 1 ? ' more result' : ' more results') + ' on this page';
 
 		var loaded = null;
 		var open = false;
@@ -958,7 +957,7 @@
 		if (!quick.hits.length) {
 			var empty = document.createElement('div');
 			empty.className = 'knowwe-quicksearch-empty';
-			empty.textContent = answer.indexing ? 'Index wird aufgebaut …' : 'Keine Treffer';
+			empty.textContent = answer.indexing ? 'Building the index …' : 'No results';
 			quick.panel.appendChild(empty);
 			if (answer.createPage) quick.panel.appendChild(createPageOffer(answer.createPage));
 			showQuick();
@@ -990,7 +989,7 @@
 		all.href = 'Search.jsp?query=' + encodeURIComponent(quick.query);
 		// "auf Suchseite", because below the limit the dropdown already shows them all and "alle anzeigen"
 		// would promise nothing new
-		all.textContent = 'Alle ' + answer.total + (answer.exact ? '' : '+') + ' Treffer auf Suchseite anzeigen';
+		all.textContent = 'Show all ' + answer.total + (answer.exact ? '' : '+') + ' results on the search page';
 		quick.panel.appendChild(all);
 		if (answer.createPage) quick.panel.appendChild(createPageOffer(answer.createPage));
 
