@@ -74,7 +74,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 	public CompilerHasMessagesTest(Message.Type type) {
 		this.type = type;
 		this.addIgnoreParameter("allowed-message-regex", TestParameter.Type.Regex, TestParameter.Mode.Optional,
-				"Specify regular expression of messages that are ignored by this test. Prefix with 'article:' to ignore all messages from matching article titles.");
+				"Specify regular expression of messages that are ignored by this test. <br>Prefix with 'article:' to ignore all messages from matching article titles.");
 	}
 
 	@Override
