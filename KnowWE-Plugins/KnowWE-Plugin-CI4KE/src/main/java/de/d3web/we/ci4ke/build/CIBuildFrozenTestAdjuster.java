@@ -72,10 +72,17 @@ class CIBuildFrozenTestAdjuster {
 				String fileText = Streams.getTextAndClose(attachment.get().getInputStream());
 
 				for (String testObject : testResult.getTestObjectsWithUnexpectedOutcome()) {
-					Pair<Message, Message> messagePair = splitText(testResult.getMessageForTestObject(testObject), fileText, testObject);
-					unexpectedMessagesNormal.put(testObject, messagePair.getA());
-					unexpectedMessagesFrozen.put(testObject, messagePair.getB());
-					if (!messagePair.getA().getText().isEmpty()) isFullyFrozen = false;
+					Message originalMessage = testResult.getMessageForTestObject(testObject);
+					Pair<Message, Message> messagePair = splitText(originalMessage, fileText, testObject);
+					String normalText = messagePair.getA().getText();
+					String frozenText = messagePair.getB().getText();
+					if (!normalText.isEmpty()) {
+						unexpectedMessagesNormal.put(testObject, messagePair.getA());
+						isFullyFrozen = false;
+					}
+					if (!frozenText.isEmpty()) {
+						unexpectedMessagesFrozen.put(testObject, messagePair.getB());
+					}
 				}
 
 				for (String testObject : testResult.getTestObjectsWithExpectedOutcome()) {
@@ -88,10 +95,12 @@ class CIBuildFrozenTestAdjuster {
 				} else {
 					normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesNormal, expectedMessages, testResult.getSummary());
 				}
-				frozenTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesFrozen, expectedMessages, testResult.getSummary());
-				frozenTest.setFrozenTest(true);
 				newResults.add(normalTest);
-				newResults.add(frozenTest);
+				if (!unexpectedMessagesFrozen.isEmpty()) {
+					frozenTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesFrozen, expectedMessages, testResult.getSummary());
+					frozenTest.setFrozenTest(true);
+					newResults.add(frozenTest);
+				}
 				removeResults.add(testResult);
 			}
 		}
@@ -119,10 +128,11 @@ class CIBuildFrozenTestAdjuster {
 
 	private static boolean containsLine(String[] lines, String fileText) {
 		List<String> fileLines = List.of(fileText.split("\\R"));
-		Set<String> fileLineSet = new HashSet<>(fileLines);
+		Set<String> fileLineSet = new HashSet<>();
+		fileLines.stream().map(CIFreezeFailedTestsAction::normalizeLink).forEach(fileLineSet::add);
 
 		for (String line : lines) {
-			if (fileLineSet.contains(line)) {
+			if (fileLineSet.contains(normalizeLink(line))) {
 				return true;
 			}
 		}
