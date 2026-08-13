@@ -20,7 +20,7 @@ import com.denkbares.events.EventManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.event.ArticleRegisteredEvent;
+import de.knowwe.event.ArticleManagerCommitDoneEvent;
 
 public class LongOperationUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LongOperationUtils.class);
@@ -154,7 +154,7 @@ public class LongOperationUtils {
 					LONG_OPERATION_CLEANER = new com.denkbares.events.EventListener() {
 						@Override
 						public Collection<Class<? extends Event>> getEvents() {
-							return List.of(ArticleRegisteredEvent.class);
+							return List.of(ArticleManagerCommitDoneEvent.class);
 						}
 
 						@Override
