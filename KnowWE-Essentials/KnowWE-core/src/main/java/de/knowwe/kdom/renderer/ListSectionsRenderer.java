@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -78,6 +79,8 @@ public class ListSectionsRenderer<T extends Type> {
 	private final UserContext context;
 
 	private final TreeMap<Integer, String> headers = new TreeMap<>();
+	// the plain text of each header, as opposed to the (potentially decorated) html in #headers
+	private final TreeMap<Integer, String> headerNames = new TreeMap<>();
 	private final TreeMap<Integer, String> superheaders = new TreeMap<>();
 	private final List<Pair<String, Function<Section<T>, String>>> columns = new ArrayList<>();
 	private final List<Function<Section<T>, Collection<? extends Tool>>> tools = new ArrayList<>();
@@ -86,6 +89,7 @@ public class ListSectionsRenderer<T extends Type> {
 
 	private String emptyText = "-- no entries --";
 	private Set<Integer> skipSearch = new HashSet<>();
+	private String filterProviderAction;
 
 	public ListSectionsRenderer(Sections<T> sections, UserContext context) {
 		this(sections.asList(), context);
@@ -136,6 +140,7 @@ public class ListSectionsRenderer<T extends Type> {
 	 * @return this instance to chain builder calls
 	 */
 	public ListSectionsRenderer<T> header(String heading) {
+		this.headerNames.put(columns.size(), heading);
 		this.headers.put(columns.size(), Strings.encodeHtml(heading));
 		return this;
 	}
@@ -181,6 +186,7 @@ public class ListSectionsRenderer<T extends Type> {
 	 */
 	public ListSectionsRenderer<T> header(String heading, String explainHtml, boolean searchable) {
 		if (!searchable) this.skipSearch.add(columns.size());
+		this.headerNames.put(columns.size(), heading);
 		this.headers.put(columns.size(), "<span class='tooltipster' title='" + Strings.encodeHtml(explainHtml) + "'>" +
 										 Strings.encodeHtml(heading) + "<span class='knowwe-superscript'>" + Icon.INFO.toHtml() + "</span></span>");
 		return this;
@@ -553,10 +559,19 @@ public class ListSectionsRenderer<T extends Type> {
 
 		// render column groups
 		headers.putIfAbsent(0, "");
+		Map<Integer, String> filterableColumns = filterProviderAction == null
+				? Map.of() : getFilterableColumnNames();
 		headers.forEach((index, heading) -> {
 			int next = Optional.ofNullable(headers.higherKey(index)).orElse(columns.size());
 			int colspan = next - index;
-			page.appendHtmlTag("th", "colspan", String.valueOf(colspan));
+			String columnName = filterableColumns.get(index);
+			if (columnName == null) {
+				page.appendHtmlTag("th", "colspan", String.valueOf(colspan));
+			}
+			else {
+				page.appendHtmlTag("th", "colspan", String.valueOf(colspan),
+						"column-name", columnName, "filter-provider-action", filterProviderAction);
+			}
 			page.appendHtml(heading);
 			page.appendHtmlTag("/th");
 		});
@@ -685,7 +700,7 @@ public class ListSectionsRenderer<T extends Type> {
 
 	public Map<String, Function<Section<T>, String>> getKeyFilters() {
 		Map<String, Function<Section<T>, String>> keyFilters = new HashMap<>();
-		for (Map.Entry<Integer, String> entry : headers.entrySet()) {
+		for (Map.Entry<Integer, String> entry : headerNames.entrySet()) {
 			if (skipSearch.contains(entry.getKey())) continue;
 			if (columns.size() > entry.getKey()) {
 				Pair<String, Function<Section<T>, String>> column = columns.get(entry.getKey());
@@ -693,6 +708,92 @@ public class ListSectionsRenderer<T extends Type> {
 			}
 		}
 		return keyFilters;
+	}
+
+	/**
+	 * Enables per-column filters for this list, using the specified action to provide the values available for each
+	 * column. This is called by {@link GroupedFilterListSectionsRenderer}, which also applies the filters the user has
+	 * selected.
+	 *
+	 * @param filterProviderAction the name of the action providing the filter values, or null to disable the filters
+	 * @return this instance to chain builder calls
+	 */
+	ListSectionsRenderer<T> filterProviderAction(@Nullable String filterProviderAction) {
+		this.filterProviderAction = filterProviderAction;
+		return this;
+	}
+
+	/**
+	 * Returns the names of all columns that can be filtered individually, mapped by their column index. A column
+	 * qualifies if it has its own header that covers exactly this one column, and if searching has not been disabled
+	 * for it using {@link #header(String, String, boolean)}. Because the name is used as the key of the user's filter
+	 * settings, duplicate header texts are made unique by appending a counter.
+	 *
+	 * @return the filterable columns' names by their column index
+	 */
+	@NotNull
+	private Map<Integer, String> getFilterableColumnNames() {
+		Map<Integer, String> result = new LinkedHashMap<>();
+		Set<String> usedNames = new HashSet<>();
+		for (Map.Entry<Integer, String> entry : headerNames.entrySet()) {
+			int index = entry.getKey();
+			String name = entry.getValue();
+			if (skipSearch.contains(index)) continue;
+			if (index >= columns.size()) continue;
+			if (Strings.isBlank(name)) continue;
+			if (CSS_SEPARATOR_COLUMN.equals(columns.get(index).getA())) continue;
+			// a header spanning multiple columns cannot be mapped to a single column to filter for
+			int next = Optional.ofNullable(headers.higherKey(index)).orElse(columns.size());
+			if (next - index != 1) continue;
+			String uniqueName = name;
+			for (int i = 2; !usedNames.add(uniqueName); i++) {
+				uniqueName = name + " (" + i + ")";
+			}
+			result.put(index, uniqueName);
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the content accessors of all columns that can be filtered individually, mapped by their column name, as
+	 * used for the {@code column-name} attribute of the rendered table headers.
+	 *
+	 * @return the filterable columns' content accessors by their column name
+	 */
+	@NotNull
+	public Map<String, Function<Section<T>, String>> getFilterableColumns() {
+		Map<String, Function<Section<T>, String>> result = new LinkedHashMap<>();
+		getFilterableColumnNames().forEach((index, name) -> result.put(name, getFilterableContent(columns.get(index))));
+		return result;
+	}
+
+	/**
+	 * Returns the accessor to filter the specified column's content for. Columns whose content is rendered as html are
+	 * reduced to their plain text, so that the user is offered the values as they are displayed instead of the markup
+	 * producing them.
+	 *
+	 * @param column the column to get the filterable content of
+	 * @return the accessor to the column's plain text content
+	 */
+	private Function<Section<T>, String> getFilterableContent(Pair<String, Function<Section<T>, String>> column) {
+		Function<Section<T>, String> content = column.getB();
+		// the same css classes that are rendered as html in #renderLine(RenderResult, Section, int)
+		return switch (column.getA().split("\\s+")[0]) {
+			case CSS_ERROR_COLUMN, CSS_HTML_COLUMN, CSS_NUMBER_COLUMN ->
+					section -> Strings.trim(Strings.htmlToPlain(content.apply(section)));
+			default -> content;
+		};
+	}
+
+	/**
+	 * Returns the sections displayed by this list renderer, in the order they are rendered. Use
+	 * {@link #filter(Predicate)} to remove sections.
+	 *
+	 * @return the sections of this list
+	 */
+	@NotNull
+	public List<Section<T>> getSections() {
+		return Collections.unmodifiableList(sections);
 	}
 
 	/**

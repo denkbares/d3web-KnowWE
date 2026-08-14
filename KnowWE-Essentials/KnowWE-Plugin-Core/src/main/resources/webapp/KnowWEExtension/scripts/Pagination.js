@@ -150,6 +150,8 @@ KNOWWE.core.plugin.pagination = function() {
       let columns = paginationState.filter.columns || [];
       $table.find("th").each(function() {
         const $th = jq$(this);
+        // only columns offering filter values are filterable, e.g. not the tool columns of a list section
+        if (!$th.attr(filterProviderActionAttribute)) return;
         $th.prepend(getFilterSymbol(isEmpty(columns[getColumnName($th)])));
       });
 
@@ -197,10 +199,22 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function closeFilter(sectionId, reset = false) {
-    let $openFilters = jq$(".pagination-column-filter.showing-tooltip, .sparqltable .filter-icon.showing-tooltip");
+    // showing-tooltip is only ever set on the column filter icons and the column selection button,
+    // so we must not restrict this to a specific kind of table
+    let $openFilters = jq$(".pagination-column-filter.showing-tooltip, .filter-icon.showing-tooltip");
     if ($openFilters.exists()) {
       $openFilters.removeClass("showing-tooltip").tooltipster("hide");
-      if (reset) loadBackupPaginationState(sectionId);
+      if (reset) {
+        // restore the sections whose filter was actually open, which is not necessarily the given one:
+        // opening a filter of another table would otherwise reset that table's state to its (missing) backup
+        const restored = new Set();
+        $openFilters.each(function() {
+          const openSectionId = jq$(this).closest(".knowwe-paginationWrapper").attr("id") || sectionId;
+          if (restored.has(openSectionId)) return;
+          restored.add(openSectionId);
+          loadBackupPaginationState(openSectionId);
+        });
+      }
     }
   }
 
@@ -429,7 +443,7 @@ KNOWWE.core.plugin.pagination = function() {
           saveAndCloseFilter(sectionId);
         } else {
           let paginationState = getPaginationState(sectionId);
-          let columnState = getColumnState(paginationState);
+          let columnState = getColumnState(paginationState, columnName);
           const filterText = jq$(this).val();
           columnState.filterText = filterText;
           setPaginationState(sectionId, paginationState);
@@ -554,33 +568,13 @@ KNOWWE.core.plugin.pagination = function() {
 
     const sectionId = $paginationWrapper.attr("id");
 
-    const $table = $paginationWrapper.find("table");
-    if (!$table.exists()) {
-      if (!$paginationWrapper.is(".list-sections-pagination")) {
-        $paginationWrapper.find(".knowwe-paginationToolbar").remove();
-      }
-      $paginationWrapper.find(".download-tools").remove();
-      return;
-    }
-
-    //for css purposes
-    $table.addClass("knowwe-pagination");
-
-    // register count selector
-    $paginationWrapper.find("select.count").on("change", function() {
-      KNOWWE.core.plugin.pagination.setCount(this, sectionId);
-    });
-
-    // register start row change event
-    $paginationWrapper.find("input.startRow").on("change", function() {
-      KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
-    });
-
     const filterActivator = $paginationWrapper.find(".filter-activator");
     const sortingMode = $paginationWrapper.attr("sorting-mode"); // from markup (not user specific)
     const filteringActive = $paginationWrapper.attr("filtering") === "true"; // from markup/annotation (not user specific)
 
     // decoratePagination "Filter" checkbox
+    // this happens before any table handling, because the filter controls have to remain usable
+    // even if the filter does not match any row at all, so that no table is rendered
     const paginationState = getPaginationState(sectionId);
     const filterState = getPaginationFilterState(paginationState);
     if (filterState.active) {
@@ -609,6 +603,28 @@ KNOWWE.core.plugin.pagination = function() {
     } else {
       clearFilter.prop("disabled", !anyActiveFilter(filterState));
     }
+
+    const $table = $paginationWrapper.find("table");
+    if (!$table.exists()) {
+      if (!$paginationWrapper.is(".list-sections-pagination")) {
+        $paginationWrapper.find(".knowwe-paginationToolbar").remove();
+      }
+      $paginationWrapper.find(".download-tools").remove();
+      return;
+    }
+
+    //for css purposes
+    $table.addClass("knowwe-pagination");
+
+    // register count selector
+    $paginationWrapper.find("select.count").on("change", function() {
+      KNOWWE.core.plugin.pagination.setCount(this, sectionId);
+    });
+
+    // register start row change event
+    $paginationWrapper.find("input.startRow").on("change", function() {
+      KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
+    });
 
     const $columnFilterButton = $paginationWrapper.find(".pagination-column-filter");
 

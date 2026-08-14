@@ -505,8 +505,8 @@ KNOWWE.plugin.listSection = function() {
         setCookieAndRerender(COOKIE_LIST_SECTION_ID, inputText, jq$(this));
       });
 
-      // init 'clear' button
-      jq$(".grouped-list-section-wrapper .clear-filter").on("click", function() {
+      // init 'clear' button; scoped to the text filter, the pagination column filters use the same class
+      jq$(".grouped-list-section-wrapper .filter-input .clear-filter").on("click", function() {
         let $input = jq$(this).parents(".grouped-list-section-wrapper").find("input.filter-list-section-input");
         $input.val("");
         $input.trigger("change");

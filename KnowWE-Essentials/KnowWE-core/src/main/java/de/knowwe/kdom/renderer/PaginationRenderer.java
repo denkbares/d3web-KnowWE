@@ -179,6 +179,20 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 
 	@NotNull
 	public static Map<String, Set<Pattern>> getFilter(Section<?> section, UserContext user) {
+		return getFilter(user);
+	}
+
+	/**
+	 * Returns the patterns the user has selected to filter for, mapped by the name of the column they apply to. A row
+	 * is to be displayed if, for each contained column, the column's content matches at least one of the column's
+	 * patterns. Columns the user has not filtered for are not contained in the returned map. If the user has switched
+	 * filtering off, an empty map is returned.
+	 *
+	 * @param user the user context of the current request
+	 * @return the patterns to filter for, by column name
+	 */
+	@NotNull
+	public static Map<String, Set<Pattern>> getFilter(UserContext user) {
 		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();
 
 		JSONObject paginationSettings = getPaginationSettings(user);
@@ -310,12 +324,32 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	protected void renderFilter(Section<?> section, UserContext user, RenderResult result) {
+		RenderResult filterTools = new RenderResult(result);
+		renderFilterTools(section, user, filterTools);
+		renderFilter(section.getID(), user, result, page -> page.append(filterTools));
+	}
+
+	/**
+	 * Renders the filter controls for a table that is not rendered by a decorating {@link PaginationRenderer}, e.g. an
+	 * open-ended list, analogous to {@link #renderOpenPagination(String, UserContext, RenderResult, int, int...)}. In
+	 * contrast to {@link #renderFilter(Section, UserContext, RenderResult)}, no column selection is offered, because
+	 * hiding columns is not supported for those tables.
+	 *
+	 * @param id     stable section ID used for client-side state and rerendering
+	 * @param user   current user context
+	 * @param result render result receiving the controls
+	 */
+	public static void renderOpenFilter(String id, UserContext user, RenderResult result) {
+		renderFilter(id, user, result, page -> page.append(new Button("Clear Filter").clazz("clear-filter")));
+	}
+
+	private static void renderFilter(String id, UserContext user, RenderResult result, HtmlProvider filterTools) {
 		// generate unique id in case the filter is added multiple times
-		String id = "filter-activator-" + section.getID();
-		String activators = user.getRenderResultKeyValueStore().getAttribute(id);
+		String activatorKey = "filter-activator-" + id;
+		String activators = user.getRenderResultKeyValueStore().getAttribute(activatorKey);
 		if (activators == null) activators = "0";
-		String uniqueId = id + "-" + activators;
-		user.getRenderResultKeyValueStore().setAttribute(id, activators + 1);
+		String uniqueId = activatorKey + "-" + activators;
+		user.getRenderResultKeyValueStore().setAttribute(activatorKey, activators + 1);
 
 		HtmlElement input = new HtmlElement("input")
 				.clazz("filter-activator filter-style")
@@ -325,11 +359,8 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				.clazz("fillText")
 				.attributes("for", uniqueId)
 				.content("Filter");
-		RenderResult filterTools = new RenderResult(result);
-		renderFilterTools(section, user, filterTools);
 
-		result.append(toolBar(section.getID(), input, label,
-				new Div().clazz("filter-tools").children(page -> page.append(filterTools))));
+		result.append(toolBar(id, input, label, new Div().clazz("filter-tools").children(filterTools)));
 	}
 
 	protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {

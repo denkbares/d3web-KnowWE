@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
@@ -72,6 +74,9 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 	private final List<Pair<String, ListSectionsRenderer<T>>> renderers;
 	private final String id;
+	// the markup section this list is rendered for, if known; required for per-column filters
+	@Nullable
+	private final Section<?> self;
 	private final UserContext context;
 	private String placeholder;
 
@@ -103,7 +108,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 * @param renderer    The single instance of {@link ListSectionsRenderer}
 	 */
 	public GroupedFilterListSectionsRenderer(String id, String placeholder, ListSectionsRenderer<T> renderer) {
-		this(id, placeholder, renderer.getContext(), Collections.singletonList(new Pair<>(null, renderer)));
+		this(null, id, placeholder, renderer.getContext(), Collections.singletonList(new Pair<>(null, renderer)));
 		this.emptyText = renderer.getEmptyText();
 	}
 
@@ -130,16 +135,28 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 *                  of the associated header
 	 */
 	public GroupedFilterListSectionsRenderer(Section<?> self, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers) {
-		this(self.getID(), "Filter " + self.getArticle().getTitle(), context, renderers);
+		this(self, self.getID(), "Filter " + self.getArticle().getTitle(), context, renderers);
 	}
 
-	private GroupedFilterListSectionsRenderer(String id, String placeholder, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers) {
+	private GroupedFilterListSectionsRenderer(@Nullable Section<?> self, String id, String placeholder, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers) {
+		this.self = self;
 		this.id = id;
 		this.renderers = renderers;
 		this.context = context;
 		this.placeholder = placeholder;
 		this.keyFilterProviders = new LinkedHashMap<>();
 		this.keylessFilterProviders = new HashSet<>();
+	}
+
+	/**
+	 * Returns whether the columns of this list can be filtered individually. This requires the markup to be able to
+	 * rebuild this very list in a subsequent request, so that {@link ListSectionsFilterProviderAction} can determine
+	 * the values available for each column.
+	 *
+	 * @return whether per-column filters are supported
+	 */
+	private boolean isColumnFilteringSupported() {
+		return self != null && self.get() instanceof ListSectionsProvider;
 	}
 
 	public GroupedFilterListSectionsRenderer<T> filter(Function<Section<T>, String> filter) {
@@ -266,15 +283,32 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 */
 	public void render(RenderResult page) {
 		boolean renderControls = !context.isRenderingPreview();
+		boolean columnFiltering = renderControls && isColumnFilteringSupported();
 		String searchPhrase = getFilterFromCookie();
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
-		Predicate<Section<T>> filter = Strings.isBlank(searchPhrase)
-				? noFilterPredicate
-				: searchPredicate.or(alwaysShowPredicate);
+		ColumnFilterPredicate columnPredicate = columnFiltering
+				? new ColumnFilterPredicate(PaginationRenderer.getFilter(context))
+				: null;
+		boolean textFiltered = Strings.nonBlank(searchPhrase);
+		boolean columnFiltered = columnPredicate != null && !columnPredicate.isEmpty();
+
+		// the restrictions of the unfiltered list only apply as long as the user does not filter at all
+		Predicate<Section<T>> filter;
+		if (textFiltered) {
+			filter = searchPredicate.or(alwaysShowPredicate);
+		}
+		else if (columnFiltered) {
+			filter = Predicates.TRUE();
+		}
+		else {
+			filter = noFilterPredicate;
+		}
+		if (columnFiltered) filter = filter.and(columnPredicate);
+
 		int defaultCount = getDefaultCount();
 		int count = PaginationRenderer.getCount(context, defaultCount);
 		int startRow = count == Integer.MAX_VALUE ? 1 : PaginationRenderer.getStartRow(context);
-		int maximumMatches = Strings.isBlank(searchPhrase) ? noFilterLimit : -1;
+		int maximumMatches = textFiltered || columnFiltered ? -1 : noFilterLimit;
 		OpenPaginationPredicate<Section<T>> pagination = new OpenPaginationPredicate<>(filter, startRow - 1,
 				count, maximumMatches);
 
@@ -282,6 +316,11 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		List<HtmlProvider> listChildren = new ArrayList<>();
 		for (Pair<String, ListSectionsRenderer<T>> rendererPair : renderers) {
 			searchPredicate.setRenderer(rendererPair.getB());
+			if (columnPredicate != null) columnPredicate.setRenderer(rendererPair.getB());
+			if (columnFiltering) {
+				rendererPair.getB()
+						.filterProviderAction(ListSectionsFilterProviderAction.class.getSimpleName());
+			}
 			ListSectionsRenderer<T> filtered = rendererPair.getB().filter(pagination);
 			if (filtered.isEmpty()) continue;
 			String header = rendererPair.getA();
@@ -312,6 +351,9 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 			List<HtmlProvider> paginationChildren = new ArrayList<>();
 			paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
 					id, context, result, defaultCount, PAGINATION_COUNT_OPTIONS));
+			if (columnFiltering) {
+				paginationChildren.add(result -> PaginationRenderer.renderOpenFilter(id, context, result));
+			}
 			paginationChildren.add(content);
 			if (showBottomPagination) {
 				paginationChildren.add(result -> PaginationRenderer.renderOpenPagination(
@@ -322,7 +364,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 					.id(id)
 					.attributes(
 							"sorting-mode", PaginationRenderer.SortingMode.off.name(),
-							"filtering", "false",
+							"filtering", Boolean.toString(columnFiltering),
 							"reset-start-row-on-count-change", "true")
 					.children(paginationChildren.toArray(HtmlProvider[]::new));
 		}
@@ -402,6 +444,103 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	public GroupedFilterListSectionsRenderer<T> searchHint(String searchHintHtml) {
 		this.searchHint = searchHintHtml;
 		return this;
+	}
+
+	/**
+	 * Collects the values that are available for filtering the specified column, to be offered in the column's filter
+	 * popup. The values are narrowed down by the current free text filter and by the filters of all other columns, so
+	 * that the offered values match what filtering for them would actually display. The filter of the specified column
+	 * itself is deliberately ignored, so that the user is able to widen an existing selection again.
+	 * <p>
+	 * Cells without content are returned as an empty string.
+	 *
+	 * @param columnName      the name of the column to collect the values for, see
+	 *                        {@link ListSectionsRenderer#getFilterableColumns()}
+	 * @param filterTextQuery an optional text the values have to contain, or null to accept all values
+	 * @param maxCount        the maximum number of values to be collected
+	 * @return the distinct values of the column, in the order the rows are displayed in
+	 */
+	@NotNull
+	public List<String> collectFilterValues(String columnName, @Nullable String filterTextQuery, int maxCount) {
+		String searchPhrase = getFilterFromCookie();
+		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
+		Map<String, Set<Pattern>> columnFilters = new HashMap<>(PaginationRenderer.getFilter(context));
+		// ignore the column's own filter, otherwise the current selection could never be widened again
+		columnFilters.remove(columnName);
+		ColumnFilterPredicate columnPredicate = new ColumnFilterPredicate(columnFilters);
+
+		Set<String> values = new LinkedHashSet<>();
+		for (Pair<String, ListSectionsRenderer<T>> rendererPair : renderers) {
+			ListSectionsRenderer<T> renderer = rendererPair.getB();
+			Function<Section<T>, String> accessor = renderer.getFilterableColumns().get(columnName);
+			if (accessor == null) continue; // the column is not part of this group
+			searchPredicate.setRenderer(renderer);
+			columnPredicate.setRenderer(renderer);
+			for (Section<T> section : renderer.getSections()) {
+				if (Strings.nonBlank(searchPhrase) && !searchPredicate.test(section)) continue;
+				if (!columnPredicate.test(section)) continue;
+				String value = accessor.apply(section);
+				if (value == null) value = "";
+				// empty cells are always offered, so the user can filter for them
+				if (Strings.nonBlank(value) && Strings.nonBlank(filterTextQuery)
+					&& !Strings.containsIgnoreCase(value, filterTextQuery)) {
+					continue;
+				}
+				values.add(value);
+				if (values.size() >= maxCount) return new ArrayList<>(values);
+			}
+		}
+		return new ArrayList<>(values);
+	}
+
+	/**
+	 * Applies the filters the user has selected in the columns' filter popups. Because each group of this renderer may
+	 * define its own columns, the predicate has to be bound to the group it is applied to, using
+	 * {@link #setRenderer(ListSectionsRenderer)}.
+	 */
+	private final class ColumnFilterPredicate implements Predicate<Section<T>> {
+
+		private final Map<String, Set<Pattern>> columnFilters;
+		private Predicate<Section<T>> delegate = Predicates.TRUE();
+
+		private ColumnFilterPredicate(Map<String, Set<Pattern>> columnFilters) {
+			this.columnFilters = columnFilters;
+		}
+
+		/**
+		 * Returns whether nothing is actually filtered out. Columns the user has opened the filter popup for, but has
+		 * not restricted, do not have any patterns to filter for.
+		 */
+		private boolean isEmpty() {
+			return columnFilters.values().stream().allMatch(Set::isEmpty);
+		}
+
+		private void setRenderer(ListSectionsRenderer<T> renderer) {
+			Predicate<Section<T>> predicate = Predicates.TRUE();
+			Map<String, Function<Section<T>, String>> accessors = renderer.getFilterableColumns();
+			for (Entry<String, Set<Pattern>> entry : columnFilters.entrySet()) {
+				Function<Section<T>, String> accessor = accessors.get(entry.getKey());
+				if (accessor == null) continue; // the column is not part of this group
+				Set<Pattern> patterns = entry.getValue();
+				if (patterns.isEmpty()) continue;
+				predicate = predicate.and(section -> matches(accessor, patterns, section));
+			}
+			this.delegate = predicate;
+		}
+
+		private boolean matches(Function<Section<T>, String> accessor, Set<Pattern> patterns, Section<T> section) {
+			String text = accessor.apply(section);
+			if (text == null) text = "";
+			for (Pattern pattern : patterns) {
+				if (pattern.matcher(text).matches()) return true;
+			}
+			return false;
+		}
+
+		@Override
+		public boolean test(Section<T> section) {
+			return delegate.test(section);
+		}
 	}
 
 	private final class SearchPredicate implements Predicate<Section<T>> {
