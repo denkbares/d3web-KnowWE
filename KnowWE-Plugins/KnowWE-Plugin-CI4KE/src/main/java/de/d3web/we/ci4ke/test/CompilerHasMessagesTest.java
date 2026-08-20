@@ -296,7 +296,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 	private static void addIgnorePattern(String ignore, List<Pattern> messagePatterns, List<Pattern> articlePatterns) {
 		String articleRegex = removeArticlePrefix(ignore);
 		if (articleRegex != null && !articleRegex.isBlank()) {
-			articlePatterns.add(Pattern.compile(articleRegex));
+			articlePatterns.add(Pattern.compile(articleRegex.strip()));
 		}
 		else {
 			messagePatterns.add(Pattern.compile(ignore));
