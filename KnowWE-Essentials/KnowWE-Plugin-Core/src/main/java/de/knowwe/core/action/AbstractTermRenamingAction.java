@@ -39,29 +39,42 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 	public static final String NO_FORCE = "noForce";
 	private static final String ARTICLES = "articles";
 
-	protected void executeRenamingCommands(UserActionContext context, Collection<RenamingCommand> renamingCommands) throws IOException {
+	/**
+	 * Collects all replacements before modifying any article and then applies the collected changes article-wise.
+	 *
+	 * @return {@code true} if at least one article could not be changed, for example because a section became stale or
+	 * the user lost the required edit permission; {@code false} if all replacements were applied
+	 */
+	protected boolean executeRenamingCommands(UserActionContext context, Collection<RenamingCommand> renamingCommands) throws IOException {
 
 		Map<Article, Map<String, String>> nodesMapByArticle = new HashMap<>();
 		for (RenamingCommand renamingCommand : renamingCommands) {
 			appendReplacements(context, renamingCommand, nodesMapByArticle);
 		}
 
-		performRenaming(nodesMapByArticle, context);
+		return performRenaming(nodesMapByArticle, context);
 	}
 
-	protected void performRenaming(Map<Article, Map<String, String>> nodesMapByArticle, UserActionContext context) throws IOException {
+	protected boolean performRenaming(Map<Article, Map<String, String>> nodesMapByArticle, UserActionContext context) throws IOException {
 		ArticleManager mgr = context.getArticleManager();
+		boolean failed = false;
 		mgr.open();
 		try {
 			for (Article article : nodesMapByArticle.keySet()) {
 				if (userCanEditArticle(context, article)) {
-					Sections.replace(context, nodesMapByArticle.get(article)).sendErrors(context);
+					failed = Sections.replace(context, nodesMapByArticle.get(article)).sendErrors(context);
 				}
+				else {
+					context.sendError(403, "You do not have the permission to edit the page '" + article.getTitle() + "'.");
+					failed = true;
+				}
+				if (failed) break;
 			}
 		}
 		finally {
 			mgr.commit();
 		}
+		return failed;
 	}
 
 	private boolean userCanEditArticle(UserActionContext context, Article article) {
