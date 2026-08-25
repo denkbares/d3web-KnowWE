@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
@@ -54,6 +56,7 @@ import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
  * @created 08.05.2026
  */
 class CIBuildFrozenTestAdjuster {
+	private static final Pattern NUMBER_PATTERN = Pattern.compile("\\b\\d+\\b");
 
 	static void adjustFrozenTests(BuildResult buildResult, CIDashboard dashboard) throws IOException {
 		if (buildResult == null) return;
@@ -188,8 +191,8 @@ class CIBuildFrozenTestAdjuster {
 		}
 
 		return new Pair<>(
-				new Message(message.getType(), hasNormalContent ? adjustHeaderCounts(normalTest.toString()).trim() : ""),
-				new Message(message.getType(), hasFrozenContent ? adjustHeaderCounts(frozenTest.toString()).trim() : "")
+				new Message(message.getType(), hasNormalContent ? adjustHeaderCounts(message.getText(), normalTest.toString()).trim() : ""),
+				new Message(message.getType(), hasFrozenContent ? adjustHeaderCounts(message.getText(), frozenTest.toString()).trim() : "")
 		);
 	}
 
@@ -322,9 +325,10 @@ class CIBuildFrozenTestAdjuster {
 		boolean firstLineMustBeSectionHeader = true;
 
 		//find SectionHeader that contains testObject, put content under that Section into the map
-		for (String fileLine : fileLines) {
+		for (int i = 0; i < fileLines.size(); i++) {
+			String fileLine = fileLines.get(i);
 			boolean isHeader = !fileLine.startsWith("*");
-			boolean isSectionHeader = isHeader && fileLines.indexOf(fileLine) < fileLines.size() - 1 && !fileLines.get(fileLines.indexOf(fileLine) + 1).startsWith("*");
+			boolean isSectionHeader = isHeader && i < fileLines.size() - 1 && !fileLines.get(i + 1).startsWith("*");
 			if (firstLineMustBeSectionHeader) {
 				isSectionHeader = true;
 				firstLineMustBeSectionHeader = false;
@@ -428,20 +432,101 @@ class CIBuildFrozenTestAdjuster {
 	}
 
 	/**
+	 * Adjusts the counts of a split message by subtracting the top-level findings that were removed
+	 * from the counts rendered in the original message. Nested list lines are details of their
+	 * top-level finding and therefore do not affect a count on their own.
+	 */
+	private static String adjustHeaderCounts(String originalText, String splitText) {
+		List<ReportBlock> originalBlocks = parseReportBlocks(originalText);
+		List<ReportBlock> splitBlocks = parseReportBlocks(splitText);
+		if (originalBlocks.isEmpty() || splitBlocks.isEmpty()) return splitText;
+
+		Map<String, ReportBlock> originalBlocksByHeader = new HashMap<>();
+		for (ReportBlock block : originalBlocks) {
+			originalBlocksByHeader.putIfAbsent(normalizeHeader(block.header()), block);
+		}
+		Map<String, ReportBlock> splitBlocksByHeader = new HashMap<>();
+		for (ReportBlock block : splitBlocks) {
+			splitBlocksByHeader.putIfAbsent(normalizeHeader(block.header()), block);
+		}
+
+		int removedTotal = 0;
+		for (ReportBlock originalBlock : originalBlocks) {
+			ReportBlock splitBlock = splitBlocksByHeader.get(normalizeHeader(originalBlock.header()));
+			removedTotal += countMessages(originalBlock.content())
+					- (splitBlock == null ? 0 : countMessages(splitBlock.content()));
+		}
+
+		List<String> result = new ArrayList<>();
+		for (int i = 0; i < splitBlocks.size(); i++) {
+			ReportBlock splitBlock = splitBlocks.get(i);
+			ReportBlock originalBlock = originalBlocksByHeader.get(normalizeHeader(splitBlock.header()));
+			String header = splitBlock.header();
+			if (i == 0) {
+				header = replaceFirstNumber(header,
+						Math.max(0, getFirstNumber(originalBlocks.get(0).header()) - removedTotal));
+			}
+			else if (originalBlock != null) {
+				int removed = countMessages(originalBlock.content()) - countMessages(splitBlock.content());
+				header = replaceLastNumber(header,
+						Math.max(0, getLastNumber(originalBlock.header()) - removed));
+			}
+			result.add(header);
+			result.addAll(splitBlock.content());
+		}
+		return String.join(System.lineSeparator(), result);
+	}
+
+	private static List<ReportBlock> parseReportBlocks(String text) {
+		List<ReportBlock> blocks = new ArrayList<>();
+		String currentHeader = null;
+		List<String> currentContent = new ArrayList<>();
+		for (String line : text.split("\\R")) {
+			if (line.isBlank()) continue;
+			if (!line.startsWith("*")) {
+				if (currentHeader != null) {
+					blocks.add(new ReportBlock(currentHeader, new ArrayList<>(currentContent)));
+				}
+				currentHeader = line;
+				currentContent.clear();
+			}
+			else {
+				currentContent.add(line);
+			}
+		}
+		if (currentHeader != null) {
+			blocks.add(new ReportBlock(currentHeader, new ArrayList<>(currentContent)));
+		}
+		return blocks;
+	}
+
+	private static int getFirstNumber(String text) {
+		Matcher matcher = NUMBER_PATTERN.matcher(text);
+		return matcher.find() ? Integer.parseInt(matcher.group()) : 0;
+	}
+
+	private static int getLastNumber(String text) {
+		Matcher matcher = NUMBER_PATTERN.matcher(text);
+		int result = 0;
+		while (matcher.find()) {
+			result = Integer.parseInt(matcher.group());
+		}
+		return result;
+	}
+
+	/**
 	 * Counts report findings inside a header block. Context parent lines are not counted as
 	 * separate findings when they only group nested list entries.
 	 */
 	private static int countMessages(List<String> content) {
-		return parseMessageLines(content).stream().mapToInt(CIBuildFrozenTestAdjuster::countLeaves).sum();
+		int count = 0;
+		for (String line : content) {
+			if (getListDepth(line) == 1) count++;
+		}
+		return count;
 	}
 
-	/**
-	 * Header counts should describe findings, not context lines. For grouped wiki lists this means
-	 * counting the deepest lines; for flat lists each root line is one finding.
-	 */
-	private static int countLeaves(MessageLine line) {
-		if (line.children().isEmpty()) return 1;
-		return line.children().stream().mapToInt(CIBuildFrozenTestAdjuster::countLeaves).sum();
+	private record ReportBlock(String header, List<String> content) {
 	}
 
 	private record BlockSplit(List<String> normalContent, List<String> frozenContent) {
