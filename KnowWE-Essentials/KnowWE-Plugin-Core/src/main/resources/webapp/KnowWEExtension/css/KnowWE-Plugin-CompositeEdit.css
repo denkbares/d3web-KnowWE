@@ -233,6 +233,42 @@
 	border: 1px solid var(--border-color-default) !important;
 }
 
+/*
+ * jQuery UI 1.14 renders "Close" as a text node in addition to the icon. The generic dialog button rules above also
+ * override the title-bar button's negative margin. Hide the generated contents and render one consistently centered
+ * close symbol instead. Deliberately hidden close buttons remain hidden because this rule does not alter display.
+ */
+.ui-dialog.ui-widget .ui-dialog-titlebar-close {
+	top: 50% !important;
+	width: 24px;
+	height: 24px;
+	margin: 0 !important;
+	padding: 0 !important;
+	transform: translateY(-50%);
+	overflow: hidden;
+	font-size: 0 !important;
+	text-indent: 0 !important;
+}
+
+.ui-dialog.ui-widget .ui-dialog-titlebar-close > .ui-icon,
+.ui-dialog.ui-widget .ui-dialog-titlebar-close > .ui-button-icon-space {
+	display: none;
+}
+
+.ui-dialog.ui-widget .ui-dialog-titlebar-close::before {
+	content: "\00d7";
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-color-primary, #333);
+	font-family: Arial, sans-serif;
+	font-size: 20px;
+	font-weight: normal;
+	line-height: 1;
+}
+
 .ui-dialog:has(> #compositeEdit) .ui-dialog-titlebar-close {
 	display: none !important;
 }
