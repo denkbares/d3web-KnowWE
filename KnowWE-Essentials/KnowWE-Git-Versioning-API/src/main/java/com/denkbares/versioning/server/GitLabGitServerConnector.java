@@ -244,23 +244,6 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		}
 	}
 
-	@Override
-	public void cloneRepositoryShallow(String remoteURI, File savePath) throws RuntimeException {
-		CloneCommand clone = prepareCloneCommand(remoteURI, savePath).setDepth(1);
-		withCredentials(clone);
-
-		try (Git result = clone.call()) {
-		}
-		catch (JGitInternalException e) {
-			LOGGER.error("Internal JGit error while shallow-cloning repository.", e);
-			throw new RuntimeException("Internal JGit error", e);
-		}
-		catch (GitAPIException e) {
-			LOGGER.error("Git shallow clone failed for remote repository.", e);
-			throw new RuntimeException("Git clone failed for repo url: " + remoteURI + ". " + e.getMessage(), e);
-		}
-	}
-
 	/**
 	 * Hands the clone the credentials as they stand now, if there are any.
 	 */
