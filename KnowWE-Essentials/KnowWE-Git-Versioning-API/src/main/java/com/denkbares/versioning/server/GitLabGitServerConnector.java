@@ -7,6 +7,7 @@ package com.denkbares.versioning.server;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,31 +37,56 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserCredentials;
+import de.uniwue.d3web.gitConnector.impl.GitConnectorParent;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
+/**
+ * The connection to a GitLab server: git over http with the credentials the source hands out, and the REST API with
+ * the same secret as a bearer token, which carries a personal access token and a delegated OAuth token alike. The
+ * credentials are asked for on every contact, so a source handing out short-lived ones, such as a launcher's
+ * {@link LauncherCredentialProvider}, is honoured.
+ */
 public class GitLabGitServerConnector implements GitServerConnector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLabGitServerConnector.class);
 
-	private final String gitRemoteURL, encodedGroupPath, gitUserName, serverApiURL, serverToken;
+	private final String gitRemoteURL, encodedGroupPath, serverApiURL;
+	private final Supplier<UserCredentials> credentials;
 	private static final String GITLAB_BRANCH_PATH = "/-/tree/";
 
+	/**
+	 * A connector acting with one fixed username and token for its whole life, the shape of a standalone wiki with
+	 * static properties.
+	 */
 	public GitLabGitServerConnector(String url, String groupPath, String gitUserName, String serverApiURL, String serverToken) {
+		this(url, groupPath, serverApiURL, GitConnectorParent.fixed(new UserCredentials(gitUserName, serverToken)));
+	}
+
+	/**
+	 * @param credentials where the credentials for every contact with the server come from, or null to act
+	 *                    anonymously
+	 */
+	public GitLabGitServerConnector(String url, String groupPath, String serverApiURL, @Nullable Supplier<UserCredentials> credentials) {
 		// make sure that gitRemoteURL always ends with / to prevent bugs
 		if (!url.endsWith("/")) {
 			url += "/";
 		}
 		this.gitRemoteURL = url + groupPath + "/";
 		this.encodedGroupPath = groupPath.replaceAll("/", "%2F");
-		this.gitUserName = gitUserName;
 		this.serverApiURL = serverApiURL;
-		this.serverToken = serverToken;
+		this.credentials = credentials;
 	}
 
 	@Override
 	public GitConnector getGitConnector(@NotNull String folder) {
-		UserCredentials userCredentials = new UserCredentials(this.gitUserName, this.serverToken);
-		return JGitBackedGitConnector.fromPath(folder, userCredentials);
+		return JGitBackedGitConnector.fromPath(folder, credentials);
+	}
+
+	/**
+	 * The credentials for a contact with the server happening now, or null if there are none.
+	 */
+	private @Nullable UserCredentials credentials() {
+		return credentials == null ? null : credentials.get();
 	}
 
 	@Override
@@ -113,8 +139,16 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	                                   String web_url) {
 	}
 
+	/**
+	 * The secret as a bearer token, which GitLab accepts for personal access tokens and OAuth tokens alike, where the
+	 * PRIVATE-TOKEN header carries only the former.
+	 */
 	private BasicHeader getRequestTokenHeader() {
-		return new BasicHeader("PRIVATE-TOKEN", this.serverToken);
+		UserCredentials current = credentials();
+		if (current == null) {
+			throw new IllegalStateException("No credentials for the git server, its API cannot be called.");
+		}
+		return new BasicHeader("Authorization", "Bearer " + current.password);
 	}
 
 	private void ensureSuccessfulResponse(HttpResponse response, String operation) throws IOException, HttpException {
@@ -184,10 +218,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		if (branch != null && !branch.isBlank()) {
 			clone.setBranch(branch);
 		}
-		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
-			clone.setCredentialsProvider(
-					new UsernamePasswordCredentialsProvider(this.gitUserName, this.serverToken));
-		}
+		withCredentials(clone);
 		try (Git git = clone.call()) {
 			// Note: the call() returns an opened repository already which needs to be closed to avoid file handle leaks!
 		}
@@ -216,10 +247,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	@Override
 	public void cloneRepositoryShallow(String remoteURI, File savePath) throws RuntimeException {
 		CloneCommand clone = prepareCloneCommand(remoteURI, savePath).setDepth(1);
-		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
-			clone.setCredentialsProvider(
-					new UsernamePasswordCredentialsProvider(this.gitUserName, this.serverToken));
-		}
+		withCredentials(clone);
 
 		try (Git result = clone.call()) {
 		}
@@ -233,12 +261,19 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		}
 	}
 
+	/**
+	 * Hands the clone the credentials as they stand now, if there are any.
+	 */
+	private void withCredentials(CloneCommand clone) {
+		UserCredentials current = credentials();
+		if (current != null && current.user != null && !current.user.isBlank()) {
+			clone.setCredentialsProvider(new UsernamePasswordCredentialsProvider(current.user, current.password));
+		}
+	}
+
 	private CloneCommand prepareCloneCommand(String remoteURI, File savePath) {
 		CloneCommand clone = Git.cloneRepository().setURI(remoteURI);
-		if (this.gitUserName != null && !this.gitUserName.isBlank()) {
-			clone.setCredentialsProvider(
-					new UsernamePasswordCredentialsProvider(this.gitUserName, this.serverToken));
-		}
+		withCredentials(clone);
 		if (savePath != null) {
 			clone.setDirectory(savePath);
 		}
