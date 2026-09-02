@@ -15,9 +15,13 @@ import com.denkbares.strings.Strings;
 
 /**
  * Who the wiki's users are, as their identity provider stated it when they signed in: full name and mail address by
- * every name the wiki knows the user under. A wiki authenticating against an identity provider keeps no user database,
- * so this is the only place a commit author can be resolved from once the request that signed the user in is gone,
- * which is where the git providers are when they attribute a save.
+ * login name. A wiki authenticating against an identity provider keeps no user database, so this is the only place a
+ * commit author can be resolved from once the request that signed the user in is gone, which is where the git
+ * providers are when they attribute a save.
+ * <p>
+ * Keyed by the login name alone, deliberately: it is the one name the provider keeps unique, while a display name is
+ * the user's own choice, and keying by it would let one user's chosen name overwrite another user's entry. The login
+ * name is also what JSPWiki hands on as the author of a save, so nothing else is needed.
  * <p>
  * A login module that learns a user's identity records it here; the connector's author resolution and the user's
  * mail address read it. A wiki with a user database is unaffected, the database is consulted first and this is only
@@ -38,34 +42,24 @@ public final class AuthenticatedIdentities {
 	 * @param email     the user's mail address, or null where the provider stated none
 	 */
 	public record Identity(@NotNull String loginName, @NotNull String fullName, @Nullable String email) {
-
-		/**
-		 * The full name without whitespace, which is what JSPWiki uses as the user's wiki name.
-		 */
-		public @NotNull String wikiName() {
-			return fullName.replaceAll("\\s", "");
-		}
 	}
 
 	/**
-	 * Records who a user is, under every name the wiki may later refer to them by.
+	 * Records who the user with this login name is, replacing what an earlier sign-in of the same user recorded.
 	 */
 	public static void remember(@NotNull Engine engine, @NotNull Identity identity) {
-		Map<String, Identity> identities = identities(engine);
-		identities.put(identity.loginName(), identity);
-		identities.put(identity.fullName(), identity);
-		identities.put(identity.wikiName(), identity);
+		identities(engine).put(identity.loginName(), identity);
 	}
 
 	/**
-	 * The identity of the user known under the given login, full or wiki name, or null if no such user signed in
-	 * against an identity provider during the life of this wiki.
+	 * The identity of the user with the given login name, or null if no such user signed in against an identity
+	 * provider during the life of this wiki.
 	 */
-	public static @Nullable Identity of(@NotNull Engine engine, @Nullable String name) {
-		if (Strings.isBlank(name)) {
+	public static @Nullable Identity of(@NotNull Engine engine, @Nullable String loginName) {
+		if (Strings.isBlank(loginName)) {
 			return null;
 		}
-		return identities(engine).get(name);
+		return identities(engine).get(loginName);
 	}
 
 	private static Map<String, Identity> identities(Engine engine) {

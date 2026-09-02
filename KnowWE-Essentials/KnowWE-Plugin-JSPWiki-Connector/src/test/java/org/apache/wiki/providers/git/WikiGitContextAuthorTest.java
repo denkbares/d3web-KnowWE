@@ -72,12 +72,23 @@ public class WikiGitContextAuthorTest {
 		AuthenticatedIdentities.remember(engine,
 				new AuthenticatedIdentities.Identity("hedwig", "Hedwig Owl", "hedwig@hogwarts.example"));
 
-		// by login name, which is what the wiki passes as the author, and by the other two names as well
-		for (String name : new String[] { "hedwig", "Hedwig Owl", "HedwigOwl" }) {
-			CommitUserData author = context.userData(name, "saved");
-			assertEquals(name, "Hedwig Owl", author.user);
-			assertEquals(name, "hedwig@hogwarts.example", author.email);
-		}
+		// by login name, which is what the wiki passes as the author
+		CommitUserData author = context.userData("hedwig", "saved");
+		assertEquals("Hedwig Owl", author.user);
+		assertEquals("hedwig@hogwarts.example", author.email);
+	}
+
+	@Test
+	public void aChosenDisplayNameCannotTakeOverAnotherUsersEntry() {
+		AuthenticatedIdentities.remember(engine,
+				new AuthenticatedIdentities.Identity("hedwig", "Hedwig Owl", "hedwig@hogwarts.example"));
+		// somebody else picks hedwig's login name as their display name
+		AuthenticatedIdentities.remember(engine,
+				new AuthenticatedIdentities.Identity("impostor", "hedwig", "impostor@example.com"));
+
+		CommitUserData author = context.userData("hedwig", "saved");
+		assertEquals("Hedwig Owl", author.user);
+		assertEquals("hedwig@hogwarts.example", author.email);
 	}
 
 	@Test
