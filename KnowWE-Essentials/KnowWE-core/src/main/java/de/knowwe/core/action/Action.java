@@ -60,6 +60,15 @@ public interface Action {
 	boolean isAdminAction();
 
 	/**
+	 * Whether a user has to be signed in for this action to run. Almost every action needs one; an action that answers
+	 * false is served to anybody, so it must reveal nothing that is not public anyway, such as whether the wiki is up.
+	 * How sign-in is enforced is the authentication filter's business, which asks the action rather than knowing it.
+	 */
+	default boolean requiresAuthentication() {
+		return true;
+	}
+
+	/**
 	 * Exception that can be thrown to signal a defined error code to the web page.
 	 */
 	class SendError extends IOException {
