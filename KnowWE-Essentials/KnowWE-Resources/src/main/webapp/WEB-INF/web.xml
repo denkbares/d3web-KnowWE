@@ -84,6 +84,13 @@
 		<filter-class>de.knowwe.jspwiki.auth.PluggableAuthenticationFilter</filter-class>
 		<async-supported>true</async-supported>
 	</filter>
+	<!-- Declared and mapped on /* by the jspwiki-http web fragment; repeated here only to enable async support, which
+	     the fragment cannot and the MCP endpoints require. web.xml wins over the fragment for this element. -->
+	<filter>
+		<filter-name>CsrfProtectionFilter</filter-name>
+		<filter-class>org.apache.wiki.http.filter.CsrfProtectionFilter</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
     <filter>
         <filter-name>WikiServletFilter</filter-name>
         <filter-class>org.apache.wiki.ui.WikiServletFilter</filter-class>
