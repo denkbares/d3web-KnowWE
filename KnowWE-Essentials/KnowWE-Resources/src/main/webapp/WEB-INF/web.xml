@@ -82,6 +82,7 @@
 	<filter>
 		<filter-name>PluggableAuthenticationFilter</filter-name>
 		<filter-class>de.knowwe.jspwiki.auth.PluggableAuthenticationFilter</filter-class>
+		<async-supported>true</async-supported>
 	</filter>
     <filter>
         <filter-name>WikiServletFilter</filter-name>
