@@ -43,6 +43,18 @@ public class LongOperationUtils {
 	}
 
 	/**
+	 * Forgets all registered long operations and shuts down the shared thread pool (it is recreated lazily by the next
+	 * {@link #getThreadPool()} call). Called when the {@link de.knowwe.core.Environment} is shut down.
+	 */
+	public static synchronized void shutdown() {
+		LONG_OPERATIONS.clear();
+		if (threadPool != null) {
+			threadPool.shutdownNow();
+			threadPool = null;
+		}
+	}
+
+	/**
 	 * Checks if the operation of the current thread has been interrupted. If so, an {@link InterruptedException} is
 	 * thrown and the threads interrupt state is restored.
 	 *

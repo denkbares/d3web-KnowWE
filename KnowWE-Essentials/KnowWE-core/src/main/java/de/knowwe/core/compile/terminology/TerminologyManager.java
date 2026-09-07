@@ -63,6 +63,14 @@ public class TerminologyManager {
 		termLogManager = new TermLogManager(caseSensitive);
 	}
 
+	/**
+	 * Forgets all occupied terms registered by {@link TerminologyExtension}s. Called when the
+	 * {@link de.knowwe.core.Environment} is shut down.
+	 */
+	public static void clearOccupiedTerms() {
+		occupiedTerms.clear();
+	}
+
 	public void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
 		for (String occupiedTermInExternalForm : terminologyExtension.getTermNames()) {
 			occupiedTerms.add(Identifier.fromExternalForm(occupiedTermInExternalForm));

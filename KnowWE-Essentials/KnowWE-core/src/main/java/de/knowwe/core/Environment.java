@@ -16,14 +16,22 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.LineContent;
 import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Scope;
+import de.knowwe.core.utils.progress.LongOperationUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
+import de.knowwe.kdom.dashtree.DashTreeElementContent;
+import de.knowwe.notification.NotificationManager;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.DeInitEvent;
 import de.knowwe.event.FullParseEvent;
@@ -106,12 +114,26 @@ public final class Environment {
 	private static Environment instance;
 
 	/**
-	 * Singleton lazy factory
+	 * Returns the singleton environment of this JVM, or null (logging an error) if none has been initialized.
+	 *
+	 * @deprecated The environment is on its way to become an ordinary instance that is reached through the objects at
+	 * hand instead of a static accessor. Use {@link ArticleManager#getEnvironment()}, which is available from every
+	 * {@link de.knowwe.core.kdom.parsing.Section#getArticleManager() Section}, {@link Article#getArticleManager()
+	 * Article}, {@link UserContext#getArticleManager() UserContext} and (via its {@link CompilerManager}) every
+	 * {@link Compiler}. See {@code documentation/environment-instance-plan.md} for the migration plan.
 	 */
+	@Deprecated
 	public static synchronized Environment getInstance() {
 		if (instance == null) {
 			LOGGER.error("Environment was not instantiated!");
 		}
+		return instance;
+	}
+
+	/**
+	 * Returns the singleton environment of this JVM without complaining if there is none.
+	 */
+	static synchronized Environment peekInstance() {
 		return instance;
 	}
 
@@ -167,10 +189,59 @@ public final class Environment {
 		}
 	}
 
+	/**
+	 * Shuts down this environment. The method waits for running compilations to terminate, notifies all
+	 * {@link DeInitEvent} listeners, resets the registries KnowWE-core keeps in static fields (section ids, script
+	 * managers, sectionizer modules, messages, occupied terms, tool settings, notifications, long operations, caches
+	 * and the singleton types) and finally detaches the singleton instance. Afterwards
+	 * {@link #initInstance(WikiConnector)} may be called again to start a fresh environment in the same JVM, which is
+	 * mainly useful for tests.
+	 */
 	public void shutdown() {
-		instance = null;
+		LOGGER.info("SHUTTING DOWN KNOWWE ENVIRONMENT");
 		initialized = false;
+		awaitCompileTerminationForShutdown();
 		EventManager.getInstance().fireEvent(new DeInitEvent());
+		resetStaticRegistries();
+		synchronized (Environment.class) {
+			if (instance == this) instance = null;
+		}
+		LOGGER.info("KNOWWE ENVIRONMENT SHUT DOWN");
+	}
+
+	private void awaitCompileTerminationForShutdown() {
+		for (ArticleManager manager : articleManagers.values()) {
+			try {
+				manager.getCompilerManager().awaitTermination();
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				LOGGER.warn("Interrupted while waiting for compilation of web '{}' to terminate during shutdown", manager.getWeb());
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Resets everything KnowWE-core keeps in static fields and that belongs to the lifecycle of one environment. The
+	 * registries that are cleaned up by their own {@link DeInitEvent} listeners (e.g. the right panel tabs in
+	 * {@link Plugins}) are intentionally not repeated here.
+	 */
+	private static void resetStaticRegistries() {
+		CompilerManager.clearScriptManagers();
+		CompilationLocal.clearCaches();
+		Section.clearSectionRegistry();
+		SectionizerModule.Registry.clear();
+		Messages.clearSectionsWithMessages();
+		TerminologyManager.clearOccupiedTerms();
+		ToolUtils.clearBlockedToolProviders();
+		NotificationManager.clearGlobalNotifications();
+		LongOperationUtils.shutdown();
+		Scope.clearCaches();
+		AttachmentUpdateMarkup.reset();
+		PlainText.resetInstance();
+		LineContent.resetInstance();
+		DashTreeElementContent.resetDefaultInstance();
 	}
 
 	private void initEventManager() {
@@ -640,7 +711,7 @@ public final class Environment {
 	 */
 	@NotNull
 	public ArticleManager getArticleManager(String web) {
-		return this.articleManagers.computeIfAbsent(web, k -> new DefaultArticleManager(web));
+		return this.articleManagers.computeIfAbsent(web, k -> new DefaultArticleManager(this, web));
 	}
 
 	public ServletContext getContext() {

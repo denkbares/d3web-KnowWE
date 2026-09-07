@@ -295,6 +295,14 @@ public class ToolUtils {
 		return result;
 	}
 
+	/**
+	 * Forgets all blocked tool providers loaded by {@link #initSettings(File)}. Called when the
+	 * {@link de.knowwe.core.Environment} is shut down; the next environment loads its settings anew.
+	 */
+	public static void clearBlockedToolProviders() {
+		BLOCKED_PROVIDERS.clear();
+	}
+
 	public static void initSettings(File jsonFile) {
 		if (!jsonFile.exists()) return;
 		try {

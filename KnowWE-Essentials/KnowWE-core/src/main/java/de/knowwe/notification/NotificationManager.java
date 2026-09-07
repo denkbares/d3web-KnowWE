@@ -58,6 +58,13 @@ public class NotificationManager {
 	private static final Map<String, Notification> globalNotifications = Collections.synchronizedMap(new HashMap<>());
 
 	/**
+	 * Removes all global notifications. Called when the {@link de.knowwe.core.Environment} is shut down.
+	 */
+	public static void clearGlobalNotifications() {
+		globalNotifications.clear();
+	}
+
+	/**
 	 * Returns the NotificationManager object for a specified
 	 * {@link UserContext}. If there is no NotificationManager object, a new one
 	 * will be created and stored in the provided UserContext, i. e.

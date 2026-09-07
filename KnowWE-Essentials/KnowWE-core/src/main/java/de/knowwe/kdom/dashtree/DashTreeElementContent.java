@@ -26,13 +26,19 @@ public class DashTreeElementContent extends AbstractType {
 
 	private static DashTreeElementContent defaultInstance = null;
 
-	public static DashTreeElementContent getDefaultInstance() {
+	public static synchronized DashTreeElementContent getDefaultInstance() {
 		if (defaultInstance == null) {
 			defaultInstance = new DashTreeElementContent();
-
 		}
-
 		return defaultInstance;
+	}
+
+	/**
+	 * Drops the default instance, so the next {@link #getDefaultInstance()} creates a fresh, undecorated type. Called
+	 * when the {@link de.knowwe.core.Environment} is shut down.
+	 */
+	public static synchronized void resetDefaultInstance() {
+		defaultInstance = null;
 	}
 
 	public DashTreeElementContent() {

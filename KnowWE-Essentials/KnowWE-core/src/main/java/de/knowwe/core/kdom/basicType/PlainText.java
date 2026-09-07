@@ -53,6 +53,15 @@ public class PlainText extends AbstractType {
 		return instance;
 	}
 
+	/**
+	 * Drops the singleton instance, so the next {@link #getInstance()} creates a fresh, undecorated type. Called when
+	 * the {@link de.knowwe.core.Environment} is shut down, because the type tree of the next environment must not
+	 * inherit the plugged children, renderers and scripts of the previous one.
+	 */
+	public static synchronized void resetInstance() {
+		instance = null;
+	}
+
 	public PlainText() {
 		this.setRenderer(DefaultTextRenderer.getInstance());
 		this.setSectionFinder(AllTextFinder.getInstance());

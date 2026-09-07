@@ -77,8 +77,20 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	static {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 			LOGGER.info("Clearing sections.");
-			sectionMap.clear();
+			clearSectionRegistry();
 		});
+	}
+
+	/**
+	 * Removes all sections from the JVM-wide section id registry (and forgets the compilers referenced by stored
+	 * objects). Called when the {@link de.knowwe.core.Environment} is shut down or the servlet context is destroyed;
+	 * afterwards {@link Sections#get(String)} no longer resolves any id of the previous lifecycle.
+	 */
+	public static void clearSectionRegistry() {
+		synchronized (sectionMap) {
+			sectionMap.clear();
+		}
+		COMPILER_REFS.clear();
 	}
 
 	private List<Integer> position = null;

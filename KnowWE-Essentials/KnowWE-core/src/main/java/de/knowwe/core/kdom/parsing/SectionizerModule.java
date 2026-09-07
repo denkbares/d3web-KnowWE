@@ -56,6 +56,14 @@ public interface SectionizerModule {
 		}
 
 		/**
+		 * Forgets all registered modules. Called when the {@link de.knowwe.core.Environment} is shut down; the next
+		 * environment registers the plugged modules anew.
+		 */
+		public static void clear() {
+			sectionizerModules.clear();
+		}
+
+		/**
 		 * Created a new section of the specified type, within the specified parent section, for the secified text (full
 		 * text of the parent section) and the specified sub-range.
 		 *

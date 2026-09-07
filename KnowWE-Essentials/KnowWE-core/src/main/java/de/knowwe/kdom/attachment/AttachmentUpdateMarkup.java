@@ -93,6 +93,17 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final Map<String, Instant> DOWNLOADING = new ConcurrentHashMap<>();
 	private static Instant LAST_WAITING_LOG = Instant.MIN;
 	private static final Set<QueuedAttachment> QUEUED_ATTACHMENTS = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+	/**
+	 * Forgets the update state (last runs, running downloads, queued attachments) of all attachments. Called when the
+	 * {@link de.knowwe.core.Environment} is shut down.
+	 */
+	public static void reset() {
+		LAST_RUNS.clear();
+		DOWNLOADING.clear();
+		QUEUED_ATTACHMENTS.clear();
+		LAST_WAITING_LOG = Instant.MIN;
+	}
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
 

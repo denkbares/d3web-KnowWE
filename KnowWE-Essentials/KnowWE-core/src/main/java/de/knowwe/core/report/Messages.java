@@ -63,6 +63,14 @@ public final class Messages {
 	private static final Map<Message.Type, Set<Section<?>>> sectionsWithMessages = new ConcurrentHashMap<>();
 
 	/**
+	 * Forgets which sections currently have messages of which type. Called when the
+	 * {@link de.knowwe.core.Environment} is shut down.
+	 */
+	public static void clearSectionsWithMessages() {
+		sectionsWithMessages.clear();
+	}
+
+	/**
 	 * Groups the given messages by their {@link Message.Type}. Sorts all groups by importance (warnings first),
 	 * and displays an error box for each. Each box contains all messages of that group sorted alphabetically.
 	 * Messages are rendered as HTML, make sure to appropriately escape user input (see

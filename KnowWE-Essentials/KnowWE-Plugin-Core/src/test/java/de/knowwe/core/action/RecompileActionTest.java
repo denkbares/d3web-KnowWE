@@ -23,9 +23,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
@@ -64,6 +66,11 @@ public class RecompileActionTest {
 		@Override
 		public String getWeb() {
 			return "test";
+		}
+
+		@Override
+		public @NotNull Environment getEnvironment() {
+			throw new UnsupportedOperationException();
 		}
 
 		@Override

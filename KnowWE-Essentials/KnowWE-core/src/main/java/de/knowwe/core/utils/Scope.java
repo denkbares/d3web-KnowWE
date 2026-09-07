@@ -62,6 +62,16 @@ public class Scope {
 
 	private static final Map<String, Scope> CACHED_SCOPES = new ConcurrentHashMap<>();
 
+	/**
+	 * Drops the cached scopes and the cached names of the kdom types. Called when the
+	 * {@link de.knowwe.core.Environment} is shut down, because the type instances the names are cached for are
+	 * recreated by the next environment.
+	 */
+	public static void clearCaches() {
+		CACHED_NAMES_OF_KDOM_TYPE.clear();
+		CACHED_SCOPES.clear();
+	}
+
 	public static class TypePath {
 
 		private final Type[] typePath;

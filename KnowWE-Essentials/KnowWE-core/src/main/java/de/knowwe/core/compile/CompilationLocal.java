@@ -91,9 +91,17 @@ public final class CompilationLocal<E> {
 		});
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 			LOGGER.info("Clear compiler cache");
-			compilerCache.clear();
-			compilerManagerCache.clear();
+			clearCaches();
 		});
+	}
+
+	/**
+	 * Drops all cached values of all compilers and compiler managers. Called when the
+	 * {@link de.knowwe.core.Environment} is shut down or the servlet context is destroyed.
+	 */
+	public static void clearCaches() {
+		compilerCache.clear();
+		compilerManagerCache.clear();
 	}
 
 	/**

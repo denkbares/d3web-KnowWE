@@ -27,13 +27,19 @@ public class LineContent extends AbstractType {
 
 	private static LineContent instance = null;
 
-	public static LineContent getInstance() {
+	public static synchronized LineContent getInstance() {
 		if (instance == null) {
 			instance = new LineContent();
-
 		}
-
 		return instance;
+	}
+
+	/**
+	 * Drops the singleton instance, so the next {@link #getInstance()} creates a fresh, undecorated type. Called when
+	 * the {@link de.knowwe.core.Environment} is shut down.
+	 */
+	public static synchronized void resetInstance() {
+		instance = null;
 	}
 
 	protected LineContent() {

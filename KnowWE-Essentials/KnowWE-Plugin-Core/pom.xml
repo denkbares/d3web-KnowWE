@@ -27,6 +27,16 @@
 	</parent>
 
 	<artifactId>KnowWE-Plugin-Core</artifactId>
+	<build>
+		<plugins>
+			<!-- Generate JPF dependency lists for tests; configuration is done in parent pom -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
@@ -39,6 +49,16 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-GlobalTestUtils</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

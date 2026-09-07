@@ -225,6 +225,15 @@ public class CompilerManager implements EventListener {
 		return (ScriptManager<C>) getScriptManager(compiler.getClass());
 	}
 
+	/**
+	 * Forgets all script managers, i.e. all compile scripts registered for any type. Called when the
+	 * {@link de.knowwe.core.Environment} is shut down; the next environment registers its scripts anew while
+	 * decorating its type tree.
+	 */
+	public static void clearScriptManagers() {
+		scriptManagers.clear();
+	}
+
 	public static Collection<ScriptManager<? extends Compiler>> getScriptManagers() {
 		return Collections.unmodifiableCollection(scriptManagers.values());
 	}
@@ -753,7 +762,7 @@ public class CompilerManager implements EventListener {
 	@Override
 	public void notify(Event event) {
 		if (event instanceof DeInitEvent) {
-			scriptManagers.clear();
+			clearScriptManagers();
 		}
 	}
 }

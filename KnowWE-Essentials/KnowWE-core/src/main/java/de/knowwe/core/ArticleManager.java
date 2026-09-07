@@ -120,4 +120,16 @@ public interface ArticleManager {
 	 * @return whether all articles are initialized
 	 */
 	boolean isInitialized();
+
+	/**
+	 * Returns the {@link Environment} this article manager belongs to. This is the preferred way to reach the
+	 * environment (and through it the {@link de.knowwe.core.wikiConnector.WikiConnector}) from any object that knows
+	 * its article manager, e.g. a {@link Section}, an {@link Article}, a {@link de.knowwe.core.user.UserContext} or a
+	 * {@link de.knowwe.core.compile.Compiler} via its {@link CompilerManager}. Prefer it over the static
+	 * {@link Environment#getInstance()}.
+	 *
+	 * @return the environment of this article manager
+	 */
+	@NotNull
+	Environment getEnvironment();
 }
