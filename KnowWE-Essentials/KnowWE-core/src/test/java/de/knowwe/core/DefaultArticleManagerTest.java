@@ -40,7 +40,7 @@ import static org.junit.Assert.fail;
 public class DefaultArticleManagerTest {
 
 	@Test
-	public void queueingArticleRequiresOpenRegistrationFrame() {
+	public void queueingArticleRequiresOpenRegistrationFrame() throws Exception {
 		DefaultArticleManager articleManager = new DefaultArticleManager("test");
 		try {
 			articleManager.queueArticle("Article", "Content");
@@ -48,6 +48,9 @@ public class DefaultArticleManagerTest {
 		}
 		catch (IllegalStateException expected) {
 			// expected: otherwise sectionizing could invalidate a KDOM that is still being compiled
+		}
+		finally {
+			ArticleLifecycleFixture.closeManager(articleManager);
 		}
 	}
 
@@ -95,6 +98,7 @@ public class DefaultArticleManagerTest {
 			executor.shutdownNow();
 			compilerManager.awaitTermination();
 			compilerManager.removeCompiler(blockingCompiler);
+			ArticleLifecycleFixture.closeManager(articleManager);
 		}
 	}
 

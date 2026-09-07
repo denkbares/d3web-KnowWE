@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.denkbares.events.EventManager;
+import de.knowwe.core.ArticleLifecycleFixture;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -38,7 +39,7 @@ import static org.junit.Assert.assertSame;
 public class LongOperationUtilsTest {
 
 	@Test
-	public void cleanupWaitsUntilArticleRegistrationCommitIsComplete() {
+	public void cleanupWaitsUntilArticleRegistrationCommitIsComplete() throws Exception {
 		DefaultArticleManager articleManager = new DefaultArticleManager("test");
 		Article article = Article.createTemporaryArticle(
 				"content", "Article-" + UUID.randomUUID(), "test", new RootType());
@@ -59,6 +60,7 @@ public class LongOperationUtilsTest {
 		finally {
 			EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(articleManager, true));
 			article.destroy(null);
+			ArticleLifecycleFixture.closeManager(articleManager);
 		}
 		assertNull(LongOperationUtils.getLongOperation(section, operationId));
 	}
