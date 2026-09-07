@@ -120,7 +120,7 @@ public final class Environment {
 	 * hand instead of a static accessor. Use {@link ArticleManager#getEnvironment()}, which is available from every
 	 * {@link de.knowwe.core.kdom.parsing.Section#getArticleManager() Section}, {@link Article#getArticleManager()
 	 * Article}, {@link UserContext#getArticleManager() UserContext} and (via its {@link CompilerManager}) every
-	 * {@link Compiler}. See {@code documentation/environment-instance-plan.md} for the migration plan.
+	 * {@link Compiler}. See {@code doc/environment-instance-plan.md} (KnowWE repository root) for the migration plan.
 	 */
 	@Deprecated
 	public static synchronized Environment getInstance() {
