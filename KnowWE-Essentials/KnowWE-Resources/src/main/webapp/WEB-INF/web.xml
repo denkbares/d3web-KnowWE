@@ -85,7 +85,7 @@
 		<async-supported>true</async-supported>
 	</filter>
 	<!-- Declared and mapped on /* by the jspwiki-http web fragment; repeated here only to enable async support, which
-	     the fragment cannot and the MCP endpoints require. web.xml wins over the fragment for this element. -->
+	     the fragment does not declare and async servlets behind it require. web.xml wins over the fragment here. -->
 	<filter>
 		<filter-name>CsrfProtectionFilter</filter-name>
 		<filter-class>org.apache.wiki.http.filter.CsrfProtectionFilter</filter-class>
