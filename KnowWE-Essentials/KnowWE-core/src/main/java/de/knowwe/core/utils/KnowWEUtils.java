@@ -435,7 +435,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canCreatePages(final UserContext context) {
-		return Environment.getInstance().getWikiConnector().userCanCreateArticles(context);
+		return KnowWEUtils.getEnvironment(context).getWikiConnector().userCanCreateArticles(context);
 	}
 
 	/**
@@ -447,7 +447,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canView(final Article article, final UserContext context) {
-		final WikiConnector connector = Environment.getInstance().getWikiConnector();
+		final WikiConnector connector = KnowWEUtils.getEnvironment(context).getWikiConnector();
 		// try nine times with catching unexpected exception from AuthorizationManager
 		for (int i = 0; i < 9; i++) {
 			try {
@@ -530,7 +530,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final String articleTitle, final UserContext user) {
-		return Environment.getInstance().getWikiConnector().userCanEditArticle(
+		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanEditArticle(
 				articleTitle, user);
 	}
 
@@ -543,7 +543,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final Article article, final UserContext user) {
-		return Environment.getInstance().getWikiConnector().userCanEditArticle(
+		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanEditArticle(
 				article.getTitle(), user);
 	}
 
@@ -556,7 +556,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canUpload(final Article article, final UserContext user) {
-		return Environment.getInstance().getWikiConnector().userCanUploadAttachment(
+		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanUploadAttachment(
 				article.getTitle(), user);
 	}
 
@@ -613,7 +613,7 @@ public class KnowWEUtils {
 	 * @return true, if the user is member of the group, false else
 	 */
 	public static boolean isInGroup(final String groupName, final UserContext user) {
-		return Environment.getInstance()
+		return KnowWEUtils.getEnvironment(user)
 				.getWikiConnector()
 				.userIsMemberOfGroup(groupName, user);
 	}
@@ -1372,7 +1372,7 @@ public class KnowWEUtils {
 	 * @created 07.01.2014
 	 */
 	public static PackageManager getPackageManager(final Section<?> section) {
-		final ArticleManager manager = Environment.getInstance().getArticleManager(section.getWeb());
+		final ArticleManager manager = KnowWEUtils.getEnvironment(section).getArticleManager(section.getWeb());
 		return getPackageManager(manager);
 	}
 
@@ -1423,7 +1423,7 @@ public class KnowWEUtils {
 	 * @created 16.02.2014
 	 */
 	public static Date getLastModified(final Article article) {
-		final WikiConnector connector = Environment.getInstance().getWikiConnector();
+		final WikiConnector connector = article.getArticleManager().getEnvironment().getWikiConnector();
 		final String title = article.getTitle();
 		final int version = connector.getVersion(title);
 		return connector.getLastModifiedDate(title, version);
@@ -1436,7 +1436,7 @@ public class KnowWEUtils {
 	 * @return null if no history exists
 	 */
 	public static WikiPageInfo getLatestArticleHistory(final Article article) {
-		final WikiConnector connector = Environment.getInstance().getWikiConnector();
+		final WikiConnector connector = article.getArticleManager().getEnvironment().getWikiConnector();
 		final String title = article.getTitle();
 
 		try {
@@ -1460,7 +1460,7 @@ public class KnowWEUtils {
 	 * @created 16.02.2014
 	 */
 	public static int getLatestVersion(final Article article) {
-		final WikiConnector connector = Environment.getInstance().getWikiConnector();
+		final WikiConnector connector = article.getArticleManager().getEnvironment().getWikiConnector();
 		final String title = article.getTitle();
 		return connector.getVersion(title);
 	}
@@ -1512,9 +1512,9 @@ public class KnowWEUtils {
 	 * Only works if GitVersioningFileProvider is active
 	 */
 	public static void openPageTransaction(final UserContext context) {
-		final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		final ArticleManager articleManager = context.getArticleManager();
 		articleManager.open();
-		Environment.getInstance().getWikiConnector().openPageTransaction(context.getUserName());
+		KnowWEUtils.getEnvironment(context).getWikiConnector().openPageTransaction(context.getUserName());
 	}
 
 	/**
@@ -1526,8 +1526,8 @@ public class KnowWEUtils {
 	 * transaction
 	 */
 	public static void commitPageTransaction(final UserContext context, final String commitMsg) {
-		Environment.getInstance().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
-		final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		KnowWEUtils.getEnvironment(context).getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
+		final ArticleManager articleManager = context.getArticleManager();
 		articleManager.commit();
 		try {
 			articleManager.getCompilerManager().awaitTermination();
@@ -1544,12 +1544,12 @@ public class KnowWEUtils {
 	 */
 	public static boolean rollbackPageTransaction(final UserContext context) {
 		boolean rolledBack = false;
-		if (Environment.getInstance().getWikiConnector().hasRollbackPageProvider()) {
-			final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		if (KnowWEUtils.getEnvironment(context).getWikiConnector().hasRollbackPageProvider()) {
+			final ArticleManager articleManager = context.getArticleManager();
 			articleManager.rollback();
 			rolledBack = true;
 		}
-		Environment.getInstance().getWikiConnector().rollbackPageTransaction(context.getUserName());
+		KnowWEUtils.getEnvironment(context).getWikiConnector().rollbackPageTransaction(context.getUserName());
 		return rolledBack;
 	}
 
