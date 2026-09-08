@@ -111,6 +111,21 @@ public class EnvironmentLifecycleTest {
 		assertNotSame(first.getArticleManager(Environment.DEFAULT_WEB), second.getArticleManager(Environment.DEFAULT_WEB));
 	}
 
+	@Test
+	public void initInstanceClosesAStillRunningEnvironment() throws InterruptedException {
+		Environment first = start();
+		createArticle(first);
+		List<String> closed = new ArrayList<>();
+		first.onClose(() -> closed.add("first"));
+
+		Environment second = start(); // without closing the first one
+		assertTrue("the previous environment must be closed", first.isClosed());
+		assertEquals(List.of("first"), closed);
+		assertNotSame(first, second);
+		assertTrue(Environment.isInitialized());
+		assertSame(second, Environment.getInstance());
+	}
+
 	private record ClosableService(String name, List<String> order) implements AutoCloseable {
 		@Override
 		public void close() {

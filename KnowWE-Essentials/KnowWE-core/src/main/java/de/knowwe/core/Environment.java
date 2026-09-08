@@ -213,11 +213,32 @@ public final class Environment implements AutoCloseable {
 		return initialized;
 	}
 
+	/**
+	 * Creates and initializes the singleton environment for the specified wiki connector. A previously initialized
+	 * environment is closed first, so that there is never more than one current environment.
+	 */
 	public static void initInstance(WikiConnector wiki) {
 		LOGGER.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
-
-		instance = new Environment(wiki);
-		instance.init();
+		Environment environment;
+		synchronized (Environment.class) {
+			Environment previous = instance;
+			if (previous != null) {
+				LOGGER.warn("An environment is still active while a new one is initialized, closing the old one first");
+				previous.close();
+			}
+			initialized = false;
+			environment = new Environment(wiki);
+			instance = environment;
+		}
+		try {
+			environment.init();
+		}
+		catch (RuntimeException | Error e) {
+			synchronized (Environment.class) {
+				if (instance == environment) instance = null;
+			}
+			throw e;
+		}
 		initialized = true;
 		EventManager.getInstance().fireEvent(new InitEvent());
 
