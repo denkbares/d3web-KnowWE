@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
@@ -43,10 +44,19 @@ public abstract class GraphDataBuilder {
 	protected GraphVisualizationRenderer graphRenderer = null;
 	protected boolean isTimeOut;
 
+	/**
+	 * @deprecated use {@link #createBaseURL(Environment)} with the environment at hand
+	 */
+	@Deprecated
 	public static String createBaseURL() {
-		if (Environment.getInstance() != null
-				&& Environment.getInstance().getWikiConnector() != null) {
-			return Environment.getInstance().getWikiConnector().getBaseUrl() + "Wiki.jsp";
+		Environment environment = Environment.peekInstance();
+		// without environment: for tests only
+		return environment == null ? "http://localhost:8080/KnowWE/Wiki.jsp" : createBaseURL(environment);
+	}
+
+	public static String createBaseURL(Environment environment) {
+		if (environment.getWikiConnector() != null) {
+			return environment.getWikiConnector().getBaseUrl() + "Wiki.jsp";
 		}
 		else {
 			// for tests only
@@ -130,7 +140,7 @@ public abstract class GraphDataBuilder {
 	}
 
 	public String createConceptURL(String to) {
-		return createBaseURL() + "?page=" + section.getTitle() + "&concept=" + to;
+		return createBaseURL(KnowWEUtils.getEnvironment(section)) + "?page=" + section.getTitle() + "&concept=" + to;
 	}
 
 	/**

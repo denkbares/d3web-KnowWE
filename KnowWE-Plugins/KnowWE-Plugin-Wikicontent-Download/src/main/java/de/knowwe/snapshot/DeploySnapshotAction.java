@@ -55,7 +55,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 		}
 
 		// try to find a corresponding temp repo folder file
-		File repoSnapshot = new File(getSnapshotsPath(), deployFilename);
+		File repoSnapshot = new File(getSnapshotsPath(KnowWEUtils.getEnvironment(context)), deployFilename);
 
 		// if not present, sent error
 		if (!repoSnapshot.exists()) {
@@ -76,8 +76,8 @@ public class DeploySnapshotAction extends SnapshotAction {
 				throw new IOException("Snapshot limit was reached. Please delete a snapshot before continuing. " +
 						"(You can still download the current wiki with \"Download Wiki-Zip\" in the admin markup.)");
 			}
-			String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(AUTOSAVE_SNAPSHOT);
-			createAndStoreWikiContentSnapshot(context, getSnapshotsPath(), wikiContentZipFilename);
+			String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(KnowWEUtils.getEnvironment(context), AUTOSAVE_SNAPSHOT);
+			createAndStoreWikiContentSnapshot(context, getSnapshotsPath(KnowWEUtils.getEnvironment(context)), wikiContentZipFilename);
 		}
 		catch (IOException e) {
 			context.sendError(500, e.getMessage());
@@ -85,7 +85,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 		}
 
 		try {
-			makeFileSystemReplaceOperation(snapshot);
+			makeFileSystemReplaceOperation(KnowWEUtils.getEnvironment(context), snapshot);
 
 			// tell WikiConnector that content has changed on the file system
 			KnowWEUtils.getEnvironment(context).reinitializeForNewWikiContent();
@@ -101,9 +101,9 @@ public class DeploySnapshotAction extends SnapshotAction {
 				.println("Wiki content has been overridden to content of file: " + snapshot.getName() + "\n Please use the browser back-button and reload page to access updated wiki content.");
 	}
 
-	private void makeFileSystemReplaceOperation(@NotNull File deployFile) throws IOException {
+	private void makeFileSystemReplaceOperation(@NotNull Environment environment, @NotNull File deployFile) throws IOException {
 		// wiki content folder
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = environment.getWikiConnector();
 		String savePath = wikiConnector.getSavePath();
 		File wikiFolderFile = new File(savePath);
 		assert wikiFolderFile.exists();
@@ -119,16 +119,16 @@ public class DeploySnapshotAction extends SnapshotAction {
 		unpack(copiedZipFile, tempDirectoryZipUnpacked);
 
 		// clear wiki content folder
-		cleanDirectoryExcept(wikiFolderFile, List.of(".git"));
+		cleanDirectoryExcept(environment, wikiFolderFile, List.of(".git"));
 		copyContentFromTo(tempDirectoryZipUnpacked, wikiFolderFile);
 	}
 
-	private static void cleanDirectoryExcept(@NotNull File wikiFolder, @NotNull Collection<String> keepFileNames) throws IOException {
+	private static void cleanDirectoryExcept(@NotNull Environment environment, @NotNull File wikiFolder, @NotNull Collection<String> keepFileNames) throws IOException {
 		if (!wikiFolder.exists() || !wikiFolder.isDirectory()) {
 			throw new IllegalArgumentException("Folder not existing: " + wikiFolder);
 		}
 		// check for retain userdatabase.xml and groupdatabase.xml
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = environment.getWikiConnector();
 		File userdatabaseFile = getFile(wikiConnector.getWikiProperty("jspwiki.xmlUserDatabaseFile"));
 		File groupdatabaseFile = getFile(wikiConnector.getWikiProperty("jspwiki.xmlGroupDatabaseFile"));
 

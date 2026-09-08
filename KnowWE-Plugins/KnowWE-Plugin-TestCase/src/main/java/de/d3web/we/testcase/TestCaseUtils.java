@@ -22,6 +22,7 @@ import de.d3web.empiricaltesting.TestCase;
 import de.d3web.we.testcase.kdom.TestCaseContent;
 import de.d3web.we.testcase.kdom.TestCaseType;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -43,8 +44,16 @@ public class TestCaseUtils {
 	 * @param web the current web
 	 * @return loaded test suite or null (if no test suite was found)
 	 */
+	/**
+	 * @deprecated use {@link #loadTestSuite(ArticleManager, String)} with the article manager at hand
+	 */
+	@Deprecated
 	public static TestCase loadTestSuite(String article, String web) {
-		Article a = Environment.getInstance().getArticleManager(web).getArticle(article);
+		return loadTestSuite(Environment.requireInstance().getArticleManager(web), article);
+	}
+
+	public static TestCase loadTestSuite(ArticleManager manager, String article) {
+		Article a = manager.getArticle(article);
 		Section<TestCaseContent> s = null;
 		TestCase testSuite = null;
 

@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -48,7 +49,7 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 	@Override
 	public void renderHTML(String web, String topic,
 			UserContext user, Map<String, String> values, RenderResult result) {
-		Collection<TagHandler> coll = Environment.getInstance()
+		Collection<TagHandler> coll = KnowWEUtils.getEnvironment(user)
 				.getDefaultTagHandlers().values();
 
 		ResourceBundle rb = Messages.getMessageBundle(user);

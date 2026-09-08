@@ -29,6 +29,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.UserActionContext;
 
 import static de.knowwe.snapshot.SnapshotAction.getSnapshotsPath;
@@ -72,7 +73,7 @@ public class UploadSnapshotAction extends AbstractAction {
 
 				// store file
 				try {
-					File newSnapshotFile = new File(getSnapshotsPath(), file.getName());
+					File newSnapshotFile = new File(getSnapshotsPath(KnowWEUtils.getEnvironment(context)), file.getName());
 					file.write(newSnapshotFile);
 				}
 				catch (Exception e) {

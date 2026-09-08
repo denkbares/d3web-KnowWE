@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -48,10 +49,18 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 
 	@Override
 	protected Section<? extends Type> getSection(UserActionContext context, String identifier) {
-		return getSection(identifier);
+		return getSection(context.getArticleManager(), identifier);
 	}
 
+	/**
+	 * @deprecated use {@link #getSection(ArticleManager, String)} with the article manager at hand
+	 */
+	@Deprecated
 	public static Section<? extends Type> getSection(String identifier) {
+		return getSection(Environment.requireInstance().getArticleManager(), identifier);
+	}
+
+	public static Section<? extends Type> getSection(ArticleManager articleManager, String identifier) {
 		try {
 			JSONObject json = new JSONObject(identifier);
 			String title = (String) json.get("pagename");
@@ -59,7 +68,7 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 			String nodeID = (String) json.get("nodeID");
 			if (title == null || flowname == null || nodeID == null) return null;
 			title = Strings.decodeURL(title);
-			Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+			Article article = articleManager.getArticle(title);
 			List<Section<DiaFluxType>> diafluxSections = Sections.children(
 					article.getRootSection(), DiaFluxType.class);
 			Section<FlowchartType> correctFlow = null;

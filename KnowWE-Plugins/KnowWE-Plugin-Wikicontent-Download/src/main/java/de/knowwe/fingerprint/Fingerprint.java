@@ -20,6 +20,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.version.taghandler.VersionTagHandler;
@@ -37,17 +38,31 @@ public class Fingerprint {
 			new DashboadScanner()
 	};
 
+	/**
+	 * @deprecated use {@link #createFingerprint(ArticleManager, File)} with the article manager at hand
+	 */
+	@Deprecated
 	public static void createFingerprint(String web, File folder) throws IOException {
-		ArticleManager manager = Environment.getInstance().getArticleManager(web);
-		Collection<Article> articles = manager.getArticles();
-		createFingerprint(articles, folder);
+		createFingerprint(Environment.requireInstance().getArticleManager(web), folder);
 	}
 
+	public static void createFingerprint(ArticleManager manager, File folder) throws IOException {
+		createFingerprint(manager.getEnvironment(), manager.getArticles(), folder);
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #createFingerprint(Environment, Collection, File)}
+	 */
+	@Deprecated
 	public static void createFingerprint(Collection<Article> articles, File folder) throws IOException {
+		createFingerprint(Environment.requireInstance(), articles, folder);
+	}
+
+	public static void createFingerprint(@NotNull Environment environment, Collection<Article> articles, File folder) throws IOException {
 		// create metadata file
 		folder.mkdirs();
 		try (PrintStream out = new PrintStream(new File(folder, FINGERPRINT))) {
-			String baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+			String baseUrl = environment.getWikiConnector().getBaseUrl();
 			out.printf("Base URL: %s\n", baseUrl);
 			out.printf("Created:  %tc\n", new Date());
 			if (VersionTagHandler.hasVersionInfo()) {

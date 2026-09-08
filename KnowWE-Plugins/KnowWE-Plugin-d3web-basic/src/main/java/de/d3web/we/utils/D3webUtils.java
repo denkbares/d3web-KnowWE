@@ -68,6 +68,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -167,7 +168,15 @@ public class D3webUtils {
 		return Compilers.getCompiler(master, D3webCompiler.class);
 	}
 
+	/**
+	 * @deprecated pass the environment at hand: {@link #storeSessionRecordsAsAttachment(Environment, String, Collection, String, String)}
+	 */
+	@Deprecated
 	public static void storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
+		storeSessionRecordsAsAttachment(Environment.requireInstance(), user, sessions, attachmentArticle, attachmentName);
+	}
+
+	public static void storeSessionRecordsAsAttachment(@NotNull Environment environment, String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 
 		Collection<SessionRecord> sessionRecords = new LinkedList<>();
 		for (Session session : sessions) {
@@ -178,7 +187,7 @@ public class D3webUtils {
 		SessionPersistenceManager.getInstance().saveSessions(outputStream, sessionRecords);
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
-		Environment.getInstance().getWikiConnector()
+		environment.getWikiConnector()
 				.storeAttachment(attachmentArticle, attachmentName, user, inputStream);
 	}
 
@@ -263,7 +272,7 @@ public class D3webUtils {
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(String web, String title) {
-		Article article = Environment.getInstance().getArticle(web, title);
+		Article article = Environment.requireInstance().getArticle(web, title);
 		if (article == null) return null;
 		Section<PackageCompileType> compileSection = Sections.successor(
 				article.getRootSection(),
@@ -491,7 +500,7 @@ public class D3webUtils {
 
 	public static ResourceBundle getD3webBundle(HttpServletRequest request) {
 		if (request == null) return D3webUtils.getD3webBundle();
-		Locale.setDefault(Environment.getInstance().getWikiConnector().getLocale(request));
+		Locale.setDefault(Environment.requireInstance().getWikiConnector().getLocale(request));
 		return D3webUtils.getD3webBundle();
 	}
 
@@ -521,12 +530,12 @@ public class D3webUtils {
 		if (kbName == null) kbName = session.getKnowledgeBase().getId();
 
 		String kbUrlLink = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(kbName));
-		kbName = "<a href=\"" + toAbsolutURL(kbUrlLink) + "\">" + kbName + "</a>";
+		kbName = "<a href=\"" + toAbsolutURL(KnowWEUtils.getEnvironment(user), kbUrlLink) + "\">" + kbName + "</a>";
 		Collection<String> renderedObjects = new ArrayList<>(loopObjects.size());
 		for (TerminologyObject loopObject : loopObjects) {
 
 			String url = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(loopObject.getName()));
-			renderedObjects.add("<a href=\"" + toAbsolutURL(url) + "\">" + loopObject.getName()
+			renderedObjects.add("<a href=\"" + toAbsolutURL(KnowWEUtils.getEnvironment(user), url) + "\">" + loopObject.getName()
 					+ "</a>");
 		}
 		return "Endless loop detected in knowledge base '"
@@ -537,8 +546,8 @@ public class D3webUtils {
 				Strings.concat(",  ", renderedObjects) + ".";
 	}
 
-	private static String toAbsolutURL(String url) {
-		return Environment.getInstance().getWikiConnector().getBaseUrl() + url;
+	private static String toAbsolutURL(Environment environment, String url) {
+		return environment.getWikiConnector().getBaseUrl() + url;
 	}
 
 	public static void removedLoopDetectionNotification(UserContext context, Session session) {

@@ -110,7 +110,7 @@ public class TermUtils {
 	@Deprecated
 	@NotNull
 	public static Set<Identifier> getTermIdentifiers(String web) {
-		return getTermIdentifiers(Environment.getInstance().getArticleManager(web));
+		return getTermIdentifiers(Environment.requireInstance().getArticleManager(web));
 	}
 
 	/**

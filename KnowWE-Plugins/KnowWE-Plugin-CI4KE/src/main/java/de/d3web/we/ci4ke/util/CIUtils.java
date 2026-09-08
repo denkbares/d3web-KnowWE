@@ -31,6 +31,7 @@ import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -48,8 +49,16 @@ public class CIUtils {
 	 * 
 	 * @return the save path for ci-build xml´s
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getCIBuildDir(Environment)}
+	 */
+	@Deprecated
 	public static File getCIBuildDir() {
-		String wikiDir = getWikiContentDirectory();
+		return getCIBuildDir(Environment.requireInstance());
+	}
+
+	public static File getCIBuildDir(@NotNull Environment environment) {
+		String wikiDir = getWikiContentDirectory(environment);
 		File buildDir = new File(wikiDir + "ci-builds");
 		// check if the path exists
 		if (!buildDir.exists()) {
@@ -63,8 +72,8 @@ public class CIUtils {
 	 * @created 10.11.2010
 	 * @return
 	 */
-	private static String getWikiContentDirectory() {
-		WikiConnector con = Environment.getInstance().getWikiConnector();
+	private static String getWikiContentDirectory(Environment environment) {
+		WikiConnector con = environment.getWikiConnector();
 		String wikiDir = con.getSavePath();
 		if (wikiDir == null || wikiDir.isEmpty()) {
 			LOGGER.warn("Wiki SavePath could not be retrieved! (null or empty!)");
@@ -84,8 +93,16 @@ public class CIUtils {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getAttachmentsDirectory(Environment, String)}
+	 */
+	@Deprecated
 	public static File getAttachmentsDirectory(String articleTitle) {
-		String wikiDir = getWikiContentDirectory();
+		return getAttachmentsDirectory(Environment.requireInstance(), articleTitle);
+	}
+
+	public static File getAttachmentsDirectory(@NotNull Environment environment, String articleTitle) {
+		String wikiDir = getWikiContentDirectory(environment);
 		String folderName = Strings.encodeURL(articleTitle) + "-att" + File.separator;
 		File attachmentsDir = new File(wikiDir + folderName);
 		if (!attachmentsDir.exists()) {

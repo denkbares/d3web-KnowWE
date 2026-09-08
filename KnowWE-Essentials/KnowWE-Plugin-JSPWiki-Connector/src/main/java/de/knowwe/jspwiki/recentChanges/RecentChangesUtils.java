@@ -56,11 +56,19 @@ public class RecentChangesUtils {
 	public static final String AUTHOR = "Author";
 	public static final String CHANGE_NOTES = "Change Notes";
 
+	/**
+	 * @deprecated pass the environment at hand: {@link #getRecentChangesFromJSPWiki(Environment)}
+	 */
+	@Deprecated
 	public static Set<Page> getRecentChangesFromJSPWiki() {
+		return getRecentChangesFromJSPWiki(Environment.requireInstance());
+	}
+
+	public static Set<Page> getRecentChangesFromJSPWiki(@NotNull Environment environment) {
 		// can take quite some time for large wikis, so we cache this...
-		return CompilationLocal.getCached(KnowWEUtils.getDefaultArticleManager()
+		return CompilationLocal.getCached(environment.getArticleManager()
 				.getCompilerManager(), "recentChangesFromJSPWiki", () -> {
-			JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+			JSPWikiConnector wikiConnector = (JSPWikiConnector) environment.getWikiConnector();
 			return wikiConnector.getPageManager().getRecentChanges();
 		});
 	}
@@ -95,7 +103,7 @@ public class RecentChangesUtils {
 	}
 
 	private static Set<Page> getRecentChangesForPageTypeSelection(UserContext user) {
-		Set<Page> recentChanges = getRecentChangesFromJSPWiki();
+		Set<Page> recentChanges = getRecentChangesFromJSPWiki(KnowWEUtils.getEnvironment(user));
 		// can take quite some time for large wikis, so we cache this...
 		boolean showPages = showPages(user);
 		boolean showAttachments = isShowAttachments(user);
@@ -106,21 +114,21 @@ public class RecentChangesUtils {
 					Set<Page> recentChangesCleaned = new LinkedHashSet<>();
 					for (Page page : recentChanges) {
 						if (!(page instanceof Attachment) && showPages) {
-							addPage(recentChangesCleaned, page, showIntermediate);
+							addPage(KnowWEUtils.getEnvironment(user), recentChangesCleaned, page, showIntermediate);
 						}
 						else if (page instanceof Attachment && showAttachments) {
-							addPage(recentChangesCleaned, page, showIntermediate);
+							addPage(KnowWEUtils.getEnvironment(user), recentChangesCleaned, page, showIntermediate);
 						}
 					}
 					return recentChangesCleaned;
 				});
 	}
 
-	private static void addPage(Set<Page> filteredPages, Page page, boolean showIntermediate) {
+	private static void addPage(Environment environment, Set<Page> filteredPages, Page page, boolean showIntermediate) {
 		if (showIntermediate) {
 			List<Page> versionHistory;
 			try {
-				versionHistory = ((JSPWikiConnector) Environment.getInstance().getWikiConnector()).getPageManager()
+				versionHistory = ((JSPWikiConnector) environment.getWikiConnector()).getPageManager()
 						.getVersionHistory(page.getName());
 			}
 			catch (Exception e) {

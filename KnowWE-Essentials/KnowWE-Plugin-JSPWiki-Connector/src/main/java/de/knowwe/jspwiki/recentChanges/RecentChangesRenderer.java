@@ -91,7 +91,7 @@ public class RecentChangesRenderer implements Renderer {
 			}
 			else {
 				int pageVersion = page.getVersion();
-				List<Page> versionHistory = getPageHistory(page);
+				List<Page> versionHistory = getPageHistory(KnowWEUtils.getEnvironment(user), page);
 				int totalVersionCount = 1;
 				for (Page p : versionHistory) {
 					if (totalVersionCount < p.getVersion()) {
@@ -121,8 +121,8 @@ public class RecentChangesRenderer implements Renderer {
 		string.appendHtml("</table>");
 	}
 
-	private static List<Page> getPageHistory(Page page) {
-		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+	private static List<Page> getPageHistory(Environment environment, Page page) {
+		JSPWikiConnector wikiConnector = (JSPWikiConnector) environment.getWikiConnector();
 		return wikiConnector.getPageManager().getVersionHistory(page.getName());
 	}
 

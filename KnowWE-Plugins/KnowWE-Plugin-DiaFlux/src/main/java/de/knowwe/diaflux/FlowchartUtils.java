@@ -194,8 +194,15 @@ public class FlowchartUtils {
 	 * @param flowName The name of the flowchart
 	 * @created 02.03.2011
 	 */
+	/**
+	 * @deprecated use {@link #findFlowchartSection(ArticleManager, String)} with the article manager at hand
+	 */
+	@Deprecated
 	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
-		ArticleManager manager = Environment.getInstance().getArticleManager(web);
+		return findFlowchartSection(Environment.requireInstance().getArticleManager(web), flowName);
+	}
+
+	public static Section<FlowchartType> findFlowchartSection(ArticleManager manager, String flowName) {
 
 		for (Article article : manager.getArticles()) {
 			List<Section<FlowchartType>> matches = new LinkedList<>();
