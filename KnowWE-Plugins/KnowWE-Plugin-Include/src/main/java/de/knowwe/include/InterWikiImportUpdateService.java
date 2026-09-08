@@ -111,7 +111,7 @@ public final class InterWikiImportUpdateService {
 				markup.get().getImportSourceLabel(markup),
 				markup.get().getImportSourceLink(markup));
 
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		ArticleManager articleManager = markup.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 			defaultArticleManager.awaitInitialization();
 		}

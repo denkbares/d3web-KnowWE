@@ -243,7 +243,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	/** Absolute link back to this importing section, shown on the source page's "imported by" marker. */
 	String getImportSourceLink(Section<InterWikiImportMarkup> section) {
-		return KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getURLLink(section));
+		return KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getEnvironment(section), KnowWEUtils.getURLLink(section));
 	}
 
 	@Nullable

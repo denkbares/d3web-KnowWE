@@ -469,7 +469,7 @@ public class D3webUtils {
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
-		sessionDir = KnowWEUtils.getRealPath(sessionDir);
+		sessionDir = KnowWEUtils.getRealPath(context.getEnvironment(), sessionDir);
 		return sessionDir;
 	}
 

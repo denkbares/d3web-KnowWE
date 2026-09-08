@@ -51,7 +51,7 @@ public class AnnotatePageAction extends AbstractAction {
 		}
 
 		// Per-page view permission via the same path KnowWE uses for article rendering.
-		Article article = KnowWEUtils.getDefaultArticleManager().getArticle(pageName);
+		Article article = context.getArticleManager().getArticle(pageName);
 		if (article != null && !KnowWEUtils.canView(article, context)) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to view: " + pageName);
 			return;

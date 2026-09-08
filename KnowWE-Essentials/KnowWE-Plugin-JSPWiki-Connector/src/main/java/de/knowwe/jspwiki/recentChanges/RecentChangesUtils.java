@@ -108,7 +108,7 @@ public class RecentChangesUtils {
 		boolean showPages = showPages(user);
 		boolean showAttachments = isShowAttachments(user);
 		boolean showIntermediate = showIntermediates(user);
-		return CompilationLocal.getCached(KnowWEUtils.getDefaultArticleManager().getCompilerManager(),
+		return CompilationLocal.getCached(user.getArticleManager().getCompilerManager(),
 				"recentChangesWithFilterFromJSPWiki-" + showPages + "-" + showAttachments + "-" + showIntermediate,
 				() -> {
 					Set<Page> recentChangesCleaned = new LinkedHashSet<>();

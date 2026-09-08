@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
@@ -111,7 +110,7 @@ public class GitAutoUpdater {
 
 	private void performRebase(ArticleManager articleManager, Git git) throws IOException, GitAPIException {
 		// Warten bis der KnowWe-Compiler fertig ist
-		Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+		Compilers.awaitTermination(articleManager.getCompilerManager());
 
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
@@ -213,7 +212,7 @@ public class GitAutoUpdater {
 		}
 		catch (InterruptedException ignored) {
 		}
-		Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+		Compilers.awaitTermination(articleManager.getCompilerManager());
 		LOGGER.info("Compile ends");
 	}
 

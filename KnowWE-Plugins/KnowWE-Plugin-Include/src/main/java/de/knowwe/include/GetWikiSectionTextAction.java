@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.Nullable;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.GetSectionTextAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -71,7 +70,7 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 	}
 
 	private static SourceInfo getSourceInfo(Section<WikiReference> wikiReferenceSection, UserActionContext context) {
-		Section<?> referencedSection = WikiReference.findReferencedSection(wikiReferenceSection, KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB));
+		Section<?> referencedSection = WikiReference.findReferencedSection(wikiReferenceSection, context.getArticleManager());
 		if (referencedSection == null) return null;
 		// Access is already validated via canView before returning any section content.
 		if (!KnowWEUtils.canView(referencedSection, context)) return new SourceInfo(referencedSection, null, null);

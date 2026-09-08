@@ -149,7 +149,7 @@ public final class Article {
 
 	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root) {
 		if (root == null) {
-			rootType = RootType.getInstance();
+			rootType = manager.getEnvironment().getRootType();
 		}
 		else {
 			rootType = root;

@@ -299,7 +299,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 
 		WikiAttachment attachment = null;
 		try {
-			Collection<WikiAttachment> attachments = KnowWEUtils.getAttachments(section.getTitle(), attachmentName + ".*");
+			Collection<WikiAttachment> attachments = KnowWEUtils.getAttachments(KnowWEUtils.getEnvironment(section), section.getTitle(), attachmentName + ".*");
 			if (!attachments.isEmpty()) {
 				attachment = attachments.iterator().next();
 				attachmentName = attachment.getFileName();

@@ -77,7 +77,7 @@ public class RootTypeExportAction extends AbstractAction {
 		realPath = servletContext.getRealPath("");
 		path = realPath + FILE_SEPARATOR + tmpPath;
 
-		RootType rt = RootType.getInstance();
+		RootType rt = context.getEnvironment().getRootType();
 		setGeneralGraphSettings();
 		dotSourceLabel = new LinkedList<>();
 		dotSourceRelations = new LinkedHashMap<>();

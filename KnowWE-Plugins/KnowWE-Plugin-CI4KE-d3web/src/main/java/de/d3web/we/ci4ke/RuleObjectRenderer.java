@@ -8,7 +8,6 @@ import de.d3web.we.kdom.rules.RuleCompileScript;
 import de.d3web.we.kdom.rules.RuleType;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -26,8 +25,8 @@ public class RuleObjectRenderer implements ObjectNameRenderer {
 	public void render(UserContext context, String objectName, RenderResult result) {
 		ArticleManager articleManager = KnowWEUtils.getArticleManager(context.getWeb());
 
-		Sections<RuleType> ruleTypeSections = Sections.$(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB)).successor(RuleType.class);
-		Collection<D3webCompiler> compilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB), D3webCompiler.class);
+		Sections<RuleType> ruleTypeSections = Sections.$(context.getArticleManager()).successor(RuleType.class);
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(context.getArticleManager(), D3webCompiler.class);
 
 		for (Section<RuleType> ruleSection : ruleTypeSections) {
 
