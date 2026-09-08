@@ -1736,8 +1736,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	private static void replaceForTitle(String title, Map<String, String> sectionsMapForCurrentTitle,
 										ReplaceContext context, @Nullable String changeNote) {
-		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context.getWeb());
-		Environment.getInstance()
+		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
+		context.getEnvironment()
 				.getWikiConnector()
 				.writeArticleToWikiPersistence(title, newArticleText, context.getAuthor(), context.getHttpRequest(), changeNote);
 	}
@@ -1745,20 +1745,22 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	private static String getNewArticleText(
 			String title,
 			Map<String, String> sectionsMapForCurrentTitle,
-			String web) {
+			ReplaceContext context) {
 
-		Article article = Environment.getInstance().getArticle(web, title);
+		Article article = context.getEnvironment().getArticleManager(context.getWeb()).getArticle(title);
 		return collectTextAndReplace(article, sectionsMapForCurrentTitle);
 	}
 
 	public static class ReplaceContext {
+		private final Environment environment;
 		private final String web;
 		private final Predicate<String> userCanEdit;
 		private final @Nullable HttpServletRequest httpRequest;
 		private final String author;
 
-		private ReplaceContext(String web, Predicate<String> userCanEdit,
+		private ReplaceContext(Environment environment, String web, Predicate<String> userCanEdit,
 							  @Nullable HttpServletRequest httpRequest, String author) {
+			this.environment = environment;
 			this.web = web;
 			this.userCanEdit = userCanEdit;
 			this.httpRequest = httpRequest;
@@ -1769,11 +1771,24 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			Predicate<String> userCanEdit = title -> userContext.getEnvironment()
 					.getWikiConnector()
 					.userCanEditArticle(title, userContext);
-			return new ReplaceContext(userContext.getWeb(), userCanEdit, userContext.getRequest(), userContext.getUserName());
+			return new ReplaceContext(userContext.getEnvironment(), userContext.getWeb(), userCanEdit, userContext.getRequest(), userContext.getUserName());
 		}
 
+		public static ReplaceContext of(@NotNull Environment environment, String web, Predicate<String> userCanEdit, String author) {
+			return new ReplaceContext(environment, web, userCanEdit, null, author);
+		}
+
+		/**
+		 * @deprecated pass the environment at hand: {@link #of(Environment, String, Predicate, String)}
+		 */
+		@Deprecated
 		public static ReplaceContext of(String web, Predicate<String> userCanEdit, String author) {
-			return new ReplaceContext(web, userCanEdit, null, author);
+			return of(Environment.requireInstance(), web, userCanEdit, author);
+		}
+
+		@NotNull
+		public Environment getEnvironment() {
+			return environment;
 		}
 
 		public String getWeb() {

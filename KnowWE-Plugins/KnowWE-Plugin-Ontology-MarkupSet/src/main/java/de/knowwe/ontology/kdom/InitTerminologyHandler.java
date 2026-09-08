@@ -403,7 +403,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 			});
 			cache.referencingSections.add(section.getID());
 			importCache.values().removeIf(rCache -> {
-				boolean remove = noLongerReferenced(rCache) || attachmentOutDated(rCache);
+				boolean remove = noLongerReferenced(rCache) || attachmentOutDated(compiler, rCache);
 				// if we remove, make sure to properly destroy to allow gc and free up memory
 				if (remove) {
 					rCache.core.close();
@@ -414,11 +414,9 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 		return cache.core;
 	}
 
-	private boolean attachmentOutDated(TermCache rCache) {
+	private boolean attachmentOutDated(OntologyCompiler compiler, TermCache rCache) {
 		try {
-			WikiAttachment rAttachment = Environment.getInstance()
-					.getWikiConnector()
-					.getAttachment(rCache.annotationPath);
+			WikiAttachment rAttachment = KnowWEUtils.getEnvironment(compiler).getWikiConnector().getAttachment(rCache.annotationPath);
 			// remove if attachment no longer exists
 			if (rAttachment == null) {
 				return true;

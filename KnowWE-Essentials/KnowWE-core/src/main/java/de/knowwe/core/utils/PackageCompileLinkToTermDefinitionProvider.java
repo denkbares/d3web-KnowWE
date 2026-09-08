@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -41,7 +42,8 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 
 	@Override
 	public String getLinkToTermDefinition(Identifier name, String masterArticle) {
-		TerminologyManager terminologyManager = getTerminologyManager(masterArticle);
+		// LinkToTermDefinitionProvider has no context object, see environment-instance-plan.md
+		TerminologyManager terminologyManager = getTerminologyManager(Environment.requireInstance(), masterArticle);
 		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(name);
 		String targetArticle = name.toString();
 		if (!termDefinitions.isEmpty()) {
@@ -54,8 +56,16 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 		return KnowWEUtils.getURLLink(targetArticle);
 	}
 
+	/**
+	 * @deprecated pass the environment at hand: {@link #getTerminologyManager(Environment, String)}
+	 */
+	@Deprecated
 	public static TerminologyManager getTerminologyManager(String master) {
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		return getTerminologyManager(Environment.requireInstance(), master);
+	}
+
+	public static TerminologyManager getTerminologyManager(@NotNull Environment environment, String master) {
+		ArticleManager articleManager = environment.getArticleManager();
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(articleManager,
 				PackageCompiler.class);
 		for (PackageCompiler ontologyCompiler : compilers) {
@@ -74,8 +84,16 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	 * @return
 	 * @created 29.11.2012
 	 */
+	public String createBaseURL(@NotNull Environment environment) {
+		return environment.getWikiConnector().getBaseUrl() + "Wiki.jsp";
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #createBaseURL(Environment)}
+	 */
+	@Deprecated
 	public String createBaseURL() {
-		return Environment.getInstance().getWikiConnector().getBaseUrl() + "Wiki.jsp";
+		return createBaseURL(Environment.requireInstance());
 	}
 
 	// @SuppressWarnings("unchecked")

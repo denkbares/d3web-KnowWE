@@ -42,6 +42,6 @@ class FileChangeTest {
 
 	@Test
 	void fromArticleReturnsNullWhenBothNamesAreMissing() {
-		assertNull(FileChange.fromArticle(null, null, "content"));
+		assertNull(FileChange.fromArticle((String) null, null, "content"));
 	}
 }

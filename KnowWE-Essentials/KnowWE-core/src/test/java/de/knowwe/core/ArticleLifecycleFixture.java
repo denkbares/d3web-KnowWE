@@ -72,8 +72,14 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 		field(Environment.class, "initialized").setBoolean(null, false);
 		Constructor<Environment> constructor = Environment.class.getDeclaredConstructor(WikiConnector.class);
 		constructor.setAccessible(true);
+		Environment[] bound = new Environment[1];
 		WikiConnector connector = (WikiConnector) Proxy.newProxyInstance(WikiConnector.class.getClassLoader(),
 				new Class<?>[] { WikiConnector.class }, (proxy, method, args) -> {
+					if (method.getName().equals("setEnvironment")) {
+						bound[0] = (Environment) args[0];
+						return null;
+					}
+					if (method.getName().equals("getEnvironment")) return bound[0];
 					if (method.getName().equals("getAttachment")) return attachment((String) args[0]);
 					throw new UnsupportedOperationException("Unexpected wiki access: " + method.getName());
 				});

@@ -74,6 +74,20 @@ public class DummyConnector implements WikiConnector {
 
 	private final Properties properties;
 
+	private Environment environment;
+
+	@Override
+	public void setEnvironment(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	@NotNull
+	public Environment getEnvironment() {
+		if (environment == null) throw new IllegalStateException("Wiki connector is not bound to an environment yet");
+		return environment;
+	}
+
 	public DummyConnector(String savePath) {
 		this(new Properties(), savePath, new SimpleDummyPageProvider());
 	}
@@ -162,20 +176,19 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) {
 		if (getArticleText(title) == null) return Collections.emptyList();
-		return Collections.singletonList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1), null));
+		return Collections.singletonList(new WikiPageInfo(this, title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1), null));
 	}
 
 	@Override
 	public List<WikiAttachmentInfo> getAttachmentHistory(String path) {
 		if (getAttachment(path) == null) return Collections.emptyList();
-		return Collections.singletonList(new WikiAttachmentInfo(path, DUMMY_USER, 1, getLastModifiedDate(path, 1)));
+		return Collections.singletonList(new WikiAttachmentInfo(this, path, DUMMY_USER, 1, getLastModifiedDate(path, 1)));
 	}
 
 	@Override
 	public String createArticle(String title, String author, String content) {
-		Environment environment = Environment.getInstance();
 		// create article with the new content
-		environment.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
+		getEnvironment().getArticleManager().registerArticle(title, content);
 		dummyPageProvider.setArticleContent(title, content);
 		return content;
 	}
@@ -449,7 +462,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, String author, String changeNote) {
-		Environment environment = Environment.getInstance();
+		Environment environment = getEnvironment();
 		// create article with the new content
 		dummyPageProvider.setArticleContent(title, content, changeNote);
 

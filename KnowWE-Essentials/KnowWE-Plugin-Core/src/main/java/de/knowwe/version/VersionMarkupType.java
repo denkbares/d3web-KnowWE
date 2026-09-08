@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.version.taghandler.VersionTagHandler;
@@ -117,11 +118,9 @@ public class VersionMarkupType extends DefaultMarkupType {
 	 * @return the application manifest
 	 */
 	@Nullable
-	public static Manifest getApplicationManifest() {
-		if (manifest == null && Environment.isInitialized()) {
-			String manifestPath = Environment.getInstance()
-					.getWikiConnector()
-					.getApplicationRootPath() + "/META-INF/MANIFEST.MF";
+	public static Manifest getApplicationManifest(@NotNull Environment environment) {
+		if (manifest == null) {
+			String manifestPath = environment.getWikiConnector().getApplicationRootPath() + "/META-INF/MANIFEST.MF";
 			try {
 				manifest = new Manifest(new FileInputStream(new File(manifestPath)));
 			}
@@ -130,5 +129,15 @@ public class VersionMarkupType extends DefaultMarkupType {
 			}
 		}
 		return manifest;
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #getApplicationManifest(Environment)}
+	 */
+	@Deprecated
+	@Nullable
+	public static Manifest getApplicationManifest() {
+		Environment environment = Environment.peekInstance();
+		return environment == null ? manifest : getApplicationManifest(environment);
 	}
 }

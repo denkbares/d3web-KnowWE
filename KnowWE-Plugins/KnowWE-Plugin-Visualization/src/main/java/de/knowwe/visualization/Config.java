@@ -189,7 +189,18 @@ public class Config {
 
 	public Config(Section<? extends DefaultMarkupType> section, UserContext user) {
 		this();
+		this.environment = KnowWEUtils.getEnvironment(section);
 		init(section, user);
+	}
+
+	/**
+	 * The environment the visualized section belongs to; null for a configuration created without a section.
+	 */
+	private Environment environment;
+
+	@NotNull
+	public Environment getEnvironment() {
+		return environment != null ? environment : Environment.requireInstance();
 	}
 
 	public String getForceVisualizationStyle() {
@@ -223,7 +234,7 @@ public class Config {
 
 	public String getCacheDirectoryPath() {
 		if (cacheDirectoryPath == null) {
-			return Environment.getInstance().getWikiConnector().getApplicationRootPath();
+			return getEnvironment().getWikiConnector().getApplicationRootPath();
 		}
 		return cacheDirectoryPath;
 	}

@@ -24,6 +24,7 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 
 public class WikiPageInfo implements WikiObjectInfo {
 
@@ -32,8 +33,10 @@ public class WikiPageInfo implements WikiObjectInfo {
 	private final int version;
 	private final Date date;
 	private final String changeNote;
+	private final WikiConnector connector;
 
-	public WikiPageInfo(String name, String author, int version, Date date, String changeNote) {
+	public WikiPageInfo(@NotNull WikiConnector connector, String name, String author, int version, Date date, String changeNote) {
+		this.connector = connector;
 		this.name = name;
 		this.author = author;
 		this.version = version;
@@ -41,8 +44,17 @@ public class WikiPageInfo implements WikiObjectInfo {
 		this.changeNote = changeNote;
 	}
 
+	/**
+	 * @deprecated pass the connector the page belongs to: {@link #WikiPageInfo(WikiConnector, String, String, int,
+	 * Date, String)}
+	 */
+	@Deprecated
+	public WikiPageInfo(String name, String author, int version, Date date, String changeNote) {
+		this(Environment.requireInstance().getWikiConnector(), name, author, version, date, changeNote);
+	}
+
 	public String getText() {
-		return Environment.getInstance().getWikiConnector().getArticleText(name, version);
+		return connector.getArticleText(name, version);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
  * Class that simply holds two WikiAttachments
@@ -20,9 +21,19 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 public class WikiAttachmentPair {
 
 	private final String testObjectName;
+	private final WikiConnector connector;
 
-	public WikiAttachmentPair(String testObjectName) {
+	public WikiAttachmentPair(@NotNull WikiConnector connector, String testObjectName) {
+		this.connector = connector;
 		this.testObjectName = testObjectName;
+	}
+
+	/**
+	 * @deprecated pass the connector at hand: {@link #WikiAttachmentPair(WikiConnector, String)}
+	 */
+	@Deprecated
+	public WikiAttachmentPair(String testObjectName) {
+		this(Environment.requireInstance().getWikiConnector(), testObjectName);
 	}
 
 	@NotNull
@@ -37,7 +48,7 @@ public class WikiAttachmentPair {
 
 	@NotNull
 	private WikiAttachment getWikiAttachment(String attachmentPath) throws IOException {
-		WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(attachmentPath);
+		WikiAttachment attachment = connector.getAttachment(attachmentPath);
 		if (attachment == null) throw new IOException(attachmentPath + " is not a valid attachment path");
 		return attachment;
 	}

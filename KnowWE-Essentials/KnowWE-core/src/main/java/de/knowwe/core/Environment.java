@@ -253,6 +253,7 @@ public final class Environment implements AutoCloseable {
 	 */
 	private Environment(WikiConnector wiki) {
 		this.wikiConnector = wiki;
+		wiki.setEnvironment(this);
 	}
 
 	private void init() {

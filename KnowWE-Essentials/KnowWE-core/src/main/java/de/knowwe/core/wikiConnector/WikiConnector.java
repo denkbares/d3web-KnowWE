@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -51,6 +52,20 @@ import de.knowwe.core.user.UserContext;
  */
 
 public interface WikiConnector {
+
+	/**
+	 * Binds this connector to the environment it serves. Called exactly once by the environment while it is created;
+	 * a connector serves exactly one environment.
+	 */
+	void setEnvironment(@NotNull Environment environment);
+
+	/**
+	 * Returns the environment this connector serves.
+	 *
+	 * @throws IllegalStateException if the connector is not bound to an environment yet
+	 */
+	@NotNull
+	Environment getEnvironment();
 
 	/**
 	 * Reads to entire content new from the file system. May take a while.

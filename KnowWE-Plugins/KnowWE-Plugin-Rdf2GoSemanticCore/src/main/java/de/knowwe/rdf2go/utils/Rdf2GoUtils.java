@@ -84,7 +84,7 @@ public class Rdf2GoUtils {
 
 	private static final SimpleDateFormat PRIVATE_XSD_DATE_TIME_FORMAT = getXsdDateTimeFormat();
 
-	private static final String staticLns = generateLocalNamespace();
+	private static final String FALLBACK_LNS = "http://localhost:8080/KnowWE/Wiki.jsp?page=";
 
 	/**
 	 * We might want to move the value factory into the semantic core or even the underlying repository or sail, because
@@ -92,23 +92,37 @@ public class Rdf2GoUtils {
 	 */
 	private static final OptimizedMemValueFactory valueFactory = new OptimizedMemValueFactory();
 
-	public static @NotNull String getLocalNamespace() {
-		return staticLns;
+	/**
+	 * Returns the local namespace (lns) of the given environment, derived from the base url of its wiki. It is computed
+	 * once per environment.
+	 */
+	public static @NotNull String getLocalNamespace(@NotNull Environment environment) {
+		return environment.getService(LocalNamespace.class, () -> new LocalNamespace(generateLocalNamespace(environment))).lns();
 	}
 
-	private static @NotNull String generateLocalNamespace() {
-		String lns;
+	/**
+	 * @deprecated pass the environment at hand: {@link #getLocalNamespace(Environment)}
+	 */
+	@Deprecated
+	public static @NotNull String getLocalNamespace() {
+		Environment environment = Environment.peekInstance();
+		return environment == null ? FALLBACK_LNS : getLocalNamespace(environment);
+	}
+
+	private record LocalNamespace(String lns) {
+	}
+
+	private static @NotNull String generateLocalNamespace(@NotNull Environment environment) {
 		String baseUrl;
 		try {
-			baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+			baseUrl = environment.getWikiConnector().getBaseUrl();
 			new URL(baseUrl); // check if we have a valid url or just context root
 		}
 		catch (Exception e) {
-			LOGGER.warn("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
-			baseUrl = "http://localhost:8080/KnowWE/";
+			LOGGER.warn("Invalid local namespace (lns), using fallback " + FALLBACK_LNS);
+			return FALLBACK_LNS;
 		}
-		lns = baseUrl + "Wiki.jsp?page=";
-		return lns;
+		return baseUrl + "Wiki.jsp?page=";
 	}
 
 	public static String getReadableQuery(String query, SparqlType type) {

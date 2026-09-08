@@ -408,7 +408,10 @@ public class Plugins {
 	 *                 {@code data-tab} key, client storage key and lazy-fetch parameter)
 	 * @param provider the provider to register
 	 * @param priority the sort priority of the tab (ascending; lower number == earlier/leftmost)
+	 * @deprecated pass the environment at hand: {@link #registerRightPanelTabProvider(Environment, String,
+	 * RightPanelTabProvider, double)}
 	 */
+	@Deprecated
 	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider, double priority) {
 		registerRightPanelTabProvider(Environment.requireInstance(), id, provider, priority);
 	}

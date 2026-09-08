@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 
 public class WikiAttachmentInfo implements WikiObjectInfo {
 
@@ -30,16 +31,27 @@ public class WikiAttachmentInfo implements WikiObjectInfo {
 	private final String author;
 	private final int version;
 	private final Date date;
+	private final WikiConnector connector;
 
-	public WikiAttachmentInfo(String name, String author, int version, Date date) {
+	public WikiAttachmentInfo(@NotNull WikiConnector connector, String name, String author, int version, Date date) {
+		this.connector = connector;
 		this.name = name;
 		this.author = author;
 		this.version = version;
 		this.date = date;
 	}
 
+	/**
+	 * @deprecated pass the connector the attachment belongs to: {@link #WikiAttachmentInfo(WikiConnector, String,
+	 * String, int, Date)}
+	 */
+	@Deprecated
+	public WikiAttachmentInfo(String name, String author, int version, Date date) {
+		this(Environment.requireInstance().getWikiConnector(), name, author, version, date);
+	}
+
 	public WikiAttachment getAttachment() throws IOException {
-		return Environment.getInstance().getWikiConnector().getAttachment(name, version);
+		return connector.getAttachment(name, version);
 	}
 
 	@Override
