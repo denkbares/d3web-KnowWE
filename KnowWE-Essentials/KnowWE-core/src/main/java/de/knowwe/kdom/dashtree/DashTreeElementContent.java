@@ -20,25 +20,19 @@
 package de.knowwe.kdom.dashtree;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class DashTreeElementContent extends AbstractType {
 
-	private static DashTreeElementContent defaultInstance = null;
-
-	public static synchronized DashTreeElementContent getDefaultInstance() {
-		if (defaultInstance == null) {
-			defaultInstance = new DashTreeElementContent();
-		}
-		return defaultInstance;
-	}
-
 	/**
-	 * Drops the default instance, so the next {@link #getDefaultInstance()} creates a fresh, undecorated type. Called
-	 * when the {@link de.knowwe.core.Environment} is shut down.
+	 * Returns the shared default instance of the current environment (one instance per environment). Without an
+	 * environment a fresh instance is returned.
 	 */
-	public static synchronized void resetDefaultInstance() {
-		defaultInstance = null;
+	public static DashTreeElementContent getDefaultInstance() {
+		Environment environment = Environment.peekInstance();
+		return environment == null ? new DashTreeElementContent()
+				: environment.getService(DashTreeElementContent.class, DashTreeElementContent::new);
 	}
 
 	public DashTreeElementContent() {

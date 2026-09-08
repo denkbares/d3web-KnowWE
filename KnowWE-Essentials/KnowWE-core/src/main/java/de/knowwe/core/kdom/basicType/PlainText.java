@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
@@ -44,22 +45,13 @@ import de.knowwe.core.report.CompilerMessage;
  */
 public class PlainText extends AbstractType {
 
-	private static PlainText instance;
-
-	public static synchronized PlainText getInstance() {
-		if (instance == null) {
-			instance = new PlainText();
-		}
-		return instance;
-	}
-
 	/**
-	 * Drops the singleton instance, so the next {@link #getInstance()} creates a fresh, undecorated type. Called when
-	 * the {@link de.knowwe.core.Environment} is shut down, because the type tree of the next environment must not
-	 * inherit the plugged children, renderers and scripts of the previous one.
+	 * Returns the shared plain text type of the current environment (one instance per environment, so decorations of
+	 * one environment's type tree do not leak into the next). Without an environment a fresh instance is returned.
 	 */
-	public static synchronized void resetInstance() {
-		instance = null;
+	public static PlainText getInstance() {
+		Environment environment = Environment.peekInstance();
+		return environment == null ? new PlainText() : environment.getService(PlainText.class, PlainText::new);
 	}
 
 	public PlainText() {

@@ -19,8 +19,6 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.basicType.LineContent;
-import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.SectionRegistry;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -31,7 +29,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
-import de.knowwe.kdom.dashtree.DashTreeElementContent;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.DeInitEvent;
 import de.knowwe.event.FullParseEvent;
@@ -144,6 +141,16 @@ public final class Environment implements AutoCloseable {
 	 * Set when {@link #close()} has released the services; from then on no service can be provided anymore.
 	 */
 	private volatile boolean closed = false;
+
+	/**
+	 * The plugged (global) compilers of this environment, instantiated for this environment only.
+	 */
+	private final List<Compiler> pluggedCompilers = new ArrayList<>();
+
+	/**
+	 * The plugged event listeners this environment registered at the (JVM-wide) event manager; unregistered on close.
+	 */
+	private final List<EventListener> pluggedEventListeners = new ArrayList<>();
 
 	/**
 	 * Hard coded name of the default web
@@ -278,6 +285,11 @@ public final class Environment implements AutoCloseable {
 		}
 		awaitCompileTerminationForShutdown();
 		EventManager.getInstance().fireEvent(new DeInitEvent());
+		// the plugged listeners belong to this environment's lifecycle; the event manager itself is JVM-wide
+		for (EventListener listener : pluggedEventListeners) {
+			EventManager.getInstance().unregister(listener);
+		}
+		pluggedEventListeners.clear();
 		// stop the compilers first: destroying their content may still use services (e.g. the message index)
 		for (ArticleManager manager : articleManagers.values()) {
 			manager.getCompilerManager().shutdown();
@@ -294,7 +306,6 @@ public final class Environment implements AutoCloseable {
 		sectionRegistry.clear();
 		occupiedTerms.clear();
 		additionalRenderer.clear();
-		resetSingletonTypes();
 		synchronized (Environment.class) {
 			if (instance == this) instance = null;
 		}
@@ -360,16 +371,6 @@ public final class Environment implements AutoCloseable {
 		}
 	}
 
-	/**
-	 * Singleton types are decorated in place while the type tree is built, so they must be recreated for the next
-	 * environment. Remaining static state; goes away when these types stop being singletons.
-	 */
-	private static void resetSingletonTypes() {
-		PlainText.resetInstance();
-		LineContent.resetInstance();
-		DashTreeElementContent.resetDefaultInstance();
-	}
-
 	private void initEventManager() {
 		// get all EventListeners
 		List<Extension> extensions = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
@@ -377,8 +378,9 @@ public final class Environment implements AutoCloseable {
 				Plugins.EXTENDED_POINT_EventListener)));
 		for (Extension extension : extensions) {
 			Object o = extension.getSingleton();
-			if (o instanceof EventListener) {
-				EventManager.getInstance().registerListener(((EventListener) o));
+			if (o instanceof EventListener listener) {
+				EventManager.getInstance().registerListener(listener);
+				pluggedEventListeners.add(listener);
 			}
 		}
 	}
@@ -393,9 +395,11 @@ public final class Environment implements AutoCloseable {
 
 		compilerManager.addCompiler(4, new DefaultGlobalCompiler());
 
+		// the plugged compilers are instantiated for this environment; they hold the state of the wiki
 		for (PriorityList.Group<Double, Compiler> priorityGroup : Plugins.getCompilers().getPriorityGroups()) {
 			List<Compiler> compilers = priorityGroup.getElements();
 			for (Compiler compiler : compilers) {
+				pluggedCompilers.add(compiler);
 				compilerManager.addCompiler(priorityGroup.getPriority(), compiler);
 			}
 		}
@@ -454,7 +458,7 @@ public final class Environment implements AutoCloseable {
 	 */
 	public boolean isGlobalCompiler(Compiler compiler) {
 		// check for PackageRegistrationCompiler is redundant as being subclass of DefaultGlobalCompiler
-		return (compiler instanceof DefaultGlobalCompiler) || Plugins.getCompilers().contains(compiler);
+		return (compiler instanceof DefaultGlobalCompiler) || pluggedCompilers.contains(compiler);
 	}
 
 	private void initProperties() {
@@ -720,7 +724,6 @@ public final class Environment implements AutoCloseable {
 		Plugins.checkTypePriorityClarity();
 
 		// queue the queue of paths to be initialized
-		PlainText.getInstance();
 		rootType = new RootType();
 		LinkedList<Type[]> queue = new LinkedList<>();
 		queue.add(new Type[] { rootType });

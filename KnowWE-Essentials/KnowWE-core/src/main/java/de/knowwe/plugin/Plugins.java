@@ -114,12 +114,16 @@ public class Plugins {
 	 *
 	 * @return List of all Instantiations
 	 */
+	/**
+	 * Returns new instances of all plugged compilers. Compilers hold the knowledge of one wiki, so every environment
+	 * instantiates its own set (see {@link de.knowwe.core.Environment#isGlobalCompiler(Compiler)}).
+	 */
 	public static PriorityList<Double, Compiler> getCompilers() {
 		PluginManager pm = PluginManager.getInstance();
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_Compiler);
 		PriorityList<Double, Compiler> result = new PriorityList<>(5d);
 		for (Extension e : extensions) {
-			result.add(e.getPriority(), (Compiler) e.getSingleton());
+			result.add(e.getPriority(), (Compiler) e.getNewInstance());
 		}
 		return result;
 	}
