@@ -127,7 +127,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @created 23.02.2011
 	 */
 	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
-		ArticleManager mgr = KnowWEUtils.getEnvironment(context).getArticleManager(
+		ArticleManager mgr = context.getEnvironment().getArticleManager(
 				context.getWeb());
 		Article article = mgr.getArticle(topic);
 		Section<RootType> rootSection = article.getRootSection();

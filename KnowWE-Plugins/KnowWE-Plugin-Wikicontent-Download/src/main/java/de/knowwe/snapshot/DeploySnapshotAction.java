@@ -55,7 +55,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 		}
 
 		// try to find a corresponding temp repo folder file
-		File repoSnapshot = new File(getSnapshotsPath(KnowWEUtils.getEnvironment(context)), deployFilename);
+		File repoSnapshot = new File(getSnapshotsPath(context.getEnvironment()), deployFilename);
 
 		// if not present, sent error
 		if (!repoSnapshot.exists()) {
@@ -76,8 +76,8 @@ public class DeploySnapshotAction extends SnapshotAction {
 				throw new IOException("Snapshot limit was reached. Please delete a snapshot before continuing. " +
 						"(You can still download the current wiki with \"Download Wiki-Zip\" in the admin markup.)");
 			}
-			String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(KnowWEUtils.getEnvironment(context), AUTOSAVE_SNAPSHOT);
-			createAndStoreWikiContentSnapshot(context, getSnapshotsPath(KnowWEUtils.getEnvironment(context)), wikiContentZipFilename);
+			String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(context.getEnvironment(), AUTOSAVE_SNAPSHOT);
+			createAndStoreWikiContentSnapshot(context, getSnapshotsPath(context.getEnvironment()), wikiContentZipFilename);
 		}
 		catch (IOException e) {
 			context.sendError(500, e.getMessage());
@@ -85,10 +85,10 @@ public class DeploySnapshotAction extends SnapshotAction {
 		}
 
 		try {
-			makeFileSystemReplaceOperation(KnowWEUtils.getEnvironment(context), snapshot);
+			makeFileSystemReplaceOperation(context.getEnvironment(), snapshot);
 
 			// tell WikiConnector that content has changed on the file system
-			KnowWEUtils.getEnvironment(context).reinitializeForNewWikiContent();
+			context.getEnvironment().reinitializeForNewWikiContent();
 		}
 		catch (IOException e) {
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error on re-initialization of new wiki content: " + e.getMessage());

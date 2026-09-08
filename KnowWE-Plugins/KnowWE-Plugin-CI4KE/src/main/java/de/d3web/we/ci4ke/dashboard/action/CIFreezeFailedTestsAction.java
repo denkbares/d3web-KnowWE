@@ -37,7 +37,6 @@ import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -68,7 +67,7 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 
 		List<TestResult> results = build.getResults();
 
-		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
+		WikiConnector wikiConnector = context.getEnvironment().getWikiConnector();
 
 		//remove all previous files
 		List<WikiAttachment> attachments = wikiConnector

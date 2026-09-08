@@ -222,7 +222,7 @@ public class SearchResultRenderer {
 	private static String toHtml(RenderResult result, UserContext user) {
 		String raw = result.toStringRaw().replaceAll("@!!!", "@\n!!!");
 		raw = TABLE_OF_CONTENTS.matcher(raw).replaceAll("");
-		String markup = KnowWEUtils.getEnvironment(user).getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
+		String markup = user.getEnvironment().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
 		return RenderResult.unmask(markup, user);
 	}
 

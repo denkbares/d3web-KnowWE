@@ -20,7 +20,6 @@ package de.knowwe.instantedit.actions;
 
 import java.io.IOException;
 
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -38,18 +37,18 @@ public class InstantEditDisableAction extends AbstractAction {
 
 		String topic = context.getTitle();
 
-		if (KnowWEUtils.getEnvironment(context).getArticle(context.getWeb(), topic) == null) {
+		if (context.getEnvironment().getArticle(context.getWeb(), topic) == null) {
 			context.sendError(404, "Page '" + topic + "' could not be found.");
 			return;
 		}
 
-		if (!KnowWEUtils.getEnvironment(context).getWikiConnector().userCanViewArticle(topic,
+		if (!context.getEnvironment().getWikiConnector().userCanViewArticle(topic,
 				context)) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}
 
-		KnowWEUtils.getEnvironment(context).getWikiConnector().unlockArticle(topic, context.getUserName());
+		context.getEnvironment().getWikiConnector().unlockArticle(topic, context.getUserName());
 	}
 
 }

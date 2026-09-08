@@ -58,7 +58,6 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.Environment;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -402,7 +401,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 
 	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title, UserContext user) {
-		Environment env = KnowWEUtils.getEnvironment(user);
+		Environment env = user.getEnvironment();
 		TerminologyManager manager = env.getTerminologyManager(user.getWeb(), title);
 		Section<?> termDefiningSection = manager.getTermDefiningSection(new Identifier(t1.getName()));
 		RenderResult builder = new RenderResult(user);

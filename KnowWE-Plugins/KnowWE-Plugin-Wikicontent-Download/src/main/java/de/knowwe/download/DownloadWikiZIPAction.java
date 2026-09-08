@@ -75,7 +75,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 			return;
 		}
 
-		String filename = generateWikiContentZipFilename(KnowWEUtils.getEnvironment(context), SNAPSHOT);
+		String filename = generateWikiContentZipFilename(context.getEnvironment(), SNAPSHOT);
 
 		//String filename = wikiFolder.getName() + ".zip";
 		context.setContentType(BINARY);
@@ -120,7 +120,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 
 	public static void writeWikiContentZipStreamToOutputStream(UserActionContext context, OutputStream outs, boolean includeVersions, boolean fingerprint) throws IOException {
 		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs))) {
-			zipDir(getWikiFolder(KnowWEUtils.getEnvironment(context)), zos, context, includeVersions);
+			zipDir(getWikiFolder(context.getEnvironment()), zos, context, includeVersions);
 			if (fingerprint) zipFingerprint(zos, context);
 		}
 	}
@@ -128,13 +128,13 @@ public class DownloadWikiZIPAction extends AbstractAction {
 	private static void zipFingerprint(ZipOutputStream zos, UserActionContext context) throws IOException {
 		File tempDir = Files.createTempDir();
 		try {
-			ArticleManager manager = KnowWEUtils.getEnvironment(context).getArticleManager(
+			ArticleManager manager = context.getEnvironment().getArticleManager(
 					Environment.DEFAULT_WEB);
 			Collection<Article> articles = new LinkedList<>();
 			for (Article article : manager.getArticles()) {
 				if (checkRights(article, context)) articles.add(article);
 			}
-			Fingerprint.createFingerprint(KnowWEUtils.getEnvironment(context), articles, tempDir);
+			Fingerprint.createFingerprint(context.getEnvironment(), articles, tempDir);
 			File[] files = tempDir.listFiles();
 			for (File file : Objects.requireNonNull(files)) {
 				String relativePath = FINGERPRINT_ENTRY_PREFIX + file.getName();
@@ -161,7 +161,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 
 		// ignore all files if they belong to an article
 		// we have no read access for
-		Article article = WikiFileProviderUtils.getArticle(KnowWEUtils.getEnvironment(context), 
+		Article article = WikiFileProviderUtils.getArticle(context.getEnvironment(), 
 				context.getWeb(), wikiRootFolder, file);
 		if (article != null && !checkRights(article, context)) {
 			return;

@@ -91,7 +91,7 @@ public class RecentChangesRenderer implements Renderer {
 			}
 			else {
 				int pageVersion = page.getVersion();
-				List<Page> versionHistory = getPageHistory(KnowWEUtils.getEnvironment(user), page);
+				List<Page> versionHistory = getPageHistory(user.getEnvironment(), page);
 				int totalVersionCount = 1;
 				for (Page p : versionHistory) {
 					if (totalVersionCount < p.getVersion()) {

@@ -73,7 +73,7 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 	}
 
 	private String toHtml(UserActionContext context, RenderResult result) {
-		String html = KnowWEUtils.getEnvironment(context).getWikiConnector().renderWikiSyntax(result.toStringRaw());
+		String html = context.getEnvironment().getWikiConnector().renderWikiSyntax(result.toStringRaw());
 		return RenderResult.unmask(html, context);
 	}
 

@@ -214,7 +214,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 	}
 
 	private void downloadThreadDump(UserActionContext context, String threadDump, String fileName) throws IOException {
-		fileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + "-" + fileName + "-" + KnowWEUtils.getEnvironment(context)
+		fileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + "-" + fileName + "-" + context.getEnvironment()
 				.getWikiConnector()
 				.getApplicationName() + ".txt";
 
@@ -254,7 +254,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 			}
 			finally {
 				if (tmpFile != null) {
-					String applicationName = KnowWEUtils.getEnvironment(context).getWikiConnector().getApplicationName();
+					String applicationName = context.getEnvironment().getWikiConnector().getApplicationName();
 					String filename = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-" + applicationName + "-logs.zip";
 					context.setContentType(BINARY);
 					context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");

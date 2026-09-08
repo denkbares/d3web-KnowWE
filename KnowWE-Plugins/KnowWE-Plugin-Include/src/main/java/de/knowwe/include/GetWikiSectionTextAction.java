@@ -76,7 +76,7 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 		// Access is already validated via canView before returning any section content.
 		if (!KnowWEUtils.canView(referencedSection, context)) return new SourceInfo(referencedSection, null, null);
 
-		Instant sourceLatestChange = KnowWEUtils.getEnvironment(context)
+		Instant sourceLatestChange = context.getEnvironment()
 				.getWikiConnector()
 				.getLastModifiedDate(referencedSection.getTitle(), -1)
 				.toInstant();

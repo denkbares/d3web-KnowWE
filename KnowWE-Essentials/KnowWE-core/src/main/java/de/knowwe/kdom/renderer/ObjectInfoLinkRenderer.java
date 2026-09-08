@@ -21,7 +21,6 @@
 package de.knowwe.kdom.renderer;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -44,7 +43,7 @@ public class ObjectInfoLinkRenderer implements Renderer {
 		renderer.render(sec, user, b);
 
 		String objectName = sec.getText().trim();
-		boolean pageExists = KnowWEUtils.getEnvironment(user).getWikiConnector().doesArticleExist(objectName);
+		boolean pageExists = user.getEnvironment().getWikiConnector().doesArticleExist(objectName);
 
 		String encodedObjectName = Strings.encodeURL(objectName);
 		if (pageExists) {

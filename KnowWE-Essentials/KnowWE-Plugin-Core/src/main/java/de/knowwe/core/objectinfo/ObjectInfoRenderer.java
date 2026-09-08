@@ -596,7 +596,7 @@ public class ObjectInfoRenderer implements Renderer {
 		renderSectionStart("Other occurrences", result);
 
 		// Search for plain text occurrences
-		SearchEngine se = new SearchEngine(KnowWEUtils.getEnvironment(user)
+		SearchEngine se = new SearchEngine(user.getEnvironment()
 				.getArticleManager(user.getWeb()));
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);

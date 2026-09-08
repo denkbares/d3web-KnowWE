@@ -42,7 +42,7 @@ public class AttachmentDownloadAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String attachmentPath = context.getParameter("attachment");
-		WikiAttachment attachment = KnowWEUtils.getEnvironment(context).getWikiConnector().getAttachment(attachmentPath);
+		WikiAttachment attachment = context.getEnvironment().getWikiConnector().getAttachment(attachmentPath);
 		if (attachment == null) fail(context, 404, "Attachment " + attachmentPath + " not found");
 		Article article = context.getArticleManager().getArticle(attachment.getParentName());
 		if (!KnowWEUtils.canView(article, context)) {

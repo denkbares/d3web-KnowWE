@@ -88,7 +88,7 @@ public class RenderPreviewAction extends AbstractAction {
 	}
 
 	private static String handleWikiSyntax(UserContext context, RenderResult result) {
-		String markup = KnowWEUtils.getEnvironment(context).getWikiConnector()
+		String markup = context.getEnvironment().getWikiConnector()
 				.renderWikiSyntax(result.toStringRaw().replaceAll("@!!!", "@\n!!!"));
 		return RenderResult.unmask(markup, context);
 	}

@@ -34,9 +34,9 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 		try {
 			execute(context, file, getProgressListener());
 
-			KnowWEUtils.getEnvironment(context).getWikiConnector().deleteAttachment(
+			context.getEnvironment().getWikiConnector().deleteAttachment(
 					article.getTitle(), attachmentFileName, context.getUserName());
-			KnowWEUtils.getEnvironment(context).getWikiConnector().storeAttachment(
+			context.getEnvironment().getWikiConnector().storeAttachment(
 					article.getTitle(), context.getUserName(), file);
 		}
 		finally {
@@ -50,7 +50,7 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 	@Override
 	public void renderReport(UserActionContext context, RenderResult result) {
 		try {
-			final WikiAttachment attachment = KnowWEUtils.getEnvironment(context)
+			final WikiAttachment attachment = context.getEnvironment()
 					.getWikiConnector()
 					.getAttachment(getArticle().getTitle() + "/" + getAttachmentFileName());
 			if (attachment != null) {

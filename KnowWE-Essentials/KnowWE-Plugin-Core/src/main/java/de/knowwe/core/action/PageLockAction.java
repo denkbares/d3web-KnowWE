@@ -61,7 +61,7 @@ public class PageLockAction extends AbstractAction {
 		}
 
 		String user = context.getUserName();
-		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
+		WikiConnector wikiConnector = context.getEnvironment().getWikiConnector();
 		JSONObject response = new JSONObject();
 
 		if (Boolean.parseBoolean(context.getParameter(PARAM_RELEASE))) {

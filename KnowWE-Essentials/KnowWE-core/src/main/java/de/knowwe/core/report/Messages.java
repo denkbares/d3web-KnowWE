@@ -870,7 +870,7 @@ public final class Messages {
 	}
 
 	public static ResourceBundle getMessageBundle(UserContext user) {
-		return getMessageBundle(KnowWEUtils.getEnvironment(user).getWikiConnector().getLocale(
+		return getMessageBundle(user.getEnvironment().getWikiConnector().getLocale(
 				user.getRequest()));
 	}
 

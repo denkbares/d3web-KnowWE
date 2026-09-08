@@ -33,6 +33,8 @@ import javax.servlet.http.HttpSession;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResultKeyValueStore;
 import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
@@ -170,6 +172,19 @@ public interface UserContext {
 	 * @created 14.01.2014
 	 */
 	ArticleManager getArticleManager();
+
+	/**
+	 * Returns the environment this context belongs to, i.e. the environment of its {@link #getArticleManager() article
+	 * manager}. This is the preferred way to reach the environment (and the wiki connector) from any action, renderer
+	 * or tag handler.
+	 *
+	 * @return the environment of this context
+	 * @throws IllegalStateException if the context belongs to no environment and none is initialized
+	 */
+	@NotNull
+	default Environment getEnvironment() {
+		return KnowWEUtils.getEnvironment(this);
+	}
 
 	/**
 	 * Returns if a preview version is rendered when editing article

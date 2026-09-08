@@ -176,7 +176,7 @@ public abstract class AbstractAction implements Action {
 	 */
 	@Contract("_, _, _ -> fail")
 	public static void fail(UserContext context, int httpCode, String message) throws IOException {
-		throw new SendError(httpCode, KnowWEUtils.getEnvironment(context).getWikiConnector().renderWikiSyntax(message));
+		throw new SendError(httpCode, context.getEnvironment().getWikiConnector().renderWikiSyntax(message));
 	}
 
 	/**

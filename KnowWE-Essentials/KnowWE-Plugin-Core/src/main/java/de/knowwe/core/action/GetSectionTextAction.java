@@ -66,7 +66,7 @@ public class GetSectionTextAction extends AbstractAction {
 		if (referencedSection != null) {
 			if (KnowWEUtils.canView(referencedSection, context)) {
 				sectionText = referencedSection.getText();
-				lastModified = KnowWEUtils.getEnvironment(context)
+				lastModified = context.getEnvironment()
 						.getWikiConnector()
 						.getLastModifiedDate(referencedSection.getTitle(), -1).toInstant();
 			}

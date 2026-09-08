@@ -506,7 +506,7 @@ public class D3webUtils {
 
 	public static ResourceBundle getD3webBundle(UserContext user) {
 		if (user == null) return getD3webBundle();
-		Locale.setDefault(KnowWEUtils.getEnvironment(user).getWikiConnector().getLocale(user.getRequest()));
+		Locale.setDefault(user.getEnvironment().getWikiConnector().getLocale(user.getRequest()));
 		return getD3webBundle();
 	}
 
@@ -530,12 +530,12 @@ public class D3webUtils {
 		if (kbName == null) kbName = session.getKnowledgeBase().getId();
 
 		String kbUrlLink = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(kbName));
-		kbName = "<a href=\"" + toAbsolutURL(KnowWEUtils.getEnvironment(user), kbUrlLink) + "\">" + kbName + "</a>";
+		kbName = "<a href=\"" + toAbsolutURL(user.getEnvironment(), kbUrlLink) + "\">" + kbName + "</a>";
 		Collection<String> renderedObjects = new ArrayList<>(loopObjects.size());
 		for (TerminologyObject loopObject : loopObjects) {
 
 			String url = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(loopObject.getName()));
-			renderedObjects.add("<a href=\"" + toAbsolutURL(KnowWEUtils.getEnvironment(user), url) + "\">" + loopObject.getName()
+			renderedObjects.add("<a href=\"" + toAbsolutURL(user.getEnvironment(), url) + "\">" + loopObject.getName()
 					+ "</a>");
 		}
 		return "Endless loop detected in knowledge base '"

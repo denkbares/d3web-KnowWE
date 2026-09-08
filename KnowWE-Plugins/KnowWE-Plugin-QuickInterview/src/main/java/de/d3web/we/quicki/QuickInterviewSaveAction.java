@@ -92,7 +92,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 	private void saveToAttachments(UserActionContext context, Session session, String filename, Section<?> section) throws IOException {
 		/* WikiAttachment attachment = */
 		if (!KnowWEUtils.canWrite(section, context)) return;
-		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
+		WikiConnector wikiConnector = context.getEnvironment().getWikiConnector();
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		SessionPersistenceManager.getInstance().saveSessions(outputStream, SessionConversionFactory.copyToSessionRecord(session));
 		outputStream.flush();

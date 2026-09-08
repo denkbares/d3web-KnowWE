@@ -77,7 +77,7 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 	}
 
 	private boolean userCanEditArticle(UserActionContext context, Article article) {
-		return KnowWEUtils.getEnvironment(context)
+		return context.getEnvironment()
 				.getWikiConnector()
 				.userCanEditArticle(article.getTitle(), context);
 	}

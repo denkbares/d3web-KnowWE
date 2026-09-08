@@ -97,7 +97,7 @@ Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initI
 
 ### Stufe 3: die vier Migrationsmuster
 
-1. **Kontext vorhanden** (rund 560 Stellen): `Environment.getInstance()` -> `section.getArticleManager().getEnvironment()`,
+1. **Kontext vorhanden** (rund 560 Stellen): `Environment.getInstance()` -> `context.getEnvironment()` (UserContext), `KnowWEUtils.getEnvironment(section|compiler|articleManager)`, `section.getArticleManager().getEnvironment()`,
    `context.getArticleManager().getEnvironment()`, `compiler.getCompilerManager().getArticleManager().getEnvironment()`.
    Meist reicht der `ArticleManager` selbst, die Environment ist nur für den `WikiConnector` nötig. Structural Replace.
 2. **Statische Utilities ohne Parameter** (`KnowWEUtils.getApplicationRootPath()`, `getConfigBundle()`, `Compilers.getCompilerManager(web)`,
@@ -128,6 +128,14 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
   - [x] 2c Singleton-Typen (2026-09-08): `PlainText.getInstance()`, `LineContent.getInstance()`, `DashTreeElementContent.getDefaultInstance()` liefern jetzt eine Instanz pro Environment (über `getService`), ohne Environment eine frische. Kein Reset mehr in `close()`; die Reset-Liste aus Stufe 1 ist leer. Die 21 Singleton-Typen in den Plugins folgen in Stufe 3 nach demselben Muster.
   - [x] 2d Plugin-Singletons pro Environment (2026-09-08): `Plugins.getCompilers()` instanziiert die geplugten Compiler pro Aufruf (`getNewInstance`), die Environment merkt sich ihre (`isGlobalCompiler`). Die von der Environment registrierten Plugin-EventListener werden beim `close()` wieder abgemeldet. TagHandler, Instantiations, SectionizerModule bleiben Plugin-Singletons (zustandslos bzw. Zustand über `getService`).
   - [ ] 2e EventManager pro Environment (Commons, offen)
+- [ ] Stufe 3 (in Arbeit seit 2026-09-08)
+  - [x] Muster 1 (Kontextobjekt vorhanden) per Skript in KnowWE (c5b69d0e4), Experimental, KnowWE-DES, KnowWE-SSP, KRONE, Information-Extraction: ~470 Stellen. Ausgenommen: KnowWE-Plugin-Agents (KnowWE-DES, lokale Variablen statt Felder, manuell nachziehen)
+  - [x] Muster 2 in KnowWE (2026-09-08, 9a2dfc2e5, b12b64604): statische Utilities bekommen eine Environment-/ArticleManager-Variante, die alte Signatur bleibt deprecated und delegiert an `Environment.requireInstance()`. Betroffen: `KnowWEUtils` (11 Methoden), `CIUtils`, `D3webUtils`, `FlowchartUtils`, `FlowchartToolMenuAction`, `TestCaseUtils`, `GraphDataBuilder`, `DownloadWikiZIPAction`, `Fingerprint`, `SnapshotAction`, `WikiFileProviderUtils`, `RecentChangesUtils`, `Plugins.addRendererToType`, `AttachmentUpdateMarkup.isAutoUpdatingActive`. `UserContext.getEnvironment()` als Default-Methode. Rest in KnowWE-main: 31 Stellen (Erzeuger `KnowWEPlugin`, `web`-Delegationen, Wertobjekte `WikiPageInfo`/`WikiAttachmentInfo`/`WikiAttachmentPair`/`WikiAttachmentResource`, `Rdf2GoCore`, `Rdf2GoUtils`, `Config`, `InitTerminologyHandler`, `FileChange`, `DefaultWikiTestObjectProvider`, `VersionMarkupType`, Test-Utilities)
+  - [ ] Muster 2 in den Consumer-Repos: Aufrufer der deprecated Statics auf die neuen Varianten (per Skript, wo Kontext vorhanden)
+  - [x] Muster 3, Anfang (2026-09-08): `Instantiation.init(Environment)` als Default-Methode; `WikiSearchService` ist Environment-Service (`of(environment)`, AutoCloseable), `RepositoryInitializer`, `WikiSearchInstantiation`, `SnapshotDirectoryPermissionInstantiation` nutzen `init(Environment)`
+  - [ ] Muster 3, Rest: übrige 21 Instantiations in den Consumer-Repos, Hintergrund-Dienste (CI-Builds, Git-Scheduler, Task-Manager, KRONE-Runtimes), Wertobjekte des `WikiConnector` (Entscheidung: kennt der Connector seine Environment?)
+  - [ ] Muster 4 (JSPs, 9 Dateien)
+  - [ ] Tests (128 Stellen): Umstieg auf `new Environment`/JUnit-Rule sobald Stufe 4 den Konstruktor öffnet
 - [x] Consumer-Repos geklont (2026-09-07): Experimental, KnowWE-DES, KnowWE-SSP, KRONE (enthält KnowWE-KONAP-Integration), Information-Extraction. Zusammen mit denkbares-Internals sind das alle Repos mit `Environment.getInstance()`-Aufrufern.
 - [ ] Nur für Stufe 4 relevant (referenzieren KnowWE-Artefakte, aber ohne `getInstance()`-Aufrufe): GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform. Vor dem Entfernen von APIs klonen und kompilieren.
 
@@ -163,6 +171,7 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 - 2026-09-07: Analyse, Plan, Arbeitsumgebung eingerichtet, Kette gebaut, Baseline-Tests grün.
 - 2026-09-07: Stufe 1 umgesetzt und committet (9e19e1b30). Voller KnowWE-Testlauf 1:53 min, nur die bekannten Git-Provider-Fehler.
+- 2026-09-08: Stufe 3, Muster 2 in KnowWE (statische Utilities mit Environment-Overload, deprecated Delegation), `Instantiation.init(Environment)`, `WikiSearchService` als erster Environment-Service, `UserContext.getEnvironment()`. KnowWE-main von 88 auf 31 `getInstance()`-Stellen.
 - 2026-09-08: `Environment.initInstance()` schließt eine noch laufende Environment (c679ea688); vorher lief `TaskContextManagerEventTest` mit `initialized=true` in die Typbaum-Assertion.
 - 2026-09-08: Stufe 3, Muster 1 in allen Repos per Skript (Kontextobjekt aus Methodenparameter oder Klassenfeld). Fallen: lokale Variablen nicht fuer Felder halten (nur Deklarationen mit genau einem Tab), Dateien mit CRLF-Zeilenenden byteweise behandeln (42 Dateien mussten repariert werden), `Environment`-Import nur entfernen, wenn das Wort nirgends mehr vorkommt (mehrzeilige Aufrufe). Kompilierfehler wurden zeilenweise aus git zurueckgesetzt (revert_errors.py), die Stellen bleiben beim statischen Zugriff.
 - 2026-09-08: Stufe 2c/2d umgesetzt, voller KnowWE-Testlauf grün bis auf die bekannten Git-Tests. In KnowWE-core bleibt an statischem Zustand nur noch: der Singleton `Environment.instance/initialized` selbst (Stufe 4), zustandslose Singletons (Renderer, Visitor, SectionFinder), Konstanten/Caches ohne Lebenszyklus (`Priority`, `Scope`, `Section.COMPILER_REFS` schwach) und `ServletContextEventListener`-Tasks (Servlet-Lebenszyklus). `ResourceLoader` (JS/CSS-Registrierung, dedupliziert) bleibt bis Stufe 3/4.

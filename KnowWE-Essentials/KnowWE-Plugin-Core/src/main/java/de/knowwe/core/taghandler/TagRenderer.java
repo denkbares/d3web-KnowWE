@@ -22,7 +22,6 @@ package de.knowwe.core.taghandler;
 
 import java.util.Map;
 
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -65,7 +64,7 @@ public class TagRenderer implements Renderer {
 			if (attValues != null) {
 				attValues.put("kdomid", id);
 				for (String elem : attValues.keySet()) {
-					Map<String, TagHandler> defaultTagHandlers = KnowWEUtils.getEnvironment(user).getDefaultTagHandlers();
+					Map<String, TagHandler> defaultTagHandlers = user.getEnvironment().getDefaultTagHandlers();
 					String key = elem.toLowerCase();
 					if (defaultTagHandlers.containsKey(key)) {
 						TagHandler handler = defaultTagHandlers.get(key);

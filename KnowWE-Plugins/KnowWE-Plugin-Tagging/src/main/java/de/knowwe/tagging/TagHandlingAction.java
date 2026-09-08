@@ -23,7 +23,6 @@ package de.knowwe.tagging;
 import java.io.IOException;
 
 import de.knowwe.core.Attributes;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -54,7 +53,7 @@ public class TagHandlingAction extends AbstractAction {
 		if (topic == null) {
 			return "error! null topic";
 		}
-		boolean b = KnowWEUtils.getEnvironment(context).getWikiConnector().userCanEditArticle(topic,
+		boolean b = context.getEnvironment().getWikiConnector().userCanEditArticle(topic,
 				context);
 
 		if (b == false) {

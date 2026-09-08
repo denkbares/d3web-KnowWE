@@ -453,7 +453,7 @@ public class Compilers {
 		// GET ALL COMPILERS
 		ArticleManager articleManager = section.getArticleManager();
 		if (articleManager == null) { // can happen in preview, use fall back
-			articleManager = KnowWEUtils.getEnvironment(context).getArticleManager(section.getWeb());
+			articleManager = context.getEnvironment().getArticleManager(section.getWeb());
 		}
 		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
 

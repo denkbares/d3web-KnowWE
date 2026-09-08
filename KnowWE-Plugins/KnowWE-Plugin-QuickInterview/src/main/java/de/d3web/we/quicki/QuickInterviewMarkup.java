@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -160,7 +159,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		 * @created 30.11.2012
 		 */
 		private static String getSavedSessions(UserContext user, String sectionId) {
-			WikiConnector wikiConnector = KnowWEUtils.getEnvironment(user).getWikiConnector();
+			WikiConnector wikiConnector = user.getEnvironment().getWikiConnector();
 			StringBuilder builder = new StringBuilder();
 			builder.append("<form id=\"")
 					.append(sectionId)

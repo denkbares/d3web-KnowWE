@@ -178,7 +178,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	private static String render(UserActionContext context, Section<?> section) {
 		RenderResult result = new RenderResult(context);
 		section.get().getRenderer().render(section, context, result);
-		String rawResult = KnowWEUtils.getEnvironment(context).getWikiConnector()
+		String rawResult = context.getEnvironment().getWikiConnector()
 				.renderWikiSyntax(result.toStringRaw());
 		String unmasked = result.toString();
 		// cleanup jsp wiki render artifact due to html masking...

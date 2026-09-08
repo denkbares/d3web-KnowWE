@@ -103,7 +103,7 @@ public class RecentChangesUtils {
 	}
 
 	private static Set<Page> getRecentChangesForPageTypeSelection(UserContext user) {
-		Set<Page> recentChanges = getRecentChangesFromJSPWiki(KnowWEUtils.getEnvironment(user));
+		Set<Page> recentChanges = getRecentChangesFromJSPWiki(user.getEnvironment());
 		// can take quite some time for large wikis, so we cache this...
 		boolean showPages = showPages(user);
 		boolean showAttachments = isShowAttachments(user);
@@ -114,10 +114,10 @@ public class RecentChangesUtils {
 					Set<Page> recentChangesCleaned = new LinkedHashSet<>();
 					for (Page page : recentChanges) {
 						if (!(page instanceof Attachment) && showPages) {
-							addPage(KnowWEUtils.getEnvironment(user), recentChangesCleaned, page, showIntermediate);
+							addPage(user.getEnvironment(), recentChangesCleaned, page, showIntermediate);
 						}
 						else if (page instanceof Attachment && showAttachments) {
-							addPage(KnowWEUtils.getEnvironment(user), recentChangesCleaned, page, showIntermediate);
+							addPage(user.getEnvironment(), recentChangesCleaned, page, showIntermediate);
 						}
 					}
 					return recentChangesCleaned;

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.json.JSONObject;
 
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -18,8 +17,8 @@ public class CheckCanEditPageAction extends AbstractAction {
 		JSONObject response = new JSONObject();
 		response.put(CAN_EDIT, false); // default
 
-		if (KnowWEUtils.getEnvironment(context).getArticle(context.getWeb(), topic) != null) {
-			if (KnowWEUtils.getEnvironment(context).getWikiConnector().userCanEditArticle(topic, context)) {
+		if (context.getEnvironment().getArticle(context.getWeb(), topic) != null) {
+			if (context.getEnvironment().getWikiConnector().userCanEditArticle(topic, context)) {
 				response.put(CAN_EDIT, true);
 			}
 		}

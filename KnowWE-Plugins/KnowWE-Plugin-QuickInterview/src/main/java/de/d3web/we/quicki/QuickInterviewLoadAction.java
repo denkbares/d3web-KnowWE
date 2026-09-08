@@ -87,7 +87,7 @@ public class QuickInterviewLoadAction extends AbstractAction {
 	}
 
 	private Collection<SessionRecord> getSessionRecordsFromAttachments(UserActionContext context) throws IOException {
-		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
+		WikiConnector wikiConnector = context.getEnvironment().getWikiConnector();
 		List<WikiAttachment> attachments = wikiConnector
 				.getAttachments(context.getTitle());
 		for (WikiAttachment wikiAttachment : attachments) {
