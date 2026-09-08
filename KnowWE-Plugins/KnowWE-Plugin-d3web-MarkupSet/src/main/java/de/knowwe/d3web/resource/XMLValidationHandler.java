@@ -33,7 +33,7 @@ import javax.xml.validation.Validator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalHandler;
 import de.knowwe.core.kdom.basicType.AttachmentType;
@@ -186,7 +186,7 @@ public class XMLValidationHandler extends DefaultGlobalHandler<AttachmentType> {
 			path = section.getTitle() + "/" + path;
 		}
 
-		WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(
+		WikiAttachment attachment = KnowWEUtils.getEnvironment(section).getWikiConnector().getAttachment(
 				path);
 
 		if (attachment == null) {

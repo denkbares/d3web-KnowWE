@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -43,7 +42,7 @@ public class HelpToolProvider implements ToolProvider {
 	public static final String HELP_TOOL_WIKI_PROPERTY = "knowwe.helpTool.externalWiki";
 
 	private String getExternalHelpWikiLink(UserContext context, Section<?> section) {
-		String wikiProperty = System.getProperty(HELP_TOOL_WIKI_PROPERTY, Environment.getInstance()
+		String wikiProperty = System.getProperty(HELP_TOOL_WIKI_PROPERTY, KnowWEUtils.getEnvironment(context)
 				.getWikiConnector()
 				.getWikiProperty(HELP_TOOL_WIKI_PROPERTY));
 		if (wikiProperty == null) return null;
@@ -93,7 +92,7 @@ public class HelpToolProvider implements ToolProvider {
 
 	private Article getDocArticle(Section<?> section, UserContext userContext) {
 		ArticleManager articleManager =
-				Environment.getInstance().getArticleManager(userContext.getWeb());
+				KnowWEUtils.getEnvironment(userContext).getArticleManager(userContext.getWeb());
 		String markupName = section.get().getName();
 
 		// looking for possible help articles

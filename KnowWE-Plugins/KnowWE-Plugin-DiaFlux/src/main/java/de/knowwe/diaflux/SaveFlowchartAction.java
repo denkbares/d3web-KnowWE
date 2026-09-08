@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -128,7 +127,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @created 23.02.2011
 	 */
 	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
-		ArticleManager mgr = Environment.getInstance().getArticleManager(
+		ArticleManager mgr = KnowWEUtils.getEnvironment(context).getArticleManager(
 				context.getWeb());
 		Article article = mgr.getArticle(topic);
 		Section<RootType> rootSection = article.getRootSection();

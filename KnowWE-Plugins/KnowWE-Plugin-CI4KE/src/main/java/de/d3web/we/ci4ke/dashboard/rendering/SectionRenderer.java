@@ -4,7 +4,6 @@
 
 package de.d3web.we.ci4ke.dashboard.rendering;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -35,7 +34,7 @@ public class SectionRenderer implements ObjectNameRenderer {
 		if (section == null) {
 			// seems to not be the id, try annotation "name"
 			displayName = objectName;
-			section = $(Environment.getInstance().getArticleManager(context.getWeb()))
+			section = $(KnowWEUtils.getEnvironment(context).getArticleManager(context.getWeb()))
 					.successor(DefaultMarkupType.class)
 					.stream()
 					.filter(s -> objectName.equals(DefaultMarkupType.getAnnotation(s, "name")))

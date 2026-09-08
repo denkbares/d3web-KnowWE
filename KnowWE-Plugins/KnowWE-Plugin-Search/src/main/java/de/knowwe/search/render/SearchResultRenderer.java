@@ -30,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -223,7 +222,7 @@ public class SearchResultRenderer {
 	private static String toHtml(RenderResult result, UserContext user) {
 		String raw = result.toStringRaw().replaceAll("@!!!", "@\n!!!");
 		raw = TABLE_OF_CONTENTS.matcher(raw).replaceAll("");
-		String markup = Environment.getInstance().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
+		String markup = KnowWEUtils.getEnvironment(user).getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
 		return RenderResult.unmask(markup, user);
 	}
 

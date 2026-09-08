@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -177,7 +176,7 @@ public abstract class AbstractAction implements Action {
 	 */
 	@Contract("_, _, _ -> fail")
 	public static void fail(UserContext context, int httpCode, String message) throws IOException {
-		throw new SendError(httpCode, Environment.getInstance().getWikiConnector().renderWikiSyntax(message));
+		throw new SendError(httpCode, KnowWEUtils.getEnvironment(context).getWikiConnector().renderWikiSyntax(message));
 	}
 
 	/**

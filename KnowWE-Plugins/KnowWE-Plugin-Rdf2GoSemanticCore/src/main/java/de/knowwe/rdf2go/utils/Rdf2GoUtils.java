@@ -66,6 +66,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.strings.Text;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;

@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -38,7 +38,7 @@ public class DropAttachmentToExistingArticleAction extends AbstractAction {
 	// TODO: Currently not used, Remove?
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
 		byte[] data = java.util.Base64.getDecoder().decode(context.getParameter("data"));
 		if (data == null) return;
 		InputStream stream = new ByteArrayInputStream(data);

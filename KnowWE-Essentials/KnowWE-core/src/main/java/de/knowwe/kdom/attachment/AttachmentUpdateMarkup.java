@@ -313,7 +313,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				// if there are other downloads currently ongoing, we have to compile once they finished anyway,
 				// so we just wait for them to trigger the compilation of the queue
 				if (!allowWaitForOtherDownloads || state.downloading.isEmpty() || longWaitingAttachmentInQueue(state)) {
-					compileQueuedAttachments(state);
+					compileQueuedAttachments(KnowWEUtils.getEnvironment(section), state);
 				}
 				else if (!state.queued.isEmpty() && state.lastWaitingLog.isBefore(Instant.now().minus(30, ChronoUnit.SECONDS))) {
 					LOGGER.info("Waiting with attachment compilation, until other currently running downloads area finished...");
@@ -349,7 +349,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return longestWaiting.waitingSince().isBefore(Instant.now().minus(20, ChronoUnit.MINUTES));
 	}
 
-	private void compileQueuedAttachments(AttachmentUpdates state) {
+	private void compileQueuedAttachments(Environment environment, AttachmentUpdates state) {
 
 		// don't lock if the queue is empty
 		if (state.queued.isEmpty()) return;
@@ -369,7 +369,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				String parentName = update.path.substring(0, update.path.indexOf(PATH_SEPARATOR));
 				String fileName = update.path.substring(update.path.indexOf("/") + 1);
 				try {
-					Environment.getInstance().getWikiConnector()
+					environment.getWikiConnector()
 							.storeAttachment(parentName, fileName, "SYSTEM", update.attachment, update.versioning);
 				}
 				catch (IOException e) {

@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Stopwatch;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -35,9 +34,9 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 		try {
 			execute(context, file, getProgressListener());
 
-			Environment.getInstance().getWikiConnector().deleteAttachment(
+			KnowWEUtils.getEnvironment(context).getWikiConnector().deleteAttachment(
 					article.getTitle(), attachmentFileName, context.getUserName());
-			Environment.getInstance().getWikiConnector().storeAttachment(
+			KnowWEUtils.getEnvironment(context).getWikiConnector().storeAttachment(
 					article.getTitle(), context.getUserName(), file);
 		}
 		finally {
@@ -51,7 +50,7 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 	@Override
 	public void renderReport(UserActionContext context, RenderResult result) {
 		try {
-			final WikiAttachment attachment = Environment.getInstance()
+			final WikiAttachment attachment = KnowWEUtils.getEnvironment(context)
 					.getWikiConnector()
 					.getAttachment(getArticle().getTitle() + "/" + getAttachmentFileName());
 			if (attachment != null) {

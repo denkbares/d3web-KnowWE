@@ -23,7 +23,6 @@ import java.io.IOException;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -62,7 +61,7 @@ public class PageLockAction extends AbstractAction {
 		}
 
 		String user = context.getUserName();
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
 		JSONObject response = new JSONObject();
 
 		if (Boolean.parseBoolean(context.getParameter(PARAM_RELEASE))) {

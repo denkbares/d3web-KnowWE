@@ -22,7 +22,7 @@ package de.knowwe.core.action;
 import java.io.IOException;
 import java.util.Collection;
 
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.kdom.renderer.TooltipRenderer;
@@ -40,7 +40,7 @@ public class RenderTooltipAction extends AbstractAction {
 		if (renderer instanceof TooltipRenderer) {
 			sendToolTip(context, section, (TooltipRenderer) renderer);
 		} else {
-			Collection<Renderer> additionalRenderers = Environment.getInstance().getRenderersForType(section.get());
+			Collection<Renderer> additionalRenderers = KnowWEUtils.getEnvironment(context).getRenderersForType(section.get());
 			for (Renderer additionalRenderer : additionalRenderers) {
 				if (additionalRenderer instanceof TooltipRenderer) {
 					sendToolTip(context, section, (TooltipRenderer) additionalRenderer);

@@ -402,7 +402,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private void renderArticle(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
-		List<PageAppendHandler> appendHandlers = Environment.getInstance().getAppendHandlers();
+		List<PageAppendHandler> appendHandlers = article.getArticleManager().getEnvironment().getAppendHandlers();
 		renderPrePageAppendHandler(userContext, article, renderResult, appendHandlers);
 		article.getRootType().getRenderer().render(article.getRootSection(), userContext, renderResult);
 		EventManager.getInstance().fireEvent(new PageRenderedEvent(article.getTitle(), userContext));

@@ -46,7 +46,6 @@ import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -136,7 +135,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		Section<InterWikiImportMarkup> interWikiSection = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (interWikiSection == null) return null;
 		String path = getWikiAttachmentPath(interWikiSection);
-		return Environment.getInstance().getWikiConnector().getAttachment(path);
+		return KnowWEUtils.getEnvironment(section).getWikiConnector().getAttachment(path);
 	}
 
 	@Override
@@ -235,7 +234,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	 * Sent both as the {@code requestFrom} URL parameter (single fetch) and in the bulk poll request body.
 	 */
 	String getImportSourceLabel(Section<InterWikiImportMarkup> section) {
-		String linkLabel = Environment.getInstance().getWikiConnector().getApplicationName();
+		String linkLabel = KnowWEUtils.getEnvironment(section).getWikiConnector().getApplicationName();
 		if (Strings.isBlank(linkLabel) || "knowwe".equalsIgnoreCase(linkLabel)) {
 			linkLabel = "another wiki";
 		}
@@ -334,7 +333,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
 			String fileName = path.substring(path.indexOf(PATH_SEPARATOR) + 1);
-			Environment.getInstance().getWikiConnector()
+			KnowWEUtils.getEnvironment(section).getWikiConnector()
 					.storeAttachment(parentName, fileName, "SYSTEM", new ByteArrayInputStream(sourceBytes), isVersioning(section));
 			return true;
 		}

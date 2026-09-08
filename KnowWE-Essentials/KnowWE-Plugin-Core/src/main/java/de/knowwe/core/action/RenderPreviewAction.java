@@ -33,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -89,7 +88,7 @@ public class RenderPreviewAction extends AbstractAction {
 	}
 
 	private static String handleWikiSyntax(UserContext context, RenderResult result) {
-		String markup = Environment.getInstance().getWikiConnector()
+		String markup = KnowWEUtils.getEnvironment(context).getWikiConnector()
 				.renderWikiSyntax(result.toStringRaw().replaceAll("@!!!", "@\n!!!"));
 		return RenderResult.unmask(markup, context);
 	}

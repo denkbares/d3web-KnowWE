@@ -31,7 +31,7 @@ import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -106,7 +106,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		if (kbName.isEmpty()) {
 			kbName = "knowledgebase";
 		}
-		String baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+		String baseUrl = KnowWEUtils.getEnvironment(userContext).getWikiConnector().getBaseUrl();
 		// try to replace hostname by ip address to allow access in local
 		// networks
 		try {

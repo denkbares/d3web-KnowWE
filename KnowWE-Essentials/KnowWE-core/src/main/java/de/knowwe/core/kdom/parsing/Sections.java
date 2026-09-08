@@ -1762,7 +1762,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		}
 
 		public static ReplaceContext of(UserContext userContext) {
-			Predicate<String> userCanEdit = title -> Environment.getInstance()
+			Predicate<String> userCanEdit = title -> KnowWEUtils.getEnvironment(userContext)
 					.getWikiConnector()
 					.userCanEditArticle(title, userContext);
 			return new ReplaceContext(userContext.getWeb(), userCanEdit, userContext.getRequest(), userContext.getUserName());

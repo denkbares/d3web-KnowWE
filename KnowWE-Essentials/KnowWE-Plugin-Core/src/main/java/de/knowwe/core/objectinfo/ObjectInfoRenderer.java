@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -597,7 +596,7 @@ public class ObjectInfoRenderer implements Renderer {
 		renderSectionStart("Other occurrences", result);
 
 		// Search for plain text occurrences
-		SearchEngine se = new SearchEngine(Environment.getInstance()
+		SearchEngine se = new SearchEngine(KnowWEUtils.getEnvironment(user)
 				.getArticleManager(user.getWeb()));
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);

@@ -26,7 +26,6 @@ import java.util.Map;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -64,7 +63,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		String newText = context.getParameter(Attributes.TEXT);
 
 		// Check for user access
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(name,
+		if (!KnowWEUtils.getEnvironment(context).getWikiConnector().userCanEditArticle(name,
 				context)) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;

@@ -25,7 +25,6 @@ import java.io.OutputStream;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Streams;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -43,7 +42,7 @@ public class AttachmentDownloadAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String attachmentPath = context.getParameter("attachment");
-		WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(attachmentPath);
+		WikiAttachment attachment = KnowWEUtils.getEnvironment(context).getWikiConnector().getAttachment(attachmentPath);
 		if (attachment == null) fail(context, 404, "Attachment " + attachmentPath + " not found");
 		Article article = context.getArticleManager().getArticle(attachment.getParentName());
 		if (!KnowWEUtils.canView(article, context)) {

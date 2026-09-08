@@ -22,7 +22,7 @@ package de.knowwe.core.action;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
@@ -37,7 +37,7 @@ public class RestoreAction extends AbstractAction {
 
 		// restore old version
 		String title = context.getTitle();
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
 		if (!wikiConnector.userCanEditArticle(title, context)) {
 			context.sendError(403, "You are not allowed to change version of this article.");
 			return;

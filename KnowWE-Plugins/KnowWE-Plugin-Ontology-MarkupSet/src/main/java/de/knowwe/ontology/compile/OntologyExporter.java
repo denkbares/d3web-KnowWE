@@ -38,7 +38,6 @@ import com.denkbares.events.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -129,7 +128,7 @@ public class OntologyExporter implements EventListener {
 			@Override
 			public void run() {
 				Stopwatch stopwatch = new Stopwatch();
-				WikiConnector connector = Environment.getInstance().getWikiConnector();
+				WikiConnector connector = KnowWEUtils.getEnvironment(ontologySection).getWikiConnector();
 				ByteArrayInputStream stream;
 				try {
 					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

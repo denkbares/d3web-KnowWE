@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
@@ -175,7 +176,7 @@ public class GitAutoUpdater {
 
 		if (title != null) {
 			LOGGER.info("do full parse");
-			Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+			Article article = articleManager.getArticle(title);
 			EventManager.getInstance().fireEvent(new FullParseEvent(article, null));
 		}
 

@@ -26,6 +26,7 @@ import com.denkbares.semanticcore.utils.ResultTableModel;
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Streams;
 import de.knowwe.kdom.renderer.PaginationRenderer;
+import de.knowwe.core.utils.KnowWEUtils;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -40,7 +41,6 @@ import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.utils.IndexedResultTableModel;
 import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -211,7 +211,7 @@ public class SparqlDownloadAction extends AbstractAction {
 		result = Strings.htmlToPlain(result);
 
 		// get rid of all JSPWiki-Markup, just render it to HTML and the remove the html
-		result = Environment.getInstance().getWikiConnector().renderWikiSyntax(result, user.getRequest());
+		result = KnowWEUtils.getEnvironment(user).getWikiConnector().renderWikiSyntax(result, user.getRequest());
 		result = Strings.htmlToPlain(result);
 		// translate html emojis
 		result = StringEscapeUtils.unescapeHtml4(result);

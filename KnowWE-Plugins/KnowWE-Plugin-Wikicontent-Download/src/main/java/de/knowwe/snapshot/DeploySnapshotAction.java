@@ -88,7 +88,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 			makeFileSystemReplaceOperation(snapshot);
 
 			// tell WikiConnector that content has changed on the file system
-			Environment.getInstance().reinitializeForNewWikiContent();
+			KnowWEUtils.getEnvironment(context).reinitializeForNewWikiContent();
 		}
 		catch (IOException e) {
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error on re-initialization of new wiki content: " + e.getMessage());

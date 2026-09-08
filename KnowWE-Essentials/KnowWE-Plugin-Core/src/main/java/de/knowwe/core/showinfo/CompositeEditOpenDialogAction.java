@@ -25,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -74,7 +73,7 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 	}
 
 	private String toHtml(UserActionContext context, RenderResult result) {
-		String html = Environment.getInstance().getWikiConnector().renderWikiSyntax(result.toStringRaw());
+		String html = KnowWEUtils.getEnvironment(context).getWikiConnector().renderWikiSyntax(result.toStringRaw());
 		return RenderResult.unmask(html, context);
 	}
 

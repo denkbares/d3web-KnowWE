@@ -34,7 +34,6 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -88,7 +87,7 @@ public class QuickInterviewLoadAction extends AbstractAction {
 	}
 
 	private Collection<SessionRecord> getSessionRecordsFromAttachments(UserActionContext context) throws IOException {
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
 		List<WikiAttachment> attachments = wikiConnector
 				.getAttachments(context.getTitle());
 		for (WikiAttachment wikiAttachment : attachments) {

@@ -24,7 +24,7 @@ import java.net.URL;
 import java.util.Collection;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -70,7 +70,7 @@ public class URLType extends AbstractType {
 		}
 		catch (MalformedURLException e) {
 			try {
-				return new URL(Environment.getInstance().getWikiConnector().getBaseUrl() + url);
+				return new URL(KnowWEUtils.getEnvironment(urlSection).getWikiConnector().getBaseUrl() + url);
 			}
 			catch (MalformedURLException ignore) {
 			}

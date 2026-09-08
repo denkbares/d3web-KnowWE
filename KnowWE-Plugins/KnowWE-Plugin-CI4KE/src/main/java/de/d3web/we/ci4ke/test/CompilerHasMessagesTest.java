@@ -42,7 +42,6 @@ import de.d3web.testing.TestResult;
 import de.d3web.testing.TestSpecification;
 import de.d3web.testing.TestingUtils;
 import de.d3web.we.ci4ke.build.CIRenderer;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
@@ -219,7 +218,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		String wikiLink;
 		String title = section.getTitle();
 		if (title != null && title.contains("/") && !KnowWEUtils.isAttachmentArticle(section.getArticle())) {
-			wikiLink = Environment.getInstance().getWikiConnector().getBaseUrl() + KnowWEUtils.getURLLink(title);
+			wikiLink = KnowWEUtils.getEnvironment(section).getWikiConnector().getBaseUrl() + KnowWEUtils.getURLLink(title);
 		}
 		else {
 			wikiLink = KnowWEUtils.getWikiLinkPart(section);

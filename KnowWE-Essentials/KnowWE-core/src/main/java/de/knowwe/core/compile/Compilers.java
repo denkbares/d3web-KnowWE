@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.NumberAwareComparator;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -454,7 +453,7 @@ public class Compilers {
 		// GET ALL COMPILERS
 		ArticleManager articleManager = section.getArticleManager();
 		if (articleManager == null) { // can happen in preview, use fall back
-			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
+			articleManager = KnowWEUtils.getEnvironment(context).getArticleManager(section.getWeb());
 		}
 		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
 

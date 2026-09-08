@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment.CompilationMode;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -111,8 +112,17 @@ public final class Article {
 		return createArticle(text, title, web, null, true, root);
 	}
 
+	/**
+	 * The environment of the manager, or the current one for articles without manager (temporary articles).
+	 */
+	private static Environment environmentOf(@Nullable ArticleManager manager) {
+		Environment environment = KnowWEUtils.findEnvironment(manager);
+		if (environment == null) throw new IllegalStateException("Cannot create article: no environment available");
+		return environment;
+	}
+
 	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType());
+		return createArticle(text, title, web, manager, fullParse, environmentOf(manager).getRootType());
 	}
 
 	/**
@@ -150,13 +160,15 @@ public final class Article {
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
 		this.articleManager = manager;
-		this.lastVersion = Environment.isInitialized() && articleManager != null
-				? Environment.getInstance().getArticle(web, title)
+		Environment environment = KnowWEUtils.findEnvironment(manager);
+		this.lastVersion = environment != null && Environment.isInitialized() && articleManager != null
+				? environment.getArticle(web, title)
 				: null;
 
 		this.fullParse = fullParse
 				|| lastVersion == null
-				|| Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
+				|| environment == null
+				|| environment.getCompilationMode() == CompilationMode.DEFAULT;
 
 		sectionizeArticle(cleanedText);
 

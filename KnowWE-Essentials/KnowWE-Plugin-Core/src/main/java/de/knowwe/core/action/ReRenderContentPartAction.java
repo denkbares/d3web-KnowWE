@@ -48,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -179,7 +178,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	private static String render(UserActionContext context, Section<?> section) {
 		RenderResult result = new RenderResult(context);
 		section.get().getRenderer().render(section, context, result);
-		String rawResult = Environment.getInstance().getWikiConnector()
+		String rawResult = KnowWEUtils.getEnvironment(context).getWikiConnector()
 				.renderWikiSyntax(result.toStringRaw());
 		String unmasked = result.toString();
 		// cleanup jsp wiki render artifact due to html masking...

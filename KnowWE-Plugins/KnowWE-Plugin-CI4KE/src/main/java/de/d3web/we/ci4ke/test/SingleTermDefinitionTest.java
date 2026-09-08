@@ -29,7 +29,6 @@ import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
 import de.d3web.testing.TestParameter.Type;
 import de.d3web.testing.TestingUtils;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -52,7 +51,7 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 	public Message execute(Article article, String[] args, String[]... ignores) throws InterruptedException {
 		if (article == null) throw new IllegalArgumentException("No article provided.");
 
-		TerminologyManager manager = Environment.getInstance().getTerminologyManager(article.getWeb(), article.getTitle());
+		TerminologyManager manager = article.getArticleManager().getEnvironment().getTerminologyManager(article.getWeb(), article.getTitle());
 		
 		Collection<Identifier> terms = manager.getAllDefinedTerms();
 

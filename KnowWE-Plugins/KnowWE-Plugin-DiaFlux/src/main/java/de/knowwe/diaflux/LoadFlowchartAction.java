@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -57,7 +57,7 @@ public class LoadFlowchartAction extends AbstractAction {
 			// also allow to specify the flowchart by name, if no section id is specified
 			String web = context.getParameter(Attributes.WEB);
 			Identifier id = Identifier.fromExternalForm(context.getParameter("FlowIdentifier"));
-			ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
+			ArticleManager articleManager = KnowWEUtils.getEnvironment(context).getArticleManager(web);
 			Article master = articleManager.getArticle(id.getPathElementAt(0));
 			D3webCompiler compiler = Compilers.getCompiler(master, D3webCompiler.class);
 			section = Sections.definitions(compiler, id.rest(1))

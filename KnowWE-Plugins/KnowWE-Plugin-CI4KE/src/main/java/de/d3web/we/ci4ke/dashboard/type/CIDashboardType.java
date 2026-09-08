@@ -53,7 +53,6 @@ import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
 import de.d3web.we.ci4ke.hook.CIHookManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -433,7 +432,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		private void processOnSaveTrigger(Matcher matcher, Set<String> monitoredArticles, List<Message> msgs, Section<CIDashboardType> section) {
 			while (matcher.find()) {
 				String parameter = parseParameter(matcher.group());
-				if (Environment.getInstance().getWikiConnector().doesArticleExist(parameter)) {
+				if (KnowWEUtils.getEnvironment(section).getWikiConnector().doesArticleExist(parameter)) {
 					monitoredArticles.add(parameter);
 				}
 				else {

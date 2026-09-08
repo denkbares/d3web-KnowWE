@@ -29,7 +29,7 @@ import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.Priority;
@@ -121,7 +121,7 @@ public class AttachmentType extends AbstractType {
 	@Nullable
 	public static WikiAttachment getAttachment(Section<? extends AttachmentType> section) throws IOException {
 		String path = getPath(section);
-		return Environment.getInstance().getWikiConnector().getAttachment(path);
+		return KnowWEUtils.getEnvironment(section).getWikiConnector().getAttachment(path);
 	}
 
 	public static String getPath(Section<? extends AttachmentType> section) {

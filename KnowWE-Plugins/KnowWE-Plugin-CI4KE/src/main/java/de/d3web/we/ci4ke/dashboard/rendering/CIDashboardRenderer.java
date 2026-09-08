@@ -32,7 +32,6 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -98,7 +97,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			LOGGER.error("Could not determine build version for date", e);
 		}
 
-		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getArticleText(
+		String sourceTextAtBuildTime = KnowWEUtils.getEnvironment(section).getWikiConnector().getArticleText(
 				section.getTitle(), versionAtBuildDate);
 
 		return !sourceTextAtBuildTime.contains(currentDashboardSourcetext);

@@ -497,7 +497,7 @@ public class D3webUtils {
 
 	public static ResourceBundle getD3webBundle(UserContext user) {
 		if (user == null) return getD3webBundle();
-		Locale.setDefault(Environment.getInstance().getWikiConnector().getLocale(user.getRequest()));
+		Locale.setDefault(KnowWEUtils.getEnvironment(user).getWikiConnector().getLocale(user.getRequest()));
 		return getD3webBundle();
 	}
 

@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -311,7 +311,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 			return null;
 		}
 		if (attachment == null) {
-			WikiConnector wc = Environment.getInstance().getWikiConnector();
+			WikiConnector wc = KnowWEUtils.getEnvironment(section).getWikiConnector();
 			try {
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				String extension;
@@ -352,7 +352,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 		String path = createPath(section, attachmentFile);
 		WikiAttachment attachment;
 		try {
-			attachment = Environment.getInstance().getWikiConnector().getAttachment(path);
+			attachment = KnowWEUtils.getEnvironment(section).getWikiConnector().getAttachment(path);
 		}
 		catch (IOException e) {
 			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while retrieving attachment '"

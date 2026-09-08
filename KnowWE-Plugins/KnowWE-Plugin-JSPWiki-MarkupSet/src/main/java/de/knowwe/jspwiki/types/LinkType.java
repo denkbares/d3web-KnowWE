@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.RenderPreviewAction;
 import de.knowwe.core.action.RenderPreviewAction.Mode;
 import de.knowwe.core.kdom.AbstractType;
@@ -180,7 +180,7 @@ public class LinkType extends AbstractType {
 
 		// not qualified, check for attachment to current page
 		try {
-			List<WikiAttachment> list = Environment.getInstance().getWikiConnector().getAttachments(
+			List<WikiAttachment> list = KnowWEUtils.getEnvironment(link).getWikiConnector().getAttachments(
 					link.getTitle());
 
 			for (WikiAttachment wikiAttachment : list) {
@@ -290,10 +290,10 @@ public class LinkType extends AbstractType {
 			else if (link.contains("#")) {
 				String articleName = link.substring(0, index);
 				headerName = link.substring(index + 1);
-				article = Environment.getInstance().getArticleManager(sourceArticle.getWeb()).getArticle(articleName);
+				article = sourceArticle.getArticleManager().getEnvironment().getArticleManager(sourceArticle.getWeb()).getArticle(articleName);
 			}
 			else if (sourceArticle.getArticleManager() == null) { // can happen in preview mode
-				ArticleManager articleManager = Environment.getInstance().getArticleManager(sourceArticle.getWeb());
+				ArticleManager articleManager = sourceArticle.getArticleManager().getEnvironment().getArticleManager(sourceArticle.getWeb());
 				article = articleManager.getArticle(link);
 				headerName = null;
 			}

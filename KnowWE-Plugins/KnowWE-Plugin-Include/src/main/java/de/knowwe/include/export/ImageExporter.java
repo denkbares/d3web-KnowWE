@@ -36,7 +36,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import com.denkbares.strings.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -82,7 +82,7 @@ public class ImageExporter implements Exporter<PluginType> {
 				// image tag uses only image name, relative to current article
 				path = title + "/" + file;
 			}
-			WikiConnector connector = Environment.getInstance().getWikiConnector();
+			WikiConnector connector = KnowWEUtils.getEnvironment(section).getWikiConnector();
 			WikiAttachment attachment = connector.getAttachment(path);
 
 			Dimension dim = getImageDimension(section, attachment);

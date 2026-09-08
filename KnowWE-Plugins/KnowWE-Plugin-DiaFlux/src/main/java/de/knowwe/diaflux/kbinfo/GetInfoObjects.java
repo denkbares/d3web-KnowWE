@@ -57,7 +57,7 @@ import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTermDefinition;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -142,7 +142,7 @@ public class GetInfoObjects extends AbstractAction {
 	private static void appendArticleInfoObject(Section<?> flowchart, Identifier articleIdentifier, StringBuilder bob) {
 
 		String title = articleIdentifier.getLastPathElement();
-		Article article = Environment.getInstance().getArticle(flowchart.getWeb(), title);
+		Article article = KnowWEUtils.getEnvironment(flowchart).getArticle(flowchart.getWeb(), title);
 		String id = articleIdentifier.toExternalForm();
 
 		bob.append("\t<article");

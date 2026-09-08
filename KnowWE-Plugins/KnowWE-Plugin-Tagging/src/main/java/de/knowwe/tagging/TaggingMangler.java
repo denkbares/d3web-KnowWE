@@ -36,7 +36,6 @@ import java.util.function.Predicate;
 import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -123,7 +122,7 @@ public class TaggingMangler {
 		if (!tags.add(Strings.trim(tag))) return;
 
 		// then add the tag to the page
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, pageName);
+		Article article = context.getArticleManager().getArticle(pageName);
 		setTags(article, tags, context);
 	}
 
@@ -139,7 +138,7 @@ public class TaggingMangler {
 		if (!tags.remove(Strings.trim(tag))) return;
 
 		// then add the tag to the page
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, pageName);
+		Article article = context.getArticleManager().getArticle(pageName);
 		setTags(article, tags, context);
 	}
 
@@ -247,7 +246,7 @@ public class TaggingMangler {
 	 * @param tags     comma/space separated list of tags
 	 */
 	public void setTags(String pageName, String tags, UserActionContext context) throws IOException {
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, pageName);
+		Article article = context.getArticleManager().getArticle(pageName);
 		setTags(article, extractTags(tags), context);
 	}
 
@@ -264,7 +263,7 @@ public class TaggingMangler {
 	 * Forcibly adds a new tags-section - the hardcore way
 	 */
 	public void addNewTagSection(String topic, String content, UserActionContext context) throws IOException {
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, topic);
+		Article article = context.getArticleManager().getArticle(topic);
 		addNewTagSection(article, content, context);
 	}
 

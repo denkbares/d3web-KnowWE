@@ -29,7 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -66,7 +66,7 @@ public class SparqlEndpointAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(context).getWikiConnector();
 
 		JSPAuthenticationManager manager = (JSPAuthenticationManager) context.getManager();
 		HttpServletRequest request = context.getRequest();
