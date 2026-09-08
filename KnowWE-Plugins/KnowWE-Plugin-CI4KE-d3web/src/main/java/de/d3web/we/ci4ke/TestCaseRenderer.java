@@ -42,7 +42,7 @@ public class TestCaseRenderer implements ObjectNameRenderer {
 		// fail and there aren't normally many, it's ok for now
 		Set<String> allPackageNames = KnowWEUtils.getPackageManager(context.getArticleManager()).getAllPackageNames();
 		List<ProviderTriple> testCaseProviders = TestCaseUtils.getTestCaseProviders(
-				context.getWeb(), allPackageNames.toArray(new String[allPackageNames.size()]));
+				context.getArticleManager(), allPackageNames.toArray(new String[allPackageNames.size()]));
 		for (ProviderTriple triple : testCaseProviders) {
 			if (triple.getA().getName().equals(objectName)) {
 				result.appendHtml("<a href='"

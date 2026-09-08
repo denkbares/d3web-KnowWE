@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.Attributes;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.action.UserActionContext;
@@ -135,8 +137,8 @@ public class TestUtils {
 	/**
 	 * Called by the Core-Junit-Tests
 	 */
-	public static void processAndUpdateArticleJunit(String username, String content, String topic, String web) {
-		Environment.getInstance().getArticleManager(web).registerArticle(topic, content);
+	public static void processAndUpdateArticleJunit(String username, String content, String topic, @NotNull ArticleManager articleManager) {
+		articleManager.registerArticle(topic, content);
 	}
 
 	public static String createKnowWEExtensionPath() {

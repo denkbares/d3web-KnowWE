@@ -15,6 +15,9 @@ import org.junit.Test;
 import com.denkbares.plugin.test.InitPluginManager;
 import connector.DummyConnector;
 import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -165,6 +168,20 @@ public class EnvironmentLifecycleTest {
 		Article article = createArticle(second);
 		assertSame(second, article.getArticleManager().getEnvironment());
 		assertNotNull(Sections.get(article.getRootSection().getID()));
+	}
+
+	@Test
+	public void temporaryArticlesResolveTheirEnvironmentAndArticleManager() throws InterruptedException {
+		Environment environment = start();
+		Article temporary = Article.createTemporaryArticle(environment, CONTENT, "Preview");
+		assertTrue(temporary.isTemporary());
+		assertNull(temporary.getArticleManager());
+		assertSame(environment, temporary.getEnvironment());
+		assertSame(environment, KnowWEUtils.getEnvironment(temporary.getRootSection()));
+		assertSame(environment.getArticleManager(), KnowWEUtils.getArticleManager(temporary));
+		assertSame(environment.getArticleManager(), KnowWEUtils.getArticleManager(temporary.getRootSection()));
+		// compilers can be looked up for preview sections
+		assertNotNull(Compilers.getCompilers(null, temporary.getRootSection(), Compiler.class));
 	}
 
 	private static Environment start() {

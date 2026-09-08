@@ -1044,6 +1044,14 @@ public final class Environment implements AutoCloseable {
 	 * @deprecated
 	 */
 	@Deprecated
+	public TerminologyManager getTerminologyManager(String master) {
+		return KnowWEUtils.getTerminologyManager((master == null) ? null : getArticleManager().getArticle(master));
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #getTerminologyManager(String)}
+	 */
+	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
 		return KnowWEUtils.getTerminologyManager((master == null)
 				? null

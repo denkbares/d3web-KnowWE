@@ -50,6 +50,11 @@ public final class Article {
 	private static final Pattern REMOVE_PATTERN = Pattern.compile("[\u200B\r]");
 	private static final Pattern WHITE_SPACE_PATTERN = Pattern.compile("[\u00A0\u2000-\u200B\u202F\u205F\u2060\u3000\u180E]");
 	private final ArticleManager articleManager;
+
+	/**
+	 * The environment this article belongs to; for temporary articles the environment they were created for.
+	 */
+	private final Environment environment;
 	/**
 	 * Name of this article (topic-name)
 	 */
@@ -104,10 +109,31 @@ public final class Article {
 	 * @param title the title or name of the article, displayed at the top (and in the URL usually)
 	 * @param web   the web the article belongs to (currently unused)
 	 */
+	/**
+	 * Creates a temporary article (not registered at any article manager) for the given environment.
+	 */
+	public static Article createTemporaryArticle(@NotNull Environment environment, String text, String title) {
+		return createArticle(text, title, Environment.DEFAULT_WEB, null, environment, true, environment.getRootType());
+	}
+
+	public static Article createTemporaryArticle(@NotNull Environment environment, String text, String title, RootType root) {
+		return createArticle(text, title, Environment.DEFAULT_WEB, null, environment, true, root);
+	}
+
+	/**
+	 * @deprecated transitional: uses the current environment, prefer {@link #createTemporaryArticle(Environment,
+	 * String, String)}
+	 */
+	@Deprecated
 	public static Article createTemporaryArticle(String text, String title) {
 		return createArticle(text, title, Environment.DEFAULT_WEB, null, true);
 	}
 
+	/**
+	 * @deprecated transitional: uses the current environment, prefer {@link #createTemporaryArticle(Environment,
+	 * String, String, RootType)}
+	 */
+	@Deprecated
 	public static Article createTemporaryArticle(String text, String title, RootType root) {
 		return createArticle(text, title, Environment.DEFAULT_WEB, null, true, root);
 	}
@@ -153,9 +179,13 @@ public final class Article {
 	 * @param root      RootType to be used
 	 */
 	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
+		return createArticle(text, title, web, manager, null, fullParse, root);
+	}
+
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, RootType root) {
 		Article article = null;
 		try {
-			article = new Article(text, title, web, manager, fullParse, root);
+			article = new Article(text, title, web, manager, temporaryEnvironment, fullParse, root);
 		}
 		catch (Exception e) {
 			LOGGER.error("Exception while creating article", e);
@@ -163,7 +193,7 @@ public final class Article {
 		return article;
 	}
 
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root) {
+	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, @Nullable RootType root) {
 		if (root == null) {
 			rootType = manager.getEnvironment().getRootType();
 		}
@@ -176,7 +206,9 @@ public final class Article {
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
 		this.articleManager = manager;
-		Environment environment = KnowWEUtils.findEnvironment(manager);
+		Environment environment = manager != null ? KnowWEUtils.findEnvironment(manager)
+				: temporaryEnvironment != null ? temporaryEnvironment : Environment.peekInstance();
+		this.environment = environment;
 		this.lastVersion = environment != null && Environment.isInitialized() && articleManager != null
 				? environment.getArticle(web, title)
 				: null;
@@ -348,5 +380,26 @@ public final class Article {
 
 	public boolean isTemporary() {
 		return articleManager == null;
+	}
+
+	/**
+	 * Returns the environment this article belongs to, or null if there is none (e.g. articles created in plain unit
+	 * tests without an environment).
+	 */
+	@Nullable
+	public Environment findEnvironment() {
+		return environment;
+	}
+
+	/**
+	 * Returns the environment this article belongs to. For temporary articles this is the environment they were created
+	 * for.
+	 *
+	 * @throws IllegalStateException if the article has no environment
+	 */
+	@NotNull
+	public Environment getEnvironment() {
+		if (environment == null) throw new IllegalStateException("Article '" + title + "' has no environment");
+		return environment;
 	}
 }

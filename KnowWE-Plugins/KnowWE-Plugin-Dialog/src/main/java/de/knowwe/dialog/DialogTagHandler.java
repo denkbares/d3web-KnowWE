@@ -40,7 +40,7 @@ public class DialogTagHandler extends AbstractTagHandler {
 			String value = values.get("dialog");
 			Strings.trimQuotes(value);
 			if (!Strings.isBlank(value)) {
-				Article article = section.getArticleManager().getArticle(value);
+				Article article = KnowWEUtils.getArticleManager(section).getArticle(value);
 				if (article != null) {
 					Section<KnowledgeBaseMarkup> kbSection = Sections.successor(
 							article.getRootSection(), KnowledgeBaseMarkup.class);

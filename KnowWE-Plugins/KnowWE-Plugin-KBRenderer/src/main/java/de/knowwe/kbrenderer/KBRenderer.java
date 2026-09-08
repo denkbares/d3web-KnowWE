@@ -58,6 +58,9 @@ import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -87,20 +90,20 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String topic,
-						   UserContext user, Map<String, String> values, RenderResult result) {
+	public void renderHTML(String topic, UserContext user, Map<String, String> values, RenderResult result) {
+		String web = user.getWeb(); // TODO stage 3b: remaining web use
 		renderedRulesCache = new HashMap<>();
 		KnowledgeBase kb = null;
 		if (values.containsKey(KB_NAME)) {
-			kb = D3webUtils.getKnowledgeBase(web, values.get(KB_NAME));
+			kb = D3webUtils.getKnowledgeBase(KnowWEUtils.getArticleManager(web), values.get(KB_NAME));
 		}
 		else {
-			kb = D3webUtils.getKnowledgeBase(web, topic);
+			kb = D3webUtils.getKnowledgeBase(KnowWEUtils.getArticleManager(web), topic);
 		}
-		renderHTML(web, topic, user, kb, result);
+		renderHTML(KnowWEUtils.getArticleManager(web), topic, user, kb, result);
 	}
 
-	public void renderHTML(String web, String topic, UserContext user, KnowledgeBase kb, RenderResult text) {
+	public void renderHTML(@NotNull ArticleManager articleManager, String topic, UserContext user, KnowledgeBase kb, RenderResult text) {
 
 		ResourceBundle rb = D3webUtils.getD3webBundle(user);
 
@@ -402,7 +405,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title, UserContext user) {
 		Environment env = user.getEnvironment();
-		TerminologyManager manager = env.getTerminologyManager(user.getWeb(), title);
+		TerminologyManager manager = env.getTerminologyManager(title);
 		Section<?> termDefiningSection = manager.getTermDefiningSection(new Identifier(t1.getName()));
 		RenderResult builder = new RenderResult(user);
 

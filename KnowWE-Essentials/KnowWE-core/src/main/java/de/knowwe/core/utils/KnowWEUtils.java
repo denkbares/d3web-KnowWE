@@ -1333,7 +1333,47 @@ public class KnowWEUtils {
 	 */
 	@Nullable
 	public static Environment findEnvironment(@Nullable Section<?> section) {
-		return findEnvironment(section == null ? null : section.getArticleManager());
+		return findEnvironment(section == null ? null : section.getArticle());
+	}
+
+	/**
+	 * Returns the environment the article belongs to (also for temporary articles), or null if there is none.
+	 */
+	@Nullable
+	public static Environment findEnvironment(@Nullable Article article) {
+		if (article == null) return null;
+		Environment environment = article.findEnvironment();
+		return environment != null ? environment : findEnvironment(article.getArticleManager());
+	}
+
+	/**
+	 * Returns the article manager responsible for the section. Temporary articles (e.g. previews) have no article
+	 * manager of their own; for them the article manager of their environment is returned.
+	 *
+	 * @throws IllegalStateException if there is no environment
+	 */
+	@NotNull
+	public static ArticleManager getArticleManager(@NotNull Section<?> section) {
+		return getArticleManager(section.getArticle());
+	}
+
+	/**
+	 * Returns the article manager responsible for the article, see {@link #getArticleManager(Section)}.
+	 */
+	@NotNull
+	public static ArticleManager getArticleManager(@NotNull Article article) {
+		ArticleManager manager = article.getArticleManager();
+		return manager != null ? manager : getEnvironment(article).getArticleManager();
+	}
+
+	/**
+	 * Returns the environment of the specified article, see {@link #findEnvironment(Article)}.
+	 *
+	 * @throws IllegalStateException if there is no environment
+	 */
+	@NotNull
+	public static Environment getEnvironment(@NotNull Article article) {
+		return requireEnvironment(findEnvironment(article), "article '" + article.getTitle() + "'");
 	}
 
 	/**
@@ -1459,7 +1499,7 @@ public class KnowWEUtils {
 	 * @created 07.01.2014
 	 */
 	public static PackageManager getPackageManager(final Section<?> section) {
-		final ArticleManager manager = KnowWEUtils.getEnvironment(section).getArticleManager(section.getWeb());
+		final ArticleManager manager = section.getArticleManager();
 		return getPackageManager(manager);
 	}
 

@@ -53,7 +53,7 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 		ObjectInfoRenderer.renderTermReferences(identifier, context, result);
 
 
-		Set<Section<?>> termReferenceSections = ObjectInfoRenderer.findTermReferenceSections(context.getWeb(), identifier);
+		Set<Section<?>> termReferenceSections = ObjectInfoRenderer.findTermReferenceSections(context.getArticleManager(), identifier);
 		boolean canWriteAllSections = KnowWEUtils.canWrite(termReferenceSections, context);
 
 		JSONObject response = new JSONObject();

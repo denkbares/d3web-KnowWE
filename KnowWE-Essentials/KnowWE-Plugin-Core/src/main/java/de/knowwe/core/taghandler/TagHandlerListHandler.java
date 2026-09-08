@@ -46,8 +46,7 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String topic,
-			UserContext user, Map<String, String> values, RenderResult result) {
+	public void renderHTML(String topic, UserContext user, Map<String, String> values, RenderResult result) {
 		Collection<TagHandler> coll = user.getEnvironment()
 				.getDefaultTagHandlers().values();
 

@@ -110,7 +110,7 @@ public class OntologyExporter implements EventListener {
 					+ " only annotation-name.syntax instead."));
 			return;
 		}
-		if (ontologySection.getArticleManager().getArticle(title) == null) {
+		if (KnowWEUtils.getArticleManager(ontologySection).getArticle(title) == null) {
 			Messages.storeMessage(exportAnnotation, this.getClass(), Messages.error("Article '" + title + "' does not"
 					+ " exist, export has to point to an existing article."));
 			return;

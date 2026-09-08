@@ -29,6 +29,8 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -50,10 +52,9 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getParameter("web");
 		String topic = context.getParameter("topic");
 		String path = context.getPath();
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context.getArticleManager(), topic);
 		if (kb == null) {
 			context.sendError(404, "The specified knowledge base does not exist.");
 			return;

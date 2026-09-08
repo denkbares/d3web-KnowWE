@@ -123,6 +123,22 @@ Vorgehen:
 3. Eigene Methoden mit `String web`-Parameter in den Plugins (rund 90) manuell oder per Skript um den Parameter kürzen.
 4. Zuletzt `getWeb()` aus `Section`, `Article`, `UserContext`, `ArticleManager` und `DEFAULT_WEB` löschen (Teil von Stufe 4).
 
+Stand 2026-09-08 (abends), Schritte 1-3 umgesetzt:
+
+- Schritt 1 (KnowWE-core): `Environment` hat genau einen `ArticleManager` (`getArticleManager()`, Feld statt Map pro Web; `getArticleManager(web)` deprecated, warnt bei fremdem Web), `getArticle(title)`, `getTerminologyManager(master)`, `DefaultArticleManager(environment)`, `Article.createTemporaryArticle(text, title[, root])`, `Sections.ReplaceContext.of(env, userCanEdit, author)`, `TermUtils.getTermInfo(articleManager, ...)`, `TermInfoSet.initTerm(articleManager, id)`, `ListSectionsRenderer.getAllSectionsOfType(articleManager, ...)`, `Attachment*Event(parent, file)`, `Attributes.getBrokerConstant()`, `WikiConnector.getAllArticles()`, `AbstractHTMLTagHandler.renderHTML(title, user, parameters, result)` (die `web`-Variante ist nicht mehr abstrakt, wirft `UnsupportedOperationException`, wenn keine der beiden überschrieben ist). Alle `web`-Varianten deprecated.
+- Schritt 2 (Skript `web2_callers.py`): `getArticleManager(DEFAULT_WEB|x.getWeb())` -> `getArticleManager()`/`x.getArticleManager()`, `Compilers.getCompilerManager(...)` -> `x.getArticleManager().getCompilerManager()`, `getArticle(web, title)` -> `getArticle(title)`, temporäre Artikel, Events, TermInfo, PackageManager ohne `web`; 129 Dateien in fünf Repos.
+- Schritt 3 (Skript `web3_methods.py`, iteriert bis Konvergenz): Methoden mit `String web`-Parameter bekommen `ArticleManager articleManager`, wenn alle `web`-Verwendungen im Rumpf umschreibbar sind (29 Methoden), lokale `String web = ctx.getWeb()` entfallen (32), TagHandler überschreiben `renderHTML(title, user, ...)` (11), Aufrufer (auch namensgleiche in anderen Repos) übergeben den ArticleManager. Falle: das Skript ordnet Aufrufer nur nach Methodennamen zu, `D3webUtils.getKnowledgeBase(web, title)` bekam so die Umschreibung von `KnowSECUtils.getKnowledgeBase(web)`; gelöst durch eine ArticleManager-Variante in `D3webUtils`.
+- Falle temporäre Artikel (Albrechts Einwand): `Article.getArticleManager()` ist `@Nullable`, für temporäre Artikel (Vorschau, `createTemporaryArticle`) null; `section.getArticleManager()` ist als Ersatz für `getArticleManager(section.getWeb())` also falsch. Lösung: `Article` kennt seine `Environment` (auch temporär: `createTemporaryArticle(environment, text, title[, root])`, `Article.getEnvironment()`/`findEnvironment()`), `KnowWEUtils.findEnvironment(Section|Article)` läuft über den Artikel statt nur über den Manager, und `KnowWEUtils.getArticleManager(Section|Article)` liefert für temporäre Artikel den Manager der Environment. Alle Umschreibungen mit Section-/Article-Empfänger (30 Dateien) nutzen den Helfer; `Compilers.getCompilers(context, section, ...)` hatte durch die Umschreibung einen wirkungslosen Fallback, jetzt ebenfalls über den Helfer. Die parameterlosen `createTemporaryArticle(text, title)` sind transitional (aktuelle Environment) und deprecated.
+- Bleibt (Stufe 4, `web` als String-Wert): `TestObjectContainer(web, ...)` der CI-TestObjectProvider, `web`-Request-Parameter in URLs/JS (`DefaultTool`, `TestCaseToolProvider`, `DebuggerQuestionRenderer`, `Attributes.WEB` in `AbstractUserContext.getWeb()`, `CommentRenderer`, `BoxRenderer`), `D3webUtils.getWebEnvironmentPath` (`$web$`-Platzhalter), `ProgressListenerProvider`-Schlüssel (KBB), `AttachmentType`-Event-Vergleich, `PrefixedTestCaseProvider`, Revisions-Plugin (Experimental, eigener `ArticleManager` pro Web), `Article.web`/`Section.getWeb()`/`UserContext.getWeb()`/`ArticleManager.getWeb()`, Log-Ausgaben mit Web.
+
+| Repo | `String web` | `Environment.DEFAULT_WEB` | `getWeb()` |
+|---|---|---|---|
+| KnowWE | 55 (davon ~40 deprecated Kern-Varianten) | 21 | 44 |
+| KnowWE-DES | 6 | 4 | 13 |
+| KnowWE-SSP | 1 | 1 | 6 |
+| Experimental | 16 | 47 | 12 |
+| KRONE | 1 | 0 | 2 |
+
 Die Muster-1-Umschreibungen haben schon viele `DEFAULT_WEB`-Stellen entfernt (`getArticleManager(DEFAULT_WEB)` -> `ctx.getArticleManager()`);
 neue Aufrufer sollen ab jetzt keine `web`-Variante mehr benutzen.
 

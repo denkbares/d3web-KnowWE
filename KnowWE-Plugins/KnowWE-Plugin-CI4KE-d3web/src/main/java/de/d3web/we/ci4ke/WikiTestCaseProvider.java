@@ -31,6 +31,7 @@ import de.d3web.testcase.model.TestCase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCaseProvider;
@@ -62,10 +63,11 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 		catch (java.util.regex.PatternSyntaxException e) {
 			return result;
 		}
-		String web = Environment.DEFAULT_WEB;
-		Set<String> allPackageNames = KnowWEUtils.getPackageManager(web).getAllPackageNames();
+		// test object provider without a context object, see environment-instance-plan.md
+		ArticleManager articleManager = Environment.requireInstance().getArticleManager();
+		Set<String> allPackageNames = KnowWEUtils.getPackageManager(articleManager).getAllPackageNames();
 		List<ProviderTriple> testCaseProviders = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(
-				web, allPackageNames.toArray(new String[allPackageNames.size()]));
+				articleManager, allPackageNames.toArray(new String[allPackageNames.size()]));
 
 		for (ProviderTriple triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();

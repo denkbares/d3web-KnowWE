@@ -21,6 +21,7 @@ package de.knowwe.instantedit.actions;
 import java.io.IOException;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -38,12 +39,11 @@ public class InstantEditEnableAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String title = context.getTitle();
-		String web = context.getWeb();
 		String id = context.getParameter("KdomNodeId");
 
 		String mode = context.getParameter("mode");
 
-		Article art = context.getEnvironment().getArticle(web, title);
+		Article art = context.getArticleManager().getArticle(title);
 		if (art == null) {
 			context.sendError(404, "Page '" + title + "' could not be found.");
 			return;

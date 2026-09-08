@@ -678,12 +678,12 @@ public class ListSectionsRenderer<T extends Type> {
 		List<String> excludedPackageNames = new ArrayList<>(Arrays.asList(DefaultMarkupType.getAnnotations(packageDefinition, PackageManager.EXCLUDE_PACKAGE_ATTRIBUTE_NAME)));
 		if (packageNames.isEmpty() && !excludedPackageNames.isEmpty()) {
 			// when there are only excluded packages defined -> list all packages and...
-			packageNames = new ArrayList<>(KnowWEUtils.getPackageManager(packageDefinition.getWeb())
+			packageNames = new ArrayList<>(KnowWEUtils.getPackageManager(KnowWEUtils.getArticleManager(packageDefinition))
 					.getAllPackageNames());
 		}
 		// ..remove excluded packages
 		packageNames.removeAll(excludedPackageNames);
-		return getAllSectionsOfType(packageDefinition.getWeb(), sectionType, packageNames.toArray(new String[0]));
+		return getAllSectionsOfType(KnowWEUtils.getArticleManager(packageDefinition), sectionType, packageNames.toArray(new String[0]));
 	}
 
 	/**

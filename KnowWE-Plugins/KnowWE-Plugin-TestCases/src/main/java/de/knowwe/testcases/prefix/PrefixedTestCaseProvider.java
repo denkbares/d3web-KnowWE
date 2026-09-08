@@ -6,6 +6,9 @@ import java.util.Set;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.prefix.PrefixedTestCase;
 import de.knowwe.core.kdom.parsing.Section;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCaseProvider;
@@ -17,7 +20,7 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 
 	private String[] prefixPackages;
 	private String prefixName;
-	private String web;
+	private ArticleManager articleManager;
 	private TestCase testCase;
 
 	public PrefixedTestCaseProvider(Section<? extends DefaultMarkupType> prefixDefiningSection) {
@@ -27,7 +30,7 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 		if (prefix == null) return;
 		Set<String> packagesSet = prefixDefiningSection.getPackageNames();
 		String[] packages = packagesSet.toArray(new String[0]);
-		setPrefixTestCase(prefixDefiningSection.getWeb(), prefix, packages);
+		setPrefixTestCase(KnowWEUtils.getArticleManager(prefixDefiningSection), prefix, packages);
 	}
 
 	@Override
@@ -43,14 +46,14 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 
 	public abstract TestCase getActualTestCase();
 
-	public void setPrefixTestCase(String web, String prefixName, String... prefixPackages) {
-		this.web = web;
+	public void setPrefixTestCase(@NotNull ArticleManager articleManager, String prefixName, String... prefixPackages) {
+		this.articleManager = articleManager;
 		this.prefixName = prefixName;
 		this.prefixPackages = prefixPackages;
 	}
 
 	public TestCase getPrefixTestCase() {
-		TestCaseProvider providerOfPrefix = getProviderOfPrefix(web, prefixName, prefixPackages);
+		TestCaseProvider providerOfPrefix = getProviderOfPrefix(articleManager, prefixName, prefixPackages);
 		if (providerOfPrefix != null && !isLooping(providerOfPrefix)) {
 			return providerOfPrefix.getTestCase();
 		}
@@ -61,7 +64,7 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 		if (isSameProvider(providerOfPrefix)) return true;
 		while (providerOfPrefix instanceof PrefixedTestCaseProvider) {
 			PrefixedTestCaseProvider prefixProvider = (PrefixedTestCaseProvider) providerOfPrefix;
-			providerOfPrefix = getProviderOfPrefix(prefixProvider.web,
+			providerOfPrefix = getProviderOfPrefix(prefixProvider.articleManager,
 					prefixProvider.prefixName, prefixProvider.prefixPackages);
 			if (providerOfPrefix != null && isSameProvider(providerOfPrefix)) return true;
 		}
@@ -72,10 +75,10 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 		return providerOfPrefix.getName().equals(this.getName());
 	}
 
-	private TestCaseProvider getProviderOfPrefix(String web, String prefixName, String... prefixPackage) {
-		if (web != null && prefixName != null && prefixPackage != null) {
+	private TestCaseProvider getProviderOfPrefix(ArticleManager articleManager, String prefixName, String... prefixPackage) {
+		if (articleManager != null && prefixName != null && prefixPackage != null) {
 			List<ProviderTriple> testCaseProviderTriples = TestCaseUtils.getTestCaseProviders(
-					web, prefixPackage);
+					articleManager, prefixPackage);
 			for (ProviderTriple triple : testCaseProviderTriples) {
 				if (triple.getA().getName().equals(prefixName)) return triple.getA();
 			}

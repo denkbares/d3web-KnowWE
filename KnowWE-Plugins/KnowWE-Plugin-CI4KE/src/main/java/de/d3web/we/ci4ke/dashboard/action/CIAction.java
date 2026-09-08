@@ -32,6 +32,7 @@ import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -52,10 +53,9 @@ public class CIAction extends AbstractAction {
 			throw new IOException(
 					"CIAction.execute(): Required parameters not set!");
 		}
-		String web = context.getWeb();
 
 		CIDashboard dashboard = CIDashboardManager.getDashboard(
-				KnowWEUtils.getArticleManager(web),
+				context.getArticleManager(),
 				dashboardName);
 		if (dashboard == null) {
 			//context.sendError(404, "<message will be inserted in JS>");
@@ -89,7 +89,7 @@ public class CIAction extends AbstractAction {
 				return;
 			}
 			CIBuildManager.getInstance().startBuild(CIDashboardManager.getDashboard(
-					KnowWEUtils.getArticleManager(web),
+					context.getArticleManager(),
 					dashboardName));
 			// TODO: Why are we rendering the old build? Necessary?
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);

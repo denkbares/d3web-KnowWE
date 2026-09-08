@@ -40,7 +40,7 @@ public class TagCloud extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
+	public void renderHTML(String topic, UserContext user, Map<String, String> values, RenderResult result) {
 		result.appendHtml("<p>");
 
 		Predicate<String> filter = getFilterPredicate(values);

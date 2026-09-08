@@ -31,6 +31,7 @@ import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.renderer.KDOMRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -63,9 +64,8 @@ public class CIDashboardTest {
 		String text = Strings.readStream(
 				getClass().getResourceAsStream("/" + "Dashboard" + ".txt"));
 		// create article with the new content
-		String web = Environment.DEFAULT_WEB;
-		env.getArticleManager(web).registerArticle("Dashboard", text);
-		return env.getArticle(web, "Dashboard");
+		Environment.requireInstance().getArticleManager().registerArticle("Dashboard", text);
+		return Environment.requireInstance().getArticleManager().getArticle("Dashboard");
 	}
 
 	@Test

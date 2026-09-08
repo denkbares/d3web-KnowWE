@@ -1645,7 +1645,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		Collection<String> missingIDs = new LinkedList<>();
 		Collection<String> forbiddenArticles = new LinkedList<>();
 
-		KnowWEUtils.getArticleManager(context.getWeb()).open();
+		context.getEnvironment().getArticleManager().open();
 		try {
 			for (Map.Entry<Article, Collection<String>> entry : idsByTitle.entrySet()) {
 				Collection<String> idsForCurrentTitle = entry.getValue();
@@ -1658,7 +1658,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			}
 		}
 		finally {
-			KnowWEUtils.getArticleManager(context.getWeb()).commit();
+			context.getEnvironment().getArticleManager().commit();
 		}
 
 		if (!missingIDs.isEmpty()) {
@@ -1747,7 +1747,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			Map<String, String> sectionsMapForCurrentTitle,
 			ReplaceContext context) {
 
-		Article article = context.getEnvironment().getArticleManager(context.getWeb()).getArticle(title);
+		Article article = context.getEnvironment().getArticleManager().getArticle(title);
 		return collectTextAndReplace(article, sectionsMapForCurrentTitle);
 	}
 

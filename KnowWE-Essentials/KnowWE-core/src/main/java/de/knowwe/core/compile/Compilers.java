@@ -376,7 +376,7 @@ public class Compilers {
 	 * @return the fallback compiler with the specific type
 	 */
 	private static Optional<String> getFallbackDefaultCompiler(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
-		Set<Compiler> childCompilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class)
+		Set<Compiler> childCompilers = Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class)
 				.stream()
 				.flatMap(c -> c.getChildCompilers().stream())
 				.collect(Collectors.toSet());
@@ -451,10 +451,8 @@ public class Compilers {
 	public static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, @NotNull Section<?> section, Class<C> compilerClass) {
 
 		// GET ALL COMPILERS
-		ArticleManager articleManager = section.getArticleManager();
-		if (articleManager == null) { // can happen in preview, use fall back
-			articleManager = context.getEnvironment().getArticleManager(section.getWeb());
-		}
+		// temporary articles (preview) have no article manager of their own, use the one of the environment
+		ArticleManager articleManager = KnowWEUtils.getArticleManager(section);
 		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
 
 		// FILTER TO CORRECT TYPE

@@ -255,7 +255,7 @@ public class D3webUtils {
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(Article article) {
-		return getKnowledgeBase(article.getWeb(), article.getTitle());
+		return getKnowledgeBase(KnowWEUtils.getArticleManager(article), article.getTitle());
 	}
 
 	/**
@@ -272,7 +272,19 @@ public class D3webUtils {
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(String web, String title) {
-		Article article = Environment.requireInstance().getArticle(web, title);
+		return getKnowledgeBase(KnowWEUtils.getArticleManager(web), title);
+	}
+
+	/**
+	 * Utility method to get a {@link KnowledgeBase} for an article specified by its title. If no such knowledge base
+	 * exists, null is returned.
+	 *
+	 * @deprecated it is possible that there are multiple knowledge bases on one page, this method will always only
+	 * return the first one
+	 */
+	@Deprecated
+	public static KnowledgeBase getKnowledgeBase(@NotNull ArticleManager articleManager, String title) {
+		Article article = articleManager.getArticle(title);
 		if (article == null) return null;
 		Section<PackageCompileType> compileSection = Sections.successor(
 				article.getRootSection(),

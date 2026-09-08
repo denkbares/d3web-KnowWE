@@ -290,10 +290,10 @@ public class LinkType extends AbstractType {
 			else if (link.contains("#")) {
 				String articleName = link.substring(0, index);
 				headerName = link.substring(index + 1);
-				article = sourceArticle.getArticleManager().getEnvironment().getArticleManager().getArticle(articleName);
+				article = KnowWEUtils.getArticleManager(sourceArticle).getEnvironment().getArticleManager().getArticle(articleName);
 			}
 			else if (sourceArticle.getArticleManager() == null) { // can happen in preview mode
-				ArticleManager articleManager = sourceArticle.getArticleManager().getEnvironment().getArticleManager();
+				ArticleManager articleManager = KnowWEUtils.getArticleManager(sourceArticle).getEnvironment().getArticleManager();
 				article = articleManager.getArticle(link);
 				headerName = null;
 			}

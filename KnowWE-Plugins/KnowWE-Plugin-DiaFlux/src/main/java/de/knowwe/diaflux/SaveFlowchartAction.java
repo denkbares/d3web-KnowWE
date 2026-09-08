@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -55,16 +56,15 @@ public class SaveFlowchartAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getWeb();
 		String nodeID = context.getParameter(Attributes.TARGET);
 		String topic = context.getTitle();
 		String newText = context.getParameter(Attributes.TEXT);
 
 		if (nodeID == null) {
-			saveNewFlowchart(context, web, topic, newText);
+			saveNewFlowchart(context, context.getArticleManager(), topic, newText);
 		}
 		else {
-			replaceExistingFlowchart(context, web, nodeID, topic, newText);
+			replaceExistingFlowchart(context, context.getArticleManager(), nodeID, topic, newText);
 		}
 
 	}
@@ -75,7 +75,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @created 23.02.2011
 	 */
 	@SuppressWarnings("unchecked")
-	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) throws IOException {
+	private void replaceExistingFlowchart(UserActionContext context, @NotNull ArticleManager articleManager, String nodeID, String topic, String newText) throws IOException {
 		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.get(
 				nodeID);
 
@@ -126,7 +126,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @throws IOException
 	 * @created 23.02.2011
 	 */
-	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
+	private void saveNewFlowchart(UserActionContext context, @NotNull ArticleManager articleManager, String topic, String newText) throws IOException {
 		ArticleManager mgr = context.getEnvironment().getArticleManager(
 				context.getWeb());
 		Article article = mgr.getArticle(topic);

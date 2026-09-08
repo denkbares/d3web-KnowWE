@@ -193,7 +193,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			String[] packageNames = DefaultMarkupType.getAnnotations(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
 			if (packageNames.length == 0) {
 				// if package(s) is not specified, use all articles
-				return section.getArticleManager().getArticles().stream();
+				return KnowWEUtils.getArticleManager(section).getArticles().stream();
 			}
 
 			// otherwise collect articles from package manager

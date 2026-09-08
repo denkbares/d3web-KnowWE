@@ -54,9 +54,8 @@ public class LoadFlowchartAction extends AbstractAction {
 
 		if (nodeID == null) {
 			// also allow to specify the flowchart by name, if no section id is specified
-			String web = context.getParameter(Attributes.WEB);
 			Identifier id = Identifier.fromExternalForm(context.getParameter("FlowIdentifier"));
-			ArticleManager articleManager = context.getEnvironment().getArticleManager(web);
+			ArticleManager articleManager = context.getArticleManager();
 			Article master = articleManager.getArticle(id.getPathElementAt(0));
 			D3webCompiler compiler = Compilers.getCompiler(master, D3webCompiler.class);
 			section = Sections.definitions(compiler, id.rest(1))
