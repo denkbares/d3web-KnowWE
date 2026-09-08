@@ -70,7 +70,8 @@ Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initI
 | 1 | Rückverbindung `ArticleManager.getEnvironment()`, `getInstance()` `@Deprecated`, `shutdown()` mit explizitem Reset (Provisorium, entfällt mit Stufe 2) | KnowWE-core | **erledigt** (9e19e1b30) |
 | 2 | **Environment besitzt allen Zustand und alle Threads.** `Environment implements AutoCloseable`; `close()` statt `shutdown()`. Reset-Liste aus Stufe 1 ist leer | KnowWE-core (+ Commons für 2e) | **2a-2d erledigt** (56b2b2b63, Folgecommit), 2e offen |
 | 3 | Aufrufer migrieren nach vier Mustern (s.u.), repo-weise: KnowWE, KnowWE-DES, KnowWE-SSP, Experimental, KRONE, Internals, IE | alle Consumer | Muster 1 in allen Repos erledigt (2026-09-08), Muster 2-4 offen |
-| 4 | `getInstance()`, `initInstance()`, `DEFAULT_WEB`, `articleManagers`-Map löschen; Einstieg nur noch über den JSPWiki-Connector, der die Environment erzeugt und in den ServletContext legt; Testinfrastruktur auf `new Environment(...)` pro Test | alle, plus Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform | offen |
+| 3b | **`web`-Parameter entfernen.** Es gibt nur `DEFAULT_WEB`; der Parameter ist toter Ballast in Signaturen und Aufrufen. Eigener Durchgang nach den Mustern 1-3 und vor dem Löschen von `getInstance()`, weil er dieselben Stellen anfasst | alle Repos | offen |
+| 4 | `getInstance()`, `initInstance()`, `articleManagers`-Map löschen; Einstieg nur noch über den JSPWiki-Connector, der die Environment erzeugt und in den ServletContext legt; Testinfrastruktur auf `new Environment(...)` pro Test | alle, plus Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform | offen |
 
 ### Stufe 2 im Detail
 
@@ -94,6 +95,36 @@ Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initI
   `close()` wieder abgemeldet (`EventManager.unregister`).
 - **2e EventManager pro Environment (Commons).** Offen. Erst nötig für zwei gleichzeitig laufende Environments; für
   "alte weg, neue sauber" reicht 2d.
+
+### Stufe 3b: `web` entfernen
+
+Stand 2026-09-08 (Hauptcode, nach den bisherigen Umschreibungen):
+
+| Repo | `Environment.DEFAULT_WEB` | `getWeb()` | Methoden mit `String web` |
+|---|---|---|---|
+| KnowWE | 67 | 86 | 43 |
+| KnowWE-DES | 40 | 58 | 26 |
+| Experimental | 68 | 31 | 14 |
+| KnowWE-SSP | 19 | 22 | 2 |
+| KRONE | 35 | 6 | 2 |
+
+Kern-APIs mit `web` in KnowWE-core: `Environment.getArticleManager(web)`/`getArticle(web, title)`, `DefaultArticleManager(env, web)`,
+`Compilers.getCompilerManager(web)`, `KnowWEUtils.getArticleManager(web)`/`getArticle(web, title)`/`getPackageManager(web)`,
+`Article.createTemporaryArticle(text, title, web[, root])`, `Sections.get(web, title, pos)`, `Sections.ReplaceContext.of(web, ...)`,
+`TermUtils.getTermInfo(web, ...)`/`getTermIdentifiers(web)`, `TermInfoSet.initTerm(web, id)`, `ListSectionsRenderer.getAllSectionsOfType(web, ...)`,
+`AbstractHTMLTagHandler.renderHTML(web, title, user, ...)` (abstrakt, von allen TagHandlern implementiert), die `Attachment*Event`-Konstruktoren,
+`Attributes.getBrokerConstant(web)`, dazu `Section.getWeb()`, `Article.getWeb()`, `UserContext.getWeb()`, `ArticleManager.getWeb()`.
+
+Vorgehen:
+1. Kern-APIs: `web`-lose Varianten anbieten (`Environment.getArticleManager()`, `getArticle(title)`, `createTemporaryArticle(text, title)`,
+   `TermUtils.getTermInfo(articleManager, ...)`, `Sections.ReplaceContext.of(articleManager, ...)`, Events ohne `web`), die `web`-Varianten deprecated.
+   `AbstractHTMLTagHandler.renderHTML` bekommt eine Default-Variante ohne `web`; die TagHandler ziehen repo-weise nach.
+2. Aufrufer per Skript: `Environment.DEFAULT_WEB`-Argumente streichen, `x.getWeb()`-Argumente streichen, wo die Zielmethode eine `web`-lose Variante hat.
+3. Eigene Methoden mit `String web`-Parameter in den Plugins (rund 90) manuell oder per Skript um den Parameter kürzen.
+4. Zuletzt `getWeb()` aus `Section`, `Article`, `UserContext`, `ArticleManager` und `DEFAULT_WEB` löschen (Teil von Stufe 4).
+
+Die Muster-1-Umschreibungen haben schon viele `DEFAULT_WEB`-Stellen entfernt (`getArticleManager(DEFAULT_WEB)` -> `ctx.getArticleManager()`);
+neue Aufrufer sollen ab jetzt keine `web`-Variante mehr benutzen.
 
 ### Stufe 3: die vier Migrationsmuster
 
@@ -171,6 +202,7 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 - 2026-09-07: Analyse, Plan, Arbeitsumgebung eingerichtet, Kette gebaut, Baseline-Tests grün.
 - 2026-09-07: Stufe 1 umgesetzt und committet (9e19e1b30). Voller KnowWE-Testlauf 1:53 min, nur die bekannten Git-Provider-Fehler.
+- 2026-09-08: Stufe 3b (`web` entfernen) als eigener Durchgang aufgenommen, mit Messung und Vorgehen. Stufe-3-Umschreibung (`context.getEnvironment()`, Environment-Varianten der Statics) in allen Repos committet.
 - 2026-09-08: Stufe 3, Muster 2 in KnowWE (statische Utilities mit Environment-Overload, deprecated Delegation), `Instantiation.init(Environment)`, `WikiSearchService` als erster Environment-Service, `UserContext.getEnvironment()`. KnowWE-main von 88 auf 31 `getInstance()`-Stellen.
 - 2026-09-08: `Environment.initInstance()` schließt eine noch laufende Environment (c679ea688); vorher lief `TaskContextManagerEventTest` mit `initialized=true` in die Typbaum-Assertion.
 - 2026-09-08: Stufe 3, Muster 1 in allen Repos per Skript (Kontextobjekt aus Methodenparameter oder Klassenfeld). Fallen: lokale Variablen nicht fuer Felder halten (nur Deklarationen mit genau einem Tab), Dateien mit CRLF-Zeilenenden byteweise behandeln (42 Dateien mussten repariert werden), `Environment`-Import nur entfernen, wenn das Wort nirgends mehr vorkommt (mehrzeilige Aufrufe). Kompilierfehler wurden zeilenweise aus git zurueckgesetzt (revert_errors.py), die Stellen bleiben beim statischen Zugriff.
