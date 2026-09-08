@@ -4,6 +4,8 @@
  */
 package de.knowwe.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -12,9 +14,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -28,7 +30,7 @@ import static org.junit.Assert.*;
 
 /**
  * Contract tests for separating article construction from publication at queue time. They intentionally assert the
- * desired lifecycle, rather than expecting today's defects: draft isolation and identity-safe cleanup tests remain red
+ * desired lifecycle, rather than expecting today's defects: draft isolation and identity-safe cleanup tests are ignored
  * until that refactoring is implemented. Successful replacement/collision tests protect already working behavior.
  */
 public class ArticleLifecycleTest {
@@ -180,6 +182,25 @@ public class ArticleLifecycleTest {
 		assertSame("Cleanup must only remove IDs still owned by the old instance", line(replacement, 0), Sections.get(id));
 	}
 
+	/** Aa and BB collide in the complete root-section signature, so this verifies reuse after the original owner is gone. */
+	@Test
+	@Ignore("Pending lifecycle change: Section.unregisterOrUpdateSectionID() blindly removes a reused colliding ID during late cleanup")
+	public void lateCleanupOfDeletedCollidingOwnerCannotUnregisterReusedRootId() throws Exception {
+		assertEquals("Aa".hashCode(), "BB".hashCode());
+		Article deletedOwner = wiki.register("Aa", "same\n");
+		String reusedId = deletedOwner.getRootSection().getID();
+		wiki.manager.deleteArticle("Aa");
+		wiki.awaitCompilation();
+		assertNull(Sections.get(reusedId));
+
+		Article newOwner = wiki.register("BB", "same\n");
+		assertEquals("The released colliding ID must be reusable", reusedId, newOwner.getRootSection().getID());
+		assertSame(newOwner.getRootSection(), Sections.get(reusedId));
+
+		deletedOwner.destroy(null);
+		assertSame("Late cleanup must not unregister an ID now owned by another article", newOwner.getRootSection(), Sections.get(reusedId));
+	}
+
 	@Test
 	@Ignore("Pending lifecycle change: a retired section can currently register itself again on a late ID request")
 	public void firstIdRequestOnRetiredSectionCannotRegisterItAgain() throws Exception {
@@ -256,6 +277,59 @@ public class ArticleLifecycleTest {
 			}
 		}
 	}
+
+	/** Coordinates at the construction event, which is after parsing but before either draft can be queued. */
+	@Test
+	@Ignore("Pending lifecycle change: constructing overlapping replacement drafts unregisters the live ID mapping before either draft is queued")
+	public void discardingOverlappingUnqueuedReplacementDraftsPreservesTheLiveRegistry() throws Exception {
+		Article original = wiki.register("Page", "same\n");
+		Section<?> originalLine = line(original, 0);
+		String id = originalLine.getID();
+		CountDownLatch draftsConstructed = new CountDownLatch(2);
+		CountDownLatch releaseDrafts = new CountDownLatch(1);
+		List<DraftId> earlyDraftIds = Collections.synchronizedList(new ArrayList<>());
+		wiki.on(KDOMCreatedEvent.class, event -> {
+			if (!event.getArticle().getTitle().equals("Page")) return;
+			Section<?> draftLine = line(event.getArticle(), 0);
+			earlyDraftIds.add(new DraftId(draftLine, draftLine.getID()));
+			draftsConstructed.countDown();
+			await(releaseDrafts);
+		});
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		Future<Article> first = executor.submit(() -> wiki.draft("Page", original.getText()));
+		Future<Article> second = executor.submit(() -> wiki.draft("Page", original.getText()));
+		try {
+			assertTrue("Both drafts did not reach the construction boundary", draftsConstructed.await(5, TimeUnit.SECONDS));
+			releaseDrafts.countDown();
+			Article firstDraft = first.get(5, TimeUnit.SECONDS);
+			Article secondDraft = second.get(5, TimeUnit.SECONDS);
+			assertEquals("Both drafts must request an ID at the construction boundary", 2, earlyDraftIds.size());
+			List<String> brokenStages = new ArrayList<>();
+			if (wiki.manager.getArticle("Page") != original) brokenStages.add("construction replaced the live article");
+			if (Sections.get(id) != originalLine) brokenStages.add("completed drafts changed the live ID registry");
+			for (int i = 0; i < earlyDraftIds.size(); i++) {
+				DraftId draftId = earlyDraftIds.get(i);
+				if (!draftId.id().equals(draftId.section().getID())) {
+					brokenStages.add("draft " + (i + 1) + " changed its early ID");
+				}
+				if (Sections.get(draftId.id()) == draftId.section()) {
+					brokenStages.add("completed draft " + (i + 1) + " is globally reachable by its early ID");
+				}
+			}
+			firstDraft.destroy(null);
+			if (Sections.get(id) != originalLine) brokenStages.add("discarding the first draft changed the live ID registry");
+			secondDraft.destroy(null);
+			if (Sections.get(id) != originalLine) brokenStages.add("discarding the second draft changed the live ID registry");
+			assertTrue("Unqueued replacement drafts must preserve every live-owner stage: " + brokenStages, brokenStages.isEmpty());
+		}
+		finally {
+			releaseDrafts.countDown();
+			executor.shutdownNow();
+			assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+		}
+	}
+
+	private record DraftId(Section<?> section, String id) { }
 
 	private static void await(CountDownLatch latch) {
 		try {

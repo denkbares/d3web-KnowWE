@@ -264,6 +264,41 @@ public class ArticleCompilationLifecycleTest {
 		assertFalse(wiki.compiler.contributions().containsKey("definition: attachment-new"));
 	}
 
+	/** A shared attachment stays compiled until the final parent reference disappears. */
+	@Test
+	public void sharedCompiledAttachmentSurvivesUntilItsLastParentReferenceIsRemoved() throws Exception {
+		String path = "Shared/data.txt";
+		wiki.attachments.put(path, "definition: shared-attachment\n");
+		Article firstParent = wiki.register("First", "attachment: " + path + "\n");
+		Article attachment = wiki.manager.getArticle(path);
+		assertNotNull("The first reference must register the attachment", attachment);
+		String attachmentId = line(attachment, 0).getID();
+		Article secondParent = wiki.register("Second", "attachment: " + path + "\n");
+		assertSame("The second reference must reuse the compiled attachment", attachment, wiki.manager.getArticle(path));
+		assertEquals(2, wiki.manager.getAttachmentManager().getCompilingAttachmentSections(attachment).size());
+		assertTrue(wiki.manager.getAttachmentManager().getCompilingAttachmentSections(attachment)
+				.containsAll(List.of(line(firstParent, 0), line(secondParent, 0))));
+
+		int runsBeforeRemovingFirstReference = wiki.compiler.compilationCount();
+		wiki.register("First", "no attachment\n");
+		assertSame("Removing one reference must retain the shared attachment", attachment, wiki.manager.getArticle(path));
+		assertSame(line(attachment, 0), Sections.get(attachmentId));
+		assertEquals(1, wiki.manager.getAttachmentManager().getCompilingAttachmentSections(attachment).size());
+		assertSame(line(secondParent, 0), wiki.manager.getAttachmentManager()
+				.getCompilingAttachmentSections(attachment).iterator().next());
+		assertEquals(Long.valueOf(1), wiki.compiler.contributions().get("definition: shared-attachment"));
+		assertEquals(runsBeforeRemovingFirstReference + 1, wiki.compiler.compilationCount());
+		assertFalse("Retaining one reference must not recompile the attachment", wiki.compiler.lastCompilation().added().contains(attachment.getRootSection()));
+		assertFalse("Retaining one reference must not remove the attachment", wiki.compiler.lastCompilation().removed().contains(attachment.getRootSection()));
+
+		wiki.register("Second", "no attachment\n");
+		assertNull("Removing the last reference must remove the attachment article", wiki.manager.getArticle(path));
+		assertNull(Sections.get(attachmentId));
+		assertFalse(wiki.manager.getAttachmentManager().isAttachmentArticle(path));
+		assertTrue(wiki.manager.getAttachmentManager().getCompilingAttachmentSections(attachment).isEmpty());
+		assertFalse(wiki.compiler.contributions().containsKey("definition: shared-attachment"));
+	}
+
 	/**
 	 * Public miniature of the clear/rebuild/restore sequence: an identity-based contribution ledger detects stale
 	 * definitions and duplicate relations. This uses a synthetic compiler, not confidential CBX data or d3web semantics.
