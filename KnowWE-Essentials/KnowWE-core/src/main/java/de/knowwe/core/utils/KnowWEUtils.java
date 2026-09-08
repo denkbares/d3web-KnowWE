@@ -128,9 +128,17 @@ public class KnowWEUtils {
 	 * @param property the property key to get the value for
 	 * @return the property value or null if not set
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getProperty(Environment, String)}
+	 */
 	@Nullable
+	@Deprecated
 	public static String getProperty(String property) {
-		String value = Environment.getInstance().getWikiConnector().getWikiProperty(property);
+		return getProperty(Environment.requireInstance(), property);
+	}
+
+	public static String getProperty(@NotNull Environment environment, String property) {
+		String value = environment.getWikiConnector().getWikiProperty(property);
 		if (value == null) {
 			value = System.getProperty(property);
 		}
@@ -336,13 +344,21 @@ public class KnowWEUtils {
 	 * @return {@link WikiAttachment} fulfilling the specified parameters or null, if no such attachment exists
 	 * @created 27.01.2012
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getAttachment(Environment, String, String)}
+	 */
+	@Deprecated
 	public static WikiAttachment getAttachment(final String title, final String fileName) throws IOException {
-		WikiAttachment actualAttachment = Environment.getInstance()
+		return getAttachment(Environment.requireInstance(), title, fileName);
+	}
+
+	public static WikiAttachment getAttachment(@NotNull Environment environment, final String title, final String fileName) throws IOException {
+		WikiAttachment actualAttachment = environment
 				.getWikiConnector().getAttachment(title + "/" + fileName);
 		if (actualAttachment != null) {
 			return actualAttachment;
 		}
-		final Collection<WikiAttachment> attachments = Environment.getInstance()
+		final Collection<WikiAttachment> attachments = environment
 				.getWikiConnector()
 				.getAttachments();
 		for (final WikiAttachment attachment : attachments) {
@@ -365,9 +381,17 @@ public class KnowWEUtils {
 	 * @return Collection of {@link WikiAttachment}s
 	 * @created 09.02.2012
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getAttachments(Environment, String, String)}
+	 */
+	@Deprecated
 	public static Collection<WikiAttachment> getAttachments(final String title, final String regex) throws IOException {
+		return getAttachments(Environment.requireInstance(), title, regex);
+	}
+
+	public static Collection<WikiAttachment> getAttachments(@NotNull Environment environment, final String title, final String regex) throws IOException {
 		final Collection<WikiAttachment> result = new LinkedList<>();
-		final Collection<WikiAttachment> attachments = Environment.getInstance()
+		final Collection<WikiAttachment> attachments = environment
 				.getWikiConnector().getAttachments();
 		Pattern pattern;
 		try {
@@ -419,12 +443,28 @@ public class KnowWEUtils {
 	// return(s);
 	// }
 
+	/**
+	 * @deprecated pass the environment at hand: {@link #getKnowWEExtensionPath(Environment)}
+	 */
+	@Deprecated
 	public static String getKnowWEExtensionPath() {
-		return Environment.getInstance().getWikiConnector().getKnowWEExtensionPath();
+		return getKnowWEExtensionPath(Environment.requireInstance());
 	}
 
+	public static String getKnowWEExtensionPath(@NotNull Environment environment) {
+		return environment.getWikiConnector().getKnowWEExtensionPath();
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #getApplicationRootPath(Environment)}
+	 */
+	@Deprecated
 	public static String getApplicationRootPath() {
-		return Environment.getInstance().getWikiConnector().getApplicationRootPath();
+		return getApplicationRootPath(Environment.requireInstance());
+	}
+
+	public static String getApplicationRootPath(@NotNull Environment environment) {
+		return environment.getWikiConnector().getApplicationRootPath();
 	}
 
 	/**
@@ -669,9 +709,17 @@ public class KnowWEUtils {
 		return canWrite(Sections.collectArticles(sections), user);
 	}
 
+	/**
+	 * @deprecated pass the environment at hand: {@link #getRealPath(Environment, String)}
+	 */
+	@Deprecated
 	public static String getRealPath(String varPath) {
+		return getRealPath(Environment.requireInstance(), varPath);
+	}
+
+	public static String getRealPath(@NotNull Environment environment, String varPath) {
 		if (varPath.contains("$root_path$")) {
-			String rootPath = Environment.getInstance().getWikiConnector()
+			String rootPath = environment.getWikiConnector()
 					.getApplicationRootPath();
 			rootPath = rootPath.replace('\\', '/');
 			rootPath = rootPath.replaceAll("/+$", "");
@@ -720,8 +768,16 @@ public class KnowWEUtils {
 	 *                     either start with or without a leading slash
 	 * @return an absolute URL such as "http://localhost:8080/KnowWE/Wiki.jsp?page=ABC"
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getAsAbsoluteLink(Environment, String)}
+	 */
+	@Deprecated
 	public static String getAsAbsoluteLink(String relativeLink) {
-		final String baseUrl = StringUtils.stripEnd(Environment.getInstance().getWikiConnector().getBaseUrl(), "/");
+		return getAsAbsoluteLink(Environment.requireInstance(), relativeLink);
+	}
+
+	public static String getAsAbsoluteLink(@NotNull Environment environment, String relativeLink) {
+		final String baseUrl = StringUtils.stripEnd(environment.getWikiConnector().getBaseUrl(), "/");
 		relativeLink = StringUtils.stripStart(relativeLink, "/");
 		return baseUrl + "/" + relativeLink;
 	}
@@ -1026,8 +1082,16 @@ public class KnowWEUtils {
 	 *
 	 * @return an info object of the article for the given date
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getArticleVersionInfoAtDate(Environment, String, Date)}
+	 */
+	@Deprecated
 	public static WikiPageInfo getArticleVersionInfoAtDate(final String title, final Date date) throws IOException {
-		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getArticleHistory(title), date);
+		return getArticleVersionInfoAtDate(Environment.requireInstance(), title, date);
+	}
+
+	public static WikiPageInfo getArticleVersionInfoAtDate(@NotNull Environment environment, final String title, final Date date) throws IOException {
+		return getObjectInfoAtDate(environment.getWikiConnector().getArticleHistory(title), date);
 	}
 
 	/**
@@ -1037,8 +1101,16 @@ public class KnowWEUtils {
 	 *
 	 * @return an info object of the attachment for the given date
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #getAttachmentVersionInfoAtDate(Environment, String, Date)}
+	 */
+	@Deprecated
 	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(final String title, final Date date) throws IOException {
-		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getAttachmentHistory(title), date);
+		return getAttachmentVersionInfoAtDate(Environment.requireInstance(), title, date);
+	}
+
+	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(@NotNull Environment environment, final String title, final Date date) throws IOException {
+		return getObjectInfoAtDate(environment.getWikiConnector().getAttachmentHistory(title), date);
 	}
 
 	/**
@@ -1246,8 +1318,13 @@ public class KnowWEUtils {
 	 *
 	 * @created 07.01.2014
 	 */
+	/**
+	 * @deprecated the web is always {@link Environment#DEFAULT_WEB}; use the {@link ArticleManager} at hand
+	 * ({@code section.getArticleManager()}, {@code context.getArticleManager()}) and its {@code getArticle(title)}
+	 */
+	@Deprecated
 	public static Article getArticle(final String web, final String title) {
-		return Environment.getInstance().getArticle(web, title);
+		return Environment.requireInstance().getArticle(web, title);
 	}
 
 	/**
@@ -1338,8 +1415,14 @@ public class KnowWEUtils {
 	 *
 	 * @created 18.04.2019
 	 */
+	/**
+	 * @deprecated use the {@link ArticleManager} at hand ({@code section.getArticleManager()},
+	 * {@code context.getArticleManager()}, {@code compiler.getCompilerManager().getArticleManager()}) or
+	 * {@link Environment#getArticleManager()} of the environment at hand
+	 */
+	@Deprecated
 	public static ArticleManager getDefaultArticleManager() {
-		return Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		return Environment.requireInstance().getArticleManager(Environment.DEFAULT_WEB);
 	}
 
 	/**
@@ -1348,9 +1431,13 @@ public class KnowWEUtils {
 	 * @param web the web we want the {@link ArticleManager} from
 	 * @created 07.01.2014
 	 */
+	/**
+	 * @deprecated the web is always {@link Environment#DEFAULT_WEB}; see {@link #getDefaultArticleManager()}
+	 */
+	@Deprecated
 	@NotNull
 	public static ArticleManager getArticleManager(final String web) {
-		return Environment.getInstance().getArticleManager(web);
+		return Environment.requireInstance().getArticleManager(web);
 	}
 
 	/**
@@ -1483,8 +1570,16 @@ public class KnowWEUtils {
 	/**
 	 * Renames and article
 	 */
+	/**
+	 * @deprecated pass the environment at hand: {@link #renameArticle(Environment, String, String)}
+	 */
+	@Deprecated
 	public static void renameArticle(final String oldArticleTitle, final String newArticleTitle) {
-		final ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		renameArticle(Environment.requireInstance(), oldArticleTitle, newArticleTitle);
+	}
+
+	public static void renameArticle(@NotNull Environment environment, final String oldArticleTitle, final String newArticleTitle) {
+		final ArticleManager manager = environment.getArticleManager(Environment.DEFAULT_WEB);
 		final Article oldArticle = manager.getArticle(oldArticleTitle);
 		manager.open();
 		try {
@@ -1604,8 +1699,16 @@ public class KnowWEUtils {
 		}
 	}
 
+	/**
+	 * @deprecated pass the environment at hand: {@link #allowPageDeletionForNonAdmin(Environment, String)}
+	 */
+	@Deprecated
 	public static boolean allowPageDeletionForNonAdmin(String pageName) throws IOException {
-		List<WikiPageInfo> versionHistory = Environment.getInstance().getWikiConnector().getArticleHistory(pageName);
+		return allowPageDeletionForNonAdmin(Environment.requireInstance(), pageName);
+	}
+
+	public static boolean allowPageDeletionForNonAdmin(@NotNull Environment environment, String pageName) throws IOException {
+		List<WikiPageInfo> versionHistory = environment.getWikiConnector().getArticleHistory(pageName);
 		long currentTime = System.currentTimeMillis();
 		Date firstModified;
 		if (versionHistory == null || versionHistory.isEmpty()) {

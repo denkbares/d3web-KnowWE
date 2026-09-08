@@ -72,13 +72,12 @@ import de.knowwe.search.render.PreviewCache;
  *
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
-public class WikiSearchService implements EventListener {
+public class WikiSearchService implements EventListener, AutoCloseable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiSearchService.class);
 
 	private static final String INDEX_DIRECTORY = "knowwe-search";
-	private static volatile WikiSearchService instance;
-
+	private final Environment environment;
 	private final Path indexPath;
 	private final SectionDocumentBuilder documents = new SectionDocumentBuilder();
 	private final Set<String> pending = new LinkedHashSet<>();
@@ -97,17 +96,36 @@ public class WikiSearchService implements EventListener {
 	private volatile boolean attachmentsIndexing;
 	private final AttachmentDocumentBuilder attachmentDocuments = new AttachmentDocumentBuilder();
 
-	WikiSearchService(@NotNull Path indexPath) {
+	WikiSearchService(@NotNull Environment environment, @NotNull Path indexPath) {
+		this.environment = environment;
 		this.indexPath = indexPath;
 	}
 
-	public static synchronized @NotNull WikiSearchService getInstance() {
-		if (instance == null) {
-			instance = new WikiSearchService(defaultIndexPath());
-			instance.open();
-			EventManager.getInstance().registerListener(instance, EventManager.RegistrationType.PERSISTENT);
-		}
-		return instance;
+	/**
+	 * Returns the search service of the specified environment, creating and opening it on first access. The service
+	 * is closed together with the environment.
+	 */
+	public static @NotNull WikiSearchService of(@NotNull Environment environment) {
+		return environment.getService(WikiSearchService.class, () -> {
+			WikiSearchService service = new WikiSearchService(environment, defaultIndexPath(environment));
+			service.open();
+			EventManager.getInstance().registerListener(service, EventManager.RegistrationType.PERSISTENT);
+			return service;
+		});
+	}
+
+	/**
+	 * @deprecated use {@link #of(Environment)} with the environment at hand
+	 */
+	@Deprecated
+	public static @NotNull WikiSearchService getInstance() {
+		return of(Environment.requireInstance());
+	}
+
+	@Override
+	public void close() {
+		EventManager.getInstance().unregister(this);
+		shutdown();
 	}
 
 	/**
@@ -115,15 +133,15 @@ public class WikiSearchService implements EventListener {
 	 * up by the file or git page provider as if it were content. The schema version is part of the path, so an
 	 * incompatible index is simply not found rather than being repaired.
 	 */
-	private static Path defaultIndexPath() {
+	private static Path defaultIndexPath(Environment environment) {
 		Path base = null;
-		if (Environment.getInstance().getWikiConnector() instanceof JSPWikiConnector jspWiki) {
+		if (environment.getWikiConnector() instanceof JSPWikiConnector jspWiki) {
 			Path workDir = Path.of(jspWiki.getEngine().getWorkDir());
 			// a relative work dir would put the index wherever the server happens to have been started
 			if (workDir.isAbsolute()) base = workDir;
 		}
 		if (base == null) base = Path.of(System.getProperty("java.io.tmpdir"));
-		return base.resolve(INDEX_DIRECTORY).resolve(SearchFields.SCHEMA_VERSION).resolve(wikiDirectoryName());
+		return base.resolve(INDEX_DIRECTORY).resolve(SearchFields.SCHEMA_VERSION).resolve(wikiDirectoryName(environment));
 	}
 
 	/**
@@ -136,8 +154,8 @@ public class WikiSearchService implements EventListener {
 	 * the same content directory name under different paths -- and the hash alone says nothing to whoever has to look
 	 * at the folder.
 	 */
-	private static String wikiDirectoryName() {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
+	private static String wikiDirectoryName(Environment environment) {
+		WikiConnector connector = environment.getWikiConnector();
 		String basedir = connector.getWikiProperty("var.basedir");
 		if (basedir == null || basedir.isBlank()) basedir = "wiki";
 		String rootPath = connector.getApplicationRootPath();
@@ -218,7 +236,7 @@ public class WikiSearchService implements EventListener {
 		}
 		else if (event instanceof AttachmentStoredEvent stored) {
 			submit(() -> {
-				WikiAttachment attachment = Environment.getInstance().getWikiConnector()
+				WikiAttachment attachment = environment.getWikiConnector()
 						.getAttachment(stored.getPath());
 				if (attachment != null) {
 					index.replaceAttachment(attachment.getPath(), attachmentDocuments.build(attachment));
@@ -307,7 +325,7 @@ public class WikiSearchService implements EventListener {
 				Stopwatch stopwatch = new Stopwatch();
 				int indexed = 0;
 				int withText = 0;
-				for (WikiAttachment attachment : Environment.getInstance().getWikiConnector().getAttachments()) {
+				for (WikiAttachment attachment : environment.getWikiConnector().getAttachments()) {
 					try {
 						Document document = attachmentDocuments.build(attachment);
 						index.replaceAttachment(attachment.getPath(), document);
@@ -363,7 +381,6 @@ public class WikiSearchService implements EventListener {
 		}
 		index = null;
 		searcher = null;
-		instance = null;
 	}
 
 	private record PageUpdate(String title, List<Document> documents) {

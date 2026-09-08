@@ -59,13 +59,13 @@ public class RootType extends AbstractType {
 		});
 	}
 
+	/**
+	 * @deprecated use {@link Environment#getRootType()} of the environment at hand (or the root type of the article)
+	 */
+	@Deprecated
 	public static RootType getInstance() {
-		if (Environment.getInstance() != null) {
-			return Environment.getInstance().getRootType();
-		}
-		else {
-			// is a dummy object for testing only
-			return new RootType();
-		}
+		Environment environment = Environment.peekInstance();
+		// without an environment, a dummy object for testing only
+		return environment != null ? environment.getRootType() : new RootType();
 	}
 }

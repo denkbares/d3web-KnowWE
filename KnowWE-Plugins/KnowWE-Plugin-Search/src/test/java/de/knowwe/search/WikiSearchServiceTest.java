@@ -67,7 +67,7 @@ public class WikiSearchServiceTest {
 			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
 			Environment.initInstance(connector);
 		}
-		service = new WikiSearchService(folder.getRoot().toPath().resolve("index"));
+		service = new WikiSearchService(Environment.getInstance(), folder.getRoot().toPath().resolve("index"));
 		service.openForTest();
 	}
 

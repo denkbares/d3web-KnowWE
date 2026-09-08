@@ -216,9 +216,16 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
+	/**
+	 * @deprecated use {@link #isAutoUpdatingActive(Environment)}
+	 */
+	@Deprecated
 	public static boolean isAutoUpdatingActive() {
-		String wikiProperty = Environment.getInstance()
-				.getWikiConnector()
+		return isAutoUpdatingActive(Environment.requireInstance());
+	}
+
+	public static boolean isAutoUpdatingActive(Environment environment) {
+		String wikiProperty = environment.getWikiConnector()
 				.getWikiProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY);
 		if (wikiProperty == null) wikiProperty = "true";
 		return Boolean.parseBoolean(System.getProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY, wikiProperty));
@@ -257,7 +264,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			state.downloading.put(path, Instant.now());
 			try {
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
-				State attachmentState = needsUpdate(attachment, url);
+				State attachmentState = needsUpdate(KnowWEUtils.getEnvironment(section), attachment, url);
 				if (!force && attachmentState == AttachmentMarkup.State.UP_TO_DATE) {
 					LOGGER.debug("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
 					return;
@@ -482,7 +489,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return connection.getInputStream();
 	}
 
-	private static State needsUpdate(WikiAttachment attachment, URL url) throws IOException {
+	private static State needsUpdate(Environment environment, WikiAttachment attachment, URL url) throws IOException {
 		if (attachment == null) return AttachmentMarkup.State.OUTDATED;
 
 		URLConnection connection;
@@ -496,8 +503,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 		connection.connect();
 
-		Date attachmentSectionDate = Environment.getInstance()
-				.getWikiConnector()
+		Date attachmentSectionDate = environment.getWikiConnector()
 				.getLastModifiedDate(attachment.getParentName(), -1);
 
 		LocalDateTime attachmentSectionDateTime = LocalDateTime.ofInstant(attachmentSectionDate.toInstant(), ZoneId.systemDefault());
@@ -674,7 +680,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				return;
 			}
 
-			if (!isAutoUpdatingActive()) return;
+			if (!isAutoUpdatingActive(KnowWEUtils.getEnvironment(section))) return;
 
 			// only perform section update if articles are initialized in case we reference articles from this wiki
 			ArticleManager articleManager = section.getArticleManager();
@@ -689,7 +695,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) throws CompilerMessage {
-			if (!isAutoUpdatingActive()) {
+			if (!isAutoUpdatingActive(KnowWEUtils.getEnvironment(compiler))) {
 				Messages.storeMessage(section, this.getClass(), Messages.info("Auto updating is deactivated using the system property " + KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY + "=true/false"));
 			}
 		}

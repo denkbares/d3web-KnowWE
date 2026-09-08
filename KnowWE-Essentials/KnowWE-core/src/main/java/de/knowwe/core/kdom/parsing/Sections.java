@@ -1470,8 +1470,12 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the Section on the given position in the KDOM, if it exists
 	 * @created 11.12.2011
 	 */
+	/**
+	 * @deprecated use {@link #get(Article, List)} with the article from the {@link de.knowwe.core.ArticleManager} at hand
+	 */
+	@Deprecated
 	public static Section<?> get(String web, String title, List<Integer> positionInKDOM) {
-		return get(Environment.getInstance().getArticle(web, title), positionInKDOM);
+		return get(Environment.requireInstance().getArticle(web, title), positionInKDOM);
 	}
 
 	/**

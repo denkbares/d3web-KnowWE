@@ -460,11 +460,8 @@ public final class Environment implements AutoCloseable {
 	}
 
 	private ArticleManager articleManager() {
-		return Environment.getInstance()
-				.getArticleManager(Environment.DEFAULT_WEB);
+		return getArticleManager(DEFAULT_WEB);
 	}
-
-
 
 	public RootType getRootType() {
 		return rootType;
@@ -502,7 +499,7 @@ public final class Environment implements AutoCloseable {
 		String cleanedContent = Article.cleanupText(content);
 		boolean contentChange = !originalText.equals(cleanedContent);
 		if (contentChange || fullParse) {
-			if (contentChange && !Environment.getInstance().getWikiConnector().userCanEditArticle(title, context)) {
+			if (contentChange && !getWikiConnector().userCanEditArticle(title, context)) {
 				throw new UpdateNotAllowedException();
 			}
 
@@ -513,7 +510,7 @@ public final class Environment implements AutoCloseable {
 				compilerManager.awaitTermination();
 			}
 			ArticleUpdateEvent event = new ArticleUpdateEvent(title, author);
-			int latestVersion = retrieveLatestVersionNumber(title);
+			int latestVersion = getLatestVersionNumber(title);
 			event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
 			EventManager.getInstance().fireEvent(event);
 			articleManager.open();
@@ -532,11 +529,20 @@ public final class Environment implements AutoCloseable {
 		return article;
 	}
 
+	/**
+	 * @deprecated use {@link #getLatestVersionNumber(String)} of the environment at hand
+	 */
+	@Deprecated
 	public static int retrieveLatestVersionNumber(String title) {
+		return requireInstance().getLatestVersionNumber(title);
+	}
+
+	/**
+	 * Returns the latest version number of the specified article in the wiki, or -1 if the wiki has no history for it.
+	 */
+	public int getLatestVersionNumber(String title) {
 		try {
-			List<WikiPageInfo> articleHistory = Environment.getInstance()
-					.getWikiConnector()
-					.getArticleHistory(title);
+			List<WikiPageInfo> articleHistory = getWikiConnector().getArticleHistory(title);
 			if (articleHistory == null || articleHistory.isEmpty()) {
 				LOGGER.warn("Error occurred when retrieving wiki page history from WikiConnector: History is empty");
 				return -1;
@@ -627,7 +633,7 @@ public final class Environment implements AutoCloseable {
 
 	private void initInstantiations() {
 		for (Instantiation inst : Plugins.getInstantiations()) {
-			inst.init(DEFAULT_WEB);
+			inst.init(this);
 		}
 	}
 
@@ -762,7 +768,7 @@ public final class Environment implements AutoCloseable {
 			// initialize plugged items
 			Plugins.addChildrenTypesToType(type, path);
 			Plugins.addAnnotations(type, path);
-			Plugins.addRendererToType(type, path);
+			Plugins.addRendererToType(this, type, path);
 			Plugins.addCompileScriptsToType(type, path);
 
 			// initialize type itself

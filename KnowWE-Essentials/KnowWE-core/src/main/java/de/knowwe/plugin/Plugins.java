@@ -256,14 +256,25 @@ public class Plugins {
 		}
 	}
 
+	/**
+	 * @deprecated use {@link #addRendererToType(Environment, Type, Type[])}
+	 */
+	@Deprecated
 	public static void addRendererToType(Type type, Type[] path) {
+		addRendererToType(Environment.requireInstance(), type, path);
+	}
+
+	/**
+	 * Plugs the renderer matching the path into the type, remembering the replaced renderer at the environment.
+	 */
+	public static void addRendererToType(Environment environment, Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer);
 		Extension match = ScopeUtils.getMatchingExtension(extensions, path);
 		if (match != null) {
 			if (type instanceof AbstractType) {
 				Renderer currentRenderer = type.getRenderer();
-				Environment.getInstance().addRendererForType(type, currentRenderer);
+				environment.addRendererForType(type, currentRenderer);
 				((AbstractType) type).setRenderer((Renderer) match.getSingleton());
 			}
 			else {

@@ -89,7 +89,7 @@ public class WikiSearchAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		WikiSearchService service = WikiSearchService.getInstance();
+		WikiSearchService service = WikiSearchService.of(KnowWEUtils.getEnvironment(context));
 		WikiSearcher searcher = service.getSearcher();
 
 		JSONObject answer = new JSONObject();
