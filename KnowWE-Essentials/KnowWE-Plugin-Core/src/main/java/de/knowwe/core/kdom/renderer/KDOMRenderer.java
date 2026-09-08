@@ -44,7 +44,8 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result) {
+	public void renderHTML(String title, UserContext user, Map<String, String> parameters, RenderResult result) {
+		String web = user.getWeb();
 		Article article = user.getEnvironment().getArticle(web, title);
 		renderHTML(article, user, result);
 	}

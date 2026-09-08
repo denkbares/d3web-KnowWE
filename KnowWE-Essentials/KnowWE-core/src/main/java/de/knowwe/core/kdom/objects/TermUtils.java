@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -94,10 +95,18 @@ public class TermUtils {
 	 * @return the collection of all term managers for the specified term
 	 * @created 25.08.2013
 	 */
-	public static TermInfo getTermInfo(String web, Identifier termIdentifier, Class<?>... allowedTermClasses) {
+	public static TermInfo getTermInfo(@NotNull ArticleManager articleManager, Identifier termIdentifier, Class<?>... allowedTermClasses) {
 		TermInfoSet set = new TermInfoSet(allowedTermClasses);
-		set.initTerm(web, termIdentifier);
+		set.initTerm(articleManager, termIdentifier);
 		return set.getTermInfo(termIdentifier);
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #getTermInfo(ArticleManager, Identifier, Class...)}
+	 */
+	@Deprecated
+	public static TermInfo getTermInfo(String web, Identifier termIdentifier, Class<?>... allowedTermClasses) {
+		return getTermInfo(KnowWEUtils.getArticleManager(web), termIdentifier, allowedTermClasses);
 	}
 
 	/**

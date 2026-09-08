@@ -374,7 +374,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private static Collection<Class<?>> getTermObjectClasses(UserContext user, Identifier identifier) {
 		Set<Class<?>> termClasses = new HashSet<>();
-		for (TerminologyManager manager : KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(user.getWeb()))) {
+		for (TerminologyManager manager : KnowWEUtils.getTerminologyManagers(user.getArticleManager())) {
 			termClasses.addAll(manager.getTermClasses(identifier));
 		}
 		return termClasses;
@@ -597,7 +597,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 		// Search for plain text occurrences
 		SearchEngine se = new SearchEngine(user.getEnvironment()
-				.getArticleManager(user.getWeb()));
+				.getArticleManager());
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);
 		se.setOption(SearchOption.DOTALL);

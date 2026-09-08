@@ -37,7 +37,7 @@ public class InstantEditDisableAction extends AbstractAction {
 
 		String topic = context.getTitle();
 
-		if (context.getEnvironment().getArticle(context.getWeb(), topic) == null) {
+		if (context.getEnvironment().getArticle(topic) == null) {
 			context.sendError(404, "Page '" + topic + "' could not be found.");
 			return;
 		}

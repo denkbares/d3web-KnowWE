@@ -207,8 +207,8 @@ public class SectionDocumentBuilderTest {
 	}
 
 	private static Article register(String title, String content) {
-		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
-		return Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		Environment.getInstance().getArticleManager().registerArticle(title, content);
+		return Environment.getInstance().getArticle(title);
 	}
 
 	/** Looks up a term verbatim, to assert what is actually in the index. */

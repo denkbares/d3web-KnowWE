@@ -83,7 +83,7 @@ public class WikiSearcherTest {
 				hit.snippet().contains("<mark>Korrosion</mark>"));
 
 		SectionAnchor.Resolution resolution =
-				hit.anchor().resolve(Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB));
+				hit.anchor().resolve(Environment.getInstance().getArticleManager());
 		assertTrue("the hit must lead back to a live section", resolution.isResolved());
 		assertFalse("and it is current", resolution.stale());
 	}
@@ -191,8 +191,8 @@ public class WikiSearcherTest {
 	}
 
 	private void page(String title, String content) throws IOException {
-		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		Environment.getInstance().getArticleManager().registerArticle(title, content);
+		Article article = Environment.getInstance().getArticle(title);
 		index.replacePage(title, documents.build(article));
 		index.refresh();
 	}

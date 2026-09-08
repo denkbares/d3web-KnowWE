@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -159,11 +160,19 @@ public class TermInfoSet implements Collection<TermInfo> {
 		throw new UnsupportedOperationException("not implemented yet.");
 	}
 
-	public void initTerm(String web, Identifier identifier) {
-		Collection<TermCompiler> terminologyManagers = Compilers.getCompilers(KnowWEUtils.getArticleManager(web), TermCompiler.class);
+	public void initTerm(@NotNull ArticleManager articleManager, Identifier identifier) {
+		Collection<TermCompiler> terminologyManagers = Compilers.getCompilers(articleManager, TermCompiler.class);
 		for (TermCompiler terminologyManager : terminologyManagers) {
 			addTermManagerIfMatches(identifier, terminologyManager);
 		}
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #initTerm(ArticleManager, Identifier)}
+	 */
+	@Deprecated
+	public void initTerm(String web, Identifier identifier) {
+		initTerm(KnowWEUtils.getArticleManager(web), identifier);
 	}
 
 	private void addTermManagerIfMatches(Identifier termIdentifier, TermCompiler termCompiler) {

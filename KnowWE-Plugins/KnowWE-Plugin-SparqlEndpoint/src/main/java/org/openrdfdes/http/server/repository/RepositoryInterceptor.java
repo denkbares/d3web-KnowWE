@@ -174,8 +174,8 @@ public class RepositoryInterceptor extends ServerInterceptor {
 	@NotNull
 	public static Rdf2GoCore getRdf2GoCore(HttpServletRequest request) throws RepositoryException {
 		String pack = request.getParameter(SparqlEndpointAction.PACKAGE);
-		ArticleManager articleManager = KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB);
-		PackageManager packageManager = KnowWEUtils.getPackageManager(Environment.DEFAULT_WEB);
+		ArticleManager articleManager = Environment.requireInstance().getArticleManager();
+		PackageManager packageManager = KnowWEUtils.getPackageManager(Environment.requireInstance().getArticleManager());
 		Set<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections(pack);
 		Class<Rdf2GoCompiler> compilerClass = Rdf2GoCompiler.class;
 		if (compileSections.isEmpty()) {

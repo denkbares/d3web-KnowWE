@@ -27,6 +27,14 @@ package de.knowwe.event;
  */
 public class AttachmentStoredEvent extends AttachmentEvent {
 
+	public AttachmentStoredEvent(String parentName, String fileName) {
+		super(parentName, fileName);
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #AttachmentStoredEvent(String, String)}
+	 */
+	@Deprecated
 	public AttachmentStoredEvent(String web, String parentName, String fileName) {
 		super(web, parentName, fileName);
 	}

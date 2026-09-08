@@ -80,16 +80,16 @@ public class TestUserContext implements UserContext, UserActionContext {
 	 * @param articleName the name of the article to be created.
 	 */
 	public TestUserContext(String articleName) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
+		this(Article.createTemporaryArticle("", articleName));
 	}
 
 	public TestUserContext(String articleName, String username) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
+		this(Article.createTemporaryArticle("", articleName));
 		this.username = username;
 	}
 
 	public TestUserContext(String articleName, String username, RootType rootType) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB, rootType));
+		this(Article.createTemporaryArticle("", articleName, rootType));
 		this.username = username;
 	}
 

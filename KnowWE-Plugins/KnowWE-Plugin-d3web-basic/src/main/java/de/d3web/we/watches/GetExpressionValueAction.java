@@ -57,7 +57,7 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 			JSONObject requestObject = new JSONObject(data);
 
 			JSONArray expressionArray = requestObject.getJSONArray(EXPRESSION);
-			ArticleManager articleManager = KnowWEUtils.getArticleManager(context.getWeb());
+			ArticleManager articleManager = context.getArticleManager();
 			for (int k = 0; k < expressionArray.length(); k++) {
 				String expression = expressionArray.get(k)
 						.toString().replace("\u200b", "").replace("\00a0", " ");

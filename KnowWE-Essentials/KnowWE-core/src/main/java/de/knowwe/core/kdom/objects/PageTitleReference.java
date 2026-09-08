@@ -55,7 +55,7 @@ public class PageTitleReference extends SimpleReference {
 	 */
 	@Nullable
 	public Article getTermObject(Section<? extends PageTitleReference> section) {
-		return KnowWEUtils.getArticle(section.getWeb(), getTermIdentifier(section).getLastPathElement());
+		return section.getArticleManager().getArticle(getTermIdentifier(section).getLastPathElement());
 	}
 
 	@Override

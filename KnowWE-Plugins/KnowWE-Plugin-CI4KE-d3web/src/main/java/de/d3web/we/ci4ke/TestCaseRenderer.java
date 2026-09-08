@@ -40,7 +40,7 @@ public class TestCaseRenderer implements ObjectNameRenderer {
 	public void render(UserContext context, String objectName, RenderResult result) {
 		// this is pretty slow... but since it is only needed if TestCaseTests
 		// fail and there aren't normally many, it's ok for now
-		Set<String> allPackageNames = KnowWEUtils.getPackageManager(context.getWeb()).getAllPackageNames();
+		Set<String> allPackageNames = KnowWEUtils.getPackageManager(context.getArticleManager()).getAllPackageNames();
 		List<ProviderTriple> testCaseProviders = TestCaseUtils.getTestCaseProviders(
 				context.getWeb(), allPackageNames.toArray(new String[allPackageNames.size()]));
 		for (ProviderTriple triple : testCaseProviders) {

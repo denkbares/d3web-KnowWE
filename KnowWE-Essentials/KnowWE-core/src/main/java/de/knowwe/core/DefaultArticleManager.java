@@ -82,6 +82,14 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @param environment the environment this manager is part of
 	 * @param web         the web this manager manages the articles for
 	 */
+	public DefaultArticleManager(@NotNull Environment environment) {
+		this(Environment.DEFAULT_WEB, Objects.requireNonNull(environment, "environment"));
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #DefaultArticleManager(Environment)}
+	 */
+	@Deprecated
 	public DefaultArticleManager(@NotNull Environment environment, String web) {
 		this(web, Objects.requireNonNull(environment, "environment"));
 	}

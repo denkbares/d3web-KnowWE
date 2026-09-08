@@ -82,7 +82,7 @@ public final class Environment implements AutoCloseable {
 	/**
 	 * An article manager for each web. In case of JSPWiki there is only on web ('default_web')
 	 */
-	private final Map<String, ArticleManager> articleManagers = new HashMap<>();
+	private ArticleManager articleManager;
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -313,7 +313,8 @@ public final class Environment implements AutoCloseable {
 		}
 		pluggedEventListeners.clear();
 		// stop the compilers first: destroying their content may still use services (e.g. the message index)
-		for (ArticleManager manager : articleManagers.values()) {
+		ArticleManager manager = this.articleManager;
+		if (manager != null) {
 			manager.getCompilerManager().shutdown();
 			if (manager instanceof DefaultArticleManager defaultManager) {
 				defaultManager.getAttachmentManager().shutdown();
@@ -350,7 +351,8 @@ public final class Environment implements AutoCloseable {
 	}
 
 	private void awaitCompileTerminationForShutdown() {
-		for (ArticleManager manager : articleManagers.values()) {
+		ArticleManager manager = this.articleManager;
+		if (manager != null) {
 			try {
 				manager.getCompilerManager().awaitTermination();
 			}
@@ -438,7 +440,7 @@ public final class Environment implements AutoCloseable {
 	public void reinitializeForNewWikiContent() throws IOException {
 		EventManager.getInstance().fireEvent(new WikiContentReplacedEvent());
 
-		articleManager().removeAllArticles();
+		getArticleManager().removeAllArticles();
 
 		awaitCompileTermination();
 
@@ -447,7 +449,7 @@ public final class Environment implements AutoCloseable {
 
 	private void awaitCompileTermination() {
 		try {
-			articleManager().getCompilerManager().awaitTermination();
+			getArticleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
 			String message = "Compilation interrupted: " + e.getMessage();
@@ -456,12 +458,13 @@ public final class Environment implements AutoCloseable {
 		}
 	}
 
-	public ArticleManager getArticleManager() {
-		return articleManager();
-	}
-
-	private ArticleManager articleManager() {
-		return getArticleManager(DEFAULT_WEB);
+	/**
+	 * Returns the article manager of this environment; it is created on first access.
+	 */
+	@NotNull
+	public synchronized ArticleManager getArticleManager() {
+		if (articleManager == null) articleManager = new DefaultArticleManager(this);
+		return articleManager;
 	}
 
 	public RootType getRootType() {
@@ -984,6 +987,14 @@ public final class Environment implements AutoCloseable {
 	 * @param web   the web of the {@link Article}
 	 * @param title the title of the {@link Article}
 	 */
+	public Article getArticle(String title) {
+		return getArticleManager().getArticle(title);
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #getArticle(String)}
+	 */
+	@Deprecated
 	public Article getArticle(String web, String title) {
 		return getArticleManager(web).getArticle(title);
 	}
@@ -993,9 +1004,14 @@ public final class Environment implements AutoCloseable {
 	 *
 	 * @param web the web of the {@link ArticleManager}
 	 */
+	/**
+	 * @deprecated the web is gone, every environment has exactly one article manager: {@link #getArticleManager()}
+	 */
+	@Deprecated
 	@NotNull
 	public ArticleManager getArticleManager(String web) {
-		return this.articleManagers.computeIfAbsent(web, k -> new DefaultArticleManager(this, web));
+		if (!DEFAULT_WEB.equals(web)) LOGGER.warn("Ignoring web '{}': an environment has exactly one article manager", web);
+		return getArticleManager();
 	}
 
 	public ServletContext getContext() {

@@ -52,6 +52,6 @@ public class InstantEditSaveAction extends AbstractAction {
 		Map<String, String> nodesMap = new HashMap<>();
 		nodesMap.put(id, newArticle);
 		Sections.replace(context, nodesMap).sendErrors(context);
-		Compilers.awaitTermination(Compilers.getCompilerManager(context.getWeb()));
+		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 	}
 }

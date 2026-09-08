@@ -134,9 +134,16 @@ public interface WikiConnector {
 	/**
 	 * Returns a map of all wiki articles with the titles as key and the article contents as values.
 	 *
-	 * @param web the web to check for the articles.
 	 */
-	Map<String, String> getAllArticles(String web);
+	Map<String, String> getAllArticles();
+
+	/**
+	 * @deprecated the web is gone, use {@link #getAllArticles()}
+	 */
+	@Deprecated
+	default Map<String, String> getAllArticles(String web) {
+		return getAllArticles();
+	}
 
 	/**
 	 * Returns all users registered to the wiki.

@@ -20,6 +20,7 @@
 package de.knowwe.event;
 
 import com.denkbares.events.Event;
+import de.knowwe.core.Environment;
 
 /**
  * Event concerning attachments attachments
@@ -33,12 +34,24 @@ public abstract class AttachmentEvent implements Event {
 	private final String fileName;
 	private final String web;
 
+	public AttachmentEvent(String parentName, String fileName) {
+		this(Environment.DEFAULT_WEB, parentName, fileName);
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #AttachmentEvent(String, String)}
+	 */
+	@Deprecated
 	public AttachmentEvent(String web, String parentName, String fileName) {
 		this.web = web;
 		this.parentName = parentName;
 		this.fileName = fileName;
 	}
 
+	/**
+	 * @deprecated the web is gone
+	 */
+	@Deprecated
 	public String getWeb() {
 		return web;
 	}

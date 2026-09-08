@@ -170,8 +170,8 @@ public class KdomTextExtractorTest {
 	}
 
 	private List<IndexChunk> chunk(String title, String content) {
-		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		Environment.getInstance().getArticleManager().registerArticle(title, content);
+		Article article = Environment.getInstance().getArticle(title);
 		return chunker.chunk(article);
 	}
 }

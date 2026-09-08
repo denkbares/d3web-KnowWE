@@ -219,7 +219,7 @@ public class WikiSearchServiceTest {
 	}
 
 	private static ArticleManager manager() {
-		return Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		return Environment.getInstance().getArticleManager();
 	}
 
 	private static void write(String title, String content) {
@@ -227,6 +227,6 @@ public class WikiSearchServiceTest {
 	}
 
 	private static de.knowwe.core.kdom.Article article(String title) {
-		return Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		return Environment.getInstance().getArticle(title);
 	}
 }

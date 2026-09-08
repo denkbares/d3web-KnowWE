@@ -17,7 +17,7 @@ public class CheckCanEditPageAction extends AbstractAction {
 		JSONObject response = new JSONObject();
 		response.put(CAN_EDIT, false); // default
 
-		if (context.getEnvironment().getArticle(context.getWeb(), topic) != null) {
+		if (context.getEnvironment().getArticle(topic) != null) {
 			if (context.getEnvironment().getWikiConnector().userCanEditArticle(topic, context)) {
 				response.put(CAN_EDIT, true);
 			}

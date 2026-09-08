@@ -92,8 +92,8 @@ public class SnippetEscapingTest {
 	}
 
 	private void page(String title, String content) throws IOException {
-		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		Environment.getInstance().getArticleManager().registerArticle(title, content);
+		Article article = Environment.getInstance().getArticle(title);
 		index.replacePage(title, new SectionDocumentBuilder().build(article));
 		index.refresh();
 	}

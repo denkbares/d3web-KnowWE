@@ -160,7 +160,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		}
 		else {
 			Article article = (title == null) ? context.getArticle()
-					: KnowWEUtils.getArticleManager(context.getWeb()).getArticle(title);
+					: context.getArticleManager().getArticle(title);
 			section = $(article).successor(OntologyMarkup.class).successor(PackageCompileType.class).getFirst();
 		}
 

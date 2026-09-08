@@ -70,7 +70,7 @@ public class CIBuildManagerTest {
 			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
 			Environment.initInstance(connector);
 		}
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager articleManager = Environment.getInstance().getArticleManager();
 		String dashboardSource = Strings.readStream(CIBuildManagerTest.class.getResourceAsStream("/Dashboard.txt"));
 		articleManager.registerArticle("Dashboard", dashboardSource);
 		assertTrue("dashboard compilation did not finish", articleManager.getCompilerManager().awaitTermination(5000));

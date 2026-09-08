@@ -23,7 +23,7 @@ public class RuleObjectRenderer implements ObjectNameRenderer {
 
 	@Override
 	public void render(UserContext context, String objectName, RenderResult result) {
-		ArticleManager articleManager = KnowWEUtils.getArticleManager(context.getWeb());
+		ArticleManager articleManager = context.getArticleManager();
 
 		Sections<RuleType> ruleTypeSections = Sections.$(context.getArticleManager()).successor(RuleType.class);
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(context.getArticleManager(), D3webCompiler.class);

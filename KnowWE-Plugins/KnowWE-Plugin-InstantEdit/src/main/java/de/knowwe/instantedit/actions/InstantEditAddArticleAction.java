@@ -61,7 +61,7 @@ public class InstantEditAddArticleAction extends AbstractAction {
 		// we wait in case this thread (reused via the thread pool) has already a compilation going
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 
-		Article article = context.getEnvironment().getArticle(context.getWeb(), title);
+		Article article = context.getEnvironment().getArticle(title);
 		if (article == null) {
 			context.getEnvironment().getWikiConnector().createArticle(title, context.getUserName(), articleText);
 		}

@@ -90,7 +90,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		nodesMap.put(nodeID, newNodeText);
 		Sections.replace(context, nodesMap).sendErrors(context);
 		try {
-			KnowWEUtils.getArticleManager(context.getWeb()).getCompilerManager().awaitTermination();
+			context.getArticleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
 			throw new IOException(e.getMessage());

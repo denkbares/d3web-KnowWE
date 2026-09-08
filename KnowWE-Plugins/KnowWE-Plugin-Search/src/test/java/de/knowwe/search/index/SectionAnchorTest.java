@@ -135,12 +135,12 @@ public class SectionAnchorTest {
 	}
 
 	private static ArticleManager manager() {
-		return Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		return Environment.getInstance().getArticleManager();
 	}
 
 	private static Article register(String title, String content) {
 		manager().registerArticle(title, content);
-		return Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		return Environment.getInstance().getArticle(title);
 	}
 
 	private static Section<?> header(Article article, String text) {

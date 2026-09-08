@@ -142,7 +142,7 @@ public class GetInfoObjects extends AbstractAction {
 	private static void appendArticleInfoObject(Section<?> flowchart, Identifier articleIdentifier, StringBuilder bob) {
 
 		String title = articleIdentifier.getLastPathElement();
-		Article article = KnowWEUtils.getEnvironment(flowchart).getArticle(flowchart.getWeb(), title);
+		Article article = KnowWEUtils.getEnvironment(flowchart).getArticle(title);
 		String id = articleIdentifier.toExternalForm();
 
 		bob.append("\t<article");

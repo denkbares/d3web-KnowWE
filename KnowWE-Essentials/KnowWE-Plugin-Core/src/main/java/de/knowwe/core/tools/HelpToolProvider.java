@@ -92,7 +92,7 @@ public class HelpToolProvider implements ToolProvider {
 
 	private Article getDocArticle(Section<?> section, UserContext userContext) {
 		ArticleManager articleManager =
-				userContext.getEnvironment().getArticleManager(userContext.getWeb());
+				userContext.getEnvironment().getArticleManager();
 		String markupName = section.get().getName();
 
 		// looking for possible help articles

@@ -420,7 +420,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 						.append(packageAnnotation)
 						.append("\n");
 			}
-			Article tempArticle = Article.createTemporaryArticle(connectionString, section.getTitle() + "_Import", section.getWeb());
+			Article tempArticle = Article.createTemporaryArticle(connectionString, section.getTitle() + "_Import");
 			Map<String, String> replacementMap = new HashMap<>();
 			for (Section<DefaultMarkupType> markupSection : $(tempArticle).successor(DefaultMarkupType.class)) {
 

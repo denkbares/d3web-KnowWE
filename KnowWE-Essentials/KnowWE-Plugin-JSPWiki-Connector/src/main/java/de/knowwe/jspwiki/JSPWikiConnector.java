@@ -274,7 +274,7 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public Map<String, String> getAllArticles(String web) {
+	public Map<String, String> getAllArticles() {
 		Map<String, String> result = new HashMap<>();
 		Collection<Page> pages;
 		PageManager pageManager = getPageManager();

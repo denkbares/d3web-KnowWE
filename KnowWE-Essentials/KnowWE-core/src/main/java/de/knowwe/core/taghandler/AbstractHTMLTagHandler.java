@@ -23,6 +23,7 @@ package de.knowwe.core.taghandler;
 import java.util.Map;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
@@ -48,7 +49,7 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	public final void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
 
 		RenderResult handlerResult = new RenderResult(result);
-		renderHTML(section.getWeb(), section.getTitle(), userContext, parameters, handlerResult);
+		renderHTML(section.getTitle(), userContext, parameters, handlerResult);
 		if (maskJSPWikiSyntax) {
 			result.appendJSPWikiMarkup(handlerResult);
 		}
@@ -68,6 +69,19 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	 * @param parameters the parameters of the tag handler invocation
 	 * @param result the result where the rendered contents are appended
 	 */
-	public abstract void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result);
+	/**
+	 * Renders the html of this tag handler. Override this method; the web-bearing variant is deprecated.
+	 */
+	public void renderHTML(String title, UserContext user, Map<String, String> parameters, RenderResult result) {
+		renderHTML(Environment.DEFAULT_WEB, title, user, parameters, result);
+	}
+
+	/**
+	 * @deprecated the web is gone, override {@link #renderHTML(String, UserContext, Map, RenderResult)} instead
+	 */
+	@Deprecated
+	public void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result) {
+		throw new UnsupportedOperationException(getClass().getName() + " does not implement renderHTML");
+	}
 
 }

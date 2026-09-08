@@ -27,6 +27,14 @@ package de.knowwe.event;
  */
 public class AttachmentDeletedEvent extends AttachmentEvent {
 
+	public AttachmentDeletedEvent(String parent, String fileName) {
+		super(parent, fileName);
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #AttachmentDeletedEvent(String, String)}
+	 */
+	@Deprecated
 	public AttachmentDeletedEvent(String web, String parent, String fileName) {
 		super(web, parent, fileName);
 	}

@@ -87,9 +87,9 @@ public class RealWikiRankingTest {
 		}
 		for (Path file : files) {
 			String title = file.getFileName().toString().replaceFirst("\\.txt$", "").replace('+', ' ');
-			Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB)
+			Environment.getInstance().getArticleManager()
 					.registerArticle(title, Files.readString(file, StandardCharsets.UTF_8));
-			Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+			Article article = Environment.getInstance().getArticle(title);
 			index.replacePage(title, documents.build(article));
 		}
 		index.commit();

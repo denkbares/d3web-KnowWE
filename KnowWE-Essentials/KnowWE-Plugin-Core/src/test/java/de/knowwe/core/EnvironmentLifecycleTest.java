@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.denkbares.plugin.test.InitPluginManager;
 import connector.DummyConnector;
 import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -49,7 +50,7 @@ public class EnvironmentLifecycleTest {
 	@Test
 	public void articleManagerKnowsItsEnvironment() throws InterruptedException {
 		Environment environment = start();
-		ArticleManager manager = environment.getArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager manager = environment.getArticleManager();
 		assertSame(environment, manager.getEnvironment());
 
 		Article article = createArticle(environment);
@@ -66,7 +67,7 @@ public class EnvironmentLifecycleTest {
 		assertNotNull("section id must resolve while the environment is running", Sections.get(sectionId));
 		assertSame(article.getRootSection(), environment.getSection(sectionId));
 		assertFalse("decorating the type tree registers compile scripts", environment.getScriptManagers().isEmpty());
-		CompilerManager compilerManager = environment.getArticleManager(Environment.DEFAULT_WEB).getCompilerManager();
+		CompilerManager compilerManager = environment.getArticleManager().getCompilerManager();
 
 		environment.close();
 
@@ -108,7 +109,7 @@ public class EnvironmentLifecycleTest {
 		Environment second = start();
 		assertNull("sections of the first environment are unknown to the second", second.getSection(sectionId));
 		assertNull(second.getService(ClosableService.class));
-		assertNotSame(first.getArticleManager(Environment.DEFAULT_WEB), second.getArticleManager(Environment.DEFAULT_WEB));
+		assertNotSame(first.getArticleManager(), second.getArticleManager());
 	}
 
 	@Test
@@ -174,7 +175,7 @@ public class EnvironmentLifecycleTest {
 
 	private static Article createArticle(Environment environment) throws InterruptedException {
 		environment.getWikiConnector().createArticle(TITLE, "test", CONTENT);
-		ArticleManager manager = environment.getArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager manager = environment.getArticleManager();
 		manager.getCompilerManager().awaitTermination();
 		Article article = manager.getArticle(TITLE);
 		assertNotNull(article);

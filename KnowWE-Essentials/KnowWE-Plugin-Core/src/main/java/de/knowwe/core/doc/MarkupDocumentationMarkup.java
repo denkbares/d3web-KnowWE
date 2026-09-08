@@ -201,7 +201,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			if (Strings.isBlank(template)) {
 				template = "%%" + markup.getName() + "\n%\n";
 			}
-			Article documentationTempArticle = Article.createTemporaryArticle(template, "DocumentationTempArticle", user.getWeb());
+			Article documentationTempArticle = Article.createTemporaryArticle(template, "DocumentationTempArticle");
 			Section<? extends DefaultMarkupType> typeSection = $(documentationTempArticle).successor(type.getClass())
 					.getFirst();
 			boolean empty = true;

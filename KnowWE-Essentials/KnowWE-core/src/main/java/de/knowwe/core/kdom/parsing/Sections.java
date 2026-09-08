@@ -1774,6 +1774,14 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			return new ReplaceContext(userContext.getEnvironment(), userContext.getWeb(), userCanEdit, userContext.getRequest(), userContext.getUserName());
 		}
 
+		public static ReplaceContext of(@NotNull Environment environment, Predicate<String> userCanEdit, String author) {
+			return new ReplaceContext(environment, Environment.DEFAULT_WEB, userCanEdit, null, author);
+		}
+
+		/**
+		 * @deprecated the web is gone, use {@link #of(Environment, Predicate, String)}
+		 */
+		@Deprecated
 		public static ReplaceContext of(@NotNull Environment environment, String web, Predicate<String> userCanEdit, String author) {
 			return new ReplaceContext(environment, web, userCanEdit, null, author);
 		}

@@ -63,7 +63,7 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 		}
 
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(
-				KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB), D3webCompiler.class);
+				Environment.requireInstance().getArticleManager(), D3webCompiler.class);
 
 		for (D3webCompiler compiler : compilers) {
 			if (compiler.getCompileSection().getTitle().matches(id)) {

@@ -104,10 +104,26 @@ public final class Article {
 	 * @param title the title or name of the article, displayed at the top (and in the URL usually)
 	 * @param web   the web the article belongs to (currently unused)
 	 */
+	public static Article createTemporaryArticle(String text, String title) {
+		return createArticle(text, title, Environment.DEFAULT_WEB, null, true);
+	}
+
+	public static Article createTemporaryArticle(String text, String title, RootType root) {
+		return createArticle(text, title, Environment.DEFAULT_WEB, null, true, root);
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #createTemporaryArticle(String, String)}
+	 */
+	@Deprecated
 	public static Article createTemporaryArticle(String text, String title, String web) {
 		return createArticle(text, title, web, null, true);
 	}
 
+	/**
+	 * @deprecated the web is gone, use {@link #createTemporaryArticle(String, String, RootType)}
+	 */
+	@Deprecated
 	public static Article createTemporaryArticle(String text, String title, String web, RootType root) {
 		return createArticle(text, title, web, null, true, root);
 	}

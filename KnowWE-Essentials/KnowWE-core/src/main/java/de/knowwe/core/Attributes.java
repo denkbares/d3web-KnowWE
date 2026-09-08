@@ -107,6 +107,14 @@ public class Attributes {
 	public static final String TAGGING_TAG = "tagtag";
 	public static final String TAGGING_QUERY = "tagquery";
 
+	public static String getBrokerConstant() {
+		return SESSIONPROVIDER + Environment.DEFAULT_WEB;
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #getBrokerConstant()}
+	 */
+	@Deprecated
 	public static String getBrokerConstant(String web) {
 		if (web != null) {
 			return SESSIONPROVIDER + web;

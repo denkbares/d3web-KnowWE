@@ -33,6 +33,7 @@ import com.denkbares.utils.Functions;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Predicates;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -655,13 +656,21 @@ public class ListSectionsRenderer<T extends Type> {
 	 * @param packageNames the package to get the sections for, or null / empty array for the whole wiki
 	 * @return the sections matching the specified section type
 	 */
-	public static <T extends Type> Sections<T> getAllSectionsOfType(String web, Class<T> sectionType, String... packageNames) {
+	public static <T extends Type> Sections<T> getAllSectionsOfType(@NotNull ArticleManager articleManager, Class<T> sectionType, String... packageNames) {
 		// if package(s) is not specified, use all articles, otherwise the package articles
 		//noinspection RedundantCast (help type inference)
 		Sections<?> packageSections = (packageNames.length == 0)
-				? $(KnowWEUtils.getArticleManager(web).getArticles().stream().map(Article::getRootSection))
-				: $((Collection<Section<?>>) KnowWEUtils.getPackageManager(web).getSectionsOfPackage(packageNames));
+				? $(articleManager.getArticles().stream().map(Article::getRootSection))
+				: $((Collection<Section<?>>) KnowWEUtils.getPackageManager(articleManager).getSectionsOfPackage(packageNames));
 		return $(packageSections.stream().distinct()).successor(sectionType);
+	}
+
+	/**
+	 * @deprecated the web is gone, use {@link #getAllSectionsOfType(ArticleManager, Class, String...)}
+	 */
+	@Deprecated
+	public static <T extends Type> Sections<T> getAllSectionsOfType(String web, Class<T> sectionType, String... packageNames) {
+		return getAllSectionsOfType(KnowWEUtils.getArticleManager(web), sectionType, packageNames);
 	}
 
 	public static <T extends Type> Sections<T> getAllSectionsOfType(Section<? extends DefaultMarkupType> packageDefinition, Class<T> sectionType) {

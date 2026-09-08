@@ -34,7 +34,7 @@ public class SectionRenderer implements ObjectNameRenderer {
 		if (section == null) {
 			// seems to not be the id, try annotation "name"
 			displayName = objectName;
-			section = $(context.getEnvironment().getArticleManager(context.getWeb()))
+			section = $(context.getEnvironment().getArticleManager())
 					.successor(DefaultMarkupType.class)
 					.stream()
 					.filter(s -> objectName.equals(DefaultMarkupType.getAnnotation(s, "name")))

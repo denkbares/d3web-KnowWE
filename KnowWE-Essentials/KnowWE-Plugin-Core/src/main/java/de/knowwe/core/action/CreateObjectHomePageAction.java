@@ -48,7 +48,7 @@ public class CreateObjectHomePageAction extends AbstractAction {
 
 			// Article doesn't exist -> create it!
 			if (objectName != null
-					&& context.getEnvironment().getArticle(context.getWeb(), objectName) == null) {
+					&& context.getEnvironment().getArticle(objectName) == null) {
 				String content = "[{KnowWEPlugin objectInfo , objectname=" + objectName
 						+ "}]";
 				context.getEnvironment().getWikiConnector().createArticle(objectName,

@@ -289,7 +289,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		if (isSupportArticle(title)) {
 			try {
 				Article supportArticle = Environment.getInstance()
-						.getArticle(Environment.DEFAULT_WEB, title);
+						.getArticle(title);
 				if (supportArticle != null
 					&& supportArticle.getRootSection().getText().equals(
 						content)) {
@@ -336,7 +336,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			else {
 				// just create/sectionize temp version of the article that is NOT added and compiled to the article
 				// manager
-				article = Article.createTemporaryArticle(content, title, Environment.DEFAULT_WEB);
+				article = Article.createTemporaryArticle(content, title);
 			}
 
 			RenderResult renderResult = new RenderResult(userContext);
@@ -410,7 +410,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private static DefaultArticleManager getDefaultArticleManager() {
-		return (DefaultArticleManager) Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		return (DefaultArticleManager) Environment.getInstance().getArticleManager();
 	}
 
 	private static Article updateArticle(Context wikiContext, String content) throws InterruptedException,
@@ -478,7 +478,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		includeDOMResources(wikiContext);
 		RenderResult renderResult = new RenderResult(userContext);
 		String title = wikiContext.getRealPage().getName();
-		Article article = Article.createTemporaryArticle(content, title, Environment.DEFAULT_WEB);
+		Article article = Article.createTemporaryArticle(content, title);
 
 		List<PageAppendHandler> appendHandlers = Environment.getInstance()
 				.getAppendHandlers();
@@ -794,12 +794,12 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		public void run() {
 			if (event.getType() == WikiAttachmentEvent.STORED) {
 				EventManager.getInstance()
-						.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), event.getParentName(),
+						.fireEvent(new AttachmentStoredEvent(event.getParentName(),
 								event.getFileName()));
 			}
 			else if (event.getType() == WikiAttachmentEvent.DELETED) {
 				EventManager.getInstance()
-						.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), event.getParentName(),
+						.fireEvent(new AttachmentDeletedEvent(event.getParentName(),
 								event.getFileName()));
 			}
 		}

@@ -1469,6 +1469,10 @@ public class KnowWEUtils {
 	 * @param web the web we want the {@link PackageManager} from
 	 * @created 07.01.2014
 	 */
+	/**
+	 * @deprecated the web is gone, use {@link #getPackageManager(ArticleManager)}
+	 */
+	@Deprecated
 	public static PackageManager getPackageManager(final String web) {
 		return getPackageManager(getArticleManager(web));
 	}

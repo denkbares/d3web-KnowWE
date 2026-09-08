@@ -209,7 +209,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public Map<String, String> getAllArticles(String web) {
+	public Map<String, String> getAllArticles() {
 		return dummyPageProvider.getAllArticles();
 	}
 
@@ -471,7 +471,7 @@ public class DummyConnector implements WikiConnector {
 		event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
 		EventManager.getInstance().fireEvent(event);
 
-		environment.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
+		environment.getArticleManager().registerArticle(title, content);
 		return true;
 	}
 

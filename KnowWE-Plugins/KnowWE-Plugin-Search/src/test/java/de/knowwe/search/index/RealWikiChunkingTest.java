@@ -127,8 +127,8 @@ public class RealWikiChunkingTest {
 	}
 
 	private static Article register(String title, String content) {
-		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
-		return Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		Environment.getInstance().getArticleManager().registerArticle(title, content);
+		return Environment.getInstance().getArticle(title);
 	}
 
 	/** The characters of full that covered does not contain, in order. */
