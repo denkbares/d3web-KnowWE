@@ -24,6 +24,8 @@ import com.denkbares.plugin.Extension;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Scope;
 import de.knowwe.core.utils.ScopeExtensions;
@@ -34,7 +36,16 @@ public class ToolUtils {
 	/**
 	 * For each tool provider there might be an (counting) set of scopes, where this provider is blocked.
 	 */
-	private static final Map<ToolProvider, CountingSet<Scope>> BLOCKED_PROVIDERS = new HashMap<>();
+	/**
+	 * The tool providers blocked for certain scopes, one registry per environment.
+	 */
+	public static final class BlockedToolProviders {
+		private final Map<ToolProvider, CountingSet<Scope>> byProvider = new HashMap<>();
+	}
+
+	private static Map<ToolProvider, CountingSet<Scope>> blocked(@NotNull Environment environment) {
+		return environment.getService(BlockedToolProviders.class, BlockedToolProviders::new).byProvider;
+	}
 	public static final String SETTINGS_FILE = "settings.toolmenu.json";
 
 	/**
@@ -184,7 +195,15 @@ public class ToolUtils {
 	 * @param scope                  the scope where to block the tool provider
 	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
 	 */
+	@Deprecated
 	public static void blockToolProvider(String extensionIdOrClassName, Scope scope) {
+		blockToolProvider(Environment.requireInstance(), extensionIdOrClassName, scope);
+	}
+
+	/**
+	 * Blocks the specified tool provider(s) in the specified environment, see {@link #blockToolProvider(String, Scope)}.
+	 */
+	public static void blockToolProvider(@NotNull Environment environment, String extensionIdOrClassName, Scope scope) {
 		final List<ToolProvider> toolProviders;
 		try {
 			toolProviders = findToolProviders(extensionIdOrClassName);
@@ -193,7 +212,7 @@ public class ToolUtils {
 			throw new IllegalArgumentException("Unable to find blocked tool provider", e);
 		}
 		for (ToolProvider provider : toolProviders) {
-			blockToolProvider(provider, scope);
+			blockToolProvider(environment, provider, scope);
 		}
 	}
 
@@ -207,8 +226,19 @@ public class ToolUtils {
 	 * @param scope    the scope where to block the tool provider
 	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
 	 */
+	@Deprecated
 	public static void blockToolProvider(ToolProvider provider, Scope scope) {
-		BLOCKED_PROVIDERS.computeIfAbsent(provider, p -> new CountingSet<>()).add(scope);
+		blockToolProvider(Environment.requireInstance(), provider, scope);
+	}
+
+	/**
+	 * Blocks the specified tool provider in the specified environment, see {@link #blockToolProvider(ToolProvider, Scope)}.
+	 */
+	public static void blockToolProvider(@NotNull Environment environment, ToolProvider provider, Scope scope) {
+		Map<ToolProvider, CountingSet<Scope>> blocked = blocked(environment);
+		synchronized (blocked) {
+			blocked.computeIfAbsent(provider, p -> new CountingSet<>()).add(scope);
+		}
 	}
 
 	/**
@@ -224,9 +254,17 @@ public class ToolUtils {
 	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
 	 * @throws IllegalStateException    if the unblocking is not balanced to the blockings before
 	 */
+	@Deprecated
 	public static void unblockToolProvider(String extensionIdOrClassName, Scope scope) {
+		unblockToolProvider(Environment.requireInstance(), extensionIdOrClassName, scope);
+	}
+
+	/**
+	 * Unblocks the specified tool provider(s) in the specified environment, see {@link #unblockToolProvider(String, Scope)}.
+	 */
+	public static void unblockToolProvider(@NotNull Environment environment, String extensionIdOrClassName, Scope scope) {
 		for (ToolProvider provider : findToolProviders(extensionIdOrClassName)) {
-			unblockToolProvider(provider, scope);
+			unblockToolProvider(environment, provider, scope);
 		}
 	}
 
@@ -242,21 +280,39 @@ public class ToolUtils {
 	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
 	 * @throws IllegalStateException    if the unblocking is not balanced to the blockings before
 	 */
+	@Deprecated
 	public static void unblockToolProvider(ToolProvider provider, Scope scope) {
-		CountingSet<Scope> blockedScopes = BLOCKED_PROVIDERS.get(provider);
-		if (blockedScopes == null || !blockedScopes.contains(scope)) {
-			throw new IllegalStateException("unbalanced tool blocking: " +
-											provider.getClass().getSimpleName() + "@" + scope);
+		unblockToolProvider(Environment.requireInstance(), provider, scope);
+	}
+
+	/**
+	 * Unblocks the specified tool provider in the specified environment, see {@link #unblockToolProvider(ToolProvider, Scope)}.
+	 */
+	public static void unblockToolProvider(@NotNull Environment environment, ToolProvider provider, Scope scope) {
+		Map<ToolProvider, CountingSet<Scope>> blocked = blocked(environment);
+		synchronized (blocked) {
+			CountingSet<Scope> blockedScopes = blocked.get(provider);
+			if (blockedScopes == null || !blockedScopes.contains(scope)) {
+				throw new IllegalStateException("unbalanced tool blocking: " +
+												provider.getClass().getSimpleName() + "@" + scope);
+			}
+			blockedScopes.remove(scope);
+			if (blockedScopes.isEmpty()) blocked.remove(provider);
 		}
-		blockedScopes.remove(scope);
-		if (blockedScopes.isEmpty()) BLOCKED_PROVIDERS.remove(provider);
 	}
 
 	/**
 	 * Returns true if the specified provider is blocked for the specified section.
 	 */
 	private static boolean isBlocked(ToolProvider provider, Section<?> section) {
-		Set<Scope> blockedScopes = BLOCKED_PROVIDERS.get(provider);
+		Environment environment = KnowWEUtils.findEnvironment(section);
+		if (environment == null) return false;
+		Set<Scope> blockedScopes;
+		Map<ToolProvider, CountingSet<Scope>> blocked = blocked(environment);
+		synchronized (blocked) {
+			CountingSet<Scope> scopes = blocked.get(provider);
+			blockedScopes = scopes == null ? null : new HashSet<>(scopes);
+		}
 		if (blockedScopes == null) return false;
 
 		for (Scope scope : blockedScopes) {
@@ -296,17 +352,20 @@ public class ToolUtils {
 	}
 
 	/**
-	 * Forgets all blocked tool providers loaded by {@link #initSettings(File)}. Called when the
-	 * {@link de.knowwe.core.Environment} is shut down; the next environment loads its settings anew.
+	 * @deprecated use {@link #initSettings(Environment, File)} with the environment at hand
 	 */
-	public static void clearBlockedToolProviders() {
-		BLOCKED_PROVIDERS.clear();
+	@Deprecated
+	public static void initSettings(File jsonFile) {
+		initSettings(Environment.requireInstance(), jsonFile);
 	}
 
-	public static void initSettings(File jsonFile) {
+	/**
+	 * Loads the blocked tool providers from the specified settings file into the specified environment.
+	 */
+	public static void initSettings(@NotNull Environment environment, File jsonFile) {
 		if (!jsonFile.exists()) return;
 		try {
-			initSettings(new JSONObject(Files.getText(jsonFile)));
+			initSettings(environment, new JSONObject(Files.getText(jsonFile)));
 		}
 		catch (IOException e) {
 			LOGGER.error("Cannot load (existing) properties file with blocked tool providers", e);
@@ -318,7 +377,15 @@ public class ToolUtils {
 	 *
 	 * @param settings the settings
 	 */
+	@Deprecated
 	public static void initSettings(JSONObject settings) {
+		initSettings(Environment.requireInstance(), settings);
+	}
+
+	/**
+	 * Initializes the blocked tool menus of the specified environment from the specified settings object.
+	 */
+	public static void initSettings(@NotNull Environment environment, JSONObject settings) {
 		for (String key : settings.keySet()) {
 			//noinspection SwitchStatementWithTooFewBranches
 			switch (key) {
@@ -330,7 +397,7 @@ public class ToolUtils {
 						if (scopes.isEmpty()) throw new IllegalArgumentException("no scope defined");
 						for (String provider : providers) {
 							for (String scope : scopes) {
-								blockToolProvider(provider, Scope.getScope(scope));
+								blockToolProvider(environment, provider, Scope.getScope(scope));
 							}
 						}
 					}

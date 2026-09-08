@@ -45,7 +45,6 @@ import de.knowwe.core.rightpanel.RightPanelTabProvider;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeUtils;
-import de.knowwe.event.DeInitEvent;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
@@ -355,28 +354,15 @@ public class Plugins {
 	 * Populated before any panel request, then merged with the {@code plugin.xml}-declared providers in
 	 * {@link #getRightPanelTabs()}.
 	 */
-	private static final List<RightPanelTab> registeredRightPanelTabs = new CopyOnWriteArrayList<>();
-
 	/**
-	 * Clears the programmatic right panel tab registry when the environment is shut down. A subsequent
-	 * re-initialization re-runs all {@link Instantiation}s, so without this the registry would accumulate stale
-	 * providers from previous lifecycles (the JVM-singleton {@link EventManager} keeps this listener alive across
-	 * re-inits, and {@link DeInitEvent} fires on every shutdown).
+	 * The programmatically registered right panel tabs, one registry per environment.
 	 */
-	private static final EventListener RIGHT_PANEL_TAB_REGISTRY_CLEANER = new EventListener() {
-		@Override
-		public Collection<Class<? extends Event>> getEvents() {
-			return Collections.singleton(DeInitEvent.class);
-		}
+	public static final class RightPanelTabRegistry {
+		private final List<RightPanelTab> tabs = new CopyOnWriteArrayList<>();
+	}
 
-		@Override
-		public void notify(Event event) {
-			registeredRightPanelTabs.clear();
-		}
-	};
-
-	static {
-		EventManager.getInstance().registerListener(RIGHT_PANEL_TAB_REGISTRY_CLEANER);
+	private static List<RightPanelTab> registeredRightPanelTabs(Environment environment) {
+		return environment.getService(RightPanelTabRegistry.class, RightPanelTabRegistry::new).tabs;
 	}
 
 	/**
@@ -409,7 +395,14 @@ public class Plugins {
 	 * @param priority the sort priority of the tab (ascending; lower number == earlier/leftmost)
 	 */
 	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider, double priority) {
-		registeredRightPanelTabs.add(new RightPanelTab(id, priority, provider));
+		registerRightPanelTabProvider(Environment.requireInstance(), id, provider, priority);
+	}
+
+	/**
+	 * Registers a right panel tab provider programmatically for the specified environment.
+	 */
+	public static void registerRightPanelTabProvider(Environment environment, String id, RightPanelTabProvider provider, double priority) {
+		registeredRightPanelTabs(environment).add(new RightPanelTab(id, priority, provider));
 	}
 
 	/**
@@ -433,7 +426,8 @@ public class Plugins {
 					(RightPanelTabProvider) extension.getSingleton())
 			);
 		}
-		all.addAll(registeredRightPanelTabs);
+		Environment environment = Environment.peekInstance();
+		if (environment != null) all.addAll(registeredRightPanelTabs(environment));
 		Map<String, RightPanelTab> deduped = new LinkedHashMap<>();
 		for (RightPanelTab tab : all) {
 			deduped.putIfAbsent(tab.id(), tab);

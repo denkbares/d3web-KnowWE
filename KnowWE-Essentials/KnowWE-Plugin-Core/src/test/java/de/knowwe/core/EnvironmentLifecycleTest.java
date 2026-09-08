@@ -5,6 +5,8 @@
 package de.knowwe.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,12 +38,12 @@ public class EnvironmentLifecycleTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (Environment.isInitialized()) Environment.getInstance().shutdown();
+		if (Environment.isInitialized()) Environment.getInstance().close();
 	}
 
 	@After
 	public void tearDown() {
-		if (Environment.isInitialized()) Environment.getInstance().shutdown();
+		if (Environment.isInitialized()) Environment.getInstance().close();
 	}
 
 	@Test
@@ -57,18 +59,70 @@ public class EnvironmentLifecycleTest {
 	}
 
 	@Test
-	public void shutdownResetsStaticRegistries() throws InterruptedException {
+	public void closeReleasesEverythingTheEnvironmentOwns() throws InterruptedException {
 		Environment environment = start();
 		Article article = createArticle(environment);
 		String sectionId = article.getRootSection().getID();
 		assertNotNull("section id must resolve while the environment is running", Sections.get(sectionId));
-		assertFalse("decorating the type tree registers compile scripts", CompilerManager.getScriptManagers().isEmpty());
+		assertSame(article.getRootSection(), environment.getSection(sectionId));
+		assertFalse("decorating the type tree registers compile scripts", environment.getScriptManagers().isEmpty());
+		CompilerManager compilerManager = environment.getArticleManager(Environment.DEFAULT_WEB).getCompilerManager();
 
-		environment.shutdown();
+		environment.close();
 
+		assertTrue(environment.isClosed());
 		assertFalse(Environment.isInitialized());
 		assertNull("section ids of the old lifecycle must not resolve anymore", Sections.get(sectionId));
-		assertTrue("script managers must be gone", CompilerManager.getScriptManagers().isEmpty());
+		assertNull(environment.getSection(sectionId));
+		assertTrue("script managers must be gone", environment.getScriptManagers().isEmpty());
+		assertTrue("compile threads must be stopped", compilerManager.isShutdown());
+	}
+
+	@Test
+	public void servicesAndCloseTasksAreClosedInReverseOrder() {
+		Environment environment = start();
+		List<String> order = new ArrayList<>();
+		ClosableService first = environment.getService(ClosableService.class, () -> new ClosableService("first", order));
+		assertSame("service is created once per environment", first, environment.getService(ClosableService.class, () -> new ClosableService("again", order)));
+		assertSame(first, environment.getService(ClosableService.class));
+		environment.getService(OtherService.class, () -> new OtherService("second", order));
+		environment.onClose(() -> order.add("task-1"));
+		environment.onClose(() -> order.add("task-2"));
+
+		environment.close();
+		environment.close(); // idempotent
+
+		assertEquals(List.of("task-2", "task-1", "second", "first"), order);
+		assertNull("services are released on close", environment.getService(ClosableService.class));
+		assertThrows(IllegalStateException.class, () -> environment.getService(ClosableService.class, () -> new ClosableService("late", order)));
+		assertThrows(IllegalStateException.class, () -> environment.onClose(() -> order.add("late")));
+	}
+
+	@Test
+	public void twoEnvironmentsDoNotShareState() throws InterruptedException {
+		Environment first = start();
+		Article article = createArticle(first);
+		String sectionId = article.getRootSection().getID();
+		first.close();
+
+		Environment second = start();
+		assertNull("sections of the first environment are unknown to the second", second.getSection(sectionId));
+		assertNull(second.getService(ClosableService.class));
+		assertNotSame(first.getArticleManager(Environment.DEFAULT_WEB), second.getArticleManager(Environment.DEFAULT_WEB));
+	}
+
+	private record ClosableService(String name, List<String> order) implements AutoCloseable {
+		@Override
+		public void close() {
+			order.add(name);
+		}
+	}
+
+	private record OtherService(String name, List<String> order) implements AutoCloseable {
+		@Override
+		public void close() {
+			order.add(name);
+		}
 	}
 
 	@Test
@@ -78,7 +132,7 @@ public class EnvironmentLifecycleTest {
 		int plainTextChildren = PlainText.getInstance().getChildrenTypes().size();
 		PlainText firstPlainText = PlainText.getInstance();
 		createArticle(first);
-		first.shutdown();
+		first.close();
 
 		Environment second = start();
 		assertNotSame(first, second);

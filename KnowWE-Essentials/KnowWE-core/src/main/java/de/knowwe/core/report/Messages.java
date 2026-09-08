@@ -43,6 +43,8 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Supplier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
@@ -60,14 +62,29 @@ public final class Messages {
 	/**
 	 * This set holds all Sections with Messages.
 	 */
-	private static final Map<Message.Type, Set<Section<?>>> sectionsWithMessages = new ConcurrentHashMap<>();
+	/**
+	 * Index of the sections that currently have messages, by message type. One per environment, see
+	 * {@link Environment#getService(Class, Supplier)}.
+	 */
+	public static final class SectionsWithMessages {
+		private final Map<Message.Type, Set<Section<?>>> byType = new ConcurrentHashMap<>();
+	}
+
+	@NotNull
+	private static Map<Message.Type, Set<Section<?>>> index(@NotNull Environment environment) {
+		return environment.getService(SectionsWithMessages.class, SectionsWithMessages::new).byType;
+	}
 
 	/**
-	 * Forgets which sections currently have messages of which type. Called when the
-	 * {@link de.knowwe.core.Environment} is shut down.
+	 * The index of the environment the section belongs to, or an empty map if the section belongs to no environment.
 	 */
-	public static void clearSectionsWithMessages() {
-		sectionsWithMessages.clear();
+	@NotNull
+	private static Map<Message.Type, Set<Section<?>>> index(@NotNull Section<?> section) {
+		Environment environment = KnowWEUtils.findEnvironment(section);
+		if (environment == null) return Collections.emptyMap();
+		// only look up, never create: reading or removing must also work while the environment is closing
+		SectionsWithMessages index = environment.getService(SectionsWithMessages.class);
+		return index == null ? Collections.emptyMap() : index.byType;
 	}
 
 	/**
@@ -337,7 +354,7 @@ public final class Messages {
 	 * @return if there are any such messages
 	 */
 	public static boolean hasMessages(Section<? extends Type> section) {
-		for (Set<Section<?>> sections : sectionsWithMessages.values()) {
+		for (Set<Section<?>> sections : index(section).values()) {
 			if (sections.contains(section)) return true;
 		}
 		return false;
@@ -351,7 +368,7 @@ public final class Messages {
 	 * @return if there are any such messages
 	 */
 	public static boolean hasMessages(Section<? extends Type> section, Message.Type type) {
-		return sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section);
+		return index(section).getOrDefault(type, Collections.emptySet()).contains(section);
 	}
 
 	/**
@@ -701,9 +718,9 @@ public final class Messages {
 				// store messages in map
 				messagesMap.put(source, Collections.unmodifiableCollection(messages));
 				// store section for type collections
+				Map<Message.Type, Set<Section<?>>> index = index(KnowWEUtils.getEnvironment(section));
 				for (Message message : messages) {
-					sectionsWithMessages
-							.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+					index.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
 							.add(section);
 				}
 			}
@@ -754,10 +771,20 @@ public final class Messages {
 	 * Returns all Sections that currently have stored Messages either of Type ERROR or WARNING.
 	 */
 	public static Collection<Section<?>> getSectionsWithMessages(Message.Type... types) {
+		Environment environment = Environment.peekInstance();
+		return environment == null ? Collections.emptyList() : getSectionsWithMessages(environment, types);
+	}
+
+	/**
+	 * Returns all Sections of the specified environment that currently have stored Messages of the specified types
+	 * (or of any type if no type is specified).
+	 */
+	public static Collection<Section<?>> getSectionsWithMessages(@NotNull Environment environment, Message.Type... types) {
 		if (types.length == 0) types = Message.Type.values();
+		Map<Message.Type, Set<Section<?>>> index = index(environment);
 		Set<Section<?>> sections = new HashSet<>();
 		for (Message.Type type : types) {
-			sections.addAll(sectionsWithMessages.getOrDefault(type, Collections.emptySet()));
+			sections.addAll(index.getOrDefault(type, Collections.emptySet()));
 		}
 		return Collections.unmodifiableCollection(sections);
 	}
@@ -854,7 +881,7 @@ public final class Messages {
 	}
 
 	private static void removeSectionFromMessageTracking(Message.Type type, Section<?> section) {
-		Set<Section<?>> sections = sectionsWithMessages.get(type);
+		Set<Section<?>> sections = index(section).get(type);
 		if (sections != null) sections.remove(section);
 	}
 }

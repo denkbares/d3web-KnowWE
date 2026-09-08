@@ -8,30 +8,30 @@ import com.denkbares.collections.PriorityList;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.plugin.*;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.*;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TerminologyExtension;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.LineContent;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.SectionRegistry;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.utils.Scope;
-import de.knowwe.core.utils.progress.LongOperationUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
-import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 import de.knowwe.kdom.dashtree.DashTreeElementContent;
-import de.knowwe.notification.NotificationManager;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.DeInitEvent;
 import de.knowwe.event.FullParseEvent;
@@ -42,6 +42,7 @@ import de.knowwe.plugin.Plugins;
 import de.knowwe.tools.ToolUtils;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -51,6 +52,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
 import java.util.logging.LogManager;
 
 import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
@@ -63,7 +68,7 @@ import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
  * @author Jochen
  */
 
-public final class Environment {
+public final class Environment implements AutoCloseable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 
 	/**
@@ -100,6 +105,47 @@ public final class Environment {
 	private RootType rootType;
 
 	/**
+	 * The sections of this environment by id.
+	 */
+	private final SectionRegistry sectionRegistry = new SectionRegistry();
+
+	/**
+	 * The compile scripts of this environment's type tree, indexed per compiler class.
+	 */
+	private final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new ConcurrentHashMap<>();
+
+	/**
+	 * The plugged sectionizer modules of this environment.
+	 */
+	private final List<SectionizerModule> sectionizerModules = new CopyOnWriteArrayList<>();
+
+	/**
+	 * Terms that are occupied by plugged terminology extensions and must not be defined in the wiki.
+	 */
+	private final Set<Identifier> occupiedTerms = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * Environment-scoped services, see {@link #getService(Class, Supplier)}. Insertion ordered, so they can be closed
+	 * in reverse order.
+	 */
+	private final Map<Class<?>, Object> services = Collections.synchronizedMap(new LinkedHashMap<>());
+
+	/**
+	 * Tasks to run when this environment is closed, see {@link #onClose(Runnable)}.
+	 */
+	private final Deque<Runnable> closeTasks = new ConcurrentLinkedDeque<>();
+
+	/**
+	 * Set when {@link #close()} starts; services stay available while closing, so cleanup code can still use them.
+	 */
+	private volatile boolean closing = false;
+
+	/**
+	 * Set when {@link #close()} has released the services; from then on no service can be provided anymore.
+	 */
+	private volatile boolean closed = false;
+
+	/**
 	 * Hard coded name of the default web
 	 */
 	public static final String DEFAULT_WEB = "default_web";
@@ -131,9 +177,28 @@ public final class Environment {
 	}
 
 	/**
-	 * Returns the singleton environment of this JVM without complaining if there is none.
+	 * Returns the singleton environment of this JVM, or null if there is none, without logging.
+	 *
+	 * @deprecated transitional accessor for code that has no context object at hand yet; it goes away together with
+	 * {@link #getInstance()}. Prefer {@link KnowWEUtils#findEnvironment(Section)} and its siblings.
 	 */
-	static synchronized Environment peekInstance() {
+	@Deprecated
+	@Nullable
+	public static synchronized Environment peekInstance() {
+		return instance;
+	}
+
+	/**
+	 * Returns the singleton environment of this JVM.
+	 *
+	 * @throws IllegalStateException if no environment is initialized
+	 * @deprecated transitional accessor for code that has no context object at hand yet; it goes away together with
+	 * {@link #getInstance()}. Prefer {@link KnowWEUtils#getEnvironment(Section)} and its siblings.
+	 */
+	@Deprecated
+	@NotNull
+	public static synchronized Environment requireInstance() {
+		if (instance == null) throw new IllegalStateException("No KnowWE environment is initialized");
 		return instance;
 	}
 
@@ -174,6 +239,7 @@ public final class Environment {
 
 			// decorate types in breast-first-search
 			decorateTypeTree();
+			initScriptManagers();
 
 			initInstantiations();
 			initBlockedTools();
@@ -190,23 +256,64 @@ public final class Environment {
 	}
 
 	/**
-	 * Shuts down this environment. The method waits for running compilations to terminate, notifies all
-	 * {@link DeInitEvent} listeners, resets the registries KnowWE-core keeps in static fields (section ids, script
-	 * managers, sectionizer modules, messages, occupied terms, tool settings, notifications, long operations, caches
-	 * and the singleton types) and finally detaches the singleton instance. Afterwards
-	 * {@link #initInstance(WikiConnector)} may be called again to start a fresh environment in the same JVM, which is
-	 * mainly useful for tests.
+	 * Closes this environment: waits for running compilations to terminate, notifies all {@link DeInitEvent}
+	 * listeners, removes the compilers and stops the compile threads of all article managers, runs the
+	 * {@link #onClose(Runnable) close tasks} in reverse order of their registration, closes all {@link AutoCloseable}
+	 * {@link #getService(Class, Supplier) services} and finally detaches the singleton instance if this environment is
+	 * the current one. Everything this
+	 * environment owns becomes garbage afterwards; nothing has to be reset by hand. Calling the method twice is
+	 * harmless.
+	 * <p>
+	 * A fresh environment may be started in the same JVM afterwards, e.g. by tests.
 	 */
-	public void shutdown() {
+	@Override
+	public void close() {
+		synchronized (this) {
+			if (closing) return;
+			closing = true;
+		}
 		LOGGER.info("SHUTTING DOWN KNOWWE ENVIRONMENT");
-		initialized = false;
+		synchronized (Environment.class) {
+			if (instance == this) initialized = false;
+		}
 		awaitCompileTerminationForShutdown();
 		EventManager.getInstance().fireEvent(new DeInitEvent());
-		resetStaticRegistries();
+		// stop the compilers first: destroying their content may still use services (e.g. the message index)
+		for (ArticleManager manager : articleManagers.values()) {
+			manager.getCompilerManager().shutdown();
+			if (manager instanceof DefaultArticleManager defaultManager) {
+				defaultManager.getAttachmentManager().shutdown();
+			}
+		}
+		runCloseTasks();
+		closeServices();
+		closed = true;
+		// release what is owned by this environment anyway, to make leaks through stale references less harmful
+		scriptManagers.clear();
+		sectionizerModules.clear();
+		sectionRegistry.clear();
+		occupiedTerms.clear();
+		additionalRenderer.clear();
+		resetSingletonTypes();
 		synchronized (Environment.class) {
 			if (instance == this) instance = null;
 		}
 		LOGGER.info("KNOWWE ENVIRONMENT SHUT DOWN");
+	}
+
+	/**
+	 * @deprecated use {@link #close()}
+	 */
+	@Deprecated
+	public void shutdown() {
+		close();
+	}
+
+	/**
+	 * Returns whether {@link #close()} has been called on this environment.
+	 */
+	public boolean isClosed() {
+		return closing;
 	}
 
 	private void awaitCompileTerminationForShutdown() {
@@ -222,23 +329,42 @@ public final class Environment {
 		}
 	}
 
+	private void runCloseTasks() {
+		Runnable task;
+		while ((task = closeTasks.pollLast()) != null) {
+			try {
+				task.run();
+			}
+			catch (RuntimeException e) {
+				LOGGER.error("Close task of environment failed", e);
+			}
+		}
+	}
+
+	private void closeServices() {
+		List<Object> ordered;
+		synchronized (services) {
+			ordered = new ArrayList<>(services.values());
+			services.clear();
+		}
+		Collections.reverse(ordered);
+		for (Object service : ordered) {
+			if (service instanceof AutoCloseable closeable) {
+				try {
+					closeable.close();
+				}
+				catch (Exception e) {
+					LOGGER.error("Closing service {} of environment failed", service.getClass().getName(), e);
+				}
+			}
+		}
+	}
+
 	/**
-	 * Resets everything KnowWE-core keeps in static fields and that belongs to the lifecycle of one environment. The
-	 * registries that are cleaned up by their own {@link DeInitEvent} listeners (e.g. the right panel tabs in
-	 * {@link Plugins}) are intentionally not repeated here.
+	 * Singleton types are decorated in place while the type tree is built, so they must be recreated for the next
+	 * environment. Remaining static state; goes away when these types stop being singletons.
 	 */
-	private static void resetStaticRegistries() {
-		CompilerManager.clearScriptManagers();
-		CompilationLocal.clearCaches();
-		Section.clearSectionRegistry();
-		SectionizerModule.Registry.clear();
-		Messages.clearSectionsWithMessages();
-		TerminologyManager.clearOccupiedTerms();
-		ToolUtils.clearBlockedToolProviders();
-		NotificationManager.clearGlobalNotifications();
-		LongOperationUtils.shutdown();
-		Scope.clearCaches();
-		AttachmentUpdateMarkup.reset();
+	private static void resetSingletonTypes() {
 		PlainText.resetInstance();
 		LineContent.resetInstance();
 		DashTreeElementContent.resetDefaultInstance();
@@ -486,7 +612,7 @@ public final class Environment {
 		if (sourceFolder != null) {
 			File jsonFile = new File(sourceFolder, ToolUtils.SETTINGS_FILE);
 			if (jsonFile.isFile()) {
-				ToolUtils.initSettings(jsonFile);
+				ToolUtils.initSettings(this, jsonFile);
 			}
 		}
 
@@ -495,7 +621,7 @@ public final class Environment {
 		File[] jsonFiles = appRoot.listFiles(f -> f.isFile() && f.getName().endsWith(".json"));
 		if (jsonFiles != null) {
 			for (File jsonFile : jsonFiles) {
-				ToolUtils.initSettings(jsonFile);
+				ToolUtils.initSettings(this, jsonFile);
 			}
 		}
 	}
@@ -507,8 +633,17 @@ public final class Environment {
 	}
 
 	private void initSectionizerModules() {
-		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
-			SectionizerModule.Registry.register(sm);
+		sectionizerModules.addAll(Plugins.getSectionizerModules());
+	}
+
+	/**
+	 * Marks the script managers as initialized, after all types of the type tree are decorated and have registered
+	 * their compile scripts. This is when the parent/child links of the types are complete, which the managers need to
+	 * know which subtrees can have scripts at all.
+	 */
+	private void initScriptManagers() {
+		for (ScriptManager<?> scriptManager : scriptManagers.values()) {
+			scriptManager.initialize();
 		}
 	}
 
@@ -609,6 +744,11 @@ public final class Environment {
 			// initialize type itself
 			type.init(path);
 
+			// index the compile scripts of the type for the compilers of this environment
+			if (type instanceof AbstractType abstractType) {
+				abstractType.registerCompileScripts(this);
+			}
+
 			// recurse for child types
 			for (Type childType : type.getChildrenTypes()) {
 				// secure against malformed plugins
@@ -649,6 +789,119 @@ public final class Environment {
 
 	public WikiConnector getWikiConnector() {
 		return this.wikiConnector;
+	}
+
+	/**
+	 * Returns the registry of the sections of this environment by their ids.
+	 */
+	@NotNull
+	public SectionRegistry getSectionRegistry() {
+		return sectionRegistry;
+	}
+
+	/**
+	 * Returns the section of this environment with the specified id, or null if there is none.
+	 *
+	 * @see Sections#get(String)
+	 */
+	@Nullable
+	public Section<?> getSection(String id) {
+		return sectionRegistry.get(id);
+	}
+
+	/**
+	 * Returns the script manager of this environment for the specified compiler class, holding the compile scripts of
+	 * this environment's type tree for that class of compilers.
+	 */
+	@SuppressWarnings("unchecked")
+	@NotNull
+	public <C extends Compiler> ScriptManager<C> getScriptManager(@NotNull Class<C> compilerClass) {
+		return (ScriptManager<C>) scriptManagers.computeIfAbsent(compilerClass, c -> new ScriptManager<>(compilerClass));
+	}
+
+	/**
+	 * Returns all script managers of this environment.
+	 */
+	@NotNull
+	public Collection<ScriptManager<? extends Compiler>> getScriptManagers() {
+		return Collections.unmodifiableCollection(scriptManagers.values());
+	}
+
+	/**
+	 * Returns the plugged sectionizer modules of this environment, in the order they are tried.
+	 */
+	@NotNull
+	public List<SectionizerModule> getSectionizerModules() {
+		return Collections.unmodifiableList(sectionizerModules);
+	}
+
+	/**
+	 * Registers an additional sectionizer module for this environment (the plugged ones are registered on
+	 * initialization).
+	 */
+	public void addSectionizerModule(@NotNull SectionizerModule module) {
+		sectionizerModules.add(module);
+	}
+
+	/**
+	 * Registers the terms of the specified terminology extension as occupied, so they cannot be defined in the wiki.
+	 */
+	public void registerOccupiedTerms(@NotNull TerminologyExtension extension) {
+		for (String termName : extension.getTermNames()) {
+			occupiedTerms.add(Identifier.fromExternalForm(termName));
+		}
+	}
+
+	/**
+	 * Returns whether the specified term is occupied by a plugged terminology extension.
+	 */
+	public boolean isOccupiedTerm(@NotNull Identifier identifier) {
+		return occupiedTerms.contains(identifier);
+	}
+
+	/**
+	 * Returns the service of the specified type that is scoped to this environment, creating it with the specified
+	 * factory on first access. This is the place for everything that would otherwise be kept in a static field of a
+	 * plugin or core class: caches, registries, thread pools, schedulers. If the service implements
+	 * {@link AutoCloseable}, it is closed when this environment is {@link #close() closed}, in reverse order of
+	 * creation.
+	 *
+	 * @param type    the type of the service, also used as key
+	 * @param factory creates the service if it does not exist yet
+	 * @return the service instance of this environment
+	 * @throws IllegalStateException if the environment is already closed
+	 */
+	@NotNull
+	public <T> T getService(@NotNull Class<T> type, @NotNull Supplier<? extends T> factory) {
+		if (closed) throw new IllegalStateException("Environment is closed, cannot provide service " + type.getName());
+		synchronized (services) {
+			Object service = services.get(type);
+			if (service == null) {
+				service = Objects.requireNonNull(factory.get(), () -> "factory for " + type.getName() + " returned null");
+				services.put(type, service);
+			}
+			return type.cast(service);
+		}
+	}
+
+	/**
+	 * Returns the service of the specified type if it has already been created for this environment, or null.
+	 */
+	@Nullable
+	public <T> T getService(@NotNull Class<T> type) {
+		return type.cast(services.get(type));
+	}
+
+	/**
+	 * Registers a task to be run when this environment is {@link #close() closed}. Tasks run in reverse order of
+	 * registration, before the services are closed. Use it to stop threads, timers and listeners that were started on
+	 * behalf of this environment.
+	 *
+	 * @throws IllegalStateException if the environment is already closed
+	 */
+	public void onClose(@NotNull Runnable task) {
+		if (closing) throw new IllegalStateException("Environment is closed, cannot register close task");
+		closeTasks.addLast(task);
 	}
 
 	/**

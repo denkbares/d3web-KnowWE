@@ -65,6 +65,7 @@ import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -1247,6 +1248,89 @@ public class KnowWEUtils {
 	 */
 	public static Article getArticle(final String web, final String title) {
 		return Environment.getInstance().getArticle(web, title);
+	}
+
+	/**
+	 * Returns the environment the specified section belongs to (via its article manager), or the current environment if
+	 * the section is not (yet) attached to an article manager, or null if there is no environment at all.
+	 */
+	@Nullable
+	public static Environment findEnvironment(@Nullable Section<?> section) {
+		return findEnvironment(section == null ? null : section.getArticleManager());
+	}
+
+	/**
+	 * Returns the environment of the specified article manager, or the current environment if the manager is null or
+	 * was created without an environment, or null if there is no environment at all.
+	 */
+	@Nullable
+	public static Environment findEnvironment(@Nullable ArticleManager manager) {
+		if (manager != null) {
+			try {
+				return manager.getEnvironment();
+			}
+			catch (IllegalStateException e) {
+				// manager created without environment (deprecated constructor) and no environment initialized
+			}
+		}
+		return Environment.peekInstance();
+	}
+
+	/**
+	 * Returns the environment of the specified compiler (via its compiler manager), falling back to the current
+	 * environment if the compiler is not attached to a compiler manager.
+	 */
+	@Nullable
+	public static Environment findEnvironment(@Nullable Compiler compiler) {
+		CompilerManager compilerManager = compiler == null ? null : compiler.getCompilerManager();
+		return findEnvironment(compilerManager == null ? null : compilerManager.getArticleManager());
+	}
+
+	/**
+	 * Returns the environment of the specified section, see {@link #findEnvironment(Section)}.
+	 *
+	 * @throws IllegalStateException if there is no environment
+	 */
+	@NotNull
+	public static Environment getEnvironment(@NotNull Section<?> section) {
+		return requireEnvironment(findEnvironment(section), "section of article '" + section.getTitle() + "'");
+	}
+
+	/**
+	 * Returns the environment of the specified article manager, see {@link #findEnvironment(ArticleManager)}.
+	 *
+	 * @throws IllegalStateException if there is no environment
+	 */
+	@NotNull
+	public static Environment getEnvironment(@NotNull ArticleManager manager) {
+		return requireEnvironment(findEnvironment(manager), "article manager '" + manager.getWeb() + "'");
+	}
+
+	/**
+	 * Returns the environment of the specified compiler, see {@link #findEnvironment(Compiler)}.
+	 *
+	 * @throws IllegalStateException if there is no environment
+	 */
+	@NotNull
+	public static Environment getEnvironment(@NotNull Compiler compiler) {
+		return requireEnvironment(findEnvironment(compiler), "compiler '" + compiler + "'");
+	}
+
+	/**
+	 * Returns the environment of the specified user context (via its article manager).
+	 *
+	 * @throws IllegalStateException if there is no environment
+	 */
+	@NotNull
+	public static Environment getEnvironment(@NotNull UserContext context) {
+		return requireEnvironment(findEnvironment(context.getArticleManager()), "user context");
+	}
+
+	private static Environment requireEnvironment(@Nullable Environment environment, String what) {
+		if (environment == null) {
+			throw new IllegalStateException("No environment available for " + what);
+		}
+		return environment;
 	}
 
 	/**

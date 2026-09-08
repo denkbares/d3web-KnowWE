@@ -66,6 +66,15 @@ public class AttachmentManager implements EventListener {
 		}
 	}
 
+	/**
+	 * Stops the background thread of this manager and unregisters it from the event manager. Called when the owning
+	 * environment is closed.
+	 */
+	public void shutdown() {
+		EventManager.getInstance().unregister(this);
+		executor.shutdownNow();
+	}
+
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
 		return Arrays.asList(AttachmentStoredEvent.class, AttachmentDeletedEvent.class,

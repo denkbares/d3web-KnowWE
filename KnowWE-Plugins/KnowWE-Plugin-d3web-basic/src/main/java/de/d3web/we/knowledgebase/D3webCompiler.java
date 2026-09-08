@@ -252,7 +252,9 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		TerminologyManager terminologyManager = new TerminologyManager(caseSensitive);
 		// extension point for plugins defining predefined terminology
 		TerminologyExtension terminologyExtension = Plugins.getTerminologyExtension(this);
-		if (terminologyExtension != null) terminologyManager.registerOccupiedTerm(terminologyExtension);
+		if (terminologyExtension != null) {
+			getCompilerManager().getArticleManager().getEnvironment().registerOccupiedTerms(terminologyExtension);
+		}
 		return terminologyManager;
 	}
 

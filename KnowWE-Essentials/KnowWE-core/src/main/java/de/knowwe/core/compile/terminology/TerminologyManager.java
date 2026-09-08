@@ -27,6 +27,8 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
@@ -47,7 +49,6 @@ import de.knowwe.core.report.Messages;
 public class TerminologyManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TerminologyManager.class);
 
-	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 	private static final String REFERENCES_KEY = TerminologyManager.class.getName() + "#Identifiers";
 	private static final String DEFINITIONS_KEY = TerminologyManager.class.getName() + "#Definitions";
 
@@ -64,17 +65,14 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * Forgets all occupied terms registered by {@link TerminologyExtension}s. Called when the
-	 * {@link de.knowwe.core.Environment} is shut down.
+	 * Registers the terms of the extension as occupied at the current environment.
+	 *
+	 * @deprecated occupied terms belong to the environment, use
+	 * {@link Environment#registerOccupiedTerms(TerminologyExtension)} of the environment at hand
 	 */
-	public static void clearOccupiedTerms() {
-		occupiedTerms.clear();
-	}
-
+	@Deprecated
 	public void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
-		for (String occupiedTermInExternalForm : terminologyExtension.getTermNames()) {
-			occupiedTerms.add(Identifier.fromExternalForm(occupiedTermInExternalForm));
-		}
+		Environment.requireInstance().registerOccupiedTerms(terminologyExtension);
 	}
 
 	/**
@@ -121,7 +119,7 @@ public class TerminologyManager {
 
 		Compiler messageCompiler = compiler instanceof AbstractPackageCompiler
 				? (AbstractPackageCompiler) compiler : null;
-		if (occupiedTerms.contains(termIdentifier)) {
+		if (KnowWEUtils.getEnvironment(compiler).isOccupiedTerm(termIdentifier)) {
 			Message msg = Messages.error("The term '"
 										 + termIdentifier
 										 + "' is reserved by the system.");

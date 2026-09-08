@@ -30,6 +30,9 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.Attributes;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -55,14 +58,22 @@ import de.knowwe.core.user.UserContext;
 public class NotificationManager {
 
 	private final Map<String, Notification> userNotifications = new HashMap<>();
-	private static final Map<String, Notification> globalNotifications = Collections.synchronizedMap(new HashMap<>());
+	/**
+	 * The notifications shown to every user of an environment, one registry per environment.
+	 */
+	public static final class GlobalNotifications {
+		private final Map<String, Notification> byId = Collections.synchronizedMap(new HashMap<>());
+	}
+
+	private static Map<String, Notification> global(@NotNull Environment environment) {
+		return environment.getService(GlobalNotifications.class, GlobalNotifications::new).byId;
+	}
 
 	/**
-	 * Removes all global notifications. Called when the {@link de.knowwe.core.Environment} is shut down.
+	 * The environment whose global notifications are merged into {@link #getNotifications()}; set whenever this manager
+	 * is fetched for a user context.
 	 */
-	public static void clearGlobalNotifications() {
-		globalNotifications.clear();
-	}
+	private transient Environment environment;
 
 	/**
 	 * Returns the NotificationManager object for a specified
@@ -87,6 +98,7 @@ public class NotificationManager {
 				manager = new NotificationManager();
 				context.getSession().setAttribute(Attributes.NOTIFICATIONMANAGER, manager);
 			}
+			manager.environment = KnowWEUtils.findEnvironment(context.getArticleManager());
 		}
 		return manager;
 	}
@@ -99,7 +111,8 @@ public class NotificationManager {
 	 */
 	public Collection<Notification> getNotifications() {
 		List<Notification> notifications = new ArrayList<>(userNotifications.values());
-		notifications.addAll(globalNotifications.values());
+		Environment environment = this.environment;
+		if (environment != null && !environment.isClosed()) notifications.addAll(global(environment).values());
 		return Collections.unmodifiableCollection(notifications);
 	}
 
@@ -119,8 +132,16 @@ public class NotificationManager {
 	/**
 	 * Adds a notification that will be visible to all users.
 	 */
+	/**
+	 * @deprecated use {@link #addGlobalNotification(Environment, Notification)} with the environment at hand
+	 */
+	@Deprecated
 	public static void addGlobalNotification(Notification notification) {
-		globalNotifications.put(notification.getID(), notification);
+		addGlobalNotification(Environment.requireInstance(), notification);
+	}
+
+	public static void addGlobalNotification(@NotNull Environment environment, Notification notification) {
+		global(environment).put(notification.getID(), notification);
 	}
 
 	/**
@@ -128,8 +149,16 @@ public class NotificationManager {
 	 *
 	 * @param id the id of the notification to remove
 	 */
+	/**
+	 * @deprecated use {@link #removeGlobalNotification(Environment, String)} with the environment at hand
+	 */
+	@Deprecated
 	public static void removeGlobalNotification(String id) {
-		globalNotifications.remove(id);
+		removeGlobalNotification(Environment.requireInstance(), id);
+	}
+
+	public static void removeGlobalNotification(@NotNull Environment environment, String id) {
+		global(environment).remove(id);
 	}
 
 	/**
@@ -171,7 +200,8 @@ public class NotificationManager {
 	 */
 	public void removeNotification(String id) {
 		userNotifications.remove(id);
-		globalNotifications.remove(id);
+		Environment environment = this.environment;
+		if (environment != null && !environment.isClosed()) global(environment).remove(id);
 	}
 
 }

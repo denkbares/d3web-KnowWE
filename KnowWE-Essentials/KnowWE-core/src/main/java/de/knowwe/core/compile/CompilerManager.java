@@ -28,20 +28,19 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.ServletContextEventListener;
+import java.util.concurrent.TimeUnit;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.event.DeInitEvent;
 
 /**
  * This class represents the compile manager for a specific {@link ArticleManager}. It is responsible to manage every
@@ -58,10 +57,9 @@ import de.knowwe.event.DeInitEvent;
  * Only compilers with same priority may compile in parallel.
  * <p/>
  */
-public class CompilerManager implements EventListener {
+public class CompilerManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompilerManager.class);
 
-	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new ConcurrentHashMap<>();
 	private static final String KNOWWE_COMPILER_THREADS_COUNT = "knowwe.compiler.threads.count";
 	private static final String KNOWWE_COMPILER_ACTIVE_PATTERN = "knowwe.compiler.active.pattern";
 	// number of threads that are not used for compilers themselves, but for operational handling of compilation process
@@ -73,6 +71,13 @@ public class CompilerManager implements EventListener {
 	// just a fast cache for the contains() method
 	private final Set<Compiler> compilerCache;
 	private final ArticleManager articleManager;
+
+	/**
+	 * The {@link CompilationLocal} caches of the compilers of this manager.
+	 */
+	private final CompilationLocal.Cache compilationLocals = new CompilationLocal.Cache();
+
+	private volatile boolean shutdown = false;
 
 	private volatile Iterator<Group<Double, Compiler>> running = null;
 	private final ThreadPoolExecutor threadPool;
@@ -92,8 +97,14 @@ public class CompilerManager implements EventListener {
 		this.compilerCache = Collections.newSetFromMap(new ConcurrentHashMap<>());
 		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService(CompilerManager.class.getSimpleName());
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> onContextDestroyed());
-		EventManager.getInstance().registerListener(this);
+	}
+
+	/**
+	 * Returns the {@link CompilationLocal} caches of the compilers of this manager.
+	 */
+	@NotNull
+	public CompilationLocal.Cache getCompilationLocals() {
+		return compilationLocals;
 	}
 
 	/**
@@ -165,11 +176,32 @@ public class CompilerManager implements EventListener {
 		return compileMessage;
 	}
 
-	private void onContextDestroyed() {
-		LOGGER.info("Shutting down KnowWE compilers.");
+	/**
+	 * Removes all compilers and stops the compile threads of this manager. Called when the owning environment is
+	 * closed. Compilations still running are interrupted; the method waits a few seconds for them to end.
+	 */
+	public void shutdown() {
+		if (shutdown) return;
+		shutdown = true;
+		LOGGER.info("Shutting down KnowWE compilers of web '{}'.", articleManager.getWeb());
 		new ArrayList<>(compilerCache).forEach(this::removeCompiler);
-		compileThreads.clear();
-		threadPool.shutdown();
+		compilationLocals.clear();
+		threadPool.shutdownNow();
+		try {
+			if (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
+				LOGGER.warn("Compile threads of web '{}' did not terminate within 10 seconds", articleManager.getWeb());
+			}
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	/**
+	 * Returns whether {@link #shutdown()} has been called.
+	 */
+	public boolean isShutdown() {
+		return shutdown;
 	}
 
 	/**
@@ -220,37 +252,54 @@ public class CompilerManager implements EventListener {
 		threadPool.setCorePoolSize(threadCount);
 	}
 
+	/**
+	 * Returns the script manager for the specified compiler, taken from the environment the compiler belongs to.
+	 */
 	@SuppressWarnings("unchecked")
 	public static <C extends Compiler> ScriptManager<C> getScriptManager(C compiler) {
-		return (ScriptManager<C>) getScriptManager(compiler.getClass());
+		return KnowWEUtils.getEnvironment(compiler).getScriptManager((Class<C>) compiler.getClass());
 	}
 
 	/**
-	 * Forgets all script managers, i.e. all compile scripts registered for any type. Called when the
-	 * {@link de.knowwe.core.Environment} is shut down; the next environment registers its scripts anew while
-	 * decorating its type tree.
+	 * Returns the script managers of the current environment.
+	 *
+	 * @deprecated use {@link Environment#getScriptManagers()} of the environment at hand
 	 */
-	public static void clearScriptManagers() {
-		scriptManagers.clear();
-	}
-
+	@Deprecated
 	public static Collection<ScriptManager<? extends Compiler>> getScriptManagers() {
-		return Collections.unmodifiableCollection(scriptManagers.values());
+		Environment environment = Environment.peekInstance();
+		return environment == null ? Collections.emptyList() : environment.getScriptManagers();
 	}
 
+	/**
+	 * Returns the script manager of the current environment for the specified compiler class.
+	 *
+	 * @deprecated use {@link Environment#getScriptManager(Class)} of the environment at hand
+	 */
+	@Deprecated
 	public static <C extends Compiler> ScriptManager<C> getScriptManager(Class<C> compilerClass) {
-		@SuppressWarnings("unchecked")
-		ScriptManager<C> result = (ScriptManager<C>) scriptManagers.computeIfAbsent(compilerClass,
-				clazz -> new ScriptManager<>(compilerClass));
-		return result;
+		return Environment.requireInstance().getScriptManager(compilerClass);
 	}
 
+	/**
+	 * @deprecated compile scripts belong to their type, use {@link AbstractType#addCompileScript(CompileScript)}
+	 */
+	@Deprecated
 	public static <C extends Compiler, T extends Type> void addScript(T type, CompileScript<C, T> script) {
 		addScript(Priority.DEFAULT, type, script);
 	}
 
+	/**
+	 * @deprecated compile scripts belong to their type, use {@link AbstractType#addCompileScript(Priority, CompileScript)}
+	 */
+	@Deprecated
 	public static <C extends Compiler, T extends Type> void addScript(Priority priority, T type, CompileScript<C, T> script) {
-		getScriptManager(script.getCompilerClass()).addScript(priority, type, script);
+		if (type instanceof AbstractType abstractType) {
+			abstractType.addCompileScript(priority, script);
+		}
+		else {
+			Environment.requireInstance().getScriptManager(script.getCompilerClass()).addScript(priority, type, script);
+		}
 	}
 
 	/**
@@ -754,15 +803,4 @@ public class CompilerManager implements EventListener {
 		}
 	}
 
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		return Collections.singleton(DeInitEvent.class);
-	}
-
-	@Override
-	public void notify(Event event) {
-		if (event instanceof DeInitEvent) {
-			clearScriptManagers();
-		}
-	}
 }

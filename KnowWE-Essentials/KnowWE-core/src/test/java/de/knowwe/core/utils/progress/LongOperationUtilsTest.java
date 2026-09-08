@@ -21,6 +21,7 @@ package de.knowwe.core.utils.progress;
 
 import java.util.UUID;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.denkbares.events.EventManager;
@@ -37,6 +38,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 public class LongOperationUtilsTest {
+
+	/**
+	 * Provides the environment the long operations are scoped to; without it, no section can register operations.
+	 */
+	@Rule
+	public final ArticleLifecycleFixture environment = new ArticleLifecycleFixture();
 
 	@Test
 	public void cleanupWaitsUntilArticleRegistrationCommitIsComplete() throws Exception {

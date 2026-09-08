@@ -26,6 +26,8 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 @FunctionalInterface
@@ -49,18 +51,15 @@ public interface SectionizerModule {
 	 */
 	class Registry {
 
-		private static final List<SectionizerModule> sectionizerModules = new ArrayList<>();
-
-		public static void register(SectionizerModule sectionizerModule) {
-			sectionizerModules.add(sectionizerModule);
-		}
-
 		/**
-		 * Forgets all registered modules. Called when the {@link de.knowwe.core.Environment} is shut down; the next
-		 * environment registers the plugged modules anew.
+		 * Registers the module at the current environment.
+		 *
+		 * @deprecated use {@link de.knowwe.core.Environment#addSectionizerModule(SectionizerModule)} of the environment at
+		 * hand; the plugged modules are registered by the environment itself
 		 */
-		public static void clear() {
-			sectionizerModules.clear();
+		@Deprecated
+		public static void register(SectionizerModule sectionizerModule) {
+			Environment.requireInstance().addSectionizerModule(sectionizerModule);
 		}
 
 		/**
@@ -75,7 +74,9 @@ public interface SectionizerModule {
 		public static void createSection(Section<?> parent, String parentText, Type childType, SectionFinderResult range) {
 			// try eventually plugged sectionizer modules to create the section
 			String sectionText = parentText.substring(range.getStart(), range.getEnd());
-			for (SectionizerModule sModule : sectionizerModules) {
+			Environment environment = KnowWEUtils.findEnvironment(parent);
+			List<SectionizerModule> modules = environment == null ? List.of() : environment.getSectionizerModules();
+			for (SectionizerModule sModule : modules) {
 				Section<?> child = sModule.createSection(parent, sectionText, childType, range);
 				if (child != null) return;
 			}

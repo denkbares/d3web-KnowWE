@@ -40,7 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -69,29 +70,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Section.class);
 
-	/**
-	 * Stores Sections by their IDs.
-	 */
-	private static final Map<Integer, Section<?>> sectionMap = new HashMap<>(2048);
-
-	static {
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			LOGGER.info("Clearing sections.");
-			clearSectionRegistry();
-		});
-	}
-
-	/**
-	 * Removes all sections from the JVM-wide section id registry (and forgets the compilers referenced by stored
-	 * objects). Called when the {@link de.knowwe.core.Environment} is shut down or the servlet context is destroyed;
-	 * afterwards {@link Sections#get(String)} no longer resolves any id of the previous lifecycle.
-	 */
-	public static void clearSectionRegistry() {
-		synchronized (sectionMap) {
-			sectionMap.clear();
-		}
-		COMPILER_REFS.clear();
-	}
 
 	private List<Integer> position = null;
 
@@ -651,16 +629,20 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private static int generateAndRegisterSectionID(Section<?> section) {
 		int idCandidate = section.getSignatureString().hashCode();
 		if (section.getArticle().isTemporary()) return idCandidate;
-		synchronized (sectionMap) {
-			Section<?> existingSection = sectionMap.get(idCandidate);
-			if (existingSection == section) return idCandidate; // already registered
-			while (existingSection != null || idCandidate == -1) {
-				++idCandidate;
-				existingSection = sectionMap.get(idCandidate);
-			}
-			sectionMap.put(idCandidate, section);
+		return registry(section).register(section, idCandidate);
+	}
+
+	/**
+	 * Returns the section registry of the environment the section belongs to. Sections that do not (yet) belong to an
+	 * article manager use the registry of the current environment.
+	 */
+	private static SectionRegistry registry(Section<?> section) {
+		Environment environment = KnowWEUtils.findEnvironment(section);
+		if (environment == null) {
+			throw new IllegalStateException("Cannot assign an id to a section of article '" + section.getTitle()
+					+ "': the section does not belong to an environment and no environment is initialized");
 		}
-		return idCandidate;
+		return environment.getSectionRegistry();
 	}
 
 	/**
@@ -694,9 +676,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	private static void unregisterID(Section<?> section) {
-		synchronized (sectionMap) {
-			sectionMap.remove(section.intID);
-		}
+		Environment environment = KnowWEUtils.findEnvironment(section);
+		if (environment != null) environment.getSectionRegistry().unregister(section.intID);
 	}
 
 	/**
@@ -706,12 +687,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the Section for the given ID or null if no Section exists for this ID.
 	 */
 	static Section<?> get(String id) {
-		synchronized (sectionMap) {
-			// We have to parse long and convert to int, because when converting a int to a hex string, the negative
-			// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
-			// to int will restore the negative sign.
-			return sectionMap.get((int) Long.parseLong(id, 16));
-		}
+		// transitional: without a context object we can only ask the current environment
+		Environment environment = Environment.peekInstance();
+		return environment == null ? null : environment.getSectionRegistry().get(id);
 	}
 
 	/**

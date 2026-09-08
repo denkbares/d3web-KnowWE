@@ -123,8 +123,8 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
   - `EnvironmentLifecycleTest` in KnowWE-Plugin-Core (dafür GlobalTestUtils + ExtensionPoints als Test-Deps und maven-dependency-plugin für `target/dependencies/output.txt`)
   - Voller KnowWE-Build mit Tests (87 Module): grün bis auf Git-Provider-Tests in JSPWiki-Connector, siehe "Bekannte Baseline-Fehler"
 - [ ] Stufe 2 (in Arbeit seit 2026-09-07)
-  - [ ] 2a Registries in die Instanz
-  - [ ] 2b Services + `close()`
+  - [x] 2a Registries in die Instanz (2026-09-08): `SectionRegistry` pro Environment (`Section.get(id)` delegiert übergangsweise an die aktuelle), ScriptManager pro Environment (Compile-Scripts gehören jetzt dem `AbstractType` und werden beim Dekorieren des Typbaums pro Environment indexiert, `registerCompileScripts`), Sectionizer-Module, `occupiedTerms`, Messages-Index, blockierte ToolProvider, globale Notifications, RightPanel-Tabs als Environment-Felder bzw. Services; `CompilationLocal`-Caches am `CompilerManager`; `Scope`-Typcache schwach referenziert
+  - [x] 2b Services + `close()` (2026-09-08): `Environment implements AutoCloseable`, `getService(Class, Supplier)`, `onClose(Runnable)`; `close()` = Kompilierung abwarten, `DeInitEvent`, CompilerManager/AttachmentManager stoppen, Close-Tasks rückwärts, Services schließen. `LongOperations` und `AttachmentUpdates` sind Services mit eigenem Thread-Pool/Timer. `ServletContextEventListener.contextDestroyed` schließt die Environment. `shutdown()` ist deprecated und delegiert. Neue Helfer `KnowWEUtils.findEnvironment/getEnvironment(Section|ArticleManager|Compiler|UserContext)`. Transitional: `Environment.peekInstance()`/`requireInstance()` (deprecated) für die verbliebenen kontextlosen statischen Aufrufer
   - [ ] 2c Singleton-Typen
   - [ ] 2d Plugin-Singletons pro Environment
   - [ ] 2e EventManager pro Environment (Commons, offen)
@@ -161,4 +161,5 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 - 2026-09-07: Analyse, Plan, Arbeitsumgebung eingerichtet, Kette gebaut, Baseline-Tests grün.
 - 2026-09-07: Stufe 1 umgesetzt und committet (5e131bf7a). Voller KnowWE-Testlauf 1:53 min, nur die bekannten Git-Provider-Fehler.
+- 2026-09-08: Stufe 2a/2b umgesetzt. Reset-Liste in `close()` besteht nur noch aus den drei Singleton-Typen (2c). Voller KnowWE-Testlauf grün bis auf die bekannten Git-Tests. Fallen: `close()` muss die Compiler vor den Services stoppen (Destroy-Scripts schreiben noch Messages); `AbstractType.removeCompileScript` darf beim Typ-Aufbau nicht auf einen noch nicht indexierten Typ zugreifen; `LongOperationUtilsTest` braucht jetzt eine Environment (per `ArticleLifecycleFixture`).
 - 2026-09-07: Plan nach Rücksprache umgebaut: Ziel ist Besitz statt Reset (Stufe 2 neu definiert, Migrationsmuster für Stufe 3, `getInstance()` wird komplett entfernt). Consumer-Repos geklont; Experimental, KnowWE-DES, KnowWE-SSP kompilieren gegen Stufe 1. KRONE braucht `-Dskip.installnodenpm -Dskip.npm -Dskip.pnpm` (Symlinks auf vboxsf).

@@ -38,7 +38,6 @@ import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
-import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
@@ -55,8 +54,30 @@ public final class CompilationLocal<E> {
 
 	private final Supplier<E> supplier;
 	private volatile E variable = null;
-	private static final Map<Compiler, Map<Object, CompilationLocal<?>>> compilerCache = new ConcurrentHashMap<>();
-	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> compilerManagerCache = new ConcurrentHashMap<>();
+	/**
+	 * The compilation local caches of one {@link CompilerManager}: per compiler of the manager, and for the manager
+	 * itself. Owned by the manager, so the caches die with it.
+	 */
+	public static final class Cache {
+		private final Map<Compiler, Map<Object, CompilationLocal<?>>> byCompiler = new ConcurrentHashMap<>();
+		private final Map<Object, CompilationLocal<?>> byManager = new ConcurrentHashMap<>();
+
+		/**
+		 * Drops all cached values.
+		 */
+		public void clear() {
+			byCompiler.clear();
+			byManager.clear();
+		}
+	}
+
+	private static Cache cache(@NotNull Compiler compiler) {
+		CompilerManager compilerManager = compiler.getCompilerManager();
+		if (compilerManager == null) {
+			throw new IllegalStateException("Compiler " + compiler + " is not attached to a compiler manager, no cache available");
+		}
+		return compilerManager.getCompilationLocals();
+	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompilationLocal.class);
 
@@ -74,34 +95,24 @@ public final class CompilationLocal<E> {
 			@Override
 			public void notify(Event event) {
 				if (event instanceof CompilerRemovedEvent compilerRemovedEvent) {
-					compilerCache.remove(compilerRemovedEvent.getCompiler());
+					clearCache(compilerRemovedEvent.getCompiler());
 				}
 				else if (event instanceof @SuppressWarnings("rawtypes")ScriptCompilerCompilePhaseStartEvent scriptCompilerCompilePhaseStartEvent) {
-					compilerCache.remove(scriptCompilerCompilePhaseStartEvent.getCompiler());
+					clearCache(scriptCompilerCompilePhaseStartEvent.getCompiler());
 				}
 				else if (event instanceof CompilationStartEvent compilationStartEvent) {
-					compilerManagerCache.remove(compilationStartEvent.getCompilerManager());
+					CompilerManager compilerManager = compilationStartEvent.getCompilerManager();
+					Cache cache = compilerManager.getCompilationLocals();
+					cache.byManager.clear();
 					// make sure we don't have stale caches
-					compilerCache.keySet().removeIf(c -> !c.getCompilerManager().contains(c));
+					cache.byCompiler.keySet().removeIf(c -> !compilerManager.contains(c));
 				}
 				else if (event instanceof ArticleManagerCommitDoneEvent doneEvent && doneEvent.changesCommitted()) {
-					CompletableFuture.runAsync(CompilationLocal::cleanupStaleSectionCaches);
+					Cache cache = doneEvent.getArticleManager().getCompilerManager().getCompilationLocals();
+					CompletableFuture.runAsync(() -> cleanupStaleSectionCaches(cache));
 				}
 			}
 		});
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			LOGGER.info("Clear compiler cache");
-			clearCaches();
-		});
-	}
-
-	/**
-	 * Drops all cached values of all compilers and compiler managers. Called when the
-	 * {@link de.knowwe.core.Environment} is shut down or the servlet context is destroyed.
-	 */
-	public static void clearCaches() {
-		compilerCache.clear();
-		compilerManagerCache.clear();
 	}
 
 	/**
@@ -158,7 +169,7 @@ public final class CompilationLocal<E> {
 	 */
 	public static <L> L getCached(@NotNull Compiler compiler, @NotNull Object cacheKey, @NotNull Supplier<L> supplier) {
 		//noinspection unchecked
-		return (L) compilerCache.computeIfAbsent(compiler, cm -> new ConcurrentHashMap<>())
+		return (L) cache(compiler).byCompiler.computeIfAbsent(compiler, cm -> new ConcurrentHashMap<>())
 				.computeIfAbsent(cacheKey, ck -> new CompilationLocal<>(supplier)).get();
 	}
 
@@ -182,7 +193,7 @@ public final class CompilationLocal<E> {
 			return getCached(compiler, cacheKey, supplier);
 		}
 		else {
-			Map<Object, CompilationLocal<?>> cache = compilerCache.computeIfAbsent(compiler, cm -> new ConcurrentHashMap<>());
+			Map<Object, CompilationLocal<?>> cache = cache(compiler).byCompiler.computeIfAbsent(compiler, cm -> new ConcurrentHashMap<>());
 			//noinspection unchecked
 			return cache.containsKey(cacheKey) ? (L) cache.get(cacheKey).get() : supplier.get();
 		}
@@ -203,7 +214,7 @@ public final class CompilationLocal<E> {
 	 */
 	public static <L> L getCached(@NotNull CompilerManager compilerManager, @NotNull Object cacheKey, @NotNull Supplier<L> supplier) {
 		//noinspection unchecked
-		return (L) compilerManagerCache.computeIfAbsent(compilerManager, cm -> new ConcurrentHashMap<>())
+		return (L) compilerManager.getCompilationLocals().byManager
 				.computeIfAbsent(cacheKey, ck -> new CompilationLocal<>(supplier)).get();
 	}
 
@@ -214,7 +225,7 @@ public final class CompilationLocal<E> {
 	 * @param cacheKey        the object by which the supplier/result is cached
 	 */
 	public static void removeCache(@NotNull CompilerManager compilerManager, @NotNull Object cacheKey) {
-		compilerManagerCache.getOrDefault(compilerManager, Collections.emptyMap()).remove(cacheKey);
+		compilerManager.getCompilationLocals().byManager.remove(cacheKey);
 	}
 
 	/**
@@ -224,7 +235,7 @@ public final class CompilationLocal<E> {
 	 * @param compiler the Compiler the cache refers to
 	 */
 	public static void removeCache(@NotNull Compiler compiler, @NotNull Object cacheKey) {
-		compilerCache.getOrDefault(compiler, Collections.emptyMap()).remove(cacheKey);
+		cache(compiler).byCompiler.getOrDefault(compiler, Collections.emptyMap()).remove(cacheKey);
 	}
 
 	/**
@@ -233,7 +244,8 @@ public final class CompilationLocal<E> {
 	 * @param compiler the compile for which the cache should be cleared
 	 */
 	public static void clearCache(@NotNull Compiler compiler) {
-		compilerCache.remove(compiler);
+		CompilerManager compilerManager = compiler.getCompilerManager();
+		if (compilerManager != null) compilerManager.getCompilationLocals().byCompiler.remove(compiler);
 	}
 
 	/**
@@ -264,17 +276,17 @@ public final class CompilationLocal<E> {
 		return variable;
 	}
 
-	private static void cleanupStaleSectionCaches() {
+	private static void cleanupStaleSectionCaches(Cache cache) {
 		Stopwatch stopwatch = new Stopwatch();
 		int counter = 0;
-		counter += cleanupStaleSectionCaches(compilerCache);
-		counter += cleanupStaleSectionCaches(compilerManagerCache);
+		counter += cleanupStaleSectionCaches(cache.byCompiler.values());
+		counter += cleanupStaleSectionCaches(List.of(cache.byManager));
 		stopwatch.log(LOGGER, "Cleaned up stale section caches: " + counter);
 	}
 
-	private static int cleanupStaleSectionCaches(Map<?, Map<Object, CompilationLocal<?>>> caches) {
+	private static int cleanupStaleSectionCaches(Collection<Map<Object, CompilationLocal<?>>> caches) {
 		int counter = 0;
-		for (Map<Object, CompilationLocal<?>> cache : caches.values()) {
+		for (Map<Object, CompilationLocal<?>> cache : caches) {
 			Iterator<Object> iterator = cache.keySet().iterator();
 			while (iterator.hasNext()) {
 				Object key = iterator.next();

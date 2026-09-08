@@ -188,8 +188,7 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	/** Also used by the older frame tests, whose otherwise retained listeners react to later attachment tests. */
 	public static void closeManager(DefaultArticleManager manager) throws ReflectiveOperationException, InterruptedException {
 		EventManager.getInstance().unregister(manager.getAttachmentManager());
-		EventManager.getInstance().unregister(manager.getCompilerManager());
-		shutdown((ExecutorService) field(CompilerManager.class, "threadPool").get(manager.getCompilerManager()));
+		manager.getCompilerManager().shutdown();
 		shutdown((ExecutorService) field(AttachmentManager.class, "executor").get(manager.getAttachmentManager()));
 	}
 

@@ -57,6 +57,15 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	private final TypePriorityList childrenTypes = new TypePriorityList();
 
+	/**
+	 * The compile scripts of this type in registration order. They belong to the type; each environment indexes them in
+	 * its {@link ScriptManager}s while decorating its type tree, see {@link #registerCompileScripts(Environment)}.
+	 */
+	private final List<CompileScriptRegistration> compileScripts = Collections.synchronizedList(new ArrayList<>());
+
+	private record CompileScriptRegistration(Priority priority, CompileScript<?, ?> script) {
+	}
+
 	private final List<Type> parents = new ArrayList<>(2);
 
 	/**
@@ -104,7 +113,12 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	@SuppressWarnings("unchecked")
 	public <C extends Compiler, T extends Type, CS extends CompileScript<C, T>> void removeCompileScript(Class<C> compilerClass, Class<CS> scriptClass) {
-		CompilerManager.getScriptManager(compilerClass).removeScript((T) this, scriptClass);
+		compileScripts.removeIf(registration -> registration.script().getClass().equals(scriptClass));
+		// if this type is already indexed by the current environment (i.e. decorated), keep the index in sync
+		Environment environment = Environment.peekInstance();
+		if (environment != null) {
+			environment.getScriptManager(compilerClass).removeScript((T) this, scriptClass);
+		}
 	}
 
 	public <C extends Compiler, T extends Type> void addCompileScript(CompileScript<C, T> script) {
@@ -114,10 +128,36 @@ public abstract class AbstractType implements Type, Sectionizable {
 	/**
 	 * Registers the given SubtreeHandlers with the given Priority.
 	 */
-	@SuppressWarnings("unchecked")
 	public <C extends Compiler, T extends Type> void addCompileScript(Priority priority, CompileScript<C, T> script) {
 		if (priority == null) priority = Priority.DEFAULT;
-		CompilerManager.addScript(priority, (T) this, script);
+		compileScripts.add(new CompileScriptRegistration(priority, script));
+	}
+
+	/**
+	 * Indexes the compile scripts of this type in the script managers of the specified environment. Called by the
+	 * environment for every type of its type tree while decorating it.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void registerCompileScripts(@NotNull Environment environment) {
+		synchronized (compileScripts) {
+			for (CompileScriptRegistration registration : compileScripts) {
+				CompileScript script = registration.script();
+				ScriptManager manager = environment.getScriptManager(script.getCompilerClass());
+				manager.addScript(registration.priority(), this, script);
+			}
+		}
+	}
+
+	/**
+	 * Returns the compile scripts registered at this type, in registration order.
+	 */
+	@NotNull
+	public Collection<CompileScript<?, ?>> getCompileScripts() {
+		synchronized (compileScripts) {
+			List<CompileScript<?, ?>> result = new ArrayList<>(compileScripts.size());
+			for (CompileScriptRegistration registration : compileScripts) result.add(registration.script());
+			return result;
+		}
 	}
 
 	@Override
@@ -195,8 +235,10 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	public void clearCompileScripts() {
-		Collection<ScriptManager<? extends Compiler>> scriptManagers = CompilerManager.getScriptManagers();
-		for (ScriptManager<? extends Compiler> manager : scriptManagers) {
+		compileScripts.clear();
+		Environment environment = Environment.peekInstance();
+		if (environment == null) return;
+		for (ScriptManager<? extends Compiler> manager : environment.getScriptManagers()) {
 			manager.removeAllScript(this);
 		}
 	}
