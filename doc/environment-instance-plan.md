@@ -67,8 +67,8 @@ Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initI
 
 | Stufe | Inhalt | Umfang | Status |
 |---|---|---|---|
-| 1 | Rückverbindung `ArticleManager.getEnvironment()`, `getInstance()` `@Deprecated`, `shutdown()` mit explizitem Reset (Provisorium, entfällt mit Stufe 2) | KnowWE-core | **erledigt** (5e131bf7a) |
-| 2 | **Environment besitzt allen Zustand und alle Threads.** `Environment implements AutoCloseable`; `close()` statt `shutdown()`. Reset-Liste aus Stufe 1 ist leer | KnowWE-core (+ Commons für 2e) | **2a-2d erledigt** (56cc91433, Folgecommit), 2e offen |
+| 1 | Rückverbindung `ArticleManager.getEnvironment()`, `getInstance()` `@Deprecated`, `shutdown()` mit explizitem Reset (Provisorium, entfällt mit Stufe 2) | KnowWE-core | **erledigt** (9e19e1b30) |
+| 2 | **Environment besitzt allen Zustand und alle Threads.** `Environment implements AutoCloseable`; `close()` statt `shutdown()`. Reset-Liste aus Stufe 1 ist leer | KnowWE-core (+ Commons für 2e) | **2a-2d erledigt** (56b2b2b63, Folgecommit), 2e offen |
 | 3 | Aufrufer migrieren nach vier Mustern (s.u.), repo-weise: KnowWE, KnowWE-DES, KnowWE-SSP, Experimental, KRONE, Internals, IE | alle Consumer | Muster 1 in allen Repos erledigt (2026-09-08), Muster 2-4 offen |
 | 4 | `getInstance()`, `initInstance()`, `DEFAULT_WEB`, `articleManagers`-Map löschen; Einstieg nur noch über den JSPWiki-Connector, der die Environment erzeugt und in den ServletContext legt; Testinfrastruktur auf `new Environment(...)` pro Test | alle, plus Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform | offen |
 
@@ -115,8 +115,8 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 - [x] Arbeitsumgebung: Host-Share `EnvInstance` gemountet, 7 Repos geklont, Branch `env-instance`
 - [x] Isoliertes Maven-Repo `~/.m2/env-instance-repo`, Kette gebaut (42/43 KnowWE-Module, ohne `KnowWE-App`)
 - [x] Baseline: KnowWE-core-Tests grün (11 Klassen, 67 Tests, 0 Fehler, 12 übersprungen)
-- [x] Plan-Dokument in KnowWE-core committet (576f0e3c8)
-- [x] Stufe 1 (2026-09-07, Commit 5e131bf7a auf env-instance, nicht gepusht)
+- [x] Plan-Dokument in KnowWE-core committet (18730a4d6)
+- [x] Stufe 1 (2026-09-07, Commit 9e19e1b30 auf env-instance, nicht gepusht)
   - `ArticleManager.getEnvironment()` + `DefaultArticleManager(Environment, String)`; alter Konstruktor deprecated (Experimental nutzt ihn noch in DatedRevision/UploadedRevision)
   - `Environment.getInstance()` deprecated; `shutdown()` wartet auf Kompilierung, feuert `DeInitEvent` bei gesetzter Instanz, ruft danach die neuen Reset-Methoden: `Section.clearSectionRegistry`, `CompilerManager.clearScriptManagers`, `SectionizerModule.Registry.clear`, `Messages.clearSectionsWithMessages`, `TerminologyManager.clearOccupiedTerms`, `ToolUtils.clearBlockedToolProviders`, `NotificationManager.clearGlobalNotifications`, `LongOperationUtils.shutdown`, `CompilationLocal.clearCaches`, `Scope.clearCaches`, `AttachmentUpdateMarkup.reset`, `PlainText/LineContent.resetInstance`, `DashTreeElementContent.resetDefaultInstance`
   - Nicht angefasst (bewusst): `Plugins.registeredRightPanelTabs` (eigener DeInit-Listener), `ServletContextEventListener`-Tasks (Servlet-Lebenszyklus), `Priority`, `CredentialProviders`, `WikiAttachments.TEMP_FOLDER`, Commons-Singletons `EventManager`/`PluginManager`, JUL/MDC
@@ -162,8 +162,8 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 ## Protokoll
 
 - 2026-09-07: Analyse, Plan, Arbeitsumgebung eingerichtet, Kette gebaut, Baseline-Tests grün.
-- 2026-09-07: Stufe 1 umgesetzt und committet (5e131bf7a). Voller KnowWE-Testlauf 1:53 min, nur die bekannten Git-Provider-Fehler.
-- 2026-09-08: `Environment.initInstance()` schließt eine noch laufende Environment (26e538dbb); vorher lief `TaskContextManagerEventTest` mit `initialized=true` in die Typbaum-Assertion.
+- 2026-09-07: Stufe 1 umgesetzt und committet (9e19e1b30). Voller KnowWE-Testlauf 1:53 min, nur die bekannten Git-Provider-Fehler.
+- 2026-09-08: `Environment.initInstance()` schließt eine noch laufende Environment (c679ea688); vorher lief `TaskContextManagerEventTest` mit `initialized=true` in die Typbaum-Assertion.
 - 2026-09-08: Stufe 3, Muster 1 in allen Repos per Skript (Kontextobjekt aus Methodenparameter oder Klassenfeld). Fallen: lokale Variablen nicht fuer Felder halten (nur Deklarationen mit genau einem Tab), Dateien mit CRLF-Zeilenenden byteweise behandeln (42 Dateien mussten repariert werden), `Environment`-Import nur entfernen, wenn das Wort nirgends mehr vorkommt (mehrzeilige Aufrufe). Kompilierfehler wurden zeilenweise aus git zurueckgesetzt (revert_errors.py), die Stellen bleiben beim statischen Zugriff.
 - 2026-09-08: Stufe 2c/2d umgesetzt, voller KnowWE-Testlauf grün bis auf die bekannten Git-Tests. In KnowWE-core bleibt an statischem Zustand nur noch: der Singleton `Environment.instance/initialized` selbst (Stufe 4), zustandslose Singletons (Renderer, Visitor, SectionFinder), Konstanten/Caches ohne Lebenszyklus (`Priority`, `Scope`, `Section.COMPILER_REFS` schwach) und `ServletContextEventListener`-Tasks (Servlet-Lebenszyklus). `ResourceLoader` (JS/CSS-Registrierung, dedupliziert) bleibt bis Stufe 3/4.
 - 2026-09-08: Stufe 2a/2b umgesetzt. Reset-Liste in `close()` besteht nur noch aus den drei Singleton-Typen (2c). Voller KnowWE-Testlauf grün bis auf die bekannten Git-Tests. Fallen: `close()` muss die Compiler vor den Services stoppen (Destroy-Scripts schreiben noch Messages); `AbstractType.removeCompileScript` darf beim Typ-Aufbau nicht auf einen noch nicht indexierten Typ zugreifen; `LongOperationUtilsTest` braucht jetzt eine Environment (per `ArticleLifecycleFixture`).
