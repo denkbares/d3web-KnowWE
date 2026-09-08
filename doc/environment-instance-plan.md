@@ -139,6 +139,8 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 ## Bekannte Baseline-Fehler (unabhängig vom Umbau)
 
+- KnowWE-DES (Testlauf 2026-09-08 nach Stufe 3, Muster 1): 9 Klassen `de.knowwe.versioning.git.*` (Git-Status/HEAD auf leerem Repo, deutsche git-Meldungen), `GeneratorAppTest` ("Cannot run program"), `TaskContextManagerPersistenceTest` (ein zweiter, über `TaskContextManagerInstance.get()` von einem Listener erzeugter BasicTaskContextManager schreibt dieselbe wc-Datei; fällt auch ohne die initInstance-Änderung, Baseline nicht verifizierbar ohne master-Build). KnowWE-SSP und Experimental: grün. KRONE und Information-Extraction: nur kompiliert.
+
 - `GitPageProviderTest`, `GitWikiRepositoryTest`, `GitAttachmentProviderTest` (JSPWiki-Connector) brauchen eine Git-Identität. In der VM gibt es keine globale, daher 11 Fehler. Mit `GIT_AUTHOR_NAME/EMAIL` und `GIT_COMMITTER_NAME/EMAIL` als Umgebungsvariablen bleiben 2 Fehler (`sweepUp...`, "dirty tree must be reconciled"), auch mit `LC_ALL=C`. Betrifft das Git-Status-Parsing des GitConnectors aus denkbares-Internals, nicht die Environment. Nicht weiter verfolgt.
 
 ## Arbeitsumgebung
@@ -161,6 +163,7 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 - 2026-09-07: Analyse, Plan, Arbeitsumgebung eingerichtet, Kette gebaut, Baseline-Tests grün.
 - 2026-09-07: Stufe 1 umgesetzt und committet (5e131bf7a). Voller KnowWE-Testlauf 1:53 min, nur die bekannten Git-Provider-Fehler.
+- 2026-09-08: `Environment.initInstance()` schließt eine noch laufende Environment (26e538dbb); vorher lief `TaskContextManagerEventTest` mit `initialized=true` in die Typbaum-Assertion.
 - 2026-09-08: Stufe 3, Muster 1 in allen Repos per Skript (Kontextobjekt aus Methodenparameter oder Klassenfeld). Fallen: lokale Variablen nicht fuer Felder halten (nur Deklarationen mit genau einem Tab), Dateien mit CRLF-Zeilenenden byteweise behandeln (42 Dateien mussten repariert werden), `Environment`-Import nur entfernen, wenn das Wort nirgends mehr vorkommt (mehrzeilige Aufrufe). Kompilierfehler wurden zeilenweise aus git zurueckgesetzt (revert_errors.py), die Stellen bleiben beim statischen Zugriff.
 - 2026-09-08: Stufe 2c/2d umgesetzt, voller KnowWE-Testlauf grün bis auf die bekannten Git-Tests. In KnowWE-core bleibt an statischem Zustand nur noch: der Singleton `Environment.instance/initialized` selbst (Stufe 4), zustandslose Singletons (Renderer, Visitor, SectionFinder), Konstanten/Caches ohne Lebenszyklus (`Priority`, `Scope`, `Section.COMPILER_REFS` schwach) und `ServletContextEventListener`-Tasks (Servlet-Lebenszyklus). `ResourceLoader` (JS/CSS-Registrierung, dedupliziert) bleibt bis Stufe 3/4.
 - 2026-09-08: Stufe 2a/2b umgesetzt. Reset-Liste in `close()` besteht nur noch aus den drei Singleton-Typen (2c). Voller KnowWE-Testlauf grün bis auf die bekannten Git-Tests. Fallen: `close()` muss die Compiler vor den Services stoppen (Destroy-Scripts schreiben noch Messages); `AbstractType.removeCompileScript` darf beim Typ-Aufbau nicht auf einen noch nicht indexierten Typ zugreifen; `LongOperationUtilsTest` braucht jetzt eine Environment (per `ArticleLifecycleFixture`).
