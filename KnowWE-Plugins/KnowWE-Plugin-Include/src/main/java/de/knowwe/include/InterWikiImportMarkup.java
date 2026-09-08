@@ -95,7 +95,12 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String LATEST_CHANGE_ANNOTATION = "latestChange";
 	private static final String TRACKING_ACCEPTED_AT_ANNOTATION = "trackingAcceptedAt";
 
-	private static final InterWikiImportUpdateService UPDATE_SERVICE = new InterWikiImportUpdateService();
+	/**
+	 * The update service of the environment the section belongs to.
+	 */
+	private static InterWikiImportUpdateService updateService(Section<?> section) {
+		return InterWikiImportUpdateService.of(KnowWEUtils.getEnvironment(section));
+	}
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
 
 	/**
@@ -119,7 +124,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(LATEST_CHANGE_ANNOTATION, false);
 		MARKUP.addAnnotation(TRACKING_ACCEPTED_AT_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
-		UPDATE_SERVICE.initialize();
 	}
 
 	public InterWikiImportMarkup() {
@@ -411,7 +415,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	void refreshNow(Section<InterWikiImportMarkup> section, boolean force) {
-		UPDATE_SERVICE.pollSingleMarkup(section, force);
+		updateService(section).pollSingleMarkup(section, force);
 	}
 
 	static String buildRefreshScript(String sectionId, boolean force) {
@@ -519,7 +523,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force, boolean allowWaitForOtherDownloads) {
 		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (markup == null) return;
-		UPDATE_SERVICE.pollSingleMarkup(markup, force);
+		updateService(markup).pollSingleMarkup(markup, force);
 	}
 
 	@Override
@@ -812,7 +816,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.append(new HtmlElement("p")
 						.clazz("warning")
 						.content("@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
-								+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
+								+ TimeUnit.MILLISECONDS.toMinutes(updateService(markup).getPollIntervalMillis())
 								+ " minutes per source wiki."));
 			}
 		}
@@ -866,18 +870,18 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			if (section.get().getUrl(section) == null) {
-				UPDATE_SERVICE.deregister(section);
+				updateService(section).deregister(section);
 				Messages.clearMessages(section, TrackingMessages.class);
 				return;
 			}
-			UPDATE_SERVICE.register(section);
+			updateService(section).register(section);
 			section.get().refreshTrackingMessages(section);
 			section.get().restoreSyncMessage(section);
 		}
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
-			UPDATE_SERVICE.deregister(section);
+			updateService(section).deregister(section);
 			Messages.clearMessages(section, TrackingMessages.class);
 			Messages.clearMessages(section, SyncMessages.class);
 		}

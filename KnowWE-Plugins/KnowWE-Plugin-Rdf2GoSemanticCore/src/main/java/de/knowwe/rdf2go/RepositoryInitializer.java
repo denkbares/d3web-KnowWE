@@ -32,6 +32,7 @@ public class RepositoryInitializer implements Instantiation {
 			SemanticCore.shutDownRepositoryManager(); // just in case there is already one initialized (e.g. JUnit tests)
 			File tempDir = SemanticCore.createRepositoryManagerDir(context);
 			SemanticCore.initializeRepositoryManager(tempDir);
+			environment.onClose(SemanticCore::shutDownRepositoryManager);
 		}
 		catch (IOException e) {
 			LOGGER.error("Unable to initialize repository for SemanticCore!", e);

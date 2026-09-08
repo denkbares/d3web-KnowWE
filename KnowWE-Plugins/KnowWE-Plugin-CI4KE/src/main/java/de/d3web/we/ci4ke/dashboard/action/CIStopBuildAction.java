@@ -36,7 +36,7 @@ public class CIStopBuildAction extends AbstractAction {
 		String web = context.getWeb();
 		CIDashboard dashboard = CIDashboardManager.getDashboard(KnowWEUtils.getArticleManager(web),
 				dashboardName);
-		CIBuildManager.getInstance().shutDownNow(dashboard);
+		CIBuildManager.of(dashboard).shutDownNow(dashboard);
 	}
 
 }

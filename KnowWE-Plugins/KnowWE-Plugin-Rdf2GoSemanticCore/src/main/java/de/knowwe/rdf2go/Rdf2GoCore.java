@@ -1688,12 +1688,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 	}
 
-	static {
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			SemanticCore.shutDownRepositoryManager();
-		});
-	}
-
 	/**
 	 * Destroys this Rdf2GoCore and its underlying model.
 	 */

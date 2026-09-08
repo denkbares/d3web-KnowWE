@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.DefaultArticleManager;
-import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -43,7 +43,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.ActionAllowListChecker;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 
-public final class InterWikiImportUpdateService {
+public final class InterWikiImportUpdateService implements AutoCloseable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiImportUpdateService.class);
 
@@ -72,12 +72,26 @@ public final class InterWikiImportUpdateService {
 		}
 	}
 
+	/**
+	 * Returns the update service of the specified environment, started on first access and closed together with the
+	 * environment.
+	 */
+	public static InterWikiImportUpdateService of(@NotNull Environment environment) {
+		return environment.getService(InterWikiImportUpdateService.class, () -> {
+			InterWikiImportUpdateService service = new InterWikiImportUpdateService();
+			service.initialize();
+			return service;
+		});
+	}
+
+	@Override
+	public void close() {
+		LOGGER.info("Shutting down InterWikiImport update poller.");
+		poller.shutdownNow();
+	}
+
 	public void initialize() {
 		if (!initialized.compareAndSet(false, true)) return;
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			LOGGER.info("Shutting down InterWikiImport update poller.");
-			poller.shutdownNow();
-		});
 		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
 
 		poller.scheduleWithFixedDelay(this::pollAllSources, 0, pollIntervalMillis,
