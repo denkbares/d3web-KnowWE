@@ -36,6 +36,7 @@ import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
@@ -160,7 +161,7 @@ public class RecompileAction extends AbstractAction {
 				}
 			}
 			stopwatch.log(LOGGER, "Sectionized " + Strings.pluralOf(currentArticlesToRecompile.size(), "article") + " for recompilation");
-			EventManager.getInstance().fireEvent(new FullParseEvent(currentArticlesToRecompile, userName));
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new FullParseEvent(currentArticlesToRecompile, userName));
 
 			if (currentArticlesToRecompile.size() == 1) {
 				// also update all markups

@@ -57,16 +57,12 @@ public class OntologyExporter implements EventListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyExporter.class);
 
 	private static final int DEFAULT_EXPORT_DELAY = 20000; // 20 seconds
-	private static OntologyExporter instance = null;
-
 	private final Map<String, Timer> timers = new HashMap<>();
 
-	public static OntologyExporter getInstance() {
-		if (instance == null) instance = new OntologyExporter();
-		return instance;
-	}
-
-	private OntologyExporter() {
+	/**
+	 * Plugged as EventListener extension; the environment registers it at its event manager.
+	 */
+	public OntologyExporter() {
 	}
 
 	@Override

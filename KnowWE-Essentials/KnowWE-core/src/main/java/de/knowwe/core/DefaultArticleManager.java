@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.core.compile.CompilerManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
@@ -286,7 +287,7 @@ public class DefaultArticleManager implements ArticleManager {
 		// in case an article with the same name gets added in the same compilation window
 		deleteAfterCompile.remove(title.toLowerCase());
 
-		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
+		KnowWEUtils.getEventManager(article).fireEvent(new ArticleRegisteredEvent(article));
 		article.clearLastVersion();
 	}
 
@@ -380,7 +381,7 @@ public class DefaultArticleManager implements ArticleManager {
 		try {
 			if (outermostCommit) {
 				registrationFrameOpen = false;
-				EventManager.getInstance().fireEvent(new ArticleManagerCommitStartEvent(this));
+				KnowWEUtils.getEventManager(this).fireEvent(new ArticleManagerCommitStartEvent(this));
 				ArrayList<Section<?>> addedSections = new ArrayList<>();
 				ArrayList<Section<?>> removedSections = new ArrayList<>();
 				synchronized (added) {
@@ -417,7 +418,7 @@ public class DefaultArticleManager implements ArticleManager {
 		finally {
 			mainLock.unlock();
 			if (outermostCommit) {
-				EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(this, changesCommitted));
+				KnowWEUtils.getEventManager(this).fireEvent(new ArticleManagerCommitDoneEvent(this, changesCommitted));
 			}
 		}
 	}

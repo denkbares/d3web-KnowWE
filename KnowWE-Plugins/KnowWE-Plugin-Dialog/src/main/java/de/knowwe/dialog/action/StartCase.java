@@ -76,8 +76,8 @@ public class StartCase extends AbstractAction implements EventListener {
 	public static final String HTTP_SESSION_RECENT_START_INFO = "com.denkbares.dialog.recentInfo";
 
 	public StartCase() {
-		synchronized (EventManager.getInstance()) {
-			EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+		synchronized (KnowWEUtils.currentEventManager()) {
+			KnowWEUtils.currentEventManager().registerListener(this, EventManager.RegistrationType.WEAK);
 		}
 	}
 

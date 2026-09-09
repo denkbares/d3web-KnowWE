@@ -82,6 +82,10 @@ public class CIBuildManager implements EventListener, AutoCloseable {
 	private static final AtomicLong executorNumber = new AtomicLong();
 	private static final AtomicLong THREAD_NUMBER = new AtomicLong();
 
+	/**
+	 * The environment this manager belongs to (null for managers created directly in tests).
+	 */
+	private final @Nullable Environment environment;
 	private final ExecutorService ciBuildExecutor;
 	private final ExecutorService ciBuildTrigger;
 	private final ExecutorService testExecutorService = createTestExecutorService();
@@ -95,11 +99,11 @@ public class CIBuildManager implements EventListener, AutoCloseable {
 	 */
 	public static CIBuildManager of(@NotNull Environment environment) {
 		return environment.getService(CIBuildManager.class, () -> {
-			CIBuildManager manager = new CIBuildManager(
+			CIBuildManager manager = new CIBuildManager(environment,
 					Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet())),
 					Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet())),
 					Collections.synchronizedMap(new WeakHashMap<>()));
-			EventManager.getInstance().registerListener(manager);
+			environment.getEventManager().registerListener(manager);
 			return manager;
 		});
 	}
@@ -122,7 +126,7 @@ public class CIBuildManager implements EventListener, AutoCloseable {
 	@Override
 	public void close() {
 		LOGGER.info("Shutting down CI build executor.");
-		EventManager.getInstance().unregister(this);
+		if (environment != null) environment.getEventManager().unregister(this);
 		ciBuildExecutor.shutdown();
 		ciBuildTrigger.shutdown();
 		testExecutorService.shutdown();
@@ -137,13 +141,15 @@ public class CIBuildManager implements EventListener, AutoCloseable {
 	 * @param ciBuildTrigger  executor performing asynchronous ordering and predecessor waits
 	 */
 	CIBuildManager(ExecutorService ciBuildExecutor, ExecutorService ciBuildTrigger) {
-		this(ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()));
+		this(null, ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()));
 	}
 
 	private CIBuildManager(
+			@Nullable Environment environment,
 			ExecutorService ciBuildExecutor,
 			ExecutorService ciBuildTrigger,
 			Map<CIDashboard, CIBuildFuture> ciBuildQueue) {
+		this.environment = environment;
 		this.ciBuildExecutor = ciBuildExecutor;
 		this.ciBuildTrigger = ciBuildTrigger;
 		this.ciBuildQueue = ciBuildQueue;
@@ -201,7 +207,7 @@ public class CIBuildManager implements EventListener, AutoCloseable {
 
 				// fire event to inform listeners about new result
 				CIBuildResultEvent event = new CIBuildResultEvent(dashboard, build);
-				EventManager.getInstance().fireEvent(event);
+				KnowWEUtils.getEventManager(dashboard.getDashboardSection()).fireEvent(event);
 
 				// add resulting build to dashboard
 				if (build != null && !testExecutor.isAborted()) {

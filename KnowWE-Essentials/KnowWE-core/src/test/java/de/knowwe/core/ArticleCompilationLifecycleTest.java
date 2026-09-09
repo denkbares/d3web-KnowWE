@@ -18,6 +18,7 @@ import org.junit.Ignore;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
@@ -227,10 +228,10 @@ public class ArticleCompilationLifecycleTest {
 		try {
 			wiki.manager.recreateAndQueueArticles(List.of(parent));
 			refreshedParent = wiki.manager.getArticle("Parent");
-			EventManager.getInstance().fireEvent(new FullParseEvent(refreshedParent, "test"));
+			KnowWEUtils.getEventManager(wiki.manager).fireEvent(new FullParseEvent(refreshedParent, "test"));
 			refreshedAttachment = wiki.manager.getArticle(path);
 			assertNotSame(oldAttachment, refreshedAttachment);
-			EventManager.getInstance().fireEvent(new FullParseEvent(refreshedParent, "test"));
+			KnowWEUtils.getEventManager(wiki.manager).fireEvent(new FullParseEvent(refreshedParent, "test"));
 			assertSame("A second full parse must reuse the attachment already queued in this frame",
 					refreshedAttachment, wiki.manager.getArticle(path));
 		}

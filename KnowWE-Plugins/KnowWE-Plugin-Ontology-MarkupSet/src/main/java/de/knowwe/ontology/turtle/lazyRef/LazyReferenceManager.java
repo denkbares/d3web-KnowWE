@@ -16,6 +16,7 @@ import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.CompilerRemovedEvent;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.IncrementalCompiler;
@@ -38,7 +39,7 @@ public class LazyReferenceManager implements EventListener {
 	public static LazyReferenceManager getInstance() {
 		if (instance == null) {
 			instance = new LazyReferenceManager();
-			EventManager.getInstance().registerListener(instance);
+			KnowWEUtils.currentEventManager().registerListener(instance);
 		}
 		return instance;
 	}

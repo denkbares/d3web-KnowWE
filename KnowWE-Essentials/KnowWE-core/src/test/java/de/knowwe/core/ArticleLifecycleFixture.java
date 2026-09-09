@@ -29,6 +29,7 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -138,7 +139,7 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 			}
 		};
 		listeners.add(listener); // retain strongly until explicitly unregistered in teardown
-		EventManager.getInstance().registerListener(listener);
+		KnowWEUtils.getEventManager(manager).registerListener(listener);
 	}
 
 	static Section<?> line(Article article, int index) {
@@ -159,7 +160,7 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	@Override
 	protected void after() {
 		try {
-			listeners.forEach(EventManager.getInstance()::unregister);
+			listeners.forEach(KnowWEUtils.getEventManager(manager)::unregister);
 			awaitCompilation();
 			afterParse = section -> { };
 			// Empty the manager while its attachment listener is still available to clear attachment mappings as well.
@@ -193,7 +194,7 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 
 	/** Also used by the older frame tests, whose otherwise retained listeners react to later attachment tests. */
 	public static void closeManager(DefaultArticleManager manager) throws ReflectiveOperationException, InterruptedException {
-		EventManager.getInstance().unregister(manager.getAttachmentManager());
+		KnowWEUtils.getEventManager(manager).unregister(manager.getAttachmentManager());
 		manager.getCompilerManager().shutdown();
 		shutdown((ExecutorService) field(AttachmentManager.class, "executor").get(manager.getAttachmentManager()));
 	}

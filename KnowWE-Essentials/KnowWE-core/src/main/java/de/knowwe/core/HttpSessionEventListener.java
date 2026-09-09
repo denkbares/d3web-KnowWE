@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSessionListener;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventManager;
 import de.knowwe.event.HttpSessionCreatedEvent;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.HttpSessionDestroyedEvent;
 
 /**
@@ -18,14 +19,14 @@ public class HttpSessionEventListener implements HttpSessionListener {
 	public void sessionCreated(HttpSessionEvent se) {
 		HttpSession session = se.getSession();
 		Event event = new HttpSessionCreatedEvent(session);
-		EventManager.getInstance().fireEvent(event);
+		KnowWEUtils.currentEventManager().fireEvent(event);
 	}
 
 	@Override
 	public void sessionDestroyed(HttpSessionEvent se) {
 		HttpSession session = se.getSession();
 		Event event = new HttpSessionDestroyedEvent(session);
-		EventManager.getInstance().fireEvent(event);
+		KnowWEUtils.currentEventManager().fireEvent(event);
 	}
 
 }

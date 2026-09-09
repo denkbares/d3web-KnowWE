@@ -262,7 +262,7 @@ public final class Article {
 			lastVersion.destroy(this);
 		}
 
-		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
+		KnowWEUtils.getEventManager(this).fireEvent(new KDOMCreatedEvent(this));
 	}
 
 	/**

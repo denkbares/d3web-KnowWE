@@ -58,7 +58,7 @@ Diese Registries liegen außerhalb von `Environment` und setzen "eine Environmen
 | `Plugins.registeredRightPanelTabs` | Liste | eigener EventListener |
 | `NotificationManager.globalNotifications`, `LongOperationUtils`, `Priority.registeredPrioritiesHash`, `ServletContextEventListener`, `CredentialProviders`, `WikiAttachments.TEMP_FOLDER` | diverse | nie / teilweise |
 | Typbaum | `AbstractType.checkInitializationStatus()` asserted `!Environment.isInitialized()`; geplugte Typen kommen per `getNewInstance()` (gut), `PlainText`/`LineContent`/`DashTreeElementContent` sind statische Singletons und werden bei Re-Init erneut dekoriert | nie |
-| Commons | `EventManager.getInstance()`, `PluginManager.getInstance()` | nie (bleiben global) |
+| Commons | `EventManager.getInstance()`, `PluginManager.getInstance()` | EventManager seit 2e pro Environment; PluginManager bleibt global |
 | JVM | `java.util.logging.LogManager`-Konfiguration, MDC | nie |
 
 Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initInstance()`, z.B. KRONE, CBX, TaskManagement) nur "meistens".
@@ -68,10 +68,10 @@ Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initI
 | Stufe | Inhalt | Umfang | Status |
 |---|---|---|---|
 | 1 | Rückverbindung `ArticleManager.getEnvironment()`, `getInstance()` `@Deprecated`, `shutdown()` mit explizitem Reset (Provisorium, entfällt mit Stufe 2) | KnowWE-core | **erledigt** (9e19e1b30) |
-| 2 | **Environment besitzt allen Zustand und alle Threads.** `Environment implements AutoCloseable`; `close()` statt `shutdown()`. Reset-Liste aus Stufe 1 ist leer | KnowWE-core (+ Commons für 2e) | **2a-2d erledigt** (56b2b2b63, Folgecommit), 2e offen |
+| 2 | **Environment besitzt allen Zustand und alle Threads.** `Environment implements AutoCloseable`; `close()` statt `shutdown()`. Reset-Liste aus Stufe 1 ist leer | KnowWE-core (+ Commons für 2e) | **erledigt** (2a-2d: 56b2b2b63, Folgecommit; 2e: 2026-09-09) |
 | 3 | Aufrufer migrieren nach vier Mustern (s.u.), repo-weise: KnowWE, KnowWE-DES, KnowWE-SSP, Experimental, KRONE, Internals, IE | alle Consumer | Muster 1 in allen Repos erledigt (2026-09-08), Muster 2-4 offen |
 | 3b | **`web`-Parameter entfernen.** Es gibt nur `DEFAULT_WEB`; der Parameter ist toter Ballast in Signaturen und Aufrufen. Eigener Durchgang nach den Mustern 1-3 und vor dem Löschen von `getInstance()`, weil er dieselben Stellen anfasst | alle Repos | offen |
-| 4 | `getInstance()`, `initInstance()`, `articleManagers`-Map löschen; Einstieg nur noch über den JSPWiki-Connector, der die Environment erzeugt und in den ServletContext legt; Testinfrastruktur auf `new Environment(...)` pro Test | alle, plus Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform | offen |
+| 4 | `getInstance()`, `initInstance()`, `articleManagers`-Map löschen; Einstieg nur noch über den JSPWiki-Connector, der die Environment erzeugt und in den ServletContext legt; Testinfrastruktur auf `new Environment(...)` pro Test; Listener-Singletons zu Environment-Services/geplugten Listenern (siehe offene Punkte) | alle, plus Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform | offen |
 
 ### Stufe 2 im Detail
 
@@ -93,8 +93,18 @@ Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initI
 - **2d Plugin-Singletons pro Environment.** Compiler aus dem Extension-Point per `getNewInstance()`, die Environment merkt
   sich ihre globalen Compiler (`isGlobalCompiler`). EventListener, die die Environment beim Start registriert, werden beim
   `close()` wieder abgemeldet (`EventManager.unregister`).
-- **2e EventManager pro Environment (Commons).** Offen. Erst nötig für zwei gleichzeitig laufende Environments; für
-  "alte weg, neue sauber" reicht 2d.
+- **2e EventManager pro Environment.** Erledigt 2026-09-09. Flach, ohne Hierarchie: `EventManager` (Commons) hat einen
+  öffentlichen Konstruktor und `close()`; die Environment besitzt einen eigenen (`Environment.getEventManager()`), alle
+  Wiki-Events werden dort gefeuert und alle Wiki-Listener dort registriert. `EventManager.getInstance()` ist aus
+  KnowWE-Sicht tabu und bleibt nur für Commons-eigene Events (SemanticCore: `RepositoryCreatedEvent`,
+  `SemanticCoreConnection*Event`; einziger KnowWE-Hörer `PermitTracker`) und Standalone-Anwendungen (TEKNO-Studio).
+  Eine Hierarchie (Environment-Manager unter dem globalen, Events in beide Richtungen) war implementiert und wurde
+  verworfen: das Sicherheitsnetz wurde nur an zwei Stellen gebraucht und die Semantik "wer hört was" wäre auf Dauer
+  unklar geblieben. Ein Listener am falschen Manager verliert Events jetzt still, das ist gewollt.
+  Zugriff: `KnowWEUtils.getEventManager(Section|Article|ArticleManager|Compiler|UserContext)`, `environment.getEventManager()`;
+  übergangsweise `KnowWEUtils.currentEventManager()` (deprecated, aktuelle Environment sonst global) für Stellen ohne
+  Kontextobjekt. Der `CompilationLocal`-Cache-Listener wird von der Environment registriert (`createCacheListener`),
+  `LongOperations` und `CIBuildManager` kennen ihre Environment, `OntologyExporter` ist ein geplugter EventListener.
 
 ### Stufe 3b: `web` entfernen
 
@@ -169,12 +179,12 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
   - Nicht angefasst (bewusst): `Plugins.registeredRightPanelTabs` (eigener DeInit-Listener), `ServletContextEventListener`-Tasks (Servlet-Lebenszyklus), `Priority`, `CredentialProviders`, `WikiAttachments.TEMP_FOLDER`, Commons-Singletons `EventManager`/`PluginManager`, JUL/MDC
   - `EnvironmentLifecycleTest` in KnowWE-Plugin-Core (dafür GlobalTestUtils + ExtensionPoints als Test-Deps und maven-dependency-plugin für `target/dependencies/output.txt`)
   - Voller KnowWE-Build mit Tests (87 Module): grün bis auf Git-Provider-Tests in JSPWiki-Connector, siehe "Bekannte Baseline-Fehler"
-- [ ] Stufe 2 (2a-2d erledigt, 2e offen)
+- [x] Stufe 2 (2a-2d 2026-09-08, 2e 2026-09-09)
   - [x] 2a Registries in die Instanz (2026-09-08): `SectionRegistry` pro Environment (`Section.get(id)` delegiert übergangsweise an die aktuelle), ScriptManager pro Environment (Compile-Scripts gehören jetzt dem `AbstractType` und werden beim Dekorieren des Typbaums pro Environment indexiert, `registerCompileScripts`), Sectionizer-Module, `occupiedTerms`, Messages-Index, blockierte ToolProvider, globale Notifications, RightPanel-Tabs als Environment-Felder bzw. Services; `CompilationLocal`-Caches am `CompilerManager`; `Scope`-Typcache schwach referenziert
   - [x] 2b Services + `close()` (2026-09-08): `Environment implements AutoCloseable`, `getService(Class, Supplier)`, `onClose(Runnable)`; `close()` = Kompilierung abwarten, `DeInitEvent`, CompilerManager/AttachmentManager stoppen, Close-Tasks rückwärts, Services schließen. `LongOperations` und `AttachmentUpdates` sind Services mit eigenem Thread-Pool/Timer. `ServletContextEventListener.contextDestroyed` schließt die Environment. `shutdown()` ist deprecated und delegiert. Neue Helfer `KnowWEUtils.findEnvironment/getEnvironment(Section|ArticleManager|Compiler|UserContext)`. Transitional: `Environment.peekInstance()`/`requireInstance()` (deprecated) für die verbliebenen kontextlosen statischen Aufrufer
   - [x] 2c Singleton-Typen (2026-09-08): `PlainText.getInstance()`, `LineContent.getInstance()`, `DashTreeElementContent.getDefaultInstance()` liefern jetzt eine Instanz pro Environment (über `getService`), ohne Environment eine frische. Kein Reset mehr in `close()`; die Reset-Liste aus Stufe 1 ist leer. Die 21 Singleton-Typen in den Plugins folgen in Stufe 3 nach demselben Muster.
   - [x] 2d Plugin-Singletons pro Environment (2026-09-08): `Plugins.getCompilers()` instanziiert die geplugten Compiler pro Aufruf (`getNewInstance`), die Environment merkt sich ihre (`isGlobalCompiler`). Die von der Environment registrierten Plugin-EventListener werden beim `close()` wieder abgemeldet. TagHandler, Instantiations, SectionizerModule bleiben Plugin-Singletons (zustandslos bzw. Zustand über `getService`).
-  - [ ] 2e EventManager pro Environment (Commons, offen)
+  - [x] 2e EventManager pro Environment (2026-09-09): Commons `EventManager` mit öffentlichem Konstruktor + `close()`; `Environment.getEventManager()`, `KnowWEUtils.getEventManager(...)`, `KnowWEUtils.currentEventManager()` (deprecated). Umgeschrieben per Skript in KnowWE, KnowWE-DES, KnowWE-SSP, Experimental, KRONE; Rest `currentEventManager()` im Hauptcode: KnowWE 18, DES 8, SSP 4, KRONE 2 (Servlet-/JSPWiki-Ebene, `Rdf2GoCore`, Listener-Singletons). Offen: Listener-Singletons (siehe offene Punkte)
 - [ ] Stufe 3 (in Arbeit seit 2026-09-08)
   - [x] Muster 1 (Kontextobjekt vorhanden) per Skript in KnowWE (c5b69d0e4), Experimental, KnowWE-DES, KnowWE-SSP, KRONE, Information-Extraction: ~470 Stellen. Ausgenommen: KnowWE-Plugin-Agents (KnowWE-DES, lokale Variablen statt Felder, manuell nachziehen)
   - [x] Muster 2 in KnowWE (2026-09-08, 9a2dfc2e5, b12b64604): statische Utilities bekommen eine Environment-/ArticleManager-Variante, die alte Signatur bleibt deprecated und delegiert an `Environment.requireInstance()`. Betroffen: `KnowWEUtils` (11 Methoden), `CIUtils`, `D3webUtils`, `FlowchartUtils`, `FlowchartToolMenuAction`, `TestCaseUtils`, `GraphDataBuilder`, `DownloadWikiZIPAction`, `Fingerprint`, `SnapshotAction`, `WikiFileProviderUtils`, `RecentChangesUtils`, `Plugins.addRendererToType`, `AttachmentUpdateMarkup.isAutoUpdatingActive`. `UserContext.getEnvironment()` als Default-Methode. Rest in KnowWE-main: 31 Stellen (Erzeuger `KnowWEPlugin`, `web`-Delegationen, Wertobjekte `WikiPageInfo`/`WikiAttachmentInfo`/`WikiAttachmentPair`/`WikiAttachmentResource`, `Rdf2GoCore`, `Rdf2GoUtils`, `Config`, `InitTerminologyHandler`, `FileChange`, `DefaultWikiTestObjectProvider`, `VersionMarkupType`, Test-Utilities)
@@ -204,6 +214,15 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (Muster 3, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.
 
+
+- **Listener-Singletons** (seit 2e relevant): statische Singletons, die sich einmalig per `currentEventManager()` als
+  Listener registrieren, hängen am Manager der Environment, die bei ihrer Erzeugung aktuell war. Bei einer zweiten
+  Environment im selben JVM (Tests, Re-Init) hören sie nichts mehr. Betroffen: KnowWE `CIHookManager`,
+  `LazyReferenceManager`, `StartCase`; DES `CompletionManager`, `SparqlCacheManager`, `TermSetManager`,
+  `D3webStatementProviderHandler` (statisches Flag), `COOMHierarchyProvider`/`OntologyHierarchyProvider`/SSP `SSCHierarchyProvider` (Plugin-Singletons,
+  registrieren sich selbst), `HeadlessKnowWE`, KnowSEC `SessionManager` und COOM `CoomConceptStore` (statische Blöcke); SSP `SSCService`, `SSCUtils`, `WikiConceptStore` (statische Blöcke);
+  KRONE `ConfigitBridgeExecutorHelper`. Lösung wie bisher: Environment-Service (`X.of(env)`) oder geplugter EventListener
+  (Environment registriert pro Instanz, wie `OntologyExporter`). Gehört zu Stufe 4.
 
 ## Bekannte Baseline-Fehler (unabhängig vom Umbau)
 

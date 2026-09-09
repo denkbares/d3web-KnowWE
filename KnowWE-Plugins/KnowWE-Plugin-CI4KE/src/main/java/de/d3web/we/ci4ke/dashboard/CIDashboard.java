@@ -40,6 +40,7 @@ import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.event.UserDefaultDashboardUpdateEvent;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -274,7 +275,7 @@ public class CIDashboard {
 					defaultDashboards.remove(getDashboardName());
 				}
 				if (!before.equals(defaultDashboards)) {
-					EventManager.getInstance().fireEvent(new UserDefaultDashboardUpdateEvent(Set.copyOf(defaultDashboards), user.getUserName()));
+					KnowWEUtils.getEventManager(user).fireEvent(new UserDefaultDashboardUpdateEvent(Set.copyOf(defaultDashboards), user.getUserName()));
 				}
 			}
 		}

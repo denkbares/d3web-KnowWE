@@ -39,6 +39,7 @@ import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.user.UserContext;
 
@@ -143,7 +144,7 @@ public class SessionProvider {
 		removeSessionInternally(context, kb, true);
 		Session session = SessionFactory.createSession(kb);
 		sessions.put(kb.getId(), new SessionEntry(session));
-		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session, context));
+		KnowWEUtils.getEventManager(context).fireEvent(new SessionCreatedEvent(session, context));
 		return session;
 	}
 
@@ -177,7 +178,7 @@ public class SessionProvider {
 	private void removeSessionInternally(UserContext context, KnowledgeBase kb, boolean terminate) {
 		SessionEntry removedEntry = sessions.remove(kb.getId());
 		if (removedEntry != null) {
-			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedEntry.session, context));
+			KnowWEUtils.getEventManager(context).fireEvent(new SessionRemovedEvent(removedEntry.session, context));
 			if (terminate) removedEntry.session.getPropagationManager().terminate();
 		}
 	}
@@ -198,7 +199,7 @@ public class SessionProvider {
 		// the create a new session entry for the session
 		entry = new SessionEntry(session);
 		sessions.put(key, entry);
-		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session, context));
+		KnowWEUtils.getEventManager(context).fireEvent(new SessionCreatedEvent(session, context));
 	}
 
 	/**

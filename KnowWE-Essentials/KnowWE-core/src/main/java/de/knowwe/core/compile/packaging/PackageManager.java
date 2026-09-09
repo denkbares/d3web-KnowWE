@@ -528,7 +528,7 @@ public class PackageManager {// implements EventListener {
 			packageToCompilingSections.computeIfAbsent(object, k -> new LinkedHashSet<>()).add(section);
 		}
 
-		EventManager.getInstance().fireEvent(new RegisteredPackageCompileSectionEvent(section));
+		KnowWEUtils.getEventManager(section).fireEvent(new RegisteredPackageCompileSectionEvent(section));
 	}
 
 	public boolean unregisterPackageCompileSection(Section<? extends PackageCompileType> section) {
@@ -545,7 +545,7 @@ public class PackageManager {// implements EventListener {
 			}
 		}
 
-		EventManager.getInstance().fireEvent(new UnregisteredPackageCompileSectionEvent(section));
+		KnowWEUtils.getEventManager(section).fireEvent(new UnregisteredPackageCompileSectionEvent(section));
 		return removed;
 	}
 

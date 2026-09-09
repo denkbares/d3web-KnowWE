@@ -101,6 +101,7 @@ import com.denkbares.strings.Text;
 import com.denkbares.utils.Stopwatch;
 import de.d3web.core.inference.RuleSet;
 import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -572,12 +573,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 				// Fire events
 				if (!this.removeCache.isEmpty()) {
-					EventManager.getInstance().fireEvent(new RemoveStatementsEvent(
+					KnowWEUtils.currentEventManager().fireEvent(new RemoveStatementsEvent(
 							Collections.unmodifiableCollection(this.removeCache), this));
 					removedStatements = true;
 				}
 				if (!this.insertCache.isEmpty()) {
-					EventManager.getInstance().fireEvent(new InsertStatementsEvent(
+					KnowWEUtils.currentEventManager().fireEvent(new InsertStatementsEvent(
 							Collections.unmodifiableCollection(this.removeCache),
 							Collections.unmodifiableCollection(this.insertCache), this));
 					insertedStatements = true;
@@ -585,7 +586,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				if (removedStatements || insertedStatements) {
 					// invalidate the result cache if there are any changes
 					sparqlCache.invalidate();
-					EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
+					KnowWEUtils.currentEventManager().fireEvent(new ChangedStatementsEvent(this));
 				}
 
 				// Logging
@@ -613,7 +614,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		finally {
 			// outside of commit an auto committing connection seems to be ok
 			this.lastModified = System.currentTimeMillis();
-			EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
+			KnowWEUtils.currentEventManager().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 		}
 		return removedStatements || insertedStatements;
 	}
@@ -1698,7 +1699,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			try {
 				if (isShutdown()) return;
 				this.isShutdown = true;
-				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+				KnowWEUtils.currentEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 				this.semanticCore.close();
 				this.threadPool.shutdownNow();
 				this.sparqlThreadPool.shutdownNow();
@@ -1713,7 +1714,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				try {
 					if (isShutdown()) return;
 					this.isShutdown = true;
-					EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+					KnowWEUtils.currentEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 					this.threadPool.shutdown();
 					this.sparqlThreadPool.shutdown();
 					this.statementCache.clear(); // free memory even if there are still references

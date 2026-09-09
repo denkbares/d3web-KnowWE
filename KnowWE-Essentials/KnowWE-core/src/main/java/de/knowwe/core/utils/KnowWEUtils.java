@@ -1434,6 +1434,64 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Returns the event manager of the environment the section belongs to, see {@link Environment#getEventManager()}.
+	 * Sections of articles created without any environment (plain unit tests) use the global event manager.
+	 */
+	@NotNull
+	public static EventManager getEventManager(@NotNull Section<?> section) {
+		return eventManagerOf(findEnvironment(section));
+	}
+
+	/**
+	 * Returns the event manager of the environment the article belongs to, see {@link #getEventManager(Section)}.
+	 */
+	@NotNull
+	public static EventManager getEventManager(@NotNull Article article) {
+		return eventManagerOf(findEnvironment(article));
+	}
+
+	/**
+	 * Returns the event manager of the environment the article manager belongs to, see {@link
+	 * #getEventManager(Section)}.
+	 */
+	@NotNull
+	public static EventManager getEventManager(@NotNull ArticleManager manager) {
+		return eventManagerOf(findEnvironment(manager));
+	}
+
+	/**
+	 * Returns the event manager of the environment the compiler belongs to, see {@link #getEventManager(Section)}.
+	 */
+	@NotNull
+	public static EventManager getEventManager(@NotNull Compiler compiler) {
+		return eventManagerOf(findEnvironment(compiler));
+	}
+
+	@NotNull
+	private static EventManager eventManagerOf(@Nullable Environment environment) {
+		// objects created without an environment exist only in plain unit tests; they share the global manager
+		return environment == null ? EventManager.getInstance() : environment.getEventManager();
+	}
+
+	@NotNull
+	public static EventManager getEventManager(@NotNull UserContext context) {
+		return context.getEnvironment().getEventManager();
+	}
+
+	/**
+	 * Returns the event manager of the current environment, or the global one if there is no environment.
+	 *
+	 * @deprecated transitional for code without a context object; use {@link #getEventManager(Section)} and its
+	 * siblings or {@link Environment#getEventManager()}
+	 */
+	@Deprecated
+	@NotNull
+	public static EventManager currentEventManager() {
+		Environment environment = Environment.peekInstance();
+		return environment == null ? EventManager.getInstance() : environment.getEventManager();
+	}
+
+	/**
 	 * Returns the environment of the specified user context (via its article manager).
 	 *
 	 * @throws IllegalStateException if there is no environment
@@ -1630,7 +1688,7 @@ public class KnowWEUtils {
 			manager.deleteArticle(oldArticleTitle);
 			// create article with the new content
 			Article newArticle = manager.registerArticle(newArticleTitle, oldArticle.getText());
-			EventManager.getInstance().fireEvent(new ArticleRenamedEvent(oldArticle, newArticle));
+			environment.getEventManager().fireEvent(new ArticleRenamedEvent(oldArticle, newArticle));
 		}
 		finally {
 			manager.commit();

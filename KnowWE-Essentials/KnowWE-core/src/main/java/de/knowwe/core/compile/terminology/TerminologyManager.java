@@ -138,7 +138,7 @@ public class TerminologyManager {
 			registeredDefinitions.add(termIdentifier);
 		}
 
-		EventManager.getInstance().fireEvent(new TermDefinitionRegisteredEvent<>(compiler, termIdentifier, termClass));
+		KnowWEUtils.getEventManager(termDefinition).fireEvent(new TermDefinitionRegisteredEvent<>(compiler, termIdentifier, termClass));
 		Messages.clearMessages(messageCompiler, termDefinition, this.getClass());
 	}
 
@@ -278,7 +278,7 @@ public class TerminologyManager {
 				boolean removedTermDefinition = termRefLog.removeTermDefinition(compiler, termDefinition,
 						termClass, termIdentifier);
 				//if(removedTermDefinition) {
-				EventManager.getInstance()
+				KnowWEUtils.getEventManager(compiler)
 						.fireEvent(new TermDefinitionUnregisteredEvent<>(compiler, termIdentifier, termClass));
 				//}
 			}

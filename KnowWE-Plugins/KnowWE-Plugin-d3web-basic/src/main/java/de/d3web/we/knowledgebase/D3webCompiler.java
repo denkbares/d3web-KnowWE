@@ -35,6 +35,7 @@ import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.OptInIncrementalCompileScript;
@@ -139,13 +140,13 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	@Override
 	public void compilePackages(String[] packagesToCompile) {
-		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
+		KnowWEUtils.getEventManager(this).fireEvent(new D3webCompilerStartEvent(this));
 
 		if (!tryIncrementalCompilation(packagesToCompile)) {
 			fullCompilation(packagesToCompile);
 		}
 
-		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
+		KnowWEUtils.getEventManager(this).fireEvent(new D3webCompilerFinishedEvent(this));
 
 		this.buildDate = new Date();
 	}

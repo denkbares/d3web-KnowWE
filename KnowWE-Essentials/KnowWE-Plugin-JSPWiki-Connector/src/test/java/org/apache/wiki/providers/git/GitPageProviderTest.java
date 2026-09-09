@@ -50,6 +50,7 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import de.knowwe.event.GitCommitEvent;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
 
 import static org.junit.Assert.*;
@@ -288,14 +289,14 @@ public class GitPageProviderTest {
 				events.add((GitCommitEvent) event);
 			}
 		};
-		EventManager.getInstance().registerListener(listener);
+		KnowWEUtils.currentEventManager().registerListener(listener);
 		try {
 			GitPageProvider restarted = new GitPageProvider();
 			restarted.initialize(engine, properties);
 			assertEquals(1, restarted.getVersionHistory("Orphan").size());
 		}
 		finally {
-			EventManager.getInstance().unregister(listener);
+			KnowWEUtils.currentEventManager().unregister(listener);
 		}
 
 		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());

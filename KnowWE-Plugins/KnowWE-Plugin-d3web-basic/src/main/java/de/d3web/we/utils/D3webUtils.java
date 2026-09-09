@@ -402,7 +402,7 @@ public class D3webUtils {
 					"terminated (possibly due to a detected propagation loop).", e);
 		}
 		if (context != null) {
-			EventManager.getInstance().fireEvent(new FindingSetEvent(fact, session, context));
+			KnowWEUtils.getEventManager(context).fireEvent(new FindingSetEvent(fact, session, context));
 		}
 	}
 

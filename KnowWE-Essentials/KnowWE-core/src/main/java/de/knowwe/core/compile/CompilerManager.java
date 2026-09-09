@@ -352,7 +352,7 @@ public class CompilerManager {
 		threadPool.execute(() -> {
 			Stopwatch stopwatch = new Stopwatch();
 			try {
-				EventManager.getInstance().fireEvent(new CompilationStartEvent(CompilerManager.this));
+				KnowWEUtils.getEventManager(articleManager).fireEvent(new CompilationStartEvent(CompilerManager.this));
 				doCompile(added, removed);
 			}
 			catch (Throwable e) {
@@ -361,7 +361,7 @@ public class CompilerManager {
 			finally {
 				// we fire this before the synchronization, so the method awaitCompilation waits
 				// till after this event is handled completely
-				EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
+				KnowWEUtils.getEventManager(articleManager).fireEvent(new CompilationFinishedEvent(CompilerManager.this));
 				synchronized (lock) {
 					running = null;
 					compileMessage = null;
@@ -749,7 +749,7 @@ public class CompilerManager {
 			compilers.remove(compiler);
 		}
 		Messages.clearMessages(compiler);
-		EventManager.getInstance().fireEvent(new CompilerRemovedEvent(compiler));
+		KnowWEUtils.getEventManager(compiler).fireEvent(new CompilerRemovedEvent(compiler));
 		compiler.destroy();
 	}
 

@@ -27,6 +27,7 @@ import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -61,8 +62,8 @@ public class AttachmentManager implements EventListener {
 
 	public AttachmentManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
-		synchronized (EventManager.getInstance()) {
-			EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+		synchronized (KnowWEUtils.getEventManager(articleManager)) {
+			KnowWEUtils.getEventManager(articleManager).registerListener(this, EventManager.RegistrationType.WEAK);
 		}
 	}
 
@@ -71,7 +72,7 @@ public class AttachmentManager implements EventListener {
 	 * environment is closed.
 	 */
 	public void shutdown() {
-		EventManager.getInstance().unregister(this);
+		KnowWEUtils.getEventManager(articleManager).unregister(this);
 		executor.shutdownNow();
 	}
 

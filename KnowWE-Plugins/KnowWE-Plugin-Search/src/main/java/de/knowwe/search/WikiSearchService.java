@@ -109,7 +109,7 @@ public class WikiSearchService implements EventListener, AutoCloseable {
 		return environment.getService(WikiSearchService.class, () -> {
 			WikiSearchService service = new WikiSearchService(environment, defaultIndexPath(environment));
 			service.open();
-			EventManager.getInstance().registerListener(service, EventManager.RegistrationType.PERSISTENT);
+			environment.getEventManager().registerListener(service, EventManager.RegistrationType.PERSISTENT);
 			return service;
 		});
 	}
@@ -124,7 +124,7 @@ public class WikiSearchService implements EventListener, AutoCloseable {
 
 	@Override
 	public void close() {
-		EventManager.getInstance().unregister(this);
+		environment.getEventManager().unregister(this);
 		shutdown();
 	}
 

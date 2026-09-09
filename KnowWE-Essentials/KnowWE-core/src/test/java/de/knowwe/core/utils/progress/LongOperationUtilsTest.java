@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleLifecycleFixture;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -61,11 +62,11 @@ public class LongOperationUtilsTest {
 		try {
 			// During a batch registration, section IDs can temporarily point to sections that are not live yet. An event
 			// for one of the other articles must not clean the operation in this transient state.
-			EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleRegisteredEvent(article));
 			assertSame(operation, LongOperationUtils.getLongOperation(section, operationId));
 		}
 		finally {
-			EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(articleManager, true));
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleManagerCommitDoneEvent(articleManager, true));
 			article.destroy(null);
 			ArticleLifecycleFixture.closeManager(articleManager);
 		}

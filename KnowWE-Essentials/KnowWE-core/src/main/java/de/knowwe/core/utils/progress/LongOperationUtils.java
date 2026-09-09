@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,11 @@ public class LongOperationUtils {
 			}
 		};
 
-		public LongOperations() {
-			EventManager.getInstance().registerListener(cleaner);
+		private final Environment environment;
+
+		public LongOperations(@NotNull Environment environment) {
+			this.environment = environment;
+			environment.getEventManager().registerListener(cleaner);
 		}
 
 		public synchronized ExecutorService getThreadPool() {
@@ -83,7 +87,7 @@ public class LongOperationUtils {
 
 		@Override
 		public synchronized void close() {
-			EventManager.getInstance().unregister(cleaner);
+			environment.getEventManager().unregister(cleaner);
 			operations.clear();
 			if (threadPool != null) {
 				threadPool.shutdownNow();
@@ -93,7 +97,7 @@ public class LongOperationUtils {
 	}
 
 	private static LongOperations operations(Environment environment) {
-		return environment.getService(LongOperations.class, LongOperations::new);
+		return environment.getService(LongOperations.class, () -> new LongOperations(environment));
 	}
 
 	/**

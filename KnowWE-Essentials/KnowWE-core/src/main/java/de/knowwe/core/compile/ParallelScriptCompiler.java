@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
@@ -228,7 +229,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 
 	@Override
 	public void compile() {
-		EventManager.getInstance().fireEvent(new ScriptCompilerCompilePhaseStartEvent<>(this));
+		KnowWEUtils.getEventManager(compiler).fireEvent(new ScriptCompilerCompilePhaseStartEvent<>(this));
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
@@ -274,7 +275,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 			List<Section<?>> sectionListThisPrio = compileLog.getOrDefault(lastPriority, Collections.emptyList())
 					.stream().map(Pair::getA).collect(Collectors.toList());
 			// event needs to be fired _after_ the currentPriority (and Iterator) has been incremented
-			EventManager.getInstance()
+			KnowWEUtils.getEventManager(compiler)
 					.fireEvent(new CompilePriorityLevelFinishedEvent(compiler, lastPriority, sectionListThisPrio, !compileLog.isEmpty()));
 		}
 		else {
@@ -285,7 +286,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	@Override
 	@SuppressWarnings("unchecked")
 	public void destroy() {
-		EventManager.getInstance().fireEvent(new ScriptCompilerDestroyPhaseStartEvent<>(this));
+		KnowWEUtils.getEventManager(compiler).fireEvent(new ScriptCompilerDestroyPhaseStartEvent<>(this));
 		while (true) {
 			CompilePair pair = next();
 			if (pair == null) break;

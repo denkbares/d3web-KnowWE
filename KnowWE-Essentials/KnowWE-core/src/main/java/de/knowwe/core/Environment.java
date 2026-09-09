@@ -148,9 +148,12 @@ public final class Environment implements AutoCloseable {
 	private final List<Compiler> pluggedCompilers = new ArrayList<>();
 
 	/**
-	 * The plugged event listeners this environment registered at the (JVM-wide) event manager; unregistered on close.
+	 * The event manager of this environment. All wiki events are fired here and all wiki listeners are registered here;
+	 * the JVM-wide {@link EventManager#getInstance()} is not involved. Listeners registered here die with the
+	 * environment.
 	 */
-	private final List<EventListener> pluggedEventListeners = new ArrayList<>();
+	private final EventManager eventManager = new EventManager();
+
 
 	/**
 	 * Hard coded name of the default web
@@ -240,7 +243,7 @@ public final class Environment implements AutoCloseable {
 			throw e;
 		}
 		initialized = true;
-		EventManager.getInstance().fireEvent(new InitEvent());
+		environment.eventManager.fireEvent(new InitEvent());
 
 		LOGGER.info("INITIALIZED KNOWWE ENVIRONMENT");
 	}
@@ -306,12 +309,7 @@ public final class Environment implements AutoCloseable {
 			if (instance == this) initialized = false;
 		}
 		awaitCompileTerminationForShutdown();
-		EventManager.getInstance().fireEvent(new DeInitEvent());
-		// the plugged listeners belong to this environment's lifecycle; the event manager itself is JVM-wide
-		for (EventListener listener : pluggedEventListeners) {
-			EventManager.getInstance().unregister(listener);
-		}
-		pluggedEventListeners.clear();
+		eventManager.fireEvent(new DeInitEvent());
 		// stop the compilers first: destroying their content may still use services (e.g. the message index)
 		ArticleManager manager = this.articleManager;
 		if (manager != null) {
@@ -322,6 +320,7 @@ public final class Environment implements AutoCloseable {
 		}
 		runCloseTasks();
 		closeServices();
+		eventManager.close();
 		closed = true;
 		// release what is owned by this environment anyway, to make leaks through stale references less harmful
 		scriptManagers.clear();
@@ -396,6 +395,8 @@ public final class Environment implements AutoCloseable {
 	}
 
 	private void initEventManager() {
+		// core listeners
+		eventManager.registerListener(CompilationLocal.createCacheListener());
 		// get all EventListeners
 		List<Extension> extensions = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
@@ -403,8 +404,7 @@ public final class Environment implements AutoCloseable {
 		for (Extension extension : extensions) {
 			Object o = extension.getSingleton();
 			if (o instanceof EventListener listener) {
-				EventManager.getInstance().registerListener(listener);
-				pluggedEventListeners.add(listener);
+				eventManager.registerListener(listener);
 			}
 		}
 	}
@@ -438,7 +438,7 @@ public final class Environment implements AutoCloseable {
 	 *
 	 */
 	public void reinitializeForNewWikiContent() throws IOException {
-		EventManager.getInstance().fireEvent(new WikiContentReplacedEvent());
+		eventManager.fireEvent(new WikiContentReplacedEvent());
 
 		getArticleManager().removeAllArticles();
 
@@ -465,6 +465,15 @@ public final class Environment implements AutoCloseable {
 	public synchronized ArticleManager getArticleManager() {
 		if (articleManager == null) articleManager = new DefaultArticleManager(this);
 		return articleManager;
+	}
+
+	/**
+	 * Returns the event manager of this environment. All wiki events are fired here; listeners registered here are
+	 * dropped when the environment is closed.
+	 */
+	@NotNull
+	public EventManager getEventManager() {
+		return eventManager;
 	}
 
 	public RootType getRootType() {
@@ -516,14 +525,14 @@ public final class Environment implements AutoCloseable {
 			ArticleUpdateEvent event = new ArticleUpdateEvent(title, author);
 			int latestVersion = getLatestVersionNumber(title);
 			event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
-			EventManager.getInstance().fireEvent(event);
+			eventManager.fireEvent(event);
 			articleManager.open();
 			try {
 				articleManager.getCompilerManager()
 						.setCompileMessage("Reason: saving page " + title + ", user: " + author);
 				// create article with the new content
 				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, cleanedContent);
-				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article, author));
+				if (fullParse) eventManager.fireEvent(new FullParseEvent(article, author));
 			}
 			finally {
 				articleManager.commit();

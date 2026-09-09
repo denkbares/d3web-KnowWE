@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -93,7 +94,7 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 
 		ArticleManager mgr = context.getArticleManager();
 		for (RenamingCommand command : renamingCommands) {
-			EventManager.getInstance()
+			KnowWEUtils.getEventManager(context)
 					.fireEvent(new TermRenamingStartEvent(mgr, context, command.termIdentifier, command.replacementIdentifier));
 		}
 
@@ -102,7 +103,7 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 		if (failed) return;
 
 		for (RenamingCommand command : renamingCommands) {
-			EventManager.getInstance()
+			KnowWEUtils.getEventManager(context)
 					.fireEvent(new TermRenamingFinishEvent(mgr, context, command.termIdentifier, command.replacementIdentifier));
 		}
 

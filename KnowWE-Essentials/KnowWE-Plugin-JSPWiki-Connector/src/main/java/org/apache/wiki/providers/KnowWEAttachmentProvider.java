@@ -28,6 +28,7 @@ import org.apache.wiki.event.WikiEventManager;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.event.ArticleUpdateEvent;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * AttachmentProvider that justs fixes the BasicAttachmentProvider from JSPWiki, which does not fire proper events when
@@ -44,14 +45,14 @@ public class KnowWEAttachmentProvider extends BasicAttachmentProvider {
 	public void putAttachmentData(org.apache.wiki.api.core.Attachment att, InputStream data) throws ProviderException, IOException {
 		super.putAttachmentData(att, data);
 		WikiEventManager.fireEvent(this, new WikiAttachmentEvent(this, att.getParentName(), att.getFileName(), WikiAttachmentEvent.STORED));
-		EventManager.getInstance()
+		KnowWEUtils.currentEventManager()
 				.fireEvent(new ArticleUpdateEvent(att.getParentName() + "/" + att.getFileName(), att.getAuthor()));
 	}
 
 	@Override
 	public void deleteAttachment(org.apache.wiki.api.core.Attachment att) throws ProviderException {
 		super.deleteAttachment(att);
-		EventManager.getInstance()
+		KnowWEUtils.currentEventManager()
 				.fireEvent(new ArticleUpdateEvent(att.getParentName() + "/" + att.getFileName(), att.getAuthor()));
 		if (!"false".equals(att.getAttribute(FIRE_DELETE_EVENT))) {
 			WikiEventManager.fireEvent(this, new WikiAttachmentEvent(this, att.getParentName(), att.getFileName(), WikiAttachmentEvent.DELETED));

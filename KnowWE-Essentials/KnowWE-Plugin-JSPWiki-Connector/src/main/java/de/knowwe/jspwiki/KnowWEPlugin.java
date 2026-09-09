@@ -405,7 +405,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		List<PageAppendHandler> appendHandlers = article.getArticleManager().getEnvironment().getAppendHandlers();
 		renderPrePageAppendHandler(userContext, article, renderResult, appendHandlers);
 		article.getRootType().getRenderer().render(article.getRootSection(), userContext, renderResult);
-		EventManager.getInstance().fireEvent(new PageRenderedEvent(article.getTitle(), userContext));
+		KnowWEUtils.getEventManager(article).fireEvent(new PageRenderedEvent(article.getTitle(), userContext));
 		renderPostPageAppendHandler(userContext, article, renderResult, appendHandlers);
 	}
 
@@ -541,7 +541,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			LOGGER.warn("Caught InterruptedException while waiting until compilation is finished.", e);
 		}
 		articleManager.setInitialized(true);
-		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
+		KnowWEUtils.getEventManager(articleManager).fireEvent(new InitializedArticlesEvent(articleManager));
 		stopwatchAll.log("Initialized all articles");
 	}
 
@@ -587,7 +587,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				// don't call deleteArticle if the article is already deleted
 				final Article article = articleManager.getArticle(e.getPageName());
 				if (article != null) {
-					EventManager.getInstance().fireEvent(new ArticleDeletedEvent(article));
+					KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleDeletedEvent(article));
 					articleManager.deleteArticle(e.getPageName());
 				}
 			}).start();
@@ -630,7 +630,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				version.setCommitHash(gitCommitRev);
 				articleUpdateEvent.setVersion(version);
 			}
-			EventManager.getInstance().fireEvent(articleUpdateEvent);
+			KnowWEUtils.getEventManager(getDefaultArticleManager()).fireEvent(articleUpdateEvent);
 		}
 	}
 
@@ -793,12 +793,12 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		@Override
 		public void run() {
 			if (event.getType() == WikiAttachmentEvent.STORED) {
-				EventManager.getInstance()
+				KnowWEUtils.getEventManager(articleManager)
 						.fireEvent(new AttachmentStoredEvent(event.getParentName(),
 								event.getFileName()));
 			}
 			else if (event.getType() == WikiAttachmentEvent.DELETED) {
-				EventManager.getInstance()
+				KnowWEUtils.getEventManager(articleManager)
 						.fireEvent(new AttachmentDeletedEvent(event.getParentName(),
 								event.getFileName()));
 			}

@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.event.GitCommitEvent;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 
 /**
@@ -138,7 +139,7 @@ public record WikiGitContext(
 			GitCommitEvent.Origin origin
 	) {
 		WikiEventManager.fireEvent(source, new GitVersioningWikiEvent(source, eventType, author, pages, commitHash));
-		EventManager.getInstance().fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, origin));
+		KnowWEUtils.currentEventManager().fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, origin));
 	}
 
 	/**

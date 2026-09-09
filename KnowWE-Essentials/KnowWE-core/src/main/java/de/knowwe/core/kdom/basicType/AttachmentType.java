@@ -138,8 +138,8 @@ public class AttachmentType extends AbstractType {
 
 		private AttachmentChangedListener(Section<AttachmentType> section) {
 			this.section = section;
-			synchronized (EventManager.getInstance()) {
-				EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+			synchronized (KnowWEUtils.getEventManager(section)) {
+				KnowWEUtils.getEventManager(section).registerListener(this, EventManager.RegistrationType.WEAK);
 			}
 		}
 
@@ -159,7 +159,7 @@ public class AttachmentType extends AbstractType {
 		}
 
 		public void destroy() {
-			EventManager.getInstance().unregister(this);
+			KnowWEUtils.getEventManager(section).unregister(this);
 		}
 
 		@Override

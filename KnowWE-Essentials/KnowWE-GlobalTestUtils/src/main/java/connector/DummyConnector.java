@@ -469,7 +469,7 @@ public class DummyConnector implements WikiConnector {
 		ArticleUpdateEvent event = new ArticleUpdateEvent(title, author);
 		int latestVersion = Environment.retrieveLatestVersionNumber(title);
 		event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
-		EventManager.getInstance().fireEvent(event);
+		environment.getEventManager().fireEvent(event);
 
 		environment.getArticleManager().registerArticle(title, content);
 		return true;

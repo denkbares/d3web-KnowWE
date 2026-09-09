@@ -176,7 +176,7 @@ public class GitAutoUpdater {
 		if (title != null) {
 			LOGGER.info("do full parse");
 			Article article = articleManager.getArticle(title);
-			EventManager.getInstance().fireEvent(new FullParseEvent(article, null));
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new FullParseEvent(article, null));
 		}
 
 		stopWatch.stop();

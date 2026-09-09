@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.kdom.parsing.Section;
@@ -81,8 +80,13 @@ public final class CompilationLocal<E> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompilationLocal.class);
 
-	static {
-		EventManager.getInstance().registerListener(new EventListener() {
+	/**
+	 * Creates the listener that keeps the caches of the compiler managers of an environment up to date. The environment
+	 * registers it at its event manager.
+	 */
+	@NotNull
+	public static EventListener createCacheListener() {
+		return new EventListener() {
 			@Override
 			public Collection<Class<? extends Event>> getEvents() {
 				return List.of(
@@ -112,7 +116,7 @@ public final class CompilationLocal<E> {
 					CompletableFuture.runAsync(() -> cleanupStaleSectionCaches(cache));
 				}
 			}
-		});
+		};
 	}
 
 	/**

@@ -44,6 +44,7 @@ import de.d3web.we.ci4ke.build.CIDashboardPriorityOverrideEvent;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.event.UserDefaultDashboardUpdateEvent;
 import de.knowwe.core.compile.CompilationFinishedEvent;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
@@ -81,7 +82,7 @@ public class CIHookManager implements EventListener {
 
 	private CIHookManager() {
 		// prevent instantiation
-		EventManager.getInstance().registerListener(this);
+		KnowWEUtils.currentEventManager().registerListener(this);
 	}
 
 	public synchronized void registerHook(CIHook hook) {
@@ -138,7 +139,7 @@ public class CIHookManager implements EventListener {
 			if (defaultDashboardsOfTriggeringUser.contains(hook.getDashboard().getDashboardName())) {
 				LOGGER.info("Set max prio for CI dashboard " + hook.getDashboard()
 						.getDashboardName() + " due to user " + userName + " triggering the last compilation");
-				EventManager.getInstance()
+				KnowWEUtils.currentEventManager()
 						.fireEvent(new CIDashboardPriorityOverrideEvent(hook.getDashboard(), Double.MAX_VALUE));
 			}
 		}

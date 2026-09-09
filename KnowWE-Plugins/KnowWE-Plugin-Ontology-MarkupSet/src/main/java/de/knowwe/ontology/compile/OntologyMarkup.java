@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
@@ -208,8 +207,6 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 				super.renderContentsAndAnnotations(section, user, string);
 			}
 		});
-
-		EventManager.getInstance().registerListener(OntologyExporter.getInstance());
 	}
 
 	@NotNull

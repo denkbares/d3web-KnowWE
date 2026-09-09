@@ -1,6 +1,7 @@
 package de.knowwe.core;
 
 import java.util.ArrayList;
+import de.knowwe.core.utils.KnowWEUtils;
 import java.util.List;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -45,14 +46,14 @@ public class ServletContextEventListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(final ServletContextEvent servletContextEvent) {
-		EventManager.getInstance().fireEvent(new ServletContextInitializedEvent(servletContextEvent));
+		KnowWEUtils.currentEventManager().fireEvent(new ServletContextInitializedEvent(servletContextEvent));
 	}
 
 	@Override
 	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 		destroyInProgress = true;
 		LOGGER.info("Executing ContextDestroyedTask...");
-		EventManager.getInstance().fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
+		KnowWEUtils.currentEventManager().fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
 		contextDestroyedTask.forEach(task -> task.accept(servletContextEvent));
 		LOGGER.info("Done executing ContextDestroyedTask, clearing...");
 		contextDestroyedTask.clear();
