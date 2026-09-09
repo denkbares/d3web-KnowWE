@@ -154,6 +154,11 @@ public final class Environment implements AutoCloseable {
 	 */
 	private final EventManager eventManager = new EventManager();
 
+	/**
+	 * The plugged event listeners of this environment, created per environment, see {@link #initEventManager()}.
+	 */
+	private final List<EventListener> pluggedListeners = new ArrayList<>();
+
 
 	/**
 	 * Hard coded name of the default web
@@ -468,11 +473,26 @@ public final class Environment implements AutoCloseable {
 				Plugins.EXTENDED_PLUGIN_ID,
 				Plugins.EXTENDED_POINT_EventListener)));
 		for (Extension extension : extensions) {
-			Object o = extension.getSingleton();
+			// every environment gets its own listener instances, so listeners may hold state of their environment
+			Object o = extension.getNewInstance();
 			if (o instanceof EventListener listener) {
+				if (listener instanceof EnvironmentAware aware) aware.attach(this);
+				pluggedListeners.add(listener);
 				eventManager.registerListener(listener);
 			}
 		}
+	}
+
+	/**
+	 * Returns the plugged event listener of the specified type that was created for this environment, or null if no
+	 * such listener is plugged. Use this instead of static singletons to reach a listener from other code.
+	 */
+	@Nullable
+	public <T extends EventListener> T getListener(@NotNull Class<T> type) {
+		for (EventListener listener : pluggedListeners) {
+			if (type.isInstance(listener)) return type.cast(listener);
+		}
+		return null;
 	}
 
 	private void initCompilers() {
