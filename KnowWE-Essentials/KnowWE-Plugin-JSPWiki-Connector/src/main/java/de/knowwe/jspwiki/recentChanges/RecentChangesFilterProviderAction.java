@@ -75,10 +75,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			@NotNull Map<String, Set<String>> filterTexts = getFilterTexts(context, filterTextQuery);
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
-			Comparator<Map.Entry<String, Set<String>>> keyComparator = Map.Entry.comparingByKey(COMPARATOR);
-			if (getColumnName(context).equals(LAST_MODIFIED)) {
-				keyComparator = keyComparator.reversed();
-			}
+			Comparator<Map.Entry<String, Set<String>>> keyComparator = Map.Entry.comparingByKey(getKeyComparator(getColumnName(context)));
 			filterTexts.entrySet()
 					.stream()
 					.sorted(keyComparator)
@@ -116,30 +113,38 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
 		String columnName = context.getParameter(COLUMN_NAME);
-		LinkedHashMap<String, Set<String>> filterTexts = new LinkedHashMap<>();
-		Set<String> filteredOut = new LinkedHashSet<>();
-		Set<String> addedFilterValueTexts = new LinkedHashSet<>();
+		Set<String> filteredOut = new HashSet<>();
+		Set<String> valueTexts = new LinkedHashSet<>();
 		Section<?> section = getSection(context);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
 		filter.put(columnName, Collections.emptySet());
 		Set<Page> filteredRecentChanges = RecentChangesUtils.getRecentChangesFiltered(context, filter);
 		for (Page page : filteredRecentChanges) {
 			String text = RecentChangesUtils.getColumnValueByName(columnName, page);
-			if (addedFilterValueTexts.contains(text) || filteredOut.contains(text)) continue;
+			if (valueTexts.contains(text) || filteredOut.contains(text)) continue;
 			if (isFilteredOut(filterTextQuery, text)) {
 				filteredOut.add(text);
 				continue;
 			}
-			filterTexts.computeIfAbsent(text, k -> new HashSet<>()).add(text);
-			addedFilterValueTexts.add(text);
-			if (filterTexts.size() >= MAX_FILTER_COUNT) {
-				break;
-			}
+			valueTexts.add(text);
 		}
-		if (filterTexts.size() >= MAX_FILTER_COUNT) {
+		// Collect all values first and only truncate after sorting: the pages are not ordered by column value
+		// (with intermediate versions shown, they are grouped by page instead of by date), so cutting off during
+		// collection would produce an arbitrary subset with gaps instead of the first MAX_FILTER_COUNT values.
+		boolean truncated = valueTexts.size() > MAX_FILTER_COUNT;
+		LinkedHashMap<String, Set<String>> filterTexts = new LinkedHashMap<>();
+		valueTexts.stream()
+				.sorted(getKeyComparator(columnName))
+				.limit(MAX_FILTER_COUNT)
+				.forEach(text -> filterTexts.computeIfAbsent(text, k -> new HashSet<>()).add(text));
+		if (truncated) {
 			addEmptyIfNotFiltered(filterTexts, filterTextQuery);
 		}
 		return filterTexts;
+	}
+
+	private static Comparator<String> getKeyComparator(String columnName) {
+		return LAST_MODIFIED.equals(columnName) ? COMPARATOR.reversed() : COMPARATOR;
 	}
 
 	private void addEmptyIfNotFiltered(Map<String, Set<String>> filterTexts, String filterTextQuery) {
