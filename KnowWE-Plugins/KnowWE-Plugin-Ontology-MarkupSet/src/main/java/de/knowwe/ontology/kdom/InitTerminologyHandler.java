@@ -51,7 +51,6 @@ import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -397,7 +396,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 		String key = attachment.getPath() + "_" + attachment.getDate();
 		synchronized (importCache) {
 			cache = importCache.computeIfAbsent(key, k -> {
-				Rdf2GoCore dummy = new Rdf2GoCore(compiler.getName() + "-InitTerminology", null, RepositoryConfigs.find("RDFS"));
+				Rdf2GoCore dummy = new Rdf2GoCore(KnowWEUtils.getEnvironment(compiler), compiler.getName() + "-InitTerminology", null, RepositoryConfigs.find("RDFS"));
 				readFrom(compiler, section, dummy, attachment, syntax);
 				return new TermCache(dummy, attachment.getPath(), attachment.getDate());
 			});

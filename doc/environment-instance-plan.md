@@ -71,7 +71,7 @@ Deshalb funktioniert das heutige Muster in Tests (`shutdown()` + erneutes `initI
 | 2 | **Environment besitzt allen Zustand und alle Threads.** `Environment implements AutoCloseable`; `close()` statt `shutdown()`. Reset-Liste aus Stufe 1 ist leer | KnowWE-core (+ Commons für 2e) | **erledigt** (2a-2d: 56b2b2b63, Folgecommit; 2e: 2026-09-09) |
 | 3 | Aufrufer migrieren nach vier Mustern (s.u.), repo-weise: KnowWE, KnowWE-DES, KnowWE-SSP, Experimental, KRONE, Internals, IE | alle Consumer | Muster 1 in allen Repos erledigt (2026-09-08), Muster 2-4 offen |
 | 3b | **`web`-Parameter entfernen.** Es gibt nur `DEFAULT_WEB`; der Parameter ist toter Ballast in Signaturen und Aufrufen. Eigener Durchgang nach den Mustern 1-3 und vor dem Löschen von `getInstance()`, weil er dieselben Stellen anfasst | alle Repos | offen |
-| 4 | `getInstance()`, `initInstance()`, `articleManagers`-Map löschen; Einstieg nur noch über den JSPWiki-Connector, der die Environment erzeugt und in den ServletContext legt; Testinfrastruktur auf `new Environment(...)` pro Test; Listener-Singletons zu Environment-Services/geplugten Listenern (siehe offene Punkte) | alle, plus Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform | offen |
+| 4 | Paket 1 (Listener-Singletons) erledigt 2026-09-09. `getInstance()`, `initInstance()`, `articleManagers`-Map löschen; Einstieg nur noch über den JSPWiki-Connector, der die Environment erzeugt und in den ServletContext legt; Testinfrastruktur auf `new Environment(...)` pro Test | alle, plus Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform | offen |
 
 ### Stufe 2 im Detail
 
@@ -204,6 +204,12 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
   - [ ] Muster 3, Rest mit Designbedarf (eigenes Paket): KRONE: 5 Kopien von `getPageProvider()` (TaskIntegrationRunService, GetTasksToChooseRunService, ReleaseOverviewRenderer, CoreReleaseQueryApi, TaskLogDiffUtil) -> `WikiGitRuntime.getPageProvider(env)`, `TaskLogDiffUtil.getInstance()`, `SynchronizingRepositoryClient.getRepoClient()`, `SAPClient.createClientFromWikiConfig()`, `ConfigitBridgeAction.getXmlFileName(product)`, `RequestPriority`, JAX-RS/Filter (`CollisionApi`, `ApiWikiFilter`), KRONE-`PropertyUtil`-Aufrufer; KnowWE-DES: `CoomModelProvider` (statische Modell-Map, 46 Stellen), `CoomCompiler.findByName(name)`, `CoomConceptStore`, `TemporaryModelRegistry`, `GitLabExportAction`/`GitLabServiceFactory`, `CoomAgentTools.allCompilers/awaitCompilation`, Git-Server-Connector (`KnowWEGitServerConnector`, `GitWikiProperties`), MCP-`engine()`-Helfer, KnowSEC (`SessionManager`, `KnowSECSearchProvider`, `KnowSECUtils.getTitle`), CI-TestObjectProvider (`CoomCompilerTestProvider`, `CompilerModelTestProvider`, `RegressionTestProvider`, KRONE `KONAPModelTestObjectProvider`, `CBXAbstractTest`); Experimental: 57 Stellen in Legacy-Plugins (Defi, WissKont, OphtoVis, Baseline, ...); Quartz-Einstieg `CBXProgressDownloadJob.execute`; `Rdf2GoCore` (asynchroner Shutdown-Thread, siehe offene Punkte)
   - [ ] Muster 4 (JSPs, 9 Dateien)
   - [ ] Tests (128 Stellen): Umstieg auf `new Environment`/JUnit-Rule sobald Stufe 4 den Konstruktor öffnet
+- [ ] Stufe 4 (seit 2026-09-09)
+  - [x] Paket 1, Listener-Singletons pro Environment (2026-09-09, KnowWE 258261b0e + Folgecommit, DES/SSP/KRONE): siehe offene Punkte. Dabei `Rdf2GoCore` mit Environment.
+  - [ ] Paket 2, `requireInstance()`-Reststellen mit Kontext-Durchreichung; Designfrage: definierter Weg zur Environment für Servlet-/JAX-RS-Einstiege, Quartz-Jobs, `CoomModelProvider` (z.B. Lookup über den ServletContext)
+  - [ ] Paket 3, Konstruktor öffnen, Tests auf `new Environment` (128 Stellen), `getInstance()`/`initInstance()` löschen
+  - [ ] Paket 4, `web`-Reste, `getWeb()`/`DEFAULT_WEB`, Rdf2GoCore-Shutdown-Thread, Kompilier-Check GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform
+- [x] master eingemergt (2026-09-09): KnowWE f85e756f7 (Konflikte in `Article`, `Section`, `Messages`: String-IDs mit Namespace und Publikation bei Queue-Zeit aus master, `SectionRegistry` pro Environment hält jetzt `Map<String, Section>`, Sperren auf der Registry), KnowWE-DES f667721bf + ad71597b1 (neue Task-Tools und `CoomExportTool` auf die Environment-APIs angepasst)
 - [x] Consumer-Repos geklont (2026-09-07): Experimental, KnowWE-DES, KnowWE-SSP, KRONE (enthält KnowWE-KONAP-Integration), Information-Extraction. Zusammen mit denkbares-Internals sind das alle Repos mit `Environment.getInstance()`-Aufrufern.
 - [ ] Nur für Stufe 4 relevant (referenzieren KnowWE-Artefakte, aber ohne `getInstance()`-Aufrufe): GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform. Vor dem Entfernen von APIs klonen und kompilieren.
 
@@ -215,14 +221,26 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (Muster 3, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.
 
 
-- **Listener-Singletons** (seit 2e relevant): statische Singletons, die sich einmalig per `currentEventManager()` als
-  Listener registrieren, hängen am Manager der Environment, die bei ihrer Erzeugung aktuell war. Bei einer zweiten
-  Environment im selben JVM (Tests, Re-Init) hören sie nichts mehr. Betroffen: KnowWE `CIHookManager`,
-  `LazyReferenceManager`, `StartCase`; DES `CompletionManager`, `SparqlCacheManager`, `TermSetManager`,
-  `D3webStatementProviderHandler` (statisches Flag), `COOMHierarchyProvider`/`OntologyHierarchyProvider`/SSP `SSCHierarchyProvider` (Plugin-Singletons,
-  registrieren sich selbst), `HeadlessKnowWE`, KnowSEC `SessionManager` und COOM `CoomConceptStore` (statische Blöcke); SSP `SSCService`, `SSCUtils`, `WikiConceptStore` (statische Blöcke);
-  KRONE `ConfigitBridgeExecutorHelper`. Lösung wie bisher: Environment-Service (`X.of(env)`) oder geplugter EventListener
-  (Environment registriert pro Instanz, wie `OntologyExporter`). Gehört zu Stufe 4.
+- **Listener-Singletons** (seit 2e relevant, erledigt 2026-09-09 als Stufe 4, Paket 1): statische Singletons, die
+  sich einmalig per `currentEventManager()` als Listener registrierten, hingen am Manager der beim Klassenladen
+  aktuellen Environment. Jetzt Environment-Services (`X.of(env|section|compiler|...)`, `getInstance()` deprecated):
+  KnowWE `CIHookManager`, `LazyReferenceManager`; DES `CompletionManager`, `SparqlCacheManager`; SSP `SSCUtils`;
+  KRONE `ConfigitBridgeExecutorHelper` (Executor endet mit der Environment statt per ServletContext-Event). Geplugte
+  EventListener statt Selbstregistrierung: `OntologyExporter`, Dialog `SessionKnowledgeBaseListener` (aus `StartCase`),
+  KnowSEC `SessionManager.CompilerFinishedListener`. Pro Environment registrierte Hilfs-Listener über `getService`:
+  `CoomConceptStore.Stores`/`WikiConceptStore.Stores` (Caches je Rdf2GoCore), `SSCService.Cleaner`,
+  `D3webCompilerFinishedCommitter` (CBX), die `CompileEventListener` der TermBrowser-CompileScript-Provider.
+  Geplugte `HierarchyProvider`-Singletons registrieren sich in `CachedHierarchyProvider.setCompiler` am Manager der
+  Compiler-Environment (WEAK) statt im Konstruktor. `TermSetManager` hängt an der Environment seiner Section.
+  Bewusst geblieben: `HeadlessKnowWE` (Erzeuger der Environment, ein Lauf pro JVM). Rest `currentEventManager()` im
+  Hauptcode: KnowWE 7 (Servlet-/JSPWiki-Ebene, `KnowWEAttachmentProvider`, `WikiGitContext`), DES 2, KRONE 1.
+- **`Rdf2GoCore` kennt seine Environment** (2026-09-09): neuer Konstruktor `Rdf2GoCore(@Nullable Environment, name,
+  lns, config)`; `OntologyCompiler` und `InitTerminologyHandler` übergeben sie, die alten Konstruktoren nehmen
+  übergangsweise `Environment.peekInstance()` (Standalone-Cores in Tests/Exporten ohne Environment bleiben erlaubt).
+  `findEnvironment()` (nullable) und `getEventManager()` (Environment-Manager, sonst `currentEventManager()`); die
+  Core-Events werden dort gefeuert. Caches je Core (`SparqlCacheManager`, Concept-Stores, `SSCUtils`) hängen damit
+  an der Environment des Cores; Standalone-Cores teilen sich eine am globalen Manager registrierte Instanz. Offen
+  bleibt der asynchrone Shutdown-Thread (siehe unten).
 
 ## Bekannte Baseline-Fehler (unabhängig vom Umbau)
 

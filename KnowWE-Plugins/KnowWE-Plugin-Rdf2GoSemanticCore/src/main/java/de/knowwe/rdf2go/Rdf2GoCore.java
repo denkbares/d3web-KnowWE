@@ -123,6 +123,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private final String name;
 
+	/**
+	 * The environment this core belongs to, or null for standalone cores (e.g. exports, unit tests) that are not
+	 * bound to a wiki.
+	 */
+	@Nullable
+	private final Environment environment;
+
 	private static final AtomicLong coreId = new AtomicLong(0);
 
 	public static final int DEFAULT_TIMEOUT = 60000; // 60 seconds
@@ -190,18 +197,34 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
 	public Rdf2GoCore(@NotNull String coreName, String lns, RepositoryConfig reasoning) {
+		// transitional: cores created without an explicit environment belong to the current one, if any
+		this(Environment.peekInstance(), coreName, lns, reasoning);
+	}
+
+	/**
+	 * Initializes the Rdf2GoCore for the specified environment. Please note that the RuleSet argument only has an
+	 * effect if OWLIM is used as underlying implementation.
+	 *
+	 * @param environment the environment the core belongs to, or null for a standalone core not bound to a wiki
+	 * @param coreName    the name of this {@link Rdf2GoCore} (used for log messages and thread names and so forth)
+	 * @param lns         the uri used as local namespace
+	 * @param reasoning   the rule set (only relevant for OWLIM model)
+	 */
+	public Rdf2GoCore(@Nullable Environment environment, @NotNull String coreName, String lns, RepositoryConfig reasoning) {
+		this.environment = environment;
 
 		if (reasoning == null) {
 			reasoning = RepositoryConfigs.get(RdfConfig.class);
 		}
 
-		String applicationName;
-		try {
-			applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
-		}
-		catch (Exception e) {
-			LOGGER.warn("Unable to get application name, using fallback");
-			applicationName = "ROOT";
+		String applicationName = "ROOT";
+		if (environment != null) {
+			try {
+				applicationName = environment.getWikiConnector().getApplicationName();
+			}
+			catch (Exception e) {
+				LOGGER.warn("Unable to get application name, using fallback");
+			}
 		}
 
 		final long coreId = Rdf2GoCore.coreId.incrementAndGet();
@@ -226,7 +249,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		if (lns == null) {
-			lns = Rdf2GoUtils.getLocalNamespace();
+			lns = environment != null ? Rdf2GoUtils.getLocalNamespace(environment) : Rdf2GoUtils.getLocalNamespace();
 		}
 		this.lns = lns;
 		this.ruleSet = reasoning;
@@ -242,6 +265,24 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Returns the environment this core belongs to. Cores created without an explicit environment belong to the
+	 * current one; standalone cores without any environment return null.
+	 */
+	@Nullable
+	public Environment findEnvironment() {
+		return environment != null ? environment : Environment.peekInstance();
+	}
+
+	/**
+	 * Returns the event manager this core fires its events at: the one of its environment, or the current one for
+	 * standalone cores.
+	 */
+	@NotNull
+	public EventManager getEventManager() {
+		return environment != null ? environment.getEventManager() : KnowWEUtils.currentEventManager();
 	}
 
 	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {
@@ -573,12 +614,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 				// Fire events
 				if (!this.removeCache.isEmpty()) {
-					KnowWEUtils.currentEventManager().fireEvent(new RemoveStatementsEvent(
+					getEventManager().fireEvent(new RemoveStatementsEvent(
 							Collections.unmodifiableCollection(this.removeCache), this));
 					removedStatements = true;
 				}
 				if (!this.insertCache.isEmpty()) {
-					KnowWEUtils.currentEventManager().fireEvent(new InsertStatementsEvent(
+					getEventManager().fireEvent(new InsertStatementsEvent(
 							Collections.unmodifiableCollection(this.removeCache),
 							Collections.unmodifiableCollection(this.insertCache), this));
 					insertedStatements = true;
@@ -586,7 +627,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				if (removedStatements || insertedStatements) {
 					// invalidate the result cache if there are any changes
 					sparqlCache.invalidate();
-					KnowWEUtils.currentEventManager().fireEvent(new ChangedStatementsEvent(this));
+					getEventManager().fireEvent(new ChangedStatementsEvent(this));
 				}
 
 				// Logging
@@ -614,7 +655,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		finally {
 			// outside of commit an auto committing connection seems to be ok
 			this.lastModified = System.currentTimeMillis();
-			KnowWEUtils.currentEventManager().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
+			getEventManager().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 		}
 		return removedStatements || insertedStatements;
 	}
@@ -1699,7 +1740,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			try {
 				if (isShutdown()) return;
 				this.isShutdown = true;
-				KnowWEUtils.currentEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+				getEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 				this.semanticCore.close();
 				this.threadPool.shutdownNow();
 				this.sparqlThreadPool.shutdownNow();
@@ -1714,7 +1755,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				try {
 					if (isShutdown()) return;
 					this.isShutdown = true;
-					KnowWEUtils.currentEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+					getEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 					this.threadPool.shutdown();
 					this.sparqlThreadPool.shutdown();
 					this.statementCache.clear(); // free memory even if there are still references
