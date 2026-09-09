@@ -50,7 +50,6 @@ public class ArticleRollbackLifecycleTest {
 	}
 
 	@Test
-	@Ignore("Rollback hardening is separate from the agreed intermediate lifecycle change: current rollback does not restore the original ID mapping")
 	public void rollbackReplacementRestoresOriginalSectionIds() throws Exception {
 		Article original = wiki.register("Page", "same\n");
 		String id = line(original, 0).getID();
@@ -68,7 +67,6 @@ public class ArticleRollbackLifecycleTest {
 	}
 
 	@Test
-	@Ignore("Rollback hardening is separate from the agreed intermediate lifecycle change: current rollback does not restore original message tracking")
 	public void rollbackReplacementRestoresOriginalMessageTracking() throws Exception {
 		Article original = wiki.register("Page", "old\n");
 		Messages.storeMessage(line(original, 0), getClass(), Messages.error("Original diagnostic"));

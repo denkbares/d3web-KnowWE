@@ -114,6 +114,8 @@ public class HeaderExporter implements Exporter<HeaderType> {
 
 	public static String getCrossReferenceID(Section<?> headerOrRootSection) {
 		if (headerOrRootSection == null) return null;
-		return "_Ref" + Long.parseLong(headerOrRootSection.getID(), 16);
+		// Section IDs are opaque 32-character hex strings, not numeric values. The prefix also keeps bookmark
+		// names valid when an ID starts with a digit; the complete name fits Word's 40-character limit.
+		return "_Ref" + headerOrRootSection.getID();
 	}
 }

@@ -21,6 +21,7 @@
 package de.knowwe.core.kdom.parsing;
 
 import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
@@ -80,9 +82,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	Article article;
 
 	/**
-	 * The unique ID of this Section (or -1, if not initialized).
+	 * The opaque ID of this Section (null until first requested).
 	 */
-	private int intID = -1;
+	private volatile String id;
 
 	/**
 	 * The text of this section. For memory footprint reasons, this is normally null and the text is instead calculated
@@ -104,6 +106,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * The father section of this KDOM-node. Used for upwards navigation through the tree
 	 */
 	private Section<? extends Type> parent;
+	/** Index hint maintained on insertion; validated against the parent because parsers can reparent separately. */
+	private int indexInParent = -1;
 
 	/**
 	 * the position the text of this node starts related to the text of the parent node. Thus: for first child always 0,
@@ -259,6 +263,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public void addChild(int index, Section<?> child) {
 		if (children == null) children = new ArrayList<>(5);
 		children.add(index, child);
+		// Appending touches only the new child. Inserting already shifts this ArrayList's suffix, so update that suffix.
+		for (int i = index; i < children.size(); i++) {
+			children.get(i).indexInParent = i;
+		}
 		if (get() instanceof AbstractType && !(child.get() instanceof RootType)) {
 			Class<?> childTypeClass = child.get().getClass();
 			if (!Types.canHaveSuccessorOfType((AbstractType) type, childTypeClass)) {
@@ -439,22 +447,38 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * Returns the unique ID of this section.
+	 * Returns the stable ID of this section. Draft IDs are computed locally and are not resolvable until publication.
+	 * Cached reads do not acquire the registry lock. Retired and temporary sections cannot publish themselves.
 	 */
 	@NotNull
 	public String getID() {
 		if (!hasID()) {
-			intID = generateAndRegisterSectionID(this);
+			synchronized (idLock(this)) {
+				if (!hasID()) {
+					String computed = UUID.nameUUIDFromBytes(getSignatureString().getBytes(StandardCharsets.UTF_8))
+							.toString().replace("-", "");
+					if (article.isPublished()) {
+						SectionRegistry registry = registry(this);
+						if (registry != null) registry.put(computed, this);
+					}
+					id = computed;
+				}
+			}
 		}
-		return Integer.toHexString(intID);
+		return id;
 	}
 
 	private String getSignatureString() {
-		return getWeb() + getTitle() + getOffsetInArticle() + "-" + getDepth() + this.getText();
+		// The article namespace changes with the complete source text, not just this section's text.
+		// Include position and type so identical empty siblings and changed parser output do not alias each other.
+		// Within this namespace, offset and length already identify the text. Do not copy/encode/hash entire subtrees
+		// again, especially for root sections and deeply nested markup.
+		return article.getSectionIdNamespace() + ":" + getIdPosition() + ":" + get().getClass().getName()
+				+ ":" + getOffsetInArticle() + ":" + getDepth() + ":" + getTextLength();
 	}
 
 	private boolean hasID() {
-		return this.intID != -1;
+		return id != null;
 	}
 
 	/**
@@ -602,7 +626,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the index of this section in the parent's list of child sections
 	 */
 	public int getIndexInParent() {
-		return (parent == null) ? -1 : parent.children.indexOf(this);
+		if (parent == null || parent.children == null) return -1;
+		if (indexInParent < 0 || indexInParent >= parent.children.size() || parent.children.get(indexInParent) != this) {
+			// Handles independently changed parent links; regular construction and insertion do not need this scan.
+			indexInParent = parent.children.indexOf(this);
+		}
+		return indexInParent;
 	}
 
 	/**
@@ -617,67 +646,73 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return article.getArticleManager();
 	}
 
-	/**
-	 * Generates an ID for the given Section and also registers the Section in a HashMap to allow searches for this
-	 * Section later. The ID is the hash code of the following String: Title of the Article containing the Section, the
-	 * position in the KDOM and the content of the Section. Hash collisions are resolved.
-	 *
-	 * @param section is the Section for which the ID is generated and which is then registered
-	 * @return the ID for the given Section
-	 * @created 05.09.2011
-	 */
-	private static int generateAndRegisterSectionID(Section<?> section) {
-		int idCandidate = section.getSignatureString().hashCode();
-		if (section.getArticle().isTemporary()) return idCandidate;
-		return registry(section).register(section, idCandidate);
+	/** Ignore the parser's temporary dummy root, but distinguish e.g. empty siblings with identical signatures. */
+	private List<Integer> getIdPosition() {
+		List<Integer> path = new ArrayList<>();
+		for (Section<?> current = this; current.parent != null && !(current.get() instanceof RootType); current = current.parent) {
+			path.add(current.getIndexInParent());
+		}
+		Collections.reverse(path);
+		return List.copyOf(path);
 	}
 
 	/**
-	 * Returns the section registry of the environment the section belongs to. Sections that do not (yet) belong to an
-	 * article manager use the registry of the current environment.
+	 * Returns the section registry of the environment the section belongs to, or null if the section does not belong
+	 * to an environment (e.g. articles created in plain unit tests). Only published sections are registered, and only
+	 * managed articles get published, so every section that needs the registry has one.
 	 */
+	@Nullable
 	private static SectionRegistry registry(Section<?> section) {
 		Environment environment = KnowWEUtils.findEnvironment(section);
-		if (environment == null) {
-			throw new IllegalStateException("Cannot assign an id to a section of article '" + section.getTitle()
-					+ "': the section does not belong to an environment and no environment is initialized");
-		}
-		return environment.getSectionRegistry();
+		return environment == null ? null : environment.getSectionRegistry();
 	}
 
 	/**
-	 * This method removes the entries of sections in the section map, if the sections are no longer used - for example
-	 * after an article is changed and build again.<br/> This method also takes care, that the equal section in the new
-	 * article gets an id. Since ids are created lazy while rendering and often the article is not rendered completely
-	 * again after changing just a few isolated spots in the article, those ids would otherwise be gone, although they
-	 * might stay the same and are still usable.<br/> We just look at the same spot/position in the KDOM. If we find a
-	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch the
-	 * right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
-	 * changed and therefore we don't need them anyway. We only do this, to allow already rendered tools to still work,
-	 * if it is possible.
+	 * Returns the object to synchronize id creation and (un-)registration on: the registry of the section's
+	 * environment, or the section itself if there is no environment.
+	 */
+	@NotNull
+	private static Object idLock(Section<?> section) {
+		SectionRegistry registry = registry(section);
+		return registry != null ? registry : section;
+	}
+
+	/** Publishes an already requested ID; does not eagerly allocate IDs for the rest of the tree. */
+	public static void publishSectionID(Section<?> section) {
+		SectionRegistry registry = registry(section);
+		if (registry == null) return;
+		synchronized (registry) {
+			if (!section.hasID() || !section.getArticle().isPublished()) return;
+			registry.put(section.id, section);
+		}
+	}
+
+	/**
+	 * Removes only registrations still owned by this section. For an unchanged-content recompile, requests the ID of
+	 * the corresponding new section so previously rendered IDs remain resolvable even before that section is rendered
+	 * again. IDs are recomputed, never assigned from the predecessor. Content changes deliberately invalidate all IDs.
 	 *
 	 * @param section    the old, no longer used Section
 	 * @param newArticle the new article which potentially contains an equal section
 	 * @created 04.12.2012
 	 */
 	public static void unregisterOrUpdateSectionID(Section<?> section, Article newArticle) {
-		if (section.hasID()) {
-			unregisterID(section);
-			if (newArticle == null) return; // if there is a new version, try to salvage
-			Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
-			if (newSection != null
-				&& newSection.get().getClass().equals(section.get().getClass())) {
-				// to not add ids to completely different sections if the
-				// article changed a lot, we only generate section ids for the
-				// same type of sections that had ids in the old article
-				newSection.getID();
+		synchronized (idLock(section)) {
+			if (section.hasID()) {
+				if (newArticle != null && section.article.getSectionIdNamespace().equals(newArticle.getSectionIdNamespace())) {
+					Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
+					if (newSection != null && newSection.get().getClass().equals(section.get().getClass())) {
+						newSection.getID();
+					}
+				}
+				unregisterID(section);
 			}
 		}
 	}
 
 	private static void unregisterID(Section<?> section) {
-		Environment environment = KnowWEUtils.findEnvironment(section);
-		if (environment != null) environment.getSectionRegistry().unregister(section.intID);
+		SectionRegistry registry = registry(section);
+		if (registry != null) registry.remove(section.id, section);
 	}
 
 	/**

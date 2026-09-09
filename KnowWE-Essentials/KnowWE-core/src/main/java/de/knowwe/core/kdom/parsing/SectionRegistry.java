@@ -10,45 +10,39 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Registry of the sections of one {@link de.knowwe.core.Environment} by their ids. Section ids are generated lazily
- * (see {@link Section#getID()}) as the hash of the section's signature, disambiguated by incrementing on collisions.
- * The registry belongs to the environment, so sections of a closed environment cannot be resolved anymore and two
- * environments in one JVM do not see each other's sections.
+ * Registry of the published sections of one {@link de.knowwe.core.Environment} by their ids. Section ids are opaque
+ * strings computed lazily from the section's signature (see {@link Section#getID()}); only sections of published
+ * articles are registered here. The registry belongs to the environment, so sections of a closed environment cannot be
+ * resolved anymore and two environments in one JVM do not see each other's sections. Compound operations on ids
+ * synchronize on the registry instance.
  *
  * @author Albrecht Striffler (denkbares GmbH) + Claude for env-instance
  * @created 07.09.2026
  */
 public final class SectionRegistry {
 
-	private final Map<Integer, Section<?>> sections = new HashMap<>(2048);
+	private final Map<String, Section<?>> sections = new HashMap<>(2048);
 
 	/**
-	 * Registers the section and returns its id. If the section is already registered, its id is returned.
+	 * Registers the section under its id.
 	 */
-	synchronized int register(Section<?> section, int idCandidate) {
-		Section<?> existingSection = sections.get(idCandidate);
-		if (existingSection == section) return idCandidate; // already registered
-		while (existingSection != null || idCandidate == -1) {
-			++idCandidate;
-			existingSection = sections.get(idCandidate);
-		}
-		sections.put(idCandidate, section);
-		return idCandidate;
-	}
-
-	synchronized void unregister(int id) {
-		sections.remove(id);
+	synchronized void put(String id, Section<?> section) {
+		sections.put(id, section);
 	}
 
 	/**
-	 * Returns the section registered for the specified (hexadecimal) id, or null if there is none.
+	 * Removes the registration of the section, but only if the id is still owned by this section.
+	 */
+	synchronized void remove(String id, Section<?> section) {
+		sections.remove(id, section);
+	}
+
+	/**
+	 * Returns the section registered for the specified id, or null if there is none.
 	 */
 	@Nullable
 	public synchronized Section<?> get(String id) {
-		// We have to parse long and convert to int, because when converting a int to a hex string, the negative
-		// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
-		// to int will restore the negative sign.
-		return sections.get((int) Long.parseLong(id, 16));
+		return sections.get(id);
 	}
 
 	public synchronized int size() {
