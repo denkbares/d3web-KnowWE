@@ -41,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.d3web.core.inference.LoopTerminator;
@@ -512,7 +511,7 @@ public class D3webUtils {
 
 	public static ResourceBundle getD3webBundle(HttpServletRequest request) {
 		if (request == null) return D3webUtils.getD3webBundle();
-		Locale.setDefault(Environment.requireInstance().getWikiConnector().getLocale(request));
+		Locale.setDefault(Environment.of(request).getWikiConnector().getLocale(request));
 		return D3webUtils.getD3webBundle();
 	}
 

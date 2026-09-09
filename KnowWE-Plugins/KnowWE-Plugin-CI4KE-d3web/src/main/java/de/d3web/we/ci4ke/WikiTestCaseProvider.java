@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testing.TestObjectContainer;
@@ -35,6 +36,7 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCaseProvider;
+import de.d3web.we.ci4ke.build.WikiTestObjectProvider;
 
 /**
  * Searches the wiki for {@link TestCase}s. The names of {@link TestCase}s are
@@ -43,11 +45,11 @@ import de.knowwe.testcases.TestCaseProvider;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 29.06.2012
  */
-public class WikiTestCaseProvider implements TestObjectProvider {
+public class WikiTestCaseProvider implements WikiTestObjectProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiTestCaseProvider.class);
 
 	@Override
-	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
+	public <T> List<TestObjectContainer<T>> getTestObjects(@NotNull Environment environment, Class<T> clazz, String name) {
 
 		if (clazz == null) {
 			LOGGER.warn("Class given to TestObjectProvider was 'null'");
@@ -63,8 +65,7 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 		catch (java.util.regex.PatternSyntaxException e) {
 			return result;
 		}
-		// test object provider without a context object, see environment-instance-plan.md
-		ArticleManager articleManager = Environment.requireInstance().getArticleManager();
+		ArticleManager articleManager = environment.getArticleManager();
 		Set<String> allPackageNames = KnowWEUtils.getPackageManager(articleManager).getAllPackageNames();
 		List<ProviderTriple> testCaseProviders = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(
 				articleManager, allPackageNames.toArray(new String[allPackageNames.size()]));

@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
@@ -15,7 +16,7 @@ import de.d3web.testing.TestObjectProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.d3web.we.ci4ke.build.WikiTestObjectProvider;
 
 /*
  * Copyright (C) 2012 denkbares GmbH
@@ -42,11 +43,11 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 22.05.2012
  */
-public class WikiKnowledgeBaseProvider implements TestObjectProvider {
+public class WikiKnowledgeBaseProvider implements WikiTestObjectProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiKnowledgeBaseProvider.class);
 
 	@Override
-	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String id) {
+	public <T> List<TestObjectContainer<T>> getTestObjects(@NotNull Environment environment, Class<T> c, String id) {
 		if (c == null) {
 			LOGGER.warn("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
@@ -63,7 +64,7 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 		}
 
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(
-				Environment.requireInstance().getArticleManager(), D3webCompiler.class);
+				environment.getArticleManager(), D3webCompiler.class);
 
 		for (D3webCompiler compiler : compilers) {
 			if (compiler.getCompileSection().getTitle().matches(id)) {

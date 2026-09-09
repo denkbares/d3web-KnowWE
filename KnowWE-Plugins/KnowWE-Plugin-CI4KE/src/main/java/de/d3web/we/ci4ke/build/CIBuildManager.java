@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
@@ -186,10 +185,13 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 		public CIBuildCallable(CIBuildManager manager, CIDashboard dashboard, Map<CIDashboard, CIBuildFuture> ciBuildQueue) {
 			this.dashboard = dashboard;
 			this.ciBuildQueue = ciBuildQueue;
+			// the plugged providers are singletons; bind them to the environment this build runs for
+			Environment environment = KnowWEUtils.getEnvironment(dashboard.getDashboardSection());
 			List<TestObjectProvider> providers = new ArrayList<>();
-			providers.add(DefaultWikiTestObjectProvider.getInstance());
-			List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
-			providers.addAll(pluggedProviders);
+			providers.add(WikiTestObjectProvider.bind(DefaultWikiTestObjectProvider.getInstance(), environment));
+			for (TestObjectProvider pluggedProvider : TestObjectProviderManager.getTestObjectProviders()) {
+				providers.add(WikiTestObjectProvider.bind(pluggedProvider, environment));
+			}
 
 			progress = new CIBuildProgress();
 			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), progress.getListener(),

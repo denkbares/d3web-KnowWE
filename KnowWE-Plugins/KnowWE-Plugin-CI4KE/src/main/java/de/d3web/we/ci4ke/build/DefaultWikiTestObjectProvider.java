@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.ArticleManager;
@@ -41,7 +42,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Jochen Reutelshöfer
  * @created 16.05.2012
  */
-public class DefaultWikiTestObjectProvider implements TestObjectProvider {
+public class DefaultWikiTestObjectProvider implements WikiTestObjectProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultWikiTestObjectProvider.class);
 
 	private static DefaultWikiTestObjectProvider instance = null;
@@ -58,7 +59,7 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 	}
 
 	@Override
-	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String testObjectName) {
+	public <T> List<TestObjectContainer<T>> getTestObjects(@NotNull Environment environment, Class<T> c, String testObjectName) {
 		if (c == null) {
 			LOGGER.warn("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
@@ -66,22 +67,21 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		List<TestObjectContainer<T>> result = new ArrayList<>();
 		if (c.equals(Article.class)) {
 
-			Collection<Article> articlesMatchingPattern = getArticlesMatchingPattern(testObjectName);
+			Collection<Article> articlesMatchingPattern = getArticlesMatchingPattern(environment, testObjectName);
 			for (Article article : articlesMatchingPattern) {
 				result.add(new TestObjectContainer<>(article.getTitle(), c.cast(article)));
 			}
 		}
 		String web = Environment.DEFAULT_WEB;
-		// test object provider without a context object, see environment-instance-plan.md
-		ArticleManager articleManager = Environment.requireInstance().getArticleManager(web);
+		ArticleManager articleManager = environment.getArticleManager();
 		if (c.equals(ArticleManager.class)) {
 			result.add(new TestObjectContainer<>(web, c.cast(articleManager)));
 		}
 		if (c.equals(PackageManager.class)) {
-			result.add(new TestObjectContainer<>(web, c.cast(KnowWEUtils.getPackageManager(web))));
+			result.add(new TestObjectContainer<>(web, c.cast(KnowWEUtils.getPackageManager(articleManager))));
 		}
 		if (c.equals(WikiAttachmentPair.class)) {
-			result.add(new TestObjectContainer<>(web, c.cast(new WikiAttachmentPair(articleManager.getEnvironment().getWikiConnector(), testObjectName))));
+			result.add(new TestObjectContainer<>(web, c.cast(new WikiAttachmentPair(environment.getWikiConnector(), testObjectName))));
 		}
 		final Pattern namePattern = Pattern.compile(testObjectName);
 		if (NamedCompiler.class.isAssignableFrom(c)) {
@@ -109,8 +109,8 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		}
 	}
 
-	private Collection<Article> getArticlesMatchingPattern(String s) {
-		ArticleManager mgr = Environment.requireInstance().getArticleManager();
+	private Collection<Article> getArticlesMatchingPattern(Environment environment, String s) {
+		ArticleManager mgr = environment.getArticleManager();
 		Pattern pattern = Pattern.compile(s);
 		List<Article> matchingArticles = new ArrayList<>();
 		// we are asynchronous here, so we need a copy of the collection
