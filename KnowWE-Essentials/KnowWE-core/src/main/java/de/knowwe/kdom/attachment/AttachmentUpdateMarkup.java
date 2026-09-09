@@ -70,6 +70,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.util.CredentialProvider;
 import de.knowwe.util.CredentialProviders;
+import de.knowwe.core.EnvironmentService;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -92,7 +93,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	 * The update state of the attachments of one environment: last runs, running downloads, queued attachments and the
 	 * timer for the scheduled updates. Closed together with the environment, which stops the timer.
 	 */
-	public static final class AttachmentUpdates implements AutoCloseable {
+	public static final class AttachmentUpdates implements EnvironmentService {
 		private final Map<String, Long> lastRuns = new ConcurrentHashMap<>();
 		private final Map<String, Instant> downloading = new ConcurrentHashMap<>();
 		private final Set<QueuedAttachment> queued = Collections.newSetFromMap(new ConcurrentHashMap<>());

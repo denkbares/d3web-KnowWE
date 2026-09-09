@@ -349,8 +349,8 @@ public final class Environment implements AutoCloseable {
 	/**
 	 * Closes this environment: waits for running compilations to terminate, notifies all {@link DeInitEvent}
 	 * listeners, removes the compilers and stops the compile threads of all article managers, runs the
-	 * {@link #onClose(Runnable) close tasks} in reverse order of their registration, closes all {@link AutoCloseable}
-	 * {@link #getService(Class, Supplier) services} and finally detaches the singleton instance if this environment is
+	 * {@link #onClose(Runnable) close tasks} in reverse order of their registration, closes all
+	 * {@link EnvironmentService} (or {@link AutoCloseable}) {@link #getService(Class, Supplier) services} and finally detaches the singleton instance if this environment is
 	 * the current one. Everything this
 	 * environment owns becomes garbage afterwards; nothing has to be reset by hand. Calling the method twice is
 	 * harmless.
@@ -446,13 +446,16 @@ public final class Environment implements AutoCloseable {
 		}
 		Collections.reverse(ordered);
 		for (Object service : ordered) {
-			if (service instanceof AutoCloseable closeable) {
-				try {
+			try {
+				if (service instanceof EnvironmentService environmentService) {
+					environmentService.close();
+				}
+				else if (service instanceof AutoCloseable closeable) {
 					closeable.close();
 				}
-				catch (Exception e) {
-					LOGGER.error("Closing service {} of environment failed", service.getClass().getName(), e);
-				}
+			}
+			catch (Exception e) {
+				LOGGER.error("Closing service {} of environment failed", service.getClass().getName(), e);
 			}
 		}
 	}
@@ -969,8 +972,8 @@ public final class Environment implements AutoCloseable {
 	 * Returns the service of the specified type that is scoped to this environment, creating it with the specified
 	 * factory on first access. This is the place for everything that would otherwise be kept in a static field of a
 	 * plugin or core class: caches, registries, thread pools, schedulers. If the service implements
-	 * {@link AutoCloseable}, it is closed when this environment is {@link #close() closed}, in reverse order of
-	 * creation.
+	 * {@link EnvironmentService} (or {@link AutoCloseable}), it is closed when this environment is {@link #close()
+	 * closed}, in reverse order of creation.
 	 *
 	 * @param type    the type of the service, also used as key
 	 * @param factory creates the service if it does not exist yet

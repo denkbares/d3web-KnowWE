@@ -242,6 +242,18 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
   an der Environment des Cores; Standalone-Cores teilen sich eine am globalen Manager registrierte Instanz. Offen
   bleibt der asynchrone Shutdown-Thread (siehe unten).
 
+- **`EnvironmentService` statt `AutoCloseable`** (2026-09-09): Environment-eigene Services (`getService`) implementieren
+  `de.knowwe.core.EnvironmentService` mit `close()`, nicht `AutoCloseable`. Grund: Aufrufer holen einen Service, um
+  ihn zu benutzen, nie um ihn zu schließen; `AutoCloseable` löste in IntelliJ überall die Inspektion "AutoCloseable
+  used without try-with-resources" aus. `Environment.closeServices()` schließt beides (AutoCloseable bleibt für
+  fremde Typen erlaubt). Echte Ressourcen mit try-with-resources (`WikiSearchIndex`) bleiben `AutoCloseable`; die
+  `Environment` selbst auch, sie ist in Tests eine Ressource.
+- **Paket 2, Muster** (2026-09-09, Beispiele committet): Servlet-Einstiege über `Environment.of(ServletContext|
+  HttpServletRequest)` (Environment liegt seit `initInstance` als Attribut im ServletContext ihres Connectors, `close()`
+  entfernt sie; `findIn` nullable für Fälle vor dem Wiki-Init), Quartz-Jobs bekommen die Environment in die
+  `JobDataMap` (`CBXProgressDownloadJob`), statische Registries werden Environment-Services (`CoomModelProvider.of`),
+  externe Clients bekommen die Environment vom Aufrufer (`SAPClient.createClientFromWikiConfig(env)`).
+
 ## Bekannte Baseline-Fehler (unabhängig vom Umbau)
 
 - **Gelöst (2026-09-08, denkbares-Internals 1ade0480):** Die Git-Provider-Tests (`GitPageProviderTest`, `GitWikiRepositoryTest` in KnowWE, `de.knowwe.versioning.git.*` in KnowWE-DES) fielen in der VM, weil `LANGUAGE=de_DE` gesetzt ist und gettext diese Variable über `LANG`/`LC_ALL` stellt; git antwortete deutsch, der Status-Parser im GitConnector versteht nur Englisch. Auf master identisch reproduziert. `RawGitExecutor.prepareEnvironment` pinnt jetzt auch `LANGUAGE`.

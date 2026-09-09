@@ -54,11 +54,12 @@ import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.EnvironmentService;
 
 /**
  * @author Marc-Oliver Ochlast, Albrecht Striffler
  */
-public class CIHookManager implements EventListener, AutoCloseable {
+public class CIHookManager implements EventListener, EnvironmentService {
 
 	public static final String KNOWWE_CI_HOOKS_ACTIVE = "knowwe.ci.hooks.active";
 

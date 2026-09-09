@@ -42,8 +42,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.ActionAllowListChecker;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
+import de.knowwe.core.EnvironmentService;
 
-public final class InterWikiImportUpdateService implements AutoCloseable {
+public final class InterWikiImportUpdateService implements EnvironmentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiImportUpdateService.class);
 

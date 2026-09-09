@@ -59,6 +59,7 @@ import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.search.index.AttachmentDocumentBuilder;
 import de.knowwe.search.query.WikiSearcher;
 import de.knowwe.search.render.PreviewCache;
+import de.knowwe.core.EnvironmentService;
 
 /**
  * Keeps the section index in step with the wiki.
@@ -72,7 +73,7 @@ import de.knowwe.search.render.PreviewCache;
  *
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
-public class WikiSearchService implements EventListener, AutoCloseable {
+public class WikiSearchService implements EventListener, EnvironmentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiSearchService.class);
 

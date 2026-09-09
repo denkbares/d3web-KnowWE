@@ -66,6 +66,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 import de.knowwe.event.WikiContentReplacedEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.core.EnvironmentService;
 
 /**
  * Coordinates the lifecycle of CI builds and their test executors.
@@ -76,7 +77,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * Before a waiting successor is submitted, the manager atomically verifies that it is still the current queue entry
  * and has not been aborted by another compilation. Obsolete successors are cancelled and removed from the queue.
  */
-public class CIBuildManager implements EventListener, AutoCloseable {
+public class CIBuildManager implements EventListener, EnvironmentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIBuildManager.class);
 
 	private static final AtomicLong executorNumber = new AtomicLong();

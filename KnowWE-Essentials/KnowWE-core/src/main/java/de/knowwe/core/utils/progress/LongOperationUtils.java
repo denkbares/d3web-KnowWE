@@ -24,6 +24,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
+import de.knowwe.core.EnvironmentService;
 
 public class LongOperationUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LongOperationUtils.class);
@@ -32,7 +33,7 @@ public class LongOperationUtils {
 	 * The long operations of one environment: the registered operations per section and the thread pool they run
 	 * in. Closed together with the environment, which stops the pool and drops the registrations.
 	 */
-	public static final class LongOperations implements AutoCloseable {
+	public static final class LongOperations implements EnvironmentService {
 
 		private final Map<String, Map<String, LongOperation>> operations = new ConcurrentHashMap<>();
 		private ExecutorService threadPool;

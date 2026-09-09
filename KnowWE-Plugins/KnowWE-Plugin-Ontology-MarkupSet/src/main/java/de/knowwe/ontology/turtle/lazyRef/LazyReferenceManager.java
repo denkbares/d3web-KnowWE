@@ -29,8 +29,9 @@ import de.knowwe.core.event.CompilerEvent;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.EnvironmentService;
 
-public class LazyReferenceManager implements EventListener, AutoCloseable {
+public class LazyReferenceManager implements EventListener, EnvironmentService {
 
 	private final Environment environment;
 
