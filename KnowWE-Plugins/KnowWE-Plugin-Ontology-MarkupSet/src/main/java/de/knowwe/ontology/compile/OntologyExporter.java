@@ -88,7 +88,7 @@ public class OntologyExporter implements EventListener {
 			Timer lastTimer = timers.get(ontologySection.getID());
 			if (lastTimer != null) lastTimer.cancel();
 			// cleanup times of now longer existing sections
-			timers.keySet().removeIf(sectionId -> Sections.get(sectionId) == null);
+			cancelOutdatedTimers(timers);
 		}
 
 		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyMarkup.ANNOTATION_EXPORT);
@@ -128,6 +128,7 @@ public class OntologyExporter implements EventListener {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
+				if (!Sections.isLive(ontologySection)) return;
 				Stopwatch stopwatch = new Stopwatch();
 				WikiConnector connector = Environment.getInstance().getWikiConnector();
 				ByteArrayInputStream stream;
@@ -149,6 +150,8 @@ public class OntologyExporter implements EventListener {
 					return;
 				}
 				try {
+					// Serialization can overlap a rebuild. Do not publish an export whose source was retired meanwhile.
+					if (!Sections.isLive(ontologySection)) return;
 					connector.deleteAttachment(title, annotationName, "SYSTEM");
 					connector.storeAttachment(title, annotationName, "SYSTEM", stream);
 				}
@@ -163,6 +166,15 @@ public class OntologyExporter implements EventListener {
 		synchronized (timers) {
 			timers.put(ontologySection.getID(), timer);
 		}
+	}
+
+	/** Removing the map entry alone leaves its delayed task running against the retired ontology. Caller holds the map lock. */
+	static void cancelOutdatedTimers(Map<String, Timer> timers) {
+		timers.entrySet().removeIf(entry -> {
+			if (Sections.get(entry.getKey()) != null) return false;
+			entry.getValue().cancel();
+			return true;
+		});
 	}
 
 	private static long getExportDelay(Section<? extends DefaultMarkupType> markupSection) {

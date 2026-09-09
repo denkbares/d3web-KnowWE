@@ -1,7 +1,8 @@
 # Article lifecycle: implementation and follow-up plan
 
 Status: 9 September 2026. User reviewed the core implementation and authorized its commit. The follow-up audits below
-remain open; this core checkpoint does not imply completed integration verification.
+are tracked in the [follow-up audit](article-lifecycle-follow-up.md); this core checkpoint does not imply completed
+integration verification.
 
 ## Agreed contract
 
@@ -28,7 +29,8 @@ remain open; this core checkpoint does not imply completed integration verificat
 1. **Review this core change first.** Check Article, Section, Messages, DefaultArticleManager and the regression tests.
    There is no atomic snapshot across separate article-map, ID-map and diagnostic queries and no thread-local view.
    The ID format change also requires the Word export's bookmark adapter to treat IDs as opaque strings.
-2. **Then audit OntologyBridge and analogous internal references explicitly. This is still open.**
+2. **Audit OntologyBridge and analogous internal references explicitly.** Initial findings and executed tests are in
+   the follow-up audit; its stated limitations and private integration verification remain.
    - Distinguish equal ID addresses from actual Section/Article/Compiler identity, especially on unchanged recompiles.
    - Trace registration, delayed unregister, cached ID-to-compiler lookups and compiler-priority waiting.
    - Test rebuilding only the ontology while the importing knowledge base stays unchanged, the reverse direction,
@@ -45,7 +47,7 @@ remain open; this core checkpoint does not imply completed integration verificat
 
 ## Test status
 
-See [the regression-test notes](src/test/article-lifecycle-tests.md) for the current executed baseline. The known
+See [the regression-test notes](article-lifecycle-tests.md) for the current executed baseline. The known
 new-article multi-replacement rollback and extra compiler-removal bookkeeping cases remain separately disabled with
 reasons; their existence is not permission to expand this change silently.
 

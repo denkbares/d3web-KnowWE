@@ -1,7 +1,7 @@
 # Article lifecycle regression tests
 
 These tests cover the working-tree construction/publication change. Constructing an article must not affect the live
-version; publication still happens when queueing, not at commit. See the [implementation and follow-up plan](../../article-lifecycle-plan.md).
+version; publication still happens when queueing, not at commit. See the [implementation and follow-up plan](article-lifecycle-plan.md).
 
 The ID contract was revised with the user on 8 September: unchanged normalized content keeps its namespace on a
 recompile, but a content change invalidates **all** IDs. Tests expecting partial-content ID preservation or reuse of a
@@ -19,10 +19,12 @@ Working-tree results on 9 September 2026, on repository baseline `c55d55ee3`:
 | `ArticleCompilationLifecycleTest` | 10 | 1 ignored |
 | `ArticleRollbackLifecycleTest` | 5 | 1 ignored |
 | `SectionIndexTest` | 4 | 0 |
+| `SectionReplacementLifecycleTest` | 1 | 0 |
+| `LongOperationLifecycleTest` | 1 | 0 |
 | Existing core tests | 38 | 0 |
-| Total | 83 | 2 ignored |
+| Total | 85 | 2 ignored |
 
-All core test classes are run directly through JUnit (83 executed, 85 including ignored methods). The tests with
+All core test classes are run directly through JUnit (85 executed, 87 including ignored methods). The tests with
 intentional parser exceptions log those exceptions; these are expected. Before the production change, 56 tests passed
 and 14 were ignored after their failures had been verified as assertions rather than initialization/timeouts.
 
@@ -42,8 +44,8 @@ clear/restore contribution sequence. The contribution ledger is not a test of d3
 
 The adjacent-module reactor also runs `RecompileActionTest` (1 test) and `HeaderExporterTest` (2 tests) against the
 modified core. The latter protects the Word bookmark adapter from parsing opaque IDs as longs; it is not an end-to-end
-Word-rendering test. OntologyBridge/CI lifecycle integration and the private headless test remain follow-up work as
-explicitly recorded in the plan. No browser focus/update notification changes have been made.
+Word-rendering test. Executed OntologyBridge/CI checks, stale-edit and rerender-response regression tests, and remaining
+private/live verification are described in the [follow-up audit](article-lifecycle-follow-up.md).
 
 ## Running
 

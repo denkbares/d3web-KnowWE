@@ -82,7 +82,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 	private static void execute(UserActionContext context, Section<?> section) throws IOException {
 		if (section == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND,
+			context.sendError(HttpServletResponse.SC_CONFLICT,
 					"The referenced section was not found. " +
 					"Maybe the page content is outdated. Please reload.");
 		}

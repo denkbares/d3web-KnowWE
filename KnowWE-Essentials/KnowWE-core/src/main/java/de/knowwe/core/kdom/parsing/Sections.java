@@ -1635,14 +1635,17 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return a result object containing some information about the replacement success or the errors occurred
 	 */
 	public static @NotNull ReplaceResult replace(ReplaceContext context, Map<String, String> sectionsMap, @Nullable String changeNote) {
-		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
-		Map<Article, Collection<String>> idsByTitle = getIdsByArticle(sectionsMap.keySet());
+		List<SectionInfo> sectionInfos;
 
 		Collection<String> missingIDs = new LinkedList<>();
 		Collection<String> forbiddenArticles = new LinkedList<>();
 
 		KnowWEUtils.getArticleManager(context.getWeb()).open();
 		try {
+			// A preceding registration may replace the article while open() waits. Resolve IDs only after acquiring
+			// the frame, otherwise obsolete IDs can be accepted and silently ignored when rebuilding the current text.
+			sectionInfos = getSectionInfos(sectionsMap);
+			Map<Article, Collection<String>> idsByTitle = getIdsByArticle(sectionsMap.keySet());
 			for (Map.Entry<Article, Collection<String>> entry : idsByTitle.entrySet()) {
 				Collection<String> idsForCurrentTitle = entry.getValue();
 				boolean errorsForThisTitle = handleErrors(entry.getKey(), idsForCurrentTitle, context.getUserCanEdit(),
