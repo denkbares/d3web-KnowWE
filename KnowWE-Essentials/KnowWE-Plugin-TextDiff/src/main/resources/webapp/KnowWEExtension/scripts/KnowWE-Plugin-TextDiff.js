@@ -65,6 +65,12 @@
 	if (customElements.get('knowwe-text-diff')) return;
 
 	const DEFAULT_ACTION_URL = 'action/TextDiffAction';
+	const STYLESHEET_URL = 'KnowWEExtension/css/KnowWE-Plugin-TextDiff.css';
+
+	function resourceUrl(path) {
+		const base = window.knowweTextDiffResourceBase;
+		return base ? new URL(path, base).toString() : path;
+	}
 
 	function withCsrf(url) {
 		try {
@@ -122,7 +128,7 @@
 		load() { return this._fetchAndRender(); }
 
 		_hasShadowContent() {
-			if (this.shadowRoot && this.shadowRoot.firstElementChild) return true;
+			if (this.shadowRoot && this.shadowRoot.querySelector('.diff-frame')) return true;
 			const tpl = this.querySelector(':scope > template[shadowrootmode]');
 			if (tpl) return this._hydrateFromTemplate(tpl);
 			return false;
@@ -171,6 +177,9 @@
 				if (!Number.isNaN(n)) payload.contextLines = n;
 			}
 
+			// the loading and error placeholders are styled by the stylesheet inside the shadow root, so it has
+			// to be present before the first response arrives (and stays if the response never arrives)
+			this._ensureStylesheet();
 			this._setStatus('loading');
 			try {
 				const res = await fetchImpl(withCsrf(url), {
@@ -201,6 +210,15 @@
 			if (slotted !== null) return slotted;
 			const attributed = this.getAttribute(textAttribute);
 			return attributed !== null ? attributed : '';
+		}
+
+		_ensureStylesheet() {
+			const root = this.shadowRoot || this.attachShadow({ mode: 'open' });
+			if (root.querySelector('link[rel="stylesheet"]')) return;
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = resourceUrl(STYLESHEET_URL);
+			root.appendChild(link);
 		}
 
 		_writeShadow(html) {

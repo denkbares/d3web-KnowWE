@@ -47,6 +47,8 @@
 	display: block;
 	contain: content;
 	color: var(--diff-fg);
+	white-space: normal;
+	text-align: start;
 }
 
 /* --- Status placeholders rendered on the host (light DOM) ---------------- */
@@ -120,6 +122,15 @@
 	line-height: var(--diff-line-height);
 	tab-size: var(--diff-tab-size);
 	-moz-tab-size: var(--diff-tab-size);
+}
+
+.diff-note {
+	margin: 0;
+	padding: 10px 16px;
+	background: var(--diff-num-bg);
+	color: var(--diff-fg-muted);
+	font: var(--diff-font-size)/var(--diff-line-height) var(--diff-font-family);
+	font-style: italic;
 }
 
 /* --- Lines --------------------------------------------------------------- */
@@ -259,6 +270,8 @@
 	--file-change-mono-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
 	display: block;
+	white-space: normal;
+	text-align: start;
 }
 
 :host([data-theme="dark"]) {
