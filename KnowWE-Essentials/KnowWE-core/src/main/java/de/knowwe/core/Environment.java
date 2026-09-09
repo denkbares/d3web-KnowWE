@@ -199,6 +199,64 @@ public final class Environment implements AutoCloseable {
 	}
 
 	/**
+	 * Attribute under which a running environment is published in the servlet context of its wiki, see {@link
+	 * #of(ServletContext)}.
+	 */
+	private static final String SERVLET_CONTEXT_ATTRIBUTE = Environment.class.getName();
+
+	/**
+	 * Returns the environment running in the specified servlet context, or null if there is none (yet). This is the
+	 * way for servlet-level entry points (filters, JAX-RS resources, session listeners) without a wiki context object
+	 * to reach their environment.
+	 */
+	@Nullable
+	public static Environment findIn(@NotNull ServletContext context) {
+		return context.getAttribute(SERVLET_CONTEXT_ATTRIBUTE) instanceof Environment environment ? environment : null;
+	}
+
+	/**
+	 * Returns the environment running in the specified servlet context, see {@link #findIn(ServletContext)}.
+	 *
+	 * @throws IllegalStateException if no environment is running in the servlet context
+	 */
+	@NotNull
+	public static Environment of(@NotNull ServletContext context) {
+		Environment environment = findIn(context);
+		if (environment == null) {
+			throw new IllegalStateException("No KnowWE environment is running in servlet context '"
+					+ context.getContextPath() + "'");
+		}
+		return environment;
+	}
+
+	/**
+	 * Returns the environment of the wiki the request is addressed to, see {@link #of(ServletContext)}.
+	 */
+	@NotNull
+	public static Environment of(@NotNull HttpServletRequest request) {
+		return of(request.getServletContext());
+	}
+
+	/**
+	 * Publishes this environment in the servlet context of its wiki, if the wiki runs in one.
+	 */
+	private void publishToServletContext() {
+		ServletContext context = findServletContext();
+		if (context != null) context.setAttribute(SERVLET_CONTEXT_ATTRIBUTE, this);
+	}
+
+	@Nullable
+	private ServletContext findServletContext() {
+		try {
+			return wikiConnector.getServletContext();
+		}
+		catch (RuntimeException e) {
+			// connectors without a servlet container (tests, headless) have no servlet context
+			return null;
+		}
+	}
+
+	/**
 	 * Returns the singleton environment of this JVM.
 	 *
 	 * @throws IllegalStateException if no environment is initialized
@@ -243,6 +301,7 @@ public final class Environment implements AutoCloseable {
 			throw e;
 		}
 		initialized = true;
+		environment.publishToServletContext();
 		environment.eventManager.fireEvent(new InitEvent());
 
 		LOGGER.info("INITIALIZED KNOWWE ENVIRONMENT");
@@ -321,6 +380,10 @@ public final class Environment implements AutoCloseable {
 		runCloseTasks();
 		closeServices();
 		eventManager.close();
+		ServletContext context = findServletContext();
+		if (context != null && context.getAttribute(SERVLET_CONTEXT_ATTRIBUTE) == this) {
+			context.removeAttribute(SERVLET_CONTEXT_ATTRIBUTE);
+		}
 		closed = true;
 		// release what is owned by this environment anyway, to make leaks through stale references less harmful
 		scriptManagers.clear();
