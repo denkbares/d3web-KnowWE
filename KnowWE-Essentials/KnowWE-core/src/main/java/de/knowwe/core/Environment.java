@@ -282,8 +282,29 @@ public final class Environment implements AutoCloseable {
 	/**
 	 * Creates and initializes the singleton environment for the specified wiki connector. A previously initialized
 	 * environment is closed first, so that there is never more than one current environment.
+	 *
+	 * @deprecated use {@link #create(WikiConnector)} and keep the returned environment
 	 */
+	@Deprecated
 	public static void initInstance(WikiConnector wiki) {
+		create(wiki);
+	}
+
+	/**
+	 * Creates and initializes a new environment for the specified wiki connector: plugins, event listeners,
+	 * sectionizer modules, compilers and the type tree are set up and the {@link InitEvent} is fired. The caller owns
+	 * the environment and {@link #close() closes} it when done, e.g. tests with try-with-resources or in an
+	 * {@code @AfterClass} method.
+	 * <p>
+	 * Transitional: as long as the deprecated singleton accessors exist, the new environment also becomes the current
+	 * instance, and a previously current environment is closed first, so that there is never more than one current
+	 * environment.
+	 *
+	 * @param wiki the connector to the wiki engine the environment works on
+	 * @return the initialized environment
+	 */
+	@NotNull
+	public static Environment create(@NotNull WikiConnector wiki) {
 		LOGGER.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
 		Environment environment;
 		synchronized (Environment.class) {
@@ -310,6 +331,7 @@ public final class Environment implements AutoCloseable {
 		environment.eventManager.fireEvent(new InitEvent());
 
 		LOGGER.info("INITIALIZED KNOWWE ENVIRONMENT");
+		return environment;
 	}
 
 	/**
