@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
@@ -26,22 +27,64 @@ import de.knowwe.core.compile.terminology.TermDefinitionUnregisteredEvent;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.CompilerEvent;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.parsing.Section;
 
-public class LazyReferenceManager implements EventListener {
+public class LazyReferenceManager implements EventListener, AutoCloseable {
 
-	public static LazyReferenceManager instance = null;
+	private final Environment environment;
 
 	private final Map<TermCompiler, Map<String, Set<Identifier>>> cache = new WeakHashMap<>();
 
-	private LazyReferenceManager() {
+	private LazyReferenceManager(@NotNull Environment environment) {
+		this.environment = environment;
 	}
 
+	/**
+	 * Returns the lazy reference manager of the specified environment, created on first access and closed together
+	 * with the environment.
+	 */
+	@NotNull
+	public static LazyReferenceManager of(@NotNull Environment environment) {
+		return environment.getService(LazyReferenceManager.class, () -> {
+			LazyReferenceManager manager = new LazyReferenceManager(environment);
+			environment.getEventManager().registerListener(manager);
+			return manager;
+		});
+	}
+
+	/**
+	 * Returns the lazy reference manager responsible for the specified compiler, i.e. the one of the compiler's
+	 * environment.
+	 */
+	@NotNull
+	public static LazyReferenceManager of(@NotNull Compiler compiler) {
+		return of(KnowWEUtils.getEnvironment(compiler));
+	}
+
+	/**
+	 * Returns the lazy reference manager responsible for the specified section, i.e. the one of the section's
+	 * environment.
+	 */
+	@NotNull
+	public static LazyReferenceManager of(@NotNull Section<?> section) {
+		return of(KnowWEUtils.getEnvironment(section));
+	}
+
+	/**
+	 * @deprecated use {@link #of(Environment)} or its siblings with the environment at hand
+	 */
+	@Deprecated
 	public static LazyReferenceManager getInstance() {
-		if (instance == null) {
-			instance = new LazyReferenceManager();
-			KnowWEUtils.currentEventManager().registerListener(instance);
+		return of(Environment.requireInstance());
+	}
+
+	@Override
+	public void close() {
+		environment.getEventManager().unregister(this);
+		synchronized (this) {
+			cache.clear();
 		}
-		return instance;
 	}
 
 	@Override

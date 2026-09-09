@@ -15,6 +15,7 @@ import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 public class DashboadScanner implements Scanner {
 
@@ -22,8 +23,8 @@ public class DashboadScanner implements Scanner {
 	public void scan(Article article, File target) throws IOException {
 		// execute builds and
 		// wait for build thread to terminate
-		CIHookManager.getInstance().triggerHooks(article);
-		CIBuildManager.getInstance().awaitTermination();
+		CIHookManager.of(article).triggerHooks(article);
+		CIBuildManager.of(KnowWEUtils.getEnvironment(article)).awaitTermination();
 
 		List<Section<CIDashboardType>> dashboardTypes = Sections.successors(article.getRootSection(), CIDashboardType.class);
 

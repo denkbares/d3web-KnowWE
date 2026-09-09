@@ -506,10 +506,12 @@ public class CIBuildManager implements EventListener, AutoCloseable {
 	@Override
 	public synchronized void notify(Event event) {
 		// Exclude new build registration while running builds are marked for asynchronous shutdown/restart.
-		if (event instanceof CompilationStartEvent) {
+		if (event instanceof CompilationStartEvent startEvent) {
 			Set<CIDashboard> ciDashboards = shutDownNow();
 			// restart them with next trigger
-			CIHookManager.getInstance().restartWithNextTrigger(ciDashboards);
+			Environment hookEnvironment = environment != null ? environment
+					: KnowWEUtils.getEnvironment(startEvent.getCompilerManager().getArticleManager());
+			CIHookManager.of(hookEnvironment).restartWithNextTrigger(ciDashboards);
 		}
 		else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {
 			priorityOverride.put(prioEvent.getDashboard().getDashboardName(), prioEvent.getPriority());

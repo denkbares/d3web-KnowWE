@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -51,17 +52,19 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.FullParseEvent;
+import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * @author Marc-Oliver Ochlast, Albrecht Striffler
  */
-public class CIHookManager implements EventListener {
+public class CIHookManager implements EventListener, AutoCloseable {
 
 	public static final String KNOWWE_CI_HOOKS_ACTIVE = "knowwe.ci.hooks.active";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIHookManager.class);
 
-	private static CIHookManager instance = null;
+	private final Environment environment;
 
 	private volatile String lastTriggeringUser = "";
 
@@ -73,16 +76,50 @@ public class CIHookManager implements EventListener {
 	private final MultiMap<String, CIHook> hooks = new DefaultMultiMap<>();
 	private final Set<CIDashboard> dashboardsToRestartWithNextTrigger = new HashSet<>();
 
-	public static CIHookManager getInstance() {
-		if (instance == null) {
-			instance = new CIHookManager();
-		}
-		return instance;
+	/**
+	 * Returns the hook manager of the specified environment, created on first access and closed together with the
+	 * environment.
+	 */
+	@NotNull
+	public static CIHookManager of(@NotNull Environment environment) {
+		return environment.getService(CIHookManager.class, () -> {
+			CIHookManager manager = new CIHookManager(environment);
+			environment.getEventManager().registerListener(manager);
+			return manager;
+		});
 	}
 
-	private CIHookManager() {
-		// prevent instantiation
-		KnowWEUtils.currentEventManager().registerListener(this);
+	/**
+	 * Returns the hook manager responsible for the specified section, i.e. the one of the section's environment.
+	 */
+	@NotNull
+	public static CIHookManager of(@NotNull Section<?> section) {
+		return of(KnowWEUtils.getEnvironment(section));
+	}
+
+	/**
+	 * Returns the hook manager responsible for the specified article, i.e. the one of the article's environment.
+	 */
+	@NotNull
+	public static CIHookManager of(@NotNull Article article) {
+		return of(KnowWEUtils.getEnvironment(article));
+	}
+
+	/**
+	 * @deprecated use {@link #of(Environment)} or its siblings with the environment at hand
+	 */
+	@Deprecated
+	public static CIHookManager getInstance() {
+		return of(Environment.requireInstance());
+	}
+
+	private CIHookManager(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	public void close() {
+		environment.getEventManager().unregister(this);
 	}
 
 	public synchronized void registerHook(CIHook hook) {
@@ -127,7 +164,7 @@ public class CIHookManager implements EventListener {
 		}
 		dashboardsToRestartWithNextTrigger.clear();
 
-		CIBuildManager.getInstance().startBuilds(dashboardsToTrigger);
+		CIBuildManager.of(environment).startBuilds(dashboardsToTrigger);
 		List<String> triggered = dashboardsToTrigger.stream().map(CIDashboard::getDashboardName).sorted().toList();
 		if (!triggered.isEmpty()) LOGGER.info("Triggered the following dashboards: " + String.join(", ", triggered));
 	}
@@ -139,7 +176,7 @@ public class CIHookManager implements EventListener {
 			if (defaultDashboardsOfTriggeringUser.contains(hook.getDashboard().getDashboardName())) {
 				LOGGER.info("Set max prio for CI dashboard " + hook.getDashboard()
 						.getDashboardName() + " due to user " + userName + " triggering the last compilation");
-				KnowWEUtils.currentEventManager()
+				environment.getEventManager()
 						.fireEvent(new CIDashboardPriorityOverrideEvent(hook.getDashboard(), Double.MAX_VALUE));
 			}
 		}
@@ -176,7 +213,7 @@ public class CIHookManager implements EventListener {
 		}
 		if (event instanceof CompilationFinishedEvent) {
 			synchronized (articlesToTrigger) {
-				CIHookManager.getInstance().triggerHooks(articlesToTrigger.values());
+				triggerHooks(articlesToTrigger.values());
 				articlesToTrigger.clear();
 			}
 		}

@@ -28,9 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import de.d3web.core.inference.PSMethod;
@@ -52,7 +49,6 @@ import de.d3web.interview.FormStrategy;
 import de.d3web.interview.Interview;
 import de.d3web.interview.NextUnansweredQuestionFormStrategy;
 import de.d3web.interview.SingleQuestionFormStrategyWrapper;
-import de.d3web.we.basic.SessionCreatedEvent;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -65,7 +61,7 @@ import de.knowwe.dialog.Utils;
  *
  * @author Volker Belli
  */
-public class StartCase extends AbstractAction implements EventListener {
+public class StartCase extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(StartCase.class);
 
 	public static final String PARAM_USER = "user";
@@ -74,25 +70,6 @@ public class StartCase extends AbstractAction implements EventListener {
 
 	public static final String HTTP_SESSION_START_INFO = "com.denkbares.dialog.startInfo";
 	public static final String HTTP_SESSION_RECENT_START_INFO = "com.denkbares.dialog.recentInfo";
-
-	public StartCase() {
-		synchronized (KnowWEUtils.currentEventManager()) {
-			KnowWEUtils.currentEventManager().registerListener(this, EventManager.RegistrationType.WEAK);
-		}
-	}
-
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		return Collections.singletonList(SessionCreatedEvent.class);
-	}
-
-	@Override
-	public void notify(Event genericEvent) {
-		SessionCreatedEvent event = (SessionCreatedEvent) genericEvent;
-		event.getContext().getSession().setAttribute(
-				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE,
-				event.getSession().getKnowledgeBase());
-	}
 
 	/**
 	 * Defines a provider that is capable to deliver the knowledge base to be used for a new session.

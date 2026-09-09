@@ -510,7 +510,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(section, tests);
 			if (trigger == CIBuildTriggers.onSave) {
 				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
-				CIHookManager.getInstance().registerHook(ciHook);
+				CIHookManager.of(section).registerHook(ciHook);
 				// store to be able to unregister hook in destroy method
 				KnowWEUtils.storeObject(section, CIHook.CI_HOOK_STORE_KEY, ciHook);
 			}
@@ -537,7 +537,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
 			Object object = section.getObject(CIHook.CI_HOOK_STORE_KEY);
 			if (object instanceof CIHook ciHook) {
-				CIHookManager.getInstance().unregisterHook(ciHook);
+				CIHookManager.of(section).unregisterHook(ciHook);
 			}
 			else if (object instanceof JobKey jobKey) {
 				QuartzSchedulerJobServer.deleteJob(jobKey);
