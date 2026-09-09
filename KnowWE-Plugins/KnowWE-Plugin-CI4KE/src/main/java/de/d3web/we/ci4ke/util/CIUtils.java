@@ -35,8 +35,24 @@ import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.d3web.testing.TestSpecification;
+import de.d3web.we.ci4ke.test.CITestSpecification;
 
 public class CIUtils {
+
+	/**
+	 * Returns the environment of the wiki the specified CI test specification belongs to. Every specification a
+	 * dashboard executes is a {@link CITestSpecification}, so tests may rely on it in
+	 * {@link de.d3web.testing.Test#execute(TestSpecification, Object)}.
+	 *
+	 * @throws IllegalArgumentException if the specification was not created by a CI dashboard
+	 */
+	@NotNull
+	public static Environment environment(@NotNull TestSpecification<?> specification) {
+		if (specification instanceof CITestSpecification<?> ciSpecification) return ciSpecification.getEnvironment();
+		throw new IllegalArgumentException("test specification of " + specification.getTestName()
+				+ " was not created by a CI dashboard, no environment available");
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIUtils.class);
 
 	public static Collection<Section<CIDashboardType>> getDashboardSections(ArticleManager manager, String dashboardName) {

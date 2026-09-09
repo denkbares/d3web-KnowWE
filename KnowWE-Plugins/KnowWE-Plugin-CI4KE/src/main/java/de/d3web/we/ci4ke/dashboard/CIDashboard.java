@@ -48,6 +48,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import de.d3web.we.ci4ke.test.CITestSpecification;
 
 /**
  * This class represents a dashboard data structure, managing the build results,
@@ -71,7 +72,8 @@ public class CIDashboard {
 	protected CIDashboard(Section<CIDashboardType> dashboardSection, List<TestSpecification<?>> specifications) {
 		this.dashboardSection = dashboardSection;
 		this.dashboardName = CIDashboardType.getDashboardName(dashboardSection);
-		this.testSpecifications = specifications;
+		// bind all specifications to the environment of this dashboard, so tests can resolve the wiki they run in
+		this.testSpecifications = CITestSpecification.bind(KnowWEUtils.getEnvironment(dashboardSection), specifications);
 		this.buildCache = new CIBuildCache();
 		this.renderer = new CIRenderer(this);
 		this.persistence = new CIPersistence(this, buildCache);
