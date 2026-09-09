@@ -223,19 +223,21 @@ public class DefaultArticleManager implements ArticleManager {
 
 		String title = article.getTitle();
 
-		if (!added.add(article)) {
-			// Old action could not be overwritten so delete and add last action
-			added.remove(article);
-			added.add(article);
-		}
-
-		Article lastVersion = getArticle(title);
-		if (lastVersion != null) removed.add(lastVersion);
-
-		synchronized (originalArticleMap) {
-			Article originalArticle = articleMap.put(title.toLowerCase(), article);
-			if (!originalArticleMap.containsKey(title.toLowerCase()) && (originalArticle != null)) {
-				originalArticleMap.put(title.toLowerCase(), originalArticle);
+		synchronized (added) {
+			synchronized (originalArticleMap) {
+				article.checkPublicationPredecessor(getArticle(title));
+				if (!added.add(article)) {
+					// Old action could not be overwritten so delete and add last action
+					added.remove(article);
+					added.add(article);
+				}
+				Article originalArticle = articleMap.put(title.toLowerCase(), article);
+				if (originalArticle != null) removed.add(originalArticle);
+				if (!originalArticleMap.containsKey(title.toLowerCase()) && (originalArticle != null)) {
+					originalArticleMap.put(title.toLowerCase(), originalArticle);
+				}
+				// Publish only here, against the actual predecessor at queue time (not the version seen by the parser).
+				article.publishReplacing(originalArticle);
 			}
 		}
 
@@ -400,7 +402,11 @@ public class DefaultArticleManager implements ArticleManager {
 				synchronized (added) {
 					synchronized (originalArticleMap) {
 						if (!originalArticleMap.isEmpty()) {
-							articleMap.putAll(originalArticleMap);
+							originalArticleMap.forEach((title, original) -> {
+								Article discarded = articleMap.put(title, original);
+								// Restoring the map must also reactivate the restored version's lifecycle.
+								original.publishReplacing(discarded);
+							});
 						}
 						for (Article changed : added) {
 							if (!originalArticleMap.containsKey(changed.getTitle().toLowerCase())) {

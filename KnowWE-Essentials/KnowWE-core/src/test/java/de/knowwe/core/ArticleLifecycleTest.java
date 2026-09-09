@@ -12,9 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -29,9 +29,8 @@ import static de.knowwe.core.ArticleLifecycleFixture.line;
 import static org.junit.Assert.*;
 
 /**
- * Contract tests for separating article construction from publication at queue time. They intentionally assert the
- * desired lifecycle, rather than expecting today's defects: draft isolation and identity-safe cleanup tests are ignored
- * until that refactoring is implemented. Successful replacement/collision tests protect already working behavior.
+ * Queue-time publication keeps drafts isolated. IDs survive unchanged-content recompiles, but every content change
+ * invalidates the complete article's IDs. Equal ID addresses across recompiles do not imply equal Section instances.
  */
 public class ArticleLifecycleTest {
 
@@ -39,7 +38,6 @@ public class ArticleLifecycleTest {
 	public final ArticleLifecycleFixture wiki = new ArticleLifecycleFixture();
 
 	/** Creating and discarding a draft must not redirect the ID of the still-published article. */
-	@Ignore("Pending lifecycle change: Article construction currently destroys the previous version and registers replacement IDs")
 	@Test
 	public void constructingUnregisteredReplacementPreservesLiveSectionIds() throws Exception {
 		Article original = wiki.register("Page", "unchanged\n");
@@ -55,7 +53,6 @@ public class ArticleLifecycleTest {
 	}
 
 	@Test
-	@Ignore("Pending lifecycle change: constructing a replacement currently unregisters messages of the live version")
 	public void constructingUnregisteredReplacementPreservesLiveMessageTracking() throws Exception {
 		Article original = wiki.register("Page", "unchanged\n");
 		Section<?> section = line(original, 0);
@@ -69,7 +66,6 @@ public class ArticleLifecycleTest {
 	}
 
 	@Test
-	@Ignore("Pending lifecycle change: draft message tracking is currently global immediately when a message is stored")
 	public void draftMessagesAreLocallyReadableButNotGloballyPublished() {
 		Article draft = wiki.draft("Unregistered", "draft\n");
 		Section<?> section = line(draft, 0);
@@ -83,7 +79,39 @@ public class ArticleLifecycleTest {
 	}
 
 	@Test
-	@Ignore("Pending lifecycle change: getID() currently registers sections even when their article is not registered")
+	public void draftDiagnosticBecomesGloballyVisibleWhenItsArticleIsActuallyQueued() throws Exception {
+		AtomicReference<Section<?>> constructedSection = new AtomicReference<>();
+		Message message = Messages.error("Diagnostic written while still a draft");
+		wiki.on(KDOMCreatedEvent.class, event -> {
+			if (!event.getArticle().getTitle().equals("Page")) return;
+			constructedSection.set(line(event.getArticle(), 0));
+			Messages.storeMessage(constructedSection.get(), getClass(), message);
+			assertFalse("The construction event runs before queue-time publication",
+					Messages.getSectionsWithMessages(Message.Type.ERROR).contains(constructedSection.get()));
+		});
+
+		Article published = wiki.register("Page", "draft\n");
+		assertSame(line(published, 0), constructedSection.get());
+		assertEquals(List.of(message), List.copyOf(Messages.getMessages(constructedSection.get())));
+		assertTrue("Queue-time publication must expose diagnostics already attached to the draft",
+				Messages.getSectionsWithMessages(Message.Type.ERROR).contains(constructedSection.get()));
+	}
+
+	@Test
+	public void lateMessageWriteToRetiredVersionStaysLocal() throws Exception {
+		Article original = wiki.register("Page", "old\n");
+		Section<?> retiredSection = line(original, 0);
+		Article replacement = wiki.register("Page", "new\n");
+
+		Message lateMessage = Messages.error("Late retired diagnostic");
+		Messages.storeMessage(retiredSection, getClass(), lateMessage);
+		assertEquals(List.of(lateMessage), List.copyOf(Messages.getMessages(retiredSection)));
+		assertFalse("A retired version must not re-enter the global diagnostic overview",
+				Messages.getSectionsWithMessages(Message.Type.ERROR).contains(retiredSection));
+		assertFalse(Messages.getSectionsWithMessages(Message.Type.ERROR).contains(line(replacement, 0)));
+	}
+
+	@Test
 	public void requestedDraftIdDoesNotMakeANewArticleGloballyReachable() {
 		Article draft = wiki.draft("Unregistered", "draft\n");
 		String id = line(draft, 0).getID();
@@ -114,7 +142,7 @@ public class ArticleLifecycleTest {
 	}
 
 	@Test
-	public void partialReplacementKeepsUnchangedSectionsAndRemovesObsoleteIds() throws Exception {
+	public void partialContentChangeInvalidatesAllPreviousSectionIds() throws Exception {
 		Article original = wiki.register("Page", "keep\nold\nremoved\n");
 		String keepId = line(original, 0).getID();
 		String changedId = line(original, 1).getID();
@@ -124,7 +152,9 @@ public class ArticleLifecycleTest {
 			wiki.manager.queueArticle("Page", "keep\nnew\n");
 			Article replacement = wiki.manager.getArticle("Page");
 			assertNotSame(original, replacement);
-			assertSame("New sections must be reachable before commit", line(replacement, 0), Sections.get(keepId));
+			assertNotEquals("Even an unchanged line gets a new ID when the article text changes", keepId, line(replacement, 0).getID());
+			assertNull(Sections.get(keepId));
+			assertSame("New sections must be reachable before commit", line(replacement, 0), Sections.get(line(replacement, 0).getID()));
 			assertNull(Sections.get(changedId));
 			assertNull(Sections.get(removedId));
 			assertSame(line(replacement, 1), Sections.get(line(replacement, 1).getID()));
@@ -134,9 +164,9 @@ public class ArticleLifecycleTest {
 		}
 	}
 
-	/** Aa and BB are distinct, equal-length Java-hash collisions, also inside the complete ID signature. */
+	/** Titles that collided under the old 32-bit hash scheme belong to independent namespaces. */
 	@Test
-	public void realHashCollisionRemainsDistinctAcrossReplacementAndDeletion() throws Exception {
+	public void formerlyCollidingTitlesRemainDistinctAcrossReplacementAndDeletion() throws Exception {
 		assertEquals("Aa".hashCode(), "BB".hashCode());
 		Article first = wiki.register("Aa", "same\n");
 		Article second = wiki.register("BB", "same\n");
@@ -170,7 +200,86 @@ public class ArticleLifecycleTest {
 	}
 
 	@Test
-	@Ignore("Pending lifecycle change: Article.destroy() currently removes the replacement's ID when called late")
+	public void discardingAnotherDraftCannotChangeAnIdBeforePublication() throws Exception {
+		assertEquals("Aa".hashCode(), "BB".hashCode());
+		Article discarded = wiki.draft("BB", "same\n");
+		String discardedId = discarded.getRootSection().getID();
+		CountDownLatch constructed = new CountDownLatch(1);
+		CountDownLatch allowQueueing = new CountDownLatch(1);
+		AtomicReference<Section<?>> earlyPublishedSection = new AtomicReference<>();
+		AtomicReference<String> earlyPublishedId = new AtomicReference<>();
+		wiki.on(KDOMCreatedEvent.class, event -> {
+			if (!event.getArticle().getTitle().equals("Aa")) return;
+			earlyPublishedSection.set(event.getArticle().getRootSection());
+			earlyPublishedId.set(earlyPublishedSection.get().getID());
+			constructed.countDown();
+			await(allowQueueing);
+		});
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		Future<Article> publishedFuture = executor.submit(() -> wiki.manager.registerArticle("Aa", "same\n"));
+		try {
+			assertTrue("Published article did not reach the construction boundary", constructed.await(5, TimeUnit.SECONDS));
+			assertNotEquals("Different articles need independent ID namespaces", discardedId, earlyPublishedId.get());
+			assertNull("The paused article must remain a draft", Sections.get(earlyPublishedId.get()));
+			discarded.destroy(null);
+			allowQueueing.countDown();
+			Article published = publishedFuture.get(5, TimeUnit.SECONDS);
+			assertSame(earlyPublishedSection.get(), published.getRootSection());
+			assertEquals(earlyPublishedId.get(), published.getRootSection().getID());
+			assertSame("Discarding a colliding draft must not remove the live owner", published.getRootSection(),
+					Sections.get(earlyPublishedId.get()));
+		}
+		finally {
+			allowQueueing.countDown();
+			executor.shutdownNow();
+			assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+		}
+	}
+
+	@Test
+	public void failedParseLeavesNoResolvableIdAndDoesNotAffectAnotherDraft() {
+		assertEquals("Aa".hashCode(), "BB".hashCode());
+		AtomicReference<String> failedId = new AtomicReference<>();
+		wiki.afterParse = parsed -> {
+			failedId.set(parsed.getChildren().get(0).getID());
+			throw new IllegalStateException("Intentional failed draft");
+		};
+
+		assertNull(Article.createArticle("same\n", "Aa", wiki.manager));
+		assertNotNull("The failing parser must have requested the partial line ID", failedId.get());
+		assertNull(Sections.get(failedId.get()));
+		wiki.afterParse = parsed -> { };
+		Article replacement = wiki.draft("BB", "same\n");
+		assertNotEquals(failedId.get(), line(replacement, 0).getID());
+		assertNull("The second draft must also remain private", Sections.get(line(replacement, 0).getID()));
+	}
+
+	@Test
+	public void equalEmptySiblingSectionsKeepDistinctStableIdsAcrossReplacement() throws Exception {
+		wiki.afterParse = parsed -> {
+			Section<?> exemplar = parsed.getChildren().get(0);
+			Section.createSection("", exemplar.get(), parsed);
+			Section.createSection("", exemplar.get(), parsed);
+		};
+		Article original = wiki.register("Page", "line\n");
+		Section<?> first = original.getRootSection().getChildren().get(1);
+		Section<?> second = original.getRootSection().getChildren().get(2);
+		String firstId = first.getID();
+		String secondId = second.getID();
+		assertNotEquals("Identical empty siblings need different IDs in one article", firstId, secondId);
+		assertSame(first, Sections.get(firstId));
+		assertSame(second, Sections.get(secondId));
+
+		Article replacement = wiki.register("Page", original.getText());
+		Section<?> replacementFirst = replacement.getRootSection().getChildren().get(1);
+		Section<?> replacementSecond = replacement.getRootSection().getChildren().get(2);
+		assertEquals(secondId, replacementSecond.getID());
+		assertEquals(firstId, replacementFirst.getID());
+		assertSame(replacementFirst, Sections.get(firstId));
+		assertSame(replacementSecond, Sections.get(secondId));
+	}
+
+	@Test
 	public void lateCleanupOfOldArticleCannotUnregisterReplacementIds() throws Exception {
 		Article original = wiki.register("Page", "same\n");
 		String id = line(original, 0).getID();
@@ -182,10 +291,9 @@ public class ArticleLifecycleTest {
 		assertSame("Cleanup must only remove IDs still owned by the old instance", line(replacement, 0), Sections.get(id));
 	}
 
-	/** Aa and BB collide in the complete root-section signature, so this verifies reuse after the original owner is gone. */
+	/** A deleted article's namespace must not be reused for an unrelated article. */
 	@Test
-	@Ignore("Pending lifecycle change: Section.unregisterOrUpdateSectionID() blindly removes a reused colliding ID during late cleanup")
-	public void lateCleanupOfDeletedCollidingOwnerCannotUnregisterReusedRootId() throws Exception {
+	public void lateCleanupOfDeletedArticleCannotAffectAnotherArticle() throws Exception {
 		assertEquals("Aa".hashCode(), "BB".hashCode());
 		Article deletedOwner = wiki.register("Aa", "same\n");
 		String reusedId = deletedOwner.getRootSection().getID();
@@ -194,15 +302,16 @@ public class ArticleLifecycleTest {
 		assertNull(Sections.get(reusedId));
 
 		Article newOwner = wiki.register("BB", "same\n");
-		assertEquals("The released colliding ID must be reusable", reusedId, newOwner.getRootSection().getID());
-		assertSame(newOwner.getRootSection(), Sections.get(reusedId));
+		String newId = newOwner.getRootSection().getID();
+		assertNotEquals(reusedId, newId);
+		assertSame(newOwner.getRootSection(), Sections.get(newId));
 
 		deletedOwner.destroy(null);
-		assertSame("Late cleanup must not unregister an ID now owned by another article", newOwner.getRootSection(), Sections.get(reusedId));
+		assertNull(Sections.get(reusedId));
+		assertSame("Late cleanup must not unregister another article", newOwner.getRootSection(), Sections.get(newId));
 	}
 
 	@Test
-	@Ignore("Pending lifecycle change: a retired section can currently register itself again on a late ID request")
 	public void firstIdRequestOnRetiredSectionCannotRegisterItAgain() throws Exception {
 		Article original = wiki.register("Page", "same\n");
 		Section<?> retired = line(original, 0); // deliberately never requested its ID while live
@@ -228,7 +337,6 @@ public class ArticleLifecycleTest {
 	}
 
 	@Test
-	@Ignore("Pending lifecycle change: a parser failure after partial section creation currently leaks the partial ID")
 	public void parserFailureDoesNotLeakIdsOrMessagesFromThePartialTree() {
 		AtomicReference<Section<?>> partial = new AtomicReference<>();
 		AtomicReference<String> partialId = new AtomicReference<>();
@@ -247,7 +355,6 @@ public class ArticleLifecycleTest {
 
 	/** Pauses at the real boundary between construction and queueing, without relying on scheduling sleeps. */
 	@Test
-	@Ignore("Pending lifecycle change: construction publishes replacement sections before queueing, so concurrent readers can observe them")
 	public void readersKeepSeeingTheOldRegistryUntilReplacementIsQueued() throws Exception {
 		Article original = wiki.register("Page", "same\n");
 		String id = line(original, 0).getID();
@@ -280,7 +387,6 @@ public class ArticleLifecycleTest {
 
 	/** Coordinates at the construction event, which is after parsing but before either draft can be queued. */
 	@Test
-	@Ignore("Pending lifecycle change: constructing overlapping replacement drafts unregisters the live ID mapping before either draft is queued")
 	public void discardingOverlappingUnqueuedReplacementDraftsPreservesTheLiveRegistry() throws Exception {
 		Article original = wiki.register("Page", "same\n");
 		Section<?> originalLine = line(original, 0);
@@ -327,6 +433,94 @@ public class ArticleLifecycleTest {
 			executor.shutdownNow();
 			assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
 		}
+	}
+
+	/** Restoring text through a new edit is not a rollback of the original Article instance. */
+	@Test
+	public void editingBackToOriginalTextDoesNotReviveOldIds() throws Exception {
+		Article original = wiki.register("Page", "original\n");
+		String originalId = line(original, 0).getID();
+		Article changed = wiki.register("Page", "changed\n");
+		String changedId = line(changed, 0).getID();
+		Article restoredText = wiki.register("Page", original.getText());
+		String restoredId = line(restoredText, 0).getID();
+		assertNotEquals(originalId, restoredId);
+		assertNotEquals(changedId, restoredId);
+		assertNull(Sections.get(originalId));
+		assertNull(Sections.get(changedId));
+		assertSame(line(restoredText, 0), Sections.get(restoredId));
+	}
+
+	@Test
+	public void deletingAndRecreatingSameTitleAndTextStartsNewNamespace() throws Exception {
+		Article original = wiki.register("Page", "same\n");
+		String oldId = original.getRootSection().getID();
+		wiki.manager.deleteArticle("Page");
+		wiki.awaitCompilation();
+		Article recreated = wiki.register("Page", original.getText());
+		assertNotEquals(oldId, recreated.getRootSection().getID());
+		assertNull(Sections.get(oldId));
+	}
+
+	@Test
+	public void parserRequestedIdsSurviveNormalizationAndUnchangedRecompile() throws Exception {
+		List<String> earlyIds = new ArrayList<>();
+		wiki.afterParse = parsed -> earlyIds.add(parsed.getChildren().get(0).getID());
+		Article original = wiki.register("Page", "same\r\n");
+		Article replacement = wiki.register("Page", "same\n");
+		assertEquals(2, earlyIds.size());
+		assertEquals(earlyIds.get(0), earlyIds.get(1));
+		assertEquals(earlyIds.get(0), line(original, 0).getID());
+		assertSame(line(replacement, 0), Sections.get(earlyIds.get(0)));
+	}
+
+	/** A parser/plugin change must not make an old ID address a different section type, even with identical text. */
+	@Test
+	public void changedSectionTypeDoesNotInheritIdDuringUnchangedRecompile() throws Exception {
+		AtomicBoolean differentType = new AtomicBoolean();
+		wiki.afterParse = parsed -> Section.createSection("", differentType.get()
+				? wiki.alternativeLine : parsed.getChildren().get(0).get(), parsed);
+		Article original = wiki.register("Page", "same\n");
+		String oldId = line(original, 1).getID();
+		differentType.set(true);
+		Article replacement = wiki.register("Page", original.getText());
+		assertEquals(original.getSectionIdNamespace(), replacement.getSectionIdNamespace());
+		assertNotEquals(oldId, line(replacement, 1).getID());
+		assertNull(Sections.get(oldId));
+	}
+
+	/** Equal source, type and position do not imply the same text range after a parser change. */
+	@Test
+	public void changedSectionLengthDoesNotInheritIdDuringUnchangedRecompile() throws Exception {
+		Article original = wiki.register("Page", "same\n");
+		String oldId = line(original, 0).getID();
+		wiki.afterParse = parsed -> parsed.getChildren().get(0).setText("sam");
+		Article replacement = wiki.register("Page", original.getText());
+		assertEquals(original.getSectionIdNamespace(), replacement.getSectionIdNamespace());
+		assertEquals(line(original, 0).getOffsetInArticle(), line(replacement, 0).getOffsetInArticle());
+		assertNotEquals(line(original, 0).getTextLength(), line(replacement, 0).getTextLength());
+		assertNotEquals(oldId, line(replacement, 0).getID());
+		assertNull(Sections.get(oldId));
+		assertSame(line(replacement, 0), Sections.get(line(replacement, 0).getID()));
+	}
+
+	/** A reentrant edit models a predecessor changing between parsing and queueing without timing sleeps. */
+	@Test
+	public void staleRecompileCannotReviveNamespaceAfterAnInterveningEdit() throws Exception {
+		Article original = wiki.register("Page", "original\n");
+		String originalId = line(original, 0).getID();
+		AtomicBoolean injectEdit = new AtomicBoolean(true);
+		wiki.on(KDOMCreatedEvent.class, event -> {
+			if (event.getArticle().getTitle().equals("Page") && injectEdit.getAndSet(false)) {
+				wiki.manager.registerArticle("Page", "changed\n");
+			}
+		});
+		IllegalStateException failure = assertThrows(IllegalStateException.class,
+				() -> wiki.manager.registerArticle("Page", original.getText()));
+		assertTrue(failure.getMessage().contains("retry"));
+		wiki.awaitCompilation();
+		assertEquals("changed\n", wiki.manager.getArticle("Page").getText());
+		assertNull(Sections.get(originalId));
 	}
 
 	private record DraftId(Section<?> section, String id) { }

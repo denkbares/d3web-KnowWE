@@ -329,6 +329,11 @@ public final class Messages {
 	 * @return if there are any such messages
 	 */
 	public static boolean hasMessages(Section<? extends Type> section) {
+		if (!section.getArticle().isPublished()) {
+			synchronized (section) {
+				return !getMessagesMap(section).isEmpty();
+			}
+		}
 		for (Set<Section<?>> sections : sectionsWithMessages.values()) {
 			if (sections.contains(section)) return true;
 		}
@@ -343,6 +348,11 @@ public final class Messages {
 	 * @return if there are any such messages
 	 */
 	public static boolean hasMessages(Section<? extends Type> section, Message.Type type) {
+		if (!section.getArticle().isPublished()) {
+			synchronized (section) {
+				return !getMessagesMap(section, type).isEmpty();
+			}
+		}
 		return sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section);
 	}
 
@@ -693,10 +703,12 @@ public final class Messages {
 				// store messages in map
 				messagesMap.put(source, Collections.unmodifiableCollection(messages));
 				// store section for type collections
-				for (Message message : messages) {
-					sectionsWithMessages
-							.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
-							.add(section);
+				if (section.getArticle().isPublished()) {
+					for (Message message : messages) {
+						sectionsWithMessages
+								.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+								.add(section);
+					}
 				}
 			}
 		}
@@ -839,9 +851,24 @@ public final class Messages {
 				user.getRequest()));
 	}
 
+	/** Publishes diagnostics collected locally during parsing. Serialized with message writers on this section. */
+	public static void registerMessagesSection(Section<?> section) {
+		synchronized (section) {
+			if (!section.getArticle().isPublished()) return;
+			for (Collection<Message> messages : getMessagesMap(section).values()) {
+				for (Message message : messages) {
+					sectionsWithMessages.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+							.add(section);
+				}
+			}
+		}
+	}
+
 	public static void unregisterMessagesSection(Section<?> section) {
-		for (Message.Type type : Message.Type.values()) {
-			removeSectionFromMessageTracking(type, section);
+		synchronized (section) {
+			for (Message.Type type : Message.Type.values()) {
+				removeSectionFromMessageTracking(type, section);
+			}
 		}
 	}
 

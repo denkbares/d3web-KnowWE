@@ -58,6 +58,7 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	final RecordingCompiler compiler = new RecordingCompiler();
 	final Map<String, String> attachments = new ConcurrentHashMap<>();
 	Consumer<Section<?>> afterParse = section -> { };
+	AbstractType alternativeLine;
 
 	private Object previousEnvironment;
 	private boolean previouslyInitialized;
@@ -93,6 +94,8 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 		};
 		root.addChildType(0, new AttachmentLine());
 		root.addChildType(1, new Line());
+		alternativeLine = new AlternativeLine();
+		root.addChildType(2, alternativeLine);
 		field(Environment.class, "rootType").set(environment, root);
 		manager = (DefaultArticleManager) environment.getArticleManager("lifecycle-" + UUID.randomUUID());
 		manager.getCompilerManager().addCompiler(1, compiler);
@@ -207,6 +210,13 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	private static class Line extends AbstractType {
 		Line() {
 			super(new RegexSectionFinder("(?m)^.+(?:\\n|$)"));
+		}
+	}
+
+	/** Registered before Environment initialization; tests may inject this type to model changed parser output. */
+	private static class AlternativeLine extends AbstractType {
+		AlternativeLine() {
+			super(new RegexSectionFinder("(?!)"));
 		}
 	}
 

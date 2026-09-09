@@ -1,49 +1,49 @@
 # Article lifecycle regression tests
 
-These tests precede the proposed construction/publication refactoring. Production code is unchanged. The contract is
-that constructing an article must not affect the live version; publication still happens when queueing, not at commit.
-The desired behavior is asserted by the active tests. Contracts that require the planned lifecycle change are marked
-with JUnit `@Ignore`, each with a reason describing the current limitation; they remain visible in reports as skipped.
+These tests cover the working-tree construction/publication change. Constructing an article must not affect the live
+version; publication still happens when queueing, not at commit. See the [implementation and follow-up plan](../../article-lifecycle-plan.md).
+
+The ID contract was revised with the user on 8 September: unchanged normalized content keeps its namespace on a
+recompile, but a content change invalidates **all** IDs. Tests expecting partial-content ID preservation or reuse of a
+deleted article's old 32-bit collision slot were deliberately updated for that contract, not disabled to hide failures.
+Reservations have been removed. Equivalent early ID requests, private drafts, owner-safe cleanup and rollback
+reactivation are now tested actively.
 
 ## Baseline
 
-On repository baseline `c55d55ee3`, 8 September 2026 (production code unchanged):
+Working-tree results on 9 September 2026, on repository baseline `c55d55ee3`:
 
 | Test class | Passing | Ignored |
 | --- | ---: | ---: |
-| `ArticleLifecycleTest` | 5 | 10 ignored |
+| `ArticleLifecycleTest` | 26 | 0 |
 | `ArticleCompilationLifecycleTest` | 10 | 1 ignored |
-| `ArticleRollbackLifecycleTest` | 3 | 3 ignored |
+| `ArticleRollbackLifecycleTest` | 5 | 1 ignored |
+| `SectionIndexTest` | 4 | 0 |
 | Existing core tests | 38 | 0 |
-| Total | 56 | 14 ignored |
+| Total | 83 | 2 ignored |
 
-The original 12 ignored tests were enabled on 7 September and failed as assertions, not because of fixture
-initialization errors or timeouts; running the core test classes in both alphabetical and reverse alphabetical order
-produced the same failing methods. The two additional ignored tests were enabled on 8 September and
-also failed as assertions without timeout or fixture setup failures. The two parser fixtures log their injected
-exceptions when enabled; those log messages are expected.
+All core test classes are run directly through JUnit (83 executed, 85 including ignored methods). The tests with
+intentional parser exceptions log those exceptions; these are expected. Before the production change, 56 tests passed
+and 14 were ignored after their failures had been verified as assertions rather than initialization/timeouts.
 
-The failing contracts cover:
+The two remaining disabled contracts concern pre-existing manager bookkeeping and remain outside this change:
 
-- Construction redirecting live IDs and removing live message tracking before publication.
-- Draft IDs and diagnostics becoming globally visible.
-- Cleanup of an old article removing the replacement's ID; a first ID request on a retired section registering it again.
-- Late cleanup of a deleted `Aa` owner removing the same root ID after a colliding `BB` owner has reused it.
-- A failed parser leaving a partial section globally registered.
-- A concurrent reader observing a replacement's section before the replacement article has been queued.
-- Overlapping unqueued replacement drafts removing the live registry mapping during construction and discard.
 - A newly created and replaced article being reported to the compiler as an original removal.
-- Rollback failing to restore ID/message tracking, and incorrectly retaining an intermediate newly created article.
+- Rollback incorrectly retaining an intermediate newly created article.
 
-Rollback contracts are grouped separately because full transaction rollback repair is not automatically part of the
-smaller construction/publication refactoring. The extra compile removal is also an existing behavior to assess, not a
-reason to silently expand the production change.
+Restoring the original Article now also reactivates its lifecycle and republishes its IDs/diagnostics; those two
+rollback tests are active. Full transaction repair is not implied by this localized restoration.
 
-Passing cases protect stable IDs on unchanged replacement, real hash collisions, partial changes, deletion/recreation,
-visibility before commit, reentrant events, actual AttachmentManager full-parse/deduplication/removal (including shared
-attachment references), and the synthetic clear/restore contribution sequence. The contribution ledger uses a test
-compiler and does not validate d3web/ontology semantics. The private headless test still needs to be rerun with its
-external fixtures after the production change.
+Passing cases include unchanged recompiles, parser-time IDs, normalization, complete invalidation on edits, independent
+namespaces for formerly colliding titles, distinct empty siblings, changed parser types and text ranges, deletion/recreation and editing
+back to old text, stale-recompile rejection, private diagnostics and late retired writes, visibility before commit,
+reentrant events, actual AttachmentManager full-parse/deduplication/shared-reference removal, and the synthetic
+clear/restore contribution sequence. The contribution ledger is not a test of d3web/ontology semantics.
+
+The adjacent-module reactor also runs `RecompileActionTest` (1 test) and `HeaderExporterTest` (2 tests) against the
+modified core. The latter protects the Word bookmark adapter from parsing opaque IDs as longs; it is not an end-to-end
+Word-rendering test. OntologyBridge/CI lifecycle integration and the private headless test remain follow-up work as
+explicitly recorded in the plan. No browser focus/update notification changes have been made.
 
 ## Running
 
