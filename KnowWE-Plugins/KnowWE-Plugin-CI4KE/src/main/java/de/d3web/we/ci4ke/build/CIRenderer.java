@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,7 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
 import de.d3web.we.ci4ke.test.ResultRenderer;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.elements.Div;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
@@ -572,6 +574,22 @@ public class CIRenderer {
 						.attributes("title", "Collapse all")
 						.attributes("onclick", "KNOWWE.plugin.ci4ke.collapseAllMessages(this)")
 						.children(Icon.COLLAPSE.toHtmlElement()));
+	}
+
+	/**
+	 * Renders the state bubble of the latest build as it appears in dashboard headers and daemons, ready to replace
+	 * the bubble in the browser. Returns {@code null} if the dashboard has no build yet.
+	 */
+	@Nullable
+	public String renderStateBubbleHtml(UserContext context) {
+		BuildResult build = dashboard.getLatestBuild();
+		if (build == null) return null;
+		RenderResult html = new RenderResult(context);
+		renderBuildStatus(build, true, Icon.BULB, html);
+		// ensure jspwiki markup is rendered in the same way as on a full page load
+		RenderResult rendered = new RenderResult(html);
+		rendered.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(html.toStringRaw()));
+		return rendered.toString();
 	}
 
 	public void renderBuildStatus(@NotNull BuildResult buildResult, boolean checkRunning, Icon icon, RenderResult result) {

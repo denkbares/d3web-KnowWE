@@ -53,6 +53,141 @@ KNOWWE.plugin.ci4ke = function() {
     }
   }
 
+  // consecutive connection failures of the progress stream after which the page stops reconnecting
+  const MAX_STREAM_FAILURES = 5;
+
+  // never use Array.from here, MooTools on the wiki pages replaces it with a version that wraps a Set into [set]
+  // the single progress stream of this page: its EventSource and the dashboard names it follows
+  let pageStream = null;
+  // last reported build state per dashboard name and callbacks to run once a dashboard's build finished
+  const lastStates = {};
+  const finishCallbacks = {};
+
+  function setText(id, text) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = text;
+  }
+
+  function setHtml(id, html) {
+    const element = document.getElementById(id);
+    if (element) element.innerHTML = html;
+  }
+
+  function progressInfo(dashboardName) {
+    return jq$("[name=\"" + dashboardName + "\"]").find(".ci-progress-info");
+  }
+
+  // state bubbles of a dashboard within headers or daemons, matching the container elements themselves as well
+  function stateBubbles(dashboardName, container) {
+    return jq$(container).find(".ci-state").addBack(".ci-state")
+      .filter("[dashboardName=\"" + dashboardName + "\"]");
+  }
+
+  function isName(value) {
+    return typeof value === "string" && value.length > 0;
+  }
+
+  function pageDashboardNames() {
+    const names = new Set();
+    jq$(".ci-header, .ci-daemon").find(".ci-state").addBack(".ci-state").each(function() {
+      const name = jq$(this).attr("dashboardName");
+      if (isName(name)) names.add(name);
+    });
+    return names;
+  }
+
+  function closeStream() {
+    if (!pageStream) return;
+    pageStream.source.close();
+    pageStream = null;
+  }
+
+  /*
+   * Opens the progress stream for the given dashboard names, replacing a stream that is already open. Events are
+   * dispatched per dashboard, the stream is closed once every followed dashboard reported a finished build.
+   */
+  function openStream(names) {
+    closeStream();
+    const url = KNOWWE.core.util.getURL({
+      action: "CIGetProgressAction",
+      names: [...names]
+    });
+    const source = new EventSource(url);
+    pageStream = { source: source, names: new Set(names) };
+    let failures = 0;
+
+    source.addEventListener("progress", function(event) {
+      failures = 0;
+      handleProgress(JSON.parse(event.data));
+    });
+
+    // the server announces that no followed dashboard has a build any more, closing prevents a reconnect
+    source.addEventListener("end", function() {
+      if (pageStream && pageStream.source === source) closeStream();
+    });
+
+    source.onerror = function() {
+      // the browser retries on its own while connecting, give up after repeated failures without any event
+      failures++;
+      if (source.readyState !== EventSource.CLOSED && failures < MAX_STREAM_FAILURES) return;
+      source.close();
+      if (pageStream && pageStream.source === source) pageStream = null;
+      names.forEach(name => {
+        if (lastStates[name] && lastStates[name] !== "FINISHED") {
+          setText(name + "_progress-text", " Connection to the server lost. Please reload manually.");
+        }
+      });
+    };
+  }
+
+  function handleProgress(status) {
+    const name = status.dashboard;
+    const previous = lastStates[name];
+    lastStates[name] = status.state;
+    const showsRunning = stateBubbles(name, ".ci-header, .ci-daemon").filter("[running='true']").length > 0;
+
+    if (status.state !== "FINISHED") {
+      setText(name + "_progress-value", status.progress + "%");
+      setHtml(name + "_progress-text", status.message);
+      setText(name + "_progress-duration", status.elapsedDuration);
+      progressInfo(name).show();
+      if (!showsRunning) {
+        // a build started while the page is open, switch header and bubble to their running appearance
+        if (stateBubbles(name, ".ci-header").length > 0) _CI.refreshBuildStatus(name);
+        if (stateBubbles(name, ".ci-daemon").length > 0) _CI.refreshCIDaemonBubble(name);
+      }
+      return;
+    }
+
+    const callbacks = finishCallbacks[name] || [];
+    delete finishCallbacks[name];
+    callbacks.forEach(callback => callback(name));
+
+    // a delivered bubble is always the current state, apply it even if nothing was shown as running
+    const bubbleDelivered = !!status.bubbleHtml;
+    if (bubbleDelivered) {
+      stateBubbles(name, ".ci-header, .ci-daemon").replaceWith(status.bubbleHtml);
+    }
+
+    const wasActive = previous !== undefined && previous !== "FINISHED";
+    if (!wasActive && !showsRunning) return;
+
+    progressInfo(name).fadeOut(500);
+    const modifiedWarning = document.getElementById("modified-warning_" + name);
+    if (modifiedWarning) {
+      modifiedWarning.parentElement.remove();
+    }
+    if (stateBubbles(name, ".ci-header").length > 0) {
+      _CI.refreshBuildDetails(name);
+      _CI.refreshBuildList(name);
+      _CI.refreshBuildStatus(name);
+    }
+    // older servers deliver no bubble, then the daemon bubble is fetched as before
+    if (!bubbleDelivered && stateBubbles(name, ".ci-daemon").length > 0) {
+      _CI.refreshCIDaemonBubble(name);
+    }
+  }
+
   return {
 
     expandAllMessages: function(button) {
@@ -152,8 +287,7 @@ KNOWWE.plugin.ci4ke = function() {
     },
 
     /*
-     * Triggers the start of a new build. Afterward just a page reload is called,
-     * which then renders progress info html stuff.
+     * Triggers the start of a new build and follows its progress afterward.
      */
     executeNewBuild: function(dashboardName, title) {
       const params = {
@@ -167,17 +301,13 @@ KNOWWE.plugin.ci4ke = function() {
         loader: true,
         response: {
           fn: function() {
-            _CI.refreshBuildProgress(dashboardName);
             _CI.refreshCIDaemonBubble(dashboardName);
-            _CI.refreshBuildProgressDaemon(dashboardName);
+            _CI.watchBuild(dashboardName);
 
             // make not-up-to-date warning disappear
             jq$(".ci-title").each(function() {
               if (jq$(this).attr("name") === dashboardName) {
                 jq$(this).find(".warning").hide();
-                // warning.attr('style', function(i, style) {
-                // 	return style + 'display: none !important;';
-                // });
               }
             });
           },
@@ -188,124 +318,72 @@ KNOWWE.plugin.ci4ke = function() {
       new _KA(options).send();
     },
 
-    /*
-     * Repeatedly asks for and displays the state of the current build process.
-     * Once the state is FINISHED, the loop terminates and the build display is refreshed.
+    /**
+     * Follows the current build of a dashboard through the progress stream of this page. Progress bar, message and
+     * elapsed time in the dashboard header are updated as events arrive. Once the build is finished, the dashboard
+     * header and daemon bubble present on the page are refreshed. The stream also covers every other dashboard shown
+     * on the page, so builds starting for them in the meantime are picked up as well.
+     */
+    watchBuild: function(dashboardName, onFinish = undefined) {
+      if (!isName(dashboardName)) return;
+      if (onFinish) {
+        (finishCallbacks[dashboardName] = finishCallbacks[dashboardName] || []).push(onFinish);
+      }
+      const names = pageDashboardNames();
+      names.add(dashboardName);
+      if (pageStream && [...names].every(name => pageStream.names.has(name))) return;
+      openStream(names);
+    },
+
+    /**
+     * Brings every dashboard header and daemon bubble on the page up to date through the progress stream. The
+     * server reports each dashboard once, delivering the current bubble for finished builds, and keeps following
+     * builds that are running. Nothing happens while a stream is already open, it already delivers all changes.
+     */
+    syncBuilds: function() {
+      if (pageStream) return;
+      const names = pageDashboardNames();
+      if (names.size === 0) return;
+      openStream(names);
+    },
+
+    /**
+     * Opens the progress stream of this page if any dashboard header or daemon bubble shows a running build.
+     */
+    watchRunningBuilds: function() {
+      const running = jq$(".ci-header, .ci-daemon").find(".ci-state").addBack(".ci-state").filter("[running='true']");
+      if (running.length === 0) return;
+      const names = pageDashboardNames();
+      if (pageStream && [...names].every(name => pageStream.names.has(name))) return;
+      openStream(names);
+    },
+
+    /**
+     * @deprecated: use watchBuild instead
      */
     refreshBuildProgress: function(dashboardName) {
-      const error = false;
-      const params = {
-        action: "CIGetProgressAction",
-        name: dashboardName
-      };
-      const options = {
-        url: KNOWWE.core.util.getURL(params),
-        response: {
-          action: "none",
-          fn: function() {
-            if (error) return;
-            const response = JSON.parse(this.responseText);
-            const percent = response.progress;
-            const message = response.message;
-
-            const pv = document.getElementById(
-              dashboardName + "_progress-value"
-            );
-            if (pv) pv.textContent = percent.trim() + "%";
-            const pt = document.getElementById(
-              dashboardName + "_progress-text"
-            );
-            if (pt) pt.innerHTML = message;
-            const duration = document.getElementById(
-              dashboardName + "_progress-duration"
-            );
-            if (duration) {
-              duration.textContent = response.elapsedDuration;
-            }
-
-            if (response.state !== "FINISHED") {
-              jq$("[name=\"" + dashboardName + "\"]")
-                .find(".ci-progress-info")
-                .show();
-              setTimeout(function() {
-                new _KA(options).send();
-              }, 500);
-            } else {
-              jq$("[name=\"" + dashboardName + "\"]")
-                .find(".ci-progress-info")
-                .fadeOut(500);
-              let modifiedWarning = document.getElementById(
-                "modified-warning_" + dashboardName
-              );
-              if (modifiedWarning) {
-                modifiedWarning.parentElement.remove();
-              }
-              _CI.refreshBuildDetails(dashboardName);
-              _CI.refreshBuildList(dashboardName);
-              _CI.refreshBuildStatus(dashboardName);
-            }
-          },
-          onError: function() {
-            const progressText = jq$("#" + dashboardName + "_progress-text");
-            if (progressText)
-              progressText.text(
-                " Exception while updating progress. Please reload manually."
-              );
-          }
-        }
-      };
-      new _KA(options).send();
+      this.watchBuild(dashboardName);
     },
 
     /**
-     * @deprecated: use refreshBuildProgressDaemon instead
+     * @deprecated: use watchBuild instead
      */
     refreshBuildProgressDeamon: function(dashboardName, onFinish = undefined) {
-      this.refreshBuildProgressDaemon(dashboardName, onFinish);
+      this.watchBuild(dashboardName, onFinish);
     },
 
     /**
-     * Repeatedly checks whether the current build process is still active. Once its state is FINISHED, the loop
-     * terminates and the state bubble is refreshed.
-     *
-     * @param dashboardName the name of the CI dashboard to display the daemon for
-     * @param {undefined | (({dashboardName: string}) => void)} onFinish an optional callback to be called after
-     * termination and successful refresh.
+     * @deprecated: use watchBuild instead
      */
     refreshBuildProgressDaemon: function(dashboardName, onFinish = undefined) {
-      const params = {
-        action: "CIGetProgressAction",
-        name: dashboardName
-      };
-      const options = {
-        url: KNOWWE.core.util.getURL(params),
-        response: {
-          action: "none",
-          fn: function() {
-            if (this.status === 200) {
-              const response = JSON.parse(this.responseText);
-              if (response.state !== "FINISHED") {
-                setTimeout(function() {
-                  new _KA(options).send();
-                }, 1000);
-              } else {
-                _CI.refreshCIDaemonBubble(dashboardName, onFinish);
-              }
-            }
-          }
-        },
-        onError: function() {
-        }
-      };
-
-      new _KA(options).send();
+      this.watchBuild(dashboardName, onFinish);
     },
 
     /**
      * @deprecated: use refreshCIDaemonBubble instead
      */
     refreshCIDeamonBubble: function(dashboardName, onFinish = undefined) {
-      refreshCIDaemonBubble(dashboardName, onFinish);
+      this.refreshCIDaemonBubble(dashboardName, onFinish);
     },
 
     /**
@@ -412,37 +490,14 @@ KNOWWE.plugin.ci4ke = function() {
 const _CI = KNOWWE.plugin.ci4ke;
 
 /*
- * Starts the progress-refresh function if the progressInfo html or some
- * ci-deamon is rendered in the page (happens if someone opens a page with a
- * dashboard where currently a build is running).
+ * Follows running builds once the page is loaded (happens if someone opens a page with a dashboard or daemon
+ * where currently a build is running). On focus all dashboards of the page are synchronized through one stream,
+ * which also picks up builds started while the tab was in the background.
  */
 jq$(function() {
-
-  // trigger dashboard progress update
-  jq$(".ci-header").find(".ci-state").each(function() {
-    const runs = jq$(this).attr("running");
-    if (runs) {
-      const dashboardName = jq$(this).attr("dashboardName");
-      _CI.refreshBuildProgress(dashboardName);
-    }
-  });
-
-  // trigger request loop asking whether build is finished to stop daemon on LeftMenu
-  jq$(".ci-daemon").find(".ci-state").each(
-    function() {
-      const runs = jq$(this).attr("running");
-      if (runs) {
-        const dashboardName = jq$(this).attr("dashboardName");
-        _CI.refreshBuildProgressDaemon(dashboardName);
-      }
-    }
-  );
-
+  _CI.watchRunningBuilds();
 }).on("focus", () => {
-  jq$(".ci-daemon").find(".ci-state").each(function() {
-    const dashboardName = jq$(this).attr("dashboardName");
-    _CI.refreshCIDaemonBubble(dashboardName, _CI.refreshBuildProgressDaemon);
-  });
+  _CI.syncBuilds();
 });
 
 KNOWWE.plugin.ci4ke.FreezeFailedTests = function() {
