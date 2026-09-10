@@ -65,17 +65,6 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * Registers the terms of the extension as occupied at the current environment.
-	 *
-	 * @deprecated occupied terms belong to the environment, use
-	 * {@link Environment#registerOccupiedTerms(TerminologyExtension)} of the environment at hand
-	 */
-	@Deprecated
-	public void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
-		Environment.requireInstance().registerOccupiedTerms(terminologyExtension);
-	}
-
-	/**
 	 * Util method to allow for code deduplication, because registration and unregistration is often very similar.
 	 */
 	public void termDefinition(Action type, TermCompiler compiler, Section<?> termDefinition, Class<?> termClass, Identifier termIdentifier) {

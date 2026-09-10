@@ -60,42 +60,10 @@ public class SparqlTestObjectProviderUtils {
 		return getSectionsForNameGlobal(environment, sectionName, ExpectedSparqlResultTableMarkup.class);
 	}
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #getSparqlQueryContentSection(Environment, String)}
-	 */
-	@Deprecated
-	public static Collection<Section<SparqlContentType>> getSparqlQueryContentSection(String sectionName) {
-		return getSparqlQueryContentSection(Environment.requireInstance(), sectionName);
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getSparqlQuerySection(Environment, String)}
-	 */
-	@Deprecated
-	public static Collection<Section<SparqlMarkupType>> getSparqlQuerySection(String sectionName) {
-		return getSparqlQuerySection(Environment.requireInstance(), sectionName);
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getExpectedQueryResultSection(Environment, String)}
-	 */
-	@Deprecated
-	public static Collection<Section<ExpectedSparqlResultTableMarkup>> getExpectedQueryResultSection(String sectionName) {
-		return getExpectedQueryResultSection(Environment.requireInstance(), sectionName);
-	}
-
 	public static String getName(Section<?> section) {
 		return $(section).closest(DefaultMarkupType.class)
 				.successor(RegisteredNameType.class)
 				.mapFirst(s -> s.get().getTermName(s));
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getSectionsForNameGlobal(Environment, String, Class)}
-	 */
-	@Deprecated
-	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(String sparqlName, Class<T> clazz) {
-		return getSectionsForNameGlobal(Environment.requireInstance(), sparqlName, clazz);
 	}
 
 	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(@NotNull Environment environment, String sparqlName, Class<T> clazz) {

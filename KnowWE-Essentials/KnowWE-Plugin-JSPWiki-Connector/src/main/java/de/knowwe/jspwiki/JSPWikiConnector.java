@@ -332,9 +332,15 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getApplicationRootPath() {
-		ServletContext servletContext = getServletContext();
+		return getApplicationRootPath(getServletContext());
+	}
+
+	/**
+	 * The application root path of the web application running in the given servlet context, or the working
+	 * directory if the context has no real path (e.g. in tests).
+	 */
+	public static String getApplicationRootPath(ServletContext servletContext) {
 		String realPath = servletContext.getRealPath("");
-		String rootPath;
 		if (realPath != null) {
 			return realPath.replaceAll("/+$", "");
 		}
@@ -1007,14 +1013,14 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanEditArticle(String title, UserContext context) {
-		if (KnowWEUtils.isAttachmentArticle(title)) return false;
+		if (KnowWEUtils.isAttachmentArticle(context.getEnvironment().getArticleManager(), title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, context, "edit");
 	}
 
 	@Override
 	public boolean userCanUploadAttachment(String title, UserContext context) {
-		if (KnowWEUtils.isAttachmentArticle(title)) return false;
+		if (KnowWEUtils.isAttachmentArticle(context.getEnvironment().getArticleManager(), title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, context, "upload");
 	}
@@ -1026,7 +1032,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanDeleteArticle(String title, UserContext context) {
-		if (KnowWEUtils.isAttachmentArticle(title)) return false;
+		if (KnowWEUtils.isAttachmentArticle(context.getEnvironment().getArticleManager(), title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, context, "delete");
 	}

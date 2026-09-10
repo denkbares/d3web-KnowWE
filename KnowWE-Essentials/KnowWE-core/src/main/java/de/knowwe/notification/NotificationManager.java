@@ -132,13 +132,6 @@ public class NotificationManager {
 	/**
 	 * Adds a notification that will be visible to all users.
 	 */
-	/**
-	 * @deprecated use {@link #addGlobalNotification(Environment, Notification)} with the environment at hand
-	 */
-	@Deprecated
-	public static void addGlobalNotification(Notification notification) {
-		addGlobalNotification(Environment.requireInstance(), notification);
-	}
 
 	public static void addGlobalNotification(@NotNull Environment environment, Notification notification) {
 		global(environment).put(notification.getID(), notification);
@@ -149,13 +142,6 @@ public class NotificationManager {
 	 *
 	 * @param id the id of the notification to remove
 	 */
-	/**
-	 * @deprecated use {@link #removeGlobalNotification(Environment, String)} with the environment at hand
-	 */
-	@Deprecated
-	public static void removeGlobalNotification(String id) {
-		removeGlobalNotification(Environment.requireInstance(), id);
-	}
 
 	public static void removeGlobalNotification(@NotNull Environment environment, String id) {
 		global(environment).remove(id);

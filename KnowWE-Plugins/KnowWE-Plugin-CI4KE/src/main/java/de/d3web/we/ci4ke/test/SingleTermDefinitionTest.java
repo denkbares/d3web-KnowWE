@@ -29,7 +29,10 @@ import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
 import de.d3web.testing.TestParameter.Type;
 import de.d3web.testing.TestingUtils;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -52,7 +55,10 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 	public Message execute(Article article, String[] args, String[]... ignores) throws InterruptedException {
 		if (article == null) throw new IllegalArgumentException("No article provided.");
 
-		TerminologyManager manager = KnowWEUtils.getArticleManager(article).getEnvironment().getTerminologyManager(article.getTitle());
+		// the terminology of the article's package compiler, an empty one if the article compiles nothing
+		Section<PackageCompileType> compileSection = Sections.successor(article.getRootSection(), PackageCompileType.class);
+		TerminologyManager manager = compileSection == null ? new TerminologyManager()
+				: KnowWEUtils.getTerminologyManagers(compileSection).stream().findFirst().orElse(null);
 		
 		Collection<Identifier> terms = manager.getAllDefinedTerms();
 

@@ -58,7 +58,7 @@ public class VersionMarkupType extends DefaultMarkupType {
 	public VersionMarkupType() {
 		super(MARKUP);
 		setRenderer((section, user, result) -> {
-			manifest = getApplicationManifest();
+			manifest = getApplicationManifest(user.getEnvironment());
 			String type = DefaultMarkupType.getAnnotation(section, "type");
 			if (manifest != null) {
 				result.appendHtml("<div style='font-size: 90%'>");
@@ -131,13 +131,4 @@ public class VersionMarkupType extends DefaultMarkupType {
 		return manifest;
 	}
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #getApplicationManifest(Environment)}
-	 */
-	@Deprecated
-	@Nullable
-	public static Manifest getApplicationManifest() {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? manifest : getApplicationManifest(environment);
-	}
 }

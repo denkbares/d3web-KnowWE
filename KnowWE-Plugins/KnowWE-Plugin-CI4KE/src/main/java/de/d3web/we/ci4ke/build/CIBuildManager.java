@@ -115,14 +115,6 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 		return of(KnowWEUtils.getEnvironment(dashboard.getDashboardSection()));
 	}
 
-	/**
-	 * @deprecated use {@link #of(CIDashboard)} or {@link #of(Environment)} with the environment at hand
-	 */
-	@Deprecated
-	public static CIBuildManager getInstance() {
-		return of(Environment.requireInstance());
-	}
-
 	@Override
 	public void close() {
 		LOGGER.info("Shutting down CI build executor.");

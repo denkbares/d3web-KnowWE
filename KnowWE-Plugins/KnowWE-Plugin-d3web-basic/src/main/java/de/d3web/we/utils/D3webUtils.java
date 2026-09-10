@@ -258,23 +258,6 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Utility method to get a {@link KnowledgeBase} for an article specified by its web and topic. If no such knowledge
-	 * base exists, a new knowledge base is created for the article and returned.
-	 *
-	 * @param web   the web of the article the knowledge base is compiled
-	 * @param title the title of the article the knowledge base is compiled
-	 * @return the knowledge base if such one exists, null otherwise
-	 * @throws NullPointerException if web or topic is null
-	 * @created 15.12.2010
-	 * @deprecated it is possible that there are multiple knowledge bases on one page, this method will always only
-	 * return the first one. You can use
-	 */
-	@Deprecated
-	public static KnowledgeBase getKnowledgeBase(String web, String title) {
-		return getKnowledgeBase(KnowWEUtils.getArticleManager(web), title);
-	}
-
-	/**
 	 * Utility method to get a {@link KnowledgeBase} for an article specified by its title. If no such knowledge base
 	 * exists, null is returned.
 	 *
@@ -484,16 +467,16 @@ public class D3webUtils {
 		return sessionDir;
 	}
 
-	public static String getWebEnvironmentPath(String web) {
+	public static String getWebEnvironmentPath(@NotNull Environment environment, String web) {
 		ResourceBundle rb = KnowWEUtils.getConfigBundle();
 		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-		sessionDir = KnowWEUtils.getRealPath(sessionDir);
+		sessionDir = KnowWEUtils.getRealPath(environment, sessionDir);
 		return sessionDir;
 	}
 
-	public static URL getKnowledgeBaseURL(String web, String id) {
-		String varPath = getWebEnvironmentPath(web);
+	public static URL getKnowledgeBaseURL(@NotNull Environment environment, String web, String id) {
+		String varPath = getWebEnvironmentPath(environment, web);
 		varPath = varPath + id + ".jar";
 		URL url = null;
 		try {

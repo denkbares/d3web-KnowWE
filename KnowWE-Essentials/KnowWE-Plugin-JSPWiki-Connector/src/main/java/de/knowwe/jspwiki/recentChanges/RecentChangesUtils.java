@@ -56,14 +56,6 @@ public class RecentChangesUtils {
 	public static final String AUTHOR = "Author";
 	public static final String CHANGE_NOTES = "Change Notes";
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #getRecentChangesFromJSPWiki(Environment)}
-	 */
-	@Deprecated
-	public static Set<Page> getRecentChangesFromJSPWiki() {
-		return getRecentChangesFromJSPWiki(Environment.requireInstance());
-	}
-
 	public static Set<Page> getRecentChangesFromJSPWiki(@NotNull Environment environment) {
 		// can take quite some time for large wikis, so we cache this...
 		return CompilationLocal.getCached(environment.getArticleManager()

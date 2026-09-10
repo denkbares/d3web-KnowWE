@@ -261,48 +261,6 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Returns the script managers of the current environment.
-	 *
-	 * @deprecated use {@link Environment#getScriptManagers()} of the environment at hand
-	 */
-	@Deprecated
-	public static Collection<ScriptManager<? extends Compiler>> getScriptManagers() {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? Collections.emptyList() : environment.getScriptManagers();
-	}
-
-	/**
-	 * Returns the script manager of the current environment for the specified compiler class.
-	 *
-	 * @deprecated use {@link Environment#getScriptManager(Class)} of the environment at hand
-	 */
-	@Deprecated
-	public static <C extends Compiler> ScriptManager<C> getScriptManager(Class<C> compilerClass) {
-		return Environment.requireInstance().getScriptManager(compilerClass);
-	}
-
-	/**
-	 * @deprecated compile scripts belong to their type, use {@link AbstractType#addCompileScript(CompileScript)}
-	 */
-	@Deprecated
-	public static <C extends Compiler, T extends Type> void addScript(T type, CompileScript<C, T> script) {
-		addScript(Priority.DEFAULT, type, script);
-	}
-
-	/**
-	 * @deprecated compile scripts belong to their type, use {@link AbstractType#addCompileScript(Priority, CompileScript)}
-	 */
-	@Deprecated
-	public static <C extends Compiler, T extends Type> void addScript(Priority priority, T type, CompileScript<C, T> script) {
-		if (type instanceof AbstractType abstractType) {
-			abstractType.addCompileScript(priority, script);
-		}
-		else {
-			Environment.requireInstance().getScriptManager(script.getCompilerClass()).addScript(priority, type, script);
-		}
-	}
-
-	/**
 	 * Returns the web this compiler belongs to.
 	 *
 	 * @return the web of this compiler

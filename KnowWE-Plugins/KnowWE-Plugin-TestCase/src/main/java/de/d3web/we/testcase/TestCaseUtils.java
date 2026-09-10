@@ -44,13 +44,6 @@ public class TestCaseUtils {
 	 * @param web the current web
 	 * @return loaded test suite or null (if no test suite was found)
 	 */
-	/**
-	 * @deprecated use {@link #loadTestSuite(ArticleManager, String)} with the article manager at hand
-	 */
-	@Deprecated
-	public static TestCase loadTestSuite(String article, String web) {
-		return loadTestSuite(Environment.requireInstance().getArticleManager(web), article);
-	}
 
 	public static TestCase loadTestSuite(ArticleManager manager, String article) {
 		Article a = manager.getArticle(article);

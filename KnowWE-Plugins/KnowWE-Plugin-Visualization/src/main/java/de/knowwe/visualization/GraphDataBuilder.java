@@ -44,16 +44,6 @@ public abstract class GraphDataBuilder {
 	protected GraphVisualizationRenderer graphRenderer = null;
 	protected boolean isTimeOut;
 
-	/**
-	 * @deprecated use {@link #createBaseURL(Environment)} with the environment at hand
-	 */
-	@Deprecated
-	public static String createBaseURL() {
-		Environment environment = Environment.peekInstance();
-		// without environment: for tests only
-		return environment == null ? "http://localhost:8080/KnowWE/Wiki.jsp" : createBaseURL(environment);
-	}
-
 	public static String createBaseURL(Environment environment) {
 		if (environment.getWikiConnector() != null) {
 			return environment.getWikiConnector().getBaseUrl() + "Wiki.jsp";

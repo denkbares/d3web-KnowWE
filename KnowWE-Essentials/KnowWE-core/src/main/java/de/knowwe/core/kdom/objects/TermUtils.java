@@ -102,27 +102,6 @@ public class TermUtils {
 	}
 
 	/**
-	 * @deprecated the web is gone, use {@link #getTermInfo(ArticleManager, Identifier, Class...)}
-	 */
-	@Deprecated
-	public static TermInfo getTermInfo(String web, Identifier termIdentifier, Class<?>... allowedTermClasses) {
-		return getTermInfo(KnowWEUtils.getArticleManager(web), termIdentifier, allowedTermClasses);
-	}
-
-	/**
-	 * Simple method returning a set of all term identifiers of a given web.
-	 *
-	 * @param web the web for which the identifiers should be returned
-	 * @return a set of all term identifiers
-	 * @deprecated use getTermIdentifiers(UserContext) instead, if possible
-	 */
-	@Deprecated
-	@NotNull
-	public static Set<Identifier> getTermIdentifiers(String web) {
-		return getTermIdentifiers(Environment.requireInstance().getArticleManager(web));
-	}
-
-	/**
 	 * Simple method returning a set of all term identifiers of a given article manager.
 	 *
 	 * @param articleManager the article manager to get all terms from

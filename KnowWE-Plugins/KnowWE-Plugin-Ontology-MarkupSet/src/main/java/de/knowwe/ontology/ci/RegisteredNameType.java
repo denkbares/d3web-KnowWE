@@ -61,15 +61,6 @@ public class RegisteredNameType extends SimpleDefinition {
 		return new Identifier(parentClass.getSimpleName(), getTermName(section));
 	}
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #getNamedMarkupSections(Environment, String, Class)}
-	 */
-	@Deprecated
-	@NotNull
-	public static <T extends Type> Collection<Section<T>> getNamedMarkupSections(String registeredName, Class<T> registeredType) {
-		return getNamedMarkupSections(Environment.requireInstance(), registeredName, registeredType);
-	}
-
 	@NotNull
 	public static <T extends Type> Collection<Section<T>> getNamedMarkupSections(@NotNull Environment environment, String registeredName, Class<T> registeredType) {
 		if (registeredName == null) return Collections.emptyList();

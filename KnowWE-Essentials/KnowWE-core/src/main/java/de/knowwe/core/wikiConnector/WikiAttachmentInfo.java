@@ -41,15 +41,6 @@ public class WikiAttachmentInfo implements WikiObjectInfo {
 		this.date = date;
 	}
 
-	/**
-	 * @deprecated pass the connector the attachment belongs to: {@link #WikiAttachmentInfo(WikiConnector, String,
-	 * String, int, Date)}
-	 */
-	@Deprecated
-	public WikiAttachmentInfo(String name, String author, int version, Date date) {
-		this(Environment.requireInstance().getWikiConnector(), name, author, version, date);
-	}
-
 	public WikiAttachment getAttachment() throws IOException {
 		return connector.getAttachment(name, version);
 	}

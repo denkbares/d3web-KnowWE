@@ -56,14 +56,6 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 		return KnowWEUtils.getURLLink(targetArticle);
 	}
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #getTerminologyManager(Environment, String)}
-	 */
-	@Deprecated
-	public static TerminologyManager getTerminologyManager(String master) {
-		return getTerminologyManager(Environment.requireInstance(), master);
-	}
-
 	public static TerminologyManager getTerminologyManager(@NotNull Environment environment, String master) {
 		ArticleManager articleManager = environment.getArticleManager();
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(articleManager,
@@ -86,14 +78,6 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	 */
 	public String createBaseURL(@NotNull Environment environment) {
 		return environment.getWikiConnector().getBaseUrl() + "Wiki.jsp";
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #createBaseURL(Environment)}
-	 */
-	@Deprecated
-	public String createBaseURL() {
-		return createBaseURL(Environment.requireInstance());
 	}
 
 	// @SuppressWarnings("unchecked")

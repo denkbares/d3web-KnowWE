@@ -72,14 +72,6 @@ public class LazyReferenceManager implements EventListener, EnvironmentService {
 		return of(KnowWEUtils.getEnvironment(section));
 	}
 
-	/**
-	 * @deprecated use {@link #of(Environment)} or its siblings with the environment at hand
-	 */
-	@Deprecated
-	public static LazyReferenceManager getInstance() {
-		return of(Environment.requireInstance());
-	}
-
 	@Override
 	public void close() {
 		environment.getEventManager().unregister(this);

@@ -33,9 +33,20 @@ public class WikiPageInfo implements WikiObjectInfo {
 	private final int version;
 	private final Date date;
 	private final String changeNote;
-	private final WikiConnector connector;
+	private final @Nullable WikiConnector connector;
 
 	public WikiPageInfo(@NotNull WikiConnector connector, String name, String author, int version, Date date, String changeNote) {
+		this(name, author, version, date, changeNote, connector);
+	}
+
+	/**
+	 * For subclasses that carry the page text themselves and override {@link #getText()}.
+	 */
+	protected WikiPageInfo(String name, String author, int version, Date date, String changeNote) {
+		this(name, author, version, date, changeNote, null);
+	}
+
+	private WikiPageInfo(String name, String author, int version, Date date, String changeNote, @Nullable WikiConnector connector) {
 		this.connector = connector;
 		this.name = name;
 		this.author = author;
@@ -44,16 +55,8 @@ public class WikiPageInfo implements WikiObjectInfo {
 		this.changeNote = changeNote;
 	}
 
-	/**
-	 * @deprecated pass the connector the page belongs to: {@link #WikiPageInfo(WikiConnector, String, String, int,
-	 * Date, String)}
-	 */
-	@Deprecated
-	public WikiPageInfo(String name, String author, int version, Date date, String changeNote) {
-		this(Environment.requireInstance().getWikiConnector(), name, author, version, date, changeNote);
-	}
-
 	public String getText() {
+		if (connector == null) throw new IllegalStateException("page info without connector must override getText()");
 		return connector.getArticleText(name, version);
 	}
 

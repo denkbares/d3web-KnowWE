@@ -52,14 +52,6 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 		return getSection(context.getArticleManager(), identifier);
 	}
 
-	/**
-	 * @deprecated use {@link #getSection(ArticleManager, String)} with the article manager at hand
-	 */
-	@Deprecated
-	public static Section<? extends Type> getSection(String identifier) {
-		return getSection(Environment.requireInstance().getArticleManager(), identifier);
-	}
-
 	public static Section<? extends Type> getSection(ArticleManager articleManager, String identifier) {
 		try {
 			JSONObject json = new JSONObject(identifier);

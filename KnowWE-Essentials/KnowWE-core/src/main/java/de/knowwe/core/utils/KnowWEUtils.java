@@ -128,14 +128,6 @@ public class KnowWEUtils {
 	 * @param property the property key to get the value for
 	 * @return the property value or null if not set
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getProperty(Environment, String)}
-	 */
-	@Nullable
-	@Deprecated
-	public static String getProperty(String property) {
-		return getProperty(Environment.requireInstance(), property);
-	}
 
 	public static String getProperty(@NotNull Environment environment, String property) {
 		String value = environment.getWikiConnector().getWikiProperty(property);
@@ -157,8 +149,8 @@ public class KnowWEUtils {
 	 * @return the property value or the default value
 	 */
 	@NotNull
-	public static String getProperty(String property, @NotNull String defaultValue) {
-		String value = getProperty(property);
+	public static String getProperty(@NotNull Environment environment, String property, @NotNull String defaultValue) {
+		String value = getProperty(environment, property);
 		return value == null ? defaultValue : value;
 	}
 
@@ -175,14 +167,6 @@ public class KnowWEUtils {
 		String value = getProperty(environment, property);
 		if (value == null) return defaultValue;
 		return "true".equalsIgnoreCase(value.trim());
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getPropertyFlag(Environment, String, boolean)}
-	 */
-	@Deprecated
-	public static boolean getPropertyFlag(String property, boolean defaultValue) {
-		return getPropertyFlag(Environment.requireInstance(), property, defaultValue);
 	}
 
 	/**
@@ -352,13 +336,6 @@ public class KnowWEUtils {
 	 * @return {@link WikiAttachment} fulfilling the specified parameters or null, if no such attachment exists
 	 * @created 27.01.2012
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getAttachment(Environment, String, String)}
-	 */
-	@Deprecated
-	public static WikiAttachment getAttachment(final String title, final String fileName) throws IOException {
-		return getAttachment(Environment.requireInstance(), title, fileName);
-	}
 
 	public static WikiAttachment getAttachment(@NotNull Environment environment, final String title, final String fileName) throws IOException {
 		WikiAttachment actualAttachment = environment
@@ -389,13 +366,6 @@ public class KnowWEUtils {
 	 * @return Collection of {@link WikiAttachment}s
 	 * @created 09.02.2012
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getAttachments(Environment, String, String)}
-	 */
-	@Deprecated
-	public static Collection<WikiAttachment> getAttachments(final String title, final String regex) throws IOException {
-		return getAttachments(Environment.requireInstance(), title, regex);
-	}
 
 	public static Collection<WikiAttachment> getAttachments(@NotNull Environment environment, final String title, final String regex) throws IOException {
 		final Collection<WikiAttachment> result = new LinkedList<>();
@@ -451,24 +421,8 @@ public class KnowWEUtils {
 	// return(s);
 	// }
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #getKnowWEExtensionPath(Environment)}
-	 */
-	@Deprecated
-	public static String getKnowWEExtensionPath() {
-		return getKnowWEExtensionPath(Environment.requireInstance());
-	}
-
 	public static String getKnowWEExtensionPath(@NotNull Environment environment) {
 		return environment.getWikiConnector().getKnowWEExtensionPath();
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getApplicationRootPath(Environment)}
-	 */
-	@Deprecated
-	public static String getApplicationRootPath() {
-		return getApplicationRootPath(Environment.requireInstance());
 	}
 
 	public static String getApplicationRootPath(@NotNull Environment environment) {
@@ -674,8 +628,7 @@ public class KnowWEUtils {
 	 * @param title the article to check
 	 * @return true if the given article is an attachment article, false otherwise
 	 */
-	public static boolean isAttachmentArticle(String title) {
-		ArticleManager articleManager = getDefaultArticleManager();
+	public static boolean isAttachmentArticle(ArticleManager articleManager, String title) {
 		if (!(articleManager instanceof DefaultArticleManager)) return false;
 		AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
 		return attachmentManager.isAttachmentArticle(title);
@@ -715,14 +668,6 @@ public class KnowWEUtils {
 	 */
 	public static boolean canWrite(final Collection<Section<?>> sections, final UserContext user) {
 		return canWrite(Sections.collectArticles(sections), user);
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getRealPath(Environment, String)}
-	 */
-	@Deprecated
-	public static String getRealPath(String varPath) {
-		return getRealPath(Environment.requireInstance(), varPath);
 	}
 
 	public static String getRealPath(@NotNull Environment environment, String varPath) {
@@ -776,13 +721,6 @@ public class KnowWEUtils {
 	 *                     either start with or without a leading slash
 	 * @return an absolute URL such as "http://localhost:8080/KnowWE/Wiki.jsp?page=ABC"
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getAsAbsoluteLink(Environment, String)}
-	 */
-	@Deprecated
-	public static String getAsAbsoluteLink(String relativeLink) {
-		return getAsAbsoluteLink(Environment.requireInstance(), relativeLink);
-	}
 
 	public static String getAsAbsoluteLink(@NotNull Environment environment, String relativeLink) {
 		final String baseUrl = StringUtils.stripEnd(environment.getWikiConnector().getBaseUrl(), "/");
@@ -835,8 +773,8 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLinkPart(Section)
 	 */
-	public static String getURLLink(final String title) {
-		return getURLLink(title, -1);
+	public static String getURLLink(ArticleManager manager, final String title) {
+		return getURLLink(manager, title, -1);
 	}
 
 	/**
@@ -848,8 +786,8 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLinkPart(Section)
 	 */
-	public static String getURLLink(String title, final int version) {
-		title = fixAttachmentArticleLinks(title);
+	public static String getURLLink(ArticleManager manager, String title, final int version) {
+		title = fixAttachmentArticleLinks(manager, title);
 		return "Wiki.jsp?page=" + Strings.encodeURL(title)
 			   + (version == -1 ? "" : "&version=" + version);
 	}
@@ -877,8 +815,7 @@ public class KnowWEUtils {
 		return builder.toString();
 	}
 
-	private static String fixAttachmentArticleLinks(ArticleManager manager, String title) {
-		if (manager == null) manager = getDefaultArticleManager();
+	private static String fixAttachmentArticleLinks(@NotNull ArticleManager manager, String title) {
 		Article article = manager.getArticle(title);
 		if (article != null) {
 			title = getArticleCompilingAttachmentArticle(article).getTitle();
@@ -886,13 +823,6 @@ public class KnowWEUtils {
 		return title;
 	}
 
-	private static String fixAttachmentArticleLinks(String title) {
-		Article article = getDefaultArticleManager().getArticle(title);
-		if (article != null) {
-			title = getArticleCompilingAttachmentArticle(article).getTitle();
-		}
-		return title;
-	}
 
 	/**
 	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
@@ -1078,8 +1008,8 @@ public class KnowWEUtils {
 	 * Returns the version of the article at the given date or the version saved closest before the given date. If there
 	 * is no such version or article, -1 is returned. In JSPWiki -1 represents the latest version of an article.
 	 */
-	public static int getArticleVersionAtDate(final String title, final Date date) throws IOException {
-		final WikiPageInfo articleVersionInfoAtDate = getArticleVersionInfoAtDate(title, date);
+	public static int getArticleVersionAtDate(@NotNull Environment environment, final String title, final Date date) throws IOException {
+		final WikiPageInfo articleVersionInfoAtDate = getArticleVersionInfoAtDate(environment, title, date);
 		return articleVersionInfoAtDate == null ? -1 : articleVersionInfoAtDate.getVersion();
 	}
 
@@ -1090,13 +1020,6 @@ public class KnowWEUtils {
 	 *
 	 * @return an info object of the article for the given date
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getArticleVersionInfoAtDate(Environment, String, Date)}
-	 */
-	@Deprecated
-	public static WikiPageInfo getArticleVersionInfoAtDate(final String title, final Date date) throws IOException {
-		return getArticleVersionInfoAtDate(Environment.requireInstance(), title, date);
-	}
 
 	public static WikiPageInfo getArticleVersionInfoAtDate(@NotNull Environment environment, final String title, final Date date) throws IOException {
 		return getObjectInfoAtDate(environment.getWikiConnector().getArticleHistory(title), date);
@@ -1109,13 +1032,6 @@ public class KnowWEUtils {
 	 *
 	 * @return an info object of the attachment for the given date
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getAttachmentVersionInfoAtDate(Environment, String, Date)}
-	 */
-	@Deprecated
-	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(final String title, final Date date) throws IOException {
-		return getAttachmentVersionInfoAtDate(Environment.requireInstance(), title, date);
-	}
 
 	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(@NotNull Environment environment, final String title, final Date date) throws IOException {
 		return getObjectInfoAtDate(environment.getWikiConnector().getAttachmentHistory(title), date);
@@ -1126,8 +1042,8 @@ public class KnowWEUtils {
 	 * there is no such version or article, -1 is returned. In JSPWiki -1 represents the latest version of an
 	 * attachment.
 	 */
-	public static int getAttachmentVersionAtDate(final String title, final Date date) throws IOException {
-		final WikiAttachmentInfo attachmentVersionInfoAtDate = getAttachmentVersionInfoAtDate(title, date);
+	public static int getAttachmentVersionAtDate(@NotNull Environment environment, final String title, final Date date) throws IOException {
+		final WikiAttachmentInfo attachmentVersionInfoAtDate = getAttachmentVersionInfoAtDate(environment, title, date);
 		return attachmentVersionInfoAtDate == null ? -1 : attachmentVersionInfoAtDate.getVersion();
 	}
 
@@ -1146,7 +1062,7 @@ public class KnowWEUtils {
 	 * @return the link string compatible with JSPWiki
 	 */
 	public static String getWikiLink(Section<?> section) {
-		return getWikiLink(getWikiLinkPart(section));
+		return getWikiLink(getArticleManager(section), getWikiLinkPart(section));
 	}
 
 	/**
@@ -1167,8 +1083,8 @@ public class KnowWEUtils {
 	 * @param title the article title we want to link to
 	 * @return the link string compatible with JSPWiki
 	 */
-	public static String getWikiLink(String title) {
-		title = fixAttachmentArticleLinks(title);
+	public static String getWikiLink(ArticleManager manager, String title) {
+		title = fixAttachmentArticleLinks(manager, title);
 		return "[" + title + "]";
 	}
 
@@ -1180,7 +1096,7 @@ public class KnowWEUtils {
 	 * @return the link string compatible with JSPWiki
 	 */
 	public static String getWikiLink(String label, Section<?> section) {
-		return getWikiLink(label, getWikiLinkPart(section));
+		return getWikiLink(getArticleManager(section), label, getWikiLinkPart(section));
 	}
 
 	/**
@@ -1190,8 +1106,8 @@ public class KnowWEUtils {
 	 * @param articleTitle the title of the article
 	 * @return the link string compatible with JSPWiki
 	 */
-	public static String getWikiLink(String label, String articleTitle) {
-		String title = fixAttachmentArticleLinks(articleTitle);
+	public static String getWikiLink(ArticleManager manager, String label, String articleTitle) {
+		String title = fixAttachmentArticleLinks(manager, articleTitle);
 		// append section id if the section is not the root section
 		if (label == null || label.equals(articleTitle)) {
 			return "[" + title + "]";
@@ -1253,30 +1169,6 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * @return the {@link TerminologyManager} for the given (master) article.
-	 * @deprecated use the method {@link KnowWEUtils#getTerminologyManagers(Section)}
-	 */
-	@Deprecated
-	public static TerminologyManager getTerminologyManager(final Article article) {
-		if (article == null) {
-			//noinspection ConstantConditions
-			return Compilers.getCompiler(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB),
-					DefaultGlobalCompiler.class).getTerminologyManager();
-		}
-		final Section<PackageCompileType> compileSection = Sections.successor(article.getRootSection(), PackageCompileType.class);
-		// to emulate old behavior (not return null) we return an empty
-		// TerminologyManager
-		if (compileSection == null) {
-			return new TerminologyManager();
-		}
-		final Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(compileSection);
-		if (terminologyManagers.isEmpty()) {
-			return null;
-		}
-		return terminologyManagers.iterator().next();
-	}
-
-	/**
 	 * Returns the TerminologyManagers of the {@link TermCompiler}s compiling the give compile Section.
 	 *
 	 * @param section the section to get the TerminologyManagers for
@@ -1326,14 +1218,6 @@ public class KnowWEUtils {
 	 *
 	 * @created 07.01.2014
 	 */
-	/**
-	 * @deprecated the web is always {@link Environment#DEFAULT_WEB}; use the {@link ArticleManager} at hand
-	 * ({@code section.getArticleManager()}, {@code context.getArticleManager()}) and its {@code getArticle(title)}
-	 */
-	@Deprecated
-	public static Article getArticle(final String web, final String title) {
-		return Environment.requireInstance().getArticle(web, title);
-	}
 
 	/**
 	 * Returns the environment the specified section belongs to (via its article manager), or the current environment if
@@ -1487,19 +1371,6 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the event manager of the current environment, or the global one if there is no environment.
-	 *
-	 * @deprecated transitional for code without a context object; use {@link #getEventManager(Section)} and its
-	 * siblings or {@link Environment#getEventManager()}
-	 */
-	@Deprecated
-	@NotNull
-	public static EventManager currentEventManager() {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? EventManager.getInstance() : environment.getEventManager();
-	}
-
-	/**
 	 * Returns the environment of the specified user context (via its article manager).
 	 *
 	 * @throws IllegalStateException if there is no environment
@@ -1521,15 +1392,6 @@ public class KnowWEUtils {
 	 *
 	 * @created 18.04.2019
 	 */
-	/**
-	 * @deprecated use the {@link ArticleManager} at hand ({@code section.getArticleManager()},
-	 * {@code context.getArticleManager()}, {@code compiler.getCompilerManager().getArticleManager()}) or
-	 * {@link Environment#getArticleManager()} of the environment at hand
-	 */
-	@Deprecated
-	public static ArticleManager getDefaultArticleManager() {
-		return Environment.requireInstance().getArticleManager(Environment.DEFAULT_WEB);
-	}
 
 	/**
 	 * Returns the default {@link ArticleManager} of the given web.
@@ -1537,14 +1399,6 @@ public class KnowWEUtils {
 	 * @param web the web we want the {@link ArticleManager} from
 	 * @created 07.01.2014
 	 */
-	/**
-	 * @deprecated the web is always {@link Environment#DEFAULT_WEB}; see {@link #getDefaultArticleManager()}
-	 */
-	@Deprecated
-	@NotNull
-	public static ArticleManager getArticleManager(final String web) {
-		return Environment.requireInstance().getArticleManager(web);
-	}
 
 	/**
 	 * Returns the {@link PackageManager} of the given {@link ArticleManager}.
@@ -1575,13 +1429,6 @@ public class KnowWEUtils {
 	 * @param web the web we want the {@link PackageManager} from
 	 * @created 07.01.2014
 	 */
-	/**
-	 * @deprecated the web is gone, use {@link #getPackageManager(ArticleManager)}
-	 */
-	@Deprecated
-	public static PackageManager getPackageManager(final String web) {
-		return getPackageManager(getArticleManager(web));
-	}
 
 	public static void storeObject(final Section<?> s, final String key, final Object o) {
 		KnowWEUtils.storeObject(null, s, key, o);
@@ -1680,13 +1527,6 @@ public class KnowWEUtils {
 	/**
 	 * Renames and article
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #renameArticle(Environment, String, String)}
-	 */
-	@Deprecated
-	public static void renameArticle(final String oldArticleTitle, final String newArticleTitle) {
-		renameArticle(Environment.requireInstance(), oldArticleTitle, newArticleTitle);
-	}
 
 	public static void renameArticle(@NotNull Environment environment, final String oldArticleTitle, final String newArticleTitle) {
 		final ArticleManager manager = environment.getArticleManager();
@@ -1807,14 +1647,6 @@ public class KnowWEUtils {
 			LOGGER.warn("Unable to generate thread dump via jcmd: {}: {}", e.getClass(), e.getMessage());
 			return getThreadDump(); // fallback
 		}
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #allowPageDeletionForNonAdmin(Environment, String)}
-	 */
-	@Deprecated
-	public static boolean allowPageDeletionForNonAdmin(String pageName) throws IOException {
-		return allowPageDeletionForNonAdmin(Environment.requireInstance(), pageName);
 	}
 
 	public static boolean allowPageDeletionForNonAdmin(@NotNull Environment environment, String pageName) throws IOException {

@@ -69,14 +69,6 @@ public class WikiAttachmentResource implements Resource {
 		return attachmentSize;
 	}
 
-	/**
-	 * @deprecated pass the connector at hand: {@link #WikiAttachmentResource(WikiConnector, String, String)}
-	 */
-	@Deprecated
-	public WikiAttachmentResource(String knowledgebasePath, String attachmentPath) throws IOException {
-		this(Environment.requireInstance().getWikiConnector(), knowledgebasePath, attachmentPath);
-	}
-
 	private WikiAttachment getAttachment() throws IOException {
 		return connector.getAttachment(attachmentPath);
 	}

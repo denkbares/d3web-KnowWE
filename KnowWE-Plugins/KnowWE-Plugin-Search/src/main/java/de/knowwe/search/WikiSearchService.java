@@ -115,14 +115,6 @@ public class WikiSearchService implements EventListener, EnvironmentService {
 		});
 	}
 
-	/**
-	 * @deprecated use {@link #of(Environment)} with the environment at hand
-	 */
-	@Deprecated
-	public static @NotNull WikiSearchService getInstance() {
-		return of(Environment.requireInstance());
-	}
-
 	@Override
 	public void close() {
 		environment.getEventManager().unregister(this);

@@ -183,13 +183,6 @@ public class WikiFileProviderUtils {
 	 * @param file the file to access the article for
 	 * @return the article belonging to that file
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getArticle(Environment, String, File, File)}
-	 */
-	@Deprecated
-	public static Article getArticle(String web, File wikiFolder, File file) {
-		return getArticle(Environment.requireInstance(), web, wikiFolder, file);
-	}
 
 	public static Article getArticle(@NotNull Environment environment, String web, File wikiFolder, File file) {
 		String title = getArticleTitle(wikiFolder, file);

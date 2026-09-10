@@ -91,25 +91,9 @@ public class DownloadWikiZIPAction extends AbstractAction {
 		stopwatch.log(LOGGER, "Finished writing wiki content to output stream: " + filename);
 	}
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #generateWikiContentZipFilename(Environment, String)}
-	 */
-	@Deprecated
-	public static @NotNull String generateWikiContentZipFilename(String prefix) {
-		return generateWikiContentZipFilename(Environment.requireInstance(), prefix);
-	}
-
 	public static @NotNull String generateWikiContentZipFilename(@NotNull Environment environment, String prefix) {
 		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 		return timestamp + "_" + prefix + "_" + getWikiFolder(environment).getName() + ".zip";
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getWikiFolder(Environment)}
-	 */
-	@Deprecated
-	public static @NotNull File getWikiFolder() {
-		return getWikiFolder(Environment.requireInstance());
 	}
 
 	public static @NotNull File getWikiFolder(@NotNull Environment environment) {

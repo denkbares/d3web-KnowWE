@@ -106,14 +106,6 @@ public class CIHookManager implements EventListener, EnvironmentService {
 		return of(KnowWEUtils.getEnvironment(article));
 	}
 
-	/**
-	 * @deprecated use {@link #of(Environment)} or its siblings with the environment at hand
-	 */
-	@Deprecated
-	public static CIHookManager getInstance() {
-		return of(Environment.requireInstance());
-	}
-
 	private CIHookManager(@NotNull Environment environment) {
 		this.environment = environment;
 	}

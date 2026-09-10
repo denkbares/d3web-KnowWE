@@ -66,7 +66,7 @@ public class EnvironmentLifecycleTest {
 		Environment environment = start();
 		Article article = createArticle(environment);
 		String sectionId = article.getRootSection().getID();
-		assertNotNull("section id must resolve while the environment is running", Sections.get(sectionId));
+		assertNotNull("section id must resolve while the environment is running", Sections.get(environment, sectionId));
 		assertSame(article.getRootSection(), environment.getSection(sectionId));
 		assertFalse("decorating the type tree registers compile scripts", environment.getScriptManagers().isEmpty());
 		CompilerManager compilerManager = environment.getArticleManager().getCompilerManager();
@@ -75,7 +75,7 @@ public class EnvironmentLifecycleTest {
 
 		assertTrue(environment.isClosed());
 		assertFalse(Environment.isInitialized());
-		assertNull("section ids of the old lifecycle must not resolve anymore", Sections.get(sectionId));
+		assertNull("section ids of the old lifecycle must not resolve anymore", Sections.get(environment, sectionId));
 		assertNull(environment.getSection(sectionId));
 		assertTrue("script managers must be gone", environment.getScriptManagers().isEmpty());
 		assertTrue("compile threads must be stopped", compilerManager.isShutdown());
@@ -162,7 +162,7 @@ public class EnvironmentLifecycleTest {
 
 		Article article = createArticle(second);
 		assertSame(second, article.getArticleManager().getEnvironment());
-		assertNotNull(Sections.get(article.getRootSection().getID()));
+		assertNotNull(Sections.get(second, article.getRootSection().getID()));
 	}
 
 	@Test

@@ -75,14 +75,6 @@ public abstract class SnapshotAction extends AbstractAction {
 		return false;
 	}
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #getSnapshotsPath(Environment)}
-	 */
-	@Deprecated
-	public static String getSnapshotsPath() {
-		return getSnapshotsPath(Environment.requireInstance());
-	}
-
 	public static String getSnapshotsPath(@NotNull Environment environment) {
 		WikiConnector wikiConnector = environment.getWikiConnector();
 		String wikiProperty = wikiConnector.getWikiProperty("var.snapshots.dir");
@@ -96,13 +88,6 @@ public abstract class SnapshotAction extends AbstractAction {
 	 *
 	 * @return storage limit in GB
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getSnapshotsStorageLimit(Environment)}
-	 */
-	@Deprecated
-	public static int getSnapshotsStorageLimit() {
-		return getSnapshotsStorageLimit(Environment.requireInstance());
-	}
 
 	public static int getSnapshotsStorageLimit(@NotNull Environment environment) {
 		WikiConnector wikiConnector = environment.getWikiConnector();
@@ -111,14 +96,6 @@ public abstract class SnapshotAction extends AbstractAction {
 			return 2;
 		}
 		return Integer.parseInt(wikiProperty);
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #storageLimitWasReached(Environment)}
-	 */
-	@Deprecated
-	public static boolean storageLimitWasReached() {
-		return storageLimitWasReached(Environment.requireInstance());
 	}
 
 	public static boolean storageLimitWasReached(@NotNull Environment environment) {

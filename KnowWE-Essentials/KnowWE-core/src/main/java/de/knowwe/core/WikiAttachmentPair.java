@@ -28,14 +28,6 @@ public class WikiAttachmentPair {
 		this.testObjectName = testObjectName;
 	}
 
-	/**
-	 * @deprecated pass the connector at hand: {@link #WikiAttachmentPair(WikiConnector, String)}
-	 */
-	@Deprecated
-	public WikiAttachmentPair(String testObjectName) {
-		this(Environment.requireInstance().getWikiConnector(), testObjectName);
-	}
-
 	@NotNull
 	public WikiAttachment getFirstAttachment() throws IOException {
 		return getWikiAttachment(getAttachmentPaths()[0]);

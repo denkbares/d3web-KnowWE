@@ -721,15 +721,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param id is the ID of the Section to be returned
 	 * @return the Section for the given ID or null if no Section exists for this ID.
 	 */
-	/**
-	 * @deprecated use {@link Sections#get(Environment, String)}
-	 */
-	@Deprecated
-	static Section<?> get(String id) {
-		// transitional: without a context object we can only ask the current environment
-		Environment environment = Environment.peekInstance();
-		return environment == null ? null : environment.getSectionRegistry().get(id);
-	}
 
 	/**
 	 * Has the same behavior as {@link #getObject(Compiler, String)} with <tt>null</tt> as the {@link Compiler}

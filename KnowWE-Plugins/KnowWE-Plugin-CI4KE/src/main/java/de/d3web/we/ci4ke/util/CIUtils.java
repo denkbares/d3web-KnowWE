@@ -65,13 +65,6 @@ public class CIUtils {
 	 * 
 	 * @return the save path for ci-build xml´s
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getCIBuildDir(Environment)}
-	 */
-	@Deprecated
-	public static File getCIBuildDir() {
-		return getCIBuildDir(Environment.requireInstance());
-	}
 
 	public static File getCIBuildDir(@NotNull Environment environment) {
 		String wikiDir = getWikiContentDirectory(environment);
@@ -109,13 +102,6 @@ public class CIUtils {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	/**
-	 * @deprecated pass the environment at hand: {@link #getAttachmentsDirectory(Environment, String)}
-	 */
-	@Deprecated
-	public static File getAttachmentsDirectory(String articleTitle) {
-		return getAttachmentsDirectory(Environment.requireInstance(), articleTitle);
-	}
 
 	public static File getAttachmentsDirectory(@NotNull Environment environment, String articleTitle) {
 		String wikiDir = getWikiContentDirectory(environment);

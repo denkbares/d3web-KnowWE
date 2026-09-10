@@ -1471,17 +1471,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * @param id is the ID of the Section to be returned
-	 * @return the Section for the given ID or null if no Section exists for this ID.
-	 * @deprecated use {@link #get(Environment, String)} or {@link #get(UserContext, String)}: without a context only
-	 * the current environment can be asked
-	 */
-	@Deprecated
-	public static Section<?> get(String id) {
-		return Section.get(id);
-	}
-
-	/**
 	 * Returns the section with the given id and casts it to the supplied class. For more information see get(id) and
 	 * cast(section, class);
 	 *
@@ -1489,13 +1478,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param typeClass the class to cast the generic section to
 	 * @return the Section for the given ID or null if no Section exists for this ID.
 	 */
-	/**
-	 * @deprecated use {@link #get(Environment, String, Class)} or {@link #get(UserContext, String, Class)}
-	 */
-	@Deprecated
-	public static <T extends Type> Section<T> get(String id, Class<T> typeClass) {
-		return cast(get(id), typeClass);
-	}
 
 	/**
 	 * @param web            is the web in which the Section should be searched
@@ -1505,13 +1487,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the Section on the given position in the KDOM, if it exists
 	 * @created 11.12.2011
 	 */
-	/**
-	 * @deprecated use {@link #get(Article, List)} with the article from the {@link de.knowwe.core.ArticleManager} at hand
-	 */
-	@Deprecated
-	public static Section<?> get(String web, String title, List<Integer> positionInKDOM) {
-		return get(Environment.requireInstance().getArticle(web, title), positionInKDOM);
-	}
 
 	/**
 	 * @param article        is the article in which the Section should be searched
@@ -1674,8 +1649,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return a result object containing some information about the replacement success or the errors occurred
 	 */
 	public static @NotNull ReplaceResult replace(ReplaceContext context, Map<String, String> sectionsMap, @Nullable String changeNote) {
-		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
-		Map<Article, Collection<String>> idsByTitle = getIdsByArticle(sectionsMap.keySet());
+		Environment environment = context.getEnvironment();
+		List<SectionInfo> sectionInfos = getSectionInfos(environment, sectionsMap);
+		Map<Article, Collection<String>> idsByTitle = getIdsByArticle(environment, sectionsMap.keySet());
 
 		Collection<String> missingIDs = new LinkedList<>();
 		Collection<String> forbiddenArticles = new LinkedList<>();
@@ -1709,10 +1685,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
 
-	private static List<SectionInfo> getSectionInfos(Map<String, String> sectionsMap) {
+	private static List<SectionInfo> getSectionInfos(Environment environment, Map<String, String> sectionsMap) {
 		List<SectionInfo> sectionInfos = new ArrayList<>(sectionsMap.size());
 		for (String id : sectionsMap.keySet()) {
-			Section<?> section = Sections.get(id);
+			Section<?> section = Sections.get(environment, id);
 			SectionInfo sectionInfo = new SectionInfo();
 			sectionInfos.add(sectionInfo);
 			if (section != null) {
@@ -1721,7 +1697,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				sectionInfo.offSet = section.getOffsetInArticle();
 				sectionInfo.sectionExists = true;
 				sectionInfo.title = section.getTitle();
-				sectionInfo.web = section.getWeb();
+				sectionInfo.articleManager = KnowWEUtils.getArticleManager(section);
 				sectionInfo.newText = sectionsMap.get(id);
 			}
 			sectionInfo.oldId = id;
@@ -1729,10 +1705,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return sectionInfos;
 	}
 
-	private static Map<Article, Collection<String>> getIdsByArticle(Collection<String> allIds) {
+	private static Map<Article, Collection<String>> getIdsByArticle(Environment environment, Collection<String> allIds) {
 		Map<Article, Collection<String>> idsByTitle = new HashMap<>();
 		for (String id : allIds) {
-			Section<?> section = Sections.get(id);
+			Section<?> section = Sections.get(environment, id);
 			Article article = section == null ? null : section.getArticle();
 			Collection<String> ids = idsByTitle.computeIfAbsent(article, k -> new ArrayList<>());
 			ids.add(id);
@@ -1924,8 +1900,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		for (SectionInfo sectionInfo : sectionInfos) {
 			if (sectionInfo.sectionExists) {
 
-				Section<?> section = get(sectionInfo.web, sectionInfo.title,
-						sectionInfo.positionInKDOM);
+				Section<?> section = get(sectionInfo.articleManager.getArticle(sectionInfo.title), sectionInfo.positionInKDOM);
 				if (section == null) continue;
 
 				String text = section.getText();

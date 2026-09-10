@@ -185,22 +185,6 @@ public class ToolUtils {
 	}
 
 	/**
-	 * Blocks the specified tool provider for all sections of the specified scope. See {@link
-	 * #findToolProviders(String)} for more information on the matched tools.
-	 * <p>
-	 * If this method is called multiple times for the same tool provider, it also becomes blocked multiple times, and
-	 * therefore must also be unblocked multiple times before it becomes active again.
-	 *
-	 * @param extensionIdOrClassName the extension id to identify the class, or the class name of the tool provider
-	 * @param scope                  the scope where to block the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
-	 */
-	@Deprecated
-	public static void blockToolProvider(String extensionIdOrClassName, Scope scope) {
-		blockToolProvider(Environment.requireInstance(), extensionIdOrClassName, scope);
-	}
-
-	/**
 	 * Blocks the specified tool provider(s) in the specified environment, see {@link #blockToolProvider(String, Scope)}.
 	 */
 	public static void blockToolProvider(@NotNull Environment environment, String extensionIdOrClassName, Scope scope) {
@@ -217,21 +201,6 @@ public class ToolUtils {
 	}
 
 	/**
-	 * Blocks the specified tool provider for all sections of the specified scope.
-	 * <p>
-	 * If this method is called multiple times for the same tool provider, it also becomes blocked multiple times, and
-	 * therefore must also be unblocked multiple times before it becomes active again.
-	 *
-	 * @param provider the tool provider to be blocked
-	 * @param scope    the scope where to block the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
-	 */
-	@Deprecated
-	public static void blockToolProvider(ToolProvider provider, Scope scope) {
-		blockToolProvider(Environment.requireInstance(), provider, scope);
-	}
-
-	/**
 	 * Blocks the specified tool provider in the specified environment, see {@link #blockToolProvider(ToolProvider, Scope)}.
 	 */
 	public static void blockToolProvider(@NotNull Environment environment, ToolProvider provider, Scope scope) {
@@ -242,47 +211,12 @@ public class ToolUtils {
 	}
 
 	/**
-	 * Unblocks the specified tool provider for all sections of the specified scope. See {@link
-	 * #findToolProviders(String)} for more information on the matched tools.
-	 * <p>
-	 * If {@link #blockToolProvider(String, Scope)} has been called multiple times, this method must be called the same
-	 * number of times to really unblock the tool again. If a tool is unblocked more often than blocked before, an
-	 * {@link IllegalStateException} is thrown.
-	 *
-	 * @param extensionIdOrClassName the extension id to identify the class, or the class name of the tool provider
-	 * @param scope                  the scope where to unblock the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
-	 * @throws IllegalStateException    if the unblocking is not balanced to the blockings before
-	 */
-	@Deprecated
-	public static void unblockToolProvider(String extensionIdOrClassName, Scope scope) {
-		unblockToolProvider(Environment.requireInstance(), extensionIdOrClassName, scope);
-	}
-
-	/**
 	 * Unblocks the specified tool provider(s) in the specified environment, see {@link #unblockToolProvider(String, Scope)}.
 	 */
 	public static void unblockToolProvider(@NotNull Environment environment, String extensionIdOrClassName, Scope scope) {
 		for (ToolProvider provider : findToolProviders(extensionIdOrClassName)) {
 			unblockToolProvider(environment, provider, scope);
 		}
-	}
-
-	/**
-	 * Unblocks the specified tool provider for all sections of the specified scope.
-	 * <p>
-	 * If {@link #blockToolProvider(ToolProvider, Scope)} has been called multiple times, this method must be called the
-	 * same number of times to really unblock the tool again. If a tool is unblocked more often than blocked before, an
-	 * {@link IllegalStateException} is thrown.
-	 *
-	 * @param provider the tool provider to be unblocked
-	 * @param scope    the scope where to unblock the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
-	 * @throws IllegalStateException    if the unblocking is not balanced to the blockings before
-	 */
-	@Deprecated
-	public static void unblockToolProvider(ToolProvider provider, Scope scope) {
-		unblockToolProvider(Environment.requireInstance(), provider, scope);
 	}
 
 	/**
@@ -352,14 +286,6 @@ public class ToolUtils {
 	}
 
 	/**
-	 * @deprecated use {@link #initSettings(Environment, File)} with the environment at hand
-	 */
-	@Deprecated
-	public static void initSettings(File jsonFile) {
-		initSettings(Environment.requireInstance(), jsonFile);
-	}
-
-	/**
 	 * Loads the blocked tool providers from the specified settings file into the specified environment.
 	 */
 	public static void initSettings(@NotNull Environment environment, File jsonFile) {
@@ -370,16 +296,6 @@ public class ToolUtils {
 		catch (IOException e) {
 			LOGGER.error("Cannot load (existing) properties file with blocked tool providers", e);
 		}
-	}
-
-	/**
-	 * Initializes the blocked tool menus from the specified settings object
-	 *
-	 * @param settings the settings
-	 */
-	@Deprecated
-	public static void initSettings(JSONObject settings) {
-		initSettings(Environment.requireInstance(), settings);
 	}
 
 	/**

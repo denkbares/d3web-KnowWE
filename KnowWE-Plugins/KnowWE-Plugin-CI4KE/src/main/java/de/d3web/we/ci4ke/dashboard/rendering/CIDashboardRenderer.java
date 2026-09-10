@@ -83,12 +83,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			assert title != null;
 			if (title.contains("/")) {
 				// is a attached article
-				versionAtBuildDate = KnowWEUtils.getAttachmentVersionAtDate(title, buildDate);
+				versionAtBuildDate = KnowWEUtils.getAttachmentVersionAtDate(KnowWEUtils.getEnvironment(section), title, buildDate);
 			}
 			else {
 				// normal article
-				versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(
-						title, buildDate);
+				versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(KnowWEUtils.getEnvironment(section), title, buildDate);
 			}
 			// case for invalid buildDates (before corresponding page existed)
 			if (versionAtBuildDate < -1) return true;

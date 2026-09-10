@@ -43,7 +43,7 @@ public class ArticleRollbackLifecycleTest {
 			wiki.manager.commit(); // must be harmless after rollback closed this frame
 		}
 		assertNull(wiki.manager.getArticle("New"));
-		assertNull(Sections.get(id));
+		assertNull(Sections.get(wiki.environment, id));
 		assertFalse(Messages.getSectionsWithMessages().contains(line(created, 0)));
 		assertTrue(wiki.manager.getQueuedArticles().isEmpty());
 		assertEquals(0, wiki.compiler.compilationCount());
@@ -62,7 +62,7 @@ public class ArticleRollbackLifecycleTest {
 			wiki.manager.commit();
 		}
 		assertSame(original, wiki.manager.getArticle("Page"));
-		assertSame("ID lookup must agree with the restored article map", line(original, 0), Sections.get(id));
+		assertSame("ID lookup must agree with the restored article map", line(original, 0), Sections.get(wiki.environment, id));
 		assertEquals(1, wiki.compiler.compilationCount());
 	}
 

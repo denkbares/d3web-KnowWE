@@ -249,7 +249,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		if (lns == null) {
-			lns = environment != null ? Rdf2GoUtils.getLocalNamespace(environment) : Rdf2GoUtils.getLocalNamespace();
+			lns = environment != null ? Rdf2GoUtils.getLocalNamespace(environment) : Rdf2GoUtils.FALLBACK_LNS;
 		}
 		this.lns = lns;
 		this.ruleSet = reasoning;
@@ -282,7 +282,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	@NotNull
 	public EventManager getEventManager() {
-		return environment != null ? environment.getEventManager() : KnowWEUtils.currentEventManager();
+		return environment != null ? environment.getEventManager() : EventManager.getInstance();
 	}
 
 	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {

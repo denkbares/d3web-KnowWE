@@ -3,6 +3,7 @@ package de.knowwe.core.kdom.parsing;
 import java.util.List;
 import java.util.Map;
 
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -19,7 +20,7 @@ public class SectionInfo implements Comparable<SectionInfo> {
 	String oldText = null;
 	String newText = null;
 	String title = null;
-	String web = null;
+	ArticleManager articleManager = null;
 	int offSet = -1;
 	List<Integer> positionInKDOM = null;
 

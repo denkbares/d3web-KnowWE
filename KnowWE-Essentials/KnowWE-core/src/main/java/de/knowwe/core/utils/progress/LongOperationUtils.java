@@ -102,16 +102,6 @@ public class LongOperationUtils {
 	}
 
 	/**
-	 * Returns the thread pool for long operations of the current environment.
-	 *
-	 * @deprecated use {@link #getThreadPool(Environment)} with the environment at hand
-	 */
-	@Deprecated
-	public static ExecutorService getThreadPool() {
-		return getThreadPool(Environment.requireInstance());
-	}
-
-	/**
 	 * Returns the thread pool for long operations of the specified environment. It is stopped when the environment is
 	 * closed.
 	 */

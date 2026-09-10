@@ -135,7 +135,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		if ("true".equals(copyCorePages)) {
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
-						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/classes/jspwiki-custom.properties"),
+						JSPWikiConnector.getApplicationRootPath(engine.getServletContext()) + "/WEB-INF/classes/jspwiki-custom.properties"),
 						StandardCharsets.UTF_8));
 				String line;
 				File pageDir = null;
@@ -151,7 +151,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				}
 
 				if (pageDir != null && pageDir.exists()) {
-					File coreDir = new File(KnowWEUtils.getApplicationRootPath()
+					File coreDir = new File(JSPWikiConnector.getApplicationRootPath(engine.getServletContext())
 											+ "/WEB-INF/resources/core-pages");
 					File[] files = coreDir.listFiles();
 					if (files != null) {

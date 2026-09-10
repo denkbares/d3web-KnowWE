@@ -55,7 +55,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import java.util.logging.LogManager;
 
-import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
 /**
  * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to access {@link
@@ -1203,22 +1202,4 @@ public final class Environment implements AutoCloseable {
 		return currentCompilationMode;
 	}
 
-	/**
-	 * @created 15.11.2013
-	 * @deprecated
-	 */
-	@Deprecated
-	public TerminologyManager getTerminologyManager(String master) {
-		return KnowWEUtils.getTerminologyManager((master == null) ? null : getArticleManager().getArticle(master));
-	}
-
-	/**
-	 * @deprecated the web is gone, use {@link #getTerminologyManager(String)}
-	 */
-	@Deprecated
-	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
-		return KnowWEUtils.getTerminologyManager((master == null)
-				? null
-				: KnowWEUtils.getArticleManager(defaultWeb).getArticle(master));
-	}
 }

@@ -43,13 +43,12 @@ public interface WikiTestObjectProvider extends TestObjectProvider {
 	<T> List<TestObjectContainer<T>> getTestObjects(@NotNull Environment environment, Class<T> clazz, String name);
 
 	/**
-	 * @deprecated transitional for callers without an environment; the CI build uses {@link #bind(TestObjectProvider,
-	 * Environment)}
+	 * Wiki providers cannot serve test objects without an environment; the CI build binds them first, see {@link
+	 * #bind(TestObjectProvider, Environment)}.
 	 */
-	@Deprecated
 	@Override
 	default <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
-		return getTestObjects(Environment.requireInstance(), clazz, name);
+		throw new IllegalStateException("wiki test object provider " + getClass().getName() + " is not bound to an environment");
 	}
 
 	/**

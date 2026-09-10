@@ -84,7 +84,7 @@ public class Rdf2GoUtils {
 
 	private static final SimpleDateFormat PRIVATE_XSD_DATE_TIME_FORMAT = getXsdDateTimeFormat();
 
-	private static final String FALLBACK_LNS = "http://localhost:8080/KnowWE/Wiki.jsp?page=";
+	public static final String FALLBACK_LNS = "http://localhost:8080/KnowWE/Wiki.jsp?page=";
 
 	/**
 	 * We might want to move the value factory into the semantic core or even the underlying repository or sail, because
@@ -98,15 +98,6 @@ public class Rdf2GoUtils {
 	 */
 	public static @NotNull String getLocalNamespace(@NotNull Environment environment) {
 		return environment.getService(LocalNamespace.class, () -> new LocalNamespace(generateLocalNamespace(environment))).lns();
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #getLocalNamespace(Environment)}
-	 */
-	@Deprecated
-	public static @NotNull String getLocalNamespace() {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? FALLBACK_LNS : getLocalNamespace(environment);
 	}
 
 	private record LocalNamespace(String lns) {

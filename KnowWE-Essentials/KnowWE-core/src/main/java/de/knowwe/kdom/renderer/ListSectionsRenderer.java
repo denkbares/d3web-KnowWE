@@ -665,14 +665,6 @@ public class ListSectionsRenderer<T extends Type> {
 		return $(packageSections.stream().distinct()).successor(sectionType);
 	}
 
-	/**
-	 * @deprecated the web is gone, use {@link #getAllSectionsOfType(ArticleManager, Class, String...)}
-	 */
-	@Deprecated
-	public static <T extends Type> Sections<T> getAllSectionsOfType(String web, Class<T> sectionType, String... packageNames) {
-		return getAllSectionsOfType(KnowWEUtils.getArticleManager(web), sectionType, packageNames);
-	}
-
 	public static <T extends Type> Sections<T> getAllSectionsOfType(Section<? extends DefaultMarkupType> packageDefinition, Class<T> sectionType) {
 		Collection<String> packageNames = new ArrayList<>(Arrays.asList(DefaultMarkupType.getAnnotations(packageDefinition, PackageManager.PACKAGE_ATTRIBUTE_NAME)));
 		List<String> excludedPackageNames = new ArrayList<>(Arrays.asList(DefaultMarkupType.getAnnotations(packageDefinition, PackageManager.EXCLUDE_PACKAGE_ATTRIBUTE_NAME)));

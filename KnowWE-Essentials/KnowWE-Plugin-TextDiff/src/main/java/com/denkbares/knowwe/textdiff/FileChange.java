@@ -44,26 +44,6 @@ public record FileChange(
 	}
 
 	/**
-	 * @deprecated pass the article manager at hand: {@link #fromArticle(ArticleManager, String, String)}
-	 */
-	@Deprecated
-	@Nullable
-	public static FileChange fromArticle(@NotNull String articleName, @Nullable String newContent) {
-		return fromArticle(Environment.requireInstance().getArticleManager(), articleName, newContent);
-	}
-
-	/**
-	 * @deprecated pass the article manager at hand: {@link #fromArticle(ArticleManager, String, String, String)}
-	 */
-	@Deprecated
-	@Nullable
-	@Contract("_, null, null, _ -> null")
-	public static FileChange fromArticle(@Nullable String oldName, @Nullable String newName, @Nullable String newContent) {
-		if (oldName == null && newName == null) return null;
-		return fromArticle(Environment.requireInstance().getArticleManager(), oldName, newName, newContent);
-	}
-
-	/**
 	 * Creates a change model from an intended article state.
 	 *
 	 * @param oldName    original article name; may be {@code null} for create/modify-by-target-name

@@ -614,14 +614,6 @@ public class Compilers {
 	 * @param web the web we want the {@link CompilerManager} from
 	 * @created 07.01.2014
 	 */
-	/**
-	 * @deprecated the web is gone, use {@code articleManager.getCompilerManager()} of the article manager at hand
-	 */
-	@Deprecated
-	@NotNull
-	public static CompilerManager getCompilerManager(String web) {
-		return KnowWEUtils.getArticleManager(web).getCompilerManager();
-	}
 
 	public static void destroyAndRecompileSubtree(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
 		if (!compiler.isIncrementalBuild()) return;

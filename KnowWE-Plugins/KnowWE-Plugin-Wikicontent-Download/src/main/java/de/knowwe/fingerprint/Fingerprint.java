@@ -38,24 +38,8 @@ public class Fingerprint {
 			new DashboadScanner()
 	};
 
-	/**
-	 * @deprecated use {@link #createFingerprint(ArticleManager, File)} with the article manager at hand
-	 */
-	@Deprecated
-	public static void createFingerprint(String web, File folder) throws IOException {
-		createFingerprint(Environment.requireInstance().getArticleManager(web), folder);
-	}
-
 	public static void createFingerprint(ArticleManager manager, File folder) throws IOException {
 		createFingerprint(manager.getEnvironment(), manager.getArticles(), folder);
-	}
-
-	/**
-	 * @deprecated pass the environment at hand: {@link #createFingerprint(Environment, Collection, File)}
-	 */
-	@Deprecated
-	public static void createFingerprint(Collection<Article> articles, File folder) throws IOException {
-		createFingerprint(Environment.requireInstance(), articles, folder);
 	}
 
 	public static void createFingerprint(@NotNull Environment environment, Collection<Article> articles, File folder) throws IOException {

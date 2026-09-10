@@ -50,6 +50,7 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import de.knowwe.event.GitCommitEvent;
+import de.knowwe.core.Environment;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
 
@@ -289,14 +290,14 @@ public class GitPageProviderTest {
 				events.add((GitCommitEvent) event);
 			}
 		};
-		KnowWEUtils.currentEventManager().registerListener(listener);
+		eventManager().registerListener(listener);
 		try {
 			GitPageProvider restarted = new GitPageProvider();
 			restarted.initialize(engine, properties);
 			assertEquals(1, restarted.getVersionHistory("Orphan").size());
 		}
 		finally {
-			KnowWEUtils.currentEventManager().unregister(listener);
+			eventManager().unregister(listener);
 		}
 
 		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
@@ -384,4 +385,14 @@ public class GitPageProviderTest {
 		when(engine.getManager(CachingManager.class)).thenReturn(cachingManager);
 		return engine;
 	}
+
+	/**
+	 * The event manager the git provider fires on: the one of the engine's KnowWE environment, or the global one if
+	 * the engine has none (as with the mocked engine of this test).
+	 */
+	private EventManager eventManager() {
+		Environment environment = Environment.findIn(engine.getServletContext());
+		return environment != null ? environment.getEventManager() : EventManager.getInstance();
+	}
+
 }

@@ -167,14 +167,6 @@ public class TermInfoSet implements Collection<TermInfo> {
 		}
 	}
 
-	/**
-	 * @deprecated the web is gone, use {@link #initTerm(ArticleManager, Identifier)}
-	 */
-	@Deprecated
-	public void initTerm(String web, Identifier identifier) {
-		initTerm(KnowWEUtils.getArticleManager(web), identifier);
-	}
-
 	private void addTermManagerIfMatches(Identifier termIdentifier, TermCompiler termCompiler) {
 		Collection<Identifier> identifiers;
 		if (termIdentifier.isCaseSensitive()) {

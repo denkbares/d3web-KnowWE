@@ -257,14 +257,6 @@ public class Plugins {
 	}
 
 	/**
-	 * @deprecated use {@link #addRendererToType(Environment, Type, Type[])}
-	 */
-	@Deprecated
-	public static void addRendererToType(Type type, Type[] path) {
-		addRendererToType(Environment.requireInstance(), type, path);
-	}
-
-	/**
 	 * Plugs the renderer matching the path into the type, remembering the replaced renderer at the environment.
 	 */
 	public static void addRendererToType(Environment environment, Type type, Type[] path) {
@@ -388,32 +380,8 @@ public class Plugins {
 	 * @param provider the provider to register
 	 * @see #registerRightPanelTabProvider(String, RightPanelTabProvider, double)
 	 */
-	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider) {
-		registerRightPanelTabProvider(id, provider, 5d);
-	}
-
-	/**
-	 * Registers a right panel tab provider programmatically, e.g. via an {@link Instantiation}. Providers registered
-	 * here are merged with the {@code plugin.xml}-declared {@code RightPanelTab} extensions by
-	 * {@link #getRightPanelTabs()}. The id and priority are the values a {@code plugin.xml}-declared tab
-	 * gets from its extension {@code id} attribute / {@code priority} parameter (priority ascending, KnowWE convention:
-	 * higher priority == lower number).
-	 * <p>
-	 * Note: resources ({@code script} / {@code css} / {@code module}) of a purely programmatic provider are not
-	 * auto-loaded by the {@code initJS} / {@code initCSS} / {@code initJsModules} scans (those only see
-	 * {@code plugin.xml} extensions). Such a provider should render server-side HTML that pulls its own resources, or
-	 * register them alongside the provider.
-	 *
-	 * @param id       the stable, unique tab id (matches a declared tab's extension {@code id}; used as the DOM
-	 *                 {@code data-tab} key, client storage key and lazy-fetch parameter)
-	 * @param provider the provider to register
-	 * @param priority the sort priority of the tab (ascending; lower number == earlier/leftmost)
-	 * @deprecated pass the environment at hand: {@link #registerRightPanelTabProvider(Environment, String,
-	 * RightPanelTabProvider, double)}
-	 */
-	@Deprecated
-	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider, double priority) {
-		registerRightPanelTabProvider(Environment.requireInstance(), id, provider, priority);
+	public static void registerRightPanelTabProvider(Environment environment, String id, RightPanelTabProvider provider) {
+		registerRightPanelTabProvider(environment, id, provider, 5d);
 	}
 
 	/**

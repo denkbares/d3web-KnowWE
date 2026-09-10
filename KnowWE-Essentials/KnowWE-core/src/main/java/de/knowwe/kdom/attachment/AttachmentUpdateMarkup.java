@@ -217,14 +217,6 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	/**
-	 * @deprecated use {@link #isAutoUpdatingActive(Environment)}
-	 */
-	@Deprecated
-	public static boolean isAutoUpdatingActive() {
-		return isAutoUpdatingActive(Environment.requireInstance());
-	}
-
 	public static boolean isAutoUpdatingActive(Environment environment) {
 		String wikiProperty = environment.getWikiConnector()
 				.getWikiProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY);
