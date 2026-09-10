@@ -329,7 +329,8 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 //	}
 
 	public static String normalizeLink(String link) {
-		return link.replaceAll("#[a-f0-9]{1,8}]", "]");
+		// Frozen reports can contain legacy short IDs or the current 32-hex lifecycle IDs.
+		return link.replaceAll("#(?:[a-f0-9]{32}|[a-f0-9]{1,8})]", "]");
 	}
 
 }

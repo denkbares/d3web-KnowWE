@@ -8,7 +8,11 @@
   callbacks check live ownership inside the article registration frame before rebuilding. Four regression tests
   cover edited/unchanged replacements, late unregister versus a successor, and replacement while a callback waits
   for the frame. The first three failed before the fix. Full core suite: 89 passed, 2 previously ignored.
-- A2–A5 and the integration follow-ups below remain unchanged in this step.
+- A2 (CI freeze normalization): implemented 10 September 2026. Accepts legacy 1–8 hex IDs and current
+  32-hex IDs without broadening to arbitrary hex lengths. Three regression tests cover link normalization,
+  stable header keys across formats/versions, and preservation of other anchors. Two failed before the fix;
+  all 30 CI4KE module tests pass afterward.
+- A3–A5 and the integration follow-ups below remain unchanged in this step.
 
 ## Scope and confidence
 
