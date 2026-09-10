@@ -21,7 +21,12 @@
   and concurrent registration. Full core suite: 127 passed, 2 previously ignored.
   This guards registration, not execution: it neither cancels existing operations nor prevents restarting an already
   registered operation that retains old domain objects. Such operations still need their own execution contract.
-- A4–A5 and the integration follow-ups below remain unchanged in this step.
+- A4 (Rerender cleanup): implemented 10 September 2026, awaiting review. Cleanup conditionally removes the exact
+  request future, leaving a successor's registration intact. The action's registration/wait/cleanup sequence is
+  extracted into a package-private method for a deterministic three-request regression test (no sleeps or wiki
+  rendering). The test failed with unconditional removal and passes with owner-conditional removal; it also checks
+  successful-request cleanup. All 3 KnowWE-Plugin-Core tests pass. Cancellation still does not interrupt render work.
+- A5 and the integration follow-ups below remain unchanged in this step.
 
 ## Scope and confidence
 

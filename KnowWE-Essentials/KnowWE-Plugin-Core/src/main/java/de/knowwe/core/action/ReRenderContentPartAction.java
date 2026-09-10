@@ -144,8 +144,13 @@ public class ReRenderContentPartAction extends AbstractAction {
 	private static String renderAndCancelOngoingRenders(UserActionContext context, Section<?> section) throws IOException {
 		String key = generateKey(context, section);
 		UserActionContext contextCopy = new AsyncActionContext(context);
+		Future<String> renderFuture = EXECUTOR.submit(() -> render(contextCopy, section));
+		return awaitRenderAndCancelPrevious(context, key, renderFuture);
+	}
+
+	/** Registers this request's future, releases the previous waiter, and cleans up its own registration. */
+	static String awaitRenderAndCancelPrevious(UserActionContext context, String key, Future<String> renderFuture) throws IOException {
 		try {
-			Future<String> renderFuture = EXECUTOR.submit(() -> render(contextCopy, section));
 			Future<String> previous = RENDER_FUTURES.put(key, renderFuture);
 			if (previous != null) {
 				// previous render thread will move to CancellationException catch block and finishes
@@ -166,7 +171,8 @@ public class ReRenderContentPartAction extends AbstractAction {
 			failUnexpected(context, "Exception while rerendering: " + e.getMessage());
 		}
 		finally {
-			RENDER_FUTURES.remove(key);
+			// A cancelled request may finish after its successor has registered under the same key.
+			RENDER_FUTURES.remove(key, renderFuture);
 		}
 		return null;
 	}
