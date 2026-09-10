@@ -41,6 +41,7 @@ import utils.TestUtils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
+import org.junit.After;
 
 /**
  * Runs the chunker over a real wiki instead of hand written fixtures, and asserts the property that actually matters:
@@ -54,6 +55,8 @@ import static org.junit.Assume.assumeTrue;
  */
 public class RealWikiChunkingTest {
 
+	private static Environment environment;
+
 	private static final String WIKI_PROPERTY = "knowwe.search.testWiki";
 	private static final String DEFAULT_WIKI = "/home/cody/denkbares/Projects/WikiSearch/vanilla";
 
@@ -63,11 +66,9 @@ public class RealWikiChunkingTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 	}
 
 	@Test
@@ -127,8 +128,8 @@ public class RealWikiChunkingTest {
 	}
 
 	private static Article register(String title, String content) {
-		Environment.getInstance().getArticleManager().registerArticle(title, content);
-		return Environment.getInstance().getArticle(title);
+		environment.getArticleManager().registerArticle(title, content);
+		return environment.getArticle(title);
 	}
 
 	/** The characters of full that covered does not contain, in order. */
@@ -145,4 +146,10 @@ public class RealWikiChunkingTest {
 		}
 		return result.toString();
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

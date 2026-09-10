@@ -59,6 +59,8 @@ import static org.junit.Assume.assumeTrue;
  */
 public class RealWikiRankingTest {
 
+	private Environment environment;
+
 	private static final String WIKI_PROPERTY = "knowwe.search.testWiki";
 	private static final String DEFAULT_WIKI = "/home/cody/denkbares/Projects/WikiSearch/vanilla";
 
@@ -71,11 +73,9 @@ public class RealWikiRankingTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 		Path wiki = Path.of(System.getProperty(WIKI_PROPERTY, DEFAULT_WIKI));
 		assumeTrue("no test wiki at " + wiki, Files.isDirectory(wiki));
 
@@ -87,9 +87,9 @@ public class RealWikiRankingTest {
 		}
 		for (Path file : files) {
 			String title = file.getFileName().toString().replaceFirst("\\.txt$", "").replace('+', ' ');
-			Environment.getInstance().getArticleManager()
+			environment.getArticleManager()
 					.registerArticle(title, Files.readString(file, StandardCharsets.UTF_8));
-			Article article = Environment.getInstance().getArticle(title);
+			Article article = environment.getArticle(title);
 			index.replacePage(title, documents.build(article));
 		}
 		index.commit();
@@ -154,4 +154,10 @@ public class RealWikiRankingTest {
 			return breadcrumbs;
 		});
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

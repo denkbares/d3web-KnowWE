@@ -39,6 +39,7 @@ import utils.TestUtils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.After;
 
 /**
  * Every chunk that can be found must also be able to show itself.
@@ -58,6 +59,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class PreviewCoverageTest {
 
+	private Environment environment;
+
 	private static final String WEB = Environment.DEFAULT_WEB;
 
 	private final ArticleChunker chunker = new ArticleChunker();
@@ -67,11 +70,9 @@ public class PreviewCoverageTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 		// after the environment, and built from a registered article: a context built from a name alone carries a
 		// temporary article, whose article manager is null -- and the renderer resolves its anchor through that manager
 		user = null;
@@ -204,8 +205,8 @@ public class PreviewCoverageTest {
 	}
 
 	private Article article(String title, String content) {
-		Environment.getInstance().getArticleManager(WEB).registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(WEB, title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticle(title);
 		user = new TestUserContext(article);
 		return article;
 	}
@@ -226,4 +227,10 @@ public class PreviewCoverageTest {
 	private static String pathOf(IndexChunk chunk) {
 		return String.valueOf(chunk.anchor().getArticle().getRootSection().getChildren().indexOf(chunk.anchor()));
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

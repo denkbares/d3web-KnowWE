@@ -37,11 +37,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.After;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
 public class SectionAnchorTest {
+
+	private static Environment environment;
 
 	private static final String CONTENT = """
 			!! Montage
@@ -53,11 +56,9 @@ public class SectionAnchorTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 	}
 
 	@Test
@@ -135,12 +136,12 @@ public class SectionAnchorTest {
 	}
 
 	private static ArticleManager manager() {
-		return Environment.getInstance().getArticleManager();
+		return environment.getArticleManager();
 	}
 
 	private static Article register(String title, String content) {
 		manager().registerArticle(title, content);
-		return Environment.getInstance().getArticle(title);
+		return environment.getArticle(title);
 	}
 
 	private static Section<?> header(Article article, String text) {
@@ -149,4 +150,10 @@ public class SectionAnchorTest {
 		}
 		throw new IllegalArgumentException("no heading '" + text + "' in " + article.getTitle());
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

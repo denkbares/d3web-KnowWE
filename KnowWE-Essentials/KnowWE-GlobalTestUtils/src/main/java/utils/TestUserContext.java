@@ -43,6 +43,7 @@ import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.jspwiki.KnowWEPlugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -79,17 +80,17 @@ public class TestUserContext implements UserContext, UserActionContext {
 	 *
 	 * @param articleName the name of the article to be created.
 	 */
-	public TestUserContext(String articleName) {
-		this(Article.createTemporaryArticle("", articleName));
+	public TestUserContext(@NotNull Environment environment, String articleName) {
+		this(Article.createTemporaryArticle(environment, "", articleName));
 	}
 
-	public TestUserContext(String articleName, String username) {
-		this(Article.createTemporaryArticle("", articleName));
+	public TestUserContext(@NotNull Environment environment, String articleName, String username) {
+		this(Article.createTemporaryArticle(environment, "", articleName));
 		this.username = username;
 	}
 
-	public TestUserContext(String articleName, String username, RootType rootType) {
-		this(Article.createTemporaryArticle("", articleName, rootType));
+	public TestUserContext(@NotNull Environment environment, String articleName, String username, RootType rootType) {
+		this(Article.createTemporaryArticle(environment, "", articleName, rootType));
 		this.username = username;
 	}
 

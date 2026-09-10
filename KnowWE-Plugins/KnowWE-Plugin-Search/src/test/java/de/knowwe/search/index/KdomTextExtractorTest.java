@@ -34,11 +34,14 @@ import utils.TestUtils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.junit.After;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
 public class KdomTextExtractorTest {
+
+	private Environment environment;
 
 	private final ArticleChunker chunker = new ArticleChunker();
 	private final KdomTextExtractor extractor = new KdomTextExtractor();
@@ -46,11 +49,9 @@ public class KdomTextExtractorTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 	}
 
 	@Test
@@ -170,8 +171,14 @@ public class KdomTextExtractorTest {
 	}
 
 	private List<IndexChunk> chunk(String title, String content) {
-		Environment.getInstance().getArticleManager().registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticle(title);
 		return chunker.chunk(article);
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

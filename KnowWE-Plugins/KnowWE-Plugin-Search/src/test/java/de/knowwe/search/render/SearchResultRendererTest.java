@@ -33,6 +33,7 @@ import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.junit.After;
 
 /**
  * Guards the rule that keeps a rendered markup block in one piece.
@@ -48,6 +49,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class SearchResultRendererTest {
 
+	private Environment environment;
+
 	private RenderResult result;
 	private String tagEnd;
 	private String tagStart;
@@ -56,12 +59,10 @@ public class SearchResultRendererTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
-		result = new RenderResult(new TestUserContext("Test"));
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
+		result = new RenderResult(new TestUserContext(environment, "Test"));
 		tagEnd = RenderResult.mask(">", result);
 		tagStart = RenderResult.mask("<", result);
 		lineBreak = RenderResult.mask("<br/>", result);
@@ -141,4 +142,10 @@ public class SearchResultRendererTest {
 	private String join(String maskedHtml) {
 		return SearchResultRenderer.joinRenderedLines(maskedHtml, result);
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

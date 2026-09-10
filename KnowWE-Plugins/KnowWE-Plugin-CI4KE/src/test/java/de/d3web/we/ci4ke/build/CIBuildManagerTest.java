@@ -49,6 +49,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.AfterClass;
 
 /**
  * Tests the asynchronous predecessor/successor handover through the public build-starting methods of
@@ -56,6 +57,8 @@ import static org.junit.Assert.assertTrue;
  * the test explicitly executes its future, making the scheduling order deterministic without relying on sleeps.
  */
 public class CIBuildManagerTest {
+
+	private static Environment environment;
 	private static CIDashboard dashboard;
 
 	private RecordingExecutorService buildExecutor;
@@ -65,12 +68,10 @@ public class CIBuildManagerTest {
 	@BeforeClass
 	public static void setUpDashboard() throws Exception {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
-		ArticleManager articleManager = Environment.getInstance().getArticleManager();
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
+		ArticleManager articleManager = environment.getArticleManager();
 		String dashboardSource = Strings.readStream(CIBuildManagerTest.class.getResourceAsStream("/Dashboard.txt"));
 		articleManager.registerArticle("Dashboard", dashboardSource);
 		assertTrue("dashboard compilation did not finish", articleManager.getCompilerManager().awaitTermination(5000));
@@ -208,4 +209,10 @@ public class CIBuildManagerTest {
 					submittedBuilds.poll(200, TimeUnit.MILLISECONDS));
 		}
 	}
+
+	@AfterClass
+	public static void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

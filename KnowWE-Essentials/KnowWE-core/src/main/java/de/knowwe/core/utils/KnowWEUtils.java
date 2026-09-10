@@ -171,10 +171,18 @@ public class KnowWEUtils {
 	 * @param defaultValue the value to return if the property is not set
 	 * @return the boolean property value or the default value
 	 */
-	public static boolean getPropertyFlag(String property, boolean defaultValue) {
-		String value = getProperty(property);
+	public static boolean getPropertyFlag(@NotNull Environment environment, String property, boolean defaultValue) {
+		String value = getProperty(environment, property);
 		if (value == null) return defaultValue;
 		return "true".equalsIgnoreCase(value.trim());
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #getPropertyFlag(Environment, String, boolean)}
+	 */
+	@Deprecated
+	public static boolean getPropertyFlag(String property, boolean defaultValue) {
+		return getPropertyFlag(Environment.requireInstance(), property, defaultValue);
 	}
 
 	/**

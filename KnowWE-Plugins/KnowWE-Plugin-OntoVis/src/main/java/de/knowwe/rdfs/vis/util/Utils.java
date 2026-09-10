@@ -356,11 +356,11 @@ public class Utils {
 					.getPreviewAncestor(termDefiningSection);
 			String url = KnowWEUtils.getURLLink(anchorAncestor);
 			if (!url.startsWith("http:")) {
-				url = KnowWEUtils.getEnvironment(section).getWikiConnector().getBaseUrl() + url;
+				url = config.getEnvironment().getWikiConnector().getBaseUrl() + url;
 			}
 			return url;
 		}
-		return OntoGraphDataBuilder.createBaseURL(KnowWEUtils.getEnvironment(section)) + "?concept=" + to;
+		return OntoGraphDataBuilder.createBaseURL(config.getEnvironment()) + "?concept=" + to;
 	}
 
 	public static String getIdentifierIRI(Value uri, Rdf2GoCore repo) {

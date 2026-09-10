@@ -46,6 +46,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class WikiSearcherTest {
 
+	private Environment environment;
+
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
@@ -56,11 +58,9 @@ public class WikiSearcherTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 		index = new WikiSearchIndex(folder.getRoot().toPath().resolve("index"));
 		searcher = new WikiSearcher(index);
 	}
@@ -83,7 +83,7 @@ public class WikiSearcherTest {
 				hit.snippet().contains("<mark>Korrosion</mark>"));
 
 		SectionAnchor.Resolution resolution =
-				hit.anchor().resolve(Environment.getInstance().getArticleManager());
+				hit.anchor().resolve(environment.getArticleManager());
 		assertTrue("the hit must lead back to a live section", resolution.isResolved());
 		assertFalse("and it is current", resolution.stale());
 	}
@@ -191,9 +191,15 @@ public class WikiSearcherTest {
 	}
 
 	private void page(String title, String content) throws IOException {
-		Environment.getInstance().getArticleManager().registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticle(title);
 		index.replacePage(title, documents.build(article));
 		index.refresh();
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

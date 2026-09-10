@@ -147,6 +147,14 @@ public class Config {
 		GRAPH_ERROR_MESSAGE = null;
 	}
 
+	/**
+	 * Creates a configuration that is not bound to a section, e.g. for tests or exports, but knows its environment.
+	 */
+	public Config(Environment environment) {
+		this();
+		this.environment = environment;
+	}
+
 	public String getClassNodeStyle() {
 		return classNodeStyle;
 	}

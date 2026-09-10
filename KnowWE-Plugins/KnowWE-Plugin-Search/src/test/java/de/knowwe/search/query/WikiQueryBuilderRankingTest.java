@@ -52,6 +52,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class WikiQueryBuilderRankingTest {
 
+	private Environment environment;
+
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
@@ -62,11 +64,9 @@ public class WikiQueryBuilderRankingTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 		index = new WikiSearchIndex(folder.getRoot().toPath().resolve("index"));
 	}
 
@@ -169,8 +169,8 @@ public class WikiQueryBuilderRankingTest {
 	}
 
 	private void page(String title, String content) throws IOException {
-		Environment.getInstance().getArticleManager().registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticle(title);
 		index.replacePage(title, documents.build(article));
 		index.refresh();
 	}
@@ -199,4 +199,10 @@ public class WikiQueryBuilderRankingTest {
 			return breadcrumbs;
 		});
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

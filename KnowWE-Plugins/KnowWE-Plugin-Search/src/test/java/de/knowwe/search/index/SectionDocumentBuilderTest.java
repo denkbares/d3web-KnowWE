@@ -62,6 +62,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class SectionDocumentBuilderTest {
 
+	private static Environment environment;
+
 	private final SectionDocumentBuilder builder = new SectionDocumentBuilder();
 	private Directory directory;
 	private IndexWriter writer;
@@ -69,11 +71,9 @@ public class SectionDocumentBuilderTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 		directory = new ByteBuffersDirectory();
 		writer = new IndexWriter(directory, new IndexWriterConfig(WikiAnalyzers.forIndexing()));
 	}
@@ -207,8 +207,8 @@ public class SectionDocumentBuilderTest {
 	}
 
 	private static Article register(String title, String content) {
-		Environment.getInstance().getArticleManager().registerArticle(title, content);
-		return Environment.getInstance().getArticle(title);
+		environment.getArticleManager().registerArticle(title, content);
+		return environment.getArticle(title);
 	}
 
 	/** Looks up a term verbatim, to assert what is actually in the index. */
@@ -251,4 +251,10 @@ public class SectionDocumentBuilderTest {
 		assertTrue("expected at least one hit", !hits.isEmpty());
 		return hits.get(0);
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

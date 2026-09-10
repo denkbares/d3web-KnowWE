@@ -36,18 +36,24 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class TestArticleManager {
 
-	@SuppressWarnings("InstantiationOfUtilityClass")
-	private static final TestArticleManager instance = new TestArticleManager();
+	private static Environment environment;
 
 	/**
 	 * Private Constructor insures noninstantiabilty.
 	 */
 	private TestArticleManager() {
-		Environment.initInstance(new DummyConnector());
 	}
 
-	public static TestArticleManager getInstance() {
-		return instance;
+	/**
+	 * The shared test environment of the tests using this utility: a real environment on a {@link DummyConnector},
+	 * created on first use. Tests that need an environment of their own create it via
+	 * {@link Environment#create(de.knowwe.core.wikiConnector.WikiConnector)} and close it themselves instead.
+	 */
+	public static synchronized Environment getEnvironment() {
+		if (environment == null || environment.isClosed()) {
+			environment = Environment.create(new DummyConnector());
+		}
+		return environment;
 	}
 
 	/**
@@ -63,20 +69,16 @@ public class TestArticleManager {
 			articleName = Strings.decodeURL(filename.substring(filename.lastIndexOf('/') + 1, filename.lastIndexOf('.')));
 		}
 
-		Article article = Environment.requireInstance().getArticleManager().getArticle(
-				articleName);
+		Environment environment = getEnvironment();
+		Article article = environment.getArticleManager().getArticle(articleName);
 		if (article == null) {
 			// Read File containing content
 			String content = KnowWEUtils.readFile(filename).replace("\r", "");
-			Environment.getInstance()
-					.getWikiConnector()
-					.createArticle(articleName, TestArticleManager.class.getSimpleName(), content
-					);
-			article = Environment.requireInstance().getArticleManager().getArticle(
-					articleName);
+			environment.getWikiConnector().createArticle(articleName, TestArticleManager.class.getSimpleName(), content);
+			article = environment.getArticleManager().getArticle(articleName);
 		}
 		try {
-			Environment.requireInstance().getArticleManager().getCompilerManager().awaitTermination();
+			environment.getArticleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
 			return null;
@@ -85,7 +87,7 @@ public class TestArticleManager {
 	}
 
 	public static void clear() {
-		ArticleManager articleManager = Environment.requireInstance().getArticleManager();
+		ArticleManager articleManager = getEnvironment().getArticleManager();
 		Collection<Article> articles = articleManager.getArticles();
 		for (Article article : new ArrayList<>(articles)) {
 			articleManager.deleteArticle(article.getTitle());
