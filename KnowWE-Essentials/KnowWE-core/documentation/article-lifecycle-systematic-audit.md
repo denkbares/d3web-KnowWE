@@ -26,7 +26,16 @@
   extracted into a package-private method for a deterministic three-request regression test (no sleeps or wiki
   rendering). The test failed with unconditional removal and passes with owner-conditional removal; it also checks
   successful-request cleanup. All 3 KnowWE-Plugin-Core tests pass. Cancellation still does not interrupt render work.
-- A5 and the integration follow-ups below remain unchanged in this step.
+- A5 (ServiceMateBridge): implemented in KnowWE-SSP on 10 September 2026, awaiting review. A read/write lock
+  protects every mapping access; readers receive immutable ID snapshots. Resolution and compilation waits never
+  hold that lock. Missing targets/compilers are skipped, candidate compile Sections must match by instance, and
+  resolution is rechecked after awaiting compilation. Interrupted waits preserve the interrupt and stop traversal.
+  Registration of an already missing Section reports an informative IllegalArgumentException. This is not atomic
+  publication across the mapping/Section/compiler registries, nor an active-caller-only contract.
+  Two new tests use real registered KB articles to exercise mapping snapshots, equal-ID replacement, deletion and
+  concurrent forward/reverse access. These test the mapping API, not a complete ServiceMate domain compilation or
+  a controlled replacement during a priority wait. Both pass, as do both XPSReference tests (4 targeted tests).
+- The TestStepCostCache/KnowSEC integration follow-ups below remain open.
 
 ## Scope and confidence
 
