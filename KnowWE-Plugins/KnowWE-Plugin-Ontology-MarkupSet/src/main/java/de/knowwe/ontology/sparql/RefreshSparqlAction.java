@@ -21,11 +21,9 @@ package de.knowwe.ontology.sparql;
 
 import java.io.IOException;
 
-import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 
 /**
@@ -39,12 +37,11 @@ public class RefreshSparqlAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionId);
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<SparqlType> section = getSection(context, SparqlType.class);
 
 		RenderResult result = new RenderResult(context);
-		SparqlResultRenderer.getInstance()
-				.renderSparqlResult(Sections.cast(section, SparqlType.class), context, result, false);
+		SparqlResultRenderer.getInstance().renderSparqlResult(section, context, result, false);
 		context.getWriter().append(result.toString());
 	}
 }

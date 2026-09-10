@@ -42,6 +42,8 @@ public class InitWiki extends AbstractAction {
 				throw new IOException(
 						"no section with id '" + sectionId + "' found");
 			}
+			// the knowledge base to start a dialog for is chosen by the request
+			KnowWEUtils.assertCanView(section, context);
 			KnowledgeBase base = D3webUtils.getKnowledgeBase(section);
 
 			if (base == null) {

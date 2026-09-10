@@ -32,6 +32,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Returns the HTML of tool menu for a certain section.
@@ -52,6 +53,9 @@ public class GetToolMenuAction extends AbstractAction {
 
 		Section<? extends Type> section = getSection(context, identifier);
 		if (section == null || section.getArticleManager() == null) return; // not tools in preview
+		// the section is referred by an own request parameter, and getSection may be overridden, so check the
+		// resolved section here to cover the subclasses as well
+		KnowWEUtils.assertCanView(section, context);
 		ToolSet tools = getTools(context, section);
 		if (!tools.hasTools()) return;
 

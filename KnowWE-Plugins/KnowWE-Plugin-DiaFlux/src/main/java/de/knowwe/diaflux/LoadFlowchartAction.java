@@ -37,6 +37,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.kdom.xml.AbstractXMLType;
 
@@ -63,10 +64,12 @@ public class LoadFlowchartAction extends AbstractAction {
 			section = Sections.definitions(compiler, id.rest(1))
 					.ancestor(FlowchartType.class)
 					.getFirst();
+			// unlike getSection below, the lookup by name has to check the access rights itself
+			if (section != null) KnowWEUtils.assertCanView(section, context);
 		}
 		else {
-			// otherwise fetch by section id
-			section = Sections.get(nodeID, FlowchartType.class);
+			// otherwise fetch by section id, which also asserts the read access rights of the user
+			section = getSection(context, FlowchartType.class);
 		}
 
 		if (section != null) {

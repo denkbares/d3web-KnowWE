@@ -28,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.PackageCompiler;
@@ -48,8 +47,8 @@ public class GetRenamingInfoAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<Term> section = Sections.get(sectionId, Term.class);
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<Term> section = getSection(context, Term.class);
 		Identifier termIdentifier = getIdentifier(section);
 
 		Set<String> allTermOccurrences = getAllTermOccurrencesOnThisArticle(section, termIdentifier, context.getArticle());

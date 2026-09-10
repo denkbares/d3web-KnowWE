@@ -2,11 +2,9 @@ package de.knowwe.core.utils.progress;
 
 import java.io.IOException;
 
-import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 
 public abstract class OperationAction extends AbstractAction {
 
@@ -14,12 +12,8 @@ public abstract class OperationAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String sectionID = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionID);
-		if (section == null) {
-			context.sendError(404, "no such section");
-			return;
-		}
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 
 		String operationID = context.getParameter(OPERATION_ID);
 		LongOperation operation = LongOperationUtils.getLongOperation(section, operationID);
