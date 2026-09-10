@@ -101,7 +101,7 @@ public class DownloadCaseAction extends AbstractAction {
 			playerid = context.getParameter("SectionID");
 		}
 
-		Section<?> section = Sections.get(playerid);
+		Section<?> section = Sections.get(context, playerid);
 		if (section != null) {
 			section = Sections.child(section, ContentType.class);
 		}

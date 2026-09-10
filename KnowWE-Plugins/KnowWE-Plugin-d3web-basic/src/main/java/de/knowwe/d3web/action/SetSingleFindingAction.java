@@ -80,7 +80,7 @@ public class SetSingleFindingAction extends AbstractAction {
 		if (namespace == null || objectid == null) {
 			return null;
 		}
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (!KnowWEUtils.canView(section, context)) {
 			return null;
 		}

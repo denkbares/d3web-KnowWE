@@ -95,12 +95,12 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		renderedRulesCache = new HashMap<>();
 		KnowledgeBase kb = null;
 		if (values.containsKey(KB_NAME)) {
-			kb = D3webUtils.getKnowledgeBase(KnowWEUtils.getArticleManager(web), values.get(KB_NAME));
+			kb = D3webUtils.getKnowledgeBase(user.getArticleManager(), values.get(KB_NAME));
 		}
 		else {
-			kb = D3webUtils.getKnowledgeBase(KnowWEUtils.getArticleManager(web), topic);
+			kb = D3webUtils.getKnowledgeBase(user.getArticleManager(), topic);
 		}
-		renderHTML(KnowWEUtils.getArticleManager(web), topic, user, kb, result);
+		renderHTML(user.getArticleManager(), topic, user, kb, result);
 	}
 
 	public void renderHTML(@NotNull ArticleManager articleManager, String topic, UserContext user, KnowledgeBase kb, RenderResult text) {

@@ -30,6 +30,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.jspwiki.types.HeaderType;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Finds the live KDOM section a hit refers to, so its preview can be rendered.
@@ -81,7 +82,7 @@ public record SectionAnchor(@NotNull String title, @Nullable String sectionId, @
 		if (sectionId == null || sectionId.isBlank()) return null;
 		Section<?> section;
 		try {
-			section = Sections.get(sectionId);
+			section = Sections.get(KnowWEUtils.getEnvironment(article), sectionId);
 		}
 		catch (RuntimeException e) {
 			// an id is read as a hexadecimal number, so anything else in the index -- a value from an older schema,

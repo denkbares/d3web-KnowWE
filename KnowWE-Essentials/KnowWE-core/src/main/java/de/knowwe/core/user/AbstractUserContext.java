@@ -94,7 +94,7 @@ public abstract class AbstractUserContext implements UserContext {
 		else {
 			String sectionId = getSectionId();
 			if (Strings.isNotBlank(sectionId)) {
-				return Sections.get(sectionId).getArticle();
+				return Sections.get(this, sectionId).getArticle();
 			}
 			else {
 				throw new NoSuchElementException("Request is missing parameter to locate current Article");
@@ -136,6 +136,6 @@ public abstract class AbstractUserContext implements UserContext {
 	@Override
 	@NotNull
 	public ArticleManager getArticleManager() {
-		return KnowWEUtils.getArticleManager(getWeb());
+		return getEnvironment().getArticleManager();
 	}
 }

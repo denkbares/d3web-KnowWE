@@ -57,7 +57,7 @@ public class SearchInfoObjects extends AbstractAction {
 		String flowchartSectionID = parameterMap.get("sectionID");
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
-		String result = search(phrase, classes, maxCount, Sections.get(flowchartSectionID));
+		String result = search(phrase, classes, maxCount, Sections.get(context, flowchartSectionID));
 		context.setContentType("text/xml; charset=UTF-8");
 		context.getWriter().write(result);
 	}

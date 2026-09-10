@@ -30,6 +30,8 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 
 /**
  * Util class providing a usable ontology during d3web compilation
@@ -187,7 +189,7 @@ public class OntologyBridge {
 
 	private static OntologyCompiler getOntologyCompilerCached(@NotNull D3webCompiler d3webCompiler, String ontologyId) {
 		return CompilationLocal.getCached(d3webCompiler, OntologyCompiler.class + ":" + ontologyId,
-				() -> Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class));
+				() -> Compilers.getCompiler(Sections.get(KnowWEUtils.getEnvironment(d3webCompiler), ontologyId), OntologyCompiler.class));
 	}
 
 	/**
@@ -227,7 +229,7 @@ public class OntologyBridge {
 			logBridgeFailure("getCompiler - ontology not linked", ontologyCompiler, ontologySectionId, null);
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler: " + Compilers.getCompilerName(ontologyCompiler));
 		}
-		Section<?> section = Sections.get(d3webId);
+		Section<?> section = Sections.get(KnowWEUtils.getEnvironment(ontologyCompiler), d3webId);
 		if (section == null) {
 			logBridgeFailure("getCompiler - mapped d3web section not found", ontologyCompiler, ontologySectionId, d3webId);
 			throw new IllegalStateException("Bridge mapping outdated, section for D3webCompiler not found");
@@ -266,8 +268,9 @@ public class OntologyBridge {
 
 			Thread thread = Thread.currentThread();
 			boolean isCompileThread = CompilerManager.isCompileThread();
-			Section<?> callerSection = Sections.get(callerSectionId);
-			Section<?> mappedSection = mappedTargetId == null ? null : Sections.get(mappedTargetId);
+			Environment environment = caller instanceof Compiler compiler ? KnowWEUtils.findEnvironment(compiler) : null;
+			Section<?> callerSection = environment == null ? null : Sections.get(environment, callerSectionId);
+			Section<?> mappedSection = environment == null || mappedTargetId == null ? null : Sections.get(environment, mappedTargetId);
 
 			StringBuilder sb = new StringBuilder();
 			sb.append("OntologyBridge failure: ").append(reason);

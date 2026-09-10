@@ -72,7 +72,7 @@ public class DeploySnapshotAction extends SnapshotAction {
 	private void reinitializeWikiContent(UserActionContext context, File snapshot) throws IOException {
 		// we force a snapshot as safety BACKUP mechanism against data loss
 		try {
-			if (storageLimitWasReached()) {
+			if (storageLimitWasReached(context.getEnvironment())) {
 				throw new IOException("Snapshot limit was reached. Please delete a snapshot before continuing. " +
 						"(You can still download the current wiki with \"Download Wiki-Zip\" in the admin markup.)");
 			}

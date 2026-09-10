@@ -360,7 +360,7 @@ public class Utils {
 			}
 			return url;
 		}
-		return OntoGraphDataBuilder.createBaseURL() + "?concept=" + to;
+		return OntoGraphDataBuilder.createBaseURL(KnowWEUtils.getEnvironment(section)) + "?concept=" + to;
 	}
 
 	public static String getIdentifierIRI(Value uri, Rdf2GoCore repo) {

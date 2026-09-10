@@ -65,7 +65,7 @@ public class QuickInterviewLoadAction extends AbstractAction {
 		if (sessionRecords == null || sessionRecords.isEmpty()) return;
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (!KnowWEUtils.canView(section, context)) return;
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context, section);

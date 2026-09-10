@@ -59,7 +59,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 		// get WikiConnector and Session
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (KnowWEUtils.canView(section, context)) {
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(context, section);
 			if (kb == null) {

@@ -62,10 +62,12 @@ public class RootTypeExportAction extends AbstractAction {
 	private static final String TMP_FOLDER = "tmp";
 	private static final String KNOWWEEXTENSION_FOLDER = "KnowWEExtension";
 	private String path;
+	private RootType rootType;
 	private static String FILE_SEPARATOR = System.getProperty("file.separator");
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		rootType = context.getEnvironment().getRootType();
 		String filename = "RootType.svg";
 		context.setContentType(BINARY);
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
@@ -207,7 +209,7 @@ public class RootTypeExportAction extends AbstractAction {
 		// the label of the RootType is added separately (because it is the only
 		// label with specified additional attributes
 		for (String label : dotSourceLabel) {
-			RootType rt = RootType.getInstance();
+			RootType rt = rootType;
 			if (label.equals("\"" + rt.getClass().toString() + rt.hashCode() + "\"")) {
 				dotSource += label;
 			}

@@ -76,7 +76,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 */
 	@SuppressWarnings("unchecked")
 	private void replaceExistingFlowchart(UserActionContext context, @NotNull ArticleManager articleManager, String nodeID, String topic, String newText) throws IOException {
-		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.get(
+		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.get(context, 
 				nodeID);
 
 		Section<FlowchartType> flowchartSection = Sections.successor(diaFluxSection,
@@ -127,8 +127,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @created 23.02.2011
 	 */
 	private void saveNewFlowchart(UserActionContext context, @NotNull ArticleManager articleManager, String topic, String newText) throws IOException {
-		ArticleManager mgr = context.getEnvironment().getArticleManager(
-				context.getWeb());
+		ArticleManager mgr = context.getEnvironment().getArticleManager();
 		Article article = mgr.getArticle(topic);
 		Section<RootType> rootSection = article.getRootSection();
 

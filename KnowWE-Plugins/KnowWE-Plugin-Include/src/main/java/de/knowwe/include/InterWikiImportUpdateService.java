@@ -62,6 +62,15 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		}
 	});
 
+	/**
+	 * The environment of the wiki whose imports this service keeps up to date.
+	 */
+	private final Environment environment;
+
+	private InterWikiImportUpdateService(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
 	private record ImportInfo(String sectionId, String wiki, String page, @Nullable String sectionHeading,
 	                          @Nullable Instant latestChange, @Nullable String from, @Nullable String link) {
 	}
@@ -79,7 +88,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	 */
 	public static InterWikiImportUpdateService of(@NotNull Environment environment) {
 		return environment.getService(InterWikiImportUpdateService.class, () -> {
-			InterWikiImportUpdateService service = new InterWikiImportUpdateService();
+			InterWikiImportUpdateService service = new InterWikiImportUpdateService(environment);
 			service.initialize();
 			return service;
 		});
@@ -113,7 +122,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	 */
 	public void pollSingleMarkup(Section<InterWikiImportMarkup> markup, boolean force) {
 		if (!Sections.isLive(markup)) return;
-		if (!AttachmentUpdateMarkup.isAutoUpdatingActive() && !force) return;
+		if (!AttachmentUpdateMarkup.isAutoUpdatingActive(environment) && !force) return;
 		String wiki = InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup));
 		if (wiki.isBlank()) return;
 
@@ -155,9 +164,9 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	}
 
 	private void pollAllSources() {
-		if (!AttachmentUpdateMarkup.isAutoUpdatingActive()) return;
+		if (!AttachmentUpdateMarkup.isAutoUpdatingActive(environment)) return;
 
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		ArticleManager articleManager = environment.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 			defaultArticleManager.awaitInitialization();
 		}
@@ -211,7 +220,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	private List<ImportInfo> getImportSnapshots() {
 		List<ImportInfo> snapshots = new ArrayList<>();
 		for (String markupId : registeredMarkupIds) {
-			Section<InterWikiImportMarkup> markup = Sections.get(markupId, InterWikiImportMarkup.class);
+			Section<InterWikiImportMarkup> markup = Sections.get(environment, markupId, InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) {
 				registeredMarkupIds.remove(markupId);
 				continue;
@@ -249,7 +258,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 			stopwatch.log(LOGGER, "Found " + changes.getUpdates()
 					.size() + " changed InterWikiImport markups for " + wiki + ": " + changes.getUpdates()
 					.stream()
-					.map(u -> Sections.get(u.requestingSectionId()))
+					.map(u -> Sections.get(environment, u.requestingSectionId()))
 					.filter(Objects::nonNull)
 					.map(Section::getTitle)
 					.collect(Collectors.joining(", ")));
@@ -271,7 +280,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	private void recordOutcome(List<ImportInfo> snapshots, PollResult result) {
 		String message = syncFailureMessage(result);
 		for (ImportInfo snapshot : snapshots) {
-			Section<InterWikiImportMarkup> markup = Sections.get(snapshot.sectionId(), InterWikiImportMarkup.class);
+			Section<InterWikiImportMarkup> markup = Sections.get(environment, snapshot.sectionId(), InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) continue;
 			markup.get().recordSyncOutcome(markup, message);
 		}
@@ -289,7 +298,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		Map<String, String> replacements = new LinkedHashMap<>();
 		int updatedImports = 0;
 		for (InterWikiChanges.Update update : updates) {
-			Section<InterWikiImportMarkup> markup = Sections.get(update.requestingSectionId(), InterWikiImportMarkup.class);
+			Section<InterWikiImportMarkup> markup = Sections.get(environment, update.requestingSectionId(), InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) {
 				registeredMarkupIds.remove(update.requestingSectionId());
 				continue;

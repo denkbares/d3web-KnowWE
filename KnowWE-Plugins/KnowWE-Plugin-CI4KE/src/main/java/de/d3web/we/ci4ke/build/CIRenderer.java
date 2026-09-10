@@ -290,7 +290,7 @@ public class CIRenderer {
 
 		// render title with configuration
 		if (test instanceof ResultRenderer) {
-			((ResultRenderer) test).renderResultTitle(testResult, renderResult);
+			((ResultRenderer) test).renderResultTitle(context, testResult, renderResult);
 		}
 		else {
 			renderResultTitle(testResult, renderResult);

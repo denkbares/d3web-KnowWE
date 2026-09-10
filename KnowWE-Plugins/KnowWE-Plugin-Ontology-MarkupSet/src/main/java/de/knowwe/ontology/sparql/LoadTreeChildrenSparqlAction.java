@@ -44,7 +44,7 @@ public class LoadTreeChildrenSparqlAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String parentNodeID = context.getParameter(Attributes.PARENT_NODE_ID);
-		Section<?> section = Sections.get(context.getParameter(Attributes.SECTION_ID));
+		Section<?> section = Sections.get(context, context.getParameter(Attributes.SECTION_ID));
 
 		RenderResult result = new RenderResult(context);
 		SparqlResultRenderer.getInstance()

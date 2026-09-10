@@ -489,7 +489,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 		if (zipEntryAttachments == null) {
 			zipEntryAttachments = new ArrayList<>();
-			WikiAttachment att = KnowWEUtils.getAttachment(attachment.getParentName(), attachment.getFileName());
+			WikiAttachment att = KnowWEUtils.getAttachment(getEnvironment(), attachment.getParentName(), attachment.getFileName());
 			File attachmentFile = att.asFile();
 			if (!attachmentFile.exists()) {
 				throw new IllegalStateException("Attachment file not found: " + attachmentFile.getAbsolutePath());
@@ -570,7 +570,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getKnowWEExtensionPath() {
-		return KnowWEUtils.getRealPath(KnowWEUtils.getConfigBundle()
+		return KnowWEUtils.getRealPath(getEnvironment(), KnowWEUtils.getConfigBundle()
 				.getString("path_to_knowweextension"));
 	}
 

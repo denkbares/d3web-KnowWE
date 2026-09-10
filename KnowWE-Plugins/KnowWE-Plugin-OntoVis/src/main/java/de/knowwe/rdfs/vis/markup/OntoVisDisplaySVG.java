@@ -45,7 +45,7 @@ public class OntoVisDisplaySVG extends AbstractAction {
 		ServletContext servletContext = context.getServletContext();
 		if (servletContext == null) return; // at wiki startup only
 
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		Section<?> section = Sections.get(context, context.getParameter("SectionID"));
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class), context);
 		config.setCacheFileID(Utils.getFileID(section, context));
 		File svg = new File(DOTRenderer.getFilePath(config) + ".svg");

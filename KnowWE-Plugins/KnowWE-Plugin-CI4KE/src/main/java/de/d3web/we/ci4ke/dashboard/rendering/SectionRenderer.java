@@ -26,7 +26,7 @@ public class SectionRenderer implements ObjectNameRenderer {
 	public void render(UserContext context, String objectName, RenderResult result) {
 		Section<?> section = null;
 		try {
-			section = Sections.get(objectName);
+			section = Sections.get(context, objectName);
 		}
 		catch (NumberFormatException ignore) {
 		}

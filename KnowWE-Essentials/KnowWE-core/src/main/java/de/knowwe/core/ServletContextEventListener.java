@@ -44,16 +44,25 @@ public class ServletContextEventListener implements ServletContextListener {
 		return destroyInProgress;
 	}
 
+	/**
+	 * The event manager of the environment running in the servlet context; before the environment exists (context
+	 * initialization) or after it is gone, the global manager.
+	 */
+	private static EventManager eventManager(ServletContextEvent event) {
+		Environment environment = Environment.findIn(event.getServletContext());
+		return environment != null ? environment.getEventManager() : EventManager.getInstance();
+	}
+
 	@Override
 	public void contextInitialized(final ServletContextEvent servletContextEvent) {
-		KnowWEUtils.currentEventManager().fireEvent(new ServletContextInitializedEvent(servletContextEvent));
+		eventManager(servletContextEvent).fireEvent(new ServletContextInitializedEvent(servletContextEvent));
 	}
 
 	@Override
 	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 		destroyInProgress = true;
 		LOGGER.info("Executing ContextDestroyedTask...");
-		KnowWEUtils.currentEventManager().fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
+		eventManager(servletContextEvent).fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
 		contextDestroyedTask.forEach(task -> task.accept(servletContextEvent));
 		LOGGER.info("Done executing ContextDestroyedTask, clearing...");
 		contextDestroyedTask.clear();

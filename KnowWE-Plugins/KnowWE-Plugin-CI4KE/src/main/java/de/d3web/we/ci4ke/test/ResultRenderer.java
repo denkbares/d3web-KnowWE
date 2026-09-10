@@ -12,7 +12,7 @@ import de.knowwe.core.user.UserContext;
  */
 public interface ResultRenderer  {
 
-	default void renderResultTitle(TestResult testResult, RenderResult renderResult) {
+	default void renderResultTitle(UserContext context, TestResult testResult, RenderResult renderResult) {
 		CIRenderer.renderResultTitle(testResult, renderResult);
 	}
 

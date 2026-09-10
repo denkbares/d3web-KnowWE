@@ -36,7 +36,7 @@ public class OntoVisPdfDownload extends AbstractAction {
 		if (servletContext == null) return; // at wiki startup only
 
 		// find graph name
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		Section<?> section = Sections.get(context, context.getParameter("SectionID"));
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class), context);
 		config.setCacheFileID(Utils.getFileID(section, context));
 		File dotFile = new File(DOTRenderer.getFilePath(config) + ".dot");

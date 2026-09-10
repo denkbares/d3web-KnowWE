@@ -40,7 +40,7 @@ public class RefreshSparqlAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 
 		RenderResult result = new RenderResult(context);
 		SparqlResultRenderer.getInstance()

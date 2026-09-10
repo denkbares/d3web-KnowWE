@@ -83,7 +83,7 @@ public class LongOperationUtils {
 		}
 
 		private void cleanupOutdatedLongOperations() {
-			operations.keySet().removeIf(id -> !Sections.isLive(Sections.get(id)));
+			operations.keySet().removeIf(id -> !Sections.isLive(Sections.get(environment, id)));
 		}
 
 		@Override

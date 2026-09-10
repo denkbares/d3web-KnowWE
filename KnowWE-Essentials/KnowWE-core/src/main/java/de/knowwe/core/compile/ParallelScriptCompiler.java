@@ -83,7 +83,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	@SuppressWarnings("unchecked")
 	public ParallelScriptCompiler(C compiler, Mode mode, Class<?>... typeFilter) {
 		this.compiler = compiler;
-		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
+		scriptManager = CompilerManager.getScriptManager(compiler);
 		this.step = mode;
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {

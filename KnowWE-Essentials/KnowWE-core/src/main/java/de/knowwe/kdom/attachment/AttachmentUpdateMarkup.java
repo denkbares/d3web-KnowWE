@@ -362,7 +362,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		// don't lock if the queue is empty
 		if (state.queued.isEmpty()) return;
 
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		ArticleManager articleManager = environment.getArticleManager();
 		// first acquire lock
 		articleManager.open();
 		Set<QueuedAttachment> attachmentsToCompile;
@@ -421,7 +421,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 						.append(packageAnnotation)
 						.append("\n");
 			}
-			Article tempArticle = Article.createTemporaryArticle(connectionString, section.getTitle() + "_Import");
+			Article tempArticle = Article.createTemporaryArticle(KnowWEUtils.getEnvironment(section), connectionString, section.getTitle() + "_Import");
 			Map<String, String> replacementMap = new HashMap<>();
 			for (Section<DefaultMarkupType> markupSection : $(tempArticle).successor(DefaultMarkupType.class)) {
 

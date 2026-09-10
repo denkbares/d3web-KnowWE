@@ -28,7 +28,7 @@ public class CommitOntologyAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String compileSectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(compileSectionId);
+		Section<?> section = Sections.get(context, compileSectionId);
 		Section<PackageCompileType> compileSection = Sections.cast(section, PackageCompileType.class);
 		Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
 		Optional<PackageCompiler> optionalCompiler = packageCompilers.stream()

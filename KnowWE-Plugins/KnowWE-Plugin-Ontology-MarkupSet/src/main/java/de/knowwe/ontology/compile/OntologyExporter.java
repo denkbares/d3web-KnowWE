@@ -83,7 +83,7 @@ public class OntologyExporter implements EventListener {
 			Timer lastTimer = timers.get(ontologySection.getID());
 			if (lastTimer != null) lastTimer.cancel();
 			// cleanup times of now longer existing sections
-			timers.keySet().removeIf(sectionId -> Sections.get(sectionId) == null);
+			timers.keySet().removeIf(sectionId -> Sections.get(KnowWEUtils.getEnvironment(compiler), sectionId) == null);
 		}
 
 		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyMarkup.ANNOTATION_EXPORT);

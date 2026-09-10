@@ -45,8 +45,8 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.knowwe.core.Environment;
 
-import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -84,7 +84,7 @@ public class GitAutoUpdater {
 		}
 
 		Git git = new Git(repository);
-		ArticleManager articleManager = getDefaultArticleManager();
+		ArticleManager articleManager = Environment.of(engine.getServletContext()).getArticleManager();
 
 		updateMasterBranch(articleManager, git);
 	}

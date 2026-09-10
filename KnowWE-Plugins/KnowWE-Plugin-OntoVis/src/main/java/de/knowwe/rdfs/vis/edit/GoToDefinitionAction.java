@@ -45,7 +45,7 @@ public class GoToDefinitionAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter("kdomid");
 		String conceptName = context.getParameter("concept");
-		Section<?> section = Sections.get(sectionID);
+		Section<?> section = Sections.get(context, sectionID);
 
 		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		LinkToTermDefinitionProvider uriProvider;

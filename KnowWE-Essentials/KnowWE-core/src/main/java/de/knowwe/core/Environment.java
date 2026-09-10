@@ -220,8 +220,13 @@ public final class Environment implements AutoCloseable {
 	 * way for servlet-level entry points (filters, JAX-RS resources, session listeners) without a wiki context object
 	 * to reach their environment.
 	 */
+	/**
+	 * Returns the environment published in the given servlet context, or null if none is running there (or there is no
+	 * servlet context at all, e.g. for wiki engines in tests).
+	 */
 	@Nullable
-	public static Environment findIn(@NotNull ServletContext context) {
+	public static Environment findIn(@Nullable ServletContext context) {
+		if (context == null) return null;
 		return context.getAttribute(SERVLET_CONTEXT_ATTRIBUTE) instanceof Environment environment ? environment : null;
 	}
 
@@ -554,7 +559,7 @@ public final class Environment implements AutoCloseable {
 	}
 
 	private void initCompilers() {
-		CompilerManager compilerManager = Compilers.getCompilerManager(DEFAULT_WEB);
+		CompilerManager compilerManager = getArticleManager().getCompilerManager();
 		PackageManager packageManager = new PackageManager();
 
 		// we want this compiler to run before alle package compilers
@@ -646,7 +651,7 @@ public final class Environment implements AutoCloseable {
 	public Article updateArticle(String title, String author, String content, boolean fullParse, UserContext context) throws InterruptedException,
 			UpdateNotAllowedException {
 
-		ArticleManager articleManager = getDefaultArticleManager();
+		ArticleManager articleManager = getArticleManager();
 		String originalText = "";
 		Article article = articleManager.getArticle(title);
 		if (article != null) {
@@ -806,7 +811,7 @@ public final class Environment implements AutoCloseable {
 		}
 
 		// additionally load all json files in 'KnowWEExtension/toolmenu' folder in webapp
-		File appRoot = new File(KnowWEUtils.getApplicationRootPath(), "KnowWEExtension/toolmenu");
+		File appRoot = new File(KnowWEUtils.getApplicationRootPath(this), "KnowWEExtension/toolmenu");
 		File[] jsonFiles = appRoot.listFiles(f -> f.isFile() && f.getName().endsWith(".json"));
 		if (jsonFiles != null) {
 			for (File jsonFile : jsonFiles) {
@@ -839,7 +844,7 @@ public final class Environment implements AutoCloseable {
 	}
 
 	private void initPlugins() throws InstantiationError {
-		File libDir = new File(KnowWEUtils.getApplicationRootPath() + "/WEB-INF/lib");
+		File libDir = new File(KnowWEUtils.getApplicationRootPath(this) + "/WEB-INF/lib");
 		// when testing, libDir doesn't exist, but the plugin framework is
 		// initialized in junit test, so there is no problem
 		// if libDir is doesn't exist in runtime, nothing will work, so this
@@ -873,7 +878,7 @@ public final class Environment implements AutoCloseable {
 				if (!pathName.endsWith("/") && pathName.startsWith("webapp/")) {
 					pathName = pathName.substring("webapp/".length());
 					try {
-						File file = new File(KnowWEUtils.getApplicationRootPath() + "/" + pathName);
+						File file = new File(KnowWEUtils.getApplicationRootPath(this) + "/" + pathName);
 						File parent = file.getParentFile();
 						if (!parent.isDirectory()) {
 							parent.mkdirs();

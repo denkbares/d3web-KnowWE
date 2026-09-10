@@ -69,6 +69,7 @@ import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import de.knowwe.core.Environment;
 
 /**
  * Adds the all the terms of the statements that are in the repository by default or are added via import to the {@link
@@ -402,7 +403,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 			});
 			cache.referencingSections.add(section.getID());
 			importCache.values().removeIf(rCache -> {
-				boolean remove = noLongerReferenced(rCache) || attachmentOutDated(compiler, rCache);
+				boolean remove = noLongerReferenced(compiler, rCache) || attachmentOutDated(compiler, rCache);
 				// if we remove, make sure to properly destroy to allow gc and free up memory
 				if (remove) {
 					rCache.core.close();
@@ -432,8 +433,9 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 		return false;
 	}
 
-	private boolean noLongerReferenced(TermCache rCache) {
-		return rCache.referencingSections.stream().noneMatch(sectionId -> Sections.get(sectionId) != null);
+	private boolean noLongerReferenced(OntologyCompiler compiler, TermCache rCache) {
+		Environment environment = KnowWEUtils.getEnvironment(compiler);
+		return rCache.referencingSections.stream().noneMatch(sectionId -> Sections.get(environment, sectionId) != null);
 	}
 
 	private static class TermCache {

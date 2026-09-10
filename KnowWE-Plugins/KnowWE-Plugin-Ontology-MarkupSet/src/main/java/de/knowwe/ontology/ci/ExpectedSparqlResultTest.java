@@ -41,6 +41,8 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 
 /**
  * @author Jochen Reutelshöfer
@@ -85,7 +87,7 @@ public class ExpectedSparqlResultTest extends SparqlTest<SparqlExpectedResultSec
 			return new Message(messageTypeTestFailed, "No sparql query specified for test object, use annotation 'sparql' to set a sparql query to test against.");
 		}
 
-		Collection<Section<SparqlContentType>> actualSparqlSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(actualSparqlName);
+		Collection<Section<SparqlContentType>> actualSparqlSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(KnowWEUtils.getEnvironment(expectedResultTableMarkup), actualSparqlName);
 		if (actualSparqlSections.size() > 1) {
 			return new Message(Message.Type.ERROR,
 					"Multiple sparql queries in the wiki with name: " + actualSparqlName);
@@ -155,8 +157,8 @@ public class ExpectedSparqlResultTest extends SparqlTest<SparqlExpectedResultSec
 	}
 
 	@Override
-	protected @Nullable Section<?> getLinkTarget(String sectionName) {
-		Collection<Section<ExpectedSparqlResultTableMarkup>> expectedQueryResultSection = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(sectionName);
+	protected @Nullable Section<?> getLinkTarget(Environment environment, String sectionName) {
+		Collection<Section<ExpectedSparqlResultTableMarkup>> expectedQueryResultSection = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(environment, sectionName);
 		if (expectedQueryResultSection.isEmpty()) {
 			return null;
 		}

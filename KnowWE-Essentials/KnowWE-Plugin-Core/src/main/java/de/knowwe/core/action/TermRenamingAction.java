@@ -71,7 +71,7 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacementIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-		Collection<TermCompiler> compilers = Compilers.getCompilers(Sections.get(sectionId), TermCompiler.class);
+		Collection<TermCompiler> compilers = Compilers.getCompilers(Sections.get(context, sectionId), TermCompiler.class);
 		Collection<RenamingCommand> renamingCommands = getRenamingCommands(termIdentifier, replacementIdentifier, compilers);
 
 		Set<Article> articlesWithoutRenamingRights = checkEditRights(context, renamingCommands);

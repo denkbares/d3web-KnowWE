@@ -37,6 +37,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.core.Environment;
 
 /**
  * Adds a file defined by resource markup to the d3web knowledge base.
@@ -120,7 +121,7 @@ public class ResourceHandler implements D3webHandler<ResourceType> {
 				return Messages.asList(Messages.syntaxError("Empty destination path."));
 			}
 			try {
-				resource = getAttachmentResource(destinationPath, article.getTitle(), sourcePath);
+				resource = getAttachmentResource(KnowWEUtils.getEnvironment(article), destinationPath, article.getTitle(), sourcePath);
 				if (resource == null) {
 					return Messages.asList(Messages.syntaxError("No attachment " + sourcePath
 							+ " found."));
@@ -167,11 +168,11 @@ public class ResourceHandler implements D3webHandler<ResourceType> {
 	 * @return the constructed resource
 	 * @created 12.06.2011
 	 */
-	private static Resource getAttachmentResource(String path, String attachmentArticleName, String attachmentFilename) throws IOException {
-		WikiAttachment attachment = KnowWEUtils.getAttachment(attachmentArticleName,
+	private static Resource getAttachmentResource(Environment environment, String path, String attachmentArticleName, String attachmentFilename) throws IOException {
+		WikiAttachment attachment = KnowWEUtils.getAttachment(environment, attachmentArticleName,
 				attachmentFilename);
 		if (attachment != null) {
-			return new WikiAttachmentResource(path, attachment.getPath());
+			return new WikiAttachmentResource(environment.getWikiConnector(), path, attachment.getPath());
 		}
 		return null;
 	}

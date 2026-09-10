@@ -80,7 +80,7 @@ public class GetInfoObjects extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String ids = context.getParameter("ids");
 		String flowchartId = context.getParameter("sectionID");
-		Section<?> flowchart = Sections.get(flowchartId);
+		Section<?> flowchart = Sections.get(context, flowchartId);
 		Identifier[] idArray;
 		try {
 			JSONArray json = new JSONArray(ids);

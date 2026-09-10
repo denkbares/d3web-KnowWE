@@ -128,8 +128,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 	private static void zipFingerprint(ZipOutputStream zos, UserActionContext context) throws IOException {
 		File tempDir = Files.createTempDir();
 		try {
-			ArticleManager manager = context.getEnvironment().getArticleManager(
-					Environment.DEFAULT_WEB);
+			ArticleManager manager = context.getEnvironment().getArticleManager();
 			Collection<Article> articles = new LinkedList<>();
 			for (Article article : manager.getArticles()) {
 				if (checkRights(article, context)) articles.add(article);

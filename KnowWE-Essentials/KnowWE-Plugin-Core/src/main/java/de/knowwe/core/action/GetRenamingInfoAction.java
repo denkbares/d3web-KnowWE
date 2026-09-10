@@ -49,7 +49,7 @@ public class GetRenamingInfoAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<Term> section = Sections.get(sectionId, Term.class);
+		Section<Term> section = Sections.get(context, sectionId, Term.class);
 		Identifier termIdentifier = getIdentifier(section);
 
 		Set<String> allTermOccurrences = getAllTermOccurrencesOnThisArticle(section, termIdentifier, context.getArticle());
@@ -73,10 +73,6 @@ public class GetRenamingInfoAction extends AbstractAction {
 		if (compiler != null)
 			return section.get().getTermIdentifier(compiler, section);
 		return section.get().getTermIdentifier(Sections.cast(section, Term.class));
-	}
-
-	protected Section<?> getSection(String identifier) {
-		return Sections.get(identifier);
 	}
 
 	protected Set<String> getAllTermOccurrencesOnThisArticle(Section<?> section, Identifier termIdentifier, Article article) {

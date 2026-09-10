@@ -36,6 +36,8 @@ import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jochen Reutelshöfer
@@ -45,17 +47,41 @@ public class SparqlTestObjectProviderUtils {
 
 	private static final String SPLIT_SYMBOL = "@";
 
-	public static Collection<Section<SparqlContentType>> getSparqlQueryContentSection(String sectionName) {
-		return $(getSectionsForNameGlobal(sectionName, SparqlMarkupType.class)).successor(SparqlContentType.class)
+	public static Collection<Section<SparqlContentType>> getSparqlQueryContentSection(@NotNull Environment environment, String sectionName) {
+		return $(getSectionsForNameGlobal(environment, sectionName, SparqlMarkupType.class)).successor(SparqlContentType.class)
 				.asList();
 	}
 
-	public static Collection<Section<SparqlMarkupType>> getSparqlQuerySection(String sectionName) {
-		return getSectionsForNameGlobal(sectionName, SparqlMarkupType.class);
+	public static Collection<Section<SparqlMarkupType>> getSparqlQuerySection(@NotNull Environment environment, String sectionName) {
+		return getSectionsForNameGlobal(environment, sectionName, SparqlMarkupType.class);
 	}
 
+	public static Collection<Section<ExpectedSparqlResultTableMarkup>> getExpectedQueryResultSection(@NotNull Environment environment, String sectionName) {
+		return getSectionsForNameGlobal(environment, sectionName, ExpectedSparqlResultTableMarkup.class);
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #getSparqlQueryContentSection(Environment, String)}
+	 */
+	@Deprecated
+	public static Collection<Section<SparqlContentType>> getSparqlQueryContentSection(String sectionName) {
+		return getSparqlQueryContentSection(Environment.requireInstance(), sectionName);
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #getSparqlQuerySection(Environment, String)}
+	 */
+	@Deprecated
+	public static Collection<Section<SparqlMarkupType>> getSparqlQuerySection(String sectionName) {
+		return getSparqlQuerySection(Environment.requireInstance(), sectionName);
+	}
+
+	/**
+	 * @deprecated pass the environment at hand: {@link #getExpectedQueryResultSection(Environment, String)}
+	 */
+	@Deprecated
 	public static Collection<Section<ExpectedSparqlResultTableMarkup>> getExpectedQueryResultSection(String sectionName) {
-		return getSectionsForNameGlobal(sectionName, ExpectedSparqlResultTableMarkup.class);
+		return getExpectedQueryResultSection(Environment.requireInstance(), sectionName);
 	}
 
 	public static String getName(Section<?> section) {
@@ -64,9 +90,17 @@ public class SparqlTestObjectProviderUtils {
 				.mapFirst(s -> s.get().getTermName(s));
 	}
 
+	/**
+	 * @deprecated pass the environment at hand: {@link #getSectionsForNameGlobal(Environment, String, Class)}
+	 */
+	@Deprecated
 	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(String sparqlName, Class<T> clazz) {
-		return Stream.of(RegisteredNameType.getNamedMarkupSections(sparqlName, clazz),
-				RegisteredNameType.getNamedMarkupSections(sparqlName.split(SPLIT_SYMBOL)[0], clazz))
+		return getSectionsForNameGlobal(Environment.requireInstance(), sparqlName, clazz);
+	}
+
+	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(@NotNull Environment environment, String sparqlName, Class<T> clazz) {
+		return Stream.of(RegisteredNameType.getNamedMarkupSections(environment, sparqlName, clazz),
+				RegisteredNameType.getNamedMarkupSections(environment, sparqlName.split(SPLIT_SYMBOL)[0], clazz))
 				.flatMap(Collection::stream)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}

@@ -1032,7 +1032,7 @@ public class KnowWEUtils {
 				}
 				final String sectionId = matcher.group(sectionIdGroup);
 				try {
-					final Section<?> section = Sections.get(sectionId);
+					final Section<?> section = Sections.get(context, sectionId);
 					if (section != null) {
 						continue;
 					}
@@ -1681,7 +1681,7 @@ public class KnowWEUtils {
 	}
 
 	public static void renameArticle(@NotNull Environment environment, final String oldArticleTitle, final String newArticleTitle) {
-		final ArticleManager manager = environment.getArticleManager(Environment.DEFAULT_WEB);
+		final ArticleManager manager = environment.getArticleManager();
 		final Article oldArticle = manager.getArticle(oldArticleTitle);
 		manager.open();
 		try {

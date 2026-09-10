@@ -58,7 +58,7 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 	}
 
 	static SourceInfo getSourceInfo(String wikiReference, UserActionContext context) {
-		Article auxiliaryArticle = Article.createTemporaryArticle("%%include\n[" + wikiReference + "]\n%", "AuxArticle", "AuxWeb");
+		Article auxiliaryArticle = Article.createTemporaryArticle(context.getEnvironment(), "%%include\n[" + wikiReference + "]\n%", "AuxArticle");
 		try {
 			Section<WikiReference> wikiReferenceSection = Sections.successor(auxiliaryArticle.getRootSection(), WikiReference.class);
 			if (wikiReferenceSection == null) return null;

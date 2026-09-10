@@ -58,8 +58,8 @@ public class ExecuteCasesAction extends AbstractAction {
 		catch (NumberFormatException e) {
 			throw new IOException(e);
 		}
-		Section<?> playerSection = Sections.get(playerId);
-		Section<?> providerSection = Sections.get(providerId);
+		Section<?> playerSection = Sections.get(context, playerId);
+		Section<?> providerSection = Sections.get(context, providerId);
 		if (providerSection == null || playerSection == null) {
 			context.sendError(409, "Section '" + providerId
 					+ "' and/or '" + playerId

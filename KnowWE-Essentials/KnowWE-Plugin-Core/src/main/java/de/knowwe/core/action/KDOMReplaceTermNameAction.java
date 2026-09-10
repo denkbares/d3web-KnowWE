@@ -76,7 +76,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		Map<String, String> nodesMap = new HashMap<>();
 
-		Section<?> section = Sections.get(nodeID);
+		Section<?> section = Sections.get(context, nodeID);
 
 		if (!(section.get() instanceof Term)) {
 			context.sendError(500, "Invalid section type");

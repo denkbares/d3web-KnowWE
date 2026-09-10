@@ -22,6 +22,8 @@ import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import de.knowwe.core.Environment;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Abstract class for SPARQL-based CI test. Handles rendering and queries.
@@ -46,7 +48,7 @@ public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRen
 	}
 
 	@Override
-	public void renderResultTitle(TestResult testResult, RenderResult renderResult) {
+	public void renderResultTitle(UserContext context, TestResult testResult, RenderResult renderResult) {
 
 		// prepare some information
 		Message summary = testResult.getSummary();
@@ -69,7 +71,7 @@ public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRen
 			name = className;
 			if (hasConfig) {
 
-				Section<?> sparqlMarkupSection = getLinkTarget(config[0]);
+				Section<?> sparqlMarkupSection = getLinkTarget(KnowWEUtils.getEnvironment(context), config[0]);
 
 				if (sparqlMarkupSection != null) {
 					additionalInfo = "(<a href = '" + KnowWEUtils.getURLLink(sparqlMarkupSection) + "'>" + config[0] + "</a> "
@@ -94,9 +96,9 @@ public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRen
 	}
 
 	@Nullable
-	protected Section<?> getLinkTarget(String sectionName) {
+	protected Section<?> getLinkTarget(Environment environment, String sectionName) {
 		Section<SparqlMarkupType> sparqlMarkupSection = null;
-		Collection<Section<SparqlMarkupType>> sparqlMarkupSections = SparqlTestObjectProviderUtils.getSparqlQuerySection(sectionName);
+		Collection<Section<SparqlMarkupType>> sparqlMarkupSections = SparqlTestObjectProviderUtils.getSparqlQuerySection(environment, sectionName);
 		if (!sparqlMarkupSections.isEmpty()) {
 			sparqlMarkupSection = sparqlMarkupSections.iterator().next();
 		}

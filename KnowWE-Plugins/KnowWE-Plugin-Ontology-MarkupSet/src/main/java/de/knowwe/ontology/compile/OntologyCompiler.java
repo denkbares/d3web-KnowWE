@@ -249,7 +249,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		compile(sectionsOfPackage);
 
 		if (getCommitType(this) == CommitType.onDemand) {
-			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
+			NotificationManager.addGlobalNotification(KnowWEUtils.getEnvironment(this), new StandardNotification("There are changes not yet committed to " +
 					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
 					"click <a onclick=\"KNOWWE.plugin.ontology.commitOntology('" + getCompileSection().getID() + "')\">here</a>.",
 					Message.Type.INFO, getCommitNotificationId(this)));
@@ -317,7 +317,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 	public static boolean commitOntology(OntologyCompiler compiler) {
 		boolean changed = compiler.rdf2GoCore.commit();
-		NotificationManager.removeGlobalNotification(getCommitNotificationId(compiler));
+		NotificationManager.removeGlobalNotification(KnowWEUtils.getEnvironment(compiler), getCommitNotificationId(compiler));
 		return changed;
 	}
 

@@ -76,7 +76,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		if (sectionId == null) sectionId = context.getParameter("KdomNodeId"); // compatibility
-		execute(context, Sections.get(sectionId));
+		execute(context, Sections.get(context, sectionId));
 	}
 
 	private static void execute(UserActionContext context, Section<?> section) throws IOException {

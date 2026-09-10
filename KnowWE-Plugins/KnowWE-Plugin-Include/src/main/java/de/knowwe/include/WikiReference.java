@@ -163,7 +163,7 @@ public class WikiReference extends AbstractType {
 		}
 
 		// check for stored section
-		Section<?> target = Sections.get(id);
+		Section<?> target = Sections.get(KnowWEUtils.getEnvironment(section), id);
 		if (target != null) return target;
 
 		// if stored id is deprecated, refresh it

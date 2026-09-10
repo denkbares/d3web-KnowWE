@@ -51,7 +51,7 @@ public class GetProgressAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String sectionID = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionID);
+		Section<?> section = Sections.get(context, sectionID);
 		if (section == null) {
 			context.sendError(404, "no such section");
 			return;

@@ -138,7 +138,7 @@ public abstract class AbstractAction implements Action {
 			fail(context, HttpServletResponse.SC_NOT_FOUND,
 					"The request did not contain a section id, unable to execute action.");
 		}
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (section == null) {
 			fail(context, HttpServletResponse.SC_NOT_FOUND, "The referenced section was not found. " +
 					"Maybe the page content is outdated. Please reload.");

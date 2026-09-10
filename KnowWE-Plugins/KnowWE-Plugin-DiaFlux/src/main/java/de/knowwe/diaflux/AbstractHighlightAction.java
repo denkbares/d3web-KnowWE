@@ -46,7 +46,7 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 
 		String parentid = context.getParameter(PARENTID);
 		String kdomid = context.getParameter(Attributes.SECTION_ID);
-		Section<FlowchartType> flowchart = Sections.get(kdomid, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.get(context, kdomid, FlowchartType.class);
 
 		if (flowchart == null) {
 			Highlight.writeEmpty(context);

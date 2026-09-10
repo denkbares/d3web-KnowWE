@@ -66,7 +66,7 @@ public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompi
 		this.compiler = compiler;
 		this.threadPool = CompilerManager.createExecutorService(Compilers.getCompilerName(compiler));
 		//noinspection unchecked
-		this.scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
+		this.scriptManager = CompilerManager.getScriptManager(compiler);
 		this.reverseOrder = reverseOrder;
 		this.typeFilter = typeFilter;
 		// the natural order for priority is from high priority to low priority, which in numbers is from low to high numbers

@@ -112,6 +112,11 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	public static final String PREVIEW = "preview";
 
 	private boolean wikiEngineInitialized = false;
+
+	/**
+	 * The environment of the wiki this plugin runs in, created by {@link #initEnvironmentIfNeeded()}.
+	 */
+	private Environment environment;
 	private final List<String> supportArticleNames;
 
 	public KnowWEPlugin() {
@@ -195,15 +200,15 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private void initEnvironmentIfNeeded() {
-		if (!Environment.isInitialized()) {
-			Environment.initInstance(new JSPWikiConnector(getEngine()));
-			// MultiSearchEngine.getInstance().addProvider(
-			// new JSPWikiSearchConnector());
+		Engine engine = getEngine();
+		Environment environment = Environment.findIn(engine.getServletContext());
+		if (environment == null) {
+			environment = Environment.create(new JSPWikiConnector(engine));
 		}
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		this.environment = environment;
+		WikiConnector wikiConnector = environment.getWikiConnector();
 		if (wikiConnector instanceof JSPWikiConnector jspWikiConnector) {
-			Engine engine = jspWikiConnector.getEngine();
-			if (engine instanceof WikiEngine wikiEngine) {
+			if (jspWikiConnector.getEngine() instanceof WikiEngine wikiEngine) {
 				wikiEngine.updateTemplateDir();
 			}
 		}
@@ -288,8 +293,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 		if (isSupportArticle(title)) {
 			try {
-				Article supportArticle = Environment.getInstance()
-						.getArticle(title);
+				Article supportArticle = environment.getArticle(title);
 				if (supportArticle != null
 					&& supportArticle.getRootSection().getText().equals(
 						content)) {
@@ -317,7 +321,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		String pureText = getPageManager().getPureText(title, version);
 		if (!content.equals(pureText)) return content;
 
-		DefaultArticleManager articleManager = getDefaultArticleManager();
+		DefaultArticleManager articleManager = getDefaultArticleManager(environment);
 		Article existingArticle = articleManager.getArticle(title);
 		// if we have an existing article but having another case of the title,
 		// we suggest a link to correct article name
@@ -336,7 +340,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			else {
 				// just create/sectionize temp version of the article that is NOT added and compiled to the article
 				// manager
-				article = Article.createTemporaryArticle(content, title);
+				article = Article.createTemporaryArticle(environment, content, title);
 			}
 
 			RenderResult renderResult = new RenderResult(userContext);
@@ -409,8 +413,15 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		renderPostPageAppendHandler(userContext, article, renderResult, appendHandlers);
 	}
 
-	private static DefaultArticleManager getDefaultArticleManager() {
-		return (DefaultArticleManager) Environment.getInstance().getArticleManager();
+	/**
+	 * The environment of the wiki the given context belongs to.
+	 */
+	private static Environment environment(Context wikiContext) {
+		return Environment.of(wikiContext.getEngine().getServletContext());
+	}
+
+	private static DefaultArticleManager getDefaultArticleManager(Environment environment) {
+		return (DefaultArticleManager) environment.getArticleManager();
 	}
 
 	private static Article updateArticle(Context wikiContext, String content) throws InterruptedException,
@@ -426,7 +437,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		if (fullParse) httpRequest.setAttribute(FULL_PARSE_FIRED, true);
 
 		JSPWikiUserContext context = new JSPWikiUserContext(wikiContext, UserContextUtil.getParameters(httpRequest));
-		return Environment.getInstance()
+		return environment(wikiContext)
 				.updateArticle(wikiContext.getRealPage().getName(), wikiContext.getCurrentUser()
 						.getName(), content, fullParse, context);
 	}
@@ -478,10 +489,10 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		includeDOMResources(wikiContext);
 		RenderResult renderResult = new RenderResult(userContext);
 		String title = wikiContext.getRealPage().getName();
-		Article article = Article.createTemporaryArticle(content, title);
+		Environment environment = environment(wikiContext);
+		Article article = Article.createTemporaryArticle(environment, content, title);
 
-		List<PageAppendHandler> appendHandlers = Environment.getInstance()
-				.getAppendHandlers();
+		List<PageAppendHandler> appendHandlers = environment.getAppendHandlers();
 		renderPrePageAppendHandler(userContext, article, renderResult, appendHandlers);
 		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 				renderResult);
@@ -514,7 +525,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	 */
 	private void initializeAllArticles() {
 		Stopwatch stopwatchAll = new Stopwatch();
-		DefaultArticleManager articleManager = getDefaultArticleManager();
+		DefaultArticleManager articleManager = getDefaultArticleManager(environment);
 		articleManager.open();
 		try {
 			Collection<?> wikiPages = getAllPages();
@@ -581,7 +592,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		// invalidate all knowledge
 		if ((event instanceof WikiPageEvent e) && (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
 
-			ArticleManager articleManager = getDefaultArticleManager();
+			ArticleManager articleManager = getDefaultArticleManager(environment);
 			new Thread(() -> {
 				// somehow the event is fired twice...
 				// don't call deleteArticle if the article is already deleted
@@ -596,14 +607,14 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			new Thread(() -> {
 				String oldArticleTitle = renameEvent.getOldPageName();
 				String newArticleTitle = renameEvent.getNewPageName();
-				KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
+				KnowWEUtils.renameArticle(environment, oldArticleTitle, newArticleTitle);
 			}).start();
 		}
 		else if (event instanceof WikiAttachmentEvent) {
 			// we fire the KnowWE events and commit asynchronously to avoid dead locks, because we cannot
 			// guarantee at this point, that the thread accessing the attachment has not locked resources
 			// that are required during compilation
-			new AttachmentEventHandler((WikiAttachmentEvent) event).start();
+			new AttachmentEventHandler(environment, (WikiAttachmentEvent) event).start();
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {
@@ -619,7 +630,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			String pageTitle = gitEvent.getPages().stream().findFirst().orElse(null);
 			if (event instanceof GitUpdateByPullPageEvent) {
 				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
-				handleArticleRefreshEvent(gitEvent.getPages(), gitEvent.getType());
+				handleArticleRefreshEvent(environment, gitEvent.getPages(), gitEvent.getType());
 			}
 			else {
 				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
@@ -630,7 +641,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				version.setCommitHash(gitCommitRev);
 				articleUpdateEvent.setVersion(version);
 			}
-			KnowWEUtils.getEventManager(getDefaultArticleManager()).fireEvent(articleUpdateEvent);
+			environment.getEventManager().fireEvent(articleUpdateEvent);
 		}
 	}
 
@@ -638,8 +649,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 	private GitConnector getGitConnector() {
 		if (gitConnector == null) {
-			String gitDir = Environment.getInstance()
-					.getWikiConnector()
+			String gitDir = environment.getWikiConnector()
 					.getWikiProperty(GitProviderProperties.JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR);
 			if (gitDir != null) {
 				gitConnector = JGitBackedGitConnector.fromPath(gitDir);
@@ -651,8 +661,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		return gitConnector;
 	}
 
-	private static void handleArticleRefreshEvent(Collection<String> pageTitles, int type) {
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+	private static void handleArticleRefreshEvent(Environment environment, Collection<String> pageTitles, int type) {
+		ArticleManager articleManager = environment.getArticleManager();
 		articleManager.open();
 		LOGGER.info("open");
 
@@ -665,8 +675,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				LOGGER.info(title);
 				if (type == GitUpdateByPullPageEvent.UPDATE) {
 					//this block checks whether the new text is empty, this gets interpreted as a deletion
-					String articleText = Environment.getInstance()
-							.getWikiConnector()
+					String articleText = environment.getWikiConnector()
 							.getArticleText(title);
 					if (articleText == null || articleText.isEmpty()) {
 						Article article = articleManager.getArticle(title);
@@ -785,9 +794,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		private final DefaultArticleManager articleManager;
 		private final WikiAttachmentEvent event;
 
-		private AttachmentEventHandler(WikiAttachmentEvent attachmentEvent) {
+		private AttachmentEventHandler(Environment environment, WikiAttachmentEvent attachmentEvent) {
 			this.event = attachmentEvent;
-			this.articleManager = getDefaultArticleManager();
+			this.articleManager = getDefaultArticleManager(environment);
 		}
 
 		@Override

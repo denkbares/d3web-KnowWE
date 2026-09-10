@@ -50,6 +50,8 @@ import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 
 /**
  * Markup to shown documentation for other markups
@@ -82,7 +84,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 				markupName = Strings.trimRight(Strings.trimRight(markupName).replaceAll("%$", ""));
 			}
 
-			List<DefaultMarkupType> markupTypes = getDefaultMarkupTypes();
+			List<DefaultMarkupType> markupTypes = getDefaultMarkupTypes(KnowWEUtils.getEnvironment(section));
 
 			// document all markups, just a big long table...
 			if (Strings.isNotBlank(markupName)) {
@@ -201,7 +203,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			if (Strings.isBlank(template)) {
 				template = "%%" + markup.getName() + "\n%\n";
 			}
-			Article documentationTempArticle = Article.createTemporaryArticle(template, "DocumentationTempArticle");
+			Article documentationTempArticle = Article.createTemporaryArticle(KnowWEUtils.getEnvironment(user), template, "DocumentationTempArticle");
 			Section<? extends DefaultMarkupType> typeSection = $(documentationTempArticle).successor(type.getClass())
 					.getFirst();
 			boolean empty = true;
@@ -267,9 +269,12 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 		}
 	}
 
+	/**
+	 * All default markup types of the type tree of the given environment.
+	 */
 	@NotNull
-	public static List<DefaultMarkupType> getDefaultMarkupTypes() {
-		return Types.getAllChildrenTypesRecursive(RootType.getInstance())
+	public static List<DefaultMarkupType> getDefaultMarkupTypes(@NotNull Environment environment) {
+		return Types.getAllChildrenTypesRecursive(environment.getRootType())
 				.stream()
 				.filter(t -> t instanceof DefaultMarkupType)
 				.map(t -> (DefaultMarkupType) t)

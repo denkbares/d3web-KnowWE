@@ -27,19 +27,22 @@ import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.core.Environment;
+import de.d3web.we.ci4ke.build.WikiTestObjectProvider;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
-public class SparqlQueryTestObjectProvider implements TestObjectProvider {
+public class SparqlQueryTestObjectProvider implements WikiTestObjectProvider {
 
 	@Override
-	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
+	public <T> List<TestObjectContainer<T>> getTestObjects(@NotNull Environment environment, Class<T> clazz, String name) {
 		List<TestObjectContainer<T>> result = new ArrayList<>();
 		if (!clazz.equals(SparqlTestObject.class)) return result;
 
-		Collection<Section<SparqlContentType>> sparqlQueryContentSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(name);
+		Collection<Section<SparqlContentType>> sparqlQueryContentSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(environment, name);
 		for (Section<SparqlContentType> section : sparqlQueryContentSections) {
 			Rdf2GoCompiler compiler = SparqlTestObjectProviderUtils.getCompiler(section, name);
 			SparqlTestObject sparqlTestObject = new SparqlTestObject(compiler, section, name);

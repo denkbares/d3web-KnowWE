@@ -50,7 +50,7 @@ public class GetSectionTextAction extends AbstractAction {
 
 		Section<?> referencedSection = null;
 		if (sectionId != null) {
-			referencedSection = Sections.get(sectionId);
+			referencedSection = Sections.get(context, sectionId);
 			fileName = referencedSection.getID();
 		}
 		else if (article != null && name != null) {

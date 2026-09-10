@@ -202,8 +202,7 @@ public class Compilers {
 
 	@NotNull
 	public static DefaultGlobalCompiler getGlobalCompiler(Section<?> section) {
-		return getGlobalCompiler(section.getArticleManager() == null
-				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
+		return getGlobalCompiler(KnowWEUtils.getArticleManager(section));
 	}
 
 	@NotNull
@@ -218,8 +217,7 @@ public class Compilers {
 
 	@NotNull
 	public static PackageRegistrationCompiler getPackageRegistrationCompiler(Section<?> section) {
-		return getPackageRegistrationCompiler(section.getArticleManager() == null
-				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
+		return getPackageRegistrationCompiler(KnowWEUtils.getArticleManager(section));
 	}
 
 	@NotNull
@@ -234,8 +232,7 @@ public class Compilers {
 
 	@NotNull
 	public static PackageUnregistrationCompiler getPackageUnregistrationCompiler(Section<?> section) {
-		return getPackageUnregistrationCompiler(section.getArticleManager() == null
-				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
+		return getPackageUnregistrationCompiler(KnowWEUtils.getArticleManager(section));
 	}
 
 	@NotNull

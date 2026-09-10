@@ -42,7 +42,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String kdomid = context.getParameter("kdomid");
 
-		Section<FlowchartType> flowchart = Sections.get(kdomid, FlowchartType.class);
+		Section<FlowchartType> flowchart = Sections.get(context, kdomid, FlowchartType.class);
 		if (flowchart == null) {
 			Highlight.writeEmpty(context);
 			return;

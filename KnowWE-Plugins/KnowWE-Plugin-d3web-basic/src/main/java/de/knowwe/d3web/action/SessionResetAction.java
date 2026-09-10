@@ -61,7 +61,7 @@ public class SessionResetAction extends AbstractAction {
 
 		// get knowledge base
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (section == null) {
 			context.sendError(404, "Section not found, try refreshing");
 			return;

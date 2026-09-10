@@ -64,7 +64,7 @@ public class LoadFlowchartAction extends AbstractAction {
 		}
 		else {
 			// otherwise fetch by section id
-			section = Sections.get(nodeID, FlowchartType.class);
+			section = Sections.get(context, nodeID, FlowchartType.class);
 		}
 
 		if (section != null) {
@@ -87,18 +87,6 @@ public class LoadFlowchartAction extends AbstractAction {
 			if (oldId.equals(id)) return oldFlow;
 		}
 		return null;
-	}
-
-	// FIXME This method is a dirty hack and should be removed in the future:
-	// It is used to sectionize old versions of an article to get the
-	// diaflux-related stuff without altering the KB and so on
-	//
-	public static Section<RootType> sectionizeArticle(String text) {
-		Section<RootType> rootSection = Section.createSection(text, RootType.getInstance(), null);
-		Article article = Article.createTemporaryArticle("", "DiaFluxHelper", "default_web");
-		rootSection.setArticle(article);
-		RootType.getInstance().getParser().parse(text, rootSection);
-		return rootSection;
 	}
 
 	private static void writeSource(UserActionContext context, String flowSource) throws IOException {

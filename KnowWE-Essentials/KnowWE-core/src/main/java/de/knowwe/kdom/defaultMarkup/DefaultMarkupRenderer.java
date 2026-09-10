@@ -300,7 +300,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (rootSection.getArticle().getArticleManager() == null) return;
 
 		List<ScriptManager<? extends Compiler>> unCompiledScriptManagersWithScriptsForTypeTree =
-				CompilerManager.getScriptManagers()
+				KnowWEUtils.getEnvironment(rootSection).getScriptManagers()
 						.stream()
 						// ignore markups that don't have package compile scripts
 						.filter(sm -> PackageCompiler.class.isAssignableFrom(sm.getCompilerClass()))
