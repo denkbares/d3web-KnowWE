@@ -1471,15 +1471,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns the section with the given id and casts it to the supplied class. For more information see get(id) and
-	 * cast(section, class);
-	 *
-	 * @param id        is the ID of the Section to be returned
-	 * @param typeClass the class to cast the generic section to
-	 * @return the Section for the given ID or null if no Section exists for this ID.
-	 */
-
-	/**
 	 * @param web            is the web in which the Section should be searched
 	 * @param title          is the title of the article in which the Section should be searched
 	 * @param positionInKDOM is the position of the Section in the Lists of children in the ancestorOneOf of the given

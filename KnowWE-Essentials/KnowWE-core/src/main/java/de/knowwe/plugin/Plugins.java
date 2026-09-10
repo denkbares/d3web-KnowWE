@@ -110,11 +110,6 @@ public class Plugins {
 	}
 
 	/**
-	 * Returns all plugged Instantiations These are used to initialize plugins.
-	 *
-	 * @return List of all Instantiations
-	 */
-	/**
 	 * Returns new instances of all plugged compilers. Compilers hold the knowledge of one wiki, so every environment
 	 * instantiates its own set (see {@link de.knowwe.core.Environment#isGlobalCompiler(Compiler)}).
 	 */
@@ -356,11 +351,6 @@ public class Plugins {
 		return getSingletons(EXTENDED_POINT_PageAppendHandler, PageAppendHandler.class);
 	}
 
-	/**
-	 * Right panel tabs registered programmatically, e.g. by an {@link Instantiation} during startup.
-	 * Populated before any panel request, then merged with the {@code plugin.xml}-declared providers in
-	 * {@link #getRightPanelTabs()}.
-	 */
 	/**
 	 * The programmatically registered right panel tabs, one registry per environment.
 	 */

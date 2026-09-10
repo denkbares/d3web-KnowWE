@@ -34,9 +34,6 @@ public class ToolUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ToolUtils.class);
 
 	/**
-	 * For each tool provider there might be an (counting) set of scopes, where this provider is blocked.
-	 */
-	/**
 	 * The tool providers blocked for certain scopes, one registry per environment.
 	 */
 	public static final class BlockedToolProviders {

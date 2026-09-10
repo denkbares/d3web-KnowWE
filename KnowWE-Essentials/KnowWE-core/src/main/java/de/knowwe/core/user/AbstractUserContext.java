@@ -133,6 +133,14 @@ public abstract class AbstractUserContext implements UserContext {
 				: defaultValue;
 	}
 
+	/**
+	 * The environment this context works in. Subclasses know it from their request, servlet context or wiki engine;
+	 * it must not be derived from {@link #getArticleManager()}, which is defined the other way round.
+	 */
+	@Override
+	@NotNull
+	public abstract Environment getEnvironment();
+
 	@Override
 	@NotNull
 	public ArticleManager getArticleManager() {

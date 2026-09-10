@@ -110,18 +110,25 @@ public class TestUtils {
 	 * Creates an @link{UserActionContext} for test purposes. Both parameters
 	 * are optional (in case you don't need the Action...)
 	 *
+	 * @param environment the environment the context works in
 	 * @param actionName <strong>optional:</strong> The name of the desired
 	 *                   Action
 	 * @param path       <strong>optional:</strong> special path (very unlikely that
 	 *                   you need this)
 	 * @created Apr 28, 2011
 	 */
-	public static UserActionContext createTestActionContext(String actionName, String path) {
+	public static UserActionContext createTestActionContext(@NotNull Environment environment, String actionName, String path) {
 		Map<String, String> map = new HashMap<>();
 		map.put(Attributes.WEB, Environment.DEFAULT_WEB);
 		map.put(Attributes.USER, "Test User");
+		// there is no servlet context in tests, the action context belongs to the given environment
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
-				map, new TestHttpServletRequest(), null, null, new TestAuthenticationManager());
+				map, new TestHttpServletRequest(), null, null, new TestAuthenticationManager()) {
+			@Override
+			public @NotNull Environment getEnvironment() {
+				return environment;
+			}
+		};
 	}
 
 	public static int countMatches(String text, String regex) {

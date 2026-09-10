@@ -241,12 +241,13 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	/**
-	 * We assert this on every possibility to change the KDOM, because in general it is a very bad idea to edit the KDOM
-	 * after initialization. It can for example create memory leaks (because we cache a lot with types) and it also
-	 * disrupts a lot of optimizations for KDOM navigation (canHaveSuccessor and so forth).
+	 * We assert this on every possibility to change the type tree, because it is a very bad idea to edit a type tree
+	 * an environment has already indexed: the compile scripts of new types would not be registered, and it disrupts
+	 * a lot of optimizations for KDOM navigation (canHaveSuccessor and so forth). Configure types before the
+	 * environment is created.
 	 */
 	private void checkInitializationStatus() {
-		assert !Environment.isInitialized();
+		assert !indexed : "type " + getClass().getName() + " must not change after an environment has indexed it";
 	}
 
 	/**

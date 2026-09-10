@@ -26,8 +26,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.jetbrains.annotations.NotNull;
 import org.apache.wiki.api.core.Context;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.user.AbstractUserContext;
 
@@ -42,6 +44,15 @@ public class JSPWikiUserContext extends AbstractUserContext {
 		this.context = context;
 		this.urlParameter = urlParameter;
 		addDefaultAttributes();
+	}
+
+	/**
+	 * The environment of the wiki this context belongs to, found in the servlet context of its engine.
+	 */
+	@Override
+	@NotNull
+	public Environment getEnvironment() {
+		return Environment.of(context.getEngine().getServletContext());
 	}
 
 	private void addDefaultAttributes() {

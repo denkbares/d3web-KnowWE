@@ -215,11 +215,6 @@ public final class Environment implements AutoCloseable {
 	private static final String SERVLET_CONTEXT_ATTRIBUTE = Environment.class.getName();
 
 	/**
-	 * Returns the environment running in the specified servlet context, or null if there is none (yet). This is the
-	 * way for servlet-level entry points (filters, JAX-RS resources, session listeners) without a wiki context object
-	 * to reach their environment.
-	 */
-	/**
 	 * Returns the environment published in the given servlet context, or null if none is running there (or there is no
 	 * servlet context at all, e.g. for wiki engines in tests).
 	 */
@@ -1162,11 +1157,6 @@ public final class Environment implements AutoCloseable {
 		return getArticleManager(web).getArticle(title);
 	}
 
-	/**
-	 * Returns the {@link ArticleManager} for a given web.
-	 *
-	 * @param web the web of the {@link ArticleManager}
-	 */
 	/**
 	 * @deprecated the web is gone, every environment has exactly one article manager: {@link #getArticleManager()}
 	 */

@@ -716,13 +716,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * This method is protected, use {@link Sections#get(String)} instead.
-	 *
-	 * @param id is the ID of the Section to be returned
-	 * @return the Section for the given ID or null if no Section exists for this ID.
-	 */
-
-	/**
 	 * Has the same behavior as {@link #getObject(Compiler, String)} with <tt>null</tt> as the {@link Compiler}
 	 * argument. Use this if the Object was stored the same way (<tt>null</tt> as the {@link Compiler} argument or the
 	 * method {@link #storeObject(String, Object)}.

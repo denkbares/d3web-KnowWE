@@ -1214,12 +1214,6 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the article with the given web and title from the {@link DefaultArticleManager}.
-	 *
-	 * @created 07.01.2014
-	 */
-
-	/**
 	 * Returns the environment the specified section belongs to (via its article manager), or the current environment if
 	 * the section is not (yet) attached to an article manager, or null if there is no environment at all.
 	 */
@@ -1386,12 +1380,6 @@ public class KnowWEUtils {
 		}
 		return environment;
 	}
-
-	/**
-	 * Returns the {@link ArticleManager} for the default web.
-	 *
-	 * @created 18.04.2019
-	 */
 
 	/**
 	 * Returns the default {@link ArticleManager} of the given web.
