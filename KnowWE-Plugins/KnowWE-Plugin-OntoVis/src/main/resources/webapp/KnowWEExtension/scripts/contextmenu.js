@@ -54,7 +54,7 @@ KNOWWE.plugin.visualization = {
 		var params = {
 			action : 'GetVisMenuAction',
 			term : term,
-			sectionID : sectionID
+			SectionID : sectionID
 		};
 		var options = {
 			url : KNOWWE.core.util.getURL(params),

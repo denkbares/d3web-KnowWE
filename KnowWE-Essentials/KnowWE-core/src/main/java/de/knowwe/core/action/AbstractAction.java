@@ -78,7 +78,7 @@ public abstract class AbstractAction implements Action {
 	public static JSONObject getLocalSectionStorage(UserContext user) {
 		String sectionStorage = user.getParameter(Attributes.LOCAL_SECTION_STORAGE);
 		if (sectionStorage == null) {
-			String sectionId = user.getParameter("sectionID");
+			String sectionId = user.getParameter(Attributes.SECTION_ID);
 			if (sectionId != null) {
 				JSONObject jsonObject = (JSONObject) user.getSession()
 						.getAttribute(getHttpSessionAttributeLocalSectionStorageKey(sectionId));
@@ -100,7 +100,7 @@ public abstract class AbstractAction implements Action {
 	}
 
 	public static void storeLocalSectionStorage(UserActionContext context) {
-		String sectionId = context.getParameter("sectionID");
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		String value = context.getParameter("value");
 		if (sectionId != null) {
 			context.getSession()
