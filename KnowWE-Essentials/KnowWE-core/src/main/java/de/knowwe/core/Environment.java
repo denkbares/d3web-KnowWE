@@ -85,6 +85,12 @@ public final class Environment implements AutoCloseable {
 	private ArticleManager articleManager;
 
 	/**
+	 * The root type given to {@link #create(WikiConnector, RootType)}, null for the plugged type tree.
+	 */
+	@Nullable
+	private final RootType providedRootType;
+
+	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
 	 */
 	private final WikiConnector wikiConnector;
@@ -305,6 +311,22 @@ public final class Environment implements AutoCloseable {
 	 */
 	@NotNull
 	public static Environment create(@NotNull WikiConnector wiki) {
+		return create(wiki, null);
+	}
+
+	/**
+	 * Creates and initializes a new environment like {@link #create(WikiConnector)}, but with the given root type as
+	 * the type tree instead of the plugged one. Plugged types, compilers, listeners, tag handlers and instantiations
+	 * are only added if a plugin manager is initialized; without one, the environment consists of the core, the given
+	 * type tree and the core compilers. This is the way to run the article lifecycle (parsing, IDs, messages,
+	 * attachments, compilation) below the plugin layer, e.g. in core tests.
+	 *
+	 * @param wiki     the connector to the wiki engine the environment works on
+	 * @param rootType the root of the type tree, null for the plugged type tree
+	 * @return the initialized environment
+	 */
+	@NotNull
+	public static Environment create(@NotNull WikiConnector wiki, @Nullable RootType rootType) {
 		LOGGER.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
 		Environment environment;
 		synchronized (Environment.class) {
@@ -314,7 +336,7 @@ public final class Environment implements AutoCloseable {
 				previous.close();
 			}
 			initialized = false;
-			environment = new Environment(wiki);
+			environment = new Environment(wiki, rootType);
 			instance = environment;
 		}
 		try {
@@ -340,9 +362,20 @@ public final class Environment implements AutoCloseable {
 	 * @param wiki Connector to the used core wiki engine
 	 * @see #getInstance()
 	 */
-	private Environment(WikiConnector wiki) {
+	private Environment(WikiConnector wiki, @Nullable RootType rootType) {
 		this.wikiConnector = wiki;
+		this.providedRootType = rootType;
 		wiki.setEnvironment(this);
+	}
+
+	/**
+	 * Whether a plugin manager is initialized, i.e. whether plugged types, compilers, listeners, tag handlers and
+	 * instantiations are available. Without one (e.g. in core tests below the plugin layer) the plugin steps of the
+	 * initialization are skipped and the type tree consists of the {@link #create(WikiConnector, RootType) provided}
+	 * root type only.
+	 */
+	private static boolean pluginsAvailable() {
+		return PluginManager.isInitialized();
 	}
 
 	private void init() {
@@ -361,9 +394,11 @@ public final class Environment implements AutoCloseable {
 
 			initInstantiations();
 			initBlockedTools();
-			Plugins.initJS();
-			Plugins.initJsModules();
-			Plugins.initCSS();
+			if (pluginsAvailable()) {
+				Plugins.initJS();
+				Plugins.initJsModules();
+				Plugins.initCSS();
+			}
 		}
 		catch (Throwable e) {
 			String msg = "Invalid initialization of the wiki. This is caused by an invalid wiki plugin. "
@@ -491,6 +526,7 @@ public final class Environment implements AutoCloseable {
 		// core listeners
 		eventManager.registerListener(CompilationLocal.createCacheListener());
 		// get all EventListeners
+		if (!pluginsAvailable()) return;
 		List<Extension> extensions = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
 				Plugins.EXTENDED_POINT_EventListener)));
@@ -528,7 +564,7 @@ public final class Environment implements AutoCloseable {
 		compilerManager.addCompiler(4, new DefaultGlobalCompiler());
 
 		// the plugged compilers are instantiated for this environment; they hold the state of the wiki
-		for (PriorityList.Group<Double, Compiler> priorityGroup : Plugins.getCompilers().getPriorityGroups()) {
+		if (pluginsAvailable()) for (PriorityList.Group<Double, Compiler> priorityGroup : Plugins.getCompilers().getPriorityGroups()) {
 			List<Compiler> compilers = priorityGroup.getElements();
 			for (Compiler compiler : compilers) {
 				pluggedCompilers.add(compiler);
@@ -753,6 +789,7 @@ public final class Environment implements AutoCloseable {
 	}
 
 	private void initInstantiations() {
+		if (!pluginsAvailable()) return;
 		for (Instantiation inst : Plugins.getInstantiations()) {
 			inst.init(this);
 		}
@@ -779,12 +816,14 @@ public final class Environment implements AutoCloseable {
 	}
 
 	private void initTagHandler() {
+		if (!pluginsAvailable()) return;
 		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
 			initTagHandler(tagHandler);
 		}
 	}
 
 	private void initSectionizerModules() {
+		if (!pluginsAvailable()) return;
 		sectionizerModules.addAll(Plugins.getSectionizerModules());
 	}
 
@@ -868,11 +907,12 @@ public final class Environment implements AutoCloseable {
 	 */
 	private void decorateTypeTree() {
 
+		boolean plugins = pluginsAvailable();
 		// check whether the priorities between plugged types lead to deterministic structure of the type tree
-		Plugins.checkTypePriorityClarity();
+		if (plugins) Plugins.checkTypePriorityClarity();
 
 		// queue the queue of paths to be initialized
-		rootType = new RootType();
+		rootType = providedRootType != null ? providedRootType : new RootType();
 		LinkedList<Type[]> queue = new LinkedList<>();
 		queue.add(new Type[] { rootType });
 
@@ -887,10 +927,12 @@ public final class Environment implements AutoCloseable {
 			Type type = path[path.length - 1];
 
 			// initialize plugged items
-			Plugins.addChildrenTypesToType(type, path);
-			Plugins.addAnnotations(type, path);
-			Plugins.addRendererToType(this, type, path);
-			Plugins.addCompileScriptsToType(type, path);
+			if (plugins) {
+				Plugins.addChildrenTypesToType(type, path);
+				Plugins.addAnnotations(type, path);
+				Plugins.addRendererToType(this, type, path);
+				Plugins.addCompileScriptsToType(type, path);
+			}
 
 			// initialize type itself
 			type.init(path);

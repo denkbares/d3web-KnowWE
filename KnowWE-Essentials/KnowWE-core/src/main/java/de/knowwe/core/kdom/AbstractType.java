@@ -29,6 +29,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompileScript;
@@ -50,6 +52,8 @@ import de.knowwe.core.report.MessageRenderer;
 
 public abstract class AbstractType implements Type, Sectionizable {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractType.class);
+
 	/**
 	 * the children types of the type. Used to serve the getAllowedChildrenTypes of the Type interface
 	 *
@@ -62,6 +66,12 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * its {@link ScriptManager}s while decorating its type tree, see {@link #registerCompileScripts(Environment)}.
 	 */
 	private final List<CompileScriptRegistration> compileScripts = Collections.synchronizedList(new ArrayList<>());
+
+	/**
+	 * Whether the compile scripts of this type have been indexed by an environment, see
+	 * {@link #registerCompileScripts(Environment)}; later changes to the scripts do not reach the compilers anymore.
+	 */
+	private volatile boolean indexed = false;
 
 	private record CompileScriptRegistration(Priority priority, CompileScript<?, ?> script) {
 	}
@@ -111,14 +121,18 @@ public abstract class AbstractType implements Type, Sectionizable {
 		this.setSectionFinder(sectionFinder);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Removes the compile scripts of the specified class from this type. Like {@link #addCompileScript(CompileScript)}
+	 * this configures the type and belongs into its constructor: the scripts are indexed for the compilers of an
+	 * environment when the environment builds its type tree ({@link #registerCompileScripts(Environment)}), and that
+	 * index is not updated afterwards.
+	 *
+	 * @param compilerClass the compiler class the scripts to remove belong to
+	 * @param scriptClass   the class of the scripts to remove
+	 */
 	public <C extends Compiler, T extends Type, CS extends CompileScript<C, T>> void removeCompileScript(Class<C> compilerClass, Class<CS> scriptClass) {
 		compileScripts.removeIf(registration -> registration.script().getClass().equals(scriptClass));
-		// if this type is already indexed by the current environment (i.e. decorated), keep the index in sync
-		Environment environment = Environment.peekInstance();
-		if (environment != null) {
-			environment.getScriptManager(compilerClass).removeScript((T) this, scriptClass);
-		}
+		warnIfIndexed("removeCompileScript(" + scriptClass.getSimpleName() + ")");
 	}
 
 	public <C extends Compiler, T extends Type> void addCompileScript(CompileScript<C, T> script) {
@@ -139,6 +153,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void registerCompileScripts(@NotNull Environment environment) {
+		indexed = true;
 		synchronized (compileScripts) {
 			for (CompileScriptRegistration registration : compileScripts) {
 				CompileScript script = registration.script();
@@ -234,12 +249,20 @@ public abstract class AbstractType implements Type, Sectionizable {
 		assert !Environment.isInitialized();
 	}
 
+	/**
+	 * Removes all compile scripts from this type. Like {@link #addCompileScript(CompileScript)} this configures the
+	 * type and belongs into its constructor, see {@link #removeCompileScript(Class, Class)}.
+	 */
 	public void clearCompileScripts() {
 		compileScripts.clear();
-		Environment environment = Environment.peekInstance();
-		if (environment == null) return;
-		for (ScriptManager<? extends Compiler> manager : environment.getScriptManagers()) {
-			manager.removeAllScript(this);
+		warnIfIndexed("clearCompileScripts()");
+	}
+
+	private void warnIfIndexed(String operation) {
+		if (indexed) {
+			LOGGER.warn("{} on type {} after its scripts have been indexed by an environment: the compilers of that " +
+					"environment keep using the previously registered scripts. Configure compile scripts in the " +
+					"constructor of the type.", operation, getClass().getName());
 		}
 	}
 

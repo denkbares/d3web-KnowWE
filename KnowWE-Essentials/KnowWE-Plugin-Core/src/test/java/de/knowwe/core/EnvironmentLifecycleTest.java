@@ -115,7 +115,7 @@ public class EnvironmentLifecycleTest {
 	}
 
 	@Test
-	public void initInstanceClosesAStillRunningEnvironment() throws InterruptedException {
+	public void createClosesAStillRunningEnvironment() throws InterruptedException {
 		Environment first = start();
 		createArticle(first);
 		List<String> closed = new ArrayList<>();
@@ -180,9 +180,9 @@ public class EnvironmentLifecycleTest {
 	}
 
 	private static Environment start() {
-		Environment.initInstance(new DummyConnector());
+		Environment environment = Environment.create(new DummyConnector());
 		assertTrue(Environment.isInitialized());
-		return Environment.getInstance();
+		return environment;
 	}
 
 	private static Article createArticle(Environment environment) throws InterruptedException {
