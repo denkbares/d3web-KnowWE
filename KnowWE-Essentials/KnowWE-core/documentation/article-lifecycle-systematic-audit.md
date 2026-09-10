@@ -12,7 +12,16 @@
   32-hex IDs without broadening to arbitrary hex lengths. Three regression tests cover link normalization,
   stable header keys across formats/versions, and preservation of other anchors. Two failed before the fix;
   all 30 CI4KE module tests pass afterward.
-- A3–A5 and the integration follow-ups below remain unchanged in this step.
+- A3 (LongOperation registration): implemented 10 September 2026, awaiting review. Atomic ID-map creation replaces
+  the Section-instance lock; registration and deduplication share the inner-map monitor. Article lifecycle validation
+  and insertion run under the same Article monitor as destroy, without opening a compilation-blocking registration
+  frame. Retired/non-current managed owners fail fast; temporary articles remain supported until retired. Read-only
+  registration lookup no longer creates map entries. Existing progress still survives unchanged recompiles.
+  Four added tests cover obsolete owners, draft/read-only behavior, retirement during operation-ID resolution,
+  and concurrent registration. Full core suite: 127 passed, 2 previously ignored.
+  This guards registration, not execution: it neither cancels existing operations nor prevents restarting an already
+  registered operation that retains old domain objects. Such operations still need their own execution contract.
+- A4–A5 and the integration follow-ups below remain unchanged in this step.
 
 ## Scope and confidence
 

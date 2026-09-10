@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
@@ -54,23 +55,33 @@ public class LongOperationUtils {
 	}
 
 	/**
-	 * Adds / registers a potential long operation to a specific section.
+	 * Adds / registers a potential long operation to a specific section. Existing progress remains addressable
+	 * across unchanged recompiles, but new registrations must use the current managed Section instance.
+	 * Temporary articles are supported until retired; managed drafts are not registration targets.
 	 *
-	 * @param section   the section to add the operatiopn for
+	 * @param section   the section to add the operation for
 	 * @param operation the operation to be added
 	 * @return an identifier to be used to access the registered operation
+	 * @throws IllegalStateException if the section belongs to a retired or non-current managed article
 	 * @created 30.07.2013
 	 * @see #getLongOperation(Section, String)
 	 */
 	public static String registerLongOperation(Section<?> section, LongOperation operation) {
-		String key = getRegistrationID(section, operation);
-		if (key != null) return key;
-
-		Map<String, LongOperation> map = accessLongOperations(section, true);
-		key = operation.getId();
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (map) {
-			map.put(key, operation);
+		// Resolve operation-provided metadata before taking the lifecycle lock.
+		String key = operation.getId();
+		Article article = section.getArticle();
+		synchronized (article) {
+			// Article.destroy uses this same monitor. Do not open a registration frame here:
+			// operations may also be registered by compile scripts.
+			if (article.isRetired() || (!article.isTemporary() && !Sections.isLive(section))) {
+				throw new IllegalStateException("Cannot register a long operation for an outdated section: " + section.getID());
+			}
+			Map<String, LongOperation> map = accessLongOperations(section, true);
+			synchronized (map) {
+				String registered = findRegistrationID(map, operation);
+				if (registered != null) return registered;
+				map.put(key, operation);
+			}
 		}
 		return key;
 	}
@@ -85,14 +96,18 @@ public class LongOperationUtils {
 	 * @created 30.07.2013
 	 */
 	public static String getRegistrationID(Section<?> section, LongOperation operation) {
-		Map<String, LongOperation> map = accessLongOperations(section, true);
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
+		Map<String, LongOperation> map = accessLongOperations(section, false);
 		synchronized (map) {
-			for (Entry<String, LongOperation> entry : map.entrySet()) {
-				if (entry.getValue().equals(operation)) return entry.getKey();
-			}
-			return null;
+			return findRegistrationID(map, operation);
 		}
+	}
+
+	/** Caller holds the operation map's monitor. */
+	private static String findRegistrationID(Map<String, LongOperation> map, LongOperation operation) {
+		for (Entry<String, LongOperation> entry : map.entrySet()) {
+			if (entry.getValue().equals(operation)) return entry.getKey();
+		}
+		return null;
 	}
 
 	/**
@@ -105,7 +120,6 @@ public class LongOperationUtils {
 	 */
 	public static Collection<LongOperation> getLongOperations(Section<?> section) {
 		Map<String, LongOperation> loMap = accessLongOperations(section, false);
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (loMap) {
 			return Collections.unmodifiableCollection(new ArrayList<>(loMap.values()));
 		}
@@ -122,7 +136,6 @@ public class LongOperationUtils {
 	 */
 	public static LongOperation getLongOperation(Section<?> section, String operationID) {
 		Map<String, LongOperation> loMap = accessLongOperations(section, false);
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (loMap) {
 			return loMap.get(operationID);
 		}
@@ -134,17 +147,9 @@ public class LongOperationUtils {
 
 	private static Map<String, LongOperation> accessLongOperations(Section<?> section, boolean create) {
 		lazyInitLongOperationCleaner();
-		String key = LongOperation.class.getName();
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (section) {
-			Map<String, LongOperation> longOperationsOfSection = LONG_OPERATIONS.get(section.getID());
-			if (longOperationsOfSection == null) {
-				if (!create) return Collections.emptyMap();
-				longOperationsOfSection = new LinkedHashMap<>();
-				LONG_OPERATIONS.put(section.getID(), longOperationsOfSection);
-			}
-			return longOperationsOfSection;
-		}
+		// Equal IDs may belong to different Section instances, so a Section monitor cannot protect map creation.
+		return create ? LONG_OPERATIONS.computeIfAbsent(section.getID(), id -> new LinkedHashMap<>())
+				: LONG_OPERATIONS.getOrDefault(section.getID(), Collections.emptyMap());
 	}
 
 	private static void lazyInitLongOperationCleaner() {
