@@ -1443,9 +1443,40 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns the section with the specified id of the given environment, or null if there is no such section (e.g.
+	 * the article was changed since the id was handed out).
+	 */
+	@Nullable
+	public static Section<?> get(@NotNull Environment environment, @Nullable String id) {
+		return id == null ? null : environment.getSectionRegistry().get(id);
+	}
+
+	/**
+	 * Returns the section with the specified id of the environment of the given user context, see
+	 * {@link #get(Environment, String)}.
+	 */
+	@Nullable
+	public static Section<?> get(@NotNull UserContext context, @Nullable String id) {
+		return get(KnowWEUtils.getEnvironment(context), id);
+	}
+
+	@Nullable
+	public static <T extends Type> Section<T> get(@NotNull Environment environment, @Nullable String id, Class<T> typeClass) {
+		return cast(get(environment, id), typeClass);
+	}
+
+	@Nullable
+	public static <T extends Type> Section<T> get(@NotNull UserContext context, @Nullable String id, Class<T> typeClass) {
+		return cast(get(context, id), typeClass);
+	}
+
+	/**
 	 * @param id is the ID of the Section to be returned
 	 * @return the Section for the given ID or null if no Section exists for this ID.
+	 * @deprecated use {@link #get(Environment, String)} or {@link #get(UserContext, String)}: without a context only
+	 * the current environment can be asked
 	 */
+	@Deprecated
 	public static Section<?> get(String id) {
 		return Section.get(id);
 	}
@@ -1458,6 +1489,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param typeClass the class to cast the generic section to
 	 * @return the Section for the given ID or null if no Section exists for this ID.
 	 */
+	/**
+	 * @deprecated use {@link #get(Environment, String, Class)} or {@link #get(UserContext, String, Class)}
+	 */
+	@Deprecated
 	public static <T extends Type> Section<T> get(String id, Class<T> typeClass) {
 		return cast(get(id), typeClass);
 	}

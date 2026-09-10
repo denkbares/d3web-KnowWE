@@ -20,7 +20,6 @@
 package de.knowwe.kdom.dashtree;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class DashTreeElementContent extends AbstractType {
@@ -29,12 +28,6 @@ public class DashTreeElementContent extends AbstractType {
 	 * Returns the shared default instance of the current environment (one instance per environment). Without an
 	 * environment a fresh instance is returned.
 	 */
-	public static DashTreeElementContent getDefaultInstance() {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? new DashTreeElementContent()
-				: environment.getService(DashTreeElementContent.class, DashTreeElementContent::new);
-	}
-
 	public DashTreeElementContent() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 	}

@@ -57,7 +57,8 @@ public class ServletContextEventListener implements ServletContextListener {
 		contextDestroyedTask.forEach(task -> task.accept(servletContextEvent));
 		LOGGER.info("Done executing ContextDestroyedTask, clearing...");
 		contextDestroyedTask.clear();
-		Environment environment = Environment.peekInstance();
+		// the environment of this servlet context, published there when it was initialized
+		Environment environment = Environment.findIn(servletContextEvent.getServletContext());
 		if (environment != null) environment.close();
 		destroyInProgress = false;
 	}

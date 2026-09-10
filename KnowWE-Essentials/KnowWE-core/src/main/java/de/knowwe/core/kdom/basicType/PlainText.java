@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
@@ -49,11 +48,6 @@ public class PlainText extends AbstractType {
 	 * Returns the shared plain text type of the current environment (one instance per environment, so decorations of
 	 * one environment's type tree do not leak into the next). Without an environment a fresh instance is returned.
 	 */
-	public static PlainText getInstance() {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? new PlainText() : environment.getService(PlainText.class, PlainText::new);
-	}
-
 	public PlainText() {
 		this.setRenderer(DefaultTextRenderer.getInstance());
 		this.setSectionFinder(AllTextFinder.getInstance());

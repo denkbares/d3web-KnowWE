@@ -262,7 +262,7 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 	private class CellRenderer implements Renderer {
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
-			Renderer renderer = PlainText.getInstance().getRenderer();
+			Renderer renderer = new PlainText().getRenderer();
 			D3webCompiler compiler = D3webUtils.getCompiler(user, section);
 			CellType type = CellContentValue.this.getType(compiler, Sections.cast(section, CellContentValue.class));
 			if (compiler != null) {

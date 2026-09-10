@@ -44,7 +44,7 @@ public class NamedObjectRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
 		Identifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
-		Renderer renderer = PlainText.getInstance().getRenderer();
+		Renderer renderer = new PlainText().getRenderer();
 		D3webCompiler compiler = D3webUtils.getCompiler(user, section);
 		if (compiler != null) {
 			TerminologyManager tManager = compiler.getTerminologyManager();

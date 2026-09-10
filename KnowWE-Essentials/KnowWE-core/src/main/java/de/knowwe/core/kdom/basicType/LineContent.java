@@ -21,7 +21,6 @@
 package de.knowwe.core.kdom.basicType;
 
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 public class LineContent extends AbstractType {
@@ -30,12 +29,7 @@ public class LineContent extends AbstractType {
 	 * Returns the shared line content type of the current environment (one instance per environment). Without an
 	 * environment a fresh instance is returned.
 	 */
-	public static LineContent getInstance() {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? new LineContent() : environment.getService(LineContent.class, LineContent::new);
-	}
-
-	protected LineContent() {
+	public LineContent() {
 		this.setSectionFinder(AllTextFinder.getInstance());
 	}
 }

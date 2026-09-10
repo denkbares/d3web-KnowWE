@@ -21,7 +21,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Sections;
 
 import static org.junit.Assert.*;
@@ -148,8 +147,6 @@ public class EnvironmentLifecycleTest {
 	public void reinitializedEnvironmentDoesNotInheritDecorations() throws InterruptedException {
 		Environment first = start();
 		int rootChildren = first.getRootType().getChildrenTypes().size();
-		int plainTextChildren = PlainText.getInstance().getChildrenTypes().size();
-		PlainText firstPlainText = PlainText.getInstance();
 		createArticle(first);
 		first.close();
 
@@ -159,8 +156,6 @@ public class EnvironmentLifecycleTest {
 		assertEquals("plugged children must not accumulate", rootChildren, second.getRootType()
 				.getChildrenTypes()
 				.size());
-		assertNotSame("singleton types must be recreated", firstPlainText, PlainText.getInstance());
-		assertEquals(plainTextChildren, PlainText.getInstance().getChildrenTypes().size());
 		for (Type child : second.getRootType().getChildrenTypes()) {
 			assertFalse("type tree of the new environment must not contain the old root", child == first.getRootType());
 		}
