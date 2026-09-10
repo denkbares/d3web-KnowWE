@@ -46,7 +46,7 @@ public class OntoVisPdfDownload extends AbstractAction {
 		DOTRenderer.convertDot(dotFile, pdf, DOTRenderer.getCommand(config, "pdf", dotFile, pdf));
 
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + ".pdf\"");
+		context.setContentDisposition("attachment", name + ".pdf");
 
 		InputStream fis = new FileInputStream(pdf);
 		OutputStream ous = context.getOutputStream();

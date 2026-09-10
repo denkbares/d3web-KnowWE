@@ -89,7 +89,7 @@ public class CIResultDownloadAction extends AbstractAction {
 			byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
 			context.setContentLength(contentBytes.length);
 			context.setContentType(XML);
-			context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\".xml");
+			context.setContentDisposition("attachment", fileName);
 			context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
 		}
 		catch (ParserConfigurationException | TransformerException e) {

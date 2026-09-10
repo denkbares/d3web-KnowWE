@@ -68,7 +68,7 @@ public class RootTypeExportAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String filename = "RootType.svg";
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+		context.setContentDisposition("attachment", filename);
 		DOT_INSTALLATION = "dot";
 
 		ServletContext servletContext = context.getServletContext();

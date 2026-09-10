@@ -10,6 +10,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Streams;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -62,7 +63,8 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 
 			KnowledgeBase base = compiler.getKnowledgeBase();
 
-			String filename = context.getParameter(PARAM_FILENAME);
+			// sanitize, the name is used as suffix of a temp file and as part of the response headers
+			String filename = Strings.encodeFileName(context.getParameter(PARAM_FILENAME));
 			if (filename == null) {
 				filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
 			}
@@ -71,7 +73,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			}
 
 			context.setContentType(BINARY);
-			context.getResponse().addHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+			context.setContentDisposition("attachment", filename);
 			context.getResponse()
 					.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 

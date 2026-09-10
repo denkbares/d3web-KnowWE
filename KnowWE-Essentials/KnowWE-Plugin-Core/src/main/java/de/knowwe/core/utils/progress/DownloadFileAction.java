@@ -71,7 +71,7 @@ public class DownloadFileAction extends AbstractAction {
 	public static void writeFileToDownloadStream(UserActionContext context, File file, String downloadFilename, boolean deleteAfterStream) throws IOException {
 		try (InputStream in = new FileInputStream(file); OutputStream out = context.getOutputStream()) {
 			context.setContentType(BINARY);
-			context.setHeader("Content-Disposition", "attachment;filename=\"" + downloadFilename + "\"");
+			context.setContentDisposition("attachment", downloadFilename);
 			Streams.stream(in, out);
 		}
 		finally {

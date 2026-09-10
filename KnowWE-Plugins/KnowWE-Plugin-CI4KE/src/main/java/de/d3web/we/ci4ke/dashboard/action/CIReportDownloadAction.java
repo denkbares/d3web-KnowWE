@@ -76,7 +76,7 @@ public class CIReportDownloadAction extends AbstractAction {
 			byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
 			context.setContentLength(contentBytes.length);
 			context.setContentType("application/xhtml+xml; charset=UTF-8");
-			context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+			context.setContentDisposition("attachment", fileName);
 			context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
 
 		}
