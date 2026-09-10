@@ -79,7 +79,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 
 		//String filename = wikiFolder.getName() + ".zip";
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+		context.setContentDisposition("attachment", filename);
 
 		boolean fingerprint = Boolean.parseBoolean(context.getParameter(PARAM_FINGERPRINT, "false"));
 		boolean includeVersions = Boolean.parseBoolean(context.getParameter(PARAM_VERSIONS, "false"));

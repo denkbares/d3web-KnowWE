@@ -220,7 +220,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 				.getApplicationName() + ".txt";
 
 		context.setContentType(Action.BINARY);
-		context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		context.setContentDisposition("attachment", fileName);
 
 		try (OutputStream out = context.getOutputStream()) {
 			out.write(threadDump.getBytes(StandardCharsets.UTF_8));
@@ -258,7 +258,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					String applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
 					String filename = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-" + applicationName + "-logs.zip";
 					context.setContentType(BINARY);
-					context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+					context.setContentDisposition("attachment", filename);
 
 					try (FileInputStream in = new FileInputStream(tmpFile); OutputStream out = context.getOutputStream()) {
 						Streams.stream(in, out);
@@ -273,7 +273,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 			File logFile = logFiles.get(0);
 			String filename = logFile.getName();
 			context.setContentType(BINARY);
-			context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+			context.setContentDisposition("attachment", filename);
 			try (InputStream in = new FileInputStream(logFile); OutputStream out = context.getOutputStream()) {
 				Streams.stream(in, out);
 			}

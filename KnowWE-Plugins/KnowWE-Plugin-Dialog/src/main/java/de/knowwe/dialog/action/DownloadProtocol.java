@@ -65,7 +65,7 @@ public class DownloadProtocol extends AbstractAction {
 
 			// init header to make the browser save the file
 			context.setContentType("application/octet-stream");
-			context.setHeader("Content-disposition", "attachment; filename=" + filename);
+			context.setContentDisposition("attachment", filename);
 
 			SessionPersistenceManager.getInstance().saveSessions(context.getOutputStream(), record);
 		}

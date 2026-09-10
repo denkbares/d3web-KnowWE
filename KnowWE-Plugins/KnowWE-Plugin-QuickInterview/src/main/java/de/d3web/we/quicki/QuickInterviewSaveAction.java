@@ -83,7 +83,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 
 	private void saveToFile(UserActionContext context, Session session, String filename) throws IOException {
 		context.setContentType("application/xml");
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+		context.setContentDisposition("attachment", filename);
 		OutputStream os = context.getOutputStream();
 		SessionPersistenceManager.getInstance().saveSessions(os, SessionConversionFactory.copyToSessionRecord(session));
 		os.flush();

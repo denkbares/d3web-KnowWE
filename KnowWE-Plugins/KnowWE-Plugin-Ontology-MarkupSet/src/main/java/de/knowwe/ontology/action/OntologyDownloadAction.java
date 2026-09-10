@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.semanticcore.utils.RDFUtils;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
@@ -89,7 +90,8 @@ public class OntologyDownloadAction extends AbstractAction {
 		}
 		String mimeType = syntax.getDefaultMIMEType() + "; charset=UTF-8";
 
-		String filename = context.getParameter(PARAM_FILENAME);
+		// sanitize, the name is used as suffix of a temp file and as part of the response headers
+		String filename = Strings.encodeFileName(context.getParameter(PARAM_FILENAME));
 		if (filename == null) {
 			filename = Compilers.getCompilerName(compiler) + "." + syntax.getFileExtensions()
 					.stream()
@@ -98,7 +100,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		}
 
 		context.setContentType(mimeType);
-		context.getResponse().addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+		context.setContentDisposition("attachment", filename);
 		context.getResponse()
 				.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 		Stopwatch stopwatch = new Stopwatch();

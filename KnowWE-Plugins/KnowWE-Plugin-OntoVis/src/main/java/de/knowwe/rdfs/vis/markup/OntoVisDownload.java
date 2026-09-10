@@ -61,7 +61,7 @@ public abstract class OntoVisDownload extends AbstractAction {
 		String name = svg.getName();
 
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + "\"");
+		context.setContentDisposition("attachment", name);
 
 		InputStream fis = new FileInputStream(svg);
 		OutputStream ous = context.getOutputStream();
