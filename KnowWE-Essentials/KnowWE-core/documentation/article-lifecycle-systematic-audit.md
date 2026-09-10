@@ -35,7 +35,27 @@
   Two new tests use real registered KB articles to exercise mapping snapshots, equal-ID replacement, deletion and
   concurrent forward/reverse access. These test the mapping API, not a complete ServiceMate domain compilation or
   a controlled replacement during a priority wait. Both pass, as do both XPSReference tests (4 targeted tests).
-- The TestStepCostCache/KnowSEC integration follow-ups below remain open.
+- A6 (TestStepCostCache): confirmed, implemented and reviewed in KnowWE-SSP on 10 September 2026.
+  A test-step-only text edit lost inherited cable costs after changing its Section ID. Independently, a cable-only
+  cost edit updated the cache but left the unchanged step's compiled COST property stale. Costs now use semantic
+  connector identifiers with source-instance ownership; lookups use the step's current connector references.
+  Source changes collect connector identifiers. A KB script at BELOW_DEFAULT invalidates only their current users'
+  lazy cached results and calls Compilers.recompileSection with only the cost script (LOWER),
+  after source registration at DEFAULT. This also handles removal of the last cost. Retained Section keys are weak,
+  including sources inside cached results; explicit removal remains. Cache hits copy only the cached costs, without
+  traversing references; unrelated test steps keep their entries. Cache misses resolve identifiers outside the
+  monitor, then read all source costs and publish the result together under it. A change counter forces a retry
+  after concurrent source updates, invalidation or reset; it does not globally invalidate cached entries.
+  Deterministic latch-controlled scenarios cover an update and a removal during term resolution, checking both
+  returned and memoized results and that resolution does not hold the cache monitor. This is cache-state safety,
+  not an atomic transaction across ontology/article publication; existing cache hits retain the previous batch
+  until the refresh script invalidates them. Empty connector buckets
+  are pruned by the batch script. Cache maps share a short monitor;
+  ontology/compiler calls occur outside it. A replaced KB object
+  clears the cache even when a full build retains the compiler. A synthetic integration test covers unchanged and
+  edited step replacement, changed connector, cable-only cost edits/removal, late source cleanup, full rebuilds with
+  new and retained compilers, and step deletion/recreation. It and SettingsContainerTest pass (2 targeted tests).
+- The KnowSEC integration follow-up below remains open.
 
 ## Scope and confidence
 
@@ -135,11 +155,9 @@ compiler callers would be a separate contract change, just as with OntologyBridg
 - InterWikiImportUpdateService stores ID/metadata snapshots and re-resolves/live-checks before using them; attachment
   update bookkeeping is keyed by attachment path, not Section ID. OntologyExporter retains the previously documented
   non-atomic live-check/persistence limitation.
-- NonCoverageQuestionsMarkup uses compiler-owned bookkeeping. TestStepCostCache also belongs to a compiler, but
-  indexes costs by the *referenced test step's* Section ID. CableMarkup.CostCompileScript discovers references again
-  at destruction rather than retaining its original targets. A test-step-only edit changes the key even if cable
-  text is unchanged. Whether dependency recompilation reliably rebuilds all these costs remains an explicit
-  follow-up test, not a confirmed failure or a clearance. Exercise a one-sided edit and compare with a full compile.
+- NonCoverageQuestionsMarkup uses compiler-owned bookkeeping. The TestStepCostCache concern was reproduced by
+  a synthetic one-sided-edit integration test and addressed in A6 above; the original target-Section-ID index did
+  lose unchanged cable costs after a step-only text edit.
 - KnowSEC SessionManager checks live identity in updateSession but cleans up retired entries by semantic identity;
   its batched queue also retains Sections. Full correctness of update/cleanup ordering across ontology generations
   is not established by this scan. It needs a domain integration test before being declared safe.
@@ -159,4 +177,4 @@ the production repository. No full Maven suite or live wiki was run for this rea
 regression suite results belong to the earlier checkpoint, not a fresh execution in this scan.
 
 Recommended follow-up: regression test plus fix for A1 and A2 first; then A3/A4 and the ServiceMate mapping contract.
-Retain the one-sided TestStepCostCache and KnowSEC integration cases as unresolved verification, not assumed safety.
+The TestStepCostCache integration case is now covered by A6; retain KnowSEC as unresolved verification, not assumed safety.
