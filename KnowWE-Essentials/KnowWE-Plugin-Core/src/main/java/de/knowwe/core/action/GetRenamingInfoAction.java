@@ -74,10 +74,6 @@ public class GetRenamingInfoAction extends AbstractAction {
 		return section.get().getTermIdentifier(Sections.cast(section, Term.class));
 	}
 
-	protected Section<?> getSection(String identifier) {
-		return Sections.get(identifier);
-	}
-
 	protected Set<String> getAllTermOccurrencesOnThisArticle(Section<?> section, Identifier termIdentifier, Article article) {
 		Set<Section<?>> sections = new HashSet<>();
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(section.getArticleManager());

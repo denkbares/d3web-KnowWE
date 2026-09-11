@@ -1,0 +1,87 @@
+# Actions that perform no authorization check.
+#
+# Authorization in KnowWE actions is opt-in: /action/* has no security-constraint, AbstractAction checks
+# nothing, and the wiki connector does not either - storeAttachment, createArticle and
+# writeArticleToWikiPersistence are plain persistence calls. Every action therefore has to decide about the
+# access rights of the user itself.
+#
+# This list is the state we found, so that the enforcer rule requireAuthorizationCheck can keep it from
+# growing. It may only get shorter: an action that is not on it and performs no check fails the build, and an
+# action on it that performs a check by now fails as well, asking for its entry to be removed.
+#
+# When you take an entry off the list, please say in the commit what the action reads or writes, so the next
+# reader can tell a real check from a formality. When you add one, put the reason behind it as a comment.
+#
+# Regenerate with: mvn -Ddenkbares.enforcer.report=true -DskipTests process-classes
+com.denkbares.knowwe.textdiff.TextDiffAction
+de.knowwe.jspwiki.DefaultLogoAction
+de.knowwe.jspwiki.readOnly.ReadOnlyAction
+de.knowwe.jspwiki.recentChanges.RecentChangesPageDisplayProviderAction
+de.knowwe.core.action.AwaitRecompilationAction
+de.knowwe.core.action.GetCompilerSwitchContentAction
+de.knowwe.core.action.GetNotificationsAction
+de.knowwe.core.action.HealthCheckAction
+de.knowwe.core.action.LookUpAction
+de.knowwe.core.action.RecompileAction
+de.knowwe.core.action.RemoveNotificationAction
+de.knowwe.core.action.SetDefaultCompilerAction
+de.knowwe.core.action.StoreLocalSectionStorageAction
+de.knowwe.core.utils.progress.DownloadFileAction
+de.knowwe.kdom.export.RootTypeExportAction
+de.d3web.we.watches.GetExpressionValueAction
+de.knowwe.d3web.action.GetKnowledgeBaseResourceAction
+de.d3web.we.kdom.rules.RuleFormatAction
+de.d3web.we.ci4ke.dashboard.action.CIAction
+de.d3web.we.ci4ke.dashboard.action.CIGetProgressAction
+de.d3web.we.ci4ke.dashboard.action.CIReportDownloadAction
+de.d3web.we.ci4ke.dashboard.action.CIResultDownloadAction
+de.d3web.we.ci4ke.dashboard.action.CIStopBuildAction
+de.knowwe.testcases.ExecuteCasesAction
+de.knowwe.include.GetWikiChangesSinceAction
+de.knowwe.diaflux.DotFormatterAction
+de.knowwe.diaflux.GetDiffHighlightAction
+de.knowwe.diaflux.GetSubflowLinksAction
+de.knowwe.ontology.action.AddStatementsAction
+de.knowwe.ontology.sparql.SparqlFormatAction
+de.knowwe.ontology.turtle.TurtleFormatAction
+de.knowwe.dialog.action.DownloadProtocol
+de.knowwe.dialog.action.ExitMobileApplication
+de.knowwe.dialog.action.ExternalViewer
+de.knowwe.dialog.action.GetAlternativeTargets
+de.knowwe.dialog.action.GetAvailableKnowledgeBaseFavIcon
+de.knowwe.dialog.action.GetAvailableKnowledgeBases
+de.knowwe.dialog.action.GetInfoObject
+de.knowwe.dialog.action.GetInterview
+de.knowwe.dialog.action.GetLanguages
+de.knowwe.dialog.action.Init
+de.knowwe.dialog.action.InitWiki
+de.knowwe.dialog.action.Multimedia
+de.knowwe.dialog.action.Resource
+de.knowwe.dialog.action.Restart
+de.knowwe.dialog.action.RetractAnswer
+de.knowwe.dialog.action.SelectAlternativeTarget
+de.knowwe.dialog.action.SelectAvailableKnowledgeBase
+de.knowwe.dialog.action.SetAnswer
+de.knowwe.dialog.action.StartCase
+de.knowwe.dialog.action.UploadProtocol
+de.knowwe.dialog.action.sync.CancelUpdate
+de.knowwe.dialog.action.sync.CheckProgress
+de.knowwe.dialog.action.sync.CheckUpdates
+de.knowwe.dialog.action.sync.StartUpdate
+de.knowwe.dialog.action.sync.server.AddRepositoryFile
+de.knowwe.dialog.action.sync.server.AddVersionSet
+de.knowwe.dialog.action.sync.server.DeleteVersionSet
+de.knowwe.dialog.action.sync.server.GetRepositoryInfo
+de.knowwe.dialog.action.sync.server.GetUpdateFile
+de.knowwe.dialog.action.sync.server.GetUpdateInfo
+de.knowwe.dialog.action.sync.server.SetAlias
+de.knowwe.rdfs.vis.edit.FindLiteralsForConceptAction
+de.knowwe.rdfs.vis.edit.GoToDefinitionAction
+de.knowwe.rdfs.vis.markup.OntoVisSvgD3Download
+de.knowwe.snapshot.CreateSnapshotAction
+de.knowwe.snapshot.DeploySnapshotAction
+de.knowwe.snapshot.ListSnapshotsAction
+de.knowwe.snapshot.UploadSnapshotAction
+de.knowwe.rightpanel.GetRightPanelTabContentAction
+de.knowwe.sparqlendpoint.SparqlEndpointAction
+de.knowwe.dropzone.action.DropAttachmentToNewArticleAction

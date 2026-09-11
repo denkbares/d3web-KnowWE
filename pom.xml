@@ -231,6 +231,51 @@
 							</rules>
 						</configuration>
 					</execution>
+					<execution>
+						<!-- every action has to decide about the access rights of the user itself: /action/* has no
+							 security-constraint, AbstractAction checks nothing and the wiki connector does not either.
+							 The actions known to perform no check are listed in actions.good-list next to this pom,
+							 and that list may only get shorter. Run a build with
+							 -Ddenkbares.enforcer.report=true to print the current state in the format of the list. -->
+						<id>enforce-action-authorization</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireAuthorizationCheck implementation="com.denkbares.maven.enforcer.RequireAuthorizationCheck">
+									<subject>action</subject>
+									<requiredType>de.knowwe.core.action.Action</requiredType>
+									<definingTypes>
+										<definingType>de.knowwe.core.action.AbstractAction</definingType>
+									</definingTypes>
+									<authorizationCalls>
+										<authorizationCall>de.knowwe.core.action.AbstractAction#getSection</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canView</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanView</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canWrite</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanWrite</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canUpload</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanUpload</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canCreatePages</authorizationCall>
+										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanCreatePages</authorizationCall>
+										<authorizationCall>de.knowwe.core.kdom.parsing.Sections#replace</authorizationCall>
+										<authorizationCall>de.knowwe.core.user.UserContext#userIsAdmin</authorizationCall>
+										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanViewArticle</authorizationCall>
+										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanEditArticle</authorizationCall>
+										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanUploadAttachment</authorizationCall>
+										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanCreateArticles</authorizationCall>
+										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanDeleteArticle</authorizationCall>
+									</authorizationCalls>
+									<authorizationFlags>
+										<authorizationFlag>isAdminAction</authorizationFlag>
+									</authorizationFlags>
+									<goodList>${maven.multiModuleProjectDirectory}/actions.good-list</goodList>
+								</requireAuthorizationCheck>
+							</rules>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
