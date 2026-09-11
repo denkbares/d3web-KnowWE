@@ -32,21 +32,22 @@ import static org.junit.Assert.*;
  * @author Albrecht Striffler (denkbares GmbH) + Claude for env-instance
  * @created 07.09.2026
  */
-@SuppressWarnings("deprecation") // the test exercises the singleton lifecycle itself
 public class EnvironmentLifecycleTest {
 
 	private static final String TITLE = "EnvironmentLifecycle";
 	private static final String CONTENT = "Some plain text\n\n%%Package\nlifecycle\n%\n";
 
+	private final List<Environment> started = new ArrayList<>();
+
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (Environment.isInitialized()) Environment.getInstance().close();
 	}
 
 	@After
 	public void tearDown() {
-		if (Environment.isInitialized()) Environment.getInstance().close();
+		started.forEach(Environment::close);
+		started.clear();
 	}
 
 	@Test
@@ -74,7 +75,6 @@ public class EnvironmentLifecycleTest {
 		environment.close();
 
 		assertTrue(environment.isClosed());
-		assertFalse(Environment.isInitialized());
 		assertNull("section ids of the old lifecycle must not resolve anymore", Sections.get(environment, sectionId));
 		assertNull(environment.getSection(sectionId));
 		assertTrue("script managers must be gone", environment.getScriptManagers().isEmpty());
@@ -115,18 +115,26 @@ public class EnvironmentLifecycleTest {
 	}
 
 	@Test
-	public void createClosesAStillRunningEnvironment() throws InterruptedException {
+	public void environmentsRunSideBySide() throws InterruptedException {
 		Environment first = start();
-		createArticle(first);
+		Article firstArticle = createArticle(first);
 		List<String> closed = new ArrayList<>();
 		first.onClose(() -> closed.add("first"));
 
 		Environment second = start(); // without closing the first one
-		assertTrue("the previous environment must be closed", first.isClosed());
-		assertEquals(List.of("first"), closed);
+		assertFalse("the previous environment must stay open", first.isClosed());
+		assertTrue(closed.isEmpty());
 		assertNotSame(first, second);
-		assertTrue(Environment.isInitialized());
-		assertSame(second, Environment.getInstance());
+		Article secondArticle = createArticle(second);
+		assertSame(first, firstArticle.getEnvironment());
+		assertSame(second, secondArticle.getEnvironment());
+		assertNotSame(firstArticle, secondArticle);
+		assertNull("section ids are scoped to their environment", second.getSection(firstArticle.getRootSection().getID()));
+
+		first.close();
+		assertEquals(List.of("first"), closed);
+		assertFalse("closing one environment leaves the other one running", second.isClosed());
+		assertSame(secondArticle, second.getArticleManager().getArticle(TITLE));
 	}
 
 	private record ClosableService(String name, List<String> order) implements AutoCloseable {
@@ -179,9 +187,10 @@ public class EnvironmentLifecycleTest {
 		assertNotNull(Compilers.getCompilers(null, temporary.getRootSection(), Compiler.class));
 	}
 
-	private static Environment start() {
+	private Environment start() {
 		Environment environment = Environment.create(new DummyConnector());
-		assertTrue(Environment.isInitialized());
+		assertTrue(environment.isReady());
+		started.add(environment);
 		return environment;
 	}
 

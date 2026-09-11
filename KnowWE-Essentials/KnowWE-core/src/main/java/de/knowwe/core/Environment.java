@@ -68,11 +68,6 @@ public final class Environment implements AutoCloseable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 
 	/**
-	 * Indicates whether this environment is initialized or not.
-	 */
-	private static boolean initialized = false;
-
-	/**
 	 * Stores additional renderer if renderer are plugged via the plugin framework The renderer plugged with the highest
 	 * priority _might_ decided to look up in this list and call other renderer.
 	 */
@@ -184,40 +179,6 @@ public final class Environment implements AutoCloseable {
 	}
 
 	/**
-	 * Singleton instance
-	 */
-	private static Environment instance;
-
-	/**
-	 * Returns the singleton environment of this JVM, or null (logging an error) if none has been initialized.
-	 *
-	 * @deprecated The environment is on its way to become an ordinary instance that is reached through the objects at
-	 * hand instead of a static accessor. Use {@link ArticleManager#getEnvironment()}, which is available from every
-	 * {@link de.knowwe.core.kdom.parsing.Section#getArticleManager() Section}, {@link Article#getArticleManager()
-	 * Article}, {@link UserContext#getArticleManager() UserContext} and (via its {@link CompilerManager}) every
-	 * {@link Compiler}. See {@code doc/environment-instance-plan.md} (KnowWE repository root) for the migration plan.
-	 */
-	@Deprecated
-	public static synchronized Environment getInstance() {
-		if (instance == null) {
-			LOGGER.error("Environment was not instantiated!");
-		}
-		return instance;
-	}
-
-	/**
-	 * Returns the singleton environment of this JVM, or null if there is none, without logging.
-	 *
-	 * @deprecated transitional accessor for code that has no context object at hand yet; it goes away together with
-	 * {@link #getInstance()}. Prefer {@link KnowWEUtils#findEnvironment(Section)} and its siblings.
-	 */
-	@Deprecated
-	@Nullable
-	public static synchronized Environment peekInstance() {
-		return instance;
-	}
-
-	/**
 	 * Attribute under which a running environment is published in the servlet context of its wiki, see {@link
 	 * #of(ServletContext)}.
 	 */
@@ -276,43 +237,11 @@ public final class Environment implements AutoCloseable {
 	}
 
 	/**
-	 * Returns the singleton environment of this JVM.
-	 *
-	 * @throws IllegalStateException if no environment is initialized
-	 * @deprecated transitional accessor for code that has no context object at hand yet; it goes away together with
-	 * {@link #getInstance()}. Prefer {@link KnowWEUtils#getEnvironment(Section)} and its siblings.
-	 */
-	@Deprecated
-	@NotNull
-	public static synchronized Environment requireInstance() {
-		if (instance == null) throw new IllegalStateException("No KnowWE environment is initialized");
-		return instance;
-	}
-
-	public static boolean isInitialized() {
-		return initialized;
-	}
-
-	/**
-	 * Creates and initializes the singleton environment for the specified wiki connector. A previously initialized
-	 * environment is closed first, so that there is never more than one current environment.
-	 *
-	 * @deprecated use {@link #create(WikiConnector)} and keep the returned environment
-	 */
-	@Deprecated
-	public static void initInstance(WikiConnector wiki) {
-		create(wiki);
-	}
-
-	/**
 	 * Creates and initializes a new environment for the specified wiki connector: plugins, event listeners,
 	 * sectionizer modules, compilers and the type tree are set up and the {@link InitEvent} is fired. The caller owns
 	 * the environment and {@link #close() closes} it when done, e.g. tests with try-with-resources or in an
-	 * {@code @AfterClass} method.
-	 * <p>
-	 * Transitional: as long as the deprecated singleton accessors exist, the new environment also becomes the current
-	 * instance, and a previously current environment is closed first, so that there is never more than one current
-	 * environment.
+	 * {@code @AfterClass} method. Several environments may run side by side in one JVM (e.g. one per wiki); they do not
+	 * know of each other.
 	 *
 	 * @param wiki the connector to the wiki engine the environment works on
 	 * @return the initialized environment
@@ -336,27 +265,8 @@ public final class Environment implements AutoCloseable {
 	@NotNull
 	public static Environment create(@NotNull WikiConnector wiki, @Nullable RootType rootType) {
 		LOGGER.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
-		Environment environment;
-		synchronized (Environment.class) {
-			Environment previous = instance;
-			if (previous != null) {
-				LOGGER.warn("An environment is still active while a new one is initialized, closing the old one first");
-				previous.close();
-			}
-			initialized = false;
-			environment = new Environment(wiki, rootType);
-			instance = environment;
-		}
-		try {
-			environment.init();
-		}
-		catch (RuntimeException | Error e) {
-			synchronized (Environment.class) {
-				if (instance == environment) instance = null;
-			}
-			throw e;
-		}
-		initialized = true;
+		Environment environment = new Environment(wiki, rootType);
+		environment.init();
 		environment.ready = true;
 		environment.publishToServletContext();
 		environment.eventManager.fireEvent(new InitEvent());
@@ -369,7 +279,7 @@ public final class Environment implements AutoCloseable {
 	 * private constructor
 	 *
 	 * @param wiki Connector to the used core wiki engine
-	 * @see #getInstance()
+	 * @see #create(WikiConnector, RootType)
 	 */
 	private Environment(WikiConnector wiki, @Nullable RootType rootType) {
 		this.wikiConnector = wiki;
@@ -421,7 +331,7 @@ public final class Environment implements AutoCloseable {
 	 * Closes this environment: waits for running compilations to terminate, notifies all {@link DeInitEvent}
 	 * listeners, removes the compilers and stops the compile threads of all article managers, runs the
 	 * {@link #onClose(Runnable) close tasks} in reverse order of their registration, closes all
-	 * {@link EnvironmentService} (or {@link AutoCloseable}) {@link #getService(Class, Supplier) services} and finally detaches the singleton instance if this environment is
+	 * {@link EnvironmentService} (or {@link AutoCloseable}) {@link #getService(Class, Supplier) services}; if this environment is
 	 * the current one. Everything this
 	 * environment owns becomes garbage afterwards; nothing has to be reset by hand. Calling the method twice is
 	 * harmless.
@@ -435,9 +345,6 @@ public final class Environment implements AutoCloseable {
 			closing = true;
 		}
 		LOGGER.info("SHUTTING DOWN KNOWWE ENVIRONMENT");
-		synchronized (Environment.class) {
-			if (instance == this) initialized = false;
-		}
 		awaitCompileTerminationForShutdown();
 		eventManager.fireEvent(new DeInitEvent());
 		// stop the compilers first: destroying their content may still use services (e.g. the message index)
@@ -462,9 +369,6 @@ public final class Environment implements AutoCloseable {
 		sectionRegistry.clear();
 		occupiedTerms.clear();
 		additionalRenderer.clear();
-		synchronized (Environment.class) {
-			if (instance == this) instance = null;
-		}
 		LOGGER.info("KNOWWE ENVIRONMENT SHUT DOWN");
 	}
 
@@ -693,14 +597,6 @@ public final class Environment implements AutoCloseable {
 			compilerManager.awaitTermination();
 		}
 		return article;
-	}
-
-	/**
-	 * @deprecated use {@link #getLatestVersionNumber(String)} of the environment at hand
-	 */
-	@Deprecated
-	public static int retrieveLatestVersionNumber(String title) {
-		return requireInstance().getLatestVersionNumber(title);
 	}
 
 	/**

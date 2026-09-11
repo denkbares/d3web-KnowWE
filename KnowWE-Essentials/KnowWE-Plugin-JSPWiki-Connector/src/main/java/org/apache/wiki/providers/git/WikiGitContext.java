@@ -59,7 +59,7 @@ public record WikiGitContext(
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiGitContext.class);
 
 	public WikiGitContext(Engine engine, Properties properties) {
-		this(engine, GitCommentStrategy.fromProperties(properties));
+		this(engine, GitCommentStrategy.fromProperties(engine, properties));
 	}
 
 	/**

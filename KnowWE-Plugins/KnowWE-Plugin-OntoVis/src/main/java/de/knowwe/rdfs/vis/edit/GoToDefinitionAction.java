@@ -22,6 +22,7 @@ package de.knowwe.rdfs.vis.edit;
 import java.io.IOException;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -55,7 +56,8 @@ public class GoToDefinitionAction extends AbstractAction {
 			try {
 				uriProvider = (LinkToTermDefinitionProvider) Class.forName(
 						"de.knowwe.compile.utils.IncrementalCompilerLinkToTermDefinitionProvider")
-						.newInstance();
+						.getConstructor(Environment.class)
+						.newInstance(context.getEnvironment());
 			}
 			catch (Exception e) {
 				uriProvider = (name, masterArticle) -> null;

@@ -57,10 +57,15 @@ import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
-import de.knowwe.core.Environment;
 import de.knowwe.core.utils.KnowWEUtils;
 import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.kdom.parsing.Sections;
+import org.jetbrains.annotations.Nullable;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -403,10 +408,24 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		return result.toStringRaw();
 	}
 
+	/**
+	 * Returns the terminology manager of the compiler compiling the article with the specified title (the first one,
+	 * if there are several), the global terminology if no title is given, or null if the article is not compiled.
+	 */
+	@Nullable
+	private static TerminologyManager getTerminologyManager(@NotNull ArticleManager articleManager, @Nullable String title) {
+		Article article = title == null ? null : articleManager.getArticle(title);
+		if (article == null) {
+			return Compilers.getCompiler(articleManager, DefaultGlobalCompiler.class).getTerminologyManager();
+		}
+		Section<PackageCompileType> compileSection = Sections.successor(article.getRootSection(), PackageCompileType.class);
+		if (compileSection == null) return new TerminologyManager();
+		return KnowWEUtils.getTerminologyManagers(compileSection).stream().findFirst().orElse(null);
+	}
+
 	private String getTermHTML(StringBuffer prompt, StringBuffer property, TerminologyObject t1, String typeDeclaration, String title, UserContext user) {
-		Environment env = user.getEnvironment();
-		TerminologyManager manager = env.getTerminologyManager(title);
-		Section<?> termDefiningSection = manager.getTermDefiningSection(new Identifier(t1.getName()));
+		TerminologyManager manager = getTerminologyManager(user.getArticleManager(), title);
+		Section<?> termDefiningSection = manager == null ? null : manager.getTermDefiningSection(new Identifier(t1.getName()));
 		RenderResult builder = new RenderResult(user);
 
 		if (termDefiningSection == null) {

@@ -116,7 +116,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		this.repository = this.gitBridge.getRepository();
 
-		this.gitCommentStrategy = GitCommentStrategy.fromProperties(properties);
+		this.gitCommentStrategy = GitCommentStrategy.fromProperties(engine, properties);
 
 		// we run the command to build up the commit graph. It considerably accelerates the reading of the commit history (e. g. git log)
 		this.gitConnector.repo().executeCommitGraph();
