@@ -35,7 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
+import com.denkbares.strings.Strings;
 import de.knowwe.event.GitCommitEvent;
+import de.knowwe.jspwiki.auth.AuthenticatedIdentities;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 
 /**
@@ -43,7 +45,7 @@ import de.uniwue.d3web.gitConnector.CommitUserData;
  * configured {@link GitCommentStrategy} so a provider resolves both once at initialization.
  * <p>
  * Everything a git provider needs from the wiki beyond plain file and git access goes through here, the commit author
- * from the user database, the two commit notifications and the page cache eviction. The per repository components
+ * from the user database or the identity provider, the two commit notifications and the page cache eviction. The per repository components
  * around it ({@link GitWikiRepository}, {@link GitRepoIndex}, {@link GitCommitBatchRegistry}) stay engine free.
  * <p>
  * A page provider and its sibling attachment provider are meant to share one instance, so the attachment provider does
@@ -61,28 +63,29 @@ public record WikiGitContext(
 	}
 
 	/**
-	 * Resolves the commit author, email and message for a wiki user name from the wiki user database.
+	 * Resolves the commit author, email and message for a wiki user name: from the wiki user database where the user
+	 * has a profile, else from what their identity provider stated at sign-in, else the name as it is. An author that
+	 * is itself a mail address is used as the email, which is what a container login sometimes hands over.
 	 */
 	public CommitUserData userData(String author, String comment) {
-		UserProfile userProfile = getUserProfile(author);
 		String userName = author;
-		String email = "";
+		String email = null;
+		UserProfile userProfile = getUserProfile(author);
 		if (userProfile != null) {
-			userName = userProfile.getFullname();
+			userName = Strings.isBlank(userProfile.getFullname()) ? author : userProfile.getFullname();
 			email = userProfile.getEmail();
 		}
-		// SSO often makes the author an email address, derive a readable name and use the address as the email
-		if (userName != null && userName.contains("@")) {
-			String local = author.split("@")[0];
-			if (local.contains(".")) {
-				userName = capitalize(local.split("\\.")[0]) + " " + capitalize(local.split("\\.")[1]);
+		if (Strings.isBlank(email)) {
+			AuthenticatedIdentities.Identity identity = AuthenticatedIdentities.of(engine, author);
+			if (identity != null) {
+				userName = identity.fullName();
+				email = identity.email();
 			}
-			else {
-				userName = local;
-			}
+		}
+		if (Strings.isBlank(email) && author != null && author.contains("@")) {
 			email = author;
 		}
-		return new CommitUserData(userName, email, comment);
+		return new CommitUserData(userName, email == null ? "" : email, comment);
 	}
 
 	@Nullable
@@ -94,13 +97,6 @@ public record WikiGitContext(
 			LOGGER.debug("No user profile for '{}'; using raw author for the commit.", user);
 			return null;
 		}
-	}
-
-	private static String capitalize(String name) {
-		if (name == null || name.isEmpty()) {
-			return name;
-		}
-		return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 	}
 
 	/**

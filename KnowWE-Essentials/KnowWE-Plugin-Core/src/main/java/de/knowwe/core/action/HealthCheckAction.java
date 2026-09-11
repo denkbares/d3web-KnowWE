@@ -10,6 +10,15 @@ import java.io.IOException;
  * @created 2024-01-26
  */
 public class HealthCheckAction extends AbstractAction {
+
+	/**
+	 * A health check is asked by whoever runs the wiki, before any user could sign in.
+	 */
+	@Override
+	public boolean requiresAuthentication() {
+		return false;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		context.setContentType(Action.JSON);
