@@ -20,11 +20,15 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -50,6 +54,16 @@ import de.knowwe.core.utils.KnowWEUtils;
 public abstract class AbstractAction implements Action {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAction.class);
+
+	/**
+	 * The historical name of the section id parameter, still sent by InstantEdit, TaskManagement and Todos.
+	 */
+	private static final String KDOM_NODE_ID = "KdomNodeId";
+
+	/**
+	 * Case variants of {@link Attributes#SECTION_ID} we have already complained about, so each one is logged once.
+	 */
+	private static final Set<String> REPORTED_SECTION_ID_ALIASES = ConcurrentHashMap.newKeySet();
 
 	/**
 	 * Get the local storage from the user context. Check out KNOWWE.helper.setToLocalSectionStorage(sectionId, key,
@@ -124,17 +138,16 @@ public abstract class AbstractAction implements Action {
 
 	/**
 	 * Returns the section that is denoted for the specified action context. The section is usually referred by the URL
-	 * parameter "SectionID" ({@link Attributes#SECTION_ID}), but for campatibility reasons this method also supports
-	 * "KdomNodeId". If no section is denoted, or if the specified section is not found, or if the user does not have
-	 * read access to the section, an appropriate error is created.
+	 * parameter "SectionID" ({@link Attributes#SECTION_ID}), but for compatibility reasons this method also supports
+	 * "KdomNodeId" and the parameter written in a different case. If no section is denoted, or if the specified
+	 * section is not found, or if the user does not have read access to the section, an appropriate error is created.
 	 *
 	 * @param context the action context to get the section for
 	 * @return the section for the action
 	 */
 	@NotNull
 	public static Section<?> getSection(UserContext context) throws IOException {
-		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		if (sectionId == null) sectionId = context.getParameter("KdomNodeId"); // compatibility
+		String sectionId = getSectionId(context);
 		if (sectionId == null) {
 			fail(context, HttpServletResponse.SC_NOT_FOUND,
 					"The request did not contain a section id, unable to execute action.");
@@ -149,11 +162,43 @@ public abstract class AbstractAction implements Action {
 	}
 
 	/**
+	 * Returns the section id denoted by the request, or null if there is none.
+	 * <p>
+	 * Besides {@link Attributes#SECTION_ID} this also accepts the parameter written in a different case, because
+	 * clients used to send "sectionID" or "sectionId" as well. Those are logged once each, so the remaining clients
+	 * can be migrated and the leniency can be removed again. Parameters with an own name like "section" are
+	 * deliberately not accepted: a request may denote several sections, and silently picking the wrong one would
+	 * apply the access check to a section the action does not use afterwards.
+	 *
+	 * @param context the action context to get the section id from
+	 * @return the section id of the request, or null if the request does not denote a section
+	 */
+	@Nullable
+	static String getSectionId(UserContext context) {
+		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		if (sectionId != null) return sectionId;
+
+		for (Map.Entry<String, String> parameter : context.getParameters().entrySet()) {
+			String name = parameter.getKey();
+			if (name.equalsIgnoreCase(Attributes.SECTION_ID) && !name.equals(Attributes.SECTION_ID)) {
+				if (REPORTED_SECTION_ID_ALIASES.add(name)) {
+					LOGGER.warn("A request denotes its section by '{}', please use '{}' instead",
+							name, Attributes.SECTION_ID);
+				}
+				return parameter.getValue();
+			}
+		}
+
+		// the historical name of the parameter, still sent by a couple of plugins, so it is not reported
+		return context.getParameter(KDOM_NODE_ID);
+	}
+
+	/**
 	 * Returns the section that is denoted for the specified action context. The section is usually referred by the URL
-	 * parameter "SectionID" ({@link Attributes#SECTION_ID}), but for campatibility reasons this method also supports
-	 * "KdomNodeId". If no section is denoted, or if the specified section is not found, or if the section is not of the
-	 * specified expected type, or if the user does not have read access to the section, an appropriate error is
-	 * created.
+	 * parameter "SectionID" ({@link Attributes#SECTION_ID}), but for compatibility reasons this method also supports
+	 * "KdomNodeId" and the parameter written in a different case. If no section is denoted, or if the specified
+	 * section is not found, or if the section is not of the specified expected type, or if the user does not have
+	 * read access to the section, an appropriate error is created.
 	 *
 	 * @param context the action context to get the section for
 	 * @return the section for the action

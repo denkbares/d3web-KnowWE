@@ -50,6 +50,11 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 
 	public static final String TERM_NAME = "termName";
 	public static final String REPLACEMENT = "termReplacement";
+	/**
+	 * The spelling of the section id parameter this action used to read. It is a case variant of
+	 * {@link de.knowwe.core.Attributes#SECTION_ID} and therefore still accepted by
+	 * {@link AbstractAction#getSection(de.knowwe.core.user.UserContext)}. Kept because KRONE refers to it.
+	 */
 	public static final String SECTION_ID = "sectionId";
 	public static final String FORCE = "force";
 
@@ -65,12 +70,15 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 		String term = context.getParameter(TERM_NAME);
 		String replacement = context.getParameter(REPLACEMENT);
 		String force = context.getParameter(FORCE);
-		String sectionId = context.getParameter(SECTION_ID);
+
+		// the compilers to rename in are taken from the requested section, and getSection asserts the read access
+		// rights for it - it accepts the spelling of SECTION_ID as a case variant of Attributes#SECTION_ID
+		Section<?> section = getSection(context);
 
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacementIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-		Collection<TermCompiler> compilers = Compilers.getCompilers(Sections.get(sectionId), TermCompiler.class);
+		Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
 		Collection<RenamingCommand> renamingCommands = getRenamingCommands(termIdentifier, replacementIdentifier, compilers);
 
 		Set<Article> articlesWithoutRenamingRights = checkEditRights(context, renamingCommands);
