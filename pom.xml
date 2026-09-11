@@ -234,7 +234,7 @@
 					<execution>
 						<!-- every action has to decide about the access rights of the user itself: /action/* has no
 							 security-constraint, AbstractAction checks nothing and the wiki connector does not either.
-							 The actions known to perform no check are listed in actions.good-list next to this pom,
+							 The actions known to perform no check are listed in actions.known-exceptions next to this pom,
 							 and that list may only get shorter. Run a build with
 							 -Ddenkbares.enforcer.report=true to print the current state in the format of the list. -->
 						<id>enforce-action-authorization</id>
@@ -271,7 +271,7 @@
 									<authorizationFlags>
 										<authorizationFlag>isAdminAction</authorizationFlag>
 									</authorizationFlags>
-									<goodList>${maven.multiModuleProjectDirectory}/actions.good-list</goodList>
+									<knownExceptions>${maven.multiModuleProjectDirectory}/actions.known-exceptions</knownExceptions>
 								</requireAuthorizationCheck>
 							</rules>
 						</configuration>

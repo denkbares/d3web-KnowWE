@@ -54,7 +54,6 @@ de.knowwe.dialog.action.GetInfoObject
 de.knowwe.dialog.action.GetInterview
 de.knowwe.dialog.action.GetLanguages
 de.knowwe.dialog.action.Init
-de.knowwe.dialog.action.InitWiki
 de.knowwe.dialog.action.Multimedia
 de.knowwe.dialog.action.Resource
 de.knowwe.dialog.action.Restart
