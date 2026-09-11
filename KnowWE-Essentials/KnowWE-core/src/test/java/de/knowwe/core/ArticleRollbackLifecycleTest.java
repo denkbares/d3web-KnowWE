@@ -44,7 +44,7 @@ public class ArticleRollbackLifecycleTest {
 		}
 		assertNull(wiki.manager.getArticle("New"));
 		assertNull(Sections.get(wiki.environment, id));
-		assertFalse(Messages.getSectionsWithMessages().contains(line(created, 0)));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment).contains(line(created, 0)));
 		assertTrue(wiki.manager.getQueuedArticles().isEmpty());
 		assertEquals(0, wiki.compiler.compilationCount());
 	}
@@ -81,8 +81,8 @@ public class ArticleRollbackLifecycleTest {
 			wiki.manager.commit();
 		}
 		assertSame(original, wiki.manager.getArticle("Page"));
-		assertTrue(Messages.getSectionsWithMessages().contains(line(original, 0)));
-		assertFalse(Messages.getSectionsWithMessages().contains(line(replacement, 0)));
+		assertTrue(Messages.getSectionsWithMessages(wiki.environment).contains(line(original, 0)));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment).contains(line(replacement, 0)));
 	}
 
 	@Test

@@ -67,7 +67,7 @@ public class ArticleCompilationLifecycleTest {
 		assertEquals(List.of(replacement.getRootSection()), wiki.compiler.lastCompilation().added());
 		assertNull(Sections.get(wiki.environment, originalId));
 		assertNull(Sections.get(wiki.environment, intermediateId));
-		assertFalse(Messages.getSectionsWithMessages().contains(line(intermediate, 0)));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment).contains(line(intermediate, 0)));
 		assertEquals(Map.of("version C", 1L), wiki.compiler.contributions());
 	}
 
@@ -117,7 +117,7 @@ public class ArticleCompilationLifecycleTest {
 
 		assertNull(wiki.manager.getArticle("Page"));
 		assertNull(Sections.get(wiki.environment, id));
-		assertFalse(Messages.getSectionsWithMessages().contains(line(original, 0)));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment).contains(line(original, 0)));
 		assertEquals(List.of(original.getRootSection()), wiki.compiler.lastCompilation().removed());
 		assertTrue(wiki.compiler.contributions().isEmpty());
 	}

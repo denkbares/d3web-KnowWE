@@ -62,7 +62,7 @@ public class ArticleLifecycleTest {
 		wiki.draft("Page", "changed\n");
 		assertEquals(List.of(message), List.copyOf(Messages.getMessages(section)));
 		assertTrue("The live diagnostic must remain in the global overview",
-				Messages.getSectionsWithMessages(Message.Type.ERROR).contains(section));
+				Messages.getSectionsWithMessages(wiki.environment, Message.Type.ERROR).contains(section));
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class ArticleLifecycleTest {
 		assertEquals(List.of(message), List.copyOf(Messages.getMessages(section)));
 		assertTrue("Local message queries must work on drafts", Messages.hasMessages(section, Message.Type.ERROR));
 		assertFalse("Unregistered drafts must not appear in the global overview",
-				Messages.getSectionsWithMessages(Message.Type.ERROR).contains(section));
+				Messages.getSectionsWithMessages(wiki.environment, Message.Type.ERROR).contains(section));
 	}
 
 	@Test
@@ -87,14 +87,14 @@ public class ArticleLifecycleTest {
 			constructedSection.set(line(event.getArticle(), 0));
 			Messages.storeMessage(constructedSection.get(), getClass(), message);
 			assertFalse("The construction event runs before queue-time publication",
-					Messages.getSectionsWithMessages(Message.Type.ERROR).contains(constructedSection.get()));
+					Messages.getSectionsWithMessages(wiki.environment, Message.Type.ERROR).contains(constructedSection.get()));
 		});
 
 		Article published = wiki.register("Page", "draft\n");
 		assertSame(line(published, 0), constructedSection.get());
 		assertEquals(List.of(message), List.copyOf(Messages.getMessages(constructedSection.get())));
 		assertTrue("Queue-time publication must expose diagnostics already attached to the draft",
-				Messages.getSectionsWithMessages(Message.Type.ERROR).contains(constructedSection.get()));
+				Messages.getSectionsWithMessages(wiki.environment, Message.Type.ERROR).contains(constructedSection.get()));
 	}
 
 	@Test
@@ -107,8 +107,8 @@ public class ArticleLifecycleTest {
 		Messages.storeMessage(retiredSection, getClass(), lateMessage);
 		assertEquals(List.of(lateMessage), List.copyOf(Messages.getMessages(retiredSection)));
 		assertFalse("A retired version must not re-enter the global diagnostic overview",
-				Messages.getSectionsWithMessages(Message.Type.ERROR).contains(retiredSection));
-		assertFalse(Messages.getSectionsWithMessages(Message.Type.ERROR).contains(line(replacement, 0)));
+				Messages.getSectionsWithMessages(wiki.environment, Message.Type.ERROR).contains(retiredSection));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment, Message.Type.ERROR).contains(line(replacement, 0)));
 	}
 
 	@Test
@@ -333,7 +333,7 @@ public class ArticleLifecycleTest {
 		assertNull(Article.createArticle("new\n", "Page", wiki.manager));
 		assertSame(original, wiki.manager.getArticle("Page"));
 		assertSame(line(original, 0), Sections.get(wiki.environment, id));
-		assertTrue(Messages.getSectionsWithMessages().contains(line(original, 0)));
+		assertTrue(Messages.getSectionsWithMessages(wiki.environment).contains(line(original, 0)));
 	}
 
 	@Test
@@ -350,7 +350,7 @@ public class ArticleLifecycleTest {
 		assertNull(Article.createArticle("partial\n", "Failed", wiki.manager));
 		assertNotNull("The parser must reach the fault injection", partial.get());
 		assertNull(Sections.get(wiki.environment, partialId.get()));
-		assertFalse(Messages.getSectionsWithMessages().contains(partial.get()));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment).contains(partial.get()));
 	}
 
 	/** Pauses at the real boundary between construction and queueing, without relying on scheduling sleeps. */

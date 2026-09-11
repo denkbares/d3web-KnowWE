@@ -311,7 +311,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 			updatedImports++;
 		}
 		if (!replacements.isEmpty()) {
-			Sections.replaceAsSystem(replacements, "Update after changes in remote wiki");
+			Sections.replaceAsSystem(environment, replacements, "Update after changes in remote wiki");
 		}
 		return updatedImports;
 	}

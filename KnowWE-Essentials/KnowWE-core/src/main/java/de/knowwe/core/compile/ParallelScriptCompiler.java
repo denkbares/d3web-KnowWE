@@ -69,7 +69,8 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 
 	private final C compiler;
 
-	private final ScriptManager<C> scriptManager;
+	/** resolved lazily: the compiler joins its compiler manager (and thus its environment) after construction */
+	private ScriptManager<C> scriptManager;
 
 	/**
 	 * Creates a new script compiler that runs scripts of the same priority in parallel.
@@ -83,7 +84,6 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	@SuppressWarnings("unchecked")
 	public ParallelScriptCompiler(C compiler, Mode mode, Class<?>... typeFilter) {
 		this.compiler = compiler;
-		scriptManager = CompilerManager.getScriptManager(compiler);
 		this.step = mode;
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
@@ -114,7 +114,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 		synchronized (compileMap) {
 			boolean added = false;
 			Map<Priority, List<CompileScript<C, Type>>> scripts =
-					scriptManager.getScripts(Sections.cast(section, Type.class).get());
+					scriptManager().getScripts(Sections.cast(section, Type.class).get());
 			for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
 				Priority priority = entry.getKey();
 				List<CompilePair> compileSet = compileMap.get(priority);
@@ -150,7 +150,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	public Sections<?> addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		//noinspection DuplicatedCode
 		Sections<?> added = Sections.empty();
-		if (scriptManager.canHaveScriptsForSubtree(section.get())) {
+		if (scriptManager().canHaveScriptsForSubtree(section.get())) {
 			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
 					added.append(addSubtree(child, scriptFilter));
@@ -311,4 +311,13 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 			super(a, b);
 		}
 	}
+
+	private ScriptManager<C> scriptManager() {
+		if (scriptManager == null) {
+			//noinspection unchecked
+			scriptManager = CompilerManager.getScriptManager(compiler);
+		}
+		return scriptManager;
+	}
+
 }

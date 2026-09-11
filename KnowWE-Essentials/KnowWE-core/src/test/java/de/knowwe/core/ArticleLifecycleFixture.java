@@ -59,7 +59,8 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	Consumer<Section<?>> afterParse = section -> { };
 	AbstractType alternativeLine;
 
-	Environment environment;
+	/** the environment of this fixture, created below the plugin layer */
+	public Environment environment;
 	private RootType root;
 	private final Set<Section<?>> parsedRoots = Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
 	private final List<EventListener> listeners = new ArrayList<>();

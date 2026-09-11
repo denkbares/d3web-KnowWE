@@ -46,7 +46,7 @@ public class GetRightPanelTabContentAction extends AbstractAction {
 			return;
 		}
 
-		RightPanelTab tab = Plugins.getRightPanelTabs().stream()
+		RightPanelTab tab = Plugins.getRightPanelTabs(context.getEnvironment()).stream()
 				.filter(t -> t.id().equals(tabId))
 				.findFirst().orElse(null);
 

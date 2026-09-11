@@ -197,8 +197,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
 	public Rdf2GoCore(@NotNull String coreName, String lns, RepositoryConfig reasoning) {
-		// transitional: cores created without an explicit environment belong to the current one, if any
-		this(Environment.peekInstance(), coreName, lns, reasoning);
+		// a core created without an explicit environment is a standalone core (e.g. for exports and tests)
+		this((Environment) null, coreName, lns, reasoning);
 	}
 
 	/**
@@ -268,12 +268,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Returns the environment this core belongs to. Cores created without an explicit environment belong to the
-	 * current one; standalone cores without any environment return null.
+	 * Returns the environment this core belongs to, null for standalone cores created without an environment.
 	 */
 	@Nullable
 	public Environment findEnvironment() {
-		return environment != null ? environment : Environment.peekInstance();
+		return environment;
 	}
 
 	/**

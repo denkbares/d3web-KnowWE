@@ -70,5 +70,10 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-TextDiff</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-GlobalTestUtils</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

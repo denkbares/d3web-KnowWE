@@ -184,7 +184,10 @@ public final class Messages {
 	 * @param compiler the compiler for which the messages should be removed
 	 */
 	public static void clearMessages(Compiler compiler) {
-		for (Section<?> section : getSectionsWithMessages()) {
+		// a compiler without environment (e.g. a bare test compiler) has no stored messages anywhere
+		Environment environment = KnowWEUtils.findEnvironment(compiler);
+		if (environment == null) return;
+		for (Section<?> section : getSectionsWithMessages(environment)) {
 			clearMessages(compiler, section);
 		}
 	}
@@ -779,13 +782,6 @@ public final class Messages {
 		}
 	}
 
-	/**
-	 * Returns all Sections that currently have stored Messages either of Type ERROR or WARNING.
-	 */
-	public static Collection<Section<?>> getSectionsWithMessages(Message.Type... types) {
-		Environment environment = Environment.peekInstance();
-		return environment == null ? Collections.emptyList() : getSectionsWithMessages(environment, types);
-	}
 
 	/**
 	 * Returns all Sections of the specified environment that currently have stored Messages of the specified types

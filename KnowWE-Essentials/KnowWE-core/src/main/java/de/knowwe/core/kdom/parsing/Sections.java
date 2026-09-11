@@ -1622,8 +1622,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param changeNote  the change notes to be associated with the given changes
 	 * @return a result object containing some information about the replacement success or the errors occurred
 	 */
-	public static @NotNull ReplaceResult replaceAsSystem(Map<String, String> sectionsMap, @Nullable String changeNote) {
-		return replace(ReplaceContext.of(Environment.DEFAULT_WEB, title -> true, "SYSTEM"), sectionsMap, changeNote);
+	public static @NotNull ReplaceResult replaceAsSystem(@NotNull Environment environment, Map<String, String> sectionsMap, @Nullable String changeNote) {
+		return replace(ReplaceContext.of(environment, Environment.DEFAULT_WEB, title -> true, "SYSTEM"), sectionsMap, changeNote);
 	}
 
 	/**
@@ -1788,13 +1788,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			return new ReplaceContext(environment, web, userCanEdit, null, author);
 		}
 
-		/**
-		 * @deprecated pass the environment at hand: {@link #of(Environment, String, Predicate, String)}
-		 */
-		@Deprecated
-		public static ReplaceContext of(String web, Predicate<String> userCanEdit, String author) {
-			return of(Environment.requireInstance(), web, userCanEdit, author);
-		}
 
 		@NotNull
 		public Environment getEnvironment() {

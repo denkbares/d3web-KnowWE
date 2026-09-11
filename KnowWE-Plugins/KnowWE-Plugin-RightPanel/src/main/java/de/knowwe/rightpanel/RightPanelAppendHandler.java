@@ -31,7 +31,7 @@ import de.knowwe.plugin.Plugins;
 /**
  * Scaffolds the right panel DOM inline during page render. Runs as a post {@link PageAppendHandler}, so its output is
  * appended to the viewed article's HTML (the framework already skips support / non-viewed articles, leaving exactly
- * one scaffold per page view). It queries {@link Plugins#getRightPanelTabs()}, drops tabs whose
+ * one scaffold per page view). It queries {@link Plugins#getRightPanelTabs(Environment)}, drops tabs whose
  * {@link de.knowwe.core.rightpanel.RightPanelTabProvider#isAvailable(UserContext) isAvailable} is false and, if any
  * remain, emits the panel structure. When no tab is available it emits nothing at all, so no panel and no toggle
  * appear.
@@ -46,7 +46,7 @@ public class RightPanelAppendHandler implements PageAppendHandler {
 		// no article on preview renders; nothing to scaffold
 		if (article == null) return;
 
-		List<RightPanelTab> available = Plugins.getRightPanelTabs().stream()
+		List<RightPanelTab> available = Plugins.getRightPanelTabs(user.getEnvironment()).stream()
 				.filter(tab -> tab.provider().isAvailable(user))
 				.toList();
 

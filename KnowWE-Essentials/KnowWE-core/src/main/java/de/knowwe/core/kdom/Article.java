@@ -128,40 +128,6 @@ public final class Article {
 	}
 
 	/**
-	 * @deprecated transitional: uses the current environment, prefer {@link #createTemporaryArticle(Environment,
-	 * String, String)}
-	 */
-	@Deprecated
-	public static Article createTemporaryArticle(String text, String title) {
-		return createArticle(text, title, Environment.DEFAULT_WEB, null, true);
-	}
-
-	/**
-	 * @deprecated transitional: uses the current environment, prefer {@link #createTemporaryArticle(Environment,
-	 * String, String, RootType)}
-	 */
-	@Deprecated
-	public static Article createTemporaryArticle(String text, String title, RootType root) {
-		return createArticle(text, title, Environment.DEFAULT_WEB, null, true, root);
-	}
-
-	/**
-	 * @deprecated the web is gone, use {@link #createTemporaryArticle(String, String)}
-	 */
-	@Deprecated
-	public static Article createTemporaryArticle(String text, String title, String web) {
-		return createArticle(text, title, web, null, true);
-	}
-
-	/**
-	 * @deprecated the web is gone, use {@link #createTemporaryArticle(String, String, RootType)}
-	 */
-	@Deprecated
-	public static Article createTemporaryArticle(String text, String title, String web, RootType root) {
-		return createArticle(text, title, web, null, true, root);
-	}
-
-	/**
 	 * The environment of the manager, or the current one for articles without manager (temporary articles).
 	 */
 	private static Environment environmentOf(@Nullable ArticleManager manager) {
@@ -219,13 +185,13 @@ public final class Article {
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
 		this.articleManager = manager;
-		Environment environment = manager != null ? KnowWEUtils.findEnvironment(manager)
-				: temporaryEnvironment != null ? temporaryEnvironment : Environment.peekInstance();
+		Environment environment = manager != null ? manager.getEnvironment() : temporaryEnvironment;
+		if (environment == null) throw new IllegalStateException("article '" + title + "' created without an environment");
 		this.environment = environment;
 		this.publicationPredecessor = articleManager != null ? articleManager.getArticle(title) : null;
 		// Keep the established initialization behavior: before the environment is ready, parsing must not reuse an
 		// existing KDOM. The publication predecessor is nevertheless needed independently for the ID namespace.
-		this.lastVersion = environment != null && Environment.isInitialized() ? publicationPredecessor : null;
+		this.lastVersion = environment.isReady() ? publicationPredecessor : null;
 		this.sectionIdNamespace = publicationPredecessor != null && publicationPredecessor.text.equals(cleanedText)
 				? publicationPredecessor.sectionIdNamespace : UUID.randomUUID().toString();
 

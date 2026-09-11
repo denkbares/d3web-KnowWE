@@ -51,16 +51,6 @@ public interface SectionizerModule {
 	 */
 	class Registry {
 
-		/**
-		 * Registers the module at the current environment.
-		 *
-		 * @deprecated use {@link de.knowwe.core.Environment#addSectionizerModule(SectionizerModule)} of the environment at
-		 * hand; the plugged modules are registered by the environment itself
-		 */
-		@Deprecated
-		public static void register(SectionizerModule sectionizerModule) {
-			Environment.requireInstance().addSectionizerModule(sectionizerModule);
-		}
 
 		/**
 		 * Created a new section of the specified type, within the specified parent section, for the secified text (full

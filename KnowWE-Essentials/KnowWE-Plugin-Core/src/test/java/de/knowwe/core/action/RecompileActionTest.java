@@ -26,6 +26,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import connector.DummyConnector;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
@@ -40,20 +41,23 @@ public class RecompileActionTest {
 
 	@Test
 	public void resolvesLatestArticleVersionsInsideRegistrationFrame() {
-		Article staleArticle = temporaryArticle("Article", "stale content");
-		Article currentArticle = temporaryArticle("Article", "current content");
-		Article deletedArticle = temporaryArticle("Deleted", "deleted content");
-		ArticleManager articleManager = new CurrentArticleManager(Map.of("Article", currentArticle));
+		// the temporary articles belong to an environment, a core-only one is enough here
+		try (Environment environment = Environment.create(new DummyConnector(), new RootType())) {
+			Article staleArticle = temporaryArticle(environment, "Article", "stale content");
+			Article currentArticle = temporaryArticle(environment, "Article", "current content");
+			Article deletedArticle = temporaryArticle(environment, "Deleted", "deleted content");
+			ArticleManager articleManager = new CurrentArticleManager(Map.of("Article", currentArticle));
 
-		List<Article> resolvedArticles = RecompileAction.resolveCurrentArticles(
-				articleManager, List.of(staleArticle, deletedArticle));
+			List<Article> resolvedArticles = RecompileAction.resolveCurrentArticles(
+					articleManager, List.of(staleArticle, deletedArticle));
 
-		assertEquals(1, resolvedArticles.size());
-		assertSame(currentArticle, resolvedArticles.get(0));
+			assertEquals(1, resolvedArticles.size());
+			assertSame(currentArticle, resolvedArticles.get(0));
+		}
 	}
 
-	private static Article temporaryArticle(String title, String content) {
-		return Article.createTemporaryArticle(content, title, "test", new RootType());
+	private static Article temporaryArticle(Environment environment, String title, String content) {
+		return Article.createTemporaryArticle(environment, content, title, new RootType());
 	}
 
 	private record CurrentArticleManager(Map<String, Article> articles) implements ArticleManager {

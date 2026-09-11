@@ -62,10 +62,10 @@ public class GoToDefinitionAction extends AbstractAction {
 			}
 		}
 		else {
-			uriProvider = new PackageCompileLinkToTermDefinitionProvider();
+			uriProvider = new PackageCompileLinkToTermDefinitionProvider(context.getEnvironment());
 		}
 
-		Config config = new Config();
+		Config config = new Config(context.getEnvironment());
 		config.init(Sections.cast(section, DefaultMarkupType.class), context);
 		String uri = Rdf2GoUtils.expandNamespace(compiler.getRdf2GoCore(), conceptName);
 

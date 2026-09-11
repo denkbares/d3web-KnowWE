@@ -129,7 +129,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer<Gr
 		if (core == null) return null;
 
 		List<Message> messages = new ArrayList<>();
-		Config config = new Config();
+		Config config = new Config(user.getEnvironment());
 		config.setCacheFileID(Utils.getFileID(section, user));
 
 		Messages.clearMessages(section, this.getClass());
@@ -141,7 +141,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer<Gr
 			config.setColors(Utils.createColorCodings(section, config.getColorsProperty(), core));
 		}
 
-		LinkToTermDefinitionProvider uriProvider = new PackageCompileLinkToTermDefinitionProvider();
+		LinkToTermDefinitionProvider uriProvider = new PackageCompileLinkToTermDefinitionProvider(user.getEnvironment());
 
 		String sparqlContentRaw = content.getText();
 

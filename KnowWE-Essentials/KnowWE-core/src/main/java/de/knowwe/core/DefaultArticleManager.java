@@ -95,18 +95,7 @@ public class DefaultArticleManager implements ArticleManager {
 		this(web, Objects.requireNonNull(environment, "environment"));
 	}
 
-	/**
-	 * Creates a new article manager that is bound to the environment singleton, resolved lazily through
-	 * {@link Environment#getInstance()} when {@link #getEnvironment()} is called.
-	 *
-	 * @deprecated use {@link #DefaultArticleManager(Environment, String)} and pass the environment explicitly
-	 */
-	@Deprecated
-	public DefaultArticleManager(String web) {
-		this(web, null);
-	}
-
-	private DefaultArticleManager(String web, Environment environment) {
+	private DefaultArticleManager(String web, @NotNull Environment environment) {
 		this.web = web;
 		this.environment = environment;
 		this.compilerManager = new CompilerManager(this);
@@ -116,13 +105,7 @@ public class DefaultArticleManager implements ArticleManager {
 	@Override
 	@NotNull
 	public Environment getEnvironment() {
-		if (environment != null) return environment;
-		Environment current = Environment.peekInstance();
-		if (current == null) {
-			throw new IllegalStateException("Article manager '" + web + "' was created without an environment " +
-					"and no environment is initialized");
-		}
-		return current;
+		return environment;
 	}
 
 	public void setInitialized(boolean initialized) {

@@ -3,6 +3,7 @@
  */
 package de.knowwe.plugin;
 
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -392,7 +393,7 @@ public class Plugins {
 	 *
 	 * @return the sorted, deduplicated list of right panel tabs
 	 */
-	public static List<RightPanelTab> getRightPanelTabs() {
+	public static List<RightPanelTab> getRightPanelTabs(@NotNull Environment environment) {
 		List<RightPanelTab> all = new ArrayList<>();
 		for (Extension extension : PluginManager.getInstance()
 				.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_RightPanelTab)) {
@@ -402,8 +403,7 @@ public class Plugins {
 					(RightPanelTabProvider) extension.getSingleton())
 			);
 		}
-		Environment environment = Environment.peekInstance();
-		if (environment != null) all.addAll(registeredRightPanelTabs(environment));
+		all.addAll(registeredRightPanelTabs(environment));
 		Map<String, RightPanelTab> deduped = new LinkedHashMap<>();
 		for (RightPanelTab tab : all) {
 			deduped.putIfAbsent(tab.id(), tab);

@@ -167,13 +167,6 @@ public class D3webUtils {
 		return Compilers.getCompiler(master, D3webCompiler.class);
 	}
 
-	/**
-	 * @deprecated pass the environment at hand: {@link #storeSessionRecordsAsAttachment(Environment, String, Collection, String, String)}
-	 */
-	@Deprecated
-	public static void storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
-		storeSessionRecordsAsAttachment(Environment.requireInstance(), user, sessions, attachmentArticle, attachmentName);
-	}
 
 	public static void storeSessionRecordsAsAttachment(@NotNull Environment environment, String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 

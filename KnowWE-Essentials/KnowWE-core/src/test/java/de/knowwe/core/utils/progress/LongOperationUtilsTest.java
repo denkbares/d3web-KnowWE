@@ -48,9 +48,9 @@ public class LongOperationUtilsTest {
 
 	@Test
 	public void cleanupWaitsUntilArticleRegistrationCommitIsComplete() throws Exception {
-		DefaultArticleManager articleManager = new DefaultArticleManager("test");
+		DefaultArticleManager articleManager = new DefaultArticleManager(environment.environment, "test");
 		Article article = Article.createTemporaryArticle(
-				"content", "Article-" + UUID.randomUUID(), "test", new RootType());
+				environment.environment, "content", "Article-" + UUID.randomUUID(), new RootType());
 		Section<?> section = article.getRootSection();
 		LongOperation operation = new AbstractLongOperation() {
 			@Override

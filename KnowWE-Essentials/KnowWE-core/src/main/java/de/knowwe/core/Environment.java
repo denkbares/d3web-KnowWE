@@ -140,7 +140,16 @@ public final class Environment implements AutoCloseable {
 	/**
 	 * Set when {@link #close()} starts; services stay available while closing, so cleanup code can still use them.
 	 */
+	private volatile boolean ready = false;
 	private volatile boolean closing = false;
+
+	/**
+	 * Returns whether this environment has finished its initialization (articles and compilers are set up). While it
+	 * is not ready, parsing must not reuse an existing KDOM.
+	 */
+	public boolean isReady() {
+		return ready;
+	}
 
 	/**
 	 * Set when {@link #close()} has released the services; from then on no service can be provided anymore.
@@ -348,6 +357,7 @@ public final class Environment implements AutoCloseable {
 			throw e;
 		}
 		initialized = true;
+		environment.ready = true;
 		environment.publishToServletContext();
 		environment.eventManager.fireEvent(new InitEvent());
 

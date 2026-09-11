@@ -1268,15 +1268,7 @@ public class KnowWEUtils {
 	 */
 	@Nullable
 	public static Environment findEnvironment(@Nullable ArticleManager manager) {
-		if (manager != null) {
-			try {
-				return manager.getEnvironment();
-			}
-			catch (IllegalStateException e) {
-				// manager created without environment (deprecated constructor) and no environment initialized
-			}
-		}
-		return Environment.peekInstance();
+		return manager == null ? null : manager.getEnvironment();
 	}
 
 	/**

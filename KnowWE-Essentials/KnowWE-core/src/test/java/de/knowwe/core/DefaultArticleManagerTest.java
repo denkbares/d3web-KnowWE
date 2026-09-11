@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import de.knowwe.core.compile.Compiler;
@@ -39,9 +40,13 @@ import static org.junit.Assert.fail;
 
 public class DefaultArticleManagerTest {
 
+	/** the environment the managers under test belong to */
+	@Rule
+	public final ArticleLifecycleFixture wiki = new ArticleLifecycleFixture();
+
 	@Test
 	public void queueingArticleRequiresOpenRegistrationFrame() throws Exception {
-		DefaultArticleManager articleManager = new DefaultArticleManager("test");
+		DefaultArticleManager articleManager = new DefaultArticleManager(wiki.environment, "test");
 		try {
 			articleManager.queueArticle("Article", "Content");
 			fail("Article was queued outside a registration frame");
@@ -56,7 +61,7 @@ public class DefaultArticleManagerTest {
 
 	@Test
 	public void articleRegistrationFrameWaitsForRunningCompilation() throws Exception {
-		DefaultArticleManager articleManager = new DefaultArticleManager("test");
+		DefaultArticleManager articleManager = new DefaultArticleManager(wiki.environment, "test");
 		CompilerManager compilerManager = articleManager.getCompilerManager();
 		CountDownLatch compilationStarted = new CountDownLatch(1);
 		CountDownLatch finishCompilation = new CountDownLatch(1);

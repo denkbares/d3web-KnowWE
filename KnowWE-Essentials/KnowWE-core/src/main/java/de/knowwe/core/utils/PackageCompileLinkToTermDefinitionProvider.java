@@ -40,10 +40,18 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDefinitionProvider {
 
+	private final Environment environment;
+
+	/**
+	 * @param environment the environment whose terminology the links point into
+	 */
+	public PackageCompileLinkToTermDefinitionProvider(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
 	@Override
 	public String getLinkToTermDefinition(Identifier name, String masterArticle) {
-		// LinkToTermDefinitionProvider has no context object, see environment-instance-plan.md
-		TerminologyManager terminologyManager = getTerminologyManager(Environment.requireInstance(), masterArticle);
+		TerminologyManager terminologyManager = getTerminologyManager(environment, masterArticle);
 		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(name);
 		String targetArticle = name.toString();
 		if (!termDefinitions.isEmpty()) {

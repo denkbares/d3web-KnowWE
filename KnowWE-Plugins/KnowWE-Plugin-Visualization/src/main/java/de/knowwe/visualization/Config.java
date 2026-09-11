@@ -208,7 +208,10 @@ public class Config {
 
 	@NotNull
 	public Environment getEnvironment() {
-		return environment != null ? environment : Environment.requireInstance();
+		if (environment == null) {
+			throw new IllegalStateException("visualization config without environment, create it with Config(Environment) or Config(section, user)");
+		}
+		return environment;
 	}
 
 	public String getForceVisualizationStyle() {

@@ -63,13 +63,13 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 		if (Thread.currentThread().isInterrupted()) return null;
 
-		OntoGraphDataBuilder builder = new OntoGraphDataBuilder(section, config, new PackageCompileLinkToTermDefinitionProvider(), core);
+		OntoGraphDataBuilder builder = new OntoGraphDataBuilder(section, config, new PackageCompileLinkToTermDefinitionProvider(user.getEnvironment()), core);
 		builder.createData(config.getTimeout());
 		return builder;
 	}
 
 	Config createConfig(Section<?> section, UserContext user, Rdf2GoCore core) {
-		Config config = new Config();
+		Config config = new Config(user.getEnvironment());
 		config.setCacheFileID(Utils.getFileID(section, user));
 
 		if (core != null && !core.getRuleSet().equals(RepositoryConfigs.get(RdfConfig.class))) {
