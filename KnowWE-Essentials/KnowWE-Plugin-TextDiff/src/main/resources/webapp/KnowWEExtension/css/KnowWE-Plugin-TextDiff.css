@@ -47,6 +47,8 @@
 	display: block;
 	contain: content;
 	color: var(--diff-fg);
+	white-space: normal;
+	text-align: start;
 }
 
 /* --- Status placeholders rendered on the host (light DOM) ---------------- */
@@ -120,6 +122,15 @@
 	line-height: var(--diff-line-height);
 	tab-size: var(--diff-tab-size);
 	-moz-tab-size: var(--diff-tab-size);
+}
+
+.diff-note {
+	margin: 0;
+	padding: 10px 16px;
+	background: var(--diff-num-bg);
+	color: var(--diff-fg-muted);
+	font: var(--diff-font-size)/var(--diff-line-height) var(--diff-font-family);
+	font-style: italic;
 }
 
 /* --- Lines --------------------------------------------------------------- */
@@ -259,6 +270,8 @@
 	--file-change-mono-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
 	display: block;
+	white-space: normal;
+	text-align: start;
 }
 
 :host([data-theme="dark"]) {
@@ -381,6 +394,10 @@
 	color: var(--file-change-purple);
 }
 
+.file-change[data-change="added-deleted"] .file-change-badge {
+	color: var(--file-change-muted-fg);
+}
+
 .file-change-badge {
 	flex: 0 0 auto;
 	padding: 0 7px;
@@ -408,6 +425,10 @@
 .file-change[data-change="renamed"] .file-change-badge,
 .file-change[data-change="renamed-modified"] .file-change-badge {
 	background: var(--file-change-purple-bg);
+}
+
+.file-change[data-change="added-deleted"] .file-change-badge {
+	background: var(--file-change-header-bg);
 }
 
 .file-change-title {
@@ -492,6 +513,25 @@
 .file-change-stat {
 	min-width: 0;
 	font-variant-numeric: tabular-nums;
+}
+
+.file-change-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	flex: 0 0 auto;
+	color: var(--file-change-muted-fg);
+	font-size: 13px;
+	line-height: 1;
+}
+
+.file-change-actions ::slotted(a) {
+	color: inherit;
+	text-decoration: none;
+}
+
+.file-change-actions ::slotted(a:hover) {
+	color: var(--file-change-blue);
 }
 
 .file-change-body {

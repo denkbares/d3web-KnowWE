@@ -97,9 +97,9 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 					.fireEvent(new TermRenamingStartEvent(mgr, context, command.termIdentifier, command.replacementIdentifier));
 		}
 
-		executeRenamingCommands(context, renamingCommands);
-
+		boolean failed = executeRenamingCommands(context, renamingCommands);
 		Compilers.awaitTermination(mgr.getCompilerManager());
+		if (failed) return;
 
 		for (RenamingCommand command : renamingCommands) {
 			EventManager.getInstance()

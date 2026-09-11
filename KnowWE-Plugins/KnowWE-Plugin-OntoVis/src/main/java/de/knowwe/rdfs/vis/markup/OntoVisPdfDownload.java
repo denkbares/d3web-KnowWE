@@ -36,7 +36,8 @@ public class OntoVisPdfDownload extends AbstractAction {
 		if (servletContext == null) return; // at wiki startup only
 
 		// find graph name
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class), context);
 		config.setCacheFileID(Utils.getFileID(section, context));
 		File dotFile = new File(DOTRenderer.getFilePath(config) + ".dot");
@@ -46,7 +47,7 @@ public class OntoVisPdfDownload extends AbstractAction {
 		DOTRenderer.convertDot(dotFile, pdf, DOTRenderer.getCommand(config, "pdf", dotFile, pdf));
 
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + ".pdf\"");
+		context.setContentDisposition("attachment", name + ".pdf");
 
 		InputStream fis = new FileInputStream(pdf);
 		OutputStream ous = context.getOutputStream();

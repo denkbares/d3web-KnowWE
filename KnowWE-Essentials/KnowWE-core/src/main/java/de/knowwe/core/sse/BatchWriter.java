@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 denkbares GmbH, Germany
+ * Copyright (C) 2026 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -16,18 +16,19 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+package de.knowwe.core.sse;
 
-package de.knowwe.dropzone.util;
+import java.io.IOException;
+import java.util.List;
 
-import de.knowwe.core.user.UserContext;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Jonas Müller
- * @created 25.05.18
+ * Writes one batch of items as one or more events, usually by serializing the batch and calling
+ * {@link ServerSentEventWriter#data(String)} or {@link ServerSentEventWriter#event(String, String)}.
  */
-public class DropZoneUtil {
+@FunctionalInterface
+public interface BatchWriter<T> {
 
-	public static String getEnrichedFileName(UserContext context, String originalName) {
-		return context.getSession().getId() + "-" + originalName;
-	}
+	void write(@NotNull ServerSentEventWriter out, @NotNull List<T> batch) throws IOException;
 }

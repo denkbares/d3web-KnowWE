@@ -83,7 +83,7 @@ public class TableToExcelAction extends AbstractAction {
 					workbook.write(outputStream);
 				}
 			}
-			context.setHeader("Content-Disposition", "attachment; filename=\"" + JSPWikiMarkupUtils.generateFileNameForSection(section) + ".xlsx\"");
+			context.setContentDisposition("attachment", JSPWikiMarkupUtils.generateFileNameForSection(section) + ".xlsx");
 			try {
 				try (InputStream inputStream = new FileInputStream(file)) {
 					Streams.stream(inputStream, contextOutputStream);

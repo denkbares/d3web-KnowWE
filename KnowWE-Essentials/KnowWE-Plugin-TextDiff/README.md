@@ -98,12 +98,23 @@ collapse behavior.
 </knowwe-file-change>
 ```
 
-Supported changes are `added`, `deleted`, `modified`, `renamed`, and `renamed-modified`.
+Supported changes are `added`, `deleted`, `modified`, `renamed`, `renamed-modified`, and `added-deleted`
+(created and deleted again within the observed range).
 The component also accepts common aliases like `create`, `delete`, `removed`, `rename`, and
 `rename-modified`.
 
 The whole header toggles collapse. Links inside the header still navigate. `data-collapsed`
 renders the body collapsed initially.
+
+Extra controls such as links to related views go into the `actions` slot and appear in the header
+between the stats and the badge:
+
+```html
+<knowwe-file-change data-change="modified" data-new-name="Article" data-collapsed>
+  <a slot="actions" href="Diff.jsp?page=Article&r1=5&r2=3" title="Open page history diff">...</a>
+  <knowwe-text-diff data-action-url="action/MyDiffAction?page=Article"></knowwe-text-diff>
+</knowwe-file-change>
+```
 
 Preferred server-side file/article change usage:
 

@@ -57,7 +57,7 @@ public class AttachmentDownloadAction extends AbstractAction {
 
 		try (InputStream in = attachment.getInputStream(); OutputStream out = context.getOutputStream()) {
 			context.setContentType(BINARY);
-			context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+			context.setContentDisposition("attachment", filename);
 			Streams.stream(in, out);
 		}
 	}

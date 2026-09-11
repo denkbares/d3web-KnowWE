@@ -11,8 +11,21 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>KnowWE-Plugin-d3web-OntologyBridge</artifactId>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-GlobalTestUtils</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-basic</artifactId>

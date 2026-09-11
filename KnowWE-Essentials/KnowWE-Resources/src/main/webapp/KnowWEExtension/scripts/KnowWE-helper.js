@@ -38,7 +38,7 @@ KNOWWE.helper = function() {
       if (oldValue !== newValue) {
         jq$.ajax("action/StoreLocalSectionStorageAction", {
           data: {
-            sectionID: sectionID,
+            SectionID: sectionID,
             value: newValue
           },
           type: 'post',
@@ -62,7 +62,7 @@ KNOWWE.helper = function() {
       if (oldValue !== newValue) {
         jq$.ajax("action/StoreLocalSectionStorageAction", {
           data: {
-            sectionID: sectionID,
+            SectionID: sectionID,
             value: newValue
           },
           type: 'post',

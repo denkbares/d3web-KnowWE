@@ -79,8 +79,8 @@ public class GetInfoObjects extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String ids = context.getParameter("ids");
-		String flowchartId = context.getParameter("sectionID");
-		Section<?> flowchart = Sections.get(flowchartId);
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> flowchart = getSection(context);
 		Identifier[] idArray;
 		try {
 			JSONArray json = new JSONArray(ids);

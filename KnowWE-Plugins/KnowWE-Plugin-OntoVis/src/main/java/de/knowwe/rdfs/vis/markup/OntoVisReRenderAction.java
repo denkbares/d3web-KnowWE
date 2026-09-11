@@ -35,7 +35,8 @@ public class OntoVisReRenderAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		// Execute clean up and clearCache methods in ConceptVisualizationRenderer
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 		PreRenderWorker.getInstance().clearCache(section);
 	}
 }

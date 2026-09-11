@@ -183,7 +183,8 @@ public record FileChange(
 		DELETED("deleted"),
 		MODIFIED("modified"),
 		RENAMED("renamed"),
-		RENAMED_MODIFIED("renamed-modified");
+		RENAMED_MODIFIED("renamed-modified"),
+		ADDED_DELETED("added-deleted");
 
 		private final String htmlValue;
 

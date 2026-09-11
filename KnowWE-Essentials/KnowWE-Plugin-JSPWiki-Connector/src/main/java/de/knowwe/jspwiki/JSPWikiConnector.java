@@ -878,15 +878,22 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException {
+		String safeName = validateAttachmentName(filename);
+		// as of validateFileName: a jsp inside the web application would be executed instead of downloaded. Only
+		// checked when storing, deleting such an attachment must stay possible.
+		String lowerCase = safeName.toLowerCase();
+		if (lowerCase.endsWith(".jsp") || lowerCase.endsWith(".jspf")) {
+			throw new IOException("Attachments must not be jsp files: " + filename);
+		}
 		try {
 			boolean wasLocked = isArticleLocked(title);
 			if (!wasLocked) lockArticle(title, user);
 			AttachmentManager attachmentManager = getAttachmentManager();
 
-			Attachment attachment = new Attachment(getEngine(), title, filename);
+			Attachment attachment = new Attachment(getEngine(), title, safeName);
 			attachment.setAuthor(user);
 			attachmentManager.storeAttachment(attachment, stream);
-			String path = toPath(title, filename);
+			String path = toPath(title, safeName);
 			LOGGER.info("Stored attachment '" + path + "'");
 			if (!wasLocked) unlockArticle(title, user);
 			return new JSPWikiAttachment(attachment, attachmentManager);
@@ -894,6 +901,34 @@ public class JSPWikiConnector implements WikiConnector {
 		catch (ProviderException e) {
 			throw new IOException("could not store attachment", e);
 		}
+	}
+
+	/**
+	 * Makes sure the file name of an attachment cannot leave the attachment directory of its article. The name becomes
+	 * part of the storage path, and {@link org.apache.wiki.providers.BasicAttachmentProvider} mangles it with
+	 * <tt>TextUtil#urlEncodeUTF8</tt>, which passes '/' and '.' through unchanged - path elements would therefore
+	 * escape the storage directory and the provider would happily create it. The ordinary attachment upload of the
+	 * wiki applies {@link AttachmentManager#validateFileName(String)} for that reason, but that one is bypassed when
+	 * attachments are stored through this connector. We deliberately do less than validateFileName does: it also
+	 * replaces harmless but annoying characters, which would silently rename existing attachments here.
+	 *
+	 * @param fileName the file name of the attachment
+	 * @return the file name without any path elements
+	 * @throws IOException if the name cannot be used as an attachment name at all
+	 */
+	private static String validateAttachmentName(String fileName) throws IOException {
+		if (Strings.isBlank(fileName)) {
+			throw new IOException("Attachment file names must not be empty");
+		}
+		int lastSeparator = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+		String name = fileName.substring(lastSeparator + 1).trim();
+		if (name.isEmpty() || ".".equals(name) || "..".equals(name)) {
+			throw new IOException("Invalid attachment file name: " + fileName);
+		}
+		if (!name.equals(fileName)) {
+			LOGGER.warn("Attachment file name '{}' contains path elements, storing it as '{}'", fileName, name);
+		}
+		return name;
 	}
 
 	@Override

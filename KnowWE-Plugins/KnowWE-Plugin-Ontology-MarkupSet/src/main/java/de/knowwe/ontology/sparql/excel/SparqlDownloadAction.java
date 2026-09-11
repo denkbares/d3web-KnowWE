@@ -22,6 +22,8 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.denkbares.semanticcore.utils.ResultTableModel;
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Streams;
@@ -71,12 +73,27 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class SparqlDownloadAction extends AbstractAction {
 
 	public static final String PARAM_FILENAME = "filename";
+	public static final String PARAM_DOWNLOAD_FILE = "downloadFile";
+	public static final String PARAM_DOWNLOAD = "download";
 	public static final double MAX_COLUMN_WIDTH = 100;
+
+	/**
+	 * The temp file names created by {@link #getExcelOutputFile} consist of a random UUID and the xlsx extension.
+	 */
+	private static final Pattern DOWNLOAD_FILE_PATTERN = Pattern.compile("[0-9a-fA-F-]{36}\\.xlsx");
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		// find query
+		// getSection also asserts the read access rights of the user for the requested section
 		Section<?> rootSection = getSection(context);
+
+		// download - 2. request (get): just stream the file the first request has prepared
+		if (Boolean.parseBoolean(context.getParameter(PARAM_DOWNLOAD))) {
+			download(context);
+			return;
+		}
+
+		// find query
 		Section<SparqlContentType> querySection = Sections.successor(rootSection, SparqlContentType.class);
 		if (querySection == null) {
 			context.sendError(410, "Query not found, probably the page has been edited while you visiting it. Please reload the page and try again, or contact the administrator if the error persists.");
@@ -97,16 +114,8 @@ public class SparqlDownloadAction extends AbstractAction {
 			Rdf2GoCore core = compilers.iterator().next().getRdf2GoCore();
 			String sparql = Rdf2GoUtils.createSparqlString(core, querySection.getText());
 			CachedTupleQueryResult resultSet = core.sparqlSelect(sparql);
-			File file = getExcelOutputFile(context, filter, hiddenColumns, opts, core, resultSet);
-			//no download - 1. request (post)
-			if (!Boolean.parseBoolean(context.getParameter("download"))) {
-				prepareDownload(context, file);
-			}
-
-			//download - 2. request (get)
-			if (Boolean.parseBoolean(context.getParameter("download"))) {
-				download(context);
-			}
+			// no download - 1. request (post): create the file and hand out its name
+			prepareDownload(context, getExcelOutputFile(context, filter, hiddenColumns, opts, core, resultSet));
 		}
 	}
 
@@ -133,7 +142,7 @@ public class SparqlDownloadAction extends AbstractAction {
 			context.setContentType(JSON);
 			JSONObject response = new JSONObject();
 			try {
-				response.put("downloadFile", file.getName());
+				response.put(PARAM_DOWNLOAD_FILE, file.getName());
 				response.write(context.getWriter());
 			}
 			catch (JSONException e) {
@@ -143,20 +152,28 @@ public class SparqlDownloadAction extends AbstractAction {
 	}
 
 	private static void download(UserActionContext context) throws IOException {
+		// only accept the exact temp file name we have handed out in prepareDownload, otherwise the parameter would
+		// allow to read and delete arbitrary files relative to the temp directory
+		String downloadFile = context.getParameter(PARAM_DOWNLOAD_FILE);
+		if (downloadFile == null || !DOWNLOAD_FILE_PATTERN.matcher(downloadFile).matches()) {
+			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid download file");
+			return;
+		}
+
 		context.setContentType("application/vnd.ms-excel");
 		String fileName = context.getParameter(PARAM_FILENAME);
+		if (Strings.isBlank(fileName)) fileName = "SparqlResult.xlsx";
 		if (Boolean.parseBoolean(context.getParameter("filtered"))) {
 			fileName = fileName.replace(".xlsx", "_filtered.xlsx");
 		}
-		context.setHeader("Content-Disposition", "attachment; filename=\""
-				+ fileName + "\"");
+		context.setContentDisposition("attachment", fileName);
 
-		File file1 = new File(Files.getSystemTempDir(), context.getParameter("downloadFile"));
-		try (FileInputStream inputStream = new FileInputStream(file1); OutputStream outputStream = context.getOutputStream()) {
+		File file = new File(Files.getSystemTempDir(), downloadFile);
+		try (FileInputStream inputStream = new FileInputStream(file); OutputStream outputStream = context.getOutputStream()) {
 			Streams.stream(inputStream, outputStream);
 		}
 		finally {
-			file1.delete();
+			file.delete();
 		}
 	}
 

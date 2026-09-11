@@ -65,6 +65,12 @@
 	if (customElements.get('knowwe-text-diff')) return;
 
 	const DEFAULT_ACTION_URL = 'action/TextDiffAction';
+	const STYLESHEET_URL = 'KnowWEExtension/css/KnowWE-Plugin-TextDiff.css';
+
+	function resourceUrl(path) {
+		const base = window.knowweTextDiffResourceBase;
+		return base ? new URL(path, base).toString() : path;
+	}
 
 	function withCsrf(url) {
 		try {
@@ -122,7 +128,7 @@
 		load() { return this._fetchAndRender(); }
 
 		_hasShadowContent() {
-			if (this.shadowRoot && this.shadowRoot.firstElementChild) return true;
+			if (this.shadowRoot && this.shadowRoot.querySelector('.diff-frame')) return true;
 			const tpl = this.querySelector(':scope > template[shadowrootmode]');
 			if (tpl) return this._hydrateFromTemplate(tpl);
 			return false;
@@ -171,6 +177,9 @@
 				if (!Number.isNaN(n)) payload.contextLines = n;
 			}
 
+			// the loading and error placeholders are styled by the stylesheet inside the shadow root, so it has
+			// to be present before the first response arrives (and stays if the response never arrives)
+			this._ensureStylesheet();
 			this._setStatus('loading');
 			try {
 				const res = await fetchImpl(withCsrf(url), {
@@ -201,6 +210,15 @@
 			if (slotted !== null) return slotted;
 			const attributed = this.getAttribute(textAttribute);
 			return attributed !== null ? attributed : '';
+		}
+
+		_ensureStylesheet() {
+			const root = this.shadowRoot || this.attachShadow({ mode: 'open' });
+			if (root.querySelector('link[rel="stylesheet"]')) return;
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = resourceUrl(STYLESHEET_URL);
+			root.appendChild(link);
 		}
 
 		_writeShadow(html) {
@@ -243,7 +261,7 @@
  * generic and can contain a <knowwe-text-diff> when the change has content differences.
  *
  * Attributes:
- *   - data-change:    added | deleted | modified | renamed | renamed-modified
+ *   - data-change:    added | deleted | modified | renamed | renamed-modified | added-deleted
  *   - data-old-name:  original file/article name
  *   - data-new-name:  final file/article name
  *   - data-url:       optional URL for the displayed file/article name
@@ -253,6 +271,12 @@
  *   - data-deletions: optional number of removed lines
  *   - data-collapsed: optional boolean attribute; collapses the body when present
  *   - data-theme:     optional explicit 'light' | 'dark' theme override
+ *
+ * Slots:
+ *   - (default):      the body, typically a <knowwe-text-diff>
+ *   - actions:        extra controls shown in the header between the stats and the badge, for
+ *                     example links to related views. Clicks on links inside the header never
+ *                     toggle the body.
  *
  * Events:
  *   - toggle: dispatched (bubbling) when the user collapses or expands the body via the header.
@@ -273,6 +297,7 @@
 		modified: { label: 'Modified' },
 		renamed: { label: 'Renamed' },
 		'renamed-modified': { label: 'Renamed + modified' },
+		'added-deleted': { label: 'Added + deleted' },
 	};
 
 	function resourceUrl(path) {
@@ -285,6 +310,7 @@
 		if (value === 'delete' || value === 'removed') return 'deleted';
 		if (value === 'rename') return 'renamed';
 		if (value === 'rename-modified' || value === 'renamed-with-modifications') return 'renamed-modified';
+		if (value === 'add-delete' || value === 'created-deleted' || value === 'transient') return 'added-deleted';
 		return Object.prototype.hasOwnProperty.call(CHANGE_TYPES, value) ? value : 'modified';
 	}
 
@@ -345,12 +371,13 @@
 				'      <span class="file-change-stat additions" part="additions"></span>' +
 				'      <span class="file-change-stat deletions" part="deletions"></span>' +
 				'    </span>' +
+				'    <span class="file-change-actions" part="actions"><slot name="actions"></slot></span>' +
 				'    <span class="file-change-badge" part="badge"></span>' +
 				'  </header>' +
 				'  <div class="file-change-body" part="body"><slot></slot></div>' +
 				'</article>';
 			root.querySelector('.file-change-header').addEventListener('click', (event) => this._onHeaderClick(event));
-			root.querySelector('slot').addEventListener('slotchange', () => this._updateSlotState());
+			root.querySelector('slot:not([name])').addEventListener('slotchange', () => this._updateSlotState());
 		}
 
 		_update() {
@@ -396,7 +423,7 @@
 		}
 
 		_updateSlotState() {
-			const slot = this.shadowRoot && this.shadowRoot.querySelector('slot');
+			const slot = this.shadowRoot && this.shadowRoot.querySelector('slot:not([name])');
 			const hasBody = slot && slot.assignedNodes({ flatten: true }).some(hasVisibleNode);
 			this.toggleAttribute('data-empty-body', !hasBody);
 			const toggle = this.shadowRoot && this.shadowRoot.querySelector('.file-change-toggle');

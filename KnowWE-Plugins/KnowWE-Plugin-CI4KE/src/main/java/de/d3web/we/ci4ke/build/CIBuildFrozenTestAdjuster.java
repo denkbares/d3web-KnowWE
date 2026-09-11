@@ -54,7 +54,6 @@ import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
  * @created 08.05.2026
  */
 class CIBuildFrozenTestAdjuster {
-
 	static void adjustFrozenTests(BuildResult buildResult, CIDashboard dashboard) throws IOException {
 		if (buildResult == null) return;
 		List<TestResult> testResults = buildResult.getResults();
@@ -67,7 +66,13 @@ class CIBuildFrozenTestAdjuster {
 				Map<String, Message> expectedMessages = Collections.synchronizedMap(new TreeMap<>());
 				boolean isFullyFrozen = true;
 
-				Optional<WikiAttachment> attachment = Environment.getInstance().getWikiConnector().getAttachments(dashboard.getDashboardArticle()).stream().filter(a -> a.getFileName().contains(CIFreezeFailedTestsAction.getFileName(dashboard, testResult))).findFirst();
+				Optional<WikiAttachment> attachment = Environment.getInstance()
+						.getWikiConnector()
+						.getAttachments(dashboard.getDashboardArticle())
+						.stream()
+						.filter(a -> a.getFileName()
+								.contains(CIFreezeFailedTestsAction.getFileName(dashboard, testResult)))
+						.findFirst();
 				if (attachment.isEmpty()) continue;
 				String fileText = Streams.getTextAndClose(attachment.get().getInputStream());
 
@@ -91,13 +96,14 @@ class CIBuildFrozenTestAdjuster {
 				TestResult normalTest;
 				TestResult frozenTest;
 				if (isFullyFrozen) {
-					normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  Collections.synchronizedMap(new TreeMap<>()), Collections.synchronizedMap(new TreeMap<>()), new Message(Message.Type.SUCCESS));
-				} else {
-					normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesNormal, expectedMessages, testResult.getSummary());
+					normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(), Collections.synchronizedMap(new TreeMap<>()), Collections.synchronizedMap(new TreeMap<>()), new Message(Message.Type.SUCCESS));
+				}
+				else {
+					normalTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(), unexpectedMessagesNormal, expectedMessages, testResult.getSummary());
 				}
 				newResults.add(normalTest);
 				if (!unexpectedMessagesFrozen.isEmpty()) {
-					frozenTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(),  unexpectedMessagesFrozen, expectedMessages, testResult.getSummary());
+					frozenTest = TestResult.createTestResult(testResult.getTestName(), testResult.getConfiguration(), unexpectedMessagesFrozen, expectedMessages, testResult.getSummary());
 					frozenTest.setFrozenTest(true);
 					newResults.add(frozenTest);
 				}
@@ -116,7 +122,12 @@ class CIBuildFrozenTestAdjuster {
 
 	private static boolean isFrozenTest(TestResult testResult, CIDashboard dashboard) throws IOException {
 		if (testResult.isSoftTest()) return false;
-		Collection<WikiAttachment> attachments = Environment.getInstance().getWikiConnector().getAttachments(dashboard.getDashboardArticle()).stream().filter(a -> a.getFileName().contains(CIFreezeFailedTestsAction.getFileName(dashboard, testResult))).toList();
+		Collection<WikiAttachment> attachments = Environment.getInstance()
+				.getWikiConnector()
+				.getAttachments(dashboard.getDashboardArticle())
+				.stream()
+				.filter(a -> a.getFileName().contains(CIFreezeFailedTestsAction.getFileName(dashboard, testResult)))
+				.toList();
 		Optional<WikiAttachment> attachment = attachments.stream().findFirst();
 		if (attachment.isEmpty()) return false;
 		for (String testObject : testResult.getTestObjectsWithUnexpectedOutcome()) {
@@ -200,7 +211,7 @@ class CIBuildFrozenTestAdjuster {
 	 * @return true if a block was appended
 	 */
 	private static boolean flushBlock(StringBuilder builder, List<String> newContent, String header) {
-		if  (newContent.isEmpty()) {
+		if (newContent.isEmpty()) {
 			return false;
 		}
 		builder.append(System.lineSeparator()).append(header).append(System.lineSeparator());
@@ -322,9 +333,10 @@ class CIBuildFrozenTestAdjuster {
 		boolean firstLineMustBeSectionHeader = true;
 
 		//find SectionHeader that contains testObject, put content under that Section into the map
-		for (String fileLine : fileLines) {
+		for (int i = 0; i < fileLines.size(); i++) {
+			String fileLine = fileLines.get(i);
 			boolean isHeader = !fileLine.startsWith("*");
-			boolean isSectionHeader = isHeader && fileLines.indexOf(fileLine) < fileLines.size() - 1 && !fileLines.get(fileLines.indexOf(fileLine) + 1).startsWith("*");
+			boolean isSectionHeader = isHeader && i < fileLines.size() - 1 && !fileLines.get(i + 1).startsWith("*");
 			if (firstLineMustBeSectionHeader) {
 				isSectionHeader = true;
 				firstLineMustBeSectionHeader = false;
@@ -344,20 +356,23 @@ class CIBuildFrozenTestAdjuster {
 					if (currentHeader != null) {
 						if (frozenContent.containsKey(currentHeader)) {
 							frozenContent.get(currentHeader).addAll(currentContent);
-						} else {
+						}
+						else {
 							frozenContent.put(currentHeader, new ArrayList<>(currentContent));
 						}
 					}
 					currentContent.clear();
 					currentHeader = normalizeHeader(fileLine);
-				} else {
+				}
+				else {
 					currentContent.add(normalizeLink(fileLine));
 				}
 			}
 		}
 		if (frozenContent.containsKey(currentHeader)) {
 			frozenContent.get(currentHeader).addAll(currentContent);
-		} else {
+		}
+		else {
 			frozenContent.put(currentHeader, new ArrayList<>(currentContent));
 		}
 
@@ -377,43 +392,33 @@ class CIBuildFrozenTestAdjuster {
 		int totalCount = 0;
 
 		for (String line : lines) {
-
 			if (!line.startsWith("*")) {
-
 				// flush previous block
 				if (currentHeader != null) {
-
 					int count = countMessages(currentContent);
 					totalCount += count;
-
 					if (!isFirstHeader) {
 						currentHeader = replaceLastNumber(currentHeader, count);
 					}
-
 					result.add(currentHeader);
 					result.addAll(currentContent);
-
 					isFirstHeader = false;
 				}
-
 				currentHeader = line;
 				currentContent.clear();
-
-			} else {
+			}
+			else {
 				currentContent.add(line);
 			}
 		}
 
 		// flush last block
 		if (currentHeader != null) {
-
 			int count = countMessages(currentContent);
 			totalCount += count;
-
 			if (!isFirstHeader) {
 				currentHeader = replaceLastNumber(currentHeader, count);
 			}
-
 			result.add(currentHeader);
 			result.addAll(currentContent);
 		}
@@ -432,16 +437,11 @@ class CIBuildFrozenTestAdjuster {
 	 * separate findings when they only group nested list entries.
 	 */
 	private static int countMessages(List<String> content) {
-		return parseMessageLines(content).stream().mapToInt(CIBuildFrozenTestAdjuster::countLeaves).sum();
-	}
-
-	/**
-	 * Header counts should describe findings, not context lines. For grouped wiki lists this means
-	 * counting the deepest lines; for flat lists each root line is one finding.
-	 */
-	private static int countLeaves(MessageLine line) {
-		if (line.children().isEmpty()) return 1;
-		return line.children().stream().mapToInt(CIBuildFrozenTestAdjuster::countLeaves).sum();
+		int count = 0;
+		for (String line : content) {
+			if (getListDepth(line) == 1) count++;
+		}
+		return count;
 	}
 
 	private record BlockSplit(List<String> normalContent, List<String> frozenContent) {
@@ -458,7 +458,8 @@ class CIBuildFrozenTestAdjuster {
 		}
 	}
 
-	private record SplitMessageLine(List<String> normalLines, List<String> frozenLines, List<String> normalChildren, List<String> frozenChildren) {
+	private record SplitMessageLine(List<String> normalLines, List<String> frozenLines, List<String> normalChildren,
+	                                List<String> frozenChildren) {
 
 		private SplitMessageLine() {
 			this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
@@ -497,7 +498,8 @@ class CIBuildFrozenTestAdjuster {
 		Set<String> testObjects2 = new HashSet<>(testResult.getTestObjectsWithUnexpectedOutcome());
 		testObjects2.addAll(testResult.getTestObjectsWithExpectedOutcome());
 		for (TestResult result : results) {
-			if (result.getTestName().equals(testResult.getTestName()) && result.isFrozenTest() == testResult.isFrozenTest() && !result.equals(testResult) && result.getConfiguration() == testResult.getConfiguration()) {
+			if (result.getTestName()
+					.equals(testResult.getTestName()) && result.isFrozenTest() == testResult.isFrozenTest() && !result.equals(testResult) && result.getConfiguration() == testResult.getConfiguration()) {
 				//Expected and Unexpected together to get total test Objects
 				Set<String> testObjects1 = new HashSet<>(result.getTestObjectsWithUnexpectedOutcome());
 				testObjects1.addAll(result.getTestObjectsWithExpectedOutcome());
@@ -585,10 +587,10 @@ class CIBuildFrozenTestAdjuster {
 				if (map.get(currentHeader).isEmpty()) { //always add not normalized header as the first line
 					map.get(currentHeader).add(line);
 				}
-			} else if (currentHeader != null) {
+			}
+			else if (currentHeader != null) {
 				map.get(currentHeader).add(line);
 			}
 		}
 	}
-
 }

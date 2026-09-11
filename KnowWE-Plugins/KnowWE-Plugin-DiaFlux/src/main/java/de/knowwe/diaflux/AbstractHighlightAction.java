@@ -28,6 +28,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 
@@ -52,6 +53,8 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 			Highlight.writeEmpty(context);
 			return;
 		}
+		// the flowchart to highlight is referred by the request
+		KnowWEUtils.assertCanView(flowchart, context);
 
 		Highlight highlight = new Highlight(parentid, getPrefix());
 

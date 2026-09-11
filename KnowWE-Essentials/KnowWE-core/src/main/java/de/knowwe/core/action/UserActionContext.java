@@ -21,9 +21,11 @@ package de.knowwe.core.action;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Path;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.denkbares.utils.ContentDisposition;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
 
@@ -134,6 +136,32 @@ public interface UserActionContext extends UserContext {
 	 * @param value value to set the header to
 	 */
 	void setHeader(String name, String value) throws IOException;
+
+	/**
+	 * Sets the 'Content-Disposition' header of the response, using the given disposition type (e.g.
+	 * <tt>attachment</tt> or <tt>inline</tt>) and file name. The file name is sanitized and encoded as of RFC 6266,
+	 * so file names originating from user input cannot inject additional header parameters.
+	 *
+	 * @param type     the disposition type, e.g. <tt>attachment</tt> or <tt>inline</tt>
+	 * @param filename the file name to be suggested to the client
+	 * @see ContentDisposition
+	 */
+	default void setContentDisposition(String type, String filename) throws IOException {
+		setHeader("Content-Disposition", ContentDisposition.of(type, filename));
+	}
+
+	/**
+	 * Sets the 'Content-Disposition' header of the response, suggesting the file name of the given file to the
+	 * client. Only the file name of the path is used, never any of its directories. The name is sanitized and encoded
+	 * as of RFC 6266.
+	 *
+	 * @param type the disposition type, e.g. <tt>attachment</tt> or <tt>inline</tt>
+	 * @param file the file whose name is to be suggested to the client
+	 * @see ContentDisposition
+	 */
+	default void setContentDisposition(String type, Path file) throws IOException {
+		setHeader("Content-Disposition", ContentDisposition.of(type, file));
+	}
 
 	/**
 	 * Sends an HTTP error as response.

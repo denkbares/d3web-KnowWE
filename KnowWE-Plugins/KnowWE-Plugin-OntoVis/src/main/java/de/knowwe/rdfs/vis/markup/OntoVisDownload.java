@@ -54,14 +54,15 @@ public abstract class OntoVisDownload extends AbstractAction {
 		if (servletContext == null) return; // at wiki startup only
 
 		// find graph name
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class), context);
 		config.setCacheFileID(Utils.getFileID(section, context));
 		File svg = new File(DOTRenderer.getFilePath(config) + "." + getExtension());
 		String name = svg.getName();
 
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + "\"");
+		context.setContentDisposition("attachment", name);
 
 		InputStream fis = new FileInputStream(svg);
 		OutputStream ous = context.getOutputStream();

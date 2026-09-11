@@ -30,12 +30,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 
 /**
@@ -51,12 +49,8 @@ public class GetProgressAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String sectionID = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionID);
-		if (section == null) {
-			context.sendError(404, "no such section");
-			return;
-		}
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 
 		try {
 			JSONArray result = new JSONArray();

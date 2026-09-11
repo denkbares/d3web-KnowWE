@@ -62,7 +62,6 @@ import de.d3web.we.ci4ke.hook.CIHookManager;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 import de.knowwe.event.WikiContentReplacedEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -90,10 +89,12 @@ public class CIBuildManager implements EventListener {
 	private static final ExecutorService SUB_TEST_EXECUTOR_SERVICE = createTestExecutorService();
 	private static final Map<CIDashboard, CIBuildFuture> CI_BUILD_QUEUE =
 			Collections.synchronizedMap(new WeakHashMap<>());
+	private static final CIBuildChanges CI_BUILD_CHANGES = new CIBuildChanges();
 
 	private final ExecutorService ciBuildExecutor;
 	private final ExecutorService ciBuildTrigger;
 	private final Map<CIDashboard, CIBuildFuture> ciBuildQueue;
+	private final CIBuildChanges ciBuildChanges;
 	private final Map<String, Double> priorityOverride = new ConcurrentHashMap<>();
 
 	public static CIBuildManager getInstance() {
@@ -102,7 +103,7 @@ public class CIBuildManager implements EventListener {
 	}
 
 	private CIBuildManager() {
-		this(CI_BUILD_EXECUTOR, CI_BUILD_TRIGGER, CI_BUILD_QUEUE);
+		this(CI_BUILD_EXECUTOR, CI_BUILD_TRIGGER, CI_BUILD_QUEUE, CI_BUILD_CHANGES);
 		EventManager.getInstance().registerListener(this);
 	}
 
@@ -114,16 +115,19 @@ public class CIBuildManager implements EventListener {
 	 * @param ciBuildTrigger  executor performing asynchronous ordering and predecessor waits
 	 */
 	CIBuildManager(ExecutorService ciBuildExecutor, ExecutorService ciBuildTrigger) {
-		this(ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()));
+		this(ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()), new CIBuildChanges());
 	}
 
 	private CIBuildManager(
 			ExecutorService ciBuildExecutor,
 			ExecutorService ciBuildTrigger,
-			Map<CIDashboard, CIBuildFuture> ciBuildQueue) {
+			Map<CIDashboard, CIBuildFuture> ciBuildQueue,
+			CIBuildChanges ciBuildChanges
+	) {
 		this.ciBuildExecutor = ciBuildExecutor;
 		this.ciBuildTrigger = ciBuildTrigger;
 		this.ciBuildQueue = ciBuildQueue;
+		this.ciBuildChanges = ciBuildChanges;
 	}
 
 	@NotNull
@@ -163,7 +167,11 @@ public class CIBuildManager implements EventListener {
 		private final Map<CIDashboard, CIBuildFuture> ciBuildQueue;
 		private final CIBuildProgress progress;
 
-		public CIBuildCallable(CIDashboard dashboard, Map<CIDashboard, CIBuildFuture> ciBuildQueue) {
+		public CIBuildCallable(
+				CIDashboard dashboard,
+				Map<CIDashboard, CIBuildFuture> ciBuildQueue,
+				CIBuildChanges changes
+		) {
 			this.dashboard = dashboard;
 			this.ciBuildQueue = ciBuildQueue;
 			List<TestObjectProvider> providers = new ArrayList<>();
@@ -171,7 +179,7 @@ public class CIBuildManager implements EventListener {
 			List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 			providers.addAll(pluggedProviders);
 
-			progress = new CIBuildProgress();
+			progress = new CIBuildProgress(changes);
 			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), progress.getListener(),
 					TEST_EXECUTOR_SERVICE, SUB_TEST_EXECUTOR_SERVICE, dashboard.getPriority());
 		}
@@ -202,6 +210,7 @@ public class CIBuildManager implements EventListener {
 				LOGGER.error("Exception while executing CI build", e);
 			}
 			finally {
+				progress.markFinished();
 				synchronized (ciBuildQueue) {
 					CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
 					if (ciBuildFuture != null && ciBuildFuture.ciBuildCallable == this) {
@@ -231,8 +240,10 @@ public class CIBuildManager implements EventListener {
 				for (CIDashboard dashboard : dashboards) {
 					CIBuildFuture precedingBuild = ciBuildQueue.get(dashboard);
 					shutDownNow(dashboard);
-					CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard, ciBuildQueue));
+					CIBuildFuture ciBuildFuture = new CIBuildFuture(
+							new CIBuildCallable(dashboard, ciBuildQueue, ciBuildChanges));
 					ciBuildQueue.put(dashboard, ciBuildFuture);
+					ciBuildChanges.changed();
 					if (precedingBuild != null) {
 						precedingBuilds.put(ciBuildFuture, precedingBuild);
 					}
@@ -270,8 +281,9 @@ public class CIBuildManager implements EventListener {
 		CIBuildFuture precedingBuild = ciBuildQueue.get(dashboard);
 		shutDownNow(dashboard);
 
-		CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard, ciBuildQueue));
+		CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard, ciBuildQueue, ciBuildChanges));
 		ciBuildQueue.put(dashboard, ciBuildFuture);
+		ciBuildChanges.changed();
 		scheduleAfterTermination(ciBuildFuture, precedingBuild);
 	}
 
@@ -321,6 +333,7 @@ public class CIBuildManager implements EventListener {
 			CIDashboard dashboard = ciBuildFuture.ciBuildCallable.dashboard;
 			if (ciBuildQueue.get(dashboard) == ciBuildFuture) {
 				ciBuildQueue.remove(dashboard);
+				ciBuildChanges.changed();
 			}
 		}
 	}
@@ -442,17 +455,26 @@ public class CIBuildManager implements EventListener {
 	}
 
 	/**
-	 * Provides the progress listener of the build registered for the given dashboard. For a successor still waiting for
-	 * its predecessor, the listener exists even though test execution has not started yet.
+	 * Provides the live progress of the build registered for the given dashboard. For a successor still waiting for
+	 * its predecessor, the progress exists even though test execution has not started yet.
 	 *
-	 * @param dashboard the dashboard to get the progress listener for
-	 * @return the progress listener for the given dashboard
+	 * @param dashboard the dashboard to get the build progress for
+	 * @return the progress of the queued or running build, or {@code null} if there is none
 	 */
 	@Nullable
-	public static DefaultAjaxProgressListener getProgress(CIDashboard dashboard) {
+	public static CIBuildProgress getBuildProgress(CIDashboard dashboard) {
 		CIBuildFuture ciBuildFuture = CI_BUILD_QUEUE.get(dashboard);
 		if (ciBuildFuture == null) return null;
-		return ciBuildFuture.ciBuildCallable.progress.getListener();
+		return ciBuildFuture.ciBuildCallable.progress;
+	}
+
+	/**
+	 * Returns the change monitor that is notified about every progress report and every queued, started or finished
+	 * build of any dashboard.
+	 */
+	@NotNull
+	public static CIBuildChanges getBuildChanges() {
+		return CI_BUILD_CHANGES;
 	}
 
 	/**
