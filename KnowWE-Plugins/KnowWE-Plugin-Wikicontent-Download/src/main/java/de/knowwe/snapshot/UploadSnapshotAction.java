@@ -42,7 +42,8 @@ public class UploadSnapshotAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		if (!context.userIsAdmin()) {
-			context.sendError(500, "You do not have permission to perform this action.");
+			context.sendError(403, "You do not have permission to perform this action.");
+			return;
 		}
 
 		if (!ServletFileUpload.isMultipartContent(context.getRequest())) {

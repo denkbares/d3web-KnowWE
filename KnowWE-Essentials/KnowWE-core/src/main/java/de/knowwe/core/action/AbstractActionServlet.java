@@ -151,6 +151,11 @@ public abstract class AbstractActionServlet extends HttpServlet {
 	 */
 	protected void doAction(UserActionContext context) throws IOException {
 		Action action = context.getAction();
+		if (action.isAdminAction() && !context.userIsAdmin()) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"You need to be admin to execute the action: \"" + context.getActionName() + "\"");
+			return;
+		}
 		try {
 			action.execute(context);
 		}

@@ -15,7 +15,6 @@
 # Regenerate with: mvn -Ddenkbares.enforcer.report=true -DskipTests process-classes
 com.denkbares.knowwe.textdiff.TextDiffAction
 de.knowwe.jspwiki.DefaultLogoAction
-de.knowwe.jspwiki.readOnly.ReadOnlyAction
 de.knowwe.jspwiki.recentChanges.RecentChangesPageDisplayProviderAction
 de.knowwe.core.action.AwaitRecompilationAction
 de.knowwe.core.action.GetCompilerSwitchContentAction
@@ -80,7 +79,6 @@ de.knowwe.rdfs.vis.markup.OntoVisSvgD3Download
 de.knowwe.snapshot.CreateSnapshotAction
 de.knowwe.snapshot.DeploySnapshotAction
 de.knowwe.snapshot.ListSnapshotsAction
-de.knowwe.snapshot.UploadSnapshotAction
 de.knowwe.rightpanel.GetRightPanelTabContentAction
 de.knowwe.sparqlendpoint.SparqlEndpointAction
 de.knowwe.dropzone.action.DropAttachmentToNewArticleAction
