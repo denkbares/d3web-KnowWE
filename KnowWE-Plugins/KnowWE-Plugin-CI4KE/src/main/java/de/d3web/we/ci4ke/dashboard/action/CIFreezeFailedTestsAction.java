@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.denkbares.utils.Streams;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestResult;
@@ -42,6 +44,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -58,6 +61,11 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		Section<?> section = getSection(context);
+		if (!KnowWEUtils.canWrite(section, context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"You are not allowed to freeze failed tests of this dashboard");
+			return;
+		}
 		CIDashboard dashboard = CIDashboardManager.getDashboard(
 				Sections.cast(section, CIDashboardType.class));
 

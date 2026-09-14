@@ -21,6 +21,7 @@ import de.d3web.we.knowledgebase.KnowledgeBaseMarkup;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.RecompileAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -31,6 +32,11 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class KnowledgeBaseDownloadAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	public static final String PARAM_FILENAME = "filename";
 	public static final String PARAM_FULL_COMPILE = "requireFullCompile";
