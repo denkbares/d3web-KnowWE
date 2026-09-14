@@ -368,14 +368,6 @@ public final class Environment implements AutoCloseable {
 	}
 
 	/**
-	 * @deprecated use {@link #close()}
-	 */
-	@Deprecated
-	public void shutdown() {
-		close();
-	}
-
-	/**
 	 * Returns whether {@link #close()} has been called on this environment.
 	 */
 	public boolean isClosed() {
