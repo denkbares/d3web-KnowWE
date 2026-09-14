@@ -1734,7 +1734,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	@Override
 	public void close() {
-		if (ServletContextEventListener.isDestroyInProgress()) {
+		// If the whole environment (or the servlet) is shutting down, tear the core down synchronously so that
+		// a closed environment really owns nothing any more. Only a core replaced during normal operation (e.g.
+		// on recompile) is released in the background, so that the compiling thread is not blocked.
+		if (ServletContextEventListener.isDestroyInProgress() || isEnvironmentClosing()) {
 			coreUsageLock.writeLock().lock();
 			try {
 				if (isShutdown()) return;
@@ -1770,6 +1773,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				}
 			}).start();
 		}
+	}
+
+	private boolean isEnvironmentClosing() {
+		Environment coreEnvironment = findEnvironment();
+		return coreEnvironment != null && coreEnvironment.isClosed();
 	}
 
 	public RepositoryConfig getRuleSet() {
