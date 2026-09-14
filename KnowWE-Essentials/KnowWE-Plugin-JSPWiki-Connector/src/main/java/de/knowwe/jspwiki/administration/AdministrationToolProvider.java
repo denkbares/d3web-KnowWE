@@ -68,6 +68,14 @@ import de.knowwe.util.Icon;
  */
 public class AdministrationToolProvider extends AbstractAction implements ToolProvider {
 
+	/**
+	 * Runs administrative operations such as thread dumps and restarts, so it is admin only.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.ADMIN;
+	}
+
 	public static final String THREAD_DUMP = "thread-dump";
 	public static final String THREAD_DUMP_JCMD = "thread-dump-jcmd";
 	public static final String LOGS_RECENT = "logs-recent";

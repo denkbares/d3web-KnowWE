@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.PaginationRenderer;
@@ -45,6 +46,14 @@ import de.knowwe.kdom.renderer.PaginationRenderer;
 import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
 
 public class RecentChangesFilterProviderAction extends AbstractAction {
+
+	/**
+	 * Reads the recent changes of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	private static final String COLUMN_NAME = "column-name";
 	private static final String FILTER_TEXT_QUERY = "filter-text-query";
