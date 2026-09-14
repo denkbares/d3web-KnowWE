@@ -81,33 +81,21 @@ public class JSPActionDispatcher extends ActionDispatcher {
 					+ context.getActionName() + "\"");
 			context.getWriter().write("Unable to load action: \"" + context.getActionName() + "\"");
 			LOGGER.warn("Unable to load action: \"" + context.getActionName() + "\"");
-		}
-		// Execute the action
-		else if (actionInstance.isAdminAction()) {
-			executeAdminAction(actionInstance, context);
-		}
-		else {
-			actionInstance.execute(context);
-		}
-	}
-
-	private void executeAdminAction(Action action, UserActionContext context) throws IOException {
-
-		// Check if user is admin and execute the action
-		if (context.userIsAdmin()) {
-			action.execute(context);
+			return;
 		}
 
-		// Tell the user that he has not the required privileges
-		else {
+		// Enforce the access the action states
+		Action.Access access = actionInstance.requiredAccess();
+		if (access.requiresAuthentication() && !context.userIsAsserted()) {
+			context.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+					"You need to be signed in to execute the action: \"" + context.getActionName() + "\"");
+			return;
+		}
+		if (access.isAdmin() && !context.userIsAdmin()) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
-					"You need to be admin to execute the action: \""
-							+ context.getActionName() + "\""
-			);
-			context.getWriter().write("You need to be admin to execute the action: \""
-					+ context.getActionName() + "\"");
-			LOGGER.warn("Unauthorized user tried to execute action: \"" + context.getActionName()
-					+ "\"");
+					"You need to be admin to execute the action: \"" + context.getActionName() + "\"");
+			return;
 		}
+		actionInstance.execute(context);
 	}
 }

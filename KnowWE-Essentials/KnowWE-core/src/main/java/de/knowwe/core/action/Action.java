@@ -26,8 +26,10 @@ import java.io.IOException;
  * Interface for Actions. Actions are used for user interactions in KnowWE. The most important method of this interface
  * is execute() because this method will be called when an action is executed.
  * <p>
- * Additionally, you can specify whether your action is "free for all" or only executable for admins by overwriting the
- * isAdminAction() method accordingly.
+ * An action declares who may call it via {@link #requiredAccess()}: {@link Access#NONE} opens it to everybody,
+ * {@link Access#ADMIN} restricts it to admins, {@link Access#READ} and {@link Access#WRITE} require the matching
+ * access to the resources it touches. How the access is enforced is the dispatcher's business, which asks the action
+ * rather than knowing it.
  *
  * @author Sebastian Furth
  * @created Mar 9, 2011
@@ -43,6 +45,36 @@ public interface Action {
 	String BINARY = "application/x-bin";
 
 	/**
+	 * The access a caller needs to execute an action.
+	 * <ul>
+	 *     <li>{@link #NONE}: anybody, so the action must reveal nothing that is not public anyway, such as whether
+	 *     the wiki is up. The overriding method should say in its javadoc what makes the action harmless.</li>
+	 *     <li>{@link #AUTH}: any signed in user; the action only touches the user's own session and needs no check of
+	 *     a wiki resource.</li>
+	 *     <li>{@link #READ}: a signed in user with read access to the resources the action touches.</li>
+	 *     <li>{@link #WRITE}: a signed in user with write access to the resources the action touches.</li>
+	 *     <li>{@link #ADMIN}: only admins; the dispatcher enforces it, so the action needs no check of its own.</li>
+	 * </ul>
+	 */
+	enum Access {
+		NONE, AUTH, READ, WRITE, ADMIN;
+
+		/**
+		 * Whether a user has to be signed in for this access level.
+		 */
+		public boolean requiresAuthentication() {
+			return this != NONE;
+		}
+
+		/**
+		 * Whether only admins may execute with this access level.
+		 */
+		public boolean isAdmin() {
+			return this == ADMIN;
+		}
+	}
+
+	/**
 	 * Executes the Action.
 	 *
 	 * @param context the context for this action
@@ -51,21 +83,14 @@ public interface Action {
 	void execute(UserActionContext context) throws IOException;
 
 	/**
-	 * This method should return true if only admins are allowed to execute this action. Otherwise this method should
-	 * return false.
+	 * The access a caller needs to execute this action. It defaults to {@link Access#WRITE}: an action is assumed to
+	 * write a wiki resource until it states otherwise, so that a missing statement fails the build rather than
+	 * leaving the action under-checked. An action that needs less overrides this method and says in its javadoc why.
 	 *
-	 * @return true if the action is a admin action otherwise false.
-	 * @created Mar 9, 2011
+	 * @return the access a caller needs
 	 */
-	boolean isAdminAction();
-
-	/**
-	 * Whether a user has to be signed in for this action to run. Almost every action needs one; an action that answers
-	 * false is served to anybody, so it must reveal nothing that is not public anyway, such as whether the wiki is up.
-	 * How sign-in is enforced is the authentication filter's business, which asks the action rather than knowing it.
-	 */
-	default boolean requiresAuthentication() {
-		return true;
+	default Access requiredAccess() {
+		return Access.WRITE;
 	}
 
 	/**

@@ -44,9 +44,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Abstract implementation of the Action Interface (KnowWEActions or Servlets).
- * <p/>
- * Please note that this standard implementation returns false for the isAdminAction()-Method. If you want to implement
- * an action which is only executable for admins you should implement the Action Interface
  *
  * @author Sebastian Furth
  * @see Action
@@ -125,15 +122,6 @@ public abstract class AbstractAction implements Action {
 	@NotNull
 	private static String getHttpSessionAttributeLocalSectionStorageKey(String sectionId) {
 		return Attributes.LOCAL_SECTION_STORAGE + "_" + sectionId;
-	}
-
-	/**
-	 * Returns always false - which means that your action can be executed by every user. If you want to implement a
-	 * "AdminAction" you should consider implementing the Action interface instead of extending AbstractAction.
-	 */
-	@Override
-	public boolean isAdminAction() {
-		return false;
 	}
 
 	/**

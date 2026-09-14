@@ -250,27 +250,27 @@
 									<definingTypes>
 										<definingType>de.knowwe.core.action.AbstractAction</definingType>
 									</definingTypes>
-									<authorizationCalls>
-										<authorizationCall>de.knowwe.core.action.AbstractAction#getSection</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canView</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanView</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canWrite</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanWrite</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canUpload</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanUpload</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#canCreatePages</authorizationCall>
-										<authorizationCall>de.knowwe.core.utils.KnowWEUtils#assertCanCreatePages</authorizationCall>
-										<authorizationCall>de.knowwe.core.kdom.parsing.Sections#replace</authorizationCall>
-										<authorizationCall>de.knowwe.core.user.UserContext#userIsAdmin</authorizationCall>
-										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanViewArticle</authorizationCall>
-										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanEditArticle</authorizationCall>
-										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanUploadAttachment</authorizationCall>
-										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanCreateArticles</authorizationCall>
-										<authorizationCall>de.knowwe.core.wikiConnector.WikiConnector#userCanDeleteArticle</authorizationCall>
-									</authorizationCalls>
-									<authorizationFlags>
-										<authorizationFlag>isAdminAction</authorizationFlag>
-									</authorizationFlags>
+									<readCalls>
+										<readCall>de.knowwe.core.action.AbstractAction#getSection</readCall>
+										<readCall>de.knowwe.core.utils.KnowWEUtils#canView</readCall>
+										<readCall>de.knowwe.core.utils.KnowWEUtils#assertCanView</readCall>
+										<readCall>de.knowwe.core.wikiConnector.WikiConnector#userCanViewArticle</readCall>
+									</readCalls>
+									<writeCalls>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canWrite</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanWrite</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canUpload</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanUpload</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canCreatePages</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanCreatePages</writeCall>
+										<writeCall>de.knowwe.core.kdom.parsing.Sections#replace</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanEditArticle</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanUploadAttachment</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanCreateArticles</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanDeleteArticle</writeCall>
+									</writeCalls>
+									<accessMethod>requiredAccess</accessMethod>
+									<defaultAccess>WRITE</defaultAccess>
 									<knownExceptions>${maven.multiModuleProjectDirectory}/actions.known-exceptions</knownExceptions>
 								</requireAuthorizationCheck>
 							</rules>

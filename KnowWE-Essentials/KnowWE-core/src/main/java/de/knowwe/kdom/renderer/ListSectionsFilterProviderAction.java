@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -39,6 +40,10 @@ public class ListSectionsFilterProviderAction extends AbstractAction {
 	private static final String FILTER_TEXTS = "filter-texts";
 	private static final int MAX_FILTER_COUNT = 200;
 
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 	/**
 	 * The text displayed for the value used to filter for cells without content.
 	 */
