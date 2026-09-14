@@ -38,7 +38,9 @@ import de.d3web.testing.BuildResultPersistenceHandler;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Action for downloading the latest CI dashboard result in XML format.
@@ -50,6 +52,11 @@ import de.knowwe.core.action.UserActionContext;
 public class CIResultDownloadAction extends AbstractAction {
 
 	private static final String PARAM_NAME = "name";
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -69,6 +76,10 @@ public class CIResultDownloadAction extends AbstractAction {
 		BuildResult latestBuild = dashboard.getLatestBuild();
 		if (latestBuild == null) {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "There are no builds for dashboard: " + name);
+			return;
+		}
+		if (!KnowWEUtils.canView(dashboard.getDashboardArticle(), context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to download this result");
 			return;
 		}
 

@@ -43,6 +43,7 @@ import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -57,6 +58,14 @@ import static de.knowwe.snapshot.SnapshotAction.SNAPSHOT;
  * @created 16.04.2012
  */
 public class DownloadWikiZIPAction extends AbstractAction {
+
+	/**
+	 * Exports the complete wiki content as a zip and is already restricted to administrators in the action itself.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadWikiZIPAction.class);
 

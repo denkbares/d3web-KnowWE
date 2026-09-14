@@ -8,6 +8,7 @@ import com.denkbares.strings.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -19,6 +20,11 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * Created by Albrecht Striffler (denkbares GmbH) on 09.12.2014.
  */
 public class ClearCachedSparqlAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClearCachedSparqlAction.class);
 
 	@Override

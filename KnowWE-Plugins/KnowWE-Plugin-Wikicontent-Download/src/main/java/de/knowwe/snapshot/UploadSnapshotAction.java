@@ -29,12 +29,21 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 import static de.knowwe.snapshot.SnapshotAction.getSnapshotsPath;
 import static de.knowwe.snapshot.SnapshotAction.storageLimitWasReached;
 
 public class UploadSnapshotAction extends AbstractAction {
+
+	/**
+	 * Uploads/replaces wiki-content snapshots and is already restricted to administrators in the action itself.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	private final Logger LOGGER = Logger.getLogger(UploadSnapshotAction.class.getName());
 

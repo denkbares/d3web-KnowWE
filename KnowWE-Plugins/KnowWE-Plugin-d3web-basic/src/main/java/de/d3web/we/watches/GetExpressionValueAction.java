@@ -31,6 +31,7 @@ import com.denkbares.plugin.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.expression.ExpressionResolver;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -49,7 +50,17 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 	public static final String ID = "id";
 
 	@Override
-	public void execute(UserActionContext context) {
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
+	public void execute(UserActionContext context) throws IOException {
+		if (!KnowWEUtils.canView(context.getArticle(), context)) {
+			context.sendError(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN,
+					"You are not allowed to resolve watch expressions on this article");
+			return;
+		}
 		String data = context.getParameter("data");
 		JSONObject responseObject = new JSONObject();
 		JSONArray responseArray = new JSONArray();

@@ -13,22 +13,10 @@
 # reader can tell a real check from a formality. When you add one, put the reason behind it as a comment.
 #
 # Regenerate with: mvn -Ddenkbares.enforcer.report=true -DskipTests process-classes
-de.d3web.we.watches.GetExpressionValueAction
-de.knowwe.d3web.action.GetKnowledgeBaseResourceAction
-de.d3web.we.kdom.rules.RuleFormatAction
-de.d3web.we.ci4ke.dashboard.action.CIAction
-de.d3web.we.ci4ke.dashboard.action.CIGetProgressAction
-de.d3web.we.ci4ke.dashboard.action.CIReportDownloadAction
-de.d3web.we.ci4ke.dashboard.action.CIResultDownloadAction
-de.d3web.we.ci4ke.dashboard.action.CIStopBuildAction
-de.knowwe.testcases.ExecuteCasesAction
-de.knowwe.include.GetWikiChangesSinceAction
-de.knowwe.diaflux.DotFormatterAction
-de.knowwe.diaflux.GetDiffHighlightAction
-de.knowwe.diaflux.GetSubflowLinksAction
-de.knowwe.ontology.action.AddStatementsAction
-de.knowwe.ontology.sparql.SparqlFormatAction
-de.knowwe.ontology.turtle.TurtleFormatAction
+#
+# The remaining entries belong to the dialog plugin. Its actions serve the dialog protocol and deliberately
+# have no local check, because the access decision is made by the dialog session, not by an article. They are
+# still to be migrated to an explicit AUTH or HELPER declaration, one by one.
 de.knowwe.dialog.action.DownloadProtocol
 de.knowwe.dialog.action.ExitMobileApplication
 de.knowwe.dialog.action.ExternalViewer
@@ -59,12 +47,3 @@ de.knowwe.dialog.action.sync.server.GetRepositoryInfo
 de.knowwe.dialog.action.sync.server.GetUpdateFile
 de.knowwe.dialog.action.sync.server.GetUpdateInfo
 de.knowwe.dialog.action.sync.server.SetAlias
-de.knowwe.rdfs.vis.edit.FindLiteralsForConceptAction
-de.knowwe.rdfs.vis.edit.GoToDefinitionAction
-de.knowwe.rdfs.vis.markup.OntoVisSvgD3Download
-de.knowwe.snapshot.CreateSnapshotAction
-de.knowwe.snapshot.DeploySnapshotAction
-de.knowwe.snapshot.ListSnapshotsAction
-de.knowwe.rightpanel.GetRightPanelTabContentAction
-de.knowwe.sparqlendpoint.SparqlEndpointAction
-de.knowwe.dropzone.action.DropAttachmentToNewArticleAction

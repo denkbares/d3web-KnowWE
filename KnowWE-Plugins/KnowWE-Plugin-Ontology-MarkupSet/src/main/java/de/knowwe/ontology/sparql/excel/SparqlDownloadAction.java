@@ -44,6 +44,7 @@ import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
@@ -71,6 +72,11 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 22.03.2013
  */
 public class SparqlDownloadAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	public static final String PARAM_FILENAME = "filename";
 	public static final String PARAM_DOWNLOAD_FILE = "downloadFile";

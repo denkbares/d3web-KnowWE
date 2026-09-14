@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -38,6 +39,14 @@ import static de.knowwe.snapshot.CreateSnapshotAction.createAndStoreWikiContentS
  * The current wiki content will be backup-ed as autosave snapshot in the tmp-file-folder.
  */
 public class DeploySnapshotAction extends SnapshotAction {
+
+	/**
+	 * Destructively replaces the whole wiki content from an uploaded snapshot, so it is restricted to administrators.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	public static final String KEY_DEPLOY_FILENAME = "deploy_file";
 	private static final Logger LOGGER = LoggerFactory.getLogger(DeploySnapshotAction.class);

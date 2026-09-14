@@ -7,9 +7,20 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class GetWikiChangesSinceAction extends AbstractAction {
+
+	/**
+	 * Reads the source text of referenced sections. The per-section view check is delegated to
+	 * {@link GetWikiSectionTextAction#getSourceInfo(String, de.knowwe.core.action.UserActionContext)}, so this action
+	 * itself declares HELPER.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 
 	/**
 	 * Maximum payload size (in bytes) accepted from anonymous callers. Larger requests must

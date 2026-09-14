@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.AbstractTripleFormatter;
 
@@ -16,6 +17,14 @@ import de.knowwe.core.utils.AbstractTripleFormatter;
  */
 
 public class TurtleFormatAction extends AbstractAction {
+
+	/**
+	 * Formats caller-supplied Turtle text without touching any wiki content.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

@@ -27,10 +27,12 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdfs.vis.util.Utils;
@@ -42,10 +44,19 @@ import de.knowwe.rdfs.vis.util.Utils;
 public class FindLiteralsForConceptAction extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter("kdomid");
 		String conceptName = context.getParameter("concept");
 		Section<?> section = Sections.get(sectionID);
+		if (section == null || !KnowWEUtils.canView(section, context)) {
+			context.sendError(403, "You are not allowed to see the literals of this concept");
+			return;
+		}
 
 		JSONArray literals = new JSONArray();
 

@@ -33,6 +33,7 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -40,6 +41,11 @@ import de.knowwe.util.Icon;
 
 public class CIAction extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIAction.class);
+
+	@Override
+	public Access requiredAccess() {
+		return Access.WRITE;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -62,6 +68,10 @@ public class CIAction extends AbstractAction {
 			// NOTE: on current ajax handling this message text will
 			// not be shown. but a list mapping error codes to message texts
 			// is managed in JS
+			return;
+		}
+		if (!KnowWEUtils.canWrite(dashboard.getDashboardArticle(), context)) {
+			context.sendError(403, "You are not allowed to control this dashboard");
 			return;
 		}
 		int selectedBuildNumber = -1;

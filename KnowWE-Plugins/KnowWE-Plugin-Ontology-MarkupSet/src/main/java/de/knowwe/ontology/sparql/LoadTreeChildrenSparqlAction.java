@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -40,6 +41,11 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * Created by Jonas Mueller (denkbares GmbH) on 23.11.2016.
  */
 public class LoadTreeChildrenSparqlAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

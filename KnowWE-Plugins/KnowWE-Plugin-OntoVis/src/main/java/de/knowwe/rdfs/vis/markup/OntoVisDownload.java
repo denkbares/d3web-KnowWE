@@ -29,6 +29,7 @@ import javax.servlet.ServletContext;
 
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -44,6 +45,11 @@ import de.knowwe.visualization.dot.DOTRenderer;
  * @created 08.05.15
  */
 public abstract class OntoVisDownload extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	protected abstract String getExtension();
 

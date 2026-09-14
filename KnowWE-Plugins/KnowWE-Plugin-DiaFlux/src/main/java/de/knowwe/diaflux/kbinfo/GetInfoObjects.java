@@ -59,6 +59,7 @@ import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
@@ -70,6 +71,11 @@ import de.knowwe.diaflux.FlowchartSubTreeHandler;
 import de.knowwe.diaflux.FlowchartUtils;
 
 public class GetInfoObjects extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	private static final String ARTICLE_IDENTIFIER_PREFIX = "$$article$$";
 

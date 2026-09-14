@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.diaflux.utils.DotToMarkupConverter;
 import de.knowwe.diaflux.utils.GraphvizConnector;
@@ -16,6 +17,14 @@ import de.knowwe.diaflux.utils.MarkupToDotConverter;
  * @created 10.01.17
  */
 public class DotFormatterAction extends AbstractAction {
+
+	/**
+	 * Formats caller-supplied Dot text without touching any wiki content.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	public static String removeDiaFluxSectionType(String markup) {
 		markup = markup.trim();

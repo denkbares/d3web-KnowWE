@@ -25,6 +25,7 @@ import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.RecompileAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -46,6 +47,11 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 19.04.2013
  */
 public class OntologyDownloadAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyDownloadAction.class);
 
 	public static final String PARAM_FILENAME = "filename";

@@ -23,9 +23,11 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.rightpanel.RightPanelTab;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.plugin.Plugins;
 
 /**
@@ -39,10 +41,19 @@ import de.knowwe.plugin.Plugins;
 public class GetRightPanelTabContentAction extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String tabId = context.getParameter("tab");
 		if (tabId == null) {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing 'tab' parameter.");
+			return;
+		}
+		if (!KnowWEUtils.canView(context.getArticle(), context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to view this article");
 			return;
 		}
 

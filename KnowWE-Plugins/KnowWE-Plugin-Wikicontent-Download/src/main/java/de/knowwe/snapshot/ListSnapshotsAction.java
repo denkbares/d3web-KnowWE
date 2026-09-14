@@ -29,12 +29,21 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
  * Retrieves a list of all created snapshots.
  */
 public class ListSnapshotsAction extends SnapshotAction {
+
+	/**
+	 * Exposes server-side snapshot files and paths, so it is restricted to administrators.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

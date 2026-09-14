@@ -22,6 +22,7 @@ package de.knowwe.dropzone.action;
 import java.io.IOException;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -33,6 +34,14 @@ import de.knowwe.core.action.UserActionContext;
  * @created 25.05.18
  */
 public class DropAttachmentToNewArticleAction extends AbstractAction {
+
+	/**
+	 * Does nothing; the actual upload goes through the ordinary wiki attachment upload.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 

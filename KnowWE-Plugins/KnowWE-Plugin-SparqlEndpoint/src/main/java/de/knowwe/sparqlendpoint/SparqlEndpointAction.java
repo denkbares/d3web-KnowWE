@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.jspwiki.JSPAuthenticationManager;
@@ -56,6 +57,15 @@ import de.knowwe.jspwiki.JSPAuthenticationManager;
  * <br>For further information: http://www.w3.org/TR/sparql11-protocol/<br>
  */
 public class SparqlEndpointAction extends AbstractAction {
+
+	/**
+	 * Requires an authenticated user; additionally the caller must be a member of the "SparqlEndpoint" group, which
+	 * the action checks itself.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.AUTH;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlEndpointAction.class);
 
 	public static final String PACKAGE = "package";

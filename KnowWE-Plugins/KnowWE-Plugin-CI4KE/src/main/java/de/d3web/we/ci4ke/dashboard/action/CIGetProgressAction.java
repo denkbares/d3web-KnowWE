@@ -36,9 +36,11 @@ import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.sse.ServerSentEventWriter;
 import de.knowwe.core.sse.ServerSentEvents;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Streams the build progress of the dashboards shown on a page as server-sent events until none of them has a
@@ -51,6 +53,11 @@ public class CIGetProgressAction extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIGetProgressAction.class);
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		List<String> names = parseNames(context);
 		if (names.isEmpty()) {
@@ -58,6 +65,13 @@ public class CIGetProgressAction extends AbstractAction {
 			return;
 		}
 		ArticleManager articleManager = context.getArticleManager();
+		for (String name : names) {
+			CIDashboard dashboard = lookupDashboard(articleManager, name);
+			if (dashboard != null && !KnowWEUtils.canView(dashboard.getDashboardArticle(), context)) {
+				context.sendError(403, "You are not allowed to see the build progress of this dashboard");
+				return;
+			}
+		}
 
 		ServerSentEventWriter sse = ServerSentEvents.open(context.getResponse());
 		try {

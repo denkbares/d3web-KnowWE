@@ -36,6 +36,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -48,6 +49,11 @@ import de.knowwe.core.wikiConnector.WikiConnector;
  * @created 05.02.18
  */
 public class QuickInterviewLoadAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 	/**
 	 * Loads a .xml file with quickinterview session information from locally stored drive/attachments
 	 *

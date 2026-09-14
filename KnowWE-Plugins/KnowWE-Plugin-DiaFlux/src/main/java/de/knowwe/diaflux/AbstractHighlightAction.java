@@ -25,6 +25,7 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -41,6 +42,11 @@ import de.knowwe.diaflux.type.FlowchartType;
 public abstract class AbstractHighlightAction extends AbstractAction {
 
 	public static final String PARENTID = "parentid";
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
