@@ -40,7 +40,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 	}
 
 	public OntoGraphDataBuilder getGraphDataBuilder(Section<?> section, UserContext user) {
-		return PreRenderWorker.getInstance().getPreRenderedArtefact(section, user, this);
+		return PreRenderWorker.of(user.getEnvironment()).getPreRenderedArtefact(section, user, this);
 	}
 
 	@Override

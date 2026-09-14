@@ -27,6 +27,8 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.knowwe.core.Environment;
+import de.knowwe.core.EnvironmentService;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -38,12 +40,10 @@ import de.knowwe.visualization.CleanableArtefact;
  *
  * @author Albrecht Striffler
  */
-public class PreRenderWorker {
+public class PreRenderWorker implements EnvironmentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PreRenderWorker.class);
 
 	private static final Object mutex = new Object();
-
-	private static PreRenderWorker instance;
 
 	private final ExecutorService executor;
 
@@ -51,13 +51,20 @@ public class PreRenderWorker {
 		executor = Executors.newFixedThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
 	}
 
-	public static PreRenderWorker getInstance() {
-		synchronized (mutex) {
-			if (instance == null) {
-				instance = new PreRenderWorker();
-			}
-		}
-		return instance;
+	/**
+	 * Returns the pre-render worker of the given environment. Every environment has its own worker (and its own
+	 * executor), so that closed environments cannot leak rendering threads into new ones.
+	 *
+	 * @param environment the environment to get the worker for
+	 * @return the environment's pre-render worker
+	 */
+	public static PreRenderWorker of(@org.jetbrains.annotations.NotNull Environment environment) {
+		return environment.getService(PreRenderWorker.class, PreRenderWorker::new);
+	}
+
+	@Override
+	public void close() {
+		executor.shutdownNow();
 	}
 
 	/**

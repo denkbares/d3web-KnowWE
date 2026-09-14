@@ -43,7 +43,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer<Gr
 		if (user.getParameter("concept") != null) {
 			// we have received a concept via url parameter to be visualized
 			// hence we need to clear the cached visualization
-			PreRenderWorker.getInstance().clearCache(content);
+			PreRenderWorker.of(user.getEnvironment()).clearCache(content);
 		}
 		GraphVisualizationRenderer graphRenderer = getGraphVisualizationRenderer(content, user);
 		if (graphRenderer != null) {
@@ -55,7 +55,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer<Gr
 	}
 
 	public GraphVisualizationRenderer getGraphVisualizationRenderer(Section<?> content, UserContext user) {
-		return PreRenderWorker.getInstance()
+		return PreRenderWorker.of(user.getEnvironment())
 				.getPreRenderedArtefact(content, user, this);
 	}
 
