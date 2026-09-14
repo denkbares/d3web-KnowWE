@@ -33,7 +33,7 @@ public class TurtleSPOSentence extends AbstractType {
         this.setSectionFinder(new AllTextFinderTrimmed());
 
         this.addChildType(new Subject(new SubjectURIWithDefinition()));
-        this.addChildType(PredicateObjectSentenceList.getInstance());
+        this.addChildType(PredicateObjectSentenceList.create());
 
 
     }

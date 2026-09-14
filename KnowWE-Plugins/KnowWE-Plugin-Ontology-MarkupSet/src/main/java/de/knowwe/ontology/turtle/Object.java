@@ -55,7 +55,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		this.addChildType(new BlankNode());
 		this.addChildType(new BlankNodeID());
 		this.addChildType(new ShowOtherExistingValuesWildCard());
-		this.addChildType(TurtleCollection.getInstance());
+		this.addChildType(TurtleCollection.create());
 		this.addChildType(new TurtleLiteralType());
 		this.addChildType(new BooleanLiteral());
 		this.addChildType(new NumberLiteral());

@@ -78,7 +78,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 				"S: Column 1 Cell, P: annotation, O: Column 1 Header");
 
 		MARKUP.addAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET, false);
-		MARKUP.addAnnotationContentType(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET, PredicateObjectSentenceList.getInstance());
+		MARKUP.addAnnotationContentType(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET, PredicateObjectSentenceList::create);
 		MARKUP.getAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET)
 				.setDocumentation("Specify predicate and object (or " +
 						"object list) using this annotation. Predicate and object(s) will be added to every concept of the " +

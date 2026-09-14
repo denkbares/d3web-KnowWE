@@ -48,7 +48,7 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 		closingBracket.setSectionFinder(new RegexSectionFinder("\\" + CLOSE_BLANK_NODE + "$"));
 		this.addChildType(closingBracket);
 
-		this.addChildType(PredicateObjectSentenceList.getInstance());
+		this.addChildType(PredicateObjectSentenceList.create());
 	}
 
 	static class MaskBracketsRenderer implements Renderer {
