@@ -294,6 +294,7 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 ## Offene Punkte / Beobachtungen
 
+- **`reuseForks=false` am Ende prüfen (To-do vor Abschluss):** Einige POMs lassen Surefire jede Testklasse in einer frischen JVM laufen (`reuseForks=false`), was genau die Environment-übergreifenden Zustandslecks verdeckt, die dieser Umbau beseitigt. Zum Schluss alle Stellen auflisten (Stand 2026-09-11: `KnowWE/KnowWE-Essentials/KnowWE-UITests`, `KnowWE-DES/KnowWE-Apps-DES/KnowWE-Headless-Plugin-Core`, `KnowWE-SSP/KnowWE-Plugin-CBX`, `KRONE/KnowWE-KONAP-Integration/KnowWE-Plugin-KONAP-Configit`, `KRONE/KnowWE-Plugin-KONAP`), die Tests probehalber mit geteilten Forks laufen lassen und prüfen, ob sie grün bleiben; `reuseForks=false` danach entfernen, wo es nur Workaround war.
 - 21 weitere Singleton-Typen (`private static X instance`) in den Plugins werden bei Re-Init nicht zurückgesetzt. Für `S2` prüfen, ob ein generischer Mechanismus (z.B. Reset über `Plugins`/Typ-Registry) sinnvoller ist als Einzelfälle.
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
