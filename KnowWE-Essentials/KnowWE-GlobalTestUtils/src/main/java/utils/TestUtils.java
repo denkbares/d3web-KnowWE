@@ -119,7 +119,6 @@ public class TestUtils {
 	 */
 	public static UserActionContext createTestActionContext(@NotNull Environment environment, String actionName, String path) {
 		Map<String, String> map = new HashMap<>();
-		map.put(Attributes.WEB, Environment.DEFAULT_WEB);
 		map.put(Attributes.USER, "Test User");
 		// there is no servlet context in tests, the action context belongs to the given environment
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",

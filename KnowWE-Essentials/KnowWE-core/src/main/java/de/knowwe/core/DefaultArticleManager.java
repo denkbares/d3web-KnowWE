@@ -61,8 +61,6 @@ public class DefaultArticleManager implements ArticleManager {
 
 	private final Collection<String> deleteAfterCompile = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-	private final String web;
-
 	private final Environment environment;
 
 	private final CompilerManager compilerManager;
@@ -81,23 +79,9 @@ public class DefaultArticleManager implements ArticleManager {
 	 * Creates a new article manager that belongs to the specified environment.
 	 *
 	 * @param environment the environment this manager is part of
-	 * @param web         the web this manager manages the articles for
 	 */
 	public DefaultArticleManager(@NotNull Environment environment) {
-		this(Environment.DEFAULT_WEB, Objects.requireNonNull(environment, "environment"));
-	}
-
-	/**
-	 * @deprecated the web is gone, use {@link #DefaultArticleManager(Environment)}
-	 */
-	@Deprecated
-	public DefaultArticleManager(@NotNull Environment environment, String web) {
-		this(web, Objects.requireNonNull(environment, "environment"));
-	}
-
-	private DefaultArticleManager(String web, @NotNull Environment environment) {
-		this.web = web;
-		this.environment = environment;
+		this.environment = Objects.requireNonNull(environment, "environment");
 		this.compilerManager = new CompilerManager(this);
 		this.attachmentManager = new AttachmentManager(this);
 	}
@@ -140,11 +124,6 @@ public class DefaultArticleManager implements ArticleManager {
 
 	public AttachmentManager getAttachmentManager() {
 		return attachmentManager;
-	}
-
-	@Override
-	public String getWeb() {
-		return web;
 	}
 
 	/**
@@ -301,7 +280,7 @@ public class DefaultArticleManager implements ArticleManager {
 			commit();
 		}
 
-		LOGGER.info("-> Deleted article '" + title + "'" + " from " + web);
+		LOGGER.info("-> Deleted article '" + title + "'");
 	}
 
 	@NotNull

@@ -1623,7 +1623,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return a result object containing some information about the replacement success or the errors occurred
 	 */
 	public static @NotNull ReplaceResult replaceAsSystem(@NotNull Environment environment, Map<String, String> sectionsMap, @Nullable String changeNote) {
-		return replace(ReplaceContext.of(environment, Environment.DEFAULT_WEB, title -> true, "SYSTEM"), sectionsMap, changeNote);
+		return replace(ReplaceContext.of(environment, title -> true, "SYSTEM"), sectionsMap, changeNote);
 	}
 
 	/**
@@ -1755,15 +1755,13 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	public static class ReplaceContext {
 		private final Environment environment;
-		private final String web;
 		private final Predicate<String> userCanEdit;
 		private final @Nullable HttpServletRequest httpRequest;
 		private final String author;
 
-		private ReplaceContext(Environment environment, String web, Predicate<String> userCanEdit,
+		private ReplaceContext(Environment environment, Predicate<String> userCanEdit,
 							  @Nullable HttpServletRequest httpRequest, String author) {
 			this.environment = environment;
-			this.web = web;
 			this.userCanEdit = userCanEdit;
 			this.httpRequest = httpRequest;
 			this.author = author;
@@ -1773,29 +1771,17 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			Predicate<String> userCanEdit = title -> userContext.getEnvironment()
 					.getWikiConnector()
 					.userCanEditArticle(title, userContext);
-			return new ReplaceContext(userContext.getEnvironment(), userContext.getWeb(), userCanEdit, userContext.getRequest(), userContext.getUserName());
+			return new ReplaceContext(userContext.getEnvironment(), userCanEdit, userContext.getRequest(), userContext.getUserName());
 		}
 
 		public static ReplaceContext of(@NotNull Environment environment, Predicate<String> userCanEdit, String author) {
-			return new ReplaceContext(environment, Environment.DEFAULT_WEB, userCanEdit, null, author);
-		}
-
-		/**
-		 * @deprecated the web is gone, use {@link #of(Environment, Predicate, String)}
-		 */
-		@Deprecated
-		public static ReplaceContext of(@NotNull Environment environment, String web, Predicate<String> userCanEdit, String author) {
-			return new ReplaceContext(environment, web, userCanEdit, null, author);
+			return new ReplaceContext(environment, userCanEdit, null, author);
 		}
 
 
 		@NotNull
 		public Environment getEnvironment() {
 			return environment;
-		}
-
-		public String getWeb() {
-			return web;
 		}
 
 		public Predicate<String> getUserCanEdit() {

@@ -187,7 +187,6 @@ public class AddStatementsAction extends AbstractAction {
 			json.accumulate("compact", compactMode);
 
 			return "window.location.href = 'action/AddStatementsAction?"
-					+ Attributes.WEB + "=" + source.getWeb() + "&"
 					+ PARAM_DATA + "=" + Strings.encodeURL(json.toString())
 					+ "'";
 		}

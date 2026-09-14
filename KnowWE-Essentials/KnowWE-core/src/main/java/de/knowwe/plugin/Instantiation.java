@@ -33,14 +33,6 @@ public interface Instantiation {
 	 * @param environment the environment being initialized
 	 */
 	default void init(@NotNull Environment environment) {
-		init(Environment.DEFAULT_WEB);
-	}
-
-	/**
-	 * @deprecated implement {@link #init(Environment)} instead; the web is always {@link Environment#DEFAULT_WEB}
-	 */
-	@Deprecated
-	default void init(String web) {
-		throw new UnsupportedOperationException(getClass().getName() + " implements neither init(Environment) nor init(String)");
+		// default no-op; override to initialize this plugin part
 	}
 }

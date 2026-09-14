@@ -106,20 +106,6 @@ public abstract class AbstractUserContext implements UserContext {
 		return this.getParameter(Attributes.SECTION_ID);
 	}
 
-	/**
-	 * Returns the web of the user's is currently visiting. It is the web the
-	 * article belongs to.
-	 *
-	 * @return the article's web
-	 * @created 04.03.2011
-	 */
-	@Override
-	public String getWeb() {
-		String web = this.getParameter(Attributes.WEB);
-		if (web == null) web = Environment.DEFAULT_WEB;
-		return web;
-	}
-
 	@Override
 	public String getParameter(String key) {
 		String value = this.getParameters().get(key);

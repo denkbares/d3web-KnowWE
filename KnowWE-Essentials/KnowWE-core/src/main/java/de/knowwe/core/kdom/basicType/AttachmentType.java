@@ -170,8 +170,6 @@ public class AttachmentType extends AbstractType {
 		@Override
 		public void notify(Event event) {
 			AttachmentEvent attachmentEvent = (AttachmentEvent) event;
-			String web = section.getWeb();
-			if (!web.equals(attachmentEvent.getWeb())) return;
 
 			String thisAttachmentPath = getPath(section);
 			String eventAttachmentPath = attachmentEvent.getPath();

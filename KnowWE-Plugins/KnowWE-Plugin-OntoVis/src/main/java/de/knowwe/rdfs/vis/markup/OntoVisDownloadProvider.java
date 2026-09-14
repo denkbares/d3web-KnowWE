@@ -56,7 +56,6 @@ public class OntoVisDownloadProvider implements ToolProvider {
 	private Tool getTool(Section<?> section, String action, String title, String description) {
 		String jsAction = "window.location='action/" + action +
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
-				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
 				"&amp;" + Attributes.SECTION_ID + "=" + section.getID() + "'";
 		return new DefaultTool(
 				Icon.DOWNLOAD,

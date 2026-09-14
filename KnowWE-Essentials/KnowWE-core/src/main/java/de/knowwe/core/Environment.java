@@ -169,11 +169,6 @@ public final class Environment implements AutoCloseable {
 	private final List<EventListener> pluggedListeners = new ArrayList<>();
 
 
-	/**
-	 * Hard coded name of the default web
-	 */
-	public static final String DEFAULT_WEB = "default_web";
-
 	public enum CompilationMode {
 		INCREMENTAL, DEFAULT
 	}
@@ -395,7 +390,7 @@ public final class Environment implements AutoCloseable {
 			}
 			catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				LOGGER.warn("Interrupted while waiting for compilation of web '{}' to terminate during shutdown", manager.getWeb());
+				LOGGER.warn("Interrupted while waiting for compilation to terminate during shutdown");
 				return;
 			}
 		}
@@ -588,7 +583,7 @@ public final class Environment implements AutoCloseable {
 				articleManager.getCompilerManager()
 						.setCompileMessage("Reason: saving page " + title + ", user: " + author);
 				// create article with the new content
-				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, cleanedContent);
+				article = articleManager.registerArticle(title, cleanedContent);
 				if (fullParse) eventManager.fireEvent(new FullParseEvent(article, author));
 			}
 			finally {
@@ -1046,31 +1041,12 @@ public final class Environment implements AutoCloseable {
 	}
 
 	/**
-	 * Returns the {@link Article} object for a given web and title
+	 * Returns the {@link Article} object for a given title
 	 *
-	 * @param web   the web of the {@link Article}
 	 * @param title the title of the {@link Article}
 	 */
 	public Article getArticle(String title) {
 		return getArticleManager().getArticle(title);
-	}
-
-	/**
-	 * @deprecated the web is gone, use {@link #getArticle(String)}
-	 */
-	@Deprecated
-	public Article getArticle(String web, String title) {
-		return getArticleManager(web).getArticle(title);
-	}
-
-	/**
-	 * @deprecated the web is gone, every environment has exactly one article manager: {@link #getArticleManager()}
-	 */
-	@Deprecated
-	@NotNull
-	public ArticleManager getArticleManager(String web) {
-		if (!DEFAULT_WEB.equals(web)) LOGGER.warn("Ignoring web '{}': an environment has exactly one article manager", web);
-		return getArticleManager();
 	}
 
 	public ServletContext getContext() {

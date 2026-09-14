@@ -42,16 +42,16 @@ public class TestCaseToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
-		Tool downloadXML = getDownloadXMLTool(section.getTitle(), section.getWeb(), section.getID());
-		Tool downloadTXT = getDownloadTXTTool(section.getTitle(), section.getWeb(), section.getID());
+		Tool downloadXML = getDownloadXMLTool(section.getTitle());
+		Tool downloadTXT = getDownloadTXTTool(section.getTitle());
 		return new Tool[] {
 				downloadXML, downloadTXT };
 	}
 
-	protected Tool getDownloadXMLTool(String topic, String web, String id) {
+	protected Tool getDownloadXMLTool(String topic) {
 		// tool to provide download capability
 		String jsAction = "window.location='action/TestCaseServlet?type=case&amp;KWiki_Topic="
-				+ topic + "&amp;web=" + web + "&amp;filename=" + topic.replaceAll(" ", "_")
+				+ topic + "&amp;filename=" + topic.replaceAll(" ", "_")
 				+ "_testcase.xml'";
 		return new DefaultTool(
 				Icon.FILE_XML,
@@ -61,10 +61,10 @@ public class TestCaseToolProvider implements ToolProvider {
 				Tool.CATEGORY_DOWNLOAD);
 	}
 
-	protected Tool getDownloadTXTTool(String topic, String web, String id) {
+	protected Tool getDownloadTXTTool(String topic) {
 		// tool to provide download capability
 		String jsAction = "window.location='action/TestCaseServlet?type=case&amp;KWiki_Topic="
-				+ topic + "&amp;web=" + web + "&amp;filename=" + topic.replaceAll(" ", "_")
+				+ topic + "&amp;filename=" + topic.replaceAll(" ", "_")
 				+ "_testcase.txt'";
 		return new DefaultTool(
 				Icon.FILE_TEXT,

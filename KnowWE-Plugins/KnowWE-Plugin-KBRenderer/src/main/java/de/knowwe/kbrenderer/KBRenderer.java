@@ -96,7 +96,6 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 
 	@Override
 	public void renderHTML(String topic, UserContext user, Map<String, String> values, RenderResult result) {
-		String web = user.getWeb(); // TODO stage 3b: remaining web use
 		renderedRulesCache = new HashMap<>();
 		KnowledgeBase kb = null;
 		if (values.containsKey(KB_NAME)) {

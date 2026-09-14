@@ -68,11 +68,6 @@ public class RecompileActionTest {
 		}
 
 		@Override
-		public String getWeb() {
-			return "test";
-		}
-
-		@Override
 		public @NotNull Environment getEnvironment() {
 			throw new UnsupportedOperationException();
 		}

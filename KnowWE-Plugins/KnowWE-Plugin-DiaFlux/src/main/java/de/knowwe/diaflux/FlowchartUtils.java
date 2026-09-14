@@ -78,7 +78,6 @@ public class FlowchartUtils {
 
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentId, String scope, boolean insertResources) {
 
-		if (user.getWeb() == null) return "";
 		parentId = escapeHtmlId(parentId);
 
 		RenderResult result = prepareFlowchartRenderer(section, parentId, user, scope, insertResources);

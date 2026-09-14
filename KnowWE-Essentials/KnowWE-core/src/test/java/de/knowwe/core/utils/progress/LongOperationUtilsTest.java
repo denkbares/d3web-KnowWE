@@ -48,7 +48,7 @@ public class LongOperationUtilsTest {
 
 	@Test
 	public void cleanupWaitsUntilArticleRegistrationCommitIsComplete() throws Exception {
-		DefaultArticleManager articleManager = new DefaultArticleManager(environment.environment, "test");
+		DefaultArticleManager articleManager = new DefaultArticleManager(environment.environment);
 		Article article = Article.createTemporaryArticle(
 				environment.environment, "content", "Article-" + UUID.randomUUID(), new RootType());
 		Section<?> section = article.getRootSection();

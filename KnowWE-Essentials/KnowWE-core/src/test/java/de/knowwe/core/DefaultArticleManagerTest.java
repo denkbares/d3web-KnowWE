@@ -46,7 +46,7 @@ public class DefaultArticleManagerTest {
 
 	@Test
 	public void queueingArticleRequiresOpenRegistrationFrame() throws Exception {
-		DefaultArticleManager articleManager = new DefaultArticleManager(wiki.environment, "test");
+		DefaultArticleManager articleManager = new DefaultArticleManager(wiki.environment);
 		try {
 			articleManager.queueArticle("Article", "Content");
 			fail("Article was queued outside a registration frame");
@@ -61,7 +61,7 @@ public class DefaultArticleManagerTest {
 
 	@Test
 	public void articleRegistrationFrameWaitsForRunningCompilation() throws Exception {
-		DefaultArticleManager articleManager = new DefaultArticleManager(wiki.environment, "test");
+		DefaultArticleManager articleManager = new DefaultArticleManager(wiki.environment);
 		CompilerManager compilerManager = articleManager.getCompilerManager();
 		CountDownLatch compilationStarted = new CountDownLatch(1);
 		CountDownLatch finishCompilation = new CountDownLatch(1);

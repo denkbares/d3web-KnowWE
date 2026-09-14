@@ -138,14 +138,6 @@ public interface WikiConnector {
 	Map<String, String> getAllArticles();
 
 	/**
-	 * @deprecated the web is gone, use {@link #getAllArticles()}
-	 */
-	@Deprecated
-	default Map<String, String> getAllArticles(String web) {
-		return getAllArticles();
-	}
-
-	/**
 	 * Returns all users registered to the wiki.
 	 */
 	String[] getAllUsers();

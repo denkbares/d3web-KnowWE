@@ -1298,7 +1298,7 @@ public class KnowWEUtils {
 	 */
 	@NotNull
 	public static Environment getEnvironment(@NotNull ArticleManager manager) {
-		return requireEnvironment(findEnvironment(manager), "article manager '" + manager.getWeb() + "'");
+		return requireEnvironment(findEnvironment(manager), "article manager " + manager);
 	}
 
 	/**

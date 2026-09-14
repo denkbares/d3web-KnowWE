@@ -61,7 +61,7 @@ public class PreviewCoverageTest {
 
 	private Environment environment;
 
-	private static final String WEB = Environment.DEFAULT_WEB;
+	private static final String WEB = "default_web";
 
 	private final ArticleChunker chunker = new ArticleChunker();
 	private final SearchResultRenderer renderer = new SearchResultRenderer();

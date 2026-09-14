@@ -61,7 +61,6 @@ public final class Article {
 	 */
 	private final String title;
 
-	private final String web;
 	private final String text;
 	private boolean sectionized = false;
 	private enum Lifecycle { DRAFT, PUBLISHED, RETIRED }
@@ -105,26 +104,18 @@ public final class Article {
 	 *                  versions if possible
 	 */
 	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, manager.getWeb(), manager, fullParse);
+		return createArticle(text, title, manager, fullParse, environmentOf(manager).getRootType());
 	}
 
-	/**
-	 * Create a new temporary article by parsing the given text into a section tree (KDOM). Use this method if and only
-	 * if the article will not be added to an article manager.
-	 *
-	 * @param text  the text of the article
-	 * @param title the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param web   the web the article belongs to (currently unused)
-	 */
 	/**
 	 * Creates a temporary article (not registered at any article manager) for the given environment.
 	 */
 	public static Article createTemporaryArticle(@NotNull Environment environment, String text, String title) {
-		return createArticle(text, title, Environment.DEFAULT_WEB, null, environment, true, environment.getRootType());
+		return createArticle(text, title, null, environment, true, environment.getRootType());
 	}
 
 	public static Article createTemporaryArticle(@NotNull Environment environment, String text, String title, RootType root) {
-		return createArticle(text, title, Environment.DEFAULT_WEB, null, environment, true, root);
+		return createArticle(text, title, null, environment, true, root);
 	}
 
 	/**
@@ -136,30 +127,15 @@ public final class Article {
 		return environment;
 	}
 
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, web, manager, fullParse, environmentOf(manager).getRootType());
+	private static Article createArticle(String text, String title, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
+		return createArticle(text, title, manager, null, fullParse, root);
 	}
 
-	/**
-	 * Create a new article by parsing the given text into a section tree (KDOM)
-	 *
-	 * @param text      the text of the article
-	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param web       the web the article belongs to (currently unused)
-	 * @param manager   the article manager the article belongs to
-	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
-	 *                  versions if possible
-	 * @param root      RootType to be used
-	 */
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
-		return createArticle(text, title, web, manager, null, fullParse, root);
-	}
-
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, RootType root) {
+	private static Article createArticle(String text, String title, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, RootType root) {
 		Article article = null;
 		boolean complete = false;
 		try {
-			article = new Article(text, title, web, manager, temporaryEnvironment, fullParse, root);
+			article = new Article(text, title, manager, temporaryEnvironment, fullParse, root);
 			article.initialize();
 			complete = true;
 			return article;
@@ -173,7 +149,7 @@ public final class Article {
 		}
 	}
 
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, @Nullable RootType root) {
+	private Article(@NotNull String text, @NotNull String title, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, @Nullable RootType root) {
 		if (root == null) {
 			rootType = manager.getEnvironment().getRootType();
 		}
@@ -181,7 +157,6 @@ public final class Article {
 			rootType = root;
 		}
 		this.title = title;
-		this.web = web;
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
 		this.articleManager = manager;
@@ -332,10 +307,6 @@ public final class Article {
 		return title;
 	}
 
-	public String getWeb() {
-		return web;
-	}
-
 	/**
 	 * The last version is only available during the initialization of the article
 	 */
@@ -386,7 +357,6 @@ public final class Article {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		result = prime * result + ((web == null) ? 0 : web.hashCode());
 		return result;
 	}
 
@@ -397,14 +367,10 @@ public final class Article {
 		if (getClass() != obj.getClass()) return false;
 		Article other = (Article) obj;
 		if (title == null) {
-			if (other.title != null) return false;
-		}
-		else if (!title.equals(other.title)) return false;
-		if (web == null) {
-			return other.web == null;
+			return other.title == null;
 		}
 		else {
-			return web.equals(other.web);
+			return title.equals(other.title);
 		}
 	}
 

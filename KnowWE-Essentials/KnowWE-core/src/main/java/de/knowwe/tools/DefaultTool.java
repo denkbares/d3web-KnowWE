@@ -98,8 +98,7 @@ public class DefaultTool implements Tool {
 	public static String createServerAction(UserContext user, String actionName, String... parameters) {
 		String jsAction =
 				"window.location='action/" + actionName +
-						"?KWiki_Topic=" + Strings.encodeURL(user.getTitle()) +
-						"&amp;web=" + Strings.encodeURL(user.getWeb());
+						"?KWiki_Topic=" + Strings.encodeURL(user.getTitle());
 		for (int i = 0; i < parameters.length; ) {
 			String key = Strings.encodeURL(parameters[i++]);
 			String value = Strings.encodeURL(parameters[i++]);

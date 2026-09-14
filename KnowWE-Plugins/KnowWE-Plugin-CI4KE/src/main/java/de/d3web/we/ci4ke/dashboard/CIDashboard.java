@@ -88,9 +88,6 @@ public class CIDashboard {
 		return this.dashboardSection;
 	}
 
-	public String getWeb() {
-		return dashboardSection.getWeb();
-	}
 
 	public String getDashboardArticle() {
 		return dashboardSection.getTitle();

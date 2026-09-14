@@ -72,7 +72,7 @@ public class DefaultWikiTestObjectProvider implements WikiTestObjectProvider {
 				result.add(new TestObjectContainer<>(article.getTitle(), c.cast(article)));
 			}
 		}
-		String web = Environment.DEFAULT_WEB;
+		String web = "default_web";
 		ArticleManager articleManager = environment.getArticleManager();
 		if (c.equals(ArticleManager.class)) {
 			result.add(new TestObjectContainer<>(web, c.cast(articleManager)));

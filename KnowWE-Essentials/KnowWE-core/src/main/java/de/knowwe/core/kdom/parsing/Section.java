@@ -398,10 +398,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return KnowWEUtils.getPackageManager(this).getPackagesOfSection(this);
 	}
 
-	public String getWeb() {
-		return this.article.getWeb();
-	}
-
 	public Article getArticle() {
 		return this.article;
 	}

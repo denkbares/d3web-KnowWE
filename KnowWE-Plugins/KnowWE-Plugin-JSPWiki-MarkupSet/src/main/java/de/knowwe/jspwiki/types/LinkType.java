@@ -95,7 +95,6 @@ public class LinkType extends AbstractType {
 				String previewSrc = "action/RenderPreviewAction"
 						+ "?" + Attributes.TITLE + "=" +
 						Strings.encodeURL(target.getTitle())
-						+ "&amp;" + Attributes.WEB + "=" + target.getWeb()
 						+ "&amp;" + RenderPreviewAction.ATTR_MODE + "=" + Mode.plain.name()
 						+ "&amp;" + Attributes.SECTION_ID + "=" + target.getID();
 				if (target.get() instanceof RootType) {

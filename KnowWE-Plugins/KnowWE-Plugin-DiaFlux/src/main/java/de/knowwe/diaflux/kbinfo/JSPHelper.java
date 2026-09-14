@@ -44,10 +44,6 @@ public class JSPHelper {
 
 	public JSPHelper(UserContext userContext) {
 		this.userContext = userContext;
-		if (this.userContext.getWeb() == null) {
-			this.userContext.getParameters().put(Attributes.WEB,
-					Environment.DEFAULT_WEB);
-		}
 	}
 
 	private static Collection<Identifier> getAllMatches(String className, Section<?> flowchart) {

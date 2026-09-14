@@ -54,7 +54,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		String userName = user.getUserName();
 		String overallStatus = KnowWEUtils.getOverallStatus(user);
 
-		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='" + article.getWeb() + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='default_web'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value=" + Strings.quote(title) + ">");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");

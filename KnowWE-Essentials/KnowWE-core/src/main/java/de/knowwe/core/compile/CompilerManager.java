@@ -183,13 +183,13 @@ public class CompilerManager {
 	public void shutdown() {
 		if (shutdown) return;
 		shutdown = true;
-		LOGGER.info("Shutting down KnowWE compilers of web '{}'.", articleManager.getWeb());
+		LOGGER.info("Shutting down KnowWE compilers.");
 		new ArrayList<>(compilerCache).forEach(this::removeCompiler);
 		compilationLocals.clear();
 		threadPool.shutdownNow();
 		try {
 			if (!threadPool.awaitTermination(10, TimeUnit.SECONDS)) {
-				LOGGER.warn("Compile threads of web '{}' did not terminate within 10 seconds", articleManager.getWeb());
+				LOGGER.warn("Compile threads did not terminate within 10 seconds");
 			}
 		}
 		catch (InterruptedException e) {
@@ -258,16 +258,6 @@ public class CompilerManager {
 	@SuppressWarnings("unchecked")
 	public static <C extends Compiler> ScriptManager<C> getScriptManager(C compiler) {
 		return KnowWEUtils.getEnvironment(compiler).getScriptManager((Class<C>) compiler.getClass());
-	}
-
-	/**
-	 * Returns the web this compiler belongs to.
-	 *
-	 * @return the web of this compiler
-	 * @created 30.10.2013
-	 */
-	public String getWeb() {
-		return articleManager.getWeb();
 	}
 
 	public ArticleManager getArticleManager() {

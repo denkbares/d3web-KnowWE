@@ -83,7 +83,6 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		}
 		String jsAction = "window.location='action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
-				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
 				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName.trim() +
 				"&amp;_=" + System.currentTimeMillis() + "'";
 		return new DefaultTool(
@@ -119,7 +118,6 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		}
 		String kbURL = baseUrl + "action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
-				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
 				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web";
 		kbURL = Strings.encodeURL(kbURL);
 

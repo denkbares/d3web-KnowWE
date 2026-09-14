@@ -59,28 +59,9 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	}
 
 	/**
-	 * Renders the tag handler into a html string. The resulting html string is rendered into the
-	 * wiki page as html. This method mus be overwritten by the deriving classes to produce their
-	 * output html.
-	 *
-	 * @param web the web where the tag handler is included.
-	 * @param title the title of the page where the tag handler is included.
-	 * @param user the user context for this request
-	 * @param parameters the parameters of the tag handler invocation
-	 * @param result the result where the rendered contents are appended
-	 */
-	/**
-	 * Renders the html of this tag handler. Override this method; the web-bearing variant is deprecated.
+	 * Renders the html of this tag handler. Override this method.
 	 */
 	public void renderHTML(String title, UserContext user, Map<String, String> parameters, RenderResult result) {
-		renderHTML(Environment.DEFAULT_WEB, title, user, parameters, result);
-	}
-
-	/**
-	 * @deprecated the web is gone, override {@link #renderHTML(String, UserContext, Map, RenderResult)} instead
-	 */
-	@Deprecated
-	public void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result) {
 		throw new UnsupportedOperationException(getClass().getName() + " does not implement renderHTML");
 	}
 

@@ -144,8 +144,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 
 		// ignore all files if they belong to an article
 		// we have no read access for
-		Article article = WikiFileProviderUtils.getArticle(context.getEnvironment(), 
-				context.getWeb(), wikiRootFolder, file);
+		Article article = WikiFileProviderUtils.getArticle(context.getEnvironment(), wikiRootFolder, file);
 		if (article != null && !checkRights(article, context)) {
 			return;
 		}

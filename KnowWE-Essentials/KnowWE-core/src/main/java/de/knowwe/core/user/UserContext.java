@@ -114,13 +114,6 @@ public interface UserContext {
 	Article getArticle();
 
 	/**
-	 * Returns the web of the user's is currently visiting. It is the web the article belongs to.
-	 *
-	 * @created 14.10.2010
-	 */
-	String getWeb();
-
-	/**
 	 * Returns the parameter map of the http request with which the user is currently accessing the wiki server.
 	 *
 	 * @created 14.10.2010

@@ -34,8 +34,6 @@ public interface ArticleManager {
 
 	CompilerManager getCompilerManager();
 
-	String getWeb();
-
 	/**
 	 * Returns the Article for a given article name/title. The case of the article is ignored.
 	 */
