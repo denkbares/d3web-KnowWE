@@ -63,13 +63,4 @@ public class UnrecognizedSyntaxType extends AbstractType {
 			}
 		});
 	}
-
-	/**
-	 * @deprecated use {@link #UnrecognizedSyntaxType()} instead; a shared instance leaks mutable KDOM state across
-	 * environments (S4.7)
-	 */
-	@Deprecated
-	public static UnrecognizedSyntaxType getInstance() {
-		return new UnrecognizedSyntaxType();
-	}
 }

@@ -38,14 +38,6 @@ public class PredicateObjectSentenceList extends AbstractType {
 				PredicateObjectSentenceList::init);
 	}
 
-	/**
-	 * @deprecated use {@link #create()} instead; the returned instance is scoped to a single construction
-	 */
-	@Deprecated
-	public static PredicateObjectSentenceList getInstance() {
-		return create();
-	}
-
 	private PredicateObjectSentenceList() {
 		// initialization performed in init() to prevent infinite init-loop on
 		// startup

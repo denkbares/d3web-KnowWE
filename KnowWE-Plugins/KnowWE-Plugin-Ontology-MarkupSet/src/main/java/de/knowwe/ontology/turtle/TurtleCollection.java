@@ -55,14 +55,6 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		return RecursiveType.create(CONSTRUCTION, TurtleCollection::new, TurtleCollection::init);
 	}
 
-	/**
-	 * @deprecated use {@link #create()} instead; the returned instance is scoped to a single construction
-	 */
-	@Deprecated
-	public static TurtleCollection getInstance() {
-		return create();
-	}
-
 	private void init() {
 		this.setSectionFinder(new ExpressionInBracketsFinder(OPEN_COLLECTION, CLOSE_COLLECTION));
 

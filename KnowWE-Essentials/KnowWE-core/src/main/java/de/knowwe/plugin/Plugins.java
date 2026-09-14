@@ -298,8 +298,7 @@ public class Plugins {
 
 				// add children type(s) defined as class attribute(s)
 				for (String subTypeClass : extension.getParameters("class")) {
-					Type subType = (Type) getNewInstance(extension, subTypeClass);
-					markup.addAnnotationContentType(name, subType);
+					markup.addAnnotationContentType(name, () -> (Type) getNewInstance(extension, subTypeClass));
 				}
 
 				// set renderer for the annotation

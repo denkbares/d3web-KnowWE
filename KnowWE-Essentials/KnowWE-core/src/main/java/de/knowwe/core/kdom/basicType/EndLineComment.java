@@ -32,13 +32,4 @@ public class EndLineComment extends AbstractType {
 		this.setSectionFinder(new RegexSectionFinder("(\\s+|^\\s*)//[^\n\r]*$", Pattern.MULTILINE));
 		setRenderer(StyleRenderer.COMMENT);
 	}
-
-	/**
-	 * @deprecated use {@link #EndLineComment()} instead; a shared instance leaks mutable KDOM state across
-	 * environments (S4.7)
-	 */
-	@Deprecated
-	public static EndLineComment getInstance() {
-		return new EndLineComment();
-	}
 }

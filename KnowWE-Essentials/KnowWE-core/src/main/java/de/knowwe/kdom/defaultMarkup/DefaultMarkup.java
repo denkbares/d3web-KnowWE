@@ -203,7 +203,7 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	public void addAnnotationIcon(String name, Icon icon) {
-		addAnnotationNameType(name, new IconType(icon));
+		addAnnotationNameType(name, () -> new IconType(icon));
 	}
 
 	/**
@@ -214,7 +214,7 @@ public class DefaultMarkup implements Cloneable {
 	 * @param label the label of the annotation to be added
 	 */
 	public void addAnnotationIcon(String name, Icon icon, String label) {
-		addAnnotationNameType(name, new IconType(icon, label));
+		addAnnotationNameType(name, () -> new IconType(icon, label));
 	}
 
 	/**
@@ -296,10 +296,6 @@ public class DefaultMarkup implements Cloneable {
 		}
 	}
 
-	public void addAnnotationContentType(String name, Type type) {
-		addAnnotationContentType(name, () -> type);
-	}
-
 	/**
 	 * Adds a {@link Type} to the content of the named annotation. The type is created freshly from the given factory
 	 * for every {@link DefaultMarkupType} instance the markup is applied to. This keeps the mutable KDOM type instances
@@ -308,10 +304,6 @@ public class DefaultMarkup implements Cloneable {
 	public void addAnnotationContentType(String name, Supplier<Type> typeFactory) {
 		Annotation annotation = getAnnotationHandleIAE(name);
 		annotation.types.add(typeFactory);
-	}
-
-	public void addAnnotationNameType(String name, Type type) {
-		addAnnotationNameType(name, () -> type);
 	}
 
 	/**
@@ -335,10 +327,6 @@ public class DefaultMarkup implements Cloneable {
 			throw new IllegalArgumentException("no such annotation defined: " + name);
 		}
 		return annotation;
-	}
-
-	public void addContentType(Type type) {
-		addContentType(() -> type);
 	}
 
 	/**
@@ -583,20 +571,12 @@ public class DefaultMarkup implements Cloneable {
 		}
 
 		public Annotation addIcon(Icon icon) {
-			return addNameType(new IconType(icon));
-		}
-
-		public Annotation addNameType(Type nameType) {
-			return addNameType(() -> nameType);
+			return addNameType(() -> new IconType(icon));
 		}
 
 		public Annotation addNameType(Supplier<Type> nameTypeFactory) {
 			nameTypes.add(nameTypeFactory);
 			return this;
-		}
-
-		public Annotation addContentType(Type contentType) {
-			return addContentType(() -> contentType);
 		}
 
 		public Annotation addContentType(Supplier<Type> contentTypeFactory) {
