@@ -42,6 +42,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -59,6 +60,14 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Philipp Sehne
  */
 public class TableToExcelAction extends AbstractAction {
+
+	/**
+	 * Exports the table of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	private static XSSFFont normalFont;
 	private static XSSFCellStyle bodyStyle;
