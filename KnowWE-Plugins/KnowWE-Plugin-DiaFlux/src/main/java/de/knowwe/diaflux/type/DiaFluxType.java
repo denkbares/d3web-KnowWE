@@ -37,7 +37,7 @@ public class DiaFluxType extends DefaultMarkupType {
 	static {
 
 		MARKUP = new DefaultMarkup("DiaFlux");
-		MARKUP.addContentType(new FlowchartType());
+		MARKUP.addContentType(() -> new FlowchartType());
 		PackageManager.addPackageAnnotation(MARKUP);
 
 	}

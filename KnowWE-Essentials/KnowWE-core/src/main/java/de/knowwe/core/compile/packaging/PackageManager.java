@@ -100,8 +100,8 @@ public class PackageManager {// implements EventListener {
 
 	public static void addPackageAnnotation(DefaultMarkup markup, boolean warnForNotCompiledPackage) {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
-		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageRule(warnForNotCompiledPackage));
+		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, () -> new PackageAnnotationNameType());
+		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, () -> new PackageRule(warnForNotCompiledPackage));
 		markup.getAnnotation(PACKAGE_ATTRIBUTE_NAME)
 				.setDocumentation("Configure the package or package rule to which the content of the markup belongs.");
 	}

@@ -43,7 +43,7 @@ public class RulesMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Rule");
-		MARKUP.addContentType(new RuleContentType());
+		MARKUP.addContentType(() -> new RuleContentType());
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
 

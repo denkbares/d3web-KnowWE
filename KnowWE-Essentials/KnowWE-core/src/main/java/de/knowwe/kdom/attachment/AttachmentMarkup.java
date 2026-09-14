@@ -67,31 +67,35 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 
 	static {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
-		MARKUP.addAnnotationContentType(ATTACHMENT_ANNOTATION, new AttachmentType());
+		MARKUP.addAnnotationContentType(ATTACHMENT_ANNOTATION, () -> new AttachmentType());
 		MARKUP.addAnnotation(URL_ANNOTATION);
 		MARKUP.addAnnotation(COMPILE_ANNOTATION, false, "true", "false");
-		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
+		MARKUP.addAnnotationContentType(URL_ANNOTATION, () -> new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION);
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->.*"));
-		PlainText regexType = new PlainText();
-		regexType.setRenderer((section, user, result) -> result.appendJSPWikiMarkup(section.getText()));
-		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->.*")).addContentType(regexType);
-		TimeStampType timeStampType = new TimeStampType();
-		timeStampType.setRenderer((section, user, result) -> {
-			result.append(section.getText());
-			Section<AttachmentUpdateMarkup> attachmentUpdate = Sections.ancestor(section, AttachmentUpdateMarkup.class);
-			if (attachmentUpdate == null) return;
-			long sinceLastRun = attachmentUpdate.get().timeSinceLastRun(attachmentUpdate);
-			long sinceLastChange = attachmentUpdate.get().timeSinceLastChange(attachmentUpdate);
-			if (sinceLastRun < Long.MAX_VALUE && sinceLastChange < Long.MAX_VALUE) {
-				String lastRunDisplay = getDisplay(sinceLastRun);
-				String lastChangeDisplay = getDisplay(sinceLastChange);
-				result.appendHtmlElement("span",
-						" (last check was " + lastRunDisplay + " ago, last change was " + lastChangeDisplay + " ago)",
-						"style", "color: grey");
-			}
+		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->.*")).addContentType(() -> {
+			PlainText regexType = new PlainText();
+			regexType.setRenderer((section, user, result) -> result.appendJSPWikiMarkup(section.getText()));
+			return regexType;
 		});
-		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, timeStampType);
+		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, () -> {
+			TimeStampType timeStampType = new TimeStampType();
+			timeStampType.setRenderer((section, user, result) -> {
+				result.append(section.getText());
+				Section<AttachmentUpdateMarkup> attachmentUpdate = Sections.ancestor(section, AttachmentUpdateMarkup.class);
+				if (attachmentUpdate == null) return;
+				long sinceLastRun = attachmentUpdate.get().timeSinceLastRun(attachmentUpdate);
+				long sinceLastChange = attachmentUpdate.get().timeSinceLastChange(attachmentUpdate);
+				if (sinceLastRun < Long.MAX_VALUE && sinceLastChange < Long.MAX_VALUE) {
+					String lastRunDisplay = getDisplay(sinceLastRun);
+					String lastChangeDisplay = getDisplay(sinceLastChange);
+					result.appendHtmlElement("span",
+							" (last check was " + lastRunDisplay + " ago, last change was " + lastChangeDisplay + " ago)",
+							"style", "color: grey");
+				}
+			});
+			return timeStampType;
+		});
 		MARKUP.addAnnotation(START_ANNOTATION);
 		MARKUP.addAnnotation(VERSIONING_ANNOTATION, false, "true", "false");
 		MARKUP.addAnnotation(ZIP_ENTRY_ANNOTATION);

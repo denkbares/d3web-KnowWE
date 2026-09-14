@@ -85,8 +85,8 @@ public class ShowSolutionsType extends DefaultMarkupType {
 						"base or the specific question using the %%Property markup.");
 		MARKUP.addAnnotation(END_USER_MODE, false, BoolValue.class);
 
-		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, new QuestionnaireReference());
-		MARKUP.addAnnotationContentType(LANGUAGE, new LocaleType());
+		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, () -> new QuestionnaireReference());
+		MARKUP.addAnnotationContentType(LANGUAGE, () -> new LocaleType());
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
 

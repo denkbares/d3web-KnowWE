@@ -123,10 +123,10 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE)
 				.setDocumentation("Decide whether matching between objects (questions, solutions, choice...) should be case-sensitive or case-insensitive");
 
-		MARKUP.addContentType(new KnowledgeBaseDefinition());
+		MARKUP.addContentType(() -> new KnowledgeBaseDefinition());
 
-		MARKUP.addAnnotationNameType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
-		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageSelection());
+		MARKUP.addAnnotationNameType(PackageManager.COMPILE_ATTRIBUTE_NAME, () -> new PackageAnnotationNameType());
+		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, () -> new PackageSelection());
 	}
 
 	public KnowledgeBaseMarkup() {

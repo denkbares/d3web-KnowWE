@@ -33,10 +33,12 @@ public class IndividualType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("Individual");
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(IndividualType.TYPE_ANNOTATION_NAME, false);
-		MARKUP.addAnnotationContentType(TYPE_ANNOTATION_NAME, new AbbreviatedResourceReference());
-		OntologyLineType lineType = new OntologyLineType();
-		lineType.addChildType(new AbbreviatedIndividualDefinition());
-		MARKUP.addContentType(lineType);
+		MARKUP.addAnnotationContentType(TYPE_ANNOTATION_NAME, () -> new AbbreviatedResourceReference());
+		MARKUP.addContentType(() -> {
+			OntologyLineType lineType = new OntologyLineType();
+			lineType.addChildType(new AbbreviatedIndividualDefinition());
+			return lineType;
+		});
 	}
 
 	public IndividualType() {

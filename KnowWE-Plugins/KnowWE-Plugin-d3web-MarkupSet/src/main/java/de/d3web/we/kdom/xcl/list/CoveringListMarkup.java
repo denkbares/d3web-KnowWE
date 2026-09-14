@@ -38,7 +38,7 @@ public class CoveringListMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("CoveringList");
-		MARKUP.addContentType(new CoveringList());
+		MARKUP.addContentType(() -> new CoveringList());
 		MARKUP.addAnnotation(ESTABLISHED_THRESHOLD, false);
 		MARKUP.addAnnotation(SUGGESTED_THRESHOLD, false);
 		MARKUP.addAnnotation(MIN_SUPPORT, false);

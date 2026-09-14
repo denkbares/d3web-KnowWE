@@ -36,7 +36,7 @@ public class PluginConfigType extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("plugin-config");
 		PackageManager.addPackageAnnotation(MARKUP);
-		MARKUP.addContentType(new AnonymousType("xml", AllTextFinderTrimmed.getInstance()));
+		MARKUP.addContentType(() -> new AnonymousType("xml", AllTextFinderTrimmed.getInstance()));
 	}
 
 	public PluginConfigType() {

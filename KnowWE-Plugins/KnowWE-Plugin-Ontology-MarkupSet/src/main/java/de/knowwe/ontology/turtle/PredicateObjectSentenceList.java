@@ -24,6 +24,11 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class PredicateObjectSentenceList extends AbstractType {
 
+	/**
+	 * Recursive type: it is referenced from within its own child graph (BlankNode), so a single instance per JVM is
+	 * assigned <em>before</em> its children are built to break the recursion. A per-environment factory (like the
+	 * other markup types) would recurse infinitely and is therefore not used here; see S4.7.
+	 */
 	private static PredicateObjectSentenceList instance = null;
 
 	public static PredicateObjectSentenceList getInstance() {

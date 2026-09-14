@@ -52,8 +52,8 @@ public class TurtleMarkup extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("Turtle");
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.ignoreAnnotation("prefix");
-		MARKUP.addContentType(new TurtlePrefixType());
-		MARKUP.addContentType(new TurtleContent());
+		MARKUP.addContentType(() -> new TurtlePrefixType());
+		MARKUP.addContentType(() -> new TurtleContent());
 		MARKUP.addAnnotation(COMPILE, false, "true", "false");
 	}
 

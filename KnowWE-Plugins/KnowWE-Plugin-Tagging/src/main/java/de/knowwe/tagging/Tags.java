@@ -30,7 +30,7 @@ public class Tags extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("tags");
-		MARKUP.addContentType(new TagsContent());
+		MARKUP.addContentType(() -> new TagsContent());
 	}
 
 	public Tags() {

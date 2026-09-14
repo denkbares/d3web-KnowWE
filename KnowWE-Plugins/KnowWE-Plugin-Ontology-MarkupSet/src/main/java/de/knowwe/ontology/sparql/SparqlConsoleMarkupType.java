@@ -51,8 +51,8 @@ public class SparqlConsoleMarkupType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
-		MARKUP.addContentType(new SparqlConsoleContentType());
-		MARKUP.addContentType(new SparqlContentType());
+		MARKUP.addContentType(SparqlConsoleContentType::new);
+		MARKUP.addContentType(SparqlContentType::new);
 		MARKUP.addAnnotation(RENDER_MODE, false, "PlainText", "HTML", "ToolMenu");
 		MARKUP.addAnnotationRenderer(RENDER_MODE, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(AsynchronousRenderer.ASYNCHRONOUS, false, "true", "false");

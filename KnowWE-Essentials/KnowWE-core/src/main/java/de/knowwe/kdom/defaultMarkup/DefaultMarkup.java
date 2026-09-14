@@ -28,6 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,7 +45,7 @@ public class DefaultMarkup implements Cloneable {
 	public static final String REGEX_SEPARATE_MULTIPLE = "[\\h\\s\\v,;]+";
 
 	private String name;
-	private Collection<Type> types = new ArrayList<>();
+	private Collection<Supplier<Type>> types = new ArrayList<>();
 	private Map<String, Annotation> annotations = new LinkedHashMap<>();
 	private final Set<String> ignoredAnnotations = new LinkedHashSet<>();
 
@@ -296,13 +297,31 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	public void addAnnotationContentType(String name, Type type) {
+		addAnnotationContentType(name, () -> type);
+	}
+
+	/**
+	 * Adds a {@link Type} to the content of the named annotation. The type is created freshly from the given factory
+	 * for every {@link DefaultMarkupType} instance the markup is applied to. This keeps the mutable KDOM type instances
+	 * per type tree (and therefore per environment) instead of sharing one instance across all of them.
+	 */
+	public void addAnnotationContentType(String name, Supplier<Type> typeFactory) {
 		Annotation annotation = getAnnotationHandleIAE(name);
-		annotation.types.add(type);
+		annotation.types.add(typeFactory);
 	}
 
 	public void addAnnotationNameType(String name, Type type) {
+		addAnnotationNameType(name, () -> type);
+	}
+
+	/**
+	 * Adds a {@link Type} to the name of the named annotation. The type is created freshly from the given factory for
+	 * every {@link DefaultMarkupType} instance the markup is applied to, see
+	 * {@link #addAnnotationContentType(String, Supplier)}.
+	 */
+	public void addAnnotationNameType(String name, Supplier<Type> typeFactory) {
 		Annotation annotation = getAnnotationHandleIAE(name);
-		annotation.nameTypes.add(type);
+		annotation.nameTypes.add(typeFactory);
 	}
 
 	public void addAnnotationRenderer(String name, Renderer renderer) {
@@ -319,7 +338,17 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	public void addContentType(Type type) {
-		this.types.add(type);
+		addContentType(() -> type);
+	}
+
+	/**
+	 * Adds a {@link Type} factory for the content of this markup. The type is created freshly from the factory for
+	 * every {@link DefaultMarkupType} instance the markup is applied to. This is the preferred way for markups that are
+	 * held in a static field: the mutable KDOM type instances then belong to the type tree of a single
+	 * {@link de.knowwe.core.Environment} instead of being shared by all of them.
+	 */
+	public void addContentType(Supplier<Type> typeFactory) {
+		this.types.add(typeFactory);
 	}
 
 	/**
@@ -330,11 +359,14 @@ public class DefaultMarkup implements Cloneable {
 	 * The mark-up may also contain any other text. It will be recognized as {@link PlainText}, such in any other
 	 * section or wiki-page. It is in responsibility of the {@link de.knowwe.core.compile.CompileScript} of the {@link
 	 * DefaultMarkupType} instance to check for non-allowed content.
+	 * <p>
+	 * Each call creates the types anew from their factories (if registered as factories), so the returned instances
+	 * belong to the caller.
 	 *
 	 * @return the Types of this mark-up
 	 */
 	public Type[] getTypes() {
-		return this.types.toArray(new Type[0]);
+		return this.types.stream().map(Supplier::get).toArray(Type[]::new);
 	}
 
 	public Set<String> getIgnoredAnnotations() {
@@ -438,8 +470,8 @@ public class DefaultMarkup implements Cloneable {
 
 		private String documentation = null;
 
-		private final Collection<Type> nameTypes = new LinkedList<>();
-		private final Collection<Type> types = new LinkedList<>();
+		private final Collection<Supplier<Type>> nameTypes = new LinkedList<>();
+		private final Collection<Supplier<Type>> types = new LinkedList<>();
 
 		private Renderer renderer = null;
 
@@ -535,11 +567,11 @@ public class DefaultMarkup implements Cloneable {
 		 * @return the Types of this annotation
 		 */
 		public Type[] getContentTypes() {
-			return this.types.toArray(new Type[0]);
+			return this.types.stream().map(Supplier::get).toArray(Type[]::new);
 		}
 
 		public Type[] getNameTypes() {
-			return this.nameTypes.toArray(new Type[0]);
+			return this.nameTypes.stream().map(Supplier::get).toArray(Type[]::new);
 		}
 
 		public Renderer getRenderer() {
@@ -555,12 +587,20 @@ public class DefaultMarkup implements Cloneable {
 		}
 
 		public Annotation addNameType(Type nameType) {
-			nameTypes.add(nameType);
+			return addNameType(() -> nameType);
+		}
+
+		public Annotation addNameType(Supplier<Type> nameTypeFactory) {
+			nameTypes.add(nameTypeFactory);
 			return this;
 		}
 
 		public Annotation addContentType(Type contentType) {
-			types.add(contentType);
+			return addContentType(() -> contentType);
+		}
+
+		public Annotation addContentType(Supplier<Type> contentTypeFactory) {
+			types.add(contentTypeFactory);
 			return this;
 		}
 	}

@@ -132,12 +132,12 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		// add content for individual annotations
 		markup.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
-		markup.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(FROZEN_TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
-		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestDeclarationType());
-		markup.addAnnotationContentType(FROZEN_TEST_KEY, new TestDeclarationType());
+		markup.addAnnotationContentType(TEST_KEY, () -> new TestIgnoreType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, () -> new TestIgnoreType());
+		markup.addAnnotationContentType(FROZEN_TEST_KEY, () -> new TestIgnoreType());
+		markup.addAnnotationContentType(TEST_KEY, () -> new TestDeclarationType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, () -> new TestDeclarationType());
+		markup.addAnnotationContentType(FROZEN_TEST_KEY, () -> new TestDeclarationType());
 		markup.addAnnotation(TEMPLATE, false);
 		markup.addAnnotation(SKIP_TESTS, false);
 

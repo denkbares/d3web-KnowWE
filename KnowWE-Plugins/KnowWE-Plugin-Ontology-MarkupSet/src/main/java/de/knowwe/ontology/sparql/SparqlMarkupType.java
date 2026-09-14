@@ -76,7 +76,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
-		MARKUP.addContentType(new SparqlContentType());
+		MARKUP.addContentType(SparqlContentType::new);
 		MARKUP.addAnnotation(RAW_OUTPUT, false, "true", "false");
 		MARKUP.addAnnotation(NAVIGATION, false, "true", "false");
 		MARKUP.addAnnotationRenderer(NAVIGATION, NothingRenderer.getInstance());
@@ -102,13 +102,13 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotation(TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
 		MARKUP.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(CONSTRUCT, false);
-		MARKUP.addAnnotationContentType(CONSTRUCT, new ConstructAnnotationType());
+		MARKUP.addAnnotationContentType(CONSTRUCT, ConstructAnnotationType::new);
 		MARKUP.getAnnotation(CONSTRUCT)
 				.setDocumentation("Specify a template how statements should be generated from the result of the query, similar to CONSTRUCT queries.<br>" +
 								  "Example: @" + CONSTRUCT + ": ?uri skos:prefLabel ?name");
 		MARKUP.addAnnotation(NAME, false);
 		MARKUP.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
-		MARKUP.addAnnotationContentType(NAME, new RegisteredNameType(SparqlMarkupType.class));
+		MARKUP.addAnnotationContentType(NAME, () -> new RegisteredNameType(SparqlMarkupType.class));
 		MARKUP.addAnnotation(COLUMN_SORTING, false, Pattern.compile("\\H+\\h+(" + Arrays.stream(RenderOptions.ColumnSortingType
 				.values()).map(Enum::name).collect(Collectors.joining("|")) + ")"));
 		MARKUP.addAnnotationRenderer(COLUMN_SORTING, NothingRenderer.getInstance());

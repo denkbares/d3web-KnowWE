@@ -19,7 +19,7 @@ public class AbstractionTableMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("AbstractionTable");
-		MARKUP.addContentType(new Table());
+		MARKUP.addContentType(Table::new);
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_ACTION_COLUMNS, false, Pattern.compile("\\d+"));
 		MARKUP.getAnnotation(ANNOTATION_ACTION_COLUMNS)

@@ -40,8 +40,8 @@ public class TestCaseTableType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("TestCaseTable");
-		MARKUP.addContentType(new Table());
-		MARKUP.addContentType(new AnonymousType("WhiteSpace", AllTextFinder.getInstance(), NothingRenderer.getInstance()));
+		MARKUP.addContentType(() -> new Table());
+		MARKUP.addContentType(() -> new AnonymousType("WhiteSpace", AllTextFinder.getInstance(), NothingRenderer.getInstance()));
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(NAME, false);
 		MARKUP.addAnnotationRenderer(NAME, new AnnotationRenderer("Name: "));

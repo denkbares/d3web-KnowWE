@@ -112,7 +112,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	static {
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, false);
-		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, new TimeStampType());
+		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, () -> new TimeStampType());
 		MARKUP.addAnnotation(COMPILE_ANNOTATION, false, "true", "false");
 		MARKUP.addAnnotation(MODE_ANNOTATION, false, "import", "tracking");
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));

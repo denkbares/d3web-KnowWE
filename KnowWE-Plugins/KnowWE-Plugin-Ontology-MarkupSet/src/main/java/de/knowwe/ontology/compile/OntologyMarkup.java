@@ -109,16 +109,16 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 				%
 				"""
 		);
-		MARKUP.addContentType(new OntologyDefinition());
+		MARKUP.addContentType(() -> new OntologyDefinition());
 
 		MARKUP.addAnnotation(ANNOTATION_COMPILE, false)
 				.addIcon(Icon.PACKAGE.addTitle("Uses"))
-				.addContentType(new PackageSelection())
+				.addContentType(() -> new PackageSelection())
 				.setDocumentation("A package that should be added to this ontology");
 
 		MARKUP.addAnnotation(ANNOTATION_IMPORT, false)
 				.addIcon(Icon.FILE_XML.addTitle("Import"))
-				.addContentType(new AttachmentType(false))
+				.addContentType(() -> new AttachmentType(false))
 				.setDocumentation("Import the ontology contained in the given attachment");
 
 		MARKUP.addAnnotation(ANNOTATION_EXPORT, false)
@@ -132,7 +132,7 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false)
 				.addIcon(Icon.FILE.addTitle("Import silently (faster, but without term support)"))
-				.addContentType(new AttachmentType(false))
+				.addContentType(() -> new AttachmentType(false))
 				.setDocumentation("Import the ontology contained in the given attachment, but without being able to " +
 								  "reference it in wiki markup later, to make compilation a bit faster (especially with big imports)");
 
@@ -176,7 +176,7 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 
 		MARKUP.addAnnotation(ANNOTATION_DEFAULT_NAMESPACE, false)
 				.addIcon(Icon.GLOBE.addTitle("Default Namespace"))
-				.addContentType(new NamespaceAbbreviationDefinition())
+				.addContentType(() -> new NamespaceAbbreviationDefinition())
 				.setDocumentation("Allows to define a default namespace that will be used " +
 								  "by other markups, if no specific namespace is given.");
 

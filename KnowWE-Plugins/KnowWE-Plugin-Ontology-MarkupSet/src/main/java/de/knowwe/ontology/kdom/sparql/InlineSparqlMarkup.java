@@ -61,7 +61,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(COUNT, false, "true", "false");
 		MARKUP.addAnnotation(ASYNCHRONOUS, false, "true", "false");
 		MARKUP.addAnnotationRenderer(ASYNCHRONOUS, NothingRenderer.getInstance());
-		MARKUP.addContentType(new InlineSparqlNameReference());
+		MARKUP.addContentType(() -> new InlineSparqlNameReference());
 	}
 
 	private static class InlineSparqlNameReference extends SparqlNameReference {

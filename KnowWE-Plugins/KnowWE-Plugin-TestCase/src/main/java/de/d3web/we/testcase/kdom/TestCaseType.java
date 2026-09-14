@@ -39,7 +39,7 @@ public class TestCaseType extends DefaultMarkupType implements TermIsHiddenInCom
 
 	static {
 		m = new DefaultMarkup("TestCase");
-		m.addContentType(new TestCaseContent());
+		m.addContentType(() -> new TestCaseContent());
 		m.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 		PackageManager.addPackageAnnotation(m);
 	}
