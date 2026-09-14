@@ -32,7 +32,7 @@ public class TextLine extends AbstractType {
 
 	public TextLine(Type lineContent) {
 		this.addChildType(new LineBreak());
-		this.addChildType(EndLineComment.getInstance());
+		this.addChildType(new EndLineComment());
 		this.addChildType(lineContent);
 		setSectionFinder(LineSectionFinder.getInstance());
 	}

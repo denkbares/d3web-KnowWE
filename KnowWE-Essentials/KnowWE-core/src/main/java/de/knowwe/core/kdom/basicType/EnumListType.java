@@ -76,7 +76,7 @@ public class EnumListType extends AbstractType {
 				.sorted(Comparator.comparingInt(String::length).reversed())
 				.map(KeywordType::new).peek(k -> k.setRenderer(StyleRenderer.CONSTANT))
 				.forEach(this::addChildType);
-		addChildType(UnrecognizedSyntaxType.getInstance());
+		addChildType(new UnrecognizedSyntaxType());
 	}
 
 	/**

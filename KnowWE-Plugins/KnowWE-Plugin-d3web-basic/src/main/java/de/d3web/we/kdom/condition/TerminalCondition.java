@@ -60,7 +60,7 @@ public class TerminalCondition extends AbstractType {
 
     public TerminalCondition(String typeName, final String messageText) {
         this.setSectionFinder(new AllTextFinderTrimmed());
-		this.addChildType(0, EndLineComment.getInstance());
+		this.addChildType(0, new EndLineComment());
 
 		// last: Anything left is an UnrecognizedTC throwing an error
         AnonymousType unrecognizedCond = new AnonymousType(typeName);

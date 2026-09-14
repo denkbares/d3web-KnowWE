@@ -142,7 +142,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 			KeywordType keywordType = new KeywordType("@");
 			keywordType.setRenderer(StyleRenderer.LOCALE);
 			addChildType(keywordType);
-			addChildType(UnrecognizedSyntaxType.getInstance());
+			addChildType(new UnrecognizedSyntaxType());
 		}
 	}
 

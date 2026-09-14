@@ -65,7 +65,7 @@ public class XCLHeader extends AbstractType {
 					new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
 			// and take the remaining ranges as solution definitions,
 			this.addChildType(new XCLSolutionDefinition());
-			this.addChildType(UnrecognizedSyntaxType.getInstance());
+			this.addChildType(new UnrecognizedSyntaxType());
 		}
 	}
 }

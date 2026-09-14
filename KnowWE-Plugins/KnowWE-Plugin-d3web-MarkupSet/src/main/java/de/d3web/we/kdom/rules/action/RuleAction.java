@@ -50,7 +50,7 @@ public class RuleAction extends AbstractType {
 
 	public RuleAction() {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
-		EndLineComment comment = EndLineComment.getInstance();
+		EndLineComment comment = new EndLineComment();
 		comment.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(comment);
 		List<Type> actions = RuleType.getActions();

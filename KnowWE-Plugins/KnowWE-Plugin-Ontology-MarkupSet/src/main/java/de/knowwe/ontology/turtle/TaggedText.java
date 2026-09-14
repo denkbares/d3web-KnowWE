@@ -49,7 +49,7 @@ public class TaggedText extends AbstractType {
 		KeywordType keywordType = new KeywordType("@");
 		keywordType.setRenderer(StyleRenderer.LOCALE);
 		addChildType(keywordType);
-		addChildType(UnrecognizedSyntaxType.getInstance());
+		addChildType(new UnrecognizedSyntaxType());
 	}
 
 	public Text getTaggedText(Section<? extends TaggedText> section) {

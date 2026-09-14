@@ -101,7 +101,7 @@ public class RuleType extends AbstractType {
 
 		this.addChildType(new ExceptionConditionContainer());
 
-		this.addChildType(EndLineComment.getInstance());
+		this.addChildType(new EndLineComment());
 
 		this.addCompileScript(Priority.LOWEST, new RuleCompileScript());
 	}
