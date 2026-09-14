@@ -13,6 +13,7 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -23,6 +24,15 @@ import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;
 
 public class InitWiki extends AbstractAction {
+
+	/**
+	 * Starts a dialog for the knowledge base of the article it is called for, so it needs read access to that
+	 * article (checked by the nested WikiProvider).
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	public static final String PARAM_USER = StartCase.PARAM_USER;
 	public static final String PARAM_LANGUAGE = StartCase.PARAM_LANGUAGE;
