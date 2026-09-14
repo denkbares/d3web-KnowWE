@@ -134,6 +134,16 @@ public class StartCase extends AbstractAction implements EventListener {
 		 * @param context
 		 */
 		KnowledgeBase getKnowledgeBase(UserActionContext context) throws IOException;
+
+		/**
+		 * Returns whether the current user is allowed to see this knowledge base. Providers that are not backed by a
+		 * wiki page (e.g. the file based mobile application) have no resource to check and return true.
+		 *
+		 * @param context the context of the current dialog action
+		 */
+		default boolean canView(UserActionContext context) throws IOException {
+			return true;
+		}
 	}
 
 	@Override

@@ -78,6 +78,12 @@ public class InitWiki extends AbstractAction {
 			return getKnowledgeBase(context).getResource("favicon.png");
 		}
 
+		@Override
+		public boolean canView(UserActionContext context) {
+			Section<?> section = Sections.get(sectionId);
+			return section != null && KnowWEUtils.canView(section, context);
+		}
+
 		public String getSectionId() {
 			return this.sectionId;
 		}

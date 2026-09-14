@@ -8,9 +8,16 @@ import java.io.File;
 import java.io.IOException;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class AddRepositoryFile extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
+
 
 	public static String PARAM_PATHNAME = "path";
 

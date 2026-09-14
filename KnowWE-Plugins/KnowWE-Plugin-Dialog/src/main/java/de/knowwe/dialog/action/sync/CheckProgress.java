@@ -8,9 +8,16 @@ import java.io.IOException;
 import java.io.Writer;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class CheckProgress extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
+
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
