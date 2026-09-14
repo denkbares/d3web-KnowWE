@@ -36,6 +36,14 @@ import de.knowwe.core.compile.GroupingCompiler;
  * @created 11.11.20
  */
 public class SetDefaultCompilerAction extends AbstractAction {
+
+	/**
+	 * Writes only the caller's own session-scoped default compiler, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String name = context.getParameter("name");

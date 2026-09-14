@@ -17,6 +17,15 @@ import static java.util.stream.Collectors.toList;
  */
 public class LookUpAction extends AbstractAction {
 
+	/**
+	 * Returns the collected term identifiers of the web without targeting a specific article, so any authenticated
+	 * user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 

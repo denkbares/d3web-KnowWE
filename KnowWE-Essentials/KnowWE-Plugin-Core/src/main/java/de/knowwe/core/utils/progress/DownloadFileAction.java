@@ -12,6 +12,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -24,6 +25,15 @@ import de.knowwe.core.action.UserActionContext;
  * @see #allowDirectory(File)
  */
 public class DownloadFileAction extends AbstractAction {
+
+	/**
+	 * Serves server-side files that were explicitly allowed via {@link #allowDirectory(File)}. Not tied to any
+	 * article, so any authenticated user may call it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.AUTH;
+	}
 
 	private static final Set<File> allowedDirectories = new HashSet<>();
 	public static final String KEY_FILE = "file";

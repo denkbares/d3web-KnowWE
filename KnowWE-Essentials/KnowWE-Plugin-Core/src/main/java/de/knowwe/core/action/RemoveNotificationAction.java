@@ -31,6 +31,14 @@ import de.knowwe.notification.NotificationManager;
  */
 public class RemoveNotificationAction extends AbstractAction {
 
+	/**
+	 * Removes notifications from the caller's own session, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	private static final String NOTIFICATIONID = "notificationid";
 
 	@Override

@@ -29,6 +29,14 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 public class StoreLocalSectionStorageAction extends AbstractAction {
 
+	/**
+	 * Writes only the caller's own session local storage, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		AbstractAction.storeLocalSectionStorage(context);

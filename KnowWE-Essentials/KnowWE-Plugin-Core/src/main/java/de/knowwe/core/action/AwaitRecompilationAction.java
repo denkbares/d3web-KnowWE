@@ -32,6 +32,14 @@ import org.slf4j.LoggerFactory;
  */
 public class AwaitRecompilationAction extends AbstractAction {
 
+	/**
+	 * Only waits for the server's compilation to finish, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AwaitRecompilationAction.class);
 
 	@Override

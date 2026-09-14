@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 
@@ -64,12 +67,21 @@ public class RecompileAction extends AbstractAction {
 	private static final ExecutorService LOGGER_THREAD = Executors.newCachedThreadPool(runnable -> new Thread(runnable, "Recompile-Logger-Thread"));
 
 	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.WRITE;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 
 		String command = context.getParameter("command");
 		Article article = context.getArticle();
 		if (article == null) {
 			failUnexpected(context, "No article found, unable to recompile");
+			return;
+		}
+		if (!KnowWEUtils.canWrite(article, context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to recompile this article");
 			return;
 		}
 

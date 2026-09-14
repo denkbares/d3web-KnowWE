@@ -16,16 +16,6 @@
 com.denkbares.knowwe.textdiff.TextDiffAction
 de.knowwe.jspwiki.DefaultLogoAction
 de.knowwe.jspwiki.recentChanges.RecentChangesPageDisplayProviderAction
-de.knowwe.core.action.AwaitRecompilationAction
-de.knowwe.core.action.GetCompilerSwitchContentAction
-de.knowwe.core.action.GetNotificationsAction
-de.knowwe.core.action.LookUpAction
-de.knowwe.core.action.RecompileAction
-de.knowwe.core.action.RemoveNotificationAction
-de.knowwe.core.action.SetDefaultCompilerAction
-de.knowwe.core.action.StoreLocalSectionStorageAction
-de.knowwe.core.utils.progress.DownloadFileAction
-de.knowwe.kdom.export.RootTypeExportAction
 de.d3web.we.watches.GetExpressionValueAction
 de.knowwe.d3web.action.GetKnowledgeBaseResourceAction
 de.d3web.we.kdom.rules.RuleFormatAction

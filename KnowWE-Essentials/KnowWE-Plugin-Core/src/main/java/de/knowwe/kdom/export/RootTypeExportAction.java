@@ -36,6 +36,7 @@ import javax.servlet.ServletContext;
 
 import com.denkbares.utils.OS;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -47,6 +48,15 @@ import de.knowwe.core.kdom.Type;
  * @created 10.11.2012
  */
 public class RootTypeExportAction extends AbstractAction {
+
+	/**
+	 * Renders the type hierarchy to a temporary svg on the server. Not tied to any article, so any authenticated user
+	 * may call it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.AUTH;
+	}
 
 	// path of the local dot-Installation
 	private static String DOT_INSTALLATION;

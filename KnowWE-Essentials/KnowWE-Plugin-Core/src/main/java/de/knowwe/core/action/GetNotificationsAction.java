@@ -39,6 +39,14 @@ import de.knowwe.notification.NotificationManager;
  */
 public class GetNotificationsAction extends AbstractAction {
 
+	/**
+	 * Returns only the caller's own session notifications, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		NotificationManager manager = NotificationManager.getNotificationManager(context);
