@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -44,6 +45,14 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  * @created 18.07.2012
  */
 public class GetProgressAction extends AbstractAction {
+
+	/**
+	 * Reads the progress of the operation of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(GetProgressAction.class);
 
 	@Override

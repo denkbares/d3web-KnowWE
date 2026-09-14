@@ -19,7 +19,6 @@ de.knowwe.jspwiki.recentChanges.RecentChangesPageDisplayProviderAction
 de.knowwe.core.action.AwaitRecompilationAction
 de.knowwe.core.action.GetCompilerSwitchContentAction
 de.knowwe.core.action.GetNotificationsAction
-de.knowwe.core.action.HealthCheckAction
 de.knowwe.core.action.LookUpAction
 de.knowwe.core.action.RecompileAction
 de.knowwe.core.action.RemoveNotificationAction

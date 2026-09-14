@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -41,6 +42,15 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 02.10.2013
  */
 public class GetToolMenuAction extends AbstractAction {
+
+	/**
+	 * Only renders the menu of the available tools for the article it is called for, so it needs read access to that
+	 * article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	public static final String IDENTIFIER = "identifier";
 	protected static final DefaultMarkupRenderer defaultMarkupRenderer =

@@ -40,6 +40,14 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class AttachmentDownloadAction extends AbstractAction {
 
+	/**
+	 * Serves an attachment, so it needs read access to the article the attachment belongs to.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.READ;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String attachmentPath = context.getParameter("attachment");

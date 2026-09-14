@@ -62,6 +62,14 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author smark
  */
 public class ReRenderContentPartAction extends AbstractAction {
+
+	/**
+	 * Re-renders a part of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.READ;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReRenderContentPartAction.class);
 
 	private static final AtomicLong THREAD_COUNTER = new AtomicLong();

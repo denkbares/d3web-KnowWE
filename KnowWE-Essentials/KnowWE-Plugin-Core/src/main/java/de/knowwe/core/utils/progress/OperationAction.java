@@ -3,10 +3,20 @@ package de.knowwe.core.utils.progress;
 import java.io.IOException;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 
 public abstract class OperationAction extends AbstractAction {
+
+	/**
+	 * Controls a transient long operation of the article it is called for (in memory, not in the wiki), so it needs
+	 * read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	private static final String OPERATION_ID = "OperationID";
 

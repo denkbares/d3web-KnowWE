@@ -45,6 +45,14 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class GetRenamingInfoAction extends AbstractAction {
 
+	/**
+	 * Reads the renaming information of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.READ;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		// getSection also asserts the read access rights of the user for the requested section

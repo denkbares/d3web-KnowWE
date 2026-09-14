@@ -33,6 +33,14 @@ import de.knowwe.kdom.renderer.TooltipRenderer;
  */
 public class RenderTooltipAction extends AbstractAction {
 
+	/**
+	 * Renders the tooltip of the section it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.READ;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		Section<?> section = getSection(context);

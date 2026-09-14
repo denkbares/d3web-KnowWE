@@ -28,6 +28,14 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class GetSectionTextAction extends AbstractAction {
 
+	/**
+	 * Returns the text of a section, so it needs read access to the article it is called for.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.READ;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
