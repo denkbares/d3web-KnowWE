@@ -50,9 +50,12 @@ public interface Action {
 	 *     <li>{@link #NONE}: anybody, so the action must reveal nothing that is not public anyway, such as whether
 	 *     the wiki is up. The overriding method should say in its javadoc what makes the action harmless.</li>
 	 *     <li>{@link #AUTH}: any signed in user; the action only touches the user's own session and needs no check of
-	 *     a wiki resource.</li>
-	 *     <li>{@link #READ}: a signed in user with read access to the resources the action touches.</li>
-	 *     <li>{@link #WRITE}: a signed in user with write access to the resources the action touches.</li>
+	 *     a wiki resource. Use this only where no resource permission can be evaluated, e.g. a session or an external
+	 *     operation that is attributed to the user.</li>
+	 *     <li>{@link #READ}: read access to the resources the action touches, as decided by the wiki's permission
+	 *     configuration. Anonymous users pass exactly where the wiki grants them read access.</li>
+	 *     <li>{@link #WRITE}: write access to the resources the action touches, as decided by the wiki's permission
+	 *     configuration.</li>
 	 *     <li>{@link #ADMIN}: only admins; the dispatcher enforces it, so the action needs no check of its own.</li>
 	 *     <li>{@link #HELPER}: the action checks its access in a helper the enforcer cannot see, such as a shared
 	 *     support class called by several actions. The rule then expects no check in the action itself, so the helper
@@ -64,11 +67,14 @@ public interface Action {
 		NONE, AUTH, READ, WRITE, ADMIN, HELPER;
 
 		/**
-		 * Whether a user has to be signed in for this access level. {@link #HELPER} is excluded: the helper decides
-		 * who may execute, and it may as well serve anonymous users.
+		 * Whether a user has to be signed in before the action runs, independent of the permission check it performs.
+		 * {@link #AUTH} and {@link #ADMIN} require it. {@link #READ} and {@link #WRITE} do not: their check
+		 * ({@code KnowWEUtils#assertCanView}/{@code assertCanWrite}) consults the wiki's permission configuration, so
+		 * anonymous users are served exactly where the wiki grants them access. {@link #HELPER} is excluded as well:
+		 * the helper decides who may execute, and it may as well serve anonymous users.
 		 */
 		public boolean requiresAuthentication() {
-			return this == AUTH || this == READ || this == WRITE || this == ADMIN;
+			return this == AUTH || this == ADMIN;
 		}
 
 		/**
