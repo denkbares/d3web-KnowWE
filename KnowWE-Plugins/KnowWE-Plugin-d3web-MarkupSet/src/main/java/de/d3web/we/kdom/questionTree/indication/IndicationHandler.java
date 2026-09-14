@@ -52,15 +52,6 @@ public class IndicationHandler implements D3webCompileScript<D3webTerm<NamedObje
 
 	private final String indicationStoreKey = "INDICATION_STORE_KEY";
 
-	private static IndicationHandler instance = null;
-
-	public static IndicationHandler getInstance() {
-		if (instance == null) {
-			instance = new IndicationHandler();
-		}
-		return instance;
-	}
-
 	@Override
 	public void destroy(D3webCompiler compiler, Section<D3webTerm<NamedObject>> section) {
 		Rule kbr = (Rule) section.getObject(compiler,

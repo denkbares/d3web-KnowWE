@@ -180,7 +180,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 			// the plugged providers are singletons; bind them to the environment this build runs for
 			Environment environment = KnowWEUtils.getEnvironment(dashboard.getDashboardSection());
 			List<TestObjectProvider> providers = new ArrayList<>();
-			providers.add(WikiTestObjectProvider.bind(DefaultWikiTestObjectProvider.getInstance(), environment));
+			providers.add(WikiTestObjectProvider.bind(new DefaultWikiTestObjectProvider(), environment));
 			for (TestObjectProvider pluggedProvider : TestObjectProviderManager.getTestObjectProviders()) {
 				providers.add(WikiTestObjectProvider.bind(pluggedProvider, environment));
 			}

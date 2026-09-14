@@ -45,17 +45,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class DefaultWikiTestObjectProvider implements WikiTestObjectProvider {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultWikiTestObjectProvider.class);
 
-	private static DefaultWikiTestObjectProvider instance = null;
+	public DefaultWikiTestObjectProvider() {
 
-	private DefaultWikiTestObjectProvider() {
-
-	}
-
-	public static DefaultWikiTestObjectProvider getInstance() {
-		if (instance == null) {
-			instance = new DefaultWikiTestObjectProvider();
-		}
-		return instance;
 	}
 
 	@Override

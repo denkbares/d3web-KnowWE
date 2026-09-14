@@ -54,7 +54,7 @@ public class QuestionRefLine extends AbstractType {
 		// the rest for the name of the question
 		QuestionReference questionRef = new QuestionReference();
 		questionRef.setSectionFinder(new AllTextFinderTrimmed());
-		questionRef.addCompileScript(IndicationHandler.getInstance());
+		questionRef.addCompileScript(new IndicationHandler());
 		this.addChildType(questionRef);
 
 		// this.addSubtreeHandler(new CreateIndicationHandler());
