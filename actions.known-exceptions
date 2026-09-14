@@ -14,28 +14,15 @@
 #
 # Regenerate with: mvn -Ddenkbares.enforcer.report=true -DskipTests process-classes
 #
-# The remaining entries belong to the dialog plugin. Its actions serve the dialog protocol and deliberately
-# have no local check, because the access decision is made by the dialog session, not by an article. They are
-# still to be migrated to an explicit AUTH or HELPER declaration, one by one.
-de.knowwe.dialog.action.DownloadProtocol
+# The remaining entries belong to the dialog plugin and have no knowledge base in their session (dialog UI
+# resources, the client update channel, the repository sync server, the knowledge base selection page). They
+# still need an explicit decision, one by one.
 de.knowwe.dialog.action.ExitMobileApplication
 de.knowwe.dialog.action.ExternalViewer
-de.knowwe.dialog.action.GetAlternativeTargets
-de.knowwe.dialog.action.GetAvailableKnowledgeBaseFavIcon
 de.knowwe.dialog.action.GetAvailableKnowledgeBases
-de.knowwe.dialog.action.GetInfoObject
-de.knowwe.dialog.action.GetInterview
-de.knowwe.dialog.action.GetLanguages
-de.knowwe.dialog.action.Init
-de.knowwe.dialog.action.Multimedia
-de.knowwe.dialog.action.Resource
-de.knowwe.dialog.action.Restart
-de.knowwe.dialog.action.RetractAnswer
-de.knowwe.dialog.action.SelectAlternativeTarget
+de.knowwe.dialog.action.GetAvailableKnowledgeBaseFavIcon
 de.knowwe.dialog.action.SelectAvailableKnowledgeBase
-de.knowwe.dialog.action.SetAnswer
-de.knowwe.dialog.action.StartCase
-de.knowwe.dialog.action.UploadProtocol
+de.knowwe.dialog.action.Resource
 de.knowwe.dialog.action.sync.CancelUpdate
 de.knowwe.dialog.action.sync.CheckProgress
 de.knowwe.dialog.action.sync.CheckUpdates

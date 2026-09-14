@@ -21,6 +21,7 @@ import de.d3web.costbenefit.inference.ExpertMode;
 import de.d3web.costbenefit.model.Target;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -31,8 +32,17 @@ import de.knowwe.core.action.UserActionContext;
  */
 public class GetAlternativeTargets extends AbstractAction {
 
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		KnowledgeBase base = (KnowledgeBase) context.getSession().getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE);
 		Session session = SessionProvider.getSession(context, base);

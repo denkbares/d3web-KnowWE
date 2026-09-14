@@ -20,6 +20,8 @@ import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
+import de.knowwe.dialog.Utils;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.dialog.SessionConstants;
 
@@ -29,6 +31,14 @@ import de.knowwe.dialog.SessionConstants;
  * @author Volker Belli
  */
 public class DownloadProtocol extends AbstractAction {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadProtocol.class);
 
 	public static final String FILENAME_SESSION_PROTOCOL_XML = "session-protocol.xml";
@@ -36,6 +46,7 @@ public class DownloadProtocol extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 
 		KnowledgeBase base = (KnowledgeBase) context.getSession().getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE);

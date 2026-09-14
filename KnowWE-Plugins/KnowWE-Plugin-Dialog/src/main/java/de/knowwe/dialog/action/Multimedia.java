@@ -16,9 +16,19 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
+import de.knowwe.dialog.Utils;
 import de.knowwe.core.action.UserActionContext;
 
 public class Multimedia extends AbstractAction {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 
 	private static final MimetypesFileTypeMap MIMETYPE_MAP = new MimetypesFileTypeMap();
 	static {
@@ -28,6 +38,7 @@ public class Multimedia extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		KnowledgeBase kb = (KnowledgeBase) context.getSession().getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE);
 

@@ -26,6 +26,8 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
+import de.knowwe.dialog.Utils;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -36,8 +38,17 @@ import de.knowwe.core.action.UserActionContext;
  */
 public class RetractAnswer extends AbstractAction {
 
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		for (Map.Entry<String, String> entry : context.getParameters().entrySet()) {
 			String id = entry.getKey();
 			String valueString = entry.getValue();

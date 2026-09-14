@@ -55,6 +55,7 @@ import de.d3web.interview.SingleQuestionFormStrategyWrapper;
 import de.d3web.we.basic.SessionCreatedEvent;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.dialog.SessionConstants;
@@ -66,6 +67,14 @@ import de.knowwe.dialog.Utils;
  * @author Volker Belli
  */
 public class StartCase extends AbstractAction implements EventListener {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(StartCase.class);
 
 	public static final String PARAM_USER = "user";
@@ -129,6 +138,7 @@ public class StartCase extends AbstractAction implements EventListener {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 
 		String language = context.getParameter(PARAM_LANGUAGE);
 		List<Locale> preferredLocales = new ArrayList<>();
