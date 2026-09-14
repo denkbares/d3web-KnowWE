@@ -13,9 +13,6 @@
 # reader can tell a real check from a formality. When you add one, put the reason behind it as a comment.
 #
 # Regenerate with: mvn -Ddenkbares.enforcer.report=true -DskipTests process-classes
-com.denkbares.knowwe.textdiff.TextDiffAction
-de.knowwe.jspwiki.DefaultLogoAction
-de.knowwe.jspwiki.recentChanges.RecentChangesPageDisplayProviderAction
 de.d3web.we.watches.GetExpressionValueAction
 de.knowwe.d3web.action.GetKnowledgeBaseResourceAction
 de.d3web.we.kdom.rules.RuleFormatAction

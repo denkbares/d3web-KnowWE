@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -17,6 +18,14 @@ import de.knowwe.core.action.UserActionContext;
  * <p>Expects a JSON request body in the {@code data} parameter; see {@link Request}.
  */
 public class TextDiffAction extends AbstractAction {
+
+	/**
+	 * Renders a diff of two texts supplied by the caller, without touching any wiki content.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 	private static final int DEFAULT_CONTEXT_LINES = 3;
