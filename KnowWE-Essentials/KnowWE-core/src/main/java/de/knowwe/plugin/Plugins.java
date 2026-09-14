@@ -283,34 +283,40 @@ public class Plugins {
 					EXTENDED_POINT_Annotation);
 			for (Extension extension : ScopeUtils.getMatchingExtensions(extensions, path)) {
 
-				// add the annotation itself to the markup
-				String regex = extension.getParameter("regex");
+				// The markup may be shared by all type trees (e.g. a static MARKUP field), so its annotations must
+				// only be decorated once, even if the type tree is decorated once per environment. The content types
+				// of the annotations are factories anyway, so they create fresh types per markup type instance.
 				String name = extension.getName();
-				if (Strings.isBlank(regex)) {
-					markup.addAnnotation(name, false);
-				}
-				else {
-					markup.addAnnotation(name, false, regex);
-				}
+				Annotation annotation = markup.getAnnotation(name);
+				if (annotation == null) {
+					// add the annotation itself to the markup
+					String regex = extension.getParameter("regex");
+					if (Strings.isBlank(regex)) {
+						markup.addAnnotation(name, false);
+					}
+					else {
+						markup.addAnnotation(name, false, regex);
+					}
+					annotation = markup.getAnnotation(name);
 
-				// add the documentation from the plugin definition
-				markup.getAnnotation(name).setDocumentation(extension.getParameter("description"));
+					// add the documentation from the plugin definition
+					annotation.setDocumentation(extension.getParameter("description"));
 
-				// add children type(s) defined as class attribute(s)
-				for (String subTypeClass : extension.getParameters("class")) {
-					markup.addAnnotationContentType(name, () -> (Type) getNewInstance(extension, subTypeClass));
-				}
+					// add children type(s) defined as class attribute(s)
+					for (String subTypeClass : extension.getParameters("class")) {
+						markup.addAnnotationContentType(name, () -> (Type) getNewInstance(extension, subTypeClass));
+					}
 
-				// set renderer for the annotation
-				String renderer = extension.getParameter("renderer");
-				if (!Strings.isBlank(renderer)) {
-					Renderer pluggedRenderer = (Renderer) getNewInstance(extension, renderer);
-					markup.addAnnotationRenderer(name, pluggedRenderer);
+					// set renderer for the annotation
+					String renderer = extension.getParameter("renderer");
+					if (!Strings.isBlank(renderer)) {
+						Renderer pluggedRenderer = (Renderer) getNewInstance(extension, renderer);
+						markup.addAnnotationRenderer(name, pluggedRenderer);
+					}
 				}
 
 				for (Type childTyp : childrenTypes) {
 					if (childTyp.getClass().equals(UnknownAnnotationType.class)) {
-						Annotation annotation = markup.getAnnotation(name);
 						type.addChildType(new AnnotationType(annotation));
 						break;
 					}
