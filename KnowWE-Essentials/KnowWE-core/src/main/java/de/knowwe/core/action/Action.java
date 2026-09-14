@@ -54,16 +54,21 @@ public interface Action {
 	 *     <li>{@link #READ}: a signed in user with read access to the resources the action touches.</li>
 	 *     <li>{@link #WRITE}: a signed in user with write access to the resources the action touches.</li>
 	 *     <li>{@link #ADMIN}: only admins; the dispatcher enforces it, so the action needs no check of its own.</li>
+	 *     <li>{@link #HELPER}: the action checks its access in a helper the enforcer cannot see, such as a shared
+	 *     support class called by several actions. The rule then expects no check in the action itself, so the helper
+	 *     has to enforce the access; use this only where the check genuinely lives elsewhere and name the helper in
+	 *     the javadoc of the overriding method.</li>
 	 * </ul>
 	 */
 	enum Access {
-		NONE, AUTH, READ, WRITE, ADMIN;
+		NONE, AUTH, READ, WRITE, ADMIN, HELPER;
 
 		/**
-		 * Whether a user has to be signed in for this access level.
+		 * Whether a user has to be signed in for this access level. {@link #HELPER} is excluded: the helper decides
+		 * who may execute, and it may as well serve anonymous users.
 		 */
 		public boolean requiresAuthentication() {
-			return this != NONE;
+			return this == AUTH || this == READ || this == WRITE || this == ADMIN;
 		}
 
 		/**
