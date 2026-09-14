@@ -40,9 +40,8 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class GuardType extends AbstractXMLType {
 
-	private static GuardType instance;
 
-	private GuardType() {
+	public GuardType() {
 		super("guard");
 		CompositeCondition condition = new CompositeCondition();
 
@@ -63,10 +62,5 @@ public class GuardType extends AbstractXMLType {
 		addChildType(new XMLContent(condition));
 	}
 
-	public static GuardType getInstance() {
-		if (instance == null) instance = new GuardType();
-
-		return instance;
-	}
 
 }

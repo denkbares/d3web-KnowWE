@@ -29,17 +29,11 @@ import de.knowwe.kdom.xml.AbstractXMLType;
  */
 public class NodeType extends AbstractXMLType {
 
-	private static NodeType instance;
 
-	private NodeType() {
+	public NodeType() {
 		super("node");
-		this.addChildType(NodeContentType.getInstance());
+		this.addChildType(new NodeContentType());
 	}
 
-	public static NodeType getInstance() {
-		if (instance == null) instance = new NodeType();
-
-		return instance;
-	}
 
 }

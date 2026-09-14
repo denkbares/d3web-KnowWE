@@ -41,7 +41,7 @@ import de.knowwe.diaflux.type.NodeType;
 public class CommentNodeHandler extends AbstractNodeHandler<CommentType> {
 
 	public CommentNodeHandler() {
-		super(CommentType.getInstance(), null);
+		super(new CommentType(), null);
 	}
 
 	@Override

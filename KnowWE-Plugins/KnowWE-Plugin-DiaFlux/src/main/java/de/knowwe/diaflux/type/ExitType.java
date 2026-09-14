@@ -40,18 +40,12 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class ExitType extends AbstractXMLType {
 
-	private static ExitType instance;
 
-	private ExitType() {
+	public ExitType() {
 		super("exit");
 		addChildType(new XMLContent(new ExitNodeDef()));
 	}
 
-	public static ExitType getInstance() {
-		if (instance == null) instance = new ExitType();
-
-		return instance;
-	}
 
 	public String getTermName(Section<? extends ExitType> section) {
 		Section<ExitNodeDef> term = Sections.successor(section, ExitNodeDef.class);

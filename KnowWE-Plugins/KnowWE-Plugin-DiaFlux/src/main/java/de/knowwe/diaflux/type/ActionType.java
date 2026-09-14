@@ -31,9 +31,8 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class ActionType extends AbstractXMLType {
 
-	private static ActionType instance;
 
-	private ActionType() {
+	public ActionType() {
 		super("action");
 		// get the CFAction higher up in the list
 		RuleAction ruleAction = new RuleAction();
@@ -41,10 +40,5 @@ public class ActionType extends AbstractXMLType {
 		addChildType(new XMLContent(ruleAction));
 	}
 
-	public static ActionType getInstance() {
-		if (instance == null) instance = new ActionType();
-
-		return instance;
-	}
 
 }

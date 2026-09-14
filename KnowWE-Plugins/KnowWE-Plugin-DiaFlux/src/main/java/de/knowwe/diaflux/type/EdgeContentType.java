@@ -29,18 +29,12 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class EdgeContentType extends XMLContent {
 
-	private static EdgeContentType instance;
 
-	private EdgeContentType() {
-		this.addChildType(OriginType.getInstance());
-		this.addChildType(TargetType.getInstance());
-		this.addChildType(GuardType.getInstance());
+	public EdgeContentType() {
+		this.addChildType(new OriginType());
+		this.addChildType(new TargetType());
+		this.addChildType(new GuardType());
 	}
 
-	public static EdgeContentType getInstance() {
-		if (instance == null) instance = new EdgeContentType();
-
-		return instance;
-	}
 
 }

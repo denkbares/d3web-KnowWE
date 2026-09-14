@@ -28,17 +28,11 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class OriginType extends AbstractXMLType {
 
-	private static OriginType instance;
 
-	private OriginType() {
+	public OriginType() {
 		super("origin");
 		addChildType(new XMLContent());
 	}
 
-	public static OriginType getInstance() {
-		if (instance == null) instance = new OriginType();
-
-		return instance;
-	}
 
 }

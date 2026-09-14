@@ -28,17 +28,11 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class FlowchartContentType extends XMLContent {
 
-	private static FlowchartContentType instance;
 
-	private FlowchartContentType() {
-		this.addChildType(NodeType.getInstance());
-		this.addChildType(EdgeType.getInstance());
+	public FlowchartContentType() {
+		this.addChildType(new NodeType());
+		this.addChildType(new EdgeType());
 	}
 
-	public static FlowchartContentType getInstance() {
-		if (instance == null) instance = new FlowchartContentType();
-
-		return instance;
-	}
 
 }

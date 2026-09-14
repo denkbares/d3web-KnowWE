@@ -33,19 +33,13 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class DecisionType extends AbstractXMLType {
 
-	private static DecisionType instance;
 
-	private DecisionType() {
+	public DecisionType() {
 		super("decision");
 		NamedObjectReference ref = new NamedObjectReference();
 		ref.setSectionFinder(new AllTextFinderTrimmed());
 		addChildType(new XMLContent(ref));
 	}
 
-	public static DecisionType getInstance() {
-		if (instance == null) instance = new DecisionType();
-
-		return instance;
-	}
 
 }

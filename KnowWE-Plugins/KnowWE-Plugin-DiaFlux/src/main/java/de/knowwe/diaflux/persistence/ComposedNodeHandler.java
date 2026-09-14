@@ -42,7 +42,7 @@ import de.knowwe.diaflux.type.NodeType;
 public class ComposedNodeHandler extends AbstractNodeHandler<ActionType> {
 
 	public ComposedNodeHandler() {
-		super(ActionType.getInstance(), "KnOffice");
+		super(new ActionType(), "KnOffice");
 	}
 
 	@Override

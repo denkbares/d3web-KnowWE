@@ -29,22 +29,16 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class NodeContentType extends XMLContent {
 
-	private static NodeContentType instance;
 
-	private NodeContentType() {
-		this.addChildType(StartType.getInstance());
-		this.addChildType(ExitType.getInstance());
-		this.addChildType(PositionType.getInstance());
-		this.addChildType(ActionType.getInstance());
-		this.addChildType(CommentType.getInstance());
-		this.addChildType(SnapshotType.getInstance());
-		this.addChildType(DecisionType.getInstance());
+	public NodeContentType() {
+		this.addChildType(new StartType());
+		this.addChildType(new ExitType());
+		this.addChildType(new PositionType());
+		this.addChildType(new ActionType());
+		this.addChildType(new CommentType());
+		this.addChildType(new SnapshotType());
+		this.addChildType(new DecisionType());
 	}
 
-	public static NodeContentType getInstance() {
-		if (instance == null) instance = new NodeContentType();
-
-		return instance;
-	}
 
 }

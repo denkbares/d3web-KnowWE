@@ -40,7 +40,7 @@ import de.knowwe.diaflux.type.NodeType;
 public class DecisionNodeHandler extends AbstractNodeHandler<DecisionType> {
 
 	public DecisionNodeHandler() {
-		super(DecisionType.getInstance());
+		super(new DecisionType());
 
 	}
 

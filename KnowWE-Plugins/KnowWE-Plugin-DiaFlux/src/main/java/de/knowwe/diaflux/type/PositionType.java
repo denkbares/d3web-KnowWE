@@ -28,16 +28,10 @@ import de.knowwe.kdom.xml.AbstractXMLType;
  */
 public class PositionType extends AbstractXMLType {
 
-	private static PositionType instance;
 
-	private PositionType() {
+	public PositionType() {
 		super("position");
 	}
 
-	public static PositionType getInstance() {
-		if (instance == null) instance = new PositionType();
-
-		return instance;
-	}
 
 }

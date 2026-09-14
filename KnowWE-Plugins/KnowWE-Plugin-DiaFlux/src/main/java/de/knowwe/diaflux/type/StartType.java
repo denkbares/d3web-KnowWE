@@ -42,18 +42,12 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class StartType extends AbstractXMLType {
 
-	private static StartType instance;
 
-	private StartType() {
+	public StartType() {
 		super("start");
 		addChildType(new XMLContent(new StartNodeDef()));
 	}
 
-	public static StartType getInstance() {
-		if (instance == null) instance = new StartType();
-
-		return instance;
-	}
 
 	public String getTermName(Section<? extends StartType> section) {
 		Section<StartNodeDef> term = Sections.successor(section, StartNodeDef.class);

@@ -29,17 +29,11 @@ import de.knowwe.kdom.xml.AbstractXMLType;
  */
 public class EdgeType extends AbstractXMLType {
 
-	private static EdgeType instance;
 
-	private EdgeType() {
+	public EdgeType() {
 		super("edge");
-		this.addChildType(EdgeContentType.getInstance());
+		this.addChildType(new EdgeContentType());
 	}
 
-	public static EdgeType getInstance() {
-		if (instance == null) instance = new EdgeType();
-
-		return instance;
-	}
 
 }

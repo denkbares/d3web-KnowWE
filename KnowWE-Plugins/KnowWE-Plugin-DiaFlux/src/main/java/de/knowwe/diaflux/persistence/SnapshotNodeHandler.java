@@ -41,7 +41,7 @@ import de.knowwe.diaflux.type.SnapshotType;
 public class SnapshotNodeHandler extends AbstractNodeHandler<SnapshotType> {
 
 	public SnapshotNodeHandler() {
-		super(SnapshotType.getInstance(), null);
+		super(new SnapshotType(), null);
 	}
 
 	@Override
