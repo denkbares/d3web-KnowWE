@@ -18,6 +18,8 @@
  */
 package de.knowwe.rdfs.vis.markup;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -50,6 +52,7 @@ public class OntoVisSvgD3Download extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		ServletContext servletContext = context.getServletContext();
 

@@ -1,5 +1,7 @@
 package de.knowwe.ontology.sparql;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.json.JSONException;
@@ -24,11 +26,12 @@ public class SparqlFormatAction extends AbstractAction {
 	 */
 	@Override
 	public Access requiredAccess() {
-		return Access.NONE;
+		return Access.AUTH;
 	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		String wikiText = context.getParameter("wikiText");
 		String formattedWikiText = new SparqlFormatter(wikiText).format();

@@ -52,6 +52,7 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		context.setContentType(Action.JSON);
 
 		Collection<GroupingCompiler> compilers = Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class);

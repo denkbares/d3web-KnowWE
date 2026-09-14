@@ -1,4 +1,6 @@
 package de.knowwe.sparqlendpoint;
+
+import de.knowwe.core.utils.KnowWEUtils;
 /*
  * Copyright (C) 2015 denkbares GmbH, Germany
  *
@@ -75,6 +77,7 @@ public class SparqlEndpointAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 

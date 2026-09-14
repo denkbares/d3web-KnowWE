@@ -547,6 +547,20 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Checks whether the user is authenticated. If not, a {@link NotAuthorizedException} is thrown, which the action
+	 * dispatcher answers with 403. Actions that declare {@code Access.AUTH} should call this, so the authentication
+	 * requirement is enforced by the action itself and not only by the dispatcher.
+	 *
+	 * @param context the user context
+	 * @throws NotAuthorizedException is thrown if no user is authenticated
+	 */
+	public static void assertUserAuth(final UserContext context) throws NotAuthorizedException {
+		if (!context.userIsAsserted()) {
+			throw new NotAuthorizedException("No authenticated user.");
+		}
+	}
+
+	/**
 	 * Returns if the user has the write access rights to the specified article.
 	 *
 	 * @param articleTitle the title of the article to check the access rights for

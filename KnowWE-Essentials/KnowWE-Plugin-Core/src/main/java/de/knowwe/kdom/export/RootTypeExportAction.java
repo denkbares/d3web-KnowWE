@@ -18,6 +18,8 @@
  */
 package de.knowwe.kdom.export;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,6 +78,7 @@ public class RootTypeExportAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		String filename = "RootType.svg";
 		context.setContentType(BINARY);
 		context.setContentDisposition("attachment", filename);

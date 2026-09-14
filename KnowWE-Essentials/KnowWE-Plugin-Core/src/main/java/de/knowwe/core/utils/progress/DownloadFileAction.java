@@ -1,5 +1,7 @@
 package de.knowwe.core.utils.progress;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,6 +64,7 @@ public class DownloadFileAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		String fileParameter = context.getParameter(KEY_FILE);
 		String deleteParameter = context.getParameter(KEY_DELETE);

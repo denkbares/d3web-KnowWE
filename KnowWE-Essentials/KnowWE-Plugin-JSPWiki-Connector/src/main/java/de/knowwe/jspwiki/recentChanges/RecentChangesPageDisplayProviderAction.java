@@ -19,6 +19,8 @@
 
 package de.knowwe.jspwiki.recentChanges;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.json.JSONObject;
@@ -38,6 +40,7 @@ public class RecentChangesPageDisplayProviderAction extends AbstractAction {
 	}
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		String filterType = context.getParameter("type");
 		boolean show = Boolean.parseBoolean(context.getParameter("show"));
 		JSONObject localSectionStorage = getLocalSectionStorage(context);

@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +51,7 @@ public class GetNotificationsAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		NotificationManager manager = NotificationManager.getNotificationManager(context);
 		List<Notification> notifications = new ArrayList<>(manager.getNotifications());
 		Collections.reverse(notifications);

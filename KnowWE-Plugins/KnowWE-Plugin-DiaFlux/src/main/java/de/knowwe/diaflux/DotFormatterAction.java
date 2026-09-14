@@ -8,6 +8,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.utils.DotToMarkupConverter;
 import de.knowwe.diaflux.utils.GraphvizConnector;
 import de.knowwe.diaflux.utils.MarkupToDotConverter;
@@ -23,7 +24,7 @@ public class DotFormatterAction extends AbstractAction {
 	 */
 	@Override
 	public Access requiredAccess() {
-		return Access.NONE;
+		return Access.AUTH;
 	}
 
 	public static String removeDiaFluxSectionType(String markup) {
@@ -44,6 +45,7 @@ public class DotFormatterAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		String markup = context.getParameter(Attributes.TEXT);
 		String content = formatMarkup(markup);
 		context.getWriter().write(removeDiaFluxSectionType(content));

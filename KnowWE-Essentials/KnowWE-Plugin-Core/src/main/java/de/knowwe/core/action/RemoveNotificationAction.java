@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import de.knowwe.notification.NotificationManager;
@@ -43,6 +45,7 @@ public class RemoveNotificationAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		String notificationID = context.getParameter(NOTIFICATIONID);
 		if (notificationID != null) {
 			NotificationManager.removeNotification(context, notificationID);

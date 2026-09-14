@@ -19,6 +19,8 @@
 
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.json.JSONObject;
@@ -39,6 +41,7 @@ public class StoreLocalSectionStorageAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		AbstractAction.storeLocalSectionStorage(context);
 	}
 

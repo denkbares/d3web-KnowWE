@@ -19,6 +19,8 @@
 
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.slf4j.Logger;
@@ -44,6 +46,7 @@ public class AwaitRecompilationAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		try {
 			context.getArticleManager().getCompilerManager().awaitTermination();
 		}

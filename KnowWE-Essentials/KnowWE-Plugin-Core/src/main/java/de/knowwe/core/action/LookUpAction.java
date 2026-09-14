@@ -1,5 +1,7 @@
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class LookUpAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		// gathering all terms
 		List<String> allTerms = TermUtils.getTermIdentifiers(context)

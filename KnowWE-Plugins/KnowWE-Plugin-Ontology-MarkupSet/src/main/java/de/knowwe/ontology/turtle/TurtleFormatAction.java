@@ -1,5 +1,7 @@
 package de.knowwe.ontology.turtle;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.json.JSONException;
@@ -23,11 +25,12 @@ public class TurtleFormatAction extends AbstractAction {
 	 */
 	@Override
 	public Access requiredAccess() {
-		return Access.NONE;
+		return Access.AUTH;
 	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		String wikiText = context.getParameter("wikiText");
 		String formattedWikiText = new TurtleFormatter(wikiText).format();

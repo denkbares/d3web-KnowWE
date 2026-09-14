@@ -269,6 +269,9 @@
 										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanCreateArticles</writeCall>
 										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanDeleteArticle</writeCall>
 									</writeCalls>
+									<authCalls>
+										<authCall>de.knowwe.core.utils.KnowWEUtils#assertUserAuth</authCall>
+									</authCalls>
 									<accessMethod>requiredAccess</accessMethod>
 									<defaultAccess>WRITE</defaultAccess>
 									<knownExceptions>${maven.multiModuleProjectDirectory}/actions.known-exceptions</knownExceptions>

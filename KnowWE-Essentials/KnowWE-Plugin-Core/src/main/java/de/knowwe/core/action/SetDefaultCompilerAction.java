@@ -20,6 +20,8 @@
 
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 import java.util.Collection;
 
@@ -46,6 +48,7 @@ public class SetDefaultCompilerAction extends AbstractAction {
 	}
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		String name = context.getParameter("name");
 		Collection<GroupingCompiler> compilers = Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class);
 		compilers.stream()
