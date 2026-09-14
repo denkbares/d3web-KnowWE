@@ -83,13 +83,30 @@ public class TestUserContext implements UserContext, UserActionContext {
 		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
 	}
 
+	/**
+	 * Creates a test user that is signed in under the specified name. Anonymous users have no name, so a test that
+	 * names its user gets an asserted and authenticated one, which is what actions declaring {@code Access.AUTH} and
+	 * asserting the user via {@code KnowWEUtils#assertUserAuth} expect. Use the constructors with the boolean flags
+	 * to create a named user with other properties.
+	 *
+	 * @param articleName the name of the article to be created
+	 * @param username    the name the user is signed in with
+	 */
 	public TestUserContext(String articleName, String username) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
+		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB), false, true, true);
 		this.username = username;
 	}
 
+	/**
+	 * Creates a test user that is signed in under the specified name, for an article with the specified root type.
+	 * See {@link #TestUserContext(String, String)} for the properties of the user.
+	 *
+	 * @param articleName the name of the article to be created
+	 * @param username    the name the user is signed in with
+	 * @param rootType    the root type of the article
+	 */
 	public TestUserContext(String articleName, String username, RootType rootType) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB, rootType));
+		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB, rootType), false, true, true);
 		this.username = username;
 	}
 
