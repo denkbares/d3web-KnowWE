@@ -356,6 +356,21 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 - `GitPageProviderTest`, `GitWikiRepositoryTest`, `GitAttachmentProviderTest` (JSPWiki-Connector) brauchen eine Git-Identität. In der VM gibt es keine globale, daher 11 Fehler. Mit `GIT_AUTHOR_NAME/EMAIL` und `GIT_COMMITTER_NAME/EMAIL` als Umgebungsvariablen bleiben 2 Fehler (`sweepUp...`, "dirty tree must be reconciled"), auch mit `LC_ALL=C`. Betrifft das Git-Status-Parsing des GitConnectors aus denkbares-Internals, nicht die Environment. Nicht weiter verfolgt.
 
+- **Masters Autorisierungs-Test-Debt (Stand nach Merge 2026-09-15):** Masters Auth-Rollout ließ `assertUserAuth`/
+  `assertCan*` in viele Actions einziehen, während zahlreiche von Masters eigenen Tests mit einem nicht-assertierten
+  `TestUserContext` (Default `isAsserted=false`) direkt `action.execute(...)` aufrufen. In KnowWE-DES 127,
+  in KRONE entsprechend viele `NotAuthorizedException: No authenticated user.` (z.B. `de.knowwe.versioning.git.*`,
+  `CreatePatchTest`, `ApplyPatchTest`, `BasicTaskContextManagerTest`, `MetaDataStoreTest`). Reproduziert Masters
+  Verhalten: die POMs setzen `maven.test.failure.ignore`/`testFailureIgnore=true`, der Build bleibt grün. Identisch
+  auf master zu erwarten, also keine Merge-Regression; nicht angefasst. Betroffene Tests bräuchten einen assertierten
+  Kontext (`new TestUserContext(article, admin, asserted, authenticated)`).
+- **Jackson-NoSuchMethodError (KRONE, 2026-09-15):** `com.fasterxml.jackson.core.util.BufferRecycler.releaseToPool()`
+  fehlt zur Laufzeit in Threads einiger KRONE-Module (jackson-core-Versionsmix auf dem Testclasspath). Der 900s-Sweep
+  lief in COOM-Tests in den Timeout, daher nicht abschließend klassifiziert; kein Bezug zum Environment-Umbau erkannt.
+- **KRONE-Sweep-Timeout (2026-09-15):** `KnowWE-Plugin-KONAP`-Modultests plus COOM benötigen > 15 min; die
+  Teil-Ergebnisse zeigen die bekannten `GpaTest`/`OptionSetTest`/`DeductionSolutionSpace*`-Baselines und
+  `ModelSetTest`. Die 15-min-Grenze wurde eingehalten, der Lauf daher abgebrochen (EXIT=124).
+
 ## Arbeitsumgebung
 
 - Klone: `Projects/EnvInstance/<Repo>`, `origin` = git.denkbares.com, Remote `main-local` = `Projects/Main/<Repo>`.
@@ -375,6 +390,27 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 ## Protokoll
 
+- 2026-09-15: **`main-local/master` in `env-instance` gemergt** (alle 7 Repos). Master brachte die Autorisierungs-
+  Checks (`requiredAccess`/`Action.Access`, `KnowWEUtils.assertUserAuth/assertCan*`, `AbstractAction.getSection`),
+  `ContentDisposition`, SSE-Helfer und den Launcher/Sandbox-Umbau des Git-Versioning-Plugins. Konfliktauflösung
+  durchgehend: Masters neue Prüfungen/Features übernehmen, Environment-Scoping behalten (`context.getEnvironment()`,
+  Environment-Varianten der Statics). Höhepunkte:
+  - Merges: denkbares-Commons, jspwiki (fast-forward), denkbares-Internals; KnowWE (~28 Konflikte), Experimental (17),
+    KnowWE-DES (44), KnowWE-SSP (9), KRONE (9). In Experimental/DES/KRONE waren viele Konflikte reine CRLF-Artefakte
+    (Master hat die von ihm bearbeiteten Action-Dateien mit CRLF committet); normierender 3-Wege-Merge (EOL ignorieren)
+    entfernt sie.
+  - **Versioning-Plugin (DES)**: Masters Launcher/Sandbox-Design übernommen (`KnowWEGitServerConnector.sandbox()`,
+    `KnowWEGitServerConnectorFactory.credentials()`, `MetaDataStore`, `GetSandboxAction`, `UnsavedWorkAction`) und
+    erneut Environment-gescopt: `GitWikiProperties`/Connector/Fabrik nehmen eine `Environment`, Actions reichen den
+    `UserActionContext` durch, statische Helfer (`setTag`/`getTags`/`releaseIsFinished`) die Environment.
+  - **ServiceMateBridge (SSP)**: Masters Read/Write-Lock-Snapshots (`getMappedTargetIds/getMappedMateIds`) plus
+    Stale-Section-Behandlung übernommen, Section-Auflösung leitet die Environment vom Compiler/Section ab.
+  - Master-Tests an Environment-Scoping angepasst (KnowWE): `AttachmentListenerLifecycleTest` feuert über den
+    EventManager der Environment, `LongOperationLifecycleTest` verzichtet auf das entfernte statische
+    `LONG_OPERATIONS`-Feld, `ReRenderContentPartActionTest` gibt dem Proxy eine echte Environment.
+  - Kette installiert vollständig grün (KnowWE, Experimental, KnowWE-DES, KnowWE-SSP, KRONE, Information-Extraction).
+    Test-Sweep: Experimental und KnowWE-SSP grün, KnowWE grün bis auf den bekannten `GitVersioningFileProviderTest`-
+    Baseline; KnowWE-DES/KRONE zeigen Masters Auth-Test-Debt (s.u.) und erreichen die 15-min-Grenze (KRONE).
 - 2026-09-11 (später): KDOM-`Type`-Singletons (DiaFlux/WikiBook/Comment/Renaming) auf `new` umgestellt; Service-Singletons in zwei Batches migriert (Environment-Services bzw. statisch/`new`, applikations-skopierte bewusst belassen); `reuseForks=false` entfernt und dabei die plugin.xml-Annotations-Dekoration idempotent gemacht. Kette grün, Tests grün bis auf Baselines.
 - 2026-09-11: `S3b.4` (web/`getWeb()`/`DEFAULT_WEB` aus Java entfernt, `Attributes.WEB` inert), `S4.6` (Rdf2GoCore synchroner Shutdown, Consumer-Check) und `S4.7` abgeschlossen; ebenso `S4.5`/`S4.3.6`-Checkboxen konsolidiert. Zuletzt das ungenutzte deprecated `Environment.shutdown()` entfernt. Kette grün, Tests KnowWE/DES/SSP/Experimental grün bis auf Baselines. `S4` damit abgeschlossen; offen bleiben nur Beobachtungen (21 Singleton-Typen, `ArticleLifecycleFixture`-Reflection, Surefire-`reuseForks`-Prüfung am Ende).
 - 2026-09-10: `S4.3` Wellen `S4.3.1`, `S4.3.3`-`S4.3.5` committet (KnowWE, DES, KRONE, SSP), `S4.3.6` in KnowWE committet, in DES vorbereitet (siehe Stand). Falle: Surefire kürzt Stacktraces auf die Testklasse (`trimStackTrace`), der OntoVis-NPE lag in `Utils.createConceptURL` (Section null im Test).
