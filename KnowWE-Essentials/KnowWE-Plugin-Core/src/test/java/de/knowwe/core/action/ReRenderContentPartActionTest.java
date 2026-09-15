@@ -12,11 +12,30 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.denkbares.plugin.test.InitPluginManager;
+import connector.DummyConnector;
+import de.knowwe.core.Environment;
 
 import static org.junit.Assert.*;
 
 public class ReRenderContentPartActionTest {
+
+	private static Environment environment;
+
+	@BeforeClass
+	public static void initEnvironment() throws Exception {
+		InitPluginManager.init();
+		environment = Environment.create(new DummyConnector());
+	}
+
+	@AfterClass
+	public static void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
 
 	/**
 	 * Orders three same-address requests without sleeps: B cancels A, A finishes its cleanup, then C must still
@@ -79,6 +98,7 @@ public class ReRenderContentPartActionTest {
 		UserActionContext context = (UserActionContext) Proxy.newProxyInstance(getClass().getClassLoader(),
 				new Class<?>[]{UserActionContext.class}, (proxy, method, args) -> {
 					if (method.getName().equals("getParameter")) return obsoleteId;
+					if (method.getName().equals("getArticleManager")) return environment.getArticleManager();
 					if (method.getName().equals("sendError")) {
 						status.set((Integer) args[0]);
 						return null;

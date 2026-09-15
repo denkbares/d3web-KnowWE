@@ -4,9 +4,7 @@
  */
 package de.knowwe.core;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -47,12 +45,9 @@ public class LongOperationLifecycleTest {
 	@Test
 	public void lookupDoesNotCreateEntriesAndManagedDraftCannotRegister() throws Exception {
 		Article draft = wiki.draft("Draft", "draft\n");
-		String id = line(draft, 0).getID();
 		assertNull(LongOperationUtils.getRegistrationID(line(draft, 0), operation()));
 		assertThrows(IllegalStateException.class, () -> LongOperationUtils.registerLongOperation(line(draft, 0), operation()));
-		Field field = LongOperationUtils.class.getDeclaredField("LONG_OPERATIONS");
-		field.setAccessible(true);
-		assertFalse(((Map<?, ?>) field.get(null)).containsKey(id));
+		assertTrue(LongOperationUtils.getLongOperations(line(draft, 0)).isEmpty());
 	}
 
 	@Test

@@ -92,7 +92,7 @@ public class AttachmentListenerLifecycleTest {
 			try (Listener successor = new Listener(current)) {
 				assertNotEquals(previous.callback, successor.callback);
 				previous.close();
-				EventManager.getInstance().fireEvent(event(current));
+				wiki.environment.getEventManager().fireEvent(event(current));
 				wiki.awaitCompilation();
 				assertNotSame("Current listener must still recompile the article", current, wiki.manager.getArticle("Page"));
 				assertEquals(current.getText(), wiki.manager.getArticle("Page").getText());
