@@ -291,7 +291,7 @@ kompilieren; fehlende Cross-Repo-Artefakte kommen als Snapshots von repo.denkbar
 
 - [x] master eingemergt (2026-09-09): KnowWE f85e756f7 (Konflikte in `Article`, `Section`, `Messages`: String-IDs mit Namespace und Publikation bei Queue-Zeit aus master, `SectionRegistry` pro Environment hält jetzt `Map<String, Section>`, Sperren auf der Registry), KnowWE-DES f667721bf + ad71597b1 (neue Task-Tools und `CoomExportTool` auf die Environment-APIs angepasst)
 - [x] Consumer-Repos geklont (2026-09-07): Experimental, KnowWE-DES, KnowWE-SSP, KRONE (enthält KnowWE-KONAP-Integration), Information-Extraction. Zusammen mit denkbares-Internals sind das alle Repos mit `Environment.getInstance()`-Aufrufern.
-- [ ] Nur für `S4` relevant (referenzieren KnowWE-Artefakte, aber ohne `getInstance()`-Aufrufe): GINA, KMW, KnowledgeConverter, d3web-Player-Platform, SemanticServicePlatform. Vor dem Entfernen von APIs klonen und kompilieren.
+- [x] Consumer-Check (2026-09-15, statisch gegen `Projects/Main`, nach dem Entfernen der APIs): GINA, KMW, KnowledgeConverter, d3web-Player-Platform importieren kein `de.knowwe` (0 Treffer). SemanticServicePlatform: die lebenden `SSP-*`-Module nutzen nur `de.knowwe.export.*` (`denkbares-WikiExport`, unverändert); der einzige `Environment.getInstance()`/`DEFAULT_WEB`-Nutzer `denkbares-TEKNO-Studio` ist im `denkbares-IE-Apps`-Reactor auskommentiert (toter Code) und im env-instance-Zweig von Information-Extraction bereits auf `HeadlessKnowWE` migriert (dort 0 `getInstance()`-Reste). Kein Klon/Kompilierlauf nötig.
 
 ## Offene Punkte / Beobachtungen
 
