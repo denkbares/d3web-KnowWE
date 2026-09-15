@@ -64,6 +64,16 @@
   All 13 targeted tests pass on `f7e8666fc`, including the normal Maven authorization checks.
   See KnowWE-DES `KnowWE-Plugins-DES/KnowWE-Plugin-KnowSEC/documentation/session-lifecycle-integration-tests.md`.
   This is not an atomic transaction across concurrent article publication and UI session updates.
+- A8 (KnowWE-SSP SearchMarkup): implemented and verified on 15 September 2026, KnowWE-SSP commits
+  `e991a66f8` and `e1ff1f7e1`. The event handler kept its Section strongly while being the value of a
+  WeakHashMap keyed by that Section, destroy left the map entry behind, and an unchanged-ontology event
+  returned before a replaced Section could get its own SSCService. A failed initialization also stayed
+  in state `initializing` because only IOException and RepositoryException were caught.
+  SearchMarkupLifecycleTest compiles a synthetic ontology and search page through the real plugin scripts
+  and covers all four cases; the module suite passes (38 tests) with the normal Maven lifecycle.
+  A ready service needs a corpus with `machine.permissions`, which a headless wiki has not, so the test
+  asserts a final initialization state rather than `ready`. Concurrent compilation and the search results
+  themselves remain outside this coverage.
 
 ## Scope and confidence
 
