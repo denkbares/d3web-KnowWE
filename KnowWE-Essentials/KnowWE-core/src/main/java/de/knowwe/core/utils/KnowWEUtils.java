@@ -529,6 +529,7 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
 	public static void assertCanView(final Section<?> section, final UserContext context) throws NotAuthorizedException {
+		assertSectionGiven(section);
 		if (!canView(section, context)) {
 			throw new NotAuthorizedException("No view access for section '" + section.getID() + "'.");
 		}
@@ -546,6 +547,20 @@ public class KnowWEUtils {
 		assertTitleGiven(articleTitle);
 		if (!canView(articleTitle, context)) {
 			throw new NotAuthorizedException("No view access for article '" + articleTitle + "'.");
+		}
+	}
+
+	/**
+	 * Refuses a permission check that has no section to check, rather than failing on the missing section while
+	 * building the refusal. A request whose section is gone cannot be granted access to it.
+	 *
+	 * @param section the section the check was asked for
+	 * @throws NotAuthorizedException if no section was given
+	 */
+	private static void assertSectionGiven(final Section<?> section) throws NotAuthorizedException {
+		if (section == null) {
+			throw new NotAuthorizedException("The section the request works on does not exist, so its access cannot " +
+					"be checked. The page content is probably outdated, please reload.");
 		}
 	}
 
@@ -673,7 +688,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final Section<?> section, final UserContext user) {
-		return canWrite(section.getArticle(), user);
+		return section != null && canWrite(section.getArticle(), user);
 	}
 
 	/**
@@ -686,6 +701,7 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
 	public static void assertCanWrite(final Section<?> section, final UserContext context) throws NotAuthorizedException {
+		assertSectionGiven(section);
 		if (!canWrite(section, context)) {
 			throw new NotAuthorizedException("No write access for section '" + section.getID() + "'.");
 		}
