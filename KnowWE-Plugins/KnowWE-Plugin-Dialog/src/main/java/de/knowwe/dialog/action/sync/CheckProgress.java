@@ -13,11 +13,13 @@ import de.knowwe.core.action.UserActionContext;
 
 public class CheckProgress extends AbstractAction {
 
+	/**
+	 * Reports how far the dialog application has come downloading its own update, which touches no wiki content.
+	 */
 	@Override
 	public Access requiredAccess() {
 		return Access.NONE;
 	}
-
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

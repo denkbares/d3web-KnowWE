@@ -28,11 +28,14 @@ import de.knowwe.core.action.UserActionContext;
 
 public class GetUpdateInfo extends AbstractAction {
 
+	/**
+	 * Serves the list of update files the dialog application needs to find its update, before it could sign in
+	 * anywhere. It reveals nothing but the versions the repository offers.
+	 */
 	@Override
 	public Access requiredAccess() {
 		return Access.NONE;
 	}
-
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

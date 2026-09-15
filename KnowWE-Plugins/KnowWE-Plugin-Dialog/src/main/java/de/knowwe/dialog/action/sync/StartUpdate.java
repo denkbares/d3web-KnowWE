@@ -12,11 +12,13 @@ import de.knowwe.core.action.UserActionContext;
 
 public class StartUpdate extends AbstractAction {
 
+	/**
+	 * Starts the download of the update the dialog application runs on, which touches no wiki content.
+	 */
 	@Override
 	public Access requiredAccess() {
 		return Access.NONE;
 	}
-
 
 	public static String PARAM_SERVER_URL = CheckUpdates.PARAM_SERVER_URL;
 	public static String PARAM_VERSION_ALIAS = "alias";

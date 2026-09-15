@@ -12,11 +12,13 @@ import de.knowwe.core.action.UserActionContext;
 
 public class ExitMobileApplication extends AbstractAction {
 
+	/**
+	 * Ends the mobile application, which does nothing on a server and touches no wiki content.
+	 */
 	@Override
 	public Access requiredAccess() {
 		return Access.NONE;
 	}
-
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
