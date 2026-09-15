@@ -55,7 +55,15 @@
   clears the cache even when a full build retains the compiler. A synthetic integration test covers unchanged and
   edited step replacement, changed connector, cable-only cost edits/removal, late source cleanup, full rebuilds with
   new and retained compilers, and step deletion/recreation. It and SettingsContainerTest pass (2 targeted tests).
-- The KnowSEC integration follow-up below remains open.
+- A7 (KnowSEC SessionManager): implemented and verified through 15 September 2026.
+  KnowWE-DES commits `be0e24788`, `0394d7933`, `baaee0c75` and `0098ae28b` cover the
+  title-keyed queue, real headless regression tests, RDF-core-scoped weak session bookkeeping,
+  startup cache fallback and cleanup failures. Successful publication sets the marker; final deletion
+  releases it even when an unusable cache prevents RDF cleanup, with a warning about remaining RDF.
+  Failed live updates retain the marker and old cache instead of publishing duplicate session data.
+  All 13 targeted tests pass on `f7e8666fc`, including the normal Maven authorization checks.
+  See KnowWE-DES `KnowWE-Plugins-DES/KnowWE-Plugin-KnowSEC/documentation/session-lifecycle-integration-tests.md`.
+  This is not an atomic transaction across concurrent article publication and UI session updates.
 
 ## Scope and confidence
 
@@ -158,11 +166,25 @@ compiler callers would be a separate contract change, just as with OntologyBridg
 - NonCoverageQuestionsMarkup uses compiler-owned bookkeeping. The TestStepCostCache concern was reproduced by
   a synthetic one-sided-edit integration test and addressed in A6 above; the original target-Section-ID index did
   lose unchanged cable costs after a step-only text edit.
-- KnowSEC SessionManager checks live identity in updateSession but cleans up retired entries by semantic identity;
-  its batched queue also retains Sections. Full correctness of update/cleanup ordering across ontology generations
-  is not established by this scan. It needs a domain integration test before being declared safe.
+- KnowSEC SessionManager now has real domain integration coverage and fixes (A7 above).
+  Concurrent publication and attachment-write failures remain outside that coverage.
 - SemanticAutocompletion and XMLManager use instance-keyed WeakHashMaps, so equal IDs alone do not alias entries.
-  Their unsynchronized access/invalidation is an additional general concurrency concern, not a proved new ID bug.
+  Their previously unsynchronized access/invalidation is a general concurrency concern, not a proved new ID bug.
+  SemanticAutocompletion follow-up on 15 September (implemented, uncommitted for review):
+  GetSemanticCompletionsAction now acquires provider and immutable constraints as a single snapshot from one
+  synchronized weak-key map. An intervening OntologyCompilerFinishedEvent cannot drop the constraint filter
+  from an already acquired snapshot. Initializers capture an invalidation generation before looking up the
+  compiler or constructing providers; expensive work runs outside the map monitor. Publication discards work
+  spanning invalidation and retains the first successful publication among concurrent initializers.
+  Eight SemanticAutocompletionLifecycleTest tests cover snapshot retention, the real action's filtering after
+  invalidation, defensive copying, blocked initialization/invalidation, competing publication in the same or
+  a new generation, avoiding repeated construction, and equal-ID/different-instance cache separation.
+  Removing the generation check makes the blocked-initialization regression fail (negative control).
+  This does not revoke in-flight query snapshots, reject every retired caller, or serialize ontology access.
+  Concurrent queries inside the legacy completion library (e.g. its static activeRetrievers list) are outside
+  this cache fix and not covered by these tests. Supplied constraints must not retain their Section keys.
+  XMLManager has no callers in the searched local Java/JSP/XML/JS sources outside its own class;
+  defer a production rewrite unless actual usage is found.
   COOM session reuse checks model iteration identity; a Section ID is not its version token.
 - Local replacement maps route through the hardened Sections.replace path; this does not make arbitrary earlier
   reads or unrelated persistence writes transactional. External clients, private tests and persisted plugin data
@@ -176,5 +198,16 @@ not the desired fixed behavior. Source is kept in the Codex task workspace as `L
 the production repository. No full Maven suite or live wiki was run for this read-only audit. Previously reported
 regression suite results belong to the earlier checkpoint, not a fresh execution in this scan.
 
-Recommended follow-up: regression test plus fix for A1 and A2 first; then A3/A4 and the ServiceMate mapping contract.
-The TestStepCostCache integration case is now covered by A6; retain KnowSEC as unresolved verification, not assumed safety.
+Current follow-up (15 September): A1–A7 have been addressed as recorded above. SemanticAutocompletion's
+split provider/constraint publication and lookup is now addressed locally, pending user review.
+Its complete module test run passes (8 tests, no failures/errors/skips), including normal Maven Enforcer checks:
+
+```sh
+cd KnowWE-DES
+mvn -o -pl KnowWE-Plugins-DES/KnowWE-Plugin-SemanticAutocompletion -DskipTests=false test
+```
+
+The added KnowWE-GlobalTestUtils test dependency uses the existing managed KnowWE.version entry.
+The required dependency-property scan still reports the unrelated existing Search/TextDiff parent-POM
+mismatches; no parent-POM modernization was included in this fix.
+The original audit validation above describes the initial scan, not the later regression-test runs.
