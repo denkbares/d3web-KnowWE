@@ -30,12 +30,14 @@ import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.kdom.xml.AbstractXMLType;
 
@@ -45,6 +47,11 @@ import de.knowwe.kdom.xml.AbstractXMLType;
  *         Created: 18.06.2010
  */
 public class LoadFlowchartAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -61,10 +68,12 @@ public class LoadFlowchartAction extends AbstractAction {
 			section = Sections.definitions(compiler, id.rest(1))
 					.ancestor(FlowchartType.class)
 					.getFirst();
+			// unlike getSection below, the lookup by name has to check the access rights itself
+			if (section != null) KnowWEUtils.assertCanView(section, context);
 		}
 		else {
-			// otherwise fetch by section id
-			section = Sections.get(context, nodeID, FlowchartType.class);
+			// otherwise fetch by section id, which also asserts the read access rights of the user
+			section = getSection(context, FlowchartType.class);
 		}
 
 		if (section != null) {

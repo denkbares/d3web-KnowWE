@@ -44,6 +44,7 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.dialog.SessionConstants;
@@ -57,10 +58,19 @@ import static de.knowwe.dialog.action.InitWiki.PARAM_LANGUAGE;
  * @author Jonas Müller
  */
 public class UploadProtocol extends AbstractAction {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(UploadProtocol.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 
 		ByteArrayInputStream data = new ByteArrayInputStream(context.getParameter("xmlData").getBytes("UTF-8"));
 		Collection<SessionRecord> sessionRecords = SessionPersistenceManager.getInstance().loadSessions(data);

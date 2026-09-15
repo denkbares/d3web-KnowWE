@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
+import de.knowwe.dialog.Utils;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -23,10 +25,19 @@ import de.knowwe.core.action.UserActionContext;
  * @created 23.11.2010
  */
 public class GetLanguages extends AbstractAction {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(GetLanguages.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 
 		// HttpSession session = context.getSession();
 		// KnowledgeBaseProvider provider = (KnowledgeBaseProvider)

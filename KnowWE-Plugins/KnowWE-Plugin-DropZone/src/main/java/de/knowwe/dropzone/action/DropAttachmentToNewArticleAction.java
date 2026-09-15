@@ -22,13 +22,26 @@ package de.knowwe.dropzone.action;
 import java.io.IOException;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
+ * Does nothing on purpose. The dropped files are uploaded by KnowWE-Plugin-DropZone.js through the ordinary attachment
+ * upload of the wiki, which applies the page permissions. This extension only exists to get the script and the style
+ * sheet of the plugin loaded, so do not add any behaviour here.
+ *
  * @author Jonas Müller
  * @created 25.05.18
  */
 public class DropAttachmentToNewArticleAction extends AbstractAction {
+
+	/**
+	 * Does nothing; the actual upload goes through the ordinary wiki attachment upload.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 

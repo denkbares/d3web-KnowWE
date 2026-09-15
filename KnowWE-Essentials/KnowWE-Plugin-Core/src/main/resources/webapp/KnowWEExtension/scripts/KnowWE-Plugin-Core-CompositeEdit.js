@@ -348,7 +348,7 @@ KNOWWE.plugin.compositeEditTool = function() {
     if (typeof AutoComplete != "undefined") {
       new AutoComplete(textarea, function(callback, prefix) {
         const scope = "root";
-        const data = {sectionId: id, prefix: prefix, scope: scope};
+        const data = {SectionID: id, prefix: prefix, scope: scope};
         if (KNOWWE && KNOWWE.helper) {
           data.KWiki_Topic = KNOWWE.helper.gup("page");
         }

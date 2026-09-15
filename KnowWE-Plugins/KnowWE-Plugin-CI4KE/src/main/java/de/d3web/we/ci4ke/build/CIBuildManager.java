@@ -62,7 +62,6 @@ import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 import de.knowwe.event.WikiContentReplacedEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.core.EnvironmentService;
@@ -91,6 +90,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 	private final ExecutorService testExecutorService = createTestExecutorService();
 	private final ExecutorService subTestExecutorService = createTestExecutorService();
 	private final Map<CIDashboard, CIBuildFuture> ciBuildQueue;
+	private final CIBuildChanges ciBuildChanges;
 	private final Map<String, Double> priorityOverride = new ConcurrentHashMap<>();
 
 	/**
@@ -102,7 +102,8 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 			CIBuildManager manager = new CIBuildManager(environment,
 					Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet())),
 					Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet())),
-					Collections.synchronizedMap(new WeakHashMap<>()));
+					Collections.synchronizedMap(new WeakHashMap<>()),
+					new CIBuildChanges());
 			environment.getEventManager().registerListener(manager);
 			return manager;
 		});
@@ -133,18 +134,21 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 	 * @param ciBuildTrigger  executor performing asynchronous ordering and predecessor waits
 	 */
 	CIBuildManager(ExecutorService ciBuildExecutor, ExecutorService ciBuildTrigger) {
-		this(null, ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()));
+		this(null, ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()), new CIBuildChanges());
 	}
 
 	private CIBuildManager(
 			@Nullable Environment environment,
 			ExecutorService ciBuildExecutor,
 			ExecutorService ciBuildTrigger,
-			Map<CIDashboard, CIBuildFuture> ciBuildQueue) {
+			Map<CIDashboard, CIBuildFuture> ciBuildQueue,
+			CIBuildChanges ciBuildChanges
+	) {
 		this.environment = environment;
 		this.ciBuildExecutor = ciBuildExecutor;
 		this.ciBuildTrigger = ciBuildTrigger;
 		this.ciBuildQueue = ciBuildQueue;
+		this.ciBuildChanges = ciBuildChanges;
 	}
 
 	@NotNull
@@ -185,7 +189,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 				providers.add(WikiTestObjectProvider.bind(pluggedProvider, environment));
 			}
 
-			progress = new CIBuildProgress();
+			progress = new CIBuildProgress(manager.ciBuildChanges);
 			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), progress.getListener(),
 					manager.testExecutorService, manager.subTestExecutorService, dashboard.getPriority());
 		}
@@ -216,6 +220,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 				LOGGER.error("Exception while executing CI build", e);
 			}
 			finally {
+				progress.markFinished();
 				synchronized (ciBuildQueue) {
 					CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
 					if (ciBuildFuture != null && ciBuildFuture.ciBuildCallable == this) {
@@ -247,6 +252,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 					shutDownNow(dashboard);
 					CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(this, dashboard, ciBuildQueue));
 					ciBuildQueue.put(dashboard, ciBuildFuture);
+					ciBuildChanges.changed();
 					if (precedingBuild != null) {
 						precedingBuilds.put(ciBuildFuture, precedingBuild);
 					}
@@ -286,6 +292,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 
 		CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(this, dashboard, ciBuildQueue));
 		ciBuildQueue.put(dashboard, ciBuildFuture);
+		ciBuildChanges.changed();
 		scheduleAfterTermination(ciBuildFuture, precedingBuild);
 	}
 
@@ -335,6 +342,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 			CIDashboard dashboard = ciBuildFuture.ciBuildCallable.dashboard;
 			if (ciBuildQueue.get(dashboard) == ciBuildFuture) {
 				ciBuildQueue.remove(dashboard);
+				ciBuildChanges.changed();
 			}
 		}
 	}
@@ -456,17 +464,26 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 	}
 
 	/**
-	 * Provides the progress listener of the build registered for the given dashboard. For a successor still waiting for
-	 * its predecessor, the listener exists even though test execution has not started yet.
+	 * Provides the live progress of the build registered for the given dashboard. For a successor still waiting for
+	 * its predecessor, the progress exists even though test execution has not started yet.
 	 *
-	 * @param dashboard the dashboard to get the progress listener for
-	 * @return the progress listener for the given dashboard
+	 * @param dashboard the dashboard to get the build progress for
+	 * @return the progress of the queued or running build, or {@code null} if there is none
 	 */
 	@Nullable
-	public static DefaultAjaxProgressListener getProgress(CIDashboard dashboard) {
+	public static CIBuildProgress getBuildProgress(CIDashboard dashboard) {
 		CIBuildFuture ciBuildFuture = of(dashboard).ciBuildQueue.get(dashboard);
 		if (ciBuildFuture == null) return null;
-		return ciBuildFuture.ciBuildCallable.progress.getListener();
+		return ciBuildFuture.ciBuildCallable.progress;
+	}
+
+	/**
+	 * Returns the change monitor that is notified about every progress report and every queued, started or finished
+	 * build of any dashboard.
+	 */
+	@NotNull
+	public CIBuildChanges getBuildChanges() {
+		return ciBuildChanges;
 	}
 
 	/**

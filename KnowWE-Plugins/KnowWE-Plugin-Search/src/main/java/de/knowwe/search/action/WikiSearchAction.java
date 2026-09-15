@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
@@ -61,6 +62,11 @@ import de.knowwe.search.render.SearchResultRenderer;
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
 public class WikiSearchAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	public static final String PARAM_QUERY = "query";
 	public static final String PARAM_PARTIAL = "partial";

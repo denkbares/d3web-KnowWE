@@ -10,10 +10,17 @@ import java.util.Date;
 
 import de.knowwe.dialog.repository.VersionSet;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.dialog.repository.ArchiveStorage;
 
 public class AddVersionSet extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
+
 
 	public static String PARAM_PATHNAME = "path";
 	public static String PARAM_NEW_VERSION = "create";

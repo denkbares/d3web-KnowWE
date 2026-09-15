@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -46,6 +47,15 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction implements ToolProvider {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiIncludeForceUpdateToolProvider.class);
+
+	/**
+	 * Updates all attachment/import markups, so it is restricted to administrators (and already returns early for
+	 * non-admins).
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

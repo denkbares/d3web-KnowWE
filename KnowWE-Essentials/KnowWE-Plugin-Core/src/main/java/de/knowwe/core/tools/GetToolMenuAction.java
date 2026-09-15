@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -32,6 +33,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Returns the HTML of tool menu for a certain section.
@@ -40,6 +42,15 @@ import de.knowwe.tools.ToolUtils;
  * @created 02.10.2013
  */
 public class GetToolMenuAction extends AbstractAction {
+
+	/**
+	 * Only renders the menu of the available tools for the article it is called for, so it needs read access to that
+	 * article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	public static final String IDENTIFIER = "identifier";
 	protected static final DefaultMarkupRenderer defaultMarkupRenderer =
@@ -52,6 +63,9 @@ public class GetToolMenuAction extends AbstractAction {
 
 		Section<? extends Type> section = getSection(context, identifier);
 		if (section == null || section.getArticleManager() == null) return; // not tools in preview
+		// the section is referred by an own request parameter, and getSection may be overridden, so check the
+		// resolved section here to cover the subclasses as well
+		KnowWEUtils.assertCanView(section, context);
 		ToolSet tools = getTools(context, section);
 		if (!tools.hasTools()) return;
 

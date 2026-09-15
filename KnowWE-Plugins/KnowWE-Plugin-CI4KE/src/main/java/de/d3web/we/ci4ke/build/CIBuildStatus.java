@@ -10,17 +10,17 @@ import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Immutable snapshot of a queued or running CI build.
+ * Immutable snapshot of a queued, running or just finished CI build.
  * <p>
  * A queued build has not entered its build callable yet and therefore has no start timestamp. Once the callable
  * starts, the state changes to {@link State#RUNNING} and {@link #startedAt()} remains stable for the lifetime of that
- * build. Finished builds are not represented by this type; {@link CIBuildManager#getBuildStatus} returns {@code null}
- * for them.
+ * build. A build reports {@link State#FINISHED} between the end of its callable and its removal from the build
+ * queue. Afterward {@link CIBuildManager#getBuildStatus} returns {@code null}.
  *
  * @param state     current execution state
  * @param progress  current progress from {@code 0} to {@code 1}
  * @param message   human-readable progress message
- * @param startedAt actual start of execution, only present for running builds
+ * @param startedAt actual start of execution, absent for queued builds and for builds aborted while queued
  */
 public record CIBuildStatus(State state, float progress, String message, @Nullable Instant startedAt) {
 
@@ -37,6 +37,7 @@ public record CIBuildStatus(State state, float progress, String message, @Nullab
 
 	public enum State {
 		QUEUED,
-		RUNNING
+		RUNNING,
+		FINISHED
 	}
 }

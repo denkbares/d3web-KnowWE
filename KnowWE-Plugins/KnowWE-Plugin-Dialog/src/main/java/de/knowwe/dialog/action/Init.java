@@ -21,6 +21,7 @@ import de.d3web.core.io.PersistenceManager.KnowledgeBaseInfo;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;
@@ -38,6 +39,14 @@ import static de.knowwe.dialog.SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BA
  */
 public class Init extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Init.class);
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 
 	private static String knowledgeBaseRoot = SessionConstants.DEFAULT_KNOWLEDGE_FOLDER;
 
@@ -117,6 +126,7 @@ public class Init extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		try {
 			// start a case for the knowledge base (taken out of default folder)
 			KnowledgeBaseProvider[] providers = createKnowledgeBaseProviders(context);

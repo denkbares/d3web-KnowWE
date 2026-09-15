@@ -23,12 +23,14 @@ import org.slf4j.LoggerFactory;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -66,6 +68,11 @@ public class AddStatementsAction extends AbstractAction {
 	public static final String PARAM_DATA = "data";
 
 	@Override
+	public Access requiredAccess() {
+		return Access.WRITE;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 
 		String jsonText = context.getParameter(PARAM_DATA);
@@ -83,6 +90,11 @@ public class AddStatementsAction extends AbstractAction {
 			if (article == null) {
 				context.sendError(HttpServletResponse.SC_NOT_FOUND,
 						"article '" + articleName + "' not available");
+				return;
+			}
+			if (!KnowWEUtils.canWrite(article, context)) {
+				context.sendError(HttpServletResponse.SC_FORBIDDEN,
+						"You are not allowed to edit article '" + articleName + "'");
 				return;
 			}
 			OntologyCompiler compiler = findCompiler(context, article);

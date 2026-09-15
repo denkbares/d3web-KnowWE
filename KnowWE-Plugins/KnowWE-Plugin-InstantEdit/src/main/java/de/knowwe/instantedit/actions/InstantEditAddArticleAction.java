@@ -26,6 +26,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -66,6 +67,8 @@ public class InstantEditAddArticleAction extends AbstractAction {
 			context.getEnvironment().getWikiConnector().createArticle(title, context.getUserName(), articleText);
 		}
 		else {
+			// the permission to create articles does not imply the permission to overwrite an existing one
+			KnowWEUtils.assertCanWrite(title, context);
 			context.getEnvironment().getWikiConnector().writeArticleToWikiPersistence(title, articleText, context);
 		}
 	}

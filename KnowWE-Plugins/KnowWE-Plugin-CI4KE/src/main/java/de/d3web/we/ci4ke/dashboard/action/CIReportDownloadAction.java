@@ -26,7 +26,9 @@ import de.d3web.testing.BuildResultPersistenceHandler;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Downloads a {@link de.d3web.testing.BuildResult} as HTML.
@@ -38,6 +40,11 @@ public class CIReportDownloadAction extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIReportDownloadAction.class);
 
 	private static final String PARAM_NAME = "name";
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -59,6 +66,10 @@ public class CIReportDownloadAction extends AbstractAction {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "There are no builds for dashboard: " + name);
 			return;
 		}
+		if (!KnowWEUtils.canView(dashboard.getDashboardArticle(), context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to download this report");
+			return;
+		}
 
 		try {
 			InputStream xsl = getClass().getResourceAsStream("/ci-build-result-style.xslt");
@@ -76,7 +87,7 @@ public class CIReportDownloadAction extends AbstractAction {
 			byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
 			context.setContentLength(contentBytes.length);
 			context.setContentType("application/xhtml+xml; charset=UTF-8");
-			context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+			context.setContentDisposition("attachment", fileName);
 			context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
 
 		}

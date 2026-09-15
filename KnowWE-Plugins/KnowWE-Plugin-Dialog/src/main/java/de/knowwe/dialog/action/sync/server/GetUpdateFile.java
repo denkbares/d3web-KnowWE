@@ -12,9 +12,16 @@ import de.knowwe.dialog.repository.VersionSet;
 
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class GetUpdateFile extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
+
 
 	public static String PARAM_FILENAME = "file";
 	public static String PARAM_CHECKSUM = "checksum";

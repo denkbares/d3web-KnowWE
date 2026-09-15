@@ -24,10 +24,12 @@ import java.io.IOException;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -43,10 +45,19 @@ import de.knowwe.visualization.Config;
 public class GoToDefinitionAction extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter("kdomid");
 		String conceptName = context.getParameter("concept");
 		Section<?> section = Sections.get(context, sectionID);
+		if (section == null || !KnowWEUtils.canView(section, context)) {
+			context.sendError(403, "You are not allowed to see the definition of this concept");
+			return;
+		}
 
 		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		LinkToTermDefinitionProvider uriProvider;

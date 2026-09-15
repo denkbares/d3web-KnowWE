@@ -30,9 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 import static de.d3web.testcase.model.TestCase.*;
 
@@ -45,6 +47,11 @@ import static de.d3web.testcase.model.TestCase.*;
  */
 public class ExecuteCasesAction extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCasesAction.class);
+
+	@Override
+	public Access requiredAccess() {
+		return Access.WRITE;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -65,6 +72,10 @@ public class ExecuteCasesAction extends AbstractAction {
 					+ "' and/or '" + playerId
 					+ "' could not be found, possibly because somebody else"
 					+ " has edited the page.");
+			return;
+		}
+		if (!KnowWEUtils.canWrite(providerSection, context)) {
+			context.sendError(403, "You are not allowed to execute test cases on this article");
 			return;
 		}
 		boolean ignoreNumValueOutOfRange = TestCasePlayerType.skipNumValueOutOfRange(playerSection);

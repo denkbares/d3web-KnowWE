@@ -25,17 +25,26 @@ import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.ArticleManager;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class CIStopBuildAction extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.WRITE;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String dashboardName = Strings.decodeURL(context.getParameter("name"));
 		CIDashboard dashboard = CIDashboardManager.getDashboard(context.getArticleManager(),
 				dashboardName);
+		if (dashboard == null || !KnowWEUtils.canWrite(dashboard.getDashboardArticle(), context)) {
+			context.sendError(403, "You are not allowed to stop this build");
+			return;
+		}
 		CIBuildManager.of(dashboard).shutDownNow(dashboard);
 	}
 

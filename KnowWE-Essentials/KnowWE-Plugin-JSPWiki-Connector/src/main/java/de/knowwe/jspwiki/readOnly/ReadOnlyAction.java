@@ -23,9 +23,18 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class ReadOnlyAction extends AbstractAction {
+
+	/**
+	 * Toggles the wiki-wide read only mode, so it is admin only.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

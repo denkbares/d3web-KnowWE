@@ -33,6 +33,7 @@ import de.d3web.interview.Interview;
 import de.d3web.interview.inference.PSMethodInterview;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;
@@ -41,12 +42,21 @@ import de.knowwe.notification.OutDatedSessionNotification;
 
 public class GetInterview extends AbstractAction {
 
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
+
 	public static final String PARAM_LANGUAGE = "lang";
 	public static final String PARAM_INCLUDE_HISTORY = "history";
 	public static final String PARAM_REQUIRE_SOLUTIONS = "requireSolutions";
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		Locale locale = Utils.parseLocale(context.getParameter(PARAM_LANGUAGE));
 		boolean includeHistory = Boolean.parseBoolean(context.getParameter(PARAM_INCLUDE_HISTORY));
 		boolean requireSolutions = Boolean.parseBoolean(context.getParameter(PARAM_REQUIRE_SOLUTIONS));

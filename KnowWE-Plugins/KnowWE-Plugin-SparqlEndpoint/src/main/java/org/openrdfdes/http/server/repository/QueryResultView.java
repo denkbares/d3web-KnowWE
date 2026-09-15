@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.View;
 
+import com.denkbares.utils.ContentDisposition;
+
 import static org.eclipse.rdf4j.http.protocol.Protocol.QUERY_PARAM_NAME;
 
 /**
@@ -70,7 +72,7 @@ public abstract class QueryResultView implements View {
 			filename += "." + fileFormat.getDefaultFileExtension();
 		}
 
-		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+		response.setHeader("Content-Disposition", ContentDisposition.attachment(filename));
 	}
 
 	protected void logEndOfRequest(HttpServletRequest request) {

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.NotNull;
 
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.download.DownloadWikiZIPAction;
@@ -23,6 +24,14 @@ import static de.knowwe.download.DownloadWikiZIPAction.PARAM_VERSIONS;
  * The file is downloaded instantly and additionally stored in the tmp-repo-folder for later re-use (e.g. redeployment).
  */
 public class CreateSnapshotAction extends SnapshotAction {
+
+	/**
+	 * Creates a full wiki-content snapshot, so it is restricted to administrators.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

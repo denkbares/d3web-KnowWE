@@ -3,6 +3,7 @@ package de.knowwe.ontology.sparql;
 import java.io.IOException;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -12,6 +13,11 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  * @created 07.10.19
  */
 public class SparqlConsoleRenderAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

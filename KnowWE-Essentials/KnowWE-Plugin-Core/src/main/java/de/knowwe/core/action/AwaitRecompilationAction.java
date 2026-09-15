@@ -19,6 +19,8 @@
 
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.slf4j.Logger;
@@ -32,10 +34,19 @@ import org.slf4j.LoggerFactory;
  */
 public class AwaitRecompilationAction extends AbstractAction {
 
+	/**
+	 * Only waits for the server's compilation to finish, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AwaitRecompilationAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		try {
 			context.getArticleManager().getCompilerManager().awaitTermination();
 		}

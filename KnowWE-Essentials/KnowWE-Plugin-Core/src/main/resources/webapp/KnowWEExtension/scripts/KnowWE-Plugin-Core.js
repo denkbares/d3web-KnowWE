@@ -680,7 +680,7 @@ KNOWWE.core.plugin.formatterAjax = function(id, actionClass) {
 
   jq$.ajax("action/" + actionClass, {
     data: {
-      sectionID: id,
+      SectionID: id,
       wikiText: wikiText
     },
     type: "post",

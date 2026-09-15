@@ -27,7 +27,9 @@ import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.WikiSecurityException;
 import org.apache.wiki.auth.user.UserProfile;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.user.AuthenticationManager;
+import de.knowwe.jspwiki.auth.AuthenticatedIdentities;
 
 /**
  * Implementation of the @link{AuthenticationManager} interface. All methods are
@@ -77,10 +79,22 @@ public class JSPAuthenticationManager implements AuthenticationManager {
 		return context.getWikiSession().getUserPrincipal().getName();
 	}
 
+	/**
+	 * The user's mail address from their wiki profile, or, for a user the wiki knows only from their sign-in against
+	 * an identity provider, the address that provider stated. Null where neither knows one.
+	 */
 	@Override
 	public String getMailAddress() {
 		UserManager manager = context.getEngine().getManager(UserManager.class);
 		UserProfile userProfile = manager.getUserProfile(context.getWikiSession());
-		return userProfile.getEmail();
+		String email = userProfile == null ? null : userProfile.getEmail();
+		if (Strings.isBlank(email)) {
+			AuthenticatedIdentities.Identity identity = AuthenticatedIdentities.of(context.getEngine(),
+					context.getWikiSession().getUserPrincipal().getName());
+			if (identity != null) {
+				email = identity.email();
+			}
+		}
+		return email;
 	}
 }

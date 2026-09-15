@@ -231,6 +231,50 @@
 							</rules>
 						</configuration>
 					</execution>
+					<execution>
+						<!-- every action has to decide about the access rights of the user itself: /action/* has no
+							 security-constraint, AbstractAction checks nothing and the wiki connector does not either. -->
+						<id>enforce-action-authorization</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireAuthorizationCheck implementation="com.denkbares.maven.enforcer.RequireAuthorizationCheck">
+									<subject>action</subject>
+									<requiredType>de.knowwe.core.action.Action</requiredType>
+									<definingTypes>
+										<definingType>de.knowwe.core.action.AbstractAction</definingType>
+									</definingTypes>
+									<readCalls>
+										<readCall>de.knowwe.core.action.AbstractAction#getSection</readCall>
+										<readCall>de.knowwe.core.utils.KnowWEUtils#canView</readCall>
+										<readCall>de.knowwe.core.utils.KnowWEUtils#assertCanView</readCall>
+										<readCall>de.knowwe.core.wikiConnector.WikiConnector#userCanViewArticle</readCall>
+									</readCalls>
+									<writeCalls>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canWrite</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanWrite</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canUpload</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanUpload</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canCreatePages</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanCreatePages</writeCall>
+										<writeCall>de.knowwe.core.kdom.parsing.Sections#replace</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanEditArticle</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanUploadAttachment</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanCreateArticles</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanDeleteArticle</writeCall>
+									</writeCalls>
+									<authCalls>
+										<authCall>de.knowwe.core.utils.KnowWEUtils#assertUserAuth</authCall>
+									</authCalls>
+									<accessMethod>requiredAccess</accessMethod>
+									<defaultAccess>WRITE</defaultAccess>
+								</requireAuthorizationCheck>
+							</rules>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 

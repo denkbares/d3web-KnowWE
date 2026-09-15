@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.dialog.Utils;
 import de.knowwe.dialog.action.StartCase.KnowledgeBaseProvider;
@@ -23,8 +24,17 @@ import static de.knowwe.dialog.action.StartCase.HTTP_SESSION_RECENT_START_INFO;
  */
 public class Restart extends AbstractAction {
 
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		HttpSession httpSession = context.getSession();
 		KnowledgeBaseProvider[] providers = (KnowledgeBaseProvider[])
 				httpSession.getAttribute(ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS);

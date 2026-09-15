@@ -1,5 +1,7 @@
 package de.knowwe.core.utils.progress;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -24,6 +27,15 @@ import de.knowwe.core.action.UserActionContext;
  * @see #allowDirectory(File)
  */
 public class DownloadFileAction extends AbstractAction {
+
+	/**
+	 * Serves server-side files that were explicitly allowed via {@link #allowDirectory(File)}. Not tied to any
+	 * article, so any authenticated user may call it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.AUTH;
+	}
 
 	private static final Set<File> allowedDirectories = new HashSet<>();
 	public static final String KEY_FILE = "file";
@@ -52,6 +64,7 @@ public class DownloadFileAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		String fileParameter = context.getParameter(KEY_FILE);
 		String deleteParameter = context.getParameter(KEY_DELETE);
@@ -71,7 +84,7 @@ public class DownloadFileAction extends AbstractAction {
 	public static void writeFileToDownloadStream(UserActionContext context, File file, String downloadFilename, boolean deleteAfterStream) throws IOException {
 		try (InputStream in = new FileInputStream(file); OutputStream out = context.getOutputStream()) {
 			context.setContentType(BINARY);
-			context.setHeader("Content-Disposition", "attachment;filename=\"" + downloadFilename + "\"");
+			context.setContentDisposition("attachment", downloadFilename);
 			Streams.stream(in, out);
 		}
 		finally {

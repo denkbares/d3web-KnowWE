@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.denkbares.strings.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -50,7 +51,7 @@ public class GetVisMenuAction extends GetToolMenuAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		RenderResult string = new RenderResult(context);
-		String identifier = context.getParameter("sectionID");
+		String identifier = context.getParameter(Attributes.SECTION_ID);
 		Section<? extends Type> visMarkupSection = getSection(context, identifier);
 
 		String conceptName = context.getParameter(CONCEPT_NAME);

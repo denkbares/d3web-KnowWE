@@ -11,9 +11,16 @@ import java.util.List;
 import de.knowwe.dialog.Utils;
 import de.knowwe.dialog.action.sync.SyncClientContext.UpdateFile;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class CheckUpdates extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
+
 
 	public static String PARAM_SERVER_URL = "url";
 	public static String PARAM_VERSION_ALIAS = "alias";

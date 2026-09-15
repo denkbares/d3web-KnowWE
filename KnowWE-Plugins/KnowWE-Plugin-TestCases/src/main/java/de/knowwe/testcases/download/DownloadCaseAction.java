@@ -14,6 +14,7 @@ import de.d3web.testcase.persistence.TestCasePersistenceManager;
 import com.denkbares.utils.Triple;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -27,6 +28,11 @@ import de.knowwe.testcases.TestCasePlayerType;
 import de.knowwe.testcases.TestCaseProvider;
 
 public class DownloadCaseAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

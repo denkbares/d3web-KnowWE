@@ -34,16 +34,6 @@
 		</library>
 	</runtime>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DropAttachmentToExistingArticleAction">
-		<parameter id="class" value="de.knowwe.dropzone.action.DropAttachmentToExistingArticleAction" />
-		<parameter id="name" value="DropAttachmentToExistingArticleAction" />
-		<parameter id="description" value="Action that attaches a dropped file to an existing article" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-Plugin-DropZone.js" />
-		<parameter id="css" value="KnowWE-Plugin-DropZone.css" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DropAttachmentToNewArticleAction">
 		<parameter id="class" value="de.knowwe.dropzone.action.DropAttachmentToNewArticleAction" />
 		<parameter id="name" value="DropAttachmentToNewArticleAction" />

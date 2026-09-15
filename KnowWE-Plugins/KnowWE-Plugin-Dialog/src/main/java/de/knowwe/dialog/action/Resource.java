@@ -20,6 +20,7 @@ import de.knowwe.dialog.Utils;
 
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -32,6 +33,12 @@ import de.knowwe.core.action.UserActionContext;
  * @author Volker Belli
  */
 public class Resource extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
+
 
 	private static final MimetypesFileTypeMap MIMETYPE_MAP = new MimetypesFileTypeMap();
 

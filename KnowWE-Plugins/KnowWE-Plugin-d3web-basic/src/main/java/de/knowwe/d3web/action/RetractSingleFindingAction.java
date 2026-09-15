@@ -38,6 +38,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -50,6 +51,15 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 22.10.2010
  */
 public class RetractSingleFindingAction extends AbstractAction {
+
+	/**
+	 * Only modifies the user's own session findings, so read access to the article of the knowledge base definition
+	 * is sufficient.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

@@ -25,6 +25,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Action to force start an update of an attachment with the {@link AttachmentMarkup}.
@@ -37,6 +38,7 @@ public class AttachmentUpdateAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		Section<AttachmentUpdateMarkup> section = Sections.cast(getSection(context), AttachmentUpdateMarkup.class);
+		KnowWEUtils.assertCanWrite(section, context);
 		boolean force = Boolean.parseBoolean(context.getParameter("force"));
 		section.get().performUpdate(section, force, true);
 	}

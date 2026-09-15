@@ -130,6 +130,13 @@ public final class DiffHtmlRenderer {
 		sb.append("<div class=\"diff-frame\" part=\"frame\">");
 
 		List<TextDiff.Line> lines = diff.lines();
+		TextDiff.Stats stats = diff.stats();
+		if (stats.added() == 0 && stats.removed() == 0) {
+			// a table of nothing but hidden common lines would render as an empty or all elided frame
+			sb.append("<p class=\"diff-note\" part=\"note\">No changes.</p>");
+			sb.append("</div>");
+			return;
+		}
 		LineNumberMode lineNumberMode = determineLineNumberMode(lines);
 		sb.append("<table class=\"diff ").append(lineNumberMode.cssClass()).append("\"><tbody>");
 		boolean[] visible = computeVisibility(lines, options.contextLines());

@@ -22,8 +22,12 @@ import com.denkbares.strings.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Streams;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 
 import static com.denkbares.strings.Strings.Encoding.UTF8;
 
@@ -49,6 +53,30 @@ public class Utils {
 		}
 		LOGGER.warn("Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;
+	}
+
+	/**
+	 * Checks whether the current dialog user is allowed to view the knowledge base the dialog is based on. The
+	 * knowledge base is taken from the dialog session; the wiki page defining it is found by matching it against the
+	 * registered {@link D3webCompiler}s, and read access to that page is asserted.
+	 * <p>
+	 * Dialogs that are not backed by a wiki page (e.g. the file based mobile application) have no page to check and
+	 * pass. Actions should call this and declare {@code Access.HELPER} for it, because the check lives here and not in
+	 * the action itself.
+	 *
+	 * @param context the context of the current dialog action
+	 * @throws de.knowwe.core.wikiConnector.NotAuthorizedException if the user may not view the knowledge base page
+	 */
+	public static void assertCanViewKnowledgeBase(UserActionContext context) {
+		KnowledgeBase kb = (KnowledgeBase) context.getSession()
+				.getAttribute(SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE);
+		if (kb == null) return;
+		for (D3webCompiler compiler : Compilers.getCompilers(context, context.getArticleManager(), D3webCompiler.class)) {
+			if (compiler.getKnowledgeBase() == kb) {
+				KnowWEUtils.assertCanView(compiler.getCompileSection().getArticle().getTitle(), context);
+				return;
+			}
+		}
 	}
 
 	public static File getRootDirectory(UserActionContext context) {

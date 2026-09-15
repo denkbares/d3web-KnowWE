@@ -1,5 +1,7 @@
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -17,8 +19,18 @@ import static java.util.stream.Collectors.toList;
  */
 public class LookUpAction extends AbstractAction {
 
+	/**
+	 * Returns the collected term identifiers of the web without targeting a specific article, so any authenticated
+	 * user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		// gathering all terms
 		List<String> allTerms = TermUtils.getTermIdentifiers(context)
