@@ -13,11 +13,14 @@ import de.knowwe.core.action.UserActionContext;
 
 public class DeleteVersionSet extends AbstractAction {
 
+	/**
+	 * Deletes a version of the update repository, which is repository administration and is offered by the
+	 * administration pages of the dialog only.
+	 */
 	@Override
 	public Access requiredAccess() {
-		return Access.NONE;
+		return Access.ADMIN;
 	}
-
 
 	public static String PARAM_VERSION = "version";
 

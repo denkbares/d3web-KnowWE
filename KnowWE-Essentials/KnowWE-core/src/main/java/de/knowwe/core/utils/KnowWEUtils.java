@@ -61,6 +61,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.AttachmentManager;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
@@ -450,18 +451,19 @@ public class KnowWEUtils {
 	 */
 	public static boolean canView(final Article article, final UserContext context) {
 		return canView(article.getTitle(), context);
-		}
+	}
 
-		/**
-		 * Returns if the user has the read access rights to the specified article. Use this instead of {@link
-		 * #canView(Article, UserContext)} if only the title is known, e.g. because it stems from a request parameter.
-		 *
-		 * @param articleTitle the title of the article to check the access rights for
-		 * @param context      the user context
-		 * @return true if the user has the read access rights to the article
-		 */
-		public static boolean canView(final String articleTitle, final UserContext context) {
-			final WikiConnector connector = KnowWEUtils.getEnvironment(context).getWikiConnector();
+	/**
+	 * Returns if the user has the read access rights to the specified article. Use this instead of {@link
+	 * #canView(Article, UserContext)} if only the title is known, e.g. because it stems from a request parameter.
+	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param context      the user context
+	 * @return true if the user has the read access rights to the article
+	 */
+	public static boolean canView(final String articleTitle, final UserContext context) {
+		if (Strings.isBlank(articleTitle)) return false;
+		final WikiConnector connector = KnowWEUtils.getEnvironment(context).getWikiConnector();
 		// try nine times with catching unexpected exception from AuthorizationManager
 		for (int i = 0; i < 9; i++) {
 			try {
@@ -530,6 +532,7 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
 	public static void assertCanView(final Section<?> section, final UserContext context) throws NotAuthorizedException {
+		assertSectionGiven(section);
 		if (!canView(section, context)) {
 			throw new NotAuthorizedException("No view access for section '" + section.getID() + "'.");
 		}
@@ -544,8 +547,38 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article
 	 */
 	public static void assertCanView(final String articleTitle, final UserContext context) throws NotAuthorizedException {
+		assertTitleGiven(articleTitle);
 		if (!canView(articleTitle, context)) {
 			throw new NotAuthorizedException("No view access for article '" + articleTitle + "'.");
+		}
+	}
+
+	/**
+	 * Refuses a permission check that has no section to check, rather than failing on the missing section while
+	 * building the refusal. A request whose section is gone cannot be granted access to it.
+	 *
+	 * @param section the section the check was asked for
+	 * @throws NotAuthorizedException if no section was given
+	 */
+	private static void assertSectionGiven(final Section<?> section) throws NotAuthorizedException {
+		if (section == null) {
+			throw new NotAuthorizedException("The section the request works on does not exist, so its access cannot " +
+					"be checked. The page content is probably outdated, please reload.");
+		}
+	}
+
+	/**
+	 * Refuses a permission check that has no page to check, rather than letting it fail deep inside the wiki
+	 * connector. A request that does not name the page it works on cannot be granted access to it, so the message
+	 * names the parameters a caller may use to name it.
+	 *
+	 * @param articleTitle the title the check was asked for
+	 * @throws NotAuthorizedException if no title was given
+	 */
+	private static void assertTitleGiven(final String articleTitle) throws NotAuthorizedException {
+		if (Strings.isBlank(articleTitle)) {
+			throw new NotAuthorizedException("The request does not name the page it works on, so its access cannot " +
+					"be checked. Send the page as '" + Attributes.TOPIC + "', 'page' or 'title'.");
 		}
 	}
 
@@ -572,6 +605,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final String articleTitle, final UserContext user) {
+		if (Strings.isBlank(articleTitle)) return false;
 		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanEditArticle(
 				articleTitle, user);
 	}
@@ -599,43 +633,37 @@ public class KnowWEUtils {
 	 */
 	public static boolean canUpload(final Article article, final UserContext user) {
 		return canUpload(article.getTitle(), user);
-		}
-
-		/**
-		 * Returns if the user has permission to attach files to the specified article. Use this instead of {@link
-		 * #canUpload(Article, UserContext)} if the attachment is stored by article title, because attachments can also be
-		 * added to wiki pages that are not (yet) an {@link Article}.
-		 *
-		 * @param articleTitle the title of the article to check the access rights for
-		 * @param user         the user context
-		 * @return true if the user has the upload permissions
-		 */
-		public static boolean canUpload(final String articleTitle, final UserContext user) {
-			return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanUploadAttachment(articleTitle, user);
-		}
-
-		/**
-		 * Checks whether the user has permission to attach files to the specified article. If not, a {@link
-		 * NotAuthorizedException} is thrown, which the action dispatcher answers with 403.
-		 *
-		 * @param articleTitle the title of the article to check the access rights for
-		 * @param context      the user context
-		 * @throws NotAuthorizedException is thrown if the user is not allowed to attach files to the article
-		 */
-		public static void assertCanUpload(final String articleTitle, final UserContext context) throws NotAuthorizedException {
-			if (!canUpload(articleTitle, context)) {
-				throw new NotAuthorizedException("No upload access for article '" + articleTitle + "'.");
-			}
 	}
 
 	/**
-	 * Returns if the user has the write access rights to all of the specified articles.
+	 * Returns if the user has permission to attach files to the specified article. Use this instead of {@link
+	 * #canUpload(Article, UserContext)} if the attachment is stored by article title, because attachments can also be
+	 * added to wiki pages that are not (yet) an {@link Article}.
 	 *
-	 * @param articles the articles to check the access rights for
-	 * @param user     the user context
-	 * @return true if the user has the write access rights to all of the articles
-	 * @created 29.11.2013
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param user         the user context
+	 * @return true if the user has the upload permissions
 	 */
+	public static boolean canUpload(final String articleTitle, final UserContext user) {
+		if (Strings.isBlank(articleTitle)) return false;
+		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanUploadAttachment(articleTitle, user);
+	}
+
+	/**
+	 * Checks whether the user has permission to attach files to the specified article. If not, a {@link
+	 * NotAuthorizedException} is thrown, which the action dispatcher answers with 403.
+	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param context      the user context
+	 * @throws NotAuthorizedException is thrown if the user is not allowed to attach files to the article
+	 */
+	public static void assertCanUpload(final String articleTitle, final UserContext context) throws NotAuthorizedException {
+		assertTitleGiven(articleTitle);
+		if (!canUpload(articleTitle, context)) {
+			throw new NotAuthorizedException("No upload access for article '" + articleTitle + "'.");
+		}
+	}
+
 	private static boolean canWrite(final Set<Article> articles, final UserContext user) {
 		for (final Article article : articles) {
 			if (!canWrite(article, user)) {
@@ -655,7 +683,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final Section<?> section, final UserContext user) {
-		return canWrite(section.getArticle(), user);
+		return section != null && canWrite(section.getArticle(), user);
 	}
 
 	/**
@@ -668,6 +696,7 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
 	public static void assertCanWrite(final Section<?> section, final UserContext context) throws NotAuthorizedException {
+		assertSectionGiven(section);
 		if (!canWrite(section, context)) {
 			throw new NotAuthorizedException("No write access for section '" + section.getID() + "'.");
 		}
@@ -682,6 +711,7 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no write rights to the article
 	 */
 	public static void assertCanWrite(final String articleTitle, final UserContext context) throws NotAuthorizedException {
+		assertTitleGiven(articleTitle);
 		if (!canWrite(articleTitle, context)) {
 			throw new NotAuthorizedException("No write access for article '" + articleTitle + "'.");
 		}

@@ -16,11 +16,14 @@ import de.knowwe.core.action.UserActionContext;
 
 public class CheckUpdates extends AbstractAction {
 
+	/**
+	 * Asks the update server which files the dialog application would download for itself, which touches no wiki
+	 * content.
+	 */
 	@Override
 	public Access requiredAccess() {
 		return Access.NONE;
 	}
-
 
 	public static String PARAM_SERVER_URL = "url";
 	public static String PARAM_VERSION_ALIAS = "alias";

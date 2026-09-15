@@ -72,11 +72,16 @@
 		return base ? new URL(path, base).toString() : path;
 	}
 
-	function withCsrf(url) {
+	// the backend checks the access of the reader against the page the component sits on, so the request carries it
+	function withWikiParams(url) {
 		try {
 			const u = new URL(url, window.location.href);
 			if (typeof Wiki !== 'undefined' && Wiki.CsrfProtection) {
 				u.searchParams.set('X-XSRF-TOKEN', Wiki.CsrfProtection);
+			}
+			const page = KNOWWE.helper.getPagename();
+			if (page && !u.searchParams.has('KWiki_Topic')) {
+				u.searchParams.set('KWiki_Topic', page);
 			}
 			return u.toString();
 		}
@@ -182,7 +187,7 @@
 			this._ensureStylesheet();
 			this._setStatus('loading');
 			try {
-				const res = await fetchImpl(withCsrf(url), {
+				const res = await fetchImpl(withWikiParams(url), {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json; charset=UTF-8' },
 					body: JSON.stringify(payload),

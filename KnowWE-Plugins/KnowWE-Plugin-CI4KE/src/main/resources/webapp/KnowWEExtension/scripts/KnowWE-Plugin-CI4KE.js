@@ -170,14 +170,16 @@ KNOWWE.plugin.ci4ke = function() {
     }
 
     const wasActive = previous !== undefined && previous !== "FINISHED";
-    if (!wasActive && !showsRunning) return;
-
-    progressInfo(name).fadeOut(500);
-    const modifiedWarning = document.getElementById("modified-warning_" + name);
-    if (modifiedWarning) {
-      modifiedWarning.parentElement.remove();
+    if (wasActive || showsRunning) {
+      progressInfo(name).fadeOut(500);
+      const modifiedWarning = document.getElementById("modified-warning_" + name);
+      if (modifiedWarning) {
+        modifiedWarning.parentElement.remove();
+      }
     }
-    if (stateBubbles(name, ".ci-header").length > 0) {
+    // Refresh the dashboard shown on the page. This must not depend on a state bubble inside the header: a freshly
+    // loaded dashboard renders none, so the build list would keep showing the state from before the build.
+    if (document.getElementById(name + "-build-table") != null) {
       _CI.refreshBuildDetails(name);
       _CI.refreshBuildList(name);
       _CI.refreshBuildStatus(name);

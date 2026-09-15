@@ -12,11 +12,13 @@ import de.knowwe.core.action.UserActionContext;
 
 public class CancelUpdate extends AbstractAction {
 
+	/**
+	 * Cancels the update the dialog application is downloading for itself, which touches no wiki content.
+	 */
 	@Override
 	public Access requiredAccess() {
 		return Access.NONE;
 	}
-
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

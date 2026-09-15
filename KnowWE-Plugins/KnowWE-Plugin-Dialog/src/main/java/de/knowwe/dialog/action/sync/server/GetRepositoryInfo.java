@@ -12,11 +12,14 @@ import de.knowwe.core.action.UserActionContext;
 
 public class GetRepositoryInfo extends AbstractAction {
 
+	/**
+	 * Serves the repository description the dialog application needs to find its update, before it could sign in
+	 * anywhere. It reveals nothing but the versions the repository offers.
+	 */
 	@Override
 	public Access requiredAccess() {
 		return Access.NONE;
 	}
-
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

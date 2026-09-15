@@ -19,15 +19,16 @@ import de.knowwe.core.utils.AbstractFormatter;
 public class RuleFormatAction extends AbstractAction {
 
 	/**
-	 * Formats caller-supplied rule text without touching any wiki content.
+	 * Formats the text of the rule section the editor has open, so the caller needs read access to it.
 	 */
 	@Override
 	public Access requiredAccess() {
-		return Access.NONE;
+		return Access.READ;
 	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		getSection(context);
 
 		String wikiText = context.getParameter("wikiText");
 		String formattedWikiText = new RuleFormatter(wikiText).format();

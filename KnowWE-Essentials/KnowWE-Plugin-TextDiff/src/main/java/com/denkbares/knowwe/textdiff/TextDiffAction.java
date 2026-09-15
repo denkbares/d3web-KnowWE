@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Computes a diff between two raw texts on the fly and returns the inner shadow-root HTML
@@ -20,11 +21,12 @@ import de.knowwe.core.action.UserActionContext;
 public class TextDiffAction extends AbstractAction {
 
 	/**
-	 * Renders a diff of two texts supplied by the caller, without touching any wiki content.
+	 * Diffs two texts supplied by the caller and touches no wiki content, but the work is bound to the page the
+	 * component sits on, so the caller needs read access to it.
 	 */
 	@Override
 	public Access requiredAccess() {
-		return Access.NONE;
+		return Access.READ;
 	}
 
 	private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -40,6 +42,7 @@ public class TextDiffAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertCanView(context.getTitle(), context);
 		Request request = MAPPER.readValue(context.getParameter("data"), Request.class);
 		int contextLines = request.contextLines != null ? request.contextLines : DEFAULT_CONTEXT_LINES;
 
