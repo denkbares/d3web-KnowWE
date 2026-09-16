@@ -148,12 +148,27 @@ public class DefaultMarkupType extends AbstractType {
 		this.addChildType(new ContentType(markup));
 		for (DefaultMarkup.Annotation parameter : markup.getAnnotations()) {
 			// update KDOM structure for the annotations
-			this.addChildType(new AnnotationType(parameter));
+			this.addAnnotationType(parameter);
 		}
 		this.addChildType(10, new UnknownAnnotationType());
 		this.addCompileScript(new DefaultMarkupPackageRegistrationScript());
 		this.addCompileScript(new DefaultMarkupPackageUnregistrationScript());
 		this.addCompileScript(new DefaultMarkupCompileScript(markup));
+	}
+
+	/**
+	 * Adds the type for the given annotation of this markup, unless this markup type already has one for it. Plugged
+	 * annotations are added to the markup when a type tree is decorated, and the markup may be shared by all type
+	 * trees (a static MARKUP field): a markup type built after the first decoration then already gets the annotation
+	 * from {@link #applyMarkup(DefaultMarkup)}, and must not be given a second type for it while decorating.
+	 */
+	public void addAnnotationType(DefaultMarkup.Annotation annotation) {
+		for (Type child : getChildrenTypes()) {
+			if (child instanceof AnnotationType annotationType && annotationType.getAnnotation() == annotation) {
+				return;
+			}
+		}
+		this.addChildType(new AnnotationType(annotation));
 	}
 
 	@Override

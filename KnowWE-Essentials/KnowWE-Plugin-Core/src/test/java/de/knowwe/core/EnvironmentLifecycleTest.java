@@ -7,6 +7,7 @@ package de.knowwe.core;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import org.junit.Test;
 
 import com.denkbares.plugin.test.InitPluginManager;
 import connector.DummyConnector;
+import utils.TypeTrees;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
@@ -130,6 +132,15 @@ public class EnvironmentLifecycleTest {
 		assertSame(second, secondArticle.getEnvironment());
 		assertNotSame(firstArticle, secondArticle);
 		assertNull("section ids are scoped to their environment", second.getSection(firstArticle.getRootSection().getID()));
+
+		Set<String> markups = TypeTrees.markupTypeNames(first.getRootType());
+		assertFalse("the type tree must contain markups, otherwise the comparison says nothing", markups.isEmpty());
+		assertEquals("both environments must know the same markups", markups,
+				TypeTrees.markupTypeNames(second.getRootType()));
+		assertEquals("markup types must be built per environment", List.of(),
+				TypeTrees.sharedMarkupTypes(first.getRootType(), second.getRootType()));
+		assertEquals("no markup may have two types for the same annotation", List.of(),
+				TypeTrees.duplicateAnnotationTypes(second.getRootType()));
 
 		first.close();
 		assertEquals(List.of("first"), closed);

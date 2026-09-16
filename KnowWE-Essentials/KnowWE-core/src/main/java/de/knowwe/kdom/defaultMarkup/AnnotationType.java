@@ -47,7 +47,7 @@ public class AnnotationType extends AbstractType {
 		this.addChildType(new AnnotationNameType(annotation));
 		this.addChildType(new AnnotationContentType(annotation));
 		this.addCompileScript(Priority.HIGHEST, new CheckContentExistsHandler());
-		Renderer renderer = annotation.getRenderer();
+		Renderer renderer = annotation.createRenderer();
 		if (renderer == null) {
 			renderer = AnchorRenderer.getDelegateInstance();
 		}

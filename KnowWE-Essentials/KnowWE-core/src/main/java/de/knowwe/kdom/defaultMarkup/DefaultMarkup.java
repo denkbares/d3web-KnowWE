@@ -33,6 +33,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -321,6 +323,18 @@ public class DefaultMarkup implements Cloneable {
 		annotation.renderer = renderer;
 	}
 
+	/**
+	 * Adds a renderer to the named annotation, created freshly from the given factory for every
+	 * {@link DefaultMarkupType} instance the markup is applied to, like
+	 * {@link #addAnnotationContentType(String, Supplier)} does for the content types. Use this instead of a fixed
+	 * instance if the renderer keeps state, especially for a plugged renderer: the markup itself may be shared by all
+	 * type trees, so a fixed instance would be shared by all environments as well.
+	 */
+	public void addAnnotationRenderer(String name, Supplier<Renderer> rendererFactory) {
+		Annotation annotation = getAnnotationHandleIAE(name);
+		annotation.rendererFactory = rendererFactory;
+	}
+
 	private Annotation getAnnotationHandleIAE(String name) {
 		Annotation annotation = getAnnotation(name);
 		if (annotation == null) {
@@ -462,6 +476,7 @@ public class DefaultMarkup implements Cloneable {
 		private final Collection<Supplier<Type>> types = new LinkedList<>();
 
 		private Renderer renderer = null;
+		private Supplier<Renderer> rendererFactory = null;
 
 		private Annotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
 			super();
@@ -564,6 +579,17 @@ public class DefaultMarkup implements Cloneable {
 
 		public Renderer getRenderer() {
 			return renderer;
+		}
+
+		/**
+		 * Returns the renderer to use for one {@link AnnotationType} of this annotation: the fixed renderer if one is
+		 * set, otherwise a fresh one from the factory, otherwise null. Ask this instead of {@link #getRenderer()}
+		 * whenever a type is built, so that a renderer registered as a factory is not shared between type trees.
+		 */
+		@Nullable
+		public Renderer createRenderer() {
+			if (renderer != null) return renderer;
+			return rendererFactory == null ? null : rendererFactory.get();
 		}
 
 		public Pattern getPattern() {

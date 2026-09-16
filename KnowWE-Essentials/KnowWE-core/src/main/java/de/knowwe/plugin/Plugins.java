@@ -46,7 +46,6 @@ import de.knowwe.core.rightpanel.RightPanelTabProvider;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeUtils;
-import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -307,17 +306,16 @@ public class Plugins {
 						markup.addAnnotationContentType(name, () -> (Type) getNewInstance(extension, subTypeClass));
 					}
 
-					// set renderer for the annotation
+					// set renderer for the annotation, as a factory, so that each type tree gets its own instance
 					String renderer = extension.getParameter("renderer");
 					if (!Strings.isBlank(renderer)) {
-						Renderer pluggedRenderer = (Renderer) getNewInstance(extension, renderer);
-						markup.addAnnotationRenderer(name, pluggedRenderer);
+						markup.addAnnotationRenderer(name, () -> (Renderer) getNewInstance(extension, renderer));
 					}
 				}
 
 				for (Type childTyp : childrenTypes) {
 					if (childTyp.getClass().equals(UnknownAnnotationType.class)) {
-						type.addChildType(new AnnotationType(annotation));
+						markupType.addAnnotationType(annotation);
 						break;
 					}
 				}

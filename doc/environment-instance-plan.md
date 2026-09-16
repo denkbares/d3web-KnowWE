@@ -322,6 +322,21 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   Service erzeugt hat. `getService(Class)` (die reine Abfrage) synchronisiert jetzt auf `services` wie die andere
   Überladung. Nachweis: `EnvironmentLifecycleTest.serviceCreatedWhileClosingIsClosedAsWell` (schlägt ohne die Runden
   fehl), 8 Tests der Klasse grün.
+- **Geplugte Annotation-Renderer pro Typbaum** (Review 2026-09-16, behoben): `Plugins.addAnnotations` erzeugte den
+  in der plugin.xml angegebenen Renderer einmal und hängte ihn an die `Annotation` des (meist geteilten) Markups —
+  eine Instanz für alle Environments, während die Content-Types längst Fabriken sind. `DefaultMarkup` nimmt jetzt
+  auch für den Renderer eine Fabrik (`addAnnotationRenderer(String, Supplier<Renderer>)`), `AnnotationType` fragt
+  `annotation.createRenderer()`, und `Plugins` registriert die Fabrik. Fest registrierte Renderer-Instanzen der
+  Markup-Autoren bleiben unverändert geteilt (zustandslos, bewusst).
+  Dabei fiel ein zweiter Punkt auf: weil die geplugte Annotation am geteilten Markup hängt, legt schon
+  `DefaultMarkupType.applyMarkup` im **zweiten** Environment einen `AnnotationType` dafür an, und `Plugins` hängte
+  einen zweiten daneben. `DefaultMarkupType.addAnnotationType(Annotation)` prüft das jetzt. Nachweis:
+  `AnnotationDecorationTest` (KnowWE-core, 3 Tests).
+- **Zwei-Environment-Nachweis verschärft** (Review 2026-09-16): Die vier Seite-an-Seite-Tests (KnowWE, CBX/SSP,
+  KONAP/KRONE, Renaming/Experimental) prüfen jetzt über den ganzen Typbaum, dass beide Environments dieselben Markups
+  kennen (sonst wäre der Vergleich leer), dass kein Markup in beiden Bäumen dieselbe `DefaultMarkupType`-Instanz ist
+  und dass kein Markup zwei Typen für dieselbe Annotation hat (`utils.TypeTrees` in KnowWE-GlobalTestUtils). Vorher
+  verglichen sie nur Artikel und Section-IDs.
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.
