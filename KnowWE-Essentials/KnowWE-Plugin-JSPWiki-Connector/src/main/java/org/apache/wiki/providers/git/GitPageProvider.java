@@ -67,8 +67,8 @@ import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
  * cache eviction). It commits but never pushes; push policy belongs to the async push listener driven by the
  * {@link GitCommitEvent}s fired here.
  * <p>
- * All repository mutations run under the repository's commit lock. A page save brackets the file write and its commit
- * in {@link GitWikiRepository#withCommitLock}, so no sweep, delete or move can interleave between the two, and closing a
+ * All repository mutations run under the repository lock. A page save brackets the file write and its commit
+ * in {@link GitWikiRepository#withRepositoryLock}, so no sweep, delete or move can interleave between the two, and closing a
  * transaction batch commits through the same lock. A dirty working tree (crash during a save) is self-healed at
  * startup by a sweep-up reconciliation commit.
  * <p>
@@ -131,7 +131,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		// bracket the file write and its commit, so no concurrent sweep, delete or move can interleave in between
 		// (a sweep would otherwise commit the half-finished save as a reconciliation commit with the wrong author)
 		try {
-			repository.withCommitLock(() -> {
+			repository.withRepositoryLock(() -> {
 				putPageTextLocked(page, text, file);
 				return null;
 			});
@@ -419,7 +419,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 
 	/**
 	 * The backend shared with the sibling attachment provider, so attachment changes go through the same repository
-	 * (and its commit lock), the same open transactions and the same engine context. Within a transaction, page and
+	 * (and its lock), the same open transactions and the same engine context. Within a transaction, page and
 	 * attachment changes end up in the same commit.
 	 */
 	GitWikiBackend backend() {

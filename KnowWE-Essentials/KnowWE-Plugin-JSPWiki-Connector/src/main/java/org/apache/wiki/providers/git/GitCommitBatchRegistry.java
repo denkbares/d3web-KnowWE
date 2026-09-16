@@ -42,7 +42,7 @@ import de.uniwue.d3web.gitConnector.CommitUserData;
  * <p>
  * The registry serves the one wiki repository, represented by the {@link GitWikiRepository} it is constructed with.
  * Closing a batch commits or rolls back through {@link GitWikiRepository#commitBatch} and
- * {@link GitWikiRepository#rollbackPaths}, which take the repository's commit lock, so a batch close is serialized
+ * {@link GitWikiRepository#rollbackPaths}, which take the repository lock, so a batch close is serialized
  * against concurrent immediate commits, sweeps, deletes and moves instead of relying on git's own {@code index.lock}
  * retries.
  */
@@ -54,7 +54,7 @@ public class GitCommitBatchRegistry {
 	private final GitWikiRepository repository;
 
 	/**
-	 * @param repository the wiki repository, whose commit lock serializes the batch close
+	 * @param repository the wiki repository, whose lock serializes the batch close
 	 */
 	public GitCommitBatchRegistry(GitWikiRepository repository) {
 		this.repository = repository;

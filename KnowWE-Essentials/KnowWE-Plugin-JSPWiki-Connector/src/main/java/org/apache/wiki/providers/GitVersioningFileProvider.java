@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.wiki.api.core.Engine;
@@ -61,7 +60,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningFileProvider.class);
 
 	private final ReadWriteLock pushLock = new ReentrantReadWriteLock();
-	private final ReentrantLock commitLock = new ReentrantLock();
 
 	private final GitAutoUpdateScheduler scheduler;
 
@@ -300,13 +298,16 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 		}
 	}
 
+	/**
+	 * Takes the lock of the working tree, the one every connector on the repository shares, so no rebase, reset or
+	 * cherry-pick issued through another connector can interleave with a save.
+	 */
 	void commitLock() {
-		//noinspection LockAcquiredButNotSafelyReleased
-		this.commitLock.lock();
+		getGitConnector().repositoryLock().lock();
 	}
 
 	void commitUnlock() {
-		this.commitLock.unlock();
+		getGitConnector().repositoryLock().unlock();
 	}
 
 	public void pushLock() {

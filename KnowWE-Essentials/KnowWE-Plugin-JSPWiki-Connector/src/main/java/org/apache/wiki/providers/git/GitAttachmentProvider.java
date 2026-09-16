@@ -68,7 +68,7 @@ import de.uniwue.d3web.gitConnector.GitFileRevision;
  * them via git; the {@code OLD/} / versioned-directory mechanism of {@link BasicAttachmentProvider} is not used.
  * <p>
  * It routes to the <strong>same</strong> {@link GitWikiRepository}, batch registry and {@link WikiGitContext} as the
- * page provider (located lazily via the engine), so attachment changes share the repository, the commit lock, and,
+ * page provider (located lazily via the engine), so attachment changes share the repository, its lock, and,
  * within a transaction, the same commit.
  */
 public class GitAttachmentProvider extends BasicAttachmentProvider {
@@ -171,7 +171,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		byte[] bytes = data.readAllBytes();
 		// bracket the file write and its commit, like the page provider's save (no sweep may interleave)
 		try {
-			repository.withCommitLock(() -> {
+			repository.withRepositoryLock(() -> {
 				putAttachmentDataLocked(attachment, bytes, attFile, relPath, repository);
 				return null;
 			});
@@ -390,7 +390,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			deleteLegacyAttachment(attachment, repository);
 			return;
 		}
-		// disk deletion and commit happen inside commitDelete under the commit lock, so no sweep can interleave
+		// disk deletion and commit happen inside commitDelete under the repository lock, so no sweep can interleave
 		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
 		File legacyDir = legacyVersionDir(attachment.getParentName(), attachment.getFileName());
 		String commitHash = legacyDir.exists()
@@ -409,7 +409,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	private String deleteBothLayouts(Attachment attachment, GitWikiRepository repository, File attFile, File legacyDir,
 									 CommitUserData userData) throws ProviderException {
 		try {
-			return repository.withCommitLock(() -> {
+			return repository.withRepositoryLock(() -> {
 				List<String> relPaths = new ArrayList<>();
 				if (!repository.isIgnored(attachmentPath(attachment))) {
 					relPaths.add(attachmentPath(attachment));
@@ -461,7 +461,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		String commitHash;
 		try {
 			// disk deletion and commit share one lock bracket, like the flat delete path
-			commitHash = repository.withCommitLock(
+			commitHash = repository.withRepositoryLock(
 					() -> repository.commitRemovedPaths(deleteLegacyVersionDir(repository, legacyDir), userData));
 		}
 		catch (ProviderException e) {
@@ -492,7 +492,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		// bracket the directory move and its commit (or staging), so no concurrent sweep can commit the half-done
 		// move as a reconciliation commit with the wrong author
 		try {
-			commitHash = repository.withCommitLock(() -> {
+			commitHash = repository.withRepositoryLock(() -> {
 				File oldDir = attachmentDir(repository, oldParent.getName());
 				File newDir = attachmentDir(repository, newParent);
 				if (!oldDir.isDirectory()) {

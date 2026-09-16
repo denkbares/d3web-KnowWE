@@ -322,7 +322,7 @@ public class GitPageProviderTest {
 		CountDownLatch releaseBracket = new CountDownLatch(1);
 		Thread saver = new Thread(() -> {
 			try {
-				provider.backend().repository().withCommitLock(() -> {
+				provider.backend().repository().withRepositoryLock(() -> {
 					insideBracket.countDown();
 					releaseBracket.await();
 					return null;

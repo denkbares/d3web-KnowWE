@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.structs.DefaultPageIdentifier;
@@ -47,14 +46,17 @@ import org.slf4j.LoggerFactory;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
+import de.uniwue.d3web.gitConnector.RepositoryLock;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 /**
  * The gateway to the wiki's git repository: the one object through which the repository is read and mutated. It owns
- * the repository's {@link GitConnector}, the commit lock that serializes every working-tree mutation (page and
- * attachment commits, deletes, moves, batch closes, the sweep-up reconciliation), and the eager {@link GitRepoIndex}
- * the lock-free history reads are served from.
+ * the repository's {@link GitConnector} and the eager {@link GitRepoIndex} the lock-free history reads are served
+ * from. Every working-tree mutation (page and attachment commits, deletes, moves, batch closes, the sweep-up
+ * reconciliation) runs under the {@link RepositoryLock} of the working tree, which the connector shares with every
+ * other connector on the same repository, so a rebase, reset or cherry-pick issued elsewhere cannot interleave with a
+ * save either.
  * <p>
  * The logic is ported from {@code GitVersioningFileProviderDelegate} but deliberately kept engine-free: it receives an
  * already-resolved {@link CommitUserData} (author, email, message) and returns engine-free {@link GitPageVersion}
@@ -65,7 +67,7 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
  * <p>
  * Batching state is <em>not</em> held here: when a user has an open transaction the provider stages paths into the
  * {@link GitCommitBatchRegistry}, which closes the batch through {@link #commitBatch}/{@link #rollbackPaths} under
- * this repository's commit lock. This class only performs the immediate, single-operation commits.
+ * the repository lock. This class only performs the immediate, single-operation commits.
  */
 public class GitWikiRepository {
 
@@ -73,12 +75,13 @@ public class GitWikiRepository {
 
 	private final GitConnector connector;
 	private final String repoPath;
-	private final ReentrantLock commitLock = new ReentrantLock();
+	private final RepositoryLock lock;
 	private final GitRepoIndex index;
 
 	public GitWikiRepository(GitConnector connector) {
 		this.connector = connector;
 		this.repoPath = connector.repo().getGitDirectory();
+		this.lock = connector.repositoryLock();
 		this.index = new GitRepoIndex(connector);
 	}
 
@@ -106,26 +109,19 @@ public class GitWikiRepository {
 	}
 
 	/**
-	 * Runs the given action while holding this repository's commit lock, so no commit, sweep, delete or move can
-	 * interleave with it. This is the sanctioned "I need the repo quiescent" entry point. Providers bracket a page's
-	 * file write and its commit with it, so a concurrent sweep cannot commit a half-finished save under the wrong
-	 * author. A future pull/fetch+merge after a rejected push belongs here too, combined with {@link #sweepUp} before
-	 * the branch operation. The lock is reentrant, actions may call the commit methods of this class.
+	 * Runs the given action while holding the repository lock, so no commit, sweep, delete, move, rebase, reset or
+	 * cherry-pick can interleave with it. This is the sanctioned "I need the repo quiescent" entry point. Providers
+	 * bracket a page's file write and its commit with it, so a concurrent sweep cannot commit a half-finished save
+	 * under the wrong author. The lock is reentrant, actions may call the commit methods of this class.
 	 */
-	public <T> T withCommitLock(Callable<T> action) throws Exception {
-		commitLock.lock();
-		try {
-			return action.call();
-		}
-		finally {
-			commitLock.unlock();
-		}
+	public <T> T withRepositoryLock(Callable<T> action) throws Exception {
+		return lock.call(action);
 	}
 
 	/**
 	 * Commits the given already-staged/tracked paths as one commit, returning the commit hash, or {@code null} if none
 	 * of the paths had changes left to commit. This is the closing commit of a transaction batch, taken under the same
-	 * commit lock as the immediate commits, so a batch close cannot interleave with a concurrent save, delete, move or
+	 * repository lock as the immediate commits, so a batch close cannot interleave with a concurrent save, delete, move or
 	 * sweep of this repository.
 	 *
 	 * @param paths    the repo-relative paths staged for the batch
@@ -133,26 +129,26 @@ public class GitWikiRepository {
 	 */
 	@Nullable
 	public String commitBatch(Set<String> paths, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			return connector.commit().commitPathsForUser(userData.message, userData.user, userData.email, paths);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Restores the working-tree state of the given repo-relative paths, discarding their uncommitted changes. This is
-	 * the rollback of a transaction batch, taken under the commit lock for the same reason as {@link #commitBatch}.
+	 * the rollback of a transaction batch, taken under the repository lock for the same reason as {@link #commitBatch}.
 	 */
 	public void rollbackPaths(Set<String> paths) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			connector.rollback().rollbackPaths(paths);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -168,7 +164,7 @@ public class GitWikiRepository {
 	 */
 	@Nullable
 	public String commitFile(File file, String repoRelativePath, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (connector.isIgnored(repoRelativePath)) {
 				// guard against a file added to .gitignore but never untracked (ported life-saver)
@@ -179,7 +175,7 @@ public class GitWikiRepository {
 			return connector.commit().changePath(file.toPath(), userData);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -189,12 +185,12 @@ public class GitWikiRepository {
 	 * Package-private: only {@link GitCommitBatchRegistry#stage} calls this, as part of staging a new file.
 	 */
 	void stageInIndex(String repoRelativePath) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			connector.commit().addPath(repoRelativePath);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -344,12 +340,12 @@ public class GitWikiRepository {
 
 	/**
 	 * Deletes a file (working-tree file and from git history going forward) and commits the removal, returning the
-	 * commit hash. Disk deletion and commit happen under the commit lock, so no sweep can interleave and commit the
+	 * commit hash. Disk deletion and commit happen under the repository lock, so no sweep can interleave and commit the
 	 * half-done delete under the wrong author. History of the deleted file is preserved in git.
 	 */
 	@Nullable
 	public String commitDelete(File file, String repoRelativePath, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (!file.delete()) {
 				LOGGER.warn("Failed to delete file on disk: {}", repoRelativePath);
@@ -357,18 +353,18 @@ public class GitWikiRepository {
 			return removeFile(repoRelativePath, userData);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Removes an already-deleted path from git and commits, returning the commit hash (or {@code null} if the path is
 	 * git-ignored). The caller is responsible for having deleted the working-tree file, inside a
-	 * {@link #withCommitLock} bracket that spans both steps.
+	 * {@link #withRepositoryLock} bracket that spans both steps.
 	 */
 	@Nullable
 	public String removeFile(String repoRelativePath, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (connector.isIgnored(repoRelativePath)) {
 				return null;
@@ -376,18 +372,18 @@ public class GitWikiRepository {
 			return commitRemovedPaths(List.of(repoRelativePath), userData);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Commits a set of moved paths as one commit: the (already-moved-on-disk) old paths are removed from the index and
 	 * the new paths added. Used by the attachment provider's {@code moveAttachmentsForPage}, which moves the directory
-	 * and commits inside one {@link #withCommitLock} bracket. Returns the commit hash.
+	 * and commits inside one {@link #withRepositoryLock} bracket. Returns the commit hash.
 	 */
 	@Nullable
 	public String commitMovedPaths(List<String> removedRelPaths, List<String> addedRelPaths, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (!addedRelPaths.isEmpty()) {
 				// the moved-in files are untracked, a pathspec commit cannot pick those up unstaged
@@ -403,18 +399,18 @@ public class GitWikiRepository {
 			return connector.commit().commitPathsForUser(userData.message, userData.user, userData.email, paths);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Commits the removal of paths whose working-tree files the caller has already deleted (inside the same
-	 * {@link #withCommitLock} bracket that deleted them), as one commit. Returns the commit hash, or {@code null} if
+	 * {@link #withRepositoryLock} bracket that deleted them), as one commit. Returns the commit hash, or {@code null} if
 	 * none of the paths was tracked.
 	 */
 	@Nullable
 	public String commitRemovedPaths(List<String> removedRelPaths, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (removedRelPaths.isEmpty()) {
 				return null;
@@ -425,7 +421,7 @@ public class GitWikiRepository {
 					.commitPathsForUser(userData.message, userData.user, userData.email, new LinkedHashSet<>(removedRelPaths));
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -434,20 +430,20 @@ public class GitWikiRepository {
 	 * commit (no {@code --follow}), the accepted, pinned behavior of the git providers.
 	 */
 	public String commitMove(File fromFile, File toFile, CommitUserData userData) throws IOException {
-		commitLock.lock();
+		lock.lock();
 		try {
 			moveCaseSafe(fromFile, toFile);
 			return connector.commit().moveFile(fromFile.toPath(), toFile.toPath(),
 					userData.user, userData.email, userData.message);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Moves a file or directory, bouncing case-only renames through a temp name so case-insensitive filesystems do not
-	 * no-op the move. Callers that commit the move afterwards must run both steps under {@link #withCommitLock}.
+	 * no-op the move. Callers that commit the move afterwards must run both steps under {@link #withRepositoryLock}.
 	 */
 	public static void moveCaseSafe(File from, File to) throws IOException {
 		if (from.getName().equalsIgnoreCase(to.getName())) {
@@ -470,7 +466,7 @@ public class GitWikiRepository {
 	 */
 	@Nullable
 	public SweepUp sweepUp(String reason) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			GitStatusCommandResult status = connector.status().get();
 			if (!(status instanceof GitStatusResultSuccess result)) {
@@ -488,7 +484,7 @@ public class GitWikiRepository {
 			return commitHash == null ? null : new SweepUp(commitHash, List.copyOf(affected));
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
