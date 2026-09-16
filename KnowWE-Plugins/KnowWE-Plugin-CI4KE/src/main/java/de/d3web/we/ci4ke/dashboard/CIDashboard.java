@@ -73,7 +73,7 @@ public class CIDashboard {
 		this.dashboardSection = dashboardSection;
 		this.dashboardName = CIDashboardType.getDashboardName(dashboardSection);
 		// bind all specifications to the environment of this dashboard, so tests can resolve the wiki they run in
-		this.testSpecifications = CITestSpecification.bind(KnowWEUtils.getEnvironment(dashboardSection), specifications);
+		this.testSpecifications = CITestSpecification.bind(dashboardSection.getEnvironment(), specifications);
 		this.buildCache = new CIBuildCache();
 		this.renderer = new CIRenderer(this);
 		this.persistence = new CIPersistence(this, buildCache);

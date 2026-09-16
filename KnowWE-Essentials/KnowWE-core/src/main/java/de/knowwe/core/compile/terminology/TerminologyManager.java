@@ -108,7 +108,7 @@ public class TerminologyManager {
 
 		Compiler messageCompiler = compiler instanceof AbstractPackageCompiler
 				? (AbstractPackageCompiler) compiler : null;
-		if (KnowWEUtils.getEnvironment(compiler).isOccupiedTerm(termIdentifier)) {
+		if (compiler.getEnvironment().isOccupiedTerm(termIdentifier)) {
 			Message msg = Messages.error("The term '"
 										 + termIdentifier
 										 + "' is reserved by the system.");

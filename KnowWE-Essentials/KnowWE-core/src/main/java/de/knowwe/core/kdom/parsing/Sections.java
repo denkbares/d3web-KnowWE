@@ -1457,7 +1457,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 */
 	@Nullable
 	public static Section<?> get(@NotNull UserContext context, @Nullable String id) {
-		return get(KnowWEUtils.getEnvironment(context), id);
+		return get(context.getEnvironment(), id);
 	}
 
 	@Nullable

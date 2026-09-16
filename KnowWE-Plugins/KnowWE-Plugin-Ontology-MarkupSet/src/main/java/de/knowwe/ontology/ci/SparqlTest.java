@@ -71,7 +71,7 @@ public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRen
 			name = className;
 			if (hasConfig) {
 
-				Section<?> sparqlMarkupSection = getLinkTarget(KnowWEUtils.getEnvironment(context), config[0]);
+				Section<?> sparqlMarkupSection = getLinkTarget(context.getEnvironment(), config[0]);
 
 				if (sparqlMarkupSection != null) {
 					additionalInfo = "(<a href = '" + KnowWEUtils.getURLLink(sparqlMarkupSection) + "'>" + config[0] + "</a> "

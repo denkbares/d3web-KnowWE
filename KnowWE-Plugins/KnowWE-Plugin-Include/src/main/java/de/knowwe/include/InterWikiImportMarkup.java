@@ -99,7 +99,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	 * The update service of the environment the section belongs to.
 	 */
 	private static InterWikiImportUpdateService updateService(Section<?> section) {
-		return InterWikiImportUpdateService.of(KnowWEUtils.getEnvironment(section));
+		return InterWikiImportUpdateService.of(section.getEnvironment());
 	}
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
 
@@ -139,7 +139,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		Section<InterWikiImportMarkup> interWikiSection = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (interWikiSection == null) return null;
 		String path = getWikiAttachmentPath(interWikiSection);
-		return KnowWEUtils.getEnvironment(section).getWikiConnector().getAttachment(path);
+		return section.getEnvironment().getWikiConnector().getAttachment(path);
 	}
 
 	@Override
@@ -238,7 +238,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	 * Sent both as the {@code requestFrom} URL parameter (single fetch) and in the bulk poll request body.
 	 */
 	String getImportSourceLabel(Section<InterWikiImportMarkup> section) {
-		String linkLabel = KnowWEUtils.getEnvironment(section).getWikiConnector().getApplicationName();
+		String linkLabel = section.getEnvironment().getWikiConnector().getApplicationName();
 		if (Strings.isBlank(linkLabel) || "knowwe".equalsIgnoreCase(linkLabel)) {
 			linkLabel = "another wiki";
 		}
@@ -247,7 +247,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	/** Absolute link back to this importing section, shown on the source page's "imported by" marker. */
 	String getImportSourceLink(Section<InterWikiImportMarkup> section) {
-		return KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getEnvironment(section), KnowWEUtils.getURLLink(section));
+		return KnowWEUtils.getAsAbsoluteLink(section.getEnvironment(), KnowWEUtils.getURLLink(section));
 	}
 
 	@Nullable
@@ -337,7 +337,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
 			String fileName = path.substring(path.indexOf(PATH_SEPARATOR) + 1);
-			KnowWEUtils.getEnvironment(section).getWikiConnector()
+			section.getEnvironment().getWikiConnector()
 					.storeAttachment(parentName, fileName, "SYSTEM", new ByteArrayInputStream(sourceBytes), isVersioning(section));
 			return true;
 		}

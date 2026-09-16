@@ -299,7 +299,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 
 		WikiAttachment attachment = null;
 		try {
-			Collection<WikiAttachment> attachments = KnowWEUtils.getAttachments(KnowWEUtils.getEnvironment(section), section.getTitle(), attachmentName + ".*");
+			Collection<WikiAttachment> attachments = KnowWEUtils.getAttachments(section.getEnvironment(), section.getTitle(), attachmentName + ".*");
 			if (!attachments.isEmpty()) {
 				attachment = attachments.iterator().next();
 				attachmentName = attachment.getFileName();
@@ -311,7 +311,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 			return null;
 		}
 		if (attachment == null) {
-			WikiConnector wc = KnowWEUtils.getEnvironment(section).getWikiConnector();
+			WikiConnector wc = section.getEnvironment().getWikiConnector();
 			try {
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				String extension;
@@ -352,7 +352,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 		String path = createPath(section, attachmentFile);
 		WikiAttachment attachment;
 		try {
-			attachment = KnowWEUtils.getEnvironment(section).getWikiConnector().getAttachment(path);
+			attachment = section.getEnvironment().getWikiConnector().getAttachment(path);
 		}
 		catch (IOException e) {
 			Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while retrieving attachment '"
@@ -397,7 +397,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 		String key = attachment.getPath() + "_" + attachment.getDate();
 		synchronized (importCache) {
 			cache = importCache.computeIfAbsent(key, k -> {
-				Rdf2GoCore dummy = new Rdf2GoCore(KnowWEUtils.getEnvironment(compiler), compiler.getName() + "-InitTerminology", null, RepositoryConfigs.find("RDFS"));
+				Rdf2GoCore dummy = new Rdf2GoCore(compiler.getEnvironment(), compiler.getName() + "-InitTerminology", null, RepositoryConfigs.find("RDFS"));
 				readFrom(compiler, section, dummy, attachment, syntax);
 				return new TermCache(dummy, attachment.getPath(), attachment.getDate());
 			});
@@ -416,7 +416,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 
 	private boolean attachmentOutDated(OntologyCompiler compiler, TermCache rCache) {
 		try {
-			WikiAttachment rAttachment = KnowWEUtils.getEnvironment(compiler).getWikiConnector().getAttachment(rCache.annotationPath);
+			WikiAttachment rAttachment = compiler.getEnvironment().getWikiConnector().getAttachment(rCache.annotationPath);
 			// remove if attachment no longer exists
 			if (rAttachment == null) {
 				return true;
@@ -434,7 +434,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 	}
 
 	private boolean noLongerReferenced(OntologyCompiler compiler, TermCache rCache) {
-		Environment environment = KnowWEUtils.getEnvironment(compiler);
+		Environment environment = compiler.getEnvironment();
 		return rCache.referencingSections.stream().noneMatch(sectionId -> Sections.get(environment, sectionId) != null);
 	}
 

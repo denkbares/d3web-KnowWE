@@ -213,7 +213,7 @@ public class EnvironmentLifecycleTest {
 		assertTrue(temporary.isTemporary());
 		assertNull(temporary.getArticleManager());
 		assertSame(environment, temporary.getEnvironment());
-		assertSame(environment, KnowWEUtils.getEnvironment(temporary.getRootSection()));
+		assertSame(environment, temporary.getRootSection().getEnvironment());
 		assertSame(environment.getArticleManager(), KnowWEUtils.getArticleManager(temporary));
 		assertSame(environment.getArticleManager(), KnowWEUtils.getArticleManager(temporary.getRootSection()));
 		// compilers can be looked up for preview sections

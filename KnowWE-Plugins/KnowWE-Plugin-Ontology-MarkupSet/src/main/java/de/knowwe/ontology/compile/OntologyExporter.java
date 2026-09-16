@@ -83,7 +83,7 @@ public class OntologyExporter implements EventListener {
 			Timer lastTimer = timers.get(ontologySection.getID());
 			if (lastTimer != null) lastTimer.cancel();
 			// cleanup times of now longer existing sections
-			cancelOutdatedTimers(KnowWEUtils.getEnvironment(compiler), timers);
+			cancelOutdatedTimers(compiler.getEnvironment(), timers);
 		}
 
 		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyMarkup.ANNOTATION_EXPORT);
@@ -125,7 +125,7 @@ public class OntologyExporter implements EventListener {
 			public void run() {
 				if (!Sections.isLive(ontologySection)) return;
 				Stopwatch stopwatch = new Stopwatch();
-				WikiConnector connector = KnowWEUtils.getEnvironment(ontologySection).getWikiConnector();
+				WikiConnector connector = ontologySection.getEnvironment().getWikiConnector();
 				ByteArrayInputStream stream;
 				try {
 					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

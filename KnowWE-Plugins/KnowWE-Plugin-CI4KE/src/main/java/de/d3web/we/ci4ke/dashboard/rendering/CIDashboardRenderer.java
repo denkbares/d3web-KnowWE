@@ -83,11 +83,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			assert title != null;
 			if (title.contains("/")) {
 				// is a attached article
-				versionAtBuildDate = KnowWEUtils.getAttachmentVersionAtDate(KnowWEUtils.getEnvironment(section), title, buildDate);
+				versionAtBuildDate = KnowWEUtils.getAttachmentVersionAtDate(section.getEnvironment(), title, buildDate);
 			}
 			else {
 				// normal article
-				versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(KnowWEUtils.getEnvironment(section), title, buildDate);
+				versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(section.getEnvironment(), title, buildDate);
 			}
 			// case for invalid buildDates (before corresponding page existed)
 			if (versionAtBuildDate < -1) return true;
@@ -96,7 +96,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			LOGGER.error("Could not determine build version for date", e);
 		}
 
-		String sourceTextAtBuildTime = KnowWEUtils.getEnvironment(section).getWikiConnector().getArticleText(
+		String sourceTextAtBuildTime = section.getEnvironment().getWikiConnector().getArticleText(
 				section.getTitle(), versionAtBuildDate);
 
 		return !sourceTextAtBuildTime.contains(currentDashboardSourcetext);

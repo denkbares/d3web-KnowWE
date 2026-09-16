@@ -121,7 +121,7 @@ public class ResourceHandler implements D3webHandler<ResourceType> {
 				return Messages.asList(Messages.syntaxError("Empty destination path."));
 			}
 			try {
-				resource = getAttachmentResource(KnowWEUtils.getEnvironment(article), destinationPath, article.getTitle(), sourcePath);
+				resource = getAttachmentResource(article.getEnvironment(), destinationPath, article.getTitle(), sourcePath);
 				if (resource == null) {
 					return Messages.asList(Messages.syntaxError("No attachment " + sourcePath
 							+ " found."));

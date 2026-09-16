@@ -197,7 +197,7 @@ public class Config {
 
 	public Config(Section<? extends DefaultMarkupType> section, UserContext user) {
 		this();
-		this.environment = KnowWEUtils.getEnvironment(section);
+		this.environment = section.getEnvironment();
 		init(section, user);
 	}
 

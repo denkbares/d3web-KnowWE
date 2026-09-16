@@ -68,7 +68,7 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 	public TestCase getActualTestCase() {
 		try {
 			WikiAttachment actualAttachment;
-			actualAttachment = KnowWEUtils.getAttachment(KnowWEUtils.getEnvironment(compiler), 
+			actualAttachment = KnowWEUtils.getAttachment(compiler.getEnvironment(), 
 					attachment.getParentName(),
 					attachment.getFileName());
 

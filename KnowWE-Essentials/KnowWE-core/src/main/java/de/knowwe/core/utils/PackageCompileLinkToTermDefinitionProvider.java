@@ -94,7 +94,7 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	// masterArticle) {
 	//
 	// TerminologyManager terminologyManager =
-	// KnowWEUtils.getEnvironment(compileSection).getTerminologyManager(
+	// compileSection.getEnvironment().getTerminologyManager(
 	// Environment.DEFAULT_WEB, masterArticle);
 	// Collection<Section<?>> definitions =
 	// terminologyManager.getTermDefiningSections(new Identifier(

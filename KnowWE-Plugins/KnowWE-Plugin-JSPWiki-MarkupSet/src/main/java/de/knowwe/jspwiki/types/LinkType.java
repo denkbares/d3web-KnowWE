@@ -179,7 +179,7 @@ public class LinkType extends AbstractType {
 
 		// not qualified, check for attachment to current page
 		try {
-			List<WikiAttachment> list = KnowWEUtils.getEnvironment(link).getWikiConnector().getAttachments(
+			List<WikiAttachment> list = link.getEnvironment().getWikiConnector().getAttachments(
 					link.getTitle());
 
 			for (WikiAttachment wikiAttachment : list) {

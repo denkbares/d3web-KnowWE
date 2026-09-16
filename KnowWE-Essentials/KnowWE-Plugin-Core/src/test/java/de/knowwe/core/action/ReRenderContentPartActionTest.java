@@ -99,6 +99,7 @@ public class ReRenderContentPartActionTest {
 				new Class<?>[]{UserActionContext.class}, (proxy, method, args) -> {
 					if (method.getName().equals("getParameter")) return obsoleteId;
 					if (method.getName().equals("getArticleManager")) return environment.getArticleManager();
+					if (method.getName().equals("getEnvironment")) return environment;
 					if (method.getName().equals("sendError")) {
 						status.set((Integer) args[0]);
 						return null;

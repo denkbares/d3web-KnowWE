@@ -432,7 +432,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		private void processOnSaveTrigger(Matcher matcher, Set<String> monitoredArticles, List<Message> msgs, Section<CIDashboardType> section) {
 			while (matcher.find()) {
 				String parameter = parseParameter(matcher.group());
-				if (KnowWEUtils.getEnvironment(section).getWikiConnector().doesArticleExist(parameter)) {
+				if (section.getEnvironment().getWikiConnector().doesArticleExist(parameter)) {
 					monitoredArticles.add(parameter);
 				}
 				else {

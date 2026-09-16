@@ -50,7 +50,6 @@ import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 
 /**
@@ -84,7 +83,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 				markupName = Strings.trimRight(Strings.trimRight(markupName).replaceAll("%$", ""));
 			}
 
-			List<DefaultMarkupType> markupTypes = getDefaultMarkupTypes(KnowWEUtils.getEnvironment(section));
+			List<DefaultMarkupType> markupTypes = getDefaultMarkupTypes(section.getEnvironment());
 
 			// document all markups, just a big long table...
 			if (Strings.isNotBlank(markupName)) {
@@ -203,7 +202,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			if (Strings.isBlank(template)) {
 				template = "%%" + markup.getName() + "\n%\n";
 			}
-			Article documentationTempArticle = Article.createTemporaryArticle(KnowWEUtils.getEnvironment(user), template, "DocumentationTempArticle");
+			Article documentationTempArticle = Article.createTemporaryArticle(user.getEnvironment(), template, "DocumentationTempArticle");
 			Section<? extends DefaultMarkupType> typeSection = $(documentationTempArticle).successor(type.getClass())
 					.getFirst();
 			boolean empty = true;

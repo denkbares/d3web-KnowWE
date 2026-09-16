@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -209,7 +208,7 @@ public class LongOperationUtils {
 	}
 
 	private static Map<String, LongOperation> accessLongOperations(Section<?> section, boolean create) {
-		return operations(KnowWEUtils.getEnvironment(section)).access(section, create);
+		return operations(section.getEnvironment()).access(section, create);
 	}
 
 	/**

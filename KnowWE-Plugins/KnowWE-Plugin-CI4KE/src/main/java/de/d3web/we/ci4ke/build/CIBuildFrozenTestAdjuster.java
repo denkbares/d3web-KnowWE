@@ -43,7 +43,6 @@ import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction;
 import de.knowwe.core.Environment;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 import static de.d3web.we.ci4ke.dashboard.action.CIFreezeFailedTestsAction.*;
@@ -67,7 +66,7 @@ class CIBuildFrozenTestAdjuster {
 				Map<String, Message> expectedMessages = Collections.synchronizedMap(new TreeMap<>());
 				boolean isFullyFrozen = true;
 
-				Optional<WikiAttachment> attachment = KnowWEUtils.getEnvironment(dashboard.getDashboardSection())
+				Optional<WikiAttachment> attachment = dashboard.getDashboardSection().getEnvironment()
 						.getWikiConnector()
 						.getAttachments(dashboard.getDashboardArticle())
 						.stream()
@@ -123,7 +122,7 @@ class CIBuildFrozenTestAdjuster {
 
 	private static boolean isFrozenTest(TestResult testResult, CIDashboard dashboard) throws IOException {
 		if (testResult.isSoftTest()) return false;
-		Collection<WikiAttachment> attachments = KnowWEUtils.getEnvironment(dashboard.getDashboardSection())
+		Collection<WikiAttachment> attachments = dashboard.getDashboardSection().getEnvironment()
 				.getWikiConnector()
 				.getAttachments(dashboard.getDashboardArticle())
 				.stream()

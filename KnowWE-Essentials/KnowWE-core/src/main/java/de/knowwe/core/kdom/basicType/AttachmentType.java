@@ -122,7 +122,7 @@ public class AttachmentType extends AbstractType {
 	@Nullable
 	public static WikiAttachment getAttachment(Section<? extends AttachmentType> section) throws IOException {
 		String path = getPath(section);
-		return KnowWEUtils.getEnvironment(section).getWikiConnector().getAttachment(path);
+		return section.getEnvironment().getWikiConnector().getAttachment(path);
 	}
 
 	public static String getPath(Section<? extends AttachmentType> section) {

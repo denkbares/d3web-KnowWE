@@ -218,7 +218,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		String wikiLink;
 		String title = section.getTitle();
 		if (title != null && title.contains("/") && !KnowWEUtils.isAttachmentArticle(section.getArticle())) {
-			wikiLink = KnowWEUtils.getEnvironment(section).getWikiConnector().getBaseUrl() + KnowWEUtils.getURLLink(title);
+			wikiLink = section.getEnvironment().getWikiConnector().getBaseUrl() + KnowWEUtils.getURLLink(title);
 		}
 		else {
 			wikiLink = KnowWEUtils.getWikiLinkPart(section);

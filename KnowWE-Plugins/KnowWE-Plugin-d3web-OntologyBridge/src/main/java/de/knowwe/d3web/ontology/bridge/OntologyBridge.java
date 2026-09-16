@@ -189,7 +189,7 @@ public class OntologyBridge {
 
 	private static OntologyCompiler getOntologyCompilerCached(@NotNull D3webCompiler d3webCompiler, String ontologyId) {
 		return CompilationLocal.getCached(d3webCompiler, OntologyCompiler.class + ":" + ontologyId,
-				() -> Compilers.getCompiler(Sections.get(KnowWEUtils.getEnvironment(d3webCompiler), ontologyId), OntologyCompiler.class));
+				() -> Compilers.getCompiler(Sections.get(d3webCompiler.getEnvironment(), ontologyId), OntologyCompiler.class));
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class OntologyBridge {
 			logBridgeFailure("getCompiler - ontology not linked", ontologyCompiler, ontologySectionId, null);
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler: " + Compilers.getCompilerName(ontologyCompiler));
 		}
-		Section<?> section = Sections.get(KnowWEUtils.getEnvironment(ontologyCompiler), d3webId);
+		Section<?> section = Sections.get(ontologyCompiler.getEnvironment(), d3webId);
 		if (section == null) {
 			logBridgeFailure("getCompiler - mapped d3web section not found", ontologyCompiler, ontologySectionId, d3webId);
 			throw new IllegalStateException("Bridge mapping outdated, section for D3webCompiler not found");

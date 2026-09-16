@@ -52,7 +52,6 @@ import de.d3web.testing.BuildResultPersistenceHandler;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.Environment;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -114,7 +113,7 @@ public class CIPersistence {
 	protected void handleTestResultAttachments(BuildResult build) throws IOException {
 		for (TestResult testResult : build.getResults()) {
 			for (File file : testResult.getAttachments()) {
-				KnowWEUtils.getEnvironment(dashboard.getDashboardSection()).getWikiConnector().storeAttachment(
+				dashboard.getDashboardSection().getEnvironment().getWikiConnector().storeAttachment(
 						dashboard.getDashboardArticle(), "CI-process", file);
 			}
 		}
@@ -147,7 +146,7 @@ public class CIPersistence {
 		byte[] bytes = result.getWriter().toString().getBytes(StandardCharsets.UTF_8);
 		ByteArrayInputStream currentBuildInputStream = new ByteArrayInputStream(bytes);
 
-		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(dashboard.getDashboardSection()).getWikiConnector();
+		WikiConnector wikiConnector = dashboard.getDashboardSection().getEnvironment().getWikiConnector();
 		String userName = "CI-process";
 		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
 
@@ -238,7 +237,7 @@ public class CIPersistence {
 	 * @created 04.10.2013
 	 */
 	public WikiAttachment getAttachment() throws IOException {
-		WikiConnector wikiConnector = KnowWEUtils.getEnvironment(dashboard.getDashboardSection()).getWikiConnector();
+		WikiConnector wikiConnector = dashboard.getDashboardSection().getEnvironment().getWikiConnector();
 		return wikiConnector.getAttachment(getAttachmentPath());
 	}
 

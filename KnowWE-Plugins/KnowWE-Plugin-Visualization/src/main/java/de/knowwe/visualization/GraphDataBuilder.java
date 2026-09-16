@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import de.knowwe.core.Environment;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
@@ -130,7 +129,7 @@ public abstract class GraphDataBuilder {
 	}
 
 	public String createConceptURL(String to) {
-		return createBaseURL(KnowWEUtils.getEnvironment(section)) + "?page=" + section.getTitle() + "&concept=" + to;
+		return createBaseURL(section.getEnvironment()) + "?page=" + section.getTitle() + "&concept=" + to;
 	}
 
 	/**

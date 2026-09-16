@@ -257,7 +257,7 @@ public class CompilerManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <C extends Compiler> ScriptManager<C> getScriptManager(C compiler) {
-		return KnowWEUtils.getEnvironment(compiler).getScriptManager((Class<C>) compiler.getClass());
+		return compiler.getEnvironment().getScriptManager((Class<C>) compiler.getClass());
 	}
 
 	public ArticleManager getArticleManager() {

@@ -61,7 +61,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
@@ -130,7 +129,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	private static AttachmentUpdates updates(Section<?> section) {
-		return KnowWEUtils.getEnvironment(section).getService(AttachmentUpdates.class, AttachmentUpdates::new);
+		return section.getEnvironment().getService(AttachmentUpdates.class, AttachmentUpdates::new);
 	}
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
@@ -257,7 +256,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			state.downloading.put(path, Instant.now());
 			try {
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
-				State attachmentState = needsUpdate(KnowWEUtils.getEnvironment(section), attachment, url);
+				State attachmentState = needsUpdate(section.getEnvironment(), attachment, url);
 				if (!force && attachmentState == AttachmentMarkup.State.UP_TO_DATE) {
 					LOGGER.debug("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
 					return;
@@ -313,7 +312,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				// if there are other downloads currently ongoing, we have to compile once they finished anyway,
 				// so we just wait for them to trigger the compilation of the queue
 				if (!allowWaitForOtherDownloads || state.downloading.isEmpty() || longWaitingAttachmentInQueue(state)) {
-					compileQueuedAttachments(KnowWEUtils.getEnvironment(section), state);
+					compileQueuedAttachments(section.getEnvironment(), state);
 				}
 				else if (!state.queued.isEmpty() && state.lastWaitingLog.isBefore(Instant.now().minus(30, ChronoUnit.SECONDS))) {
 					LOGGER.info("Waiting with attachment compilation, until other currently running downloads area finished...");
@@ -413,7 +412,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 						.append(packageAnnotation)
 						.append("\n");
 			}
-			Article tempArticle = Article.createTemporaryArticle(KnowWEUtils.getEnvironment(section), connectionString, section.getTitle() + "_Import");
+			Article tempArticle = Article.createTemporaryArticle(section.getEnvironment(), connectionString, section.getTitle() + "_Import");
 			Map<String, String> replacementMap = new HashMap<>();
 			for (Section<DefaultMarkupType> markupSection : $(tempArticle).successor(DefaultMarkupType.class)) {
 
@@ -673,7 +672,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				return;
 			}
 
-			if (!isAutoUpdatingActive(KnowWEUtils.getEnvironment(section))) return;
+			if (!isAutoUpdatingActive(section.getEnvironment())) return;
 
 			// only perform section update if articles are initialized in case we reference articles from this wiki
 			ArticleManager articleManager = section.getArticleManager();
@@ -688,7 +687,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) throws CompilerMessage {
-			if (!isAutoUpdatingActive(KnowWEUtils.getEnvironment(compiler))) {
+			if (!isAutoUpdatingActive(compiler.getEnvironment())) {
 				Messages.storeMessage(section, this.getClass(), Messages.info("Auto updating is deactivated using the system property " + KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY + "=true/false"));
 			}
 		}

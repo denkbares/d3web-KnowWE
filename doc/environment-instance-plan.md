@@ -356,9 +356,29 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   `ArticleManager`, `UserContext`, `Compiler` (Default über den CompilerManager) und von der `Environment` selbst
   (liefert sich selbst). `Section` hat damit endlich eigene `getEnvironment()`/`findEnvironment()`-Methoden.
   Dienste nehmen nur noch `of(@NotNull HasEnvironment source)`; die 25 delegierenden Überladungen in 12 Klassen sind
-  gelöscht, bestehende Aufrufer kompilieren unverändert weiter. Offen als eigener Durchgang: die ~295
-  `KnowWEUtils.getEnvironment(x)`-Aufrufstellen auf `x.getEnvironment()` umschreiben und die Utility-Überladungen
-  danach entfernen (oder deprecaten).
+  gelöscht, bestehende Aufrufer kompilieren unverändert weiter. Anschließend sind 275 Aufrufstellen in 178 Dateien
+  von `KnowWEUtils.getEnvironment(x)` auf `x.getEnvironment()` umgeschrieben und die fünf `getEnvironment`-
+  Überladungen aus `KnowWEUtils` gelöscht; `KnowWEUtils.findEnvironment(...)` bleibt als Nullable-Plumbing, auf dem
+  `Section`/`Compiler` ihre Auflösung aufsetzen. Zwei Fallen dabei: (1) das Skript ersetzte auch in den neuen
+  Accessoren selbst, `Section`/`Compiler`/`UserContext.getEnvironment()` riefen sich danach selbst auf (kompiliert,
+  StackOverflow zur Laufzeit) — sie implementieren ihre Auflösung jetzt ausgeschrieben; (2) `Sections.get(context,
+  id)` fragt jetzt `context.getEnvironment()` statt `context.getArticleManager()`, was Test-Fakes betrifft, die
+  einen `UserActionContext` als dynamischen Proxy bauen: ein Proxy leitet auch Default-Methoden an seinen Handler
+  (`ReRenderContentPartActionTest` angepasst); (3) Python-`read_text`/`write_text` normalisiert Zeilenenden, vier
+  CRLF-Dateien (WikiBook `WikiBookUtils`/`ImageTypeRenderer`, DiaFlux-Anomalies `MissingArticlesTest`/
+  `OrphanArticlesTest`) kamen als Komplett-Diff zurück und wurden byteweise auf CRLF zurückgestellt — bei
+  Massenersetzungen immer `git diff --numstat` gegenlesen.
+- **`reuseForks=false`: zwei neue Stellen geprüft** (2026-09-16): Nach dem Master-Merge stand die Einstellung wieder
+  in `KnowWE-SSP/KnowWE-Plugin-SemanticServiceCore` und `KnowWE-DES/KnowWE-Plugin-KnowSEC`, beide mit der Begründung
+  „Headless lifecycle tests require a fresh Environment per class". SSC läuft mit geteilten Forks (38 Tests grün,
+  darunter `SearchMarkupLifecycleTest` und `ConceptStoreTest`), die Einstellung ist dort entfernt. KnowSEC nicht:
+  `SessionManagerStartupIntegrationTest` prüft das Laden des Session-Caches, das nur beim **ersten** Start eines
+  Wikis passiert, und `HeadlessKnowWE` ist bewusst ein Wiki pro JVM (`instance`-Singleton, siehe „Listener-
+  Singletons"). Allein läuft die Klasse auch im geteilten Fork grün, nach einer anderen KnowSEC-Klasse nicht. Dabei
+  gefunden und behoben: `SessionManager.startupDone` war ein JVM-globales `static volatile boolean`; die Phase hängt
+  jetzt als `StartupState`-Service an der Environment. Die Einstellung bleibt in KnowSEC, mit dem echten Grund im
+  POM. Sauber lösen ließe es sich, wenn `KnowSECSessionTestSupport` je Klasse ein eigenes `HeadlessKnowWE` baut
+  (der Konstruktor ist public) statt über `getInstance()` zu gehen.
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.

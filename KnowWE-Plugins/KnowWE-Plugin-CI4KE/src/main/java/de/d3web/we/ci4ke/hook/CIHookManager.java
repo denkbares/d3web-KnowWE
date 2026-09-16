@@ -44,7 +44,6 @@ import de.d3web.we.ci4ke.build.CIDashboardPriorityOverrideEvent;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.event.UserDefaultDashboardUpdateEvent;
 import de.knowwe.core.compile.CompilationFinishedEvent;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
@@ -98,7 +97,7 @@ public class CIHookManager implements EventListener, EnvironmentService {
 	 */
 	@NotNull
 	public static CIHookManager of(@NotNull Article article) {
-		return of(KnowWEUtils.getEnvironment(article));
+		return of(article.getEnvironment());
 	}
 
 	private CIHookManager(@NotNull Environment environment) {

@@ -35,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.HasEnvironment;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResultKeyValueStore;
 import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
@@ -178,7 +177,11 @@ public interface UserContext extends HasEnvironment {
 	@NotNull
 	@Override
 	default Environment getEnvironment() {
-		return KnowWEUtils.getEnvironment(this);
+		ArticleManager manager = getArticleManager();
+		if (manager == null) {
+			throw new IllegalStateException("No environment available for user context");
+		}
+		return manager.getEnvironment();
 	}
 
 	/**

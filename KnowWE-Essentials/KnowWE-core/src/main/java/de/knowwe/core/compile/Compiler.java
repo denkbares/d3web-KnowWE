@@ -25,7 +25,11 @@ public interface Compiler extends HasEnvironment {
 	@NotNull
 	@Override
 	default Environment getEnvironment() {
-		return KnowWEUtils.getEnvironment(this);
+		Environment environment = KnowWEUtils.findEnvironment(this);
+		if (environment == null) {
+			throw new IllegalStateException("No environment available for compiler '" + this + "'");
+		}
+		return environment;
 	}
 
 

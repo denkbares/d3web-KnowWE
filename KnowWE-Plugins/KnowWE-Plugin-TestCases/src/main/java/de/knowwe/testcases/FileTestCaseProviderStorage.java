@@ -110,7 +110,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 		for (String fileRegex : regexMap.keySet()) {
 			Collection<WikiAttachment> fittingAttachments;
 			try {
-				fittingAttachments = KnowWEUtils.getAttachments(KnowWEUtils.getEnvironment(prefixProvidingSection), 
+				fittingAttachments = KnowWEUtils.getAttachments(prefixProvidingSection.getEnvironment(), 
 						sectionArticle.getTitle(), fileRegex);
 			}
 			catch (IOException e) {

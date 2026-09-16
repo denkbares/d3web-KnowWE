@@ -231,7 +231,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
 			if (this.rdf2GoCore != null) this.rdf2GoCore.close();
-			this.rdf2GoCore = new Rdf2GoCore(KnowWEUtils.getEnvironment(this), getName(), null, ruleSet);
+			this.rdf2GoCore = new Rdf2GoCore(this.getEnvironment(), getName(), null, ruleSet);
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 		}
@@ -249,7 +249,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		compile(sectionsOfPackage);
 
 		if (getCommitType(this) == CommitType.onDemand) {
-			NotificationManager.addGlobalNotification(KnowWEUtils.getEnvironment(this), new StandardNotification("There are changes not yet committed to " +
+			NotificationManager.addGlobalNotification(this.getEnvironment(), new StandardNotification("There are changes not yet committed to " +
 					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
 					"click <a onclick=\"KNOWWE.plugin.ontology.commitOntology('" + getCompileSection().getID() + "')\">here</a>.",
 					Message.Type.INFO, getCommitNotificationId(this)));
@@ -317,7 +317,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 	public static boolean commitOntology(OntologyCompiler compiler) {
 		boolean changed = compiler.rdf2GoCore.commit();
-		NotificationManager.removeGlobalNotification(KnowWEUtils.getEnvironment(compiler), getCommitNotificationId(compiler));
+		NotificationManager.removeGlobalNotification(compiler.getEnvironment(), getCommitNotificationId(compiler));
 		return changed;
 	}
 

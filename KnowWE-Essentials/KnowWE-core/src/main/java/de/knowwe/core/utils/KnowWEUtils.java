@@ -438,7 +438,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canCreatePages(final UserContext context) {
-		return KnowWEUtils.getEnvironment(context).getWikiConnector().userCanCreateArticles(context);
+		return context.getEnvironment().getWikiConnector().userCanCreateArticles(context);
 	}
 
 	/**
@@ -463,7 +463,7 @@ public class KnowWEUtils {
 	 */
 	public static boolean canView(final String articleTitle, final UserContext context) {
 		if (Strings.isBlank(articleTitle)) return false;
-		final WikiConnector connector = KnowWEUtils.getEnvironment(context).getWikiConnector();
+		final WikiConnector connector = context.getEnvironment().getWikiConnector();
 		// try nine times with catching unexpected exception from AuthorizationManager
 		for (int i = 0; i < 9; i++) {
 			try {
@@ -606,7 +606,7 @@ public class KnowWEUtils {
 	 */
 	public static boolean canWrite(final String articleTitle, final UserContext user) {
 		if (Strings.isBlank(articleTitle)) return false;
-		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanEditArticle(
+		return user.getEnvironment().getWikiConnector().userCanEditArticle(
 				articleTitle, user);
 	}
 
@@ -619,7 +619,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final Article article, final UserContext user) {
-		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanEditArticle(
+		return user.getEnvironment().getWikiConnector().userCanEditArticle(
 				article.getTitle(), user);
 	}
 
@@ -646,7 +646,7 @@ public class KnowWEUtils {
 	 */
 	public static boolean canUpload(final String articleTitle, final UserContext user) {
 		if (Strings.isBlank(articleTitle)) return false;
-		return KnowWEUtils.getEnvironment(user).getWikiConnector().userCanUploadAttachment(articleTitle, user);
+		return user.getEnvironment().getWikiConnector().userCanUploadAttachment(articleTitle, user);
 	}
 
 	/**
@@ -738,7 +738,7 @@ public class KnowWEUtils {
 	 * @return true, if the user is member of the group, false else
 	 */
 	public static boolean isInGroup(final String groupName, final UserContext user) {
-		return KnowWEUtils.getEnvironment(user)
+		return user.getEnvironment()
 				.getWikiConnector()
 				.userIsMemberOfGroup(groupName, user);
 	}
@@ -945,7 +945,6 @@ public class KnowWEUtils {
 		}
 		return title;
 	}
-
 
 	/**
 	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
@@ -1372,17 +1371,7 @@ public class KnowWEUtils {
 	@NotNull
 	public static ArticleManager getArticleManager(@NotNull Article article) {
 		ArticleManager manager = article.getArticleManager();
-		return manager != null ? manager : getEnvironment(article).getArticleManager();
-	}
-
-	/**
-	 * Returns the environment of the specified article, see {@link #findEnvironment(Article)}.
-	 *
-	 * @throws IllegalStateException if there is no environment
-	 */
-	@NotNull
-	public static Environment getEnvironment(@NotNull Article article) {
-		return requireEnvironment(findEnvironment(article), "article '" + article.getTitle() + "'");
+		return manager != null ? manager : article.getEnvironment().getArticleManager();
 	}
 
 	/**
@@ -1402,36 +1391,6 @@ public class KnowWEUtils {
 	public static Environment findEnvironment(@Nullable Compiler compiler) {
 		CompilerManager compilerManager = compiler == null ? null : compiler.getCompilerManager();
 		return findEnvironment(compilerManager == null ? null : compilerManager.getArticleManager());
-	}
-
-	/**
-	 * Returns the environment of the specified section, see {@link #findEnvironment(Section)}.
-	 *
-	 * @throws IllegalStateException if there is no environment
-	 */
-	@NotNull
-	public static Environment getEnvironment(@NotNull Section<?> section) {
-		return requireEnvironment(findEnvironment(section), "section of article '" + section.getTitle() + "'");
-	}
-
-	/**
-	 * Returns the environment of the specified article manager, see {@link #findEnvironment(ArticleManager)}.
-	 *
-	 * @throws IllegalStateException if there is no environment
-	 */
-	@NotNull
-	public static Environment getEnvironment(@NotNull ArticleManager manager) {
-		return requireEnvironment(findEnvironment(manager), "article manager " + manager);
-	}
-
-	/**
-	 * Returns the environment of the specified compiler, see {@link #findEnvironment(Compiler)}.
-	 *
-	 * @throws IllegalStateException if there is no environment
-	 */
-	@NotNull
-	public static Environment getEnvironment(@NotNull Compiler compiler) {
-		return requireEnvironment(findEnvironment(compiler), "compiler '" + compiler + "'");
 	}
 
 	/**
@@ -1477,16 +1436,6 @@ public class KnowWEUtils {
 	@NotNull
 	public static EventManager getEventManager(@NotNull UserContext context) {
 		return context.getEnvironment().getEventManager();
-	}
-
-	/**
-	 * Returns the environment of the specified user context (via its article manager).
-	 *
-	 * @throws IllegalStateException if there is no environment
-	 */
-	@NotNull
-	public static Environment getEnvironment(@NotNull UserContext context) {
-		return requireEnvironment(findEnvironment(context.getArticleManager()), "user context");
 	}
 
 	private static Environment requireEnvironment(@Nullable Environment environment, String what) {
@@ -1662,7 +1611,7 @@ public class KnowWEUtils {
 	public static void openPageTransaction(final UserContext context) {
 		final ArticleManager articleManager = context.getArticleManager();
 		articleManager.open();
-		KnowWEUtils.getEnvironment(context).getWikiConnector().openPageTransaction(context.getUserName());
+		context.getEnvironment().getWikiConnector().openPageTransaction(context.getUserName());
 	}
 
 	/**
@@ -1674,7 +1623,7 @@ public class KnowWEUtils {
 	 * transaction
 	 */
 	public static void commitPageTransaction(final UserContext context, final String commitMsg) {
-		KnowWEUtils.getEnvironment(context).getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
+		context.getEnvironment().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
 		final ArticleManager articleManager = context.getArticleManager();
 		articleManager.commit();
 		try {
@@ -1692,12 +1641,12 @@ public class KnowWEUtils {
 	 */
 	public static boolean rollbackPageTransaction(final UserContext context) {
 		boolean rolledBack = false;
-		if (KnowWEUtils.getEnvironment(context).getWikiConnector().hasRollbackPageProvider()) {
+		if (context.getEnvironment().getWikiConnector().hasRollbackPageProvider()) {
 			final ArticleManager articleManager = context.getArticleManager();
 			articleManager.rollback();
 			rolledBack = true;
 		}
-		KnowWEUtils.getEnvironment(context).getWikiConnector().rollbackPageTransaction(context.getUserName());
+		context.getEnvironment().getWikiConnector().rollbackPageTransaction(context.getUserName());
 		return rolledBack;
 	}
 

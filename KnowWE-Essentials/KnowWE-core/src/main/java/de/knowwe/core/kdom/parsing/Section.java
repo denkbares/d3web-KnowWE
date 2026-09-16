@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.HasEnvironment;
@@ -412,7 +411,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	@NotNull
 	@Override
 	public Environment getEnvironment() {
-		return KnowWEUtils.getEnvironment(this);
+		Environment environment = findEnvironment();
+		if (environment == null) {
+			throw new IllegalStateException("No environment available for section of article '" + getTitle() + "'");
+		}
+		return environment;
 	}
 
 	/**

@@ -732,7 +732,7 @@ public final class Messages {
 				messagesMap.put(source, Collections.unmodifiableCollection(messages));
 				// store section for type collections
 				if (section.getArticle().isPublished()) {
-					Map<Message.Type, Set<Section<?>>> index = index(KnowWEUtils.getEnvironment(section));
+					Map<Message.Type, Set<Section<?>>> index = index(section.getEnvironment());
 					for (Message message : messages) {
 						index.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
 								.add(section);

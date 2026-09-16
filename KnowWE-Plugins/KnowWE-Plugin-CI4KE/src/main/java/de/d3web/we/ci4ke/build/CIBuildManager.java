@@ -113,7 +113,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 	 * Returns the build manager responsible for the specified dashboard, i.e. the one of the dashboard's environment.
 	 */
 	public static CIBuildManager of(@NotNull CIDashboard dashboard) {
-		return of(KnowWEUtils.getEnvironment(dashboard.getDashboardSection()));
+		return of(dashboard.getDashboardSection().getEnvironment());
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 			this.dashboard = dashboard;
 			this.ciBuildQueue = ciBuildQueue;
 			// the plugged providers are singletons; bind them to the environment this build runs for
-			Environment environment = KnowWEUtils.getEnvironment(dashboard.getDashboardSection());
+			Environment environment = dashboard.getDashboardSection().getEnvironment();
 			List<TestObjectProvider> providers = new ArrayList<>();
 			providers.add(WikiTestObjectProvider.bind(new DefaultWikiTestObjectProvider(), environment));
 			for (TestObjectProvider pluggedProvider : TestObjectProviderManager.getTestObjectProviders()) {
@@ -522,7 +522,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 			Set<CIDashboard> ciDashboards = shutDownNow();
 			// restart them with next trigger
 			Environment hookEnvironment = environment != null ? environment
-					: KnowWEUtils.getEnvironment(startEvent.getCompilerManager().getArticleManager());
+					: startEvent.getCompilerManager().getArticleManager().getEnvironment();
 			CIHookManager.of(hookEnvironment).restartWithNextTrigger(ciDashboards);
 		}
 		else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {

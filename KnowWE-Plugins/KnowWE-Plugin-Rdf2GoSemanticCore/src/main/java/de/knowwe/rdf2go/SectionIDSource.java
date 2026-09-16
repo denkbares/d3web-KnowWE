@@ -22,7 +22,6 @@ package de.knowwe.rdf2go;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 
 /**
@@ -35,7 +34,7 @@ public class SectionIDSource implements ArticleStatementSource {
 	private final String sectionID;
 
 	public SectionIDSource(Section<?> section) {
-		this.environment = KnowWEUtils.getEnvironment(section);
+		this.environment = section.getEnvironment();
 		this.sectionID = section.getID();
 	}
 
