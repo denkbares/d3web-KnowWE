@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -157,6 +158,12 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public void invalidatePageCache(Collection<String> titles) {
 		// the dummy wiki serves its pages from a map, there is nothing cached beside it
+	}
+
+	@Override
+	@NotNull
+	public Set<String> readArticleTitlesFromPersistence() {
+		return new LinkedHashSet<>(dummyPageProvider.getAllArticles().keySet());
 	}
 
 	@Override

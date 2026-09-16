@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -665,6 +666,32 @@ public class JSPWikiConnector implements WikiConnector {
 			cachingManager.remove(CACHE_PAGES_TEXT, title);
 			cachingManager.remove(CACHE_PAGES_HISTORY, title);
 		}
+	}
+
+	@Override
+	@NotNull
+	public Set<String> readArticleTitlesFromPersistence() throws IOException {
+		try {
+			return getAllPagesFromPersistence().stream()
+					.map(Page::getName)
+					.collect(Collectors.toCollection(LinkedHashSet::new));
+		}
+		catch (ProviderException e) {
+			throw new IOException("Unable to read the article titles from the wiki persistence", e);
+		}
+	}
+
+	/**
+	 * All pages of the provider actually backed by the file system. The caching provider answers from its own page
+	 * list, which does not know about files that appeared or vanished behind the wiki's back, and additionally serves
+	 * pseudo pages created for links whose case does not match an existing page.
+	 */
+	private Collection<Page> getAllPagesFromPersistence() throws ProviderException {
+		PageProvider provider = getPageManager().getProvider();
+		if (provider instanceof CachingProvider cachingProvider) {
+			return cachingProvider.getRealProvider().getAllPages();
+		}
+		return provider.getAllPages();
 	}
 
 	private void reinitReferenceManager() throws WikiException {

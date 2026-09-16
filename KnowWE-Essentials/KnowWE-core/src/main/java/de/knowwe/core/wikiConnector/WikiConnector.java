@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +68,16 @@ public interface WikiConnector {
 	 * @param titles the titles of the pages to drop
 	 */
 	void invalidatePageCache(Collection<String> titles);
+
+	/**
+	 * The titles of all pages the wiki's persistence currently holds, read past any caches. Needed by components that
+	 * change page files directly, because a cached page list does not know about files that appeared or vanished
+	 * behind the wiki's back.
+	 *
+	 * @throws IOException in case of an exception from the underlying wiki
+	 */
+	@NotNull
+	Set<String> readArticleTitlesFromPersistence() throws IOException;
 
 	/**
 	 * Returns the list with all available versions of the wiki page with the given title, starting with the most
