@@ -397,6 +397,24 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
 
 ## Protokoll
 
+- 2026-09-15 (Nachtrag): Master weiter nachgezogen. **denkbares-Internals** (+5, neues Modul `denkbares-Secrets`),
+  **KnowWE** (+9, u. a. `5777663ef adapt tests to new auth requirements` — `TestUserContext(String,String)` ist jetzt
+  assertiert+authentifiziert, plus `KnowWEUtils`-Refusals für leere Seite/Section), **KnowWE-DES** (+7, u. a.
+  `63815a4cd adapt tests`, danach +1 COOM-Reformat), **KnowWE-SSP** (+2, SearchMarkup-Listener/Service). Damit ist der
+  **Auth-Test-Debt aufgelöst**: DES von 22 roten Klassen auf nur noch `GeneratorAppTest`. Gemergte Konflikte: jeweils
+  Masters neue Auth-/Feature-Logik + Environment-Scoping; TestUserContext behält die assert-Flags; SearchMarkup-/
+  SearchMarkupLifecycleTest-Handler am EventManager der Environment.
+  **KRONE bewusst nicht nachgezogen:** die 3 neueren Commits (`42fb59519`, `8ad52255d`, `d33a4c112`) sind
+  unvollständiger WIP — `d33a4c112` legt `TechnischeFreigabeTableLine`/`RuleTableLineDefinitionRegistrationScript` an,
+  die `TableUtils.getCell(Section,int)` und die Klasse selbst referenzieren; beides existiert erst im nicht gepushten
+  lokalen `e36d81914` (Main/KRONE). `main-local/master` kompiliert damit nicht → KRONE bleibt auf dem letzten
+  konsistenten Stand `8b9960953` (Test-Compile grün).
+  **`ModelSetTest.modelInvalidateAndUpdateGPATest`** scheitert identisch auf `Main/KRONE` (e36d81914, 0,17 s,
+  gleicher `AssertionError`) = Master-Baseline, nicht der Umbau.
+  **Bau-Performance:** `MAVEN_OPTS` erreicht die Surefire-Forks nicht (KRONE-Parent-`<argLine>` setzt nur den
+  Mockito-Agent); Fork-Heap über `JAVA_TOOL_OPTIONS` (mit `-Xmx6g` kein OOM mehr in `CoomModelWriterTest`).
+  `-T 4C`/`PARALLEL=4` bringt KRONE von >15 min auf ~7,5 min (Baselines ausgeschlossen). Harness
+  `run-consumer-tests.sh` um `PARALLEL`/`FORK_HEAP` erweitert; Bau-Erfahrungen in `EnvInstance/CLAUDE.md` gesammelt.
 - 2026-09-15 (später): Zwei-Environment-Nachweis für SSP/Experimental/KRONE abgeschlossen: je ein
   `EnvironmentSideBySideTest` (zweite Environment bei laufender erster, Artikel-/Section-Isolation, Close-Verhalten) in
   `KnowWE-Plugin-CBX` (SSP, 98 Tests der Modulsuite zusätzlich grün im geteilten Fork), `KnowWE-Plugin-KONAP` (KRONE,
