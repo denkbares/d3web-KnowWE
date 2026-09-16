@@ -337,6 +337,16 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   kennen (sonst wäre der Vergleich leer), dass kein Markup in beiden Bäumen dieselbe `DefaultMarkupType`-Instanz ist
   und dass kein Markup zwei Typen für dieselbe Annotation hat (`utils.TypeTrees` in KnowWE-GlobalTestUtils). Vorher
   verglichen sie nur Artikel und Section-IDs.
+- **Testabdeckung des Sweeps** (Review 2026-09-16): `run-consumer-tests.sh` schliesst Klassennamen aus, nicht
+  Module; `!*Configit*,!*BridgeBuilder*,!*ConsistentDSTD*,!*VariantDstd*` liess damit das ganze KRONE-Modul
+  `KnowWE-Plugin-KONAP-Configit` aus, obwohl gerade dort `reuseForks=false` entfernt wurde. Einzeln nachgefahren
+  (geteilte Forks): `ConfigitBridgeCompileProductVariantsTest` 2 Tests grün (84 s), `ConsistentDSTDCheckTest` 1 Test
+  grün, `BridgeBuilderHeadlessTest` die bekannte Baseline (zufällige VersionID in der Erwartungsdatei; der Test
+  schreibt dabei `bb_actualHeadless.xml` ins Modul, danach `git checkout` darauf), und
+  `VariantDstdTestConfigIntegrationTest` braucht eine erreichbare Configit-Bridge und lief in Retries bis zur
+  Zeitgrenze (Abbruch nach 10 min, EXIT=124). Die Ausschlussliste bleibt daher wie sie ist, ist jetzt aber im Script
+  kommentiert, samt Kommandozeile für den separaten Lauf. Ebenfalls korrigiert: der Tippfehler in
+  `GIT_COMMITTER_EMAIL` (`albrecht.strfler@`).
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.
@@ -437,8 +447,11 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   (`environment.getService(KnowWEGitServerConnector.class, ...)`); damit ist die geschlossene Environment nicht mehr
   hart referenziert und zwei Environments bauen ihren Connector nicht mehr gegenseitig neu (176 Tests des Moduls
   `KnowWE-Plugin-Versioning-Git-Tests` grün). (3) Identitätsvergleich auf `CoomDSLType.DEF_DEFINE` durch die
-  Termklasse ersetzt, (4) den toten Singleton aus `VerbatimType` entfernt und (5) `closeServices()` gegen Services
-  abgesichert, die während des Schließens entstehen (alles s. o.).
+  Termklasse ersetzt, (4) den toten Singleton aus `VerbatimType` entfernt, (5) `closeServices()` gegen Services
+  abgesichert, die während des Schließens entstehen, (6) geplugte Annotation-Renderer auf Fabriken umgestellt und
+  dabei den doppelten `AnnotationType` im zweiten Environment beseitigt, (7) den Zwei-Environment-Nachweis auf den
+  ganzen Typbaum ausgeweitet und die Lücke des Sweeps bei KRONE-Configit geschlossen, (8) den Tippfehler in der
+  Committer-Adresse des Testscripts behoben (alles s. o.).
 - 2026-09-15 (Nachtrag): Master weiter nachgezogen. **denkbares-Internals** (+5, neues Modul `denkbares-Secrets`),
   **KnowWE** (+9, u. a. `5777663ef adapt tests to new auth requirements` — `TestUserContext(String,String)` ist jetzt
   assertiert+authentifiziert, plus `KnowWEUtils`-Refusals für leere Seite/Section), **KnowWE-DES** (+7, u. a.
