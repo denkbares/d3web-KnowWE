@@ -137,6 +137,28 @@ public class EnvironmentLifecycleTest {
 		assertSame(secondArticle, second.getArticleManager().getArticle(TITLE));
 	}
 
+	@Test
+	public void serviceCreatedWhileClosingIsClosedAsWell() {
+		Environment environment = start();
+		List<String> order = new ArrayList<>();
+		// a service that reaches for another service while it is shut down itself
+		environment.getService(ResurrectingService.class, () -> new ResurrectingService(environment, order));
+
+		environment.close();
+
+		assertEquals("a service created while closing must be closed as well",
+				List.of("resurrecting", "late"), order);
+		assertNull(environment.getService(ClosableService.class));
+	}
+
+	private record ResurrectingService(Environment environment, List<String> order) implements AutoCloseable {
+		@Override
+		public void close() {
+			order.add("resurrecting");
+			environment.getService(ClosableService.class, () -> new ClosableService("late", order));
+		}
+	}
+
 	private record ClosableService(String name, List<String> order) implements AutoCloseable {
 		@Override
 		public void close() {

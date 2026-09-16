@@ -312,6 +312,16 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   vertragen keine Identitätsvergleiche: `UnusedDefinitionTest` verglich `section.get() != CoomDSLType.DEF_DEFINE` und
   prüft jetzt die Termklasse (`getTermObjectClass(...) != Bindings.class`) — ein Identitätsvergleich würde bei einer
   späteren Umstellung auf Fabriken still falsch (alles "unbenutzt"), statt zu scheitern.
+- **Services, die während `close()` entstehen** (Review 2026-09-16, behoben): `closeServices()` nahm einen Snapshot,
+  leerte die Map und schloss der Reihe nach; `getService` wirft aber erst, wenn `closed` gesetzt ist, und das passiert
+  erst nach `closeServices()`. Im Fenster dazwischen war die Map leer und beschreibbar: ein Service, der in seinem
+  eigenen `close()` einen Geschwister-Service holt, oder ein Thread, der die Environment noch hält (ein Request, der
+  beim Servlet-Shutdown noch rendert, z. B. `PreRenderWorker.of(user.getEnvironment())`), bekam eine **frische**
+  Instanz samt neuem Thread-Pool, die niemand mehr schloss — der Pool überlebte die Environment. `closeServices()`
+  schließt jetzt in Runden, bis nichts mehr nachkommt, und meldet ab der zweiten Runde per Warnung, wer da noch einen
+  Service erzeugt hat. `getService(Class)` (die reine Abfrage) synchronisiert jetzt auf `services` wie die andere
+  Überladung. Nachweis: `EnvironmentLifecycleTest.serviceCreatedWhileClosingIsClosedAsWell` (schlägt ohne die Runden
+  fehl), 8 Tests der Klasse grün.
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.
@@ -412,7 +422,8 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   (`environment.getService(KnowWEGitServerConnector.class, ...)`); damit ist die geschlossene Environment nicht mehr
   hart referenziert und zwei Environments bauen ihren Connector nicht mehr gegenseitig neu (176 Tests des Moduls
   `KnowWE-Plugin-Versioning-Git-Tests` grün). (3) Identitätsvergleich auf `CoomDSLType.DEF_DEFINE` durch die
-  Termklasse ersetzt und (4) den toten Singleton aus `VerbatimType` entfernt (s. o.).
+  Termklasse ersetzt, (4) den toten Singleton aus `VerbatimType` entfernt und (5) `closeServices()` gegen Services
+  abgesichert, die während des Schließens entstehen (alles s. o.).
 - 2026-09-15 (Nachtrag): Master weiter nachgezogen. **denkbares-Internals** (+5, neues Modul `denkbares-Secrets`),
   **KnowWE** (+9, u. a. `5777663ef adapt tests to new auth requirements` — `TestUserContext(String,String)` ist jetzt
   assertiert+authentifiziert, plus `KnowWEUtils`-Refusals für leere Seite/Section), **KnowWE-DES** (+7, u. a.

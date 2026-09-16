@@ -400,24 +400,39 @@ public final class Environment implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * Closes the services, newest first. Creating a service is still possible while they are closed: a service may
+	 * reach for another one in its own {@link EnvironmentService#close()}, and a thread that still holds this
+	 * environment (a request being rendered while the servlet shuts down) may ask for one. Such a late service would
+	 * be created after the map was emptied and would never be closed, keeping its threads alive beyond the
+	 * environment, so the services are closed in rounds until none is left. A second round means somebody created a
+	 * service while this environment was closing, which is worth a look, hence the warning.
+	 */
 	private void closeServices() {
-		List<Object> ordered;
-		synchronized (services) {
-			ordered = new ArrayList<>(services.values());
-			services.clear();
-		}
-		Collections.reverse(ordered);
-		for (Object service : ordered) {
-			try {
-				if (service instanceof EnvironmentService environmentService) {
-					environmentService.close();
-				}
-				else if (service instanceof AutoCloseable closeable) {
-					closeable.close();
-				}
+		for (int round = 1; ; round++) {
+			List<Object> ordered;
+			synchronized (services) {
+				if (services.isEmpty()) return;
+				ordered = new ArrayList<>(services.values());
+				services.clear();
 			}
-			catch (Exception e) {
-				LOGGER.error("Closing service {} of environment failed", service.getClass().getName(), e);
+			if (round > 1) {
+				LOGGER.warn("Services were created while the environment was closing, closing them as well: {}",
+						ordered.stream().map(service -> service.getClass().getName()).toList());
+			}
+			Collections.reverse(ordered);
+			for (Object service : ordered) {
+				try {
+					if (service instanceof EnvironmentService environmentService) {
+						environmentService.close();
+					}
+					else if (service instanceof AutoCloseable closeable) {
+						closeable.close();
+					}
+				}
+				catch (Exception e) {
+					LOGGER.error("Closing service {} of environment failed", service.getClass().getName(), e);
+				}
 			}
 		}
 	}
@@ -974,7 +989,9 @@ public final class Environment implements AutoCloseable {
 	 */
 	@Nullable
 	public <T> T getService(@NotNull Class<T> type) {
-		return type.cast(services.get(type));
+		synchronized (services) {
+			return type.cast(services.get(type));
+		}
 	}
 
 	/**
