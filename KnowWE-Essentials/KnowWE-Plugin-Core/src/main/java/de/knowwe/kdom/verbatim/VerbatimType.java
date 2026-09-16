@@ -34,15 +34,6 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
  */
 public class VerbatimType extends AbstractType {
 
-	public static VerbatimType instance;
-
-	public static synchronized VerbatimType getInstance() {
-		if (instance == null) {
-			instance = new VerbatimType();
-		}
-		return instance;
-	}
-
 	public VerbatimType() {
 		this.setSectionFinder(new RegexSectionFinder(
 				"\\{\\{\\{\\s*(.+?)\\s*\\}\\}\\}", Pattern.DOTALL));
