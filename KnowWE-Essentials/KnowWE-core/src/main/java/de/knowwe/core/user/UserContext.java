@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResultKeyValueStore;
@@ -45,7 +46,7 @@ import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
  * @author Sebastian Furth (denkbares GmbH)
  * @created Mar 4, 2011
  */
-public interface UserContext {
+public interface UserContext extends HasEnvironment {
 
 	String TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE = "temporaryWritePermissions";
 
@@ -175,6 +176,7 @@ public interface UserContext {
 	 * @throws IllegalStateException if the context belongs to no environment and none is initialized
 	 */
 	@NotNull
+	@Override
 	default Environment getEnvironment() {
 		return KnowWEUtils.getEnvironment(this);
 	}

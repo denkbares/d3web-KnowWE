@@ -64,7 +64,7 @@ import java.util.logging.LogManager;
  * @author Jochen
  */
 
-public final class Environment implements AutoCloseable {
+public final class Environment implements AutoCloseable, HasEnvironment {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 
 	/**
@@ -142,6 +142,15 @@ public final class Environment implements AutoCloseable {
 	 * Returns whether this environment has finished its initialization (articles and compilers are set up). While it
 	 * is not ready, parsing must not reuse an existing KDOM.
 	 */
+	/**
+	 * Returns this environment, so that an environment can be passed wherever a {@link HasEnvironment} is expected.
+	 */
+	@NotNull
+	@Override
+	public Environment getEnvironment() {
+		return this;
+	}
+
 	public boolean isReady() {
 		return ready;
 	}

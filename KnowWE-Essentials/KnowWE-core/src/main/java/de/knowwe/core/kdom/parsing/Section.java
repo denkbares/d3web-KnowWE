@@ -46,6 +46,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -68,7 +69,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  *
  * @author Jochen
  */
-public final class Section<T extends Type> implements Comparable<Section<? extends Type>> {
+public final class Section<T extends Type> implements Comparable<Section<? extends Type>>, HasEnvironment {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Section.class);
 
@@ -400,6 +401,26 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	public Article getArticle() {
 		return this.article;
+	}
+
+	/**
+	 * Returns the environment this section belongs to, via its article (and its article manager for temporary
+	 * articles).
+	 *
+	 * @throws IllegalStateException if the section belongs to no environment, e.g. in a plain unit test
+	 */
+	@NotNull
+	@Override
+	public Environment getEnvironment() {
+		return KnowWEUtils.getEnvironment(this);
+	}
+
+	/**
+	 * Returns the environment this section belongs to, or null if there is none.
+	 */
+	@Nullable
+	public Environment findEnvironment() {
+		return KnowWEUtils.findEnvironment(this);
 	}
 
 	/**

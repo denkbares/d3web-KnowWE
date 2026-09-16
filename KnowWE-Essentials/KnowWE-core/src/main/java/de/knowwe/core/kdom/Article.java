@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment.CompilationMode;
 import de.knowwe.core.kdom.parsing.Section;
@@ -44,7 +45,7 @@ import de.knowwe.event.KDOMCreatedEvent;
  *
  * @author Jochen
  */
-public final class Article {
+public final class Article implements HasEnvironment {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Article.class);
 
 	public static final int LOG_THRESHOLD = 50;
@@ -406,6 +407,7 @@ public final class Article {
 	 * @throws IllegalStateException if the article has no environment
 	 */
 	@NotNull
+	@Override
 	public Environment getEnvironment() {
 		if (environment == null) throw new IllegalStateException("Article '" + title + "' has no environment");
 		return environment;

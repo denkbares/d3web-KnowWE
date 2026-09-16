@@ -347,6 +347,18 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   Zeitgrenze (Abbruch nach 10 min, EXIT=124). Die Ausschlussliste bleibt daher wie sie ist, ist jetzt aber im Script
   kommentiert, samt Kommandozeile für den separaten Lauf. Ebenfalls korrigiert: der Tippfehler in
   `GIT_COMMITTER_EMAIL` (`albrecht.strfler@`).
+- **`HasEnvironment`** (2026-09-16, nach Signatur-Review): Es gab vier Schreibweisen, um an die Environment zu
+  kommen — `x.getEnvironment()` (Article, ArticleManager, UserContext), `KnowWEUtils.getEnvironment(x)` (Section 213
+  Aufrufe, Compiler 50, Rest 32), `Environment.of(ServletContext|Request)` und `Rdf2GoCore.findEnvironment()` —, und
+  jeder Dienst schrieb sich seine eigene Overload-Familie (`WDManager.of` fünfmal, `ReleaseContextManager.of`
+  fünfmal, insgesamt 49 solcher Methoden, alle reine Delegation). Jetzt gibt es
+  `de.knowwe.core.HasEnvironment { @NotNull Environment getEnvironment(); }`, implementiert von `Section`, `Article`,
+  `ArticleManager`, `UserContext`, `Compiler` (Default über den CompilerManager) und von der `Environment` selbst
+  (liefert sich selbst). `Section` hat damit endlich eigene `getEnvironment()`/`findEnvironment()`-Methoden.
+  Dienste nehmen nur noch `of(@NotNull HasEnvironment source)`; die 25 delegierenden Überladungen in 12 Klassen sind
+  gelöscht, bestehende Aufrufer kompilieren unverändert weiter. Offen als eigener Durchgang: die ~295
+  `KnowWEUtils.getEnvironment(x)`-Aufrufstellen auf `x.getEnvironment()` umschreiben und die Utility-Überladungen
+  danach entfernen (oder deprecaten).
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.

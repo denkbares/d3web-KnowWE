@@ -38,7 +38,6 @@ import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIDashboardPriorityOverrideEvent;
@@ -53,7 +52,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.EnvironmentService;
 
 /**
@@ -80,22 +79,18 @@ public class CIHookManager implements EventListener, EnvironmentService {
 	/**
 	 * Returns the hook manager of the specified environment, created on first access and closed together with the
 	 * environment.
+	 *
+	 * @param source anything that knows its environment: a section, article, article manager, compiler,
+	 *               user context - or the environment itself
 	 */
 	@NotNull
-	public static CIHookManager of(@NotNull Environment environment) {
+	public static CIHookManager of(@NotNull HasEnvironment source) {
+		Environment environment = source.getEnvironment();
 		return environment.getService(CIHookManager.class, () -> {
 			CIHookManager manager = new CIHookManager(environment);
 			environment.getEventManager().registerListener(manager);
 			return manager;
 		});
-	}
-
-	/**
-	 * Returns the hook manager responsible for the specified section, i.e. the one of the section's environment.
-	 */
-	@NotNull
-	public static CIHookManager of(@NotNull Section<?> section) {
-		return of(KnowWEUtils.getEnvironment(section));
 	}
 
 	/**

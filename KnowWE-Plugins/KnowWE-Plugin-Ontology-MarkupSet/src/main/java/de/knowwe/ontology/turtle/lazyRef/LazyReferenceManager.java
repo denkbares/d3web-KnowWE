@@ -14,10 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.CompilerRemovedEvent;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.IncrementalCompiler;
@@ -28,7 +26,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.CompilerEvent;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.EnvironmentService;
 
 public class LazyReferenceManager implements EventListener, EnvironmentService {
@@ -44,32 +42,18 @@ public class LazyReferenceManager implements EventListener, EnvironmentService {
 	/**
 	 * Returns the lazy reference manager of the specified environment, created on first access and closed together
 	 * with the environment.
+	 *
+	 * @param source anything that knows its environment: a section, article, article manager, compiler,
+	 *               user context - or the environment itself
 	 */
 	@NotNull
-	public static LazyReferenceManager of(@NotNull Environment environment) {
+	public static LazyReferenceManager of(@NotNull HasEnvironment source) {
+		Environment environment = source.getEnvironment();
 		return environment.getService(LazyReferenceManager.class, () -> {
 			LazyReferenceManager manager = new LazyReferenceManager(environment);
 			environment.getEventManager().registerListener(manager);
 			return manager;
 		});
-	}
-
-	/**
-	 * Returns the lazy reference manager responsible for the specified compiler, i.e. the one of the compiler's
-	 * environment.
-	 */
-	@NotNull
-	public static LazyReferenceManager of(@NotNull Compiler compiler) {
-		return of(KnowWEUtils.getEnvironment(compiler));
-	}
-
-	/**
-	 * Returns the lazy reference manager responsible for the specified section, i.e. the one of the section's
-	 * environment.
-	 */
-	@NotNull
-	public static LazyReferenceManager of(@NotNull Section<?> section) {
-		return of(KnowWEUtils.getEnvironment(section));
 	}
 
 	@Override
