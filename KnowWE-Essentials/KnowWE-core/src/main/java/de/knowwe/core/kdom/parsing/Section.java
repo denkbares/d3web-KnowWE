@@ -419,11 +419,13 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * Returns the environment this section belongs to, or null if there is none.
+	 * Returns the environment this section belongs to, via its article, or null if there is none.
 	 */
 	@Nullable
+	@Override
 	public Environment findEnvironment() {
-		return KnowWEUtils.findEnvironment(this);
+		Article article = getArticle();
+		return article == null ? null : article.findEnvironment();
 	}
 
 	/**
@@ -683,7 +685,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	@Nullable
 	private static SectionRegistry registry(Section<?> section) {
-		Environment environment = KnowWEUtils.findEnvironment(section);
+		Environment environment = section.findEnvironment();
 		return environment == null ? null : environment.getSectionRegistry();
 	}
 

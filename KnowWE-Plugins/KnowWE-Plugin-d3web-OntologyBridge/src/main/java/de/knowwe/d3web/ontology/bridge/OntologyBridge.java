@@ -268,7 +268,7 @@ public class OntologyBridge {
 
 			Thread thread = Thread.currentThread();
 			boolean isCompileThread = CompilerManager.isCompileThread();
-			Environment environment = caller instanceof Compiler compiler ? KnowWEUtils.findEnvironment(compiler) : null;
+			Environment environment = caller instanceof Compiler compiler ? compiler.findEnvironment() : null;
 			Section<?> callerSection = environment == null ? null : Sections.get(environment, callerSectionId);
 			Section<?> mappedSection = environment == null || mappedTargetId == null ? null : Sections.get(environment, mappedTargetId);
 

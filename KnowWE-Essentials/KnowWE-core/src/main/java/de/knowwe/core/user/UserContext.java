@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -174,14 +175,11 @@ public interface UserContext extends HasEnvironment {
 	 * @return the environment of this context
 	 * @throws IllegalStateException if the context belongs to no environment and none is initialized
 	 */
-	@NotNull
+	@Nullable
 	@Override
-	default Environment getEnvironment() {
+	default Environment findEnvironment() {
 		ArticleManager manager = getArticleManager();
-		if (manager == null) {
-			throw new IllegalStateException("No environment available for user context");
-		}
-		return manager.getEnvironment();
+		return manager == null ? null : manager.getEnvironment();
 	}
 
 	/**

@@ -84,7 +84,7 @@ public final class Messages {
 	 */
 	@NotNull
 	private static Map<Message.Type, Set<Section<?>>> index(@NotNull Section<?> section) {
-		Environment environment = KnowWEUtils.findEnvironment(section);
+		Environment environment = section.findEnvironment();
 		if (environment == null) return Collections.emptyMap();
 		// only look up, never create: reading or removing must also work while the environment is closing
 		SectionsWithMessages index = environment.getService(SectionsWithMessages.class);
@@ -189,7 +189,7 @@ public final class Messages {
 	 */
 	public static void clearMessages(Compiler compiler) {
 		// a compiler without environment (e.g. a bare test compiler) has no stored messages anywhere
-		Environment environment = KnowWEUtils.findEnvironment(compiler);
+		Environment environment = compiler.findEnvironment();
 		if (environment == null) return;
 		for (Section<?> section : getSectionsWithMessages(environment)) {
 			clearMessages(compiler, section);

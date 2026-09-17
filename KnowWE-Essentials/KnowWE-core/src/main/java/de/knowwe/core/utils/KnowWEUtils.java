@@ -1336,25 +1336,6 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the environment the specified section belongs to (via its article manager), or the current environment if
-	 * the section is not (yet) attached to an article manager, or null if there is no environment at all.
-	 */
-	@Nullable
-	public static Environment findEnvironment(@Nullable Section<?> section) {
-		return findEnvironment(section == null ? null : section.getArticle());
-	}
-
-	/**
-	 * Returns the environment the article belongs to (also for temporary articles), or null if there is none.
-	 */
-	@Nullable
-	public static Environment findEnvironment(@Nullable Article article) {
-		if (article == null) return null;
-		Environment environment = article.findEnvironment();
-		return environment != null ? environment : findEnvironment(article.getArticleManager());
-	}
-
-	/**
 	 * Returns the article manager responsible for the section. Temporary articles (e.g. previews) have no article
 	 * manager of their own; for them the article manager of their environment is returned.
 	 *
@@ -1375,31 +1356,12 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the environment of the specified article manager, or the current environment if the manager is null or
-	 * was created without an environment, or null if there is no environment at all.
-	 */
-	@Nullable
-	public static Environment findEnvironment(@Nullable ArticleManager manager) {
-		return manager == null ? null : manager.getEnvironment();
-	}
-
-	/**
-	 * Returns the environment of the specified compiler (via its compiler manager), falling back to the current
-	 * environment if the compiler is not attached to a compiler manager.
-	 */
-	@Nullable
-	public static Environment findEnvironment(@Nullable Compiler compiler) {
-		CompilerManager compilerManager = compiler == null ? null : compiler.getCompilerManager();
-		return findEnvironment(compilerManager == null ? null : compilerManager.getArticleManager());
-	}
-
-	/**
 	 * Returns the event manager of the environment the section belongs to, see {@link Environment#getEventManager()}.
 	 * Sections of articles created without any environment (plain unit tests) use the global event manager.
 	 */
 	@NotNull
 	public static EventManager getEventManager(@NotNull Section<?> section) {
-		return eventManagerOf(findEnvironment(section));
+		return eventManagerOf(section.findEnvironment());
 	}
 
 	/**
@@ -1407,7 +1369,7 @@ public class KnowWEUtils {
 	 */
 	@NotNull
 	public static EventManager getEventManager(@NotNull Article article) {
-		return eventManagerOf(findEnvironment(article));
+		return eventManagerOf(article.findEnvironment());
 	}
 
 	/**
@@ -1416,7 +1378,7 @@ public class KnowWEUtils {
 	 */
 	@NotNull
 	public static EventManager getEventManager(@NotNull ArticleManager manager) {
-		return eventManagerOf(findEnvironment(manager));
+		return eventManagerOf(manager.findEnvironment());
 	}
 
 	/**
@@ -1424,7 +1386,7 @@ public class KnowWEUtils {
 	 */
 	@NotNull
 	public static EventManager getEventManager(@NotNull Compiler compiler) {
-		return eventManagerOf(findEnvironment(compiler));
+		return eventManagerOf(compiler.findEnvironment());
 	}
 
 	@NotNull

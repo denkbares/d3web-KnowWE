@@ -102,7 +102,7 @@ public class NotificationManager {
 				manager = new NotificationManager();
 				context.getSession().setAttribute(Attributes.NOTIFICATIONMANAGER, manager);
 			}
-			manager.environment = KnowWEUtils.findEnvironment(context.getArticleManager());
+			manager.environment = context.getArticleManager().findEnvironment();
 		}
 		return manager;
 	}

@@ -240,7 +240,7 @@ public class ToolUtils {
 	 * Returns true if the specified provider is blocked for the specified section.
 	 */
 	private static boolean isBlocked(ToolProvider provider, Section<?> section) {
-		Environment environment = KnowWEUtils.findEnvironment(section);
+		Environment environment = section.findEnvironment();
 		if (environment == null) return false;
 		Set<Scope> blockedScopes;
 		Map<ToolProvider, CountingSet<Scope>> blocked = blocked(environment);

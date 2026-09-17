@@ -64,7 +64,7 @@ public interface SectionizerModule {
 		public static void createSection(Section<?> parent, String parentText, Type childType, SectionFinderResult range) {
 			// try eventually plugged sectionizer modules to create the section
 			String sectionText = parentText.substring(range.getStart(), range.getEnd());
-			Environment environment = KnowWEUtils.findEnvironment(parent);
+			Environment environment = parent.findEnvironment();
 			List<SectionizerModule> modules = environment == null ? List.of() : environment.getSectionizerModules();
 			for (SectionizerModule sModule : modules) {
 				Section<?> child = sModule.createSection(parent, sectionText, childType, range);

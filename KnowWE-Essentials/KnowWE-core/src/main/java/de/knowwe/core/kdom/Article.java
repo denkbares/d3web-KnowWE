@@ -123,7 +123,7 @@ public final class Article implements HasEnvironment {
 	 * The environment of the manager, or the current one for articles without manager (temporary articles).
 	 */
 	private static Environment environmentOf(@Nullable ArticleManager manager) {
-		Environment environment = KnowWEUtils.findEnvironment(manager);
+		Environment environment = manager.findEnvironment();
 		if (environment == null) throw new IllegalStateException("Cannot create article: no environment available");
 		return environment;
 	}
@@ -396,8 +396,11 @@ public final class Article implements HasEnvironment {
 	 * tests without an environment).
 	 */
 	@Nullable
+	@Override
 	public Environment findEnvironment() {
-		return environment;
+		if (environment != null) return environment;
+		ArticleManager manager = getArticleManager();
+		return manager == null ? null : manager.getEnvironment();
 	}
 
 	/**

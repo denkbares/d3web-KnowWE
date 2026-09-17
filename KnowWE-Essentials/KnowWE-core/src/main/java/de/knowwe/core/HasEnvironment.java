@@ -5,6 +5,7 @@
 package de.knowwe.core;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Something that belongs to an {@link Environment} and can hand it out: a {@link de.knowwe.core.kdom.parsing.Section},
@@ -26,11 +27,23 @@ import org.jetbrains.annotations.NotNull;
 public interface HasEnvironment {
 
 	/**
+	 * Returns the environment this object belongs to, or null if it belongs to none - a section of an article that
+	 * was created in a plain unit test, a compiler that is not attached to an article manager.
+	 */
+	@Nullable
+	Environment findEnvironment();
+
+	/**
 	 * Returns the environment this object belongs to.
 	 *
-	 * @throws IllegalStateException if the object belongs to no environment, e.g. a section of an article that was
-	 *                               created in a plain unit test without one
+	 * @throws IllegalStateException if the object belongs to no environment, see {@link #findEnvironment()}
 	 */
 	@NotNull
-	Environment getEnvironment();
+	default Environment getEnvironment() {
+		Environment environment = findEnvironment();
+		if (environment == null) {
+			throw new IllegalStateException("No environment available for " + this);
+		}
+		return environment;
+	}
 }

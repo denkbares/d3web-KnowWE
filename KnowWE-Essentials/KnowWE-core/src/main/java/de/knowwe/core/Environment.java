@@ -154,6 +154,12 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 		return this;
 	}
 
+	@NotNull
+	@Override
+	public Environment findEnvironment() {
+		return this;
+	}
+
 	public boolean isReady() {
 		return ready;
 	}

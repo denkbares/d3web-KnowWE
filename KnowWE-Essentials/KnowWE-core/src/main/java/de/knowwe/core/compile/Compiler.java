@@ -2,12 +2,12 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Interface that defines a compiler that compiles a special artifact instance.
@@ -18,18 +18,15 @@ import de.knowwe.core.utils.KnowWEUtils;
 public interface Compiler extends HasEnvironment {
 
 	/**
-	 * Returns the environment this compiler belongs to, via the article manager of its {@link CompilerManager}.
-	 *
-	 * @throws IllegalStateException if the compiler is attached to no environment
+	 * Returns the environment this compiler belongs to, via the article manager of its {@link CompilerManager}, or
+	 * null if it is attached to none.
 	 */
-	@NotNull
+	@Nullable
 	@Override
-	default Environment getEnvironment() {
-		Environment environment = KnowWEUtils.findEnvironment(this);
-		if (environment == null) {
-			throw new IllegalStateException("No environment available for compiler '" + this + "'");
-		}
-		return environment;
+	default Environment findEnvironment() {
+		CompilerManager compilerManager = getCompilerManager();
+		ArticleManager articleManager = compilerManager == null ? null : compilerManager.getArticleManager();
+		return articleManager == null ? null : articleManager.getEnvironment();
 	}
 
 

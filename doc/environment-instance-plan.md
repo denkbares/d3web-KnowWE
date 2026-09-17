@@ -393,6 +393,13 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   listener per environment", der Code hing an einer beliebigen, nach Edits veralteten Section. Der Listener hält
   jetzt die Environment und leert den Hierarchie-Cache aller TermBrowser-Sections. Nachweis: Kette grün bis
   Information-Extraction, Sweep KnowWE/Experimental/SSP/DES/KRONE auf Baseline-Niveau.
+- **`get`/`find` symmetrisch** (2026-09-17, Signatur-Review Punkt 6): `HasEnvironment` deklariert jetzt
+  `@Nullable findEnvironment()` als die primäre Methode und `@NotNull getEnvironment()` als Default darauf
+  (wirft, wenn keine da ist). `Section` und `Article` überschreiben `getEnvironment()` nur noch für ihre sprechenden
+  Meldungen, `Compiler` und `UserContext` lösen ausschließlich nullable auf, `ArticleManager` und `Environment`
+  antworten immer. Die vier `KnowWEUtils.findEnvironment(...)`-Überladungen sind gelöscht; die Auflösung liegt jetzt
+  bei den Objekten selbst (`Article.findEnvironment()` fällt dabei wie früher die Utility auf seinen ArticleManager
+  zurück).
 - **Zustandsnamen und `getServletContext()`** (2026-09-17, Signatur-Review Punkte 4 und 5): `isClosed()` lieferte in
   Wahrheit das Feld `closing`, während `getService` auf `closed` prüfte — beim Rdf2GoCore-Fix musste ich erst
   nachsehen, welches gemeint war. Jetzt gibt es beide Fragen ehrlich: `isClosing()` ab dem Beginn von `close()`

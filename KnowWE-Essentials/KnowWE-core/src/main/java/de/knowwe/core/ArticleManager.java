@@ -21,6 +21,7 @@ package de.knowwe.core;
 import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
@@ -130,4 +131,11 @@ public interface ArticleManager extends HasEnvironment {
 	@NotNull
 	@Override
 	Environment getEnvironment();
+
+	/** An article manager always belongs to an environment, see {@link #getEnvironment()}. */
+	@Nullable
+	@Override
+	default Environment findEnvironment() {
+		return getEnvironment();
+	}
 }
