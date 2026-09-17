@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * instead of writing one overload per context class:
  * <pre>
  * public static WDManager of(&#64;NotNull HasEnvironment source) {
- *     return source.getEnvironment().getService(WDManager.class, WDManager::new);
+ *     return source.getEnvironment().getService(WDManager.SERVICE);
  * }
  * </pre>
  * Callers then pass their section, compiler, user context or environment directly.

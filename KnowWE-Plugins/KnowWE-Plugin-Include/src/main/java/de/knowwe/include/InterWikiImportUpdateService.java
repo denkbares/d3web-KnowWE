@@ -36,6 +36,7 @@ import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.DefaultArticleManager;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -45,6 +46,12 @@ import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 import de.knowwe.core.EnvironmentService;
 
 public final class InterWikiImportUpdateService implements EnvironmentService {
+	public static final ServiceKey<InterWikiImportUpdateService> SERVICE = ServiceKey.of(InterWikiImportUpdateService.class, environment -> {
+		InterWikiImportUpdateService service = new InterWikiImportUpdateService(environment);
+		service.initialize();
+		return service;
+	});
+
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiImportUpdateService.class);
 
@@ -87,11 +94,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	 * environment.
 	 */
 	public static InterWikiImportUpdateService of(@NotNull Environment environment) {
-		return environment.getService(InterWikiImportUpdateService.class, () -> {
-			InterWikiImportUpdateService service = new InterWikiImportUpdateService(environment);
-			service.initialize();
-			return service;
-		});
+		return environment.getService(InterWikiImportUpdateService.SERVICE);
 	}
 
 	@Override

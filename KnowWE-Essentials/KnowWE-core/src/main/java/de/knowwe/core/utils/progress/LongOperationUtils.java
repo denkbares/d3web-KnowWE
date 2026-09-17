@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventManager;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -34,6 +35,8 @@ public class LongOperationUtils {
 	 * in. Closed together with the environment, which stops the pool and drops the registrations.
 	 */
 	public static final class LongOperations implements EnvironmentService {
+
+		public static final ServiceKey<LongOperations> SERVICE = ServiceKey.of(LongOperations.class, LongOperations::new);
 
 		private final Map<String, Map<String, LongOperation>> operations = new ConcurrentHashMap<>();
 		private ExecutorService threadPool;
@@ -98,7 +101,7 @@ public class LongOperationUtils {
 	}
 
 	private static LongOperations operations(Environment environment) {
-		return environment.getService(LongOperations.class, () -> new LongOperations(environment));
+		return environment.getService(LongOperations.SERVICE);
 	}
 
 	/**

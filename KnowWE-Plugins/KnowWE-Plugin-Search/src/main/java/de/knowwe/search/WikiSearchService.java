@@ -42,6 +42,7 @@ import com.denkbares.events.EventManager;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.ArticleDeletedEvent;
@@ -74,6 +75,13 @@ import de.knowwe.core.EnvironmentService;
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
 public class WikiSearchService implements EventListener, EnvironmentService {
+	public static final ServiceKey<WikiSearchService> SERVICE = ServiceKey.of(WikiSearchService.class, environment -> {
+		WikiSearchService service = new WikiSearchService(environment, defaultIndexPath(environment));
+		service.open();
+		environment.getEventManager().registerListener(service, EventManager.RegistrationType.PERSISTENT);
+		return service;
+	});
+
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiSearchService.class);
 
@@ -107,12 +115,7 @@ public class WikiSearchService implements EventListener, EnvironmentService {
 	 * is closed together with the environment.
 	 */
 	public static @NotNull WikiSearchService of(@NotNull Environment environment) {
-		return environment.getService(WikiSearchService.class, () -> {
-			WikiSearchService service = new WikiSearchService(environment, defaultIndexPath(environment));
-			service.open();
-			environment.getEventManager().registerListener(service, EventManager.RegistrationType.PERSISTENT);
-			return service;
-		});
+		return environment.getService(WikiSearchService.SERVICE);
 	}
 
 	@Override

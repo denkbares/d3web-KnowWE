@@ -53,6 +53,7 @@ import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
@@ -93,6 +94,9 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	 * timer for the scheduled updates. Closed together with the environment, which stops the timer.
 	 */
 	public static final class AttachmentUpdates implements EnvironmentService {
+
+		public static final ServiceKey<AttachmentUpdates> SERVICE = ServiceKey.of(AttachmentUpdates.class, environment -> new AttachmentUpdates());
+
 		private final Map<String, Long> lastRuns = new ConcurrentHashMap<>();
 		private final Map<String, Instant> downloading = new ConcurrentHashMap<>();
 		private final Set<QueuedAttachment> queued = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -129,7 +133,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	private static AttachmentUpdates updates(Section<?> section) {
-		return section.getEnvironment().getService(AttachmentUpdates.class, AttachmentUpdates::new);
+		return section.getEnvironment().getService(AttachmentUpdates.SERVICE);
 	}
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";

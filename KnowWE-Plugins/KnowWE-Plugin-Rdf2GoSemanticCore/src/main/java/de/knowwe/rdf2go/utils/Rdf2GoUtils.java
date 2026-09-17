@@ -66,6 +66,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.strings.Text;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -97,10 +98,13 @@ public class Rdf2GoUtils {
 	 * once per environment.
 	 */
 	public static @NotNull String getLocalNamespace(@NotNull Environment environment) {
-		return environment.getService(LocalNamespace.class, () -> new LocalNamespace(generateLocalNamespace(environment))).lns();
+		return environment.getService(LocalNamespace.SERVICE).lns();
 	}
 
 	private record LocalNamespace(String lns) {
+
+		private static final ServiceKey<LocalNamespace> SERVICE =
+				ServiceKey.of(LocalNamespace.class, environment -> new LocalNamespace(generateLocalNamespace(environment)));
 	}
 
 	private static @NotNull String generateLocalNamespace(@NotNull Environment environment) {

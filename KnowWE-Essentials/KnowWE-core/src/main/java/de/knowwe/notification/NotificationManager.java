@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.Attributes;
 import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -62,11 +63,14 @@ public class NotificationManager {
 	 * The notifications shown to every user of an environment, one registry per environment.
 	 */
 	public static final class GlobalNotifications {
+
+		public static final ServiceKey<GlobalNotifications> SERVICE = ServiceKey.of(GlobalNotifications.class, environment -> new GlobalNotifications());
+
 		private final Map<String, Notification> byId = Collections.synchronizedMap(new HashMap<>());
 	}
 
 	private static Map<String, Notification> global(@NotNull Environment environment) {
-		return environment.getService(GlobalNotifications.class, GlobalNotifications::new).byId;
+		return environment.getService(GlobalNotifications.SERVICE).byId;
 	}
 
 	/**

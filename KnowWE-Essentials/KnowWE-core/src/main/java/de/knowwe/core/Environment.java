@@ -52,7 +52,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Supplier;
 import java.util.logging.LogManager;
 
 
@@ -122,10 +121,14 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	private final Set<Identifier> occupiedTerms = ConcurrentHashMap.newKeySet();
 
 	/**
-	 * Environment-scoped services, see {@link #getService(Class, Supplier)}. Insertion ordered, so they can be closed
-	 * in reverse order.
+	 * Environment-scoped services, see {@link #getService(ServiceKey)}. Insertion ordered, so they can be closed in
+	 * reverse order. The declaring key is kept next to the service, so a second declaration of the same type is
+	 * refused instead of being silently ignored.
 	 */
-	private final Map<Class<?>, Object> services = Collections.synchronizedMap(new LinkedHashMap<>());
+	private final Map<Class<?>, Service> services = Collections.synchronizedMap(new LinkedHashMap<>());
+
+	private record Service(ServiceKey<?> key, Object instance) {
+	}
 
 	/**
 	 * Tasks to run when this environment is closed, see {@link #onClose(Runnable)}.
@@ -335,7 +338,7 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	 * Closes this environment: waits for running compilations to terminate, notifies all {@link DeInitEvent}
 	 * listeners, removes the compilers and stops the compile threads of all article managers, runs the
 	 * {@link #onClose(Runnable) close tasks} in reverse order of their registration, closes all
-	 * {@link EnvironmentService} (or {@link AutoCloseable}) {@link #getService(Class, Supplier) services}; if this environment is
+	 * {@link EnvironmentService} (or {@link AutoCloseable}) {@link #getService(ServiceKey) services}; if this environment is
 	 * the current one. Everything this
 	 * environment owns becomes garbage afterwards; nothing has to be reset by hand. Calling the method twice is
 	 * harmless.
@@ -422,7 +425,8 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 			List<Object> ordered;
 			synchronized (services) {
 				if (services.isEmpty()) return;
-				ordered = new ArrayList<>(services.values());
+				ordered = new ArrayList<>();
+				services.values().forEach(service -> ordered.add(service.instance()));
 				services.clear();
 			}
 			if (round > 1) {
@@ -969,27 +973,33 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	}
 
 	/**
-	 * Returns the service of the specified type that is scoped to this environment, creating it with the specified
-	 * factory on first access. This is the place for everything that would otherwise be kept in a static field of a
-	 * plugin or core class: caches, registries, thread pools, schedulers. If the service implements
-	 * {@link EnvironmentService} (or {@link AutoCloseable}), it is closed when this environment is {@link #close()
-	 * closed}, in reverse order of creation.
+	 * Returns the service declared by the given key, creating it with the key's factory on first access. This is the
+	 * place for everything that would otherwise be kept in a static field of a plugin or core class: caches,
+	 * registries, thread pools, schedulers. If the service implements {@link EnvironmentService} (or
+	 * {@link AutoCloseable}), it is closed when this environment is {@link #close() closed}, in reverse order of
+	 * creation.
 	 *
-	 * @param type    the type of the service, also used as key
-	 * @param factory creates the service if it does not exist yet
+	 * @param key the service's declaration, a constant of the service class, see {@link ServiceKey}
 	 * @return the service instance of this environment
-	 * @throws IllegalStateException if the environment is already closed
+	 * @throws IllegalStateException if the environment is already closed, or if the service type was already created
+	 *                               from a different declaration
 	 */
 	@NotNull
-	public <T> T getService(@NotNull Class<T> type, @NotNull Supplier<? extends T> factory) {
-		if (closed) throw new IllegalStateException("Environment is closed, cannot provide service " + type.getName());
+	public <T> T getService(@NotNull ServiceKey<T> key) {
+		if (closed) throw new IllegalStateException("Environment is closed, cannot provide " + key);
 		synchronized (services) {
-			Object service = services.get(type);
+			Service service = services.get(key.type());
 			if (service == null) {
-				service = Objects.requireNonNull(factory.get(), () -> "factory for " + type.getName() + " returned null");
-				services.put(type, service);
+				Object instance = Objects.requireNonNull(key.factory().apply(this),
+						() -> "factory for " + key + " returned null");
+				services.put(key.type(), new Service(key, instance));
+				return key.type().cast(instance);
 			}
-			return type.cast(service);
+			if (service.key() != key) {
+				throw new IllegalStateException(key + " is declared more than once; declare it exactly once, "
+						+ "as a constant of the service class");
+			}
+			return key.type().cast(service.instance());
 		}
 	}
 
@@ -999,7 +1009,8 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	@Nullable
 	public <T> T getService(@NotNull Class<T> type) {
 		synchronized (services) {
-			return type.cast(services.get(type));
+			Service service = services.get(type);
+			return service == null ? null : type.cast(service.instance());
 		}
 	}
 

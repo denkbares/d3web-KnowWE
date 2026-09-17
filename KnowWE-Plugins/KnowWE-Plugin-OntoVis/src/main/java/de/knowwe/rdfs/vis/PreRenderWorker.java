@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.EnvironmentService;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -41,6 +42,8 @@ import de.knowwe.visualization.CleanableArtefact;
  * @author Albrecht Striffler
  */
 public class PreRenderWorker implements EnvironmentService {
+	public static final ServiceKey<PreRenderWorker> SERVICE = ServiceKey.of(PreRenderWorker.class, environment -> new PreRenderWorker());
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(PreRenderWorker.class);
 
 	private static final Object mutex = new Object();
@@ -59,7 +62,7 @@ public class PreRenderWorker implements EnvironmentService {
 	 * @return the environment's pre-render worker
 	 */
 	public static PreRenderWorker of(@org.jetbrains.annotations.NotNull Environment environment) {
-		return environment.getService(PreRenderWorker.class, PreRenderWorker::new);
+		return environment.getService(PreRenderWorker.SERVICE);
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.CompileScript;
@@ -359,11 +360,14 @@ public class Plugins {
 	 * The programmatically registered right panel tabs, one registry per environment.
 	 */
 	public static final class RightPanelTabRegistry {
+
+		public static final ServiceKey<RightPanelTabRegistry> SERVICE = ServiceKey.of(RightPanelTabRegistry.class, environment -> new RightPanelTabRegistry());
+
 		private final List<RightPanelTab> tabs = new CopyOnWriteArrayList<>();
 	}
 
 	private static List<RightPanelTab> registeredRightPanelTabs(Environment environment) {
-		return environment.getService(RightPanelTabRegistry.class, RightPanelTabRegistry::new).tabs;
+		return environment.getService(RightPanelTabRegistry.SERVICE).tabs;
 	}
 
 	/**

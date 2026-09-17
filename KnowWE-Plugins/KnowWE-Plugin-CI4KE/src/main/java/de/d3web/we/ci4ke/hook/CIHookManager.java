@@ -43,6 +43,7 @@ import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIDashboardPriorityOverrideEvent;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.event.UserDefaultDashboardUpdateEvent;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.PackageCompiler;
@@ -58,6 +59,12 @@ import de.knowwe.core.EnvironmentService;
  * @author Marc-Oliver Ochlast, Albrecht Striffler
  */
 public class CIHookManager implements EventListener, EnvironmentService {
+	public static final ServiceKey<CIHookManager> SERVICE = ServiceKey.of(CIHookManager.class, environment -> {
+		CIHookManager manager = new CIHookManager(environment);
+		environment.getEventManager().registerListener(manager);
+		return manager;
+	});
+
 
 	public static final String KNOWWE_CI_HOOKS_ACTIVE = "knowwe.ci.hooks.active";
 
@@ -85,11 +92,7 @@ public class CIHookManager implements EventListener, EnvironmentService {
 	@NotNull
 	public static CIHookManager of(@NotNull HasEnvironment source) {
 		Environment environment = source.getEnvironment();
-		return environment.getService(CIHookManager.class, () -> {
-			CIHookManager manager = new CIHookManager(environment);
-			environment.getEventManager().registerListener(manager);
-			return manager;
-		});
+		return environment.getService(CIHookManager.SERVICE);
 	}
 
 	/**

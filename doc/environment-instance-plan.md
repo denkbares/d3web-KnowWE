@@ -379,6 +379,20 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   jetzt als `StartupState`-Service an der Environment. Die Einstellung bleibt in KnowSEC, mit dem echten Grund im
   POM. Sauber lösen ließe es sich, wenn `KnowSECSessionTestSupport` je Klasse ein eigenes `HeadlessKnowWE` baut
   (der Konstruktor ist public) statt über `getInstance()` zu gehen.
+- **`ServiceKey` statt Fabrik am Aufruf** (2026-09-17, nach Signatur-Review Punkt 2): `getService(Class, Supplier)`
+  hatte zwei Schwächen — jede Aufrufstelle wiederholte die Fabrik (zwei abweichende Fabriken: die erste gewinnt,
+  still), und die Lambda konnte eine **fremde** Environment einfangen (`a.getService(X.class, () -> new X(b))`
+  kompilierte). Jetzt deklariert jeder Dienst sich selbst, einmal, als Konstante auf seiner eigenen Klasse:
+  `public static final ServiceKey<X> SERVICE = ServiceKey.of(X.class, X::new)`; die Fabrik ist eine
+  `Function<Environment, X>` und bekommt die Environment, die gefragt wurde. `Environment.getService(ServiceKey)`
+  merkt sich den bauenden Key und wirft, wenn ein zweiter, anderer Key für denselben Typ auftaucht
+  (`aSecondDeclarationOfTheSameServiceIsRefused`). Die Fabrik-Überladung ist gelöscht; geblieben ist die reine
+  Abfrage `getService(Class)` (nullable). Umfang: 41 Dienste über alle fünf Repos.
+  Dabei aufgefallen und behoben: COOM und Ontology-TermBrowser bauten ihren `CompileEventListener` je aus der
+  Section, die zufällig zuerst kompilierte, und cachten ihn als Environment-Dienst — der Kommentar sagte „one
+  listener per environment", der Code hing an einer beliebigen, nach Edits veralteten Section. Der Listener hält
+  jetzt die Environment und leert den Hierarchie-Cache aller TermBrowser-Sections. Nachweis: Kette grün bis
+  Information-Extraction, Sweep KnowWE/Experimental/SSP/DES/KRONE auf Baseline-Niveau.
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.

@@ -45,6 +45,7 @@ import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import org.jetbrains.annotations.NotNull;
 import java.util.function.Supplier;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
@@ -67,12 +68,15 @@ public final class Messages {
 	 * {@link Environment#getService(Class, Supplier)}.
 	 */
 	public static final class SectionsWithMessages {
+
+		public static final ServiceKey<SectionsWithMessages> SERVICE = ServiceKey.of(SectionsWithMessages.class, environment -> new SectionsWithMessages());
+
 		private final Map<Message.Type, Set<Section<?>>> byType = new ConcurrentHashMap<>();
 	}
 
 	@NotNull
 	private static Map<Message.Type, Set<Section<?>>> index(@NotNull Environment environment) {
-		return environment.getService(SectionsWithMessages.class, SectionsWithMessages::new).byType;
+		return environment.getService(SectionsWithMessages.SERVICE).byType;
 	}
 
 	/**

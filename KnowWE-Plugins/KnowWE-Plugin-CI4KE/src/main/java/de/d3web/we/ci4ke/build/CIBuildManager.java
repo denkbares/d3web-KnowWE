@@ -58,6 +58,7 @@ import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.d3web.we.ci4ke.hook.CIHookManager;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
@@ -81,6 +82,16 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 	private static final AtomicLong executorNumber = new AtomicLong();
 	private static final AtomicLong THREAD_NUMBER = new AtomicLong();
 
+	public static final ServiceKey<CIBuildManager> SERVICE = ServiceKey.of(CIBuildManager.class, environment -> {
+		CIBuildManager manager = new CIBuildManager(environment,
+			Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet())),
+			Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet())),
+			Collections.synchronizedMap(new WeakHashMap<>()),
+			new CIBuildChanges());
+		environment.getEventManager().registerListener(manager);
+		return manager;
+	});
+
 	/**
 	 * The environment this manager belongs to (null for managers created directly in tests).
 	 */
@@ -98,15 +109,7 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 	 * listener unregistered) together with the environment.
 	 */
 	public static CIBuildManager of(@NotNull Environment environment) {
-		return environment.getService(CIBuildManager.class, () -> {
-			CIBuildManager manager = new CIBuildManager(environment,
-					Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet())),
-					Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet())),
-					Collections.synchronizedMap(new WeakHashMap<>()),
-					new CIBuildChanges());
-			environment.getEventManager().registerListener(manager);
-			return manager;
-		});
+		return environment.getService(CIBuildManager.SERVICE);
 	}
 
 	/**

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerRemovedEvent;
 import de.knowwe.core.compile.Compilers;
@@ -30,6 +31,12 @@ import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.EnvironmentService;
 
 public class LazyReferenceManager implements EventListener, EnvironmentService {
+	public static final ServiceKey<LazyReferenceManager> SERVICE = ServiceKey.of(LazyReferenceManager.class, environment -> {
+		LazyReferenceManager manager = new LazyReferenceManager(environment);
+		environment.getEventManager().registerListener(manager);
+		return manager;
+	});
+
 
 	private final Environment environment;
 
@@ -49,11 +56,7 @@ public class LazyReferenceManager implements EventListener, EnvironmentService {
 	@NotNull
 	public static LazyReferenceManager of(@NotNull HasEnvironment source) {
 		Environment environment = source.getEnvironment();
-		return environment.getService(LazyReferenceManager.class, () -> {
-			LazyReferenceManager manager = new LazyReferenceManager(environment);
-			environment.getEventManager().registerListener(manager);
-			return manager;
-		});
+		return environment.getService(LazyReferenceManager.SERVICE);
 	}
 
 	@Override

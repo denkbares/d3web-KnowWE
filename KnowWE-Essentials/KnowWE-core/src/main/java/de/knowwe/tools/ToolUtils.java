@@ -23,6 +23,7 @@ import com.denkbares.collections.CountingSet;
 import com.denkbares.plugin.Extension;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment;
@@ -37,11 +38,14 @@ public class ToolUtils {
 	 * The tool providers blocked for certain scopes, one registry per environment.
 	 */
 	public static final class BlockedToolProviders {
+
+		public static final ServiceKey<BlockedToolProviders> SERVICE = ServiceKey.of(BlockedToolProviders.class, environment -> new BlockedToolProviders());
+
 		private final Map<ToolProvider, CountingSet<Scope>> byProvider = new HashMap<>();
 	}
 
 	private static Map<ToolProvider, CountingSet<Scope>> blocked(@NotNull Environment environment) {
-		return environment.getService(BlockedToolProviders.class, BlockedToolProviders::new).byProvider;
+		return environment.getService(BlockedToolProviders.SERVICE).byProvider;
 	}
 	public static final String SETTINGS_FILE = "settings.toolmenu.json";
 
