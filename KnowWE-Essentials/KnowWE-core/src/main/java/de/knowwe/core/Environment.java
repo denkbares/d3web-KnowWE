@@ -915,7 +915,7 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	/**
 	 * Returns the section of this environment with the specified id, or null if there is none.
 	 *
-	 * @see Sections#get(String)
+	 * @see Sections#get(Environment, String)
 	 */
 	@Nullable
 	public Section<?> getSection(String id) {
