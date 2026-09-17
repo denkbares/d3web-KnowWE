@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -20,7 +19,7 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.compile.terminology.TermRenamings;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -84,36 +83,13 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 	}
 
 	protected void appendReplacements(UserActionContext context, RenamingCommand renamingCommand, Map<Article, Map<String, String>> nodesMapByArticle) {
-		Map<Article, Set<Section<? extends RenamableTerm>>> registrations = renamingCommand.registrationsByArticle;
-		for (Article article : registrations.keySet()) {
-			Map<String, String> nodesMap = nodesMapByArticle.computeIfAbsent(article, k -> new HashMap<>());
-			for (Section<? extends RenamableTerm> termSection : registrations.get(article)) {
-				if (!KnowWEUtils.canWrite(termSection, context)) continue;
-				if (!termSection.get().allowRename(termSection)) continue;
-				String sectionTextAfterRename = termSection.get()
-						.getSectionTextAfterRename(termSection, renamingCommand.termIdentifier, renamingCommand.replacementIdentifier);
-				if (!sectionTextAfterRename.equals(termSection.getText())) {
-					nodesMap.put(termSection.getID(), sectionTextAfterRename);
-				}
-			}
-		}
+		TermRenamings.appendReplacements(renamingCommand.registrationsByArticle, renamingCommand.termIdentifier,
+				renamingCommand.replacementIdentifier, title -> KnowWEUtils.canWrite(title, context),
+				nodesMapByArticle);
 	}
 
 	protected Map<Article, Set<Section<? extends RenamableTerm>>> getRegistrationsByArticle(Collection<TermCompiler> compilers, Identifier termIdentifier) {
-		Map<Article, Set<Section<? extends RenamableTerm>>> registrationsByArticle = new HashMap<>();
-		Consumer<Section<?>> addIfRenamable = (section) -> {
-			if (section.get() instanceof RenamableTerm) {
-				registrationsByArticle.computeIfAbsent(section.getArticle(), k -> new HashSet<>())
-						.add(Sections.cast(section, RenamableTerm.class));
-			}
-		};
-
-		for (TermCompiler compiler : compilers) {
-			TerminologyManager manager = compiler.getTerminologyManager();
-			manager.getTermDefiningSections(termIdentifier).forEach(addIfRenamable);
-			manager.getTermReferenceSections(termIdentifier).forEach(addIfRenamable);
-		}
-		return registrationsByArticle;
+		return TermRenamings.getRegistrationsByArticle(compilers, termIdentifier);
 	}
 
 	protected Set<Article> getArticlesWithoutEditRights(Map<Article, Set<Section<? extends RenamableTerm>>> termsByArticle, UserActionContext context) {
