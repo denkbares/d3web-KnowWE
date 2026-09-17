@@ -4,9 +4,12 @@
 package de.knowwe.core.kdom.rendering;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +26,40 @@ public class RenderResult {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RenderResult.class);
 
 	private static final String storeKey = RenderResult.class.getName();
-	// unmask parses mask token indices as a single digit, so HTML must never exceed 10 entries
-	private static final String[] HTML = new String[] {
-			"[{", "}]", "\\\\", "\"", "'", ">", "<", "[", "]" };
-	private static final int MASK_QUOTE = 3;
-	private static final int MASK_GT = 5;
-	private static final int MASK_LT = 6;
+	/**
+	 * Everything appended via appendHtml* has to be hidden from the JSPWiki renderer until it has run: the
+	 * html structural characters (tag brackets, quotes, plugin syntax) and every JSPWiki markup token
+	 * (single source of truth: {@link KnowWEUtils#JSPWIKI_TOKENS}). Without the latter JSPWiki turns
+	 * __bold__ into a b tag inside our own html, attribute values included, where html entity encoding is
+	 * no help because JSPWiki markup is made of characters that need no encoding. unmask() restores the
+	 * original byte for byte.
+	 * <p>
+	 * Sorted longest first, so that no token is shadowed by one of its own prefixes ({{{ before {{).
+	 */
+	private static final String[] HTML = Stream.concat(
+					Stream.of("[{", "}]", "\"", "'", ">", "<"),
+					KnowWEUtils.JSPWIKI_TOKENS.stream())
+			.distinct()
+			.sorted(Comparator.comparingInt(String::length).reversed())
+			.toArray(String[]::new);
+
+	private static final int MASK_QUOTE = patternIndex("\"");
+	private static final int MASK_GT = patternIndex(">");
+	private static final int MASK_LT = patternIndex("<");
+
+	private static final int ASCII_RANGE = 128;
+
+	/**
+	 * For each possible first character the indices of the {@link #HTML} patterns starting with it, longest
+	 * first. Derived from HTML instead of written out, so the dispatch of {@link #maskPatternAt} cannot
+	 * drift away from the table it dispatches on.
+	 */
+	private static final int[][] PATTERNS_BY_FIRST_CHAR = createPatternsByFirstChar();
+
+	/**
+	 * Mask tokens carry their pattern index in decimal, so unmask has to know how far to read.
+	 */
+	private static final int MAX_INDEX_DIGITS = Integer.toString(HTML.length - 1).length();
 
 	private final String maskKey;
 	private final String maskPrefix;
@@ -224,7 +255,9 @@ public class RenderResult {
 			builder.append((String) null);
 			return this;
 		}
+		int encodedStart = builder.length();
 		Strings.encodeHtml(text, builder);
+		maskEncoded(encodedStart);
 		return this;
 	}
 
@@ -355,6 +388,21 @@ public class RenderResult {
 	}
 
 	/**
+	 * Masks what an html entity encoding leaves behind, from the given position to the end of the builder.
+	 * encodeHtml takes care of the html structural characters, but JSPWiki markup such as __bold__ or the |
+	 * of a table row is made of characters that need no encoding and would reach the JSPWiki renderer
+	 * unprotected.
+	 */
+	private void maskEncoded(int from) {
+		int first = from;
+		while (first < builder.length() && maskPatternAt(builder, first) < 0) first++;
+		if (first == builder.length()) return;
+		String encoded = builder.substring(first);
+		builder.setLength(first);
+		maskInto(encoded, 0, builder);
+	}
+
+	/**
 	 * Masks the given text in a single pass. If nothing requires masking, the given string instance is returned
 	 * unchanged.
 	 */
@@ -392,23 +440,58 @@ public class RenderResult {
 	}
 
 	/**
-	 * Returns the index of the HTML pattern starting at the given position, or -1 if there is none. Two-char patterns
-	 * take precedence over their one-char prefixes, matching the replacement order of the HTML array.
+	 * Returns the index of the HTML pattern starting at the given position, or -1 if there is none. Longer
+	 * patterns take precedence over their own prefixes, matching the order of the HTML array.
 	 */
 	private static int maskPatternAt(CharSequence html, int index) {
 		char c = html.charAt(index);
-		boolean hasNext = index + 1 < html.length();
-		return switch (c) {
-			case '[' -> (hasNext && html.charAt(index + 1) == '{') ? 0 : 7;
-			case '}' -> (hasNext && html.charAt(index + 1) == ']') ? 1 : -1;
-			case '\\' -> (hasNext && html.charAt(index + 1) == '\\') ? 2 : -1;
-			case '"' -> MASK_QUOTE;
-			case '\'' -> 4;
-			case '>' -> MASK_GT;
-			case '<' -> MASK_LT;
-			case ']' -> 8;
-			default -> -1;
-		};
+		if (c >= ASCII_RANGE) return -1;
+		int[] candidates = PATTERNS_BY_FIRST_CHAR[c];
+		if (candidates == null) return -1;
+		for (int candidate : candidates) {
+			if (matchesAt(html, index, HTML[candidate])) return candidate;
+		}
+		return -1;
+	}
+
+	/**
+	 * Whether the given pattern starts at the given position. The first character is already matched by the
+	 * dispatch of {@link #maskPatternAt} and is not compared again.
+	 */
+	private static boolean matchesAt(CharSequence html, int index, String pattern) {
+		if (index + pattern.length() > html.length()) return false;
+		for (int i = 1; i < pattern.length(); i++) {
+			if (html.charAt(index + i) != pattern.charAt(i)) return false;
+		}
+		return true;
+	}
+
+	private static int[][] createPatternsByFirstChar() {
+		int[][] byFirstChar = new int[ASCII_RANGE][];
+		for (int i = 0; i < HTML.length; i++) {
+			char first = HTML[i].charAt(0);
+			if (first >= ASCII_RANGE) {
+				throw new IllegalStateException("mask pattern must start with an ascii character: " + HTML[i]);
+			}
+			int[] candidates = byFirstChar[first];
+			// HTML is sorted longest first, so appending keeps that order per character
+			if (candidates == null) {
+				byFirstChar[first] = new int[] { i };
+			}
+			else {
+				candidates = Arrays.copyOf(candidates, candidates.length + 1);
+				candidates[candidates.length - 1] = i;
+				byFirstChar[first] = candidates;
+			}
+		}
+		return byFirstChar;
+	}
+
+	private static int patternIndex(String pattern) {
+		for (int i = 0; i < HTML.length; i++) {
+			if (HTML[i].equals(pattern)) return i;
+		}
+		throw new IllegalStateException("no mask pattern for " + pattern);
 	}
 
 	public static String mask(String string, UserContext context) {
@@ -476,11 +559,13 @@ public class RenderResult {
 		StringBuilder result = new StringBuilder(string.length());
 		int plainStart = 0;
 		while (index >= 0) {
-			int digitIndex = index + maskPrefix.length();
-			int pattern = digitIndex < string.length() ? string.charAt(digitIndex) - '0' : -1;
-			if (pattern >= 0 && pattern < HTML.length && string.startsWith("@@", digitIndex + 1)) {
+			int digitStart = index + maskPrefix.length();
+			int digitEnd = digitStart;
+			while (digitEnd < string.length() && isDigit(string.charAt(digitEnd))) digitEnd++;
+			int pattern = patternIndexOf(string, digitStart, digitEnd);
+			if (pattern >= 0 && string.startsWith("@@", digitEnd)) {
 				result.append(string, plainStart, index).append(HTML[pattern]);
-				plainStart = digitIndex + 3;
+				plainStart = digitEnd + 2;
 				index = string.indexOf(maskPrefix, plainStart);
 			}
 			else {
@@ -490,6 +575,25 @@ public class RenderResult {
 		}
 		result.append(string, plainStart, string.length());
 		return result.toString();
+	}
+
+	private static boolean isDigit(char c) {
+		return c >= '0' && c <= '9';
+	}
+
+	/**
+	 * Reads the pattern index of a mask token from the given digits, or -1 if they are none, too many, or
+	 * out of range. createMaskHtml() never writes leading zeros, so a longer digit run than the largest
+	 * index needs is not a token this instance produced.
+	 */
+	private static int patternIndexOf(String string, int digitStart, int digitEnd) {
+		int digits = digitEnd - digitStart;
+		if (digits < 1 || digits > MAX_INDEX_DIGITS) return -1;
+		int index = 0;
+		for (int i = digitStart; i < digitEnd; i++) {
+			index = index * 10 + (string.charAt(i) - '0');
+		}
+		return index < HTML.length ? index : -1;
 	}
 
 	public static String unmask(String string, UserContext context) {
@@ -533,8 +637,7 @@ public class RenderResult {
 	 * @created 05.02.2013
 	 */
 	public RenderResult appendHtmlTag(String tag, boolean encode, String... attributes) {
-		// emit the mask tokens of the tag structure directly, so the text we assemble here is never scanned;
-		// encoded attribute values need no masking, because encodeHtml encodes every maskable character
+		// emit the mask tokens of the tag structure directly, so the text we assemble here is never scanned
 		builder.append(maskedHtml[MASK_LT]);
 		maskInto(tag, 0, builder);
 		for (int i = 0; i + 2 <= attributes.length; i += 2) {
@@ -546,7 +649,9 @@ public class RenderResult {
 			maskInto(attributeName, 0, builder);
 			builder.append('=').append(maskedHtml[MASK_QUOTE]);
 			if (encode) {
+				int encodedStart = builder.length();
 				Strings.encodeHtml(attributeValue, builder);
+				maskEncoded(encodedStart);
 			}
 			else {
 				maskInto(attributeValue, 0, builder);

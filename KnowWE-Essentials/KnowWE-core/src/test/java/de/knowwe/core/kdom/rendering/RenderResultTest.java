@@ -16,14 +16,20 @@ import de.knowwe.core.user.UserContext;
 import static org.junit.Assert.*;
 
 /**
- * Tests the single-pass mask/unmask implementation against the legacy sequential-replace behavior.
+ * Tests the single-pass mask/unmask implementation against a naive reference over the token table, and
+ * unmask additionally against the legacy sequential-replace behavior.
  *
  * @author Konstantin Herud (denkbares GmbH)
  * @created 03.08.2026
  */
 public class RenderResultTest {
 
-	private static final String[] HTML = { "[{", "}]", "\\\\", "\"", "'", ">", "<", "[", "]" };
+	// the token table RenderResult is expected to derive, longest first: the html structural characters
+	// plus KnowWEUtils.JSPWIKI_TOKENS. Written out on purpose, so that a change to either of the two
+	// sources surfaces here as a failing reference comparison instead of passing silently.
+	private static final String[] HTML = {
+			"----", "{{{", "}}}", "[{", "}]", "{{", "}}", "%%", "__", "''", "||",
+			"\"", "'", ">", "<", "[", "]", "\\", "|" };
 
 	private static class TestKeyValueStore implements RenderResultKeyValueStore {
 		private final Map<String, Object> attributes = new HashMap<>();
@@ -67,12 +73,51 @@ public class RenderResultTest {
 		return maskedHtml;
 	}
 
+	/**
+	 * Masks leftmost first, and at each position the longest matching pattern — the rule a single left to
+	 * right pass can implement. Written out naively over the token table, independent of the dispatch
+	 * structure RenderResult derives from it.
+	 * <p>
+	 * This replaces the sequential replace of the legacy implementation, which applied the patterns one
+	 * after the other in table order. Both hide every token, but they break ties differently as soon as two
+	 * patterns start with the same character: on "}}]" the sequential order masks the "}]" at offset 1 and
+	 * leaves a bare "}" behind, the single pass masks the "}}" at offset 0. Since the table now holds the
+	 * JSPWiki tokens, such overlaps are the rule rather than the exception, so byte equality with the
+	 * legacy order is no longer a meaningful contract. What has to hold is checked separately: an exact
+	 * round trip and no token left visible.
+	 */
 	private String maskReference(String html) {
 		String[] maskedHtml = maskedHtml(maskKey());
-		for (int i = 0; i < HTML.length; i++) {
-			html = html.replace(HTML[i], maskedHtml[i]);
+		StringBuilder result = new StringBuilder();
+		int i = 0;
+		while (i < html.length()) {
+			int pattern = longestPatternAt(html, i);
+			if (pattern < 0) {
+				result.append(html.charAt(i));
+				i++;
+			}
+			else {
+				result.append(maskedHtml[pattern]);
+				i += HTML[pattern].length();
+			}
 		}
-		return html;
+		return result.toString();
+	}
+
+	private static int longestPatternAt(String html, int index) {
+		int longest = -1;
+		for (int i = 0; i < HTML.length; i++) {
+			if (!html.startsWith(HTML[i], index)) continue;
+			if (longest < 0 || HTML[i].length() > HTML[longest].length()) longest = i;
+		}
+		return longest;
+	}
+
+	private void assertNoTokenVisible(String masked, String original) {
+		for (String pattern : HTML) {
+			assertFalse("mask(" + original + ") leaves " + pattern + " visible to JSPWiki",
+					masked.contains(pattern));
+		}
 	}
 
 	private String unmaskReference(String string) {
@@ -88,16 +133,24 @@ public class RenderResultTest {
 		String[] cases = {
 				"", "[", "]", "[{", "}]", "{", "}", "\\", "\\\\", "\\\\\\", "[[{", "}]]", "[{}]",
 				"a[", "a\\", "a}", "x}]y", "\"'<>", "[{[{", "text ends with [", "plain text",
-				"<div class=\"foo\">[link]</div>" };
+				"<div class=\"foo\">[link]</div>",
+				// the JSPWiki tokens, including the prefix shadowing cases
+				"_", "__", "___", "|", "||", "|||", "'", "''", "'''", "%", "%%",
+				"-", "--", "---", "----", "-----", "{", "{{", "{{{", "{{{{", "}", "}}", "}}}", "}}}}",
+				"a__b__c", "|| head | cell", "text ---- rule", "{{mono}} and {{{code}}}",
+				"50%% off", "C:\\path\\file", "text ends with -", "text ends with {" };
 		for (String text : cases) {
-			assertEquals("mask(" + text + ")", maskReference(text), RenderResult.mask(text, store));
+			String masked = RenderResult.mask(text, store);
+			assertEquals("mask(" + text + ")", maskReference(text), masked);
+			assertNoTokenVisible(masked, text);
+			assertEquals("roundtrip(" + text + ")", text, RenderResult.unmask(masked, store));
 		}
 	}
 
 	@Test
-	public void maskMatchesSequentialReplace() {
+	public void maskMatchesReferenceScan() {
 		Random random = new Random(42);
-		char[] alphabet = "ab[]{}\\\"'<> ".toCharArray();
+		char[] alphabet = "ab[]{}\\\"'<>_|-%~ ".toCharArray();
 		for (int run = 0; run < 2000; run++) {
 			char[] chars = new char[random.nextInt(40)];
 			for (int i = 0; i < chars.length; i++) {
@@ -106,6 +159,7 @@ public class RenderResultTest {
 			String text = new String(chars);
 			String masked = RenderResult.mask(text, store);
 			assertEquals("mask(" + text + ")", maskReference(text), masked);
+			assertNoTokenVisible(masked, text);
 			assertEquals("roundtrip(" + text + ")", text, RenderResult.unmask(masked, store));
 		}
 	}
@@ -120,7 +174,10 @@ public class RenderResultTest {
 		// legacy pattern-priority order.
 		String[] fragments = {
 				"a", "b ", "@@", "@", "_", "@@" + key + "_0@@", "@@" + key + "_8@@",
-				"@@" + key + "_9@@", "@@" + key + "_12@@", "@@otherkey_3@@", key };
+				"@@" + key + "_9@@", "@@" + key + "_12@@", "@@" + key + "_18@@",
+				// out of range, over long and empty indices have to stay verbatim
+				"@@" + key + "_19@@", "@@" + key + "_99@@", "@@" + key + "_123@@", "@@" + key + "_@@",
+				"@@otherkey_3@@", key };
 		for (int run = 0; run < 2000; run++) {
 			StringBuilder text = new StringBuilder();
 			int count = random.nextInt(8);
@@ -165,7 +222,7 @@ public class RenderResultTest {
 	@Test
 	public void appendHtmlTagMatchesLegacy() {
 		Random random = new Random(1337);
-		char[] alphabet = "ab[]{}\\\"'<>&#% ".toCharArray();
+		char[] alphabet = "ab[]{}\\\"'<>&#%_|-~ ".toCharArray();
 		String[] tags = { "div", "span", "a" };
 		for (boolean encode : new boolean[] { true, false }) {
 			for (int run = 0; run < 500; run++) {
@@ -215,21 +272,47 @@ public class RenderResultTest {
 	public void appendPlainText() {
 		RenderResult result = new RenderResult(user);
 		result.appendPlainText("a<b & [c]");
-		assertEquals(Strings.encodeHtml("a<b & [c]"), result.toStringRaw());
+		// html encoding alone does not make text inert: [c] would still be a JSPWiki link, so the
+		// encoded text is masked as well. Unmasking has to give the encoded text back unchanged.
 		assertEquals(Strings.encodeHtml("a<b & [c]"), result.toString());
+		assertEquals(maskReference(Strings.encodeHtml("a<b & [c]")), result.toStringRaw());
 	}
 
 	@Test
-	public void encodedHtmlIsMaskInert() {
-		// appendHtmlTag appends encoded attribute values without masking them, which is only
-		// correct while encodeHtml encodes every character occurring in a maskable pattern
+	public void plainTextIsInertForJSPWiki() {
+		// what appendPlainText promises: neither html nor JSPWiki markup survives into the raw result
+		String text = "a__b__c {{x}} 50%% e|f||g ---- h" + "\\" + "i [j] <k> \'l\' \"m\"";
+		RenderResult result = new RenderResult(user);
+		result.appendPlainText(text);
+		String raw = result.toStringRaw();
+		for (String pattern : HTML) {
+			assertFalse("still visible to JSPWiki: " + pattern, raw.contains(pattern));
+		}
+		assertEquals(Strings.encodeHtml(text), result.toString());
+	}
+
+	@Test
+	public void encodedAttributeValuesHideEveryToken() {
+		// appendHtmlTag encodes attribute values and masks what the encoding leaves behind. A file name
+		// like Bericht__final__.docx in a data attribute must not reach JSPWiki as markup.
 		for (char c = 0; c < 128; c++) {
-			String encoded = Strings.encodeHtml(Character.toString(c));
-			assertSame("encodeHtml('" + c + "') must not be maskable", encoded, RenderResult.mask(encoded, store));
+			assertAttributeValueIsInert(Character.toString(c));
 		}
 		for (String pattern : HTML) {
-			String encoded = Strings.encodeHtml(pattern);
-			assertSame("encodeHtml(" + pattern + ") must not be maskable", encoded, RenderResult.mask(encoded, store));
+			assertAttributeValueIsInert(pattern);
+			assertAttributeValueIsInert("x" + pattern + "y");
 		}
+		assertAttributeValueIsInert("Bericht__final__.docx");
+	}
+
+	private void assertAttributeValueIsInert(String attributeValue) {
+		RenderResult result = new RenderResult(user);
+		result.appendHtmlTag("div", true, "data-file", attributeValue);
+		String raw = result.toStringRaw();
+		for (String pattern : HTML) {
+			assertFalse("value " + attributeValue + " leaves " + pattern + " visible to JSPWiki",
+					raw.contains(pattern));
+		}
+		assertEquals("<div data-file=\"" + Strings.encodeHtml(attributeValue) + "\">", result.toString());
 	}
 }

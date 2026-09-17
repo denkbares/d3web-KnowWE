@@ -27,7 +27,7 @@
 <form action="<wiki:Link jsp='Search.jsp' format='url'/>"
         class="wikiform"
            id="searchForm" accept-charset="<wiki:ContentEncoding />">
-	<wiki:CsrfProtection/>
+	<%-- no wiki:CsrfProtection here: this is a GET form, the token would only end up in the URL --%>
   <div style="position:relative">
   <input onblur="if( this.value == '' ) { this.value = this.defaultValue }; return true; "
         onfocus="if( this.value == this.defaultValue ) { this.value = ''}; return true; "

@@ -36,7 +36,7 @@
        class="wikiform"
           id="searchform2"
          accept-charset="<wiki:ContentEncoding/>">
-  <wiki:CsrfProtection/>
+  <%-- no wiki:CsrfProtection here: this is a GET form, the token would only end up in the URL --%>
   <h4><fmt:message key="find.input" /></h4>
   <p>
     <input type="text"
