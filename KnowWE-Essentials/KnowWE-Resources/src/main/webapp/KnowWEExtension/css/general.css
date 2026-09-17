@@ -307,8 +307,8 @@ code.box {
 
 .warning:before {
 	content: "\f071";
-	font-family: 'Font Awesome 6 Pro';
-	font-weight: 300;
+	font-family: 'Font Awesome 6 Free';
+	font-weight: 900;
 	margin-right: 10px;
 	margin-left: 5px;
 }

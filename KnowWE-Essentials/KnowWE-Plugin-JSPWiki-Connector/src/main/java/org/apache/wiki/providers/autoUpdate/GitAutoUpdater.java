@@ -3,15 +3,15 @@ package org.apache.wiki.providers.autoUpdate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.denkbares.utils.Stopwatch;
+
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
@@ -26,34 +26,14 @@ import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.GitVersioningAttachmentProvider;
 import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullCommand;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RebaseCommand;
-import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.merge.ContentMergeStrategy;
-import org.eclipse.jgit.merge.MergeStrategy;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevSort;
-import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.transport.FetchResult;
-import org.eclipse.jgit.transport.TrackingRefUpdate;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +65,7 @@ public class GitAutoUpdater {
 	public GitAutoUpdater(Engine engine, GitVersioningFileProvider fileProvider) {
 		this.fileProvider = fileProvider;
 		this.filesystemPath = fileProvider.getFilesystemPath();
-		repository = fileProvider.getRepository();
+		this.repository = fileProvider.getRepository();
 		this.engine = engine;
 		this.gitConnector = fileProvider.getGitConnector();
 	}
@@ -102,10 +82,6 @@ public class GitAutoUpdater {
 			LOGGER.info("Not updating, because of filesystem lock");
 			return;
 		}
-
-		//if we are not on master branch we also do not update TODO => having a good understanding of the current state in here helps us to remove the start/stop logic of the updater via the scheduler which still causes unwated side effects
-
-
 
 		Git git = new Git(repository);
 		ArticleManager articleManager = getDefaultArticleManager();
@@ -133,11 +109,11 @@ public class GitAutoUpdater {
 	}
 
 	private void performRebase(ArticleManager articleManager, Git git) throws IOException, GitAPIException {
-		//wait until KnowWe compiler is done
+		// Warten bis der KnowWe-Compiler fertig ist
 		Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
 
-  Stopwatch stopWatch = new Stopwatch();
-  stopWatch.start();
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 
 		articleManager.open();
 		fileProvider.pushLock();
@@ -147,18 +123,15 @@ public class GitAutoUpdater {
 		try {
 			Status status = git.status().call();
 			if (!status.isClean()) {
-
 				logStatus(status);
-
 				try {
-					//we abort the rebase
 					pullAfterReset = abortRebase(git);
 				}
 				catch (GitAPIException e) {
 					LOGGER.error("Reset wasn't successful", e);
 					return;
 				}
-				//fallback is hard reset or abort if even this fails!
+				// Fallback: harter Reset; wenn selbst der fehlschlägt -> Abbruch
 				boolean resetSuccess = resetHard(git);
 				if (resetSuccess) {
 					return;
@@ -166,54 +139,49 @@ public class GitAutoUpdater {
 			}
 		}
 		catch (GitAPIException e) {
-			LOGGER.error("Status query wasn't successful, quiting update", e);
+			LOGGER.error("Status query wasn't successful, quitting update", e);
 			return;
 		}
 
-		RevWalk revWalk = new RevWalk(repository);
-		ObjectId oldHead = repository.resolve("remotes/origin/master");
-		RevCommit oldHeadCommit = revWalk.parseCommit(oldHead);
+		// *** NEU: Immer den lokalen HEAD vor dem Pull merken ***
+		ObjectId oldLocalHead = repository.resolve(Constants.HEAD);
+		String oldLocalHeadHash = oldLocalHead.getName();
 
-		FetchCommand fetch1 = git.fetch();
-		FetchResult fetch = fetch1.call();
-		Collection<TrackingRefUpdate> trackingRefUpdates = fetch.getTrackingRefUpdates();
+		// *** NEU: Kein fetch() mehr zum Erkennen von Änderungen. ***
+		// Pull (mit Rebase) ist idempotent: wenn nichts zu tun ist, macht er nichts.
+		boolean pullResultSuccess = getPullResult(gitConnector);
 
-		if (pullAfterReset || !trackingRefUpdates.isEmpty()) {
-
-			//pull with rebase
-			PullResult pullResult = getPullResult(git);
-
-			if (pullResult != null) {
-				RebaseResult rebaseResult = pullResult.getRebaseResult();
-				boolean successful = rebaseResult.getStatus().isSuccessful();
-				if (!successful) {
-					LOGGER.error("unsuccessful pull " + rebaseResult.getStatus());
-					if (rebaseResult.getConflicts() != null) {
-						LOGGER.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
-					}
-					else {
-						LOGGER.error("unsuccessful pull " + rebaseResult.getFailingPaths());
-					}
-				}
-			}
+		if (pullResultSuccess == false) {
+			LOGGER.error("unsuccessful pull, aborting!");
 			fileProvider.pushUnlock();
-			ObjectId newHead = repository.resolve(Constants.HEAD);
-
-			String title = null;
-			if (!oldHeadCommit.equals(newHead)) {
-				LOGGER.info("Read changes after rebase");
-				title = readChangesAfterRebase(revWalk, newHead, git, oldHeadCommit, oldHead);
-			}
-			if (title != null) {
-				LOGGER.info("do full parse");
-				Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
-				//lets hope this sticks!
-				EventManager.getInstance().fireEvent(new FullParseEvent(article,null));
-			}
-   stopWatch.pause();
-   LOGGER.info("Update of wiki lasts " + stopWatch);
+			return;
 		}
-	}
+
+		fileProvider.pushUnlock();
+
+		ObjectId newHead = repository.resolve(Constants.HEAD);
+		String title = null;
+
+		// *** NEU: Änderungserkennung rein lokal über HEAD-Vergleich ***
+		if (!oldLocalHead.equals(newHead)) {
+			LOGGER.info("Read changes after rebase (local HEAD moved)");
+			title = readChangesAfterRebase(oldLocalHeadHash, newHead.getName());
+		}
+		else if (pullAfterReset) {
+			// nach Reset dennoch prüfen (sollte selten sein)
+			LOGGER.info("Read changes after rebase (post-reset)");
+			title = readChangesAfterRebase(oldLocalHeadHash, newHead.getName());
+		}
+
+		if (title != null) {
+			LOGGER.info("do full parse");
+			Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+			EventManager.getInstance().fireEvent(new FullParseEvent(article, null));
+		}
+
+		stopWatch.stop();
+			LOGGER.info("Update of wiki lasts " + stopWatch);
+		}
 
 	private boolean abortRebase(Git git) throws GitAPIException {
 		boolean pullAfterReset = false;
@@ -227,31 +195,8 @@ public class GitAutoUpdater {
 	}
 
 	@Nullable
-	private PullResult getPullResult(Git git) throws GitAPIException {
-		PullCommand pull = git.pull()
-				.setRemote("origin")
-				.setRemoteBranchName("master")
-				.setStrategy(MergeStrategy.RESOLVE)
-				.setRebase(true);
-		PullResult pullResult = null;
-		try {
-			pullResult = pull.call();
-		}
-		catch (JGitInternalException ie) {
-			LOGGER.error("internal jgit error", ie);
-			try {
-				switch (repository.getRepositoryState()) {
-					case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
-							.setOperation(RebaseCommand.Operation.ABORT)
-							.call();
-				}
-				pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
-			}
-			catch (JGitInternalException ie2) {
-				LOGGER.error("internal jgit error", ie);
-			}
-		}
-		return pullResult;
+	private boolean getPullResult(GitConnector gitConnector) throws GitAPIException {
+		return gitConnector.pull().allWithRebase();
 	}
 
 	private void postprocess(ArticleManager articleManager) {
@@ -293,41 +238,21 @@ public class GitAutoUpdater {
 	}
 
 	@Nullable
-	private String readChangesAfterRebase(RevWalk revWalk, ObjectId newHead, Git git, RevCommit oldHeadCommit, ObjectId oldHead) throws IOException, GitAPIException {
+	private String readChangesAfterRebase(String oldHeadHash, String newHeadHash) {
 		String title;
 		try {
 			fileProvider.canWriteFileLock();
-			RevCommit newHeadCommit = revWalk.parseCommit(newHead);
-
-			git.log().addRange(oldHeadCommit, newHeadCommit).call();
-
-			final ObjectReader objectReader = this.repository.newObjectReader();
-			final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-			final CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-			final DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-			diffFormatter.setRepository(this.repository);
-			revWalk.reset();
-			revWalk.sort(RevSort.REVERSE);
-			revWalk.markStart(newHeadCommit);
-			revWalk.parseCommit(oldHead);
-			Iterator<RevCommit> iterator = revWalk.iterator();
-			boolean parse = false;
 			Collection<String> toRefresh = new HashSet<>();
-			Collection<RevCommit> revWalkCommits = new ArrayList<>();
-			while (iterator.hasNext()) {
-				RevCommit commit = iterator.next();
-				revWalkCommits.add(commit);
+			List<String> commitHashes = gitConnector.log().commitsBetween(oldHeadHash, newHeadHash);
+			for (String commitHash : commitHashes) {
+				LOGGER.info("Read changed paths for commit: " + commitHash);
+				for (String changedPath : gitConnector.log().listChangedFilesForHash(commitHash)) {
+					if (changedPath != null && !changedPath.isBlank()) {
+						toRefresh.add(changedPath);
+					}
+				}
 			}
 
-			for (RevCommit commit : revWalkCommits) {
-				if (commit.equals(oldHeadCommit)) {
-					parse = true;
-					continue;
-				}
-				if (parse) {
-					mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, toRefresh);
-				}
-			}
 			Set<String> refreshedPages = new TreeSet<>();
 			for (String path : toRefresh) {
 				chooseAndUpdate(refreshedPages, path);
@@ -352,52 +277,6 @@ public class GitAutoUpdater {
 			fileProvider.writeFileUnlock();
 		}
 		return title;
-	}
-
-
-
-	private void mapRevCommit(ObjectReader objectReader, CanonicalTreeParser oldTreeParser, CanonicalTreeParser newTreeParser, DiffFormatter diffFormatter, RevCommit commit, Collection<String> toRefresh) throws IOException {
-		final RevCommit[] parents = commit.getParents();
-		RevTree tree = commit.getTree();
-		if (parents.length > 0) {
-			oldTreeParser.reset(objectReader, commit.getParent(0)
-					.getTree());
-			newTreeParser.reset(objectReader, tree);
-			List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
-			RenameDetector rd = new RenameDetector(repository);
-			rd.addAll(diffs);
-			diffs = rd.compute();
-			for (final DiffEntry diff : diffs) {
-				String path;
-				if (diff.getChangeType() == DiffEntry.ChangeType.MODIFY) {
-					path = diff.getOldPath();
-					if (path != null) {
-						toRefresh.add(path);
-					}
-				}
-				else if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
-					path = diff.getNewPath();
-					if (path != null) {
-						toRefresh.add(path);
-					}
-				}
-				else if (diff.getChangeType() == DiffEntry.ChangeType.DELETE) {
-					toRefresh.add(diff.getOldPath());
-				}
-				else if (diff.getChangeType() == DiffEntry.ChangeType.RENAME) {
-					toRefresh.add(diff.getOldPath());
-					toRefresh.add(diff.getNewPath());
-				}
-			}
-		}
-		else {
-			final TreeWalk tw = new TreeWalk(this.repository);
-			tw.reset(tree);
-			tw.setRecursive(true);
-			while (tw.next()) {
-				toRefresh.add(tw.getPathString());
-			}
-		}
 	}
 
 	private void chooseAndUpdate(Collection<String> refreshedPages, String path) {
@@ -432,22 +311,13 @@ public class GitAutoUpdater {
 				toRefresh.setVersion(PageProvider.LATEST_VERSION);
 				AttachmentManager manager = engine.getManager(AttachmentManager.class);
 				manager.getCurrentProvider().deleteVersion((Attachment) toRefresh);
-				//Page page = manager.getAttachmentInfo(toRefresh.getName());
-				//if (page != null) {
-				//	LOGGER.info("refresh call" + page.getName());
-				//}
 			}
 			else {
 				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
 				PageManager manager = engine.getManager(PageManager.class);
 				manager.getProvider().deleteVersion(toRefresh, PageProvider.LATEST_VERSION);
-				//Page page = manager.getPage(toRefresh.getName());
-				//if (page != null) {
-				//	LOGGER.info("refresh call" + page.getName());
-				//}
 			}
 			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
-
 			return toRefresh.getName();
 		}
 		catch (ProviderException e) {

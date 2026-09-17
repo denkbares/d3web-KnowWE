@@ -96,6 +96,17 @@ public class PluggableAuthenticationManager implements AuthenticationManager {
 		delegate.addWikiEventListener(listener);
 	}
 
+	/**
+	 * Fires on the delegate, where the listeners are registered. The interface default fires on this instance, which
+	 * has no listeners, so the event would be dropped silently.
+	 */
+	@Override
+	public void fireEvent(int type, Principal principal, Object target) {
+		if (delegate != null) {
+			delegate.fireEvent(type, principal, target);
+		}
+	}
+
 	@Override
 	public void removeWikiEventListener(WikiEventListener listener) {
 		delegate.removeWikiEventListener(listener);

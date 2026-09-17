@@ -95,7 +95,7 @@ public class ArticleHasMarkupErrorsTest extends AbstractTest<Article> implements
 
     @Override
     public void renderResultMessage(UserContext context, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
-        Class<?> testObjectClass = CIRenderer.renderResultMessageHeader(context, message, testResult, renderResult);
+        Class<?> testObjectClass = CIRenderer.renderResultMessageHeader(message, testResult, renderResult);
         renderResult.append(message.getText());
         CIRenderer.renderResultMessageFooter(context, testObjectName, testObjectClass, message, renderResult);
     }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- Set the root logger to log everything except those specified -->
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE"/>
+	</root>
+
+	<!-- Define a console appender -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Disable logging for all loggers containing .eclipse.jgit -->
+	<logger name="org.eclipse.jgit" level="OFF" />
+	<logger name="org.eclipse.jgit.api" level="OFF" />
+	<logger name="org.eclipse.jgit.errors" level="OFF" />
+	<logger name="org.eclipse.jgit.http" level="OFF" />
+	<logger name="org.eclipse.jgit.internal" level="OFF" />
+	<logger name="org.eclipse.jgit.lib" level="OFF" />
+	<logger name="org.eclipse.jgit.revwalk" level="OFF" />
+	<logger name="org.eclipse.jgit.storage" level="OFF" />
+	<logger name="org.eclipse.jgit.transport" level="OFF" />
+	<logger name="org.eclipse.jgit.treewalk" level="OFF" />
+	<logger name="org.eclipse.jgit.internal.storage.file.FileSnapshot" level="OFF" />
+
+</configuration>

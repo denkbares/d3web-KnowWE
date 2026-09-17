@@ -20,16 +20,19 @@
 
 package de.knowwe.core.kdom.parsing;
 
+import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.WeakHashMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiFunction;
 
 import org.jetbrains.annotations.NotNull;
@@ -71,12 +74,14 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Stores Sections by their IDs.
 	 */
-	private static final Map<Integer, Section<?>> sectionMap = new HashMap<>(2048);
+	private static final Map<String, Section<?>> sectionMap = new HashMap<>(2048);
 
 	static {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 			LOGGER.info("Clearing sections.");
-			sectionMap.clear();
+			synchronized (sectionMap) {
+				sectionMap.clear();
+			}
 		});
 	}
 
@@ -86,14 +91,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	boolean isOrHasReusedSuccessor = false;
 
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
-
 	Article article;
 
 	/**
-	 * The unique ID of this Section (or -1, if not initialized).
+	 * The opaque ID of this Section (null until first requested).
 	 */
-	private int intID = -1;
+	private volatile String id;
 
 	/**
 	 * The text of this section. For memory footprint reasons, this is normally null and the text is instead calculated
@@ -115,6 +118,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * The father section of this KDOM-node. Used for upwards navigation through the tree
 	 */
 	private Section<? extends Type> parent;
+	/** Index hint maintained on insertion; validated against the parent because parsers can reparent separately. */
+	private int indexInParent = -1;
 
 	/**
 	 * the position the text of this node starts related to the text of the parent node. Thus: for first child always 0,
@@ -128,9 +133,26 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private int offsetInArticle = -1;
 
 	/**
-	 * Contains all the stored objects
+	 * Marks store entries that are independent of any compiler.
 	 */
-	private Map<Compiler, Map<String, Object>> store = null;
+	private static final Object NO_COMPILER = new Object();
+
+	/**
+	 * Canonical weak reference per compiler, so all section stores share a single reference object per compiler.
+	 * The value references its key only weakly, so it does not prevent the entry from being expunged.
+	 */
+	private static final Map<Compiler, WeakReference<Compiler>> COMPILER_REFS =
+			Collections.synchronizedMap(new WeakHashMap<>());
+
+	/**
+	 * Contains all the stored objects, as a flat array of (compiler holder, key, value) triples. The holder is
+	 * either {@link #NO_COMPILER} or a weak reference to the compiler, so stores never keep replaced compilers
+	 * alive. The array is replaced as a whole on every write (guarded by this section's monitor) and never
+	 * mutated afterward, so readers just take a consistent snapshot without any locking. Entries of collected
+	 * compilers are skipped by readers and compacted out by the next write. Sections typically hold very few
+	 * entries, making the linear scan faster than hashing and far smaller than the nested maps used before.
+	 */
+	private volatile Object[] store = null;
 
 	/**
 	 * Type of this node.
@@ -253,6 +275,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public void addChild(int index, Section<?> child) {
 		if (children == null) children = new ArrayList<>(5);
 		children.add(index, child);
+		// Appending touches only the new child. Inserting already shifts this ArrayList's suffix, so update that suffix.
+		for (int i = index; i < children.size(); i++) {
+			children.get(i).indexInParent = i;
+		}
 		if (get() instanceof AbstractType && !(child.get() instanceof RootType)) {
 			Class<?> childTypeClass = child.get().getClass();
 			if (!Types.canHaveSuccessorOfType((AbstractType) type, childTypeClass)) {
@@ -433,22 +459,34 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * Returns the unique ID of this section.
+	 * Returns the stable ID of this section. Draft IDs are computed locally and are not resolvable until publication.
+	 * Cached reads do not acquire the registry lock. Retired and temporary sections cannot publish themselves.
 	 */
 	@NotNull
 	public String getID() {
 		if (!hasID()) {
-			intID = generateAndRegisterSectionID(this);
+			synchronized (sectionMap) {
+				if (!hasID()) {
+					id = UUID.nameUUIDFromBytes(getSignatureString().getBytes(StandardCharsets.UTF_8))
+							.toString().replace("-", "");
+					if (article.isPublished()) sectionMap.put(id, this);
+				}
+			}
 		}
-		return Integer.toHexString(intID);
+		return id;
 	}
 
 	private String getSignatureString() {
-		return getWeb() + getTitle() + getOffsetInArticle() + "-" + getDepth() + this.getText();
+		// The article namespace changes with the complete source text, not just this section's text.
+		// Include position and type so identical empty siblings and changed parser output do not alias each other.
+		// Within this namespace, offset and length already identify the text. Do not copy/encode/hash entire subtrees
+		// again, especially for root sections and deeply nested markup.
+		return article.getSectionIdNamespace() + ":" + getIdPosition() + ":" + get().getClass().getName()
+				+ ":" + getOffsetInArticle() + ":" + getDepth() + ":" + getTextLength();
 	}
 
 	private boolean hasID() {
-		return this.intID != -1;
+		return id != null;
 	}
 
 	/**
@@ -596,7 +634,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the index of this section in the parent's list of child sections
 	 */
 	public int getIndexInParent() {
-		return (parent == null) ? -1 : parent.children.indexOf(this);
+		if (parent == null || parent.children == null) return -1;
+		if (indexInParent < 0 || indexInParent >= parent.children.size() || parent.children.get(indexInParent) != this) {
+			// Handles independently changed parent links; regular construction and insertion do not need this scan.
+			indexInParent = parent.children.indexOf(this);
+		}
+		return indexInParent;
 	}
 
 	/**
@@ -611,63 +654,50 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return article.getArticleManager();
 	}
 
-	/**
-	 * Generates an ID for the given Section and also registers the Section in a HashMap to allow searches for this
-	 * Section later. The ID is the hash code of the following String: Title of the Article containing the Section, the
-	 * position in the KDOM and the content of the Section. Hash collisions are resolved.
-	 *
-	 * @param section is the Section for which the ID is generated and which is then registered
-	 * @return the ID for the given Section
-	 * @created 05.09.2011
-	 */
-	private static int generateAndRegisterSectionID(Section<?> section) {
-		int idCandidate = section.getSignatureString().hashCode();
-		if (section.getArticle().isTemporary()) return idCandidate;
-		synchronized (sectionMap) {
-			Section<?> existingSection = sectionMap.get(idCandidate);
-			if (existingSection == section) return idCandidate; // already registered
-			while (existingSection != null || idCandidate == -1) {
-				++idCandidate;
-				existingSection = sectionMap.get(idCandidate);
-			}
-			sectionMap.put(idCandidate, section);
+	/** Ignore the parser's temporary dummy root, but distinguish e.g. empty siblings with identical signatures. */
+	private List<Integer> getIdPosition() {
+		List<Integer> path = new ArrayList<>();
+		for (Section<?> current = this; current.parent != null && !(current.get() instanceof RootType); current = current.parent) {
+			path.add(current.getIndexInParent());
 		}
-		return idCandidate;
+		Collections.reverse(path);
+		return List.copyOf(path);
+	}
+
+	/** Publishes an already requested ID; does not eagerly allocate IDs for the rest of the tree. */
+	public static void publishSectionID(Section<?> section) {
+		synchronized (sectionMap) {
+			if (!section.hasID() || !section.getArticle().isPublished()) return;
+			sectionMap.put(section.id, section);
+		}
 	}
 
 	/**
-	 * This method removes the entries of sections in the section map, if the sections are no longer used - for example
-	 * after an article is changed and build again.<br/> This method also takes care, that the equal section in the new
-	 * article gets an id. Since ids are created lazy while rendering and often the article is not rendered completely
-	 * again after changing just a few isolated spots in the article, those ids would otherwise be gone, although they
-	 * might stay the same and are still usable.<br/> We just look at the same spot/position in the KDOM. If we find a
-	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch the
-	 * right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
-	 * changed and therefore we don't need them anyway. We only do this, to allow already rendered tools to still work,
-	 * if it is possible.
+	 * Removes only registrations still owned by this section. For an unchanged-content recompile, requests the ID of
+	 * the corresponding new section so previously rendered IDs remain resolvable even before that section is rendered
+	 * again. IDs are recomputed, never assigned from the predecessor. Content changes deliberately invalidate all IDs.
 	 *
 	 * @param section    the old, no longer used Section
 	 * @param newArticle the new article which potentially contains an equal section
 	 * @created 04.12.2012
 	 */
 	public static void unregisterOrUpdateSectionID(Section<?> section, Article newArticle) {
-		if (section.hasID()) {
-			unregisterID(section);
-			if (newArticle == null) return; // if there is a new version, try to salvage
-			Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
-			if (newSection != null
-				&& newSection.get().getClass().equals(section.get().getClass())) {
-				// to not add ids to completely different sections if the
-				// article changed a lot, we only generate section ids for the
-				// same type of sections that had ids in the old article
-				newSection.getID();
+		synchronized (sectionMap) {
+			if (section.hasID()) {
+				if (newArticle != null && section.article.getSectionIdNamespace().equals(newArticle.getSectionIdNamespace())) {
+					Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
+					if (newSection != null && newSection.get().getClass().equals(section.get().getClass())) {
+						newSection.getID();
+					}
+				}
+				unregisterID(section);
 			}
 		}
 	}
 
 	private static void unregisterID(Section<?> section) {
 		synchronized (sectionMap) {
-			sectionMap.remove(section.intID);
+			sectionMap.remove(section.id, section);
 		}
 	}
 
@@ -679,10 +709,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	static Section<?> get(String id) {
 		synchronized (sectionMap) {
-			// We have to parse long and convert to int, because when converting a int to a hex string, the negative
-			// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
-			// to int will restore the negative sign.
-			return sectionMap.get((int) Long.parseLong(id, 16));
+			return sectionMap.get(id);
 		}
 	}
 
@@ -710,40 +737,41 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	@NotNull
 	public Map<Compiler, Object> getObjects(String key) {
-		lock.readLock().lock();
-		try {
-			if (store == null) return Collections.emptyMap();
-			Map<Compiler, Object> objects = new HashMap<>(store.size());
-			for (Map.Entry<Compiler, Map<String, Object>> entry : store.entrySet()) {
-				Compiler compiler = entry.getKey();
-				if (compiler != null && !compiler.getCompilerManager().contains(compiler)) continue;
-				Object object = entry.getValue().get(key);
-				if (object != null) objects.put(compiler, object);
+		Object[] store = this.store;
+		if (store == null) return Collections.emptyMap();
+		Map<Compiler, Object> objects = new HashMap<>();
+		for (int i = 0; i < store.length; i += 3) {
+			if (!Objects.equals(key, store[i + 1])) continue;
+			Object holder = store[i];
+			Compiler compiler = null;
+			if (holder != NO_COMPILER) {
+				compiler = (Compiler) ((WeakReference<?>) holder).get();
+				if (compiler == null) continue;
+				if (!compiler.getCompilerManager().contains(compiler)) continue;
 			}
-			return Collections.unmodifiableMap(objects);
+			Object object = store[i + 2];
+			if (object != null) objects.put(compiler, object);
 		}
-		finally {
-			lock.readLock().unlock();
-		}
+		return Collections.unmodifiableMap(objects);
 	}
 
 	/**
 	 * Returns all objects stored in this Section for the specified compiler. The {@link Map} maps the stored keys to
 	 * the stored object of that compiler. To get the objects that are stored without an {@link Compiler} (compiler
-	 * independent), specify <tt>null</tt> as the requested compiler.
+	 * independent), specify <tt>null</tt> as the requested compiler. The returned map is a snapshot, it does not
+	 * reflect later changes to this section's store.
 	 *
 	 * @param compiler the compiler to get the stored objects for, or null for compiler-independent stored objects
 	 */
 	@NotNull
 	public Map<String, Object> getObjects(Compiler compiler) {
-		lock.readLock().lock();
-		try {
-			Map<String, Object> store = getStoreForCompiler(compiler);
-			return (store == null) ? Collections.emptyMap() : Collections.unmodifiableMap(store);
+		Object[] store = this.store;
+		if (store == null) return Collections.emptyMap();
+		Map<String, Object> objects = new HashMap<>();
+		for (int i = 0; i < store.length; i += 3) {
+			if (matchesCompiler(store[i], compiler)) objects.put((String) store[i + 1], store[i + 2]);
 		}
-		finally {
-			lock.readLock().unlock();
-		}
+		return objects.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(objects);
 	}
 
 	/**
@@ -755,16 +783,15 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public <O> O getObject(@Nullable Compiler compiler, String key) {
 		if (compiler != null && compiler.getCompilerManager() != null && !compiler.getCompilerManager().contains(compiler)) return null;
-		lock.readLock().lock();
-		try {
-			Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
-			if (storeForArticle == null) return null;
-			//noinspection unchecked
-			return (O) storeForArticle.get(key);
+		Object[] store = this.store;
+		if (store == null) return null;
+		for (int i = 0; i < store.length; i += 3) {
+			if (matchesCompiler(store[i], compiler) && Objects.equals(key, store[i + 1])) {
+				//noinspection unchecked
+				return (O) store[i + 2];
+			}
 		}
-		finally {
-			lock.readLock().unlock();
-		}
+		return null;
 	}
 
 	/**
@@ -828,19 +855,35 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param object   the object to be stored
 	 * @created 08.07.2011
 	 */
-	public void storeObject(@Nullable Compiler compiler, String key, Object object) {
-		lock.writeLock().lock();
-		try {
-			Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
-			if (storeForCompiler == null) {
-				storeForCompiler = new HashMap<>(4);
-				putStoreForCompiler(compiler, storeForCompiler);
+	public synchronized void storeObject(@Nullable Compiler compiler, String key, Object object) {
+		Object[] store = this.store;
+		int length = (store == null) ? 0 : store.length;
+		Object[] copy = new Object[length + 3];
+		int out = 0;
+		boolean stored = false;
+		for (int i = 0; i < length; i += 3) {
+			Object holder = store[i];
+			// compact entries of collected compilers
+			if (isStale(holder)) continue;
+			copy[out] = holder;
+			if (!stored && matchesCompiler(holder, compiler) && Objects.equals(key, store[i + 1])) {
+				copy[out + 1] = key;
+				copy[out + 2] = object;
+				stored = true;
 			}
-			storeForCompiler.put(key, object);
+			else {
+				copy[out + 1] = store[i + 1];
+				copy[out + 2] = store[i + 2];
+			}
+			out += 3;
 		}
-		finally {
-			lock.writeLock().unlock();
+		if (!stored) {
+			copy[out] = holderFor(compiler);
+			copy[out + 1] = key;
+			copy[out + 2] = object;
+			out += 3;
 		}
+		this.store = (out == copy.length) ? copy : Arrays.copyOf(copy, out);
 	}
 
 	/**
@@ -860,16 +903,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public <C extends Compiler, O> O computeIfAbsent(@Nullable C compiler, String key, BiFunction<@Nullable C, @NotNull Section<T>, @NotNull O> mappingFunction) {
 		O object = getObject(compiler, key);
 		if (object == null) {
-			lock.writeLock().lock();
-			try {
+			synchronized (this) {
 				object = getObject(compiler, key);
 				if (object == null) {
 					object = mappingFunction.apply(compiler, this);
 					storeObject(compiler, key, object);
 				}
-			}
-			finally {
-				lock.writeLock().unlock();
 			}
 		}
 		return object;
@@ -886,32 +925,46 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the removed object for the compiler and key, or null
 	 * @created 16.03.2014
 	 */
-	public <O> O removeObject(Compiler compiler, String key) {
-		lock.writeLock().lock();
-		try {
-			Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
-			if (storeForCompiler == null) return null;
-			Object removed = storeForCompiler.remove(key);
-			if (storeForCompiler.isEmpty()) store.remove(compiler);
-			if (store.isEmpty()) store = null;
-			//noinspection unchecked
-			return (O) removed;
-		}
-		finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
+	public synchronized <O> O removeObject(Compiler compiler, String key) {
+		Object[] store = this.store;
 		if (store == null) return null;
-		return store.get(compiler);
+		Object removed = null;
+		Object[] copy = new Object[store.length];
+		int out = 0;
+		for (int i = 0; i < store.length; i += 3) {
+			Object holder = store[i];
+			// compact entries of collected compilers
+			if (isStale(holder)) continue;
+			if (removed == null && matchesCompiler(holder, compiler) && Objects.equals(key, store[i + 1])) {
+				removed = store[i + 2];
+				continue;
+			}
+			copy[out] = holder;
+			copy[out + 1] = store[i + 1];
+			copy[out + 2] = store[i + 2];
+			out += 3;
+		}
+		this.store = (out == 0) ? null : (out == copy.length) ? copy : Arrays.copyOf(copy, out);
+		//noinspection unchecked
+		return (O) removed;
 	}
 
-	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
-		if (store == null) {
-			store = new WeakHashMap<>(4);
-		}
-		store.put(compiler, storeForCompiler);
+	/**
+	 * Returns true if the store entry belongs to the given compiler. Compilers are compared by identity, no
+	 * implementation overrides equals. A cleared reference matches no compiler, not even null, which denotes
+	 * the compiler independent entries.
+	 */
+	private static boolean matchesCompiler(Object holder, @Nullable Compiler compiler) {
+		if (compiler == null) return holder == NO_COMPILER;
+		return holder != NO_COMPILER && ((WeakReference<?>) holder).get() == compiler;
+	}
+
+	private static boolean isStale(Object holder) {
+		return holder != NO_COMPILER && ((WeakReference<?>) holder).get() == null;
+	}
+
+	private static Object holderFor(@Nullable Compiler compiler) {
+		return (compiler == null) ? NO_COMPILER : COMPILER_REFS.computeIfAbsent(compiler, WeakReference::new);
 	}
 
 	public boolean isEmpty() {

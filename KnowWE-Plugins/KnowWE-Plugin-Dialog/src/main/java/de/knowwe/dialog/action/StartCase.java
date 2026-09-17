@@ -55,6 +55,7 @@ import de.d3web.interview.SingleQuestionFormStrategyWrapper;
 import de.d3web.we.basic.SessionCreatedEvent;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.dialog.SessionConstants;
@@ -66,6 +67,14 @@ import de.knowwe.dialog.Utils;
  * @author Volker Belli
  */
 public class StartCase extends AbstractAction implements EventListener {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(StartCase.class);
 
 	public static final String PARAM_USER = "user";
@@ -125,10 +134,21 @@ public class StartCase extends AbstractAction implements EventListener {
 		 * @param context
 		 */
 		KnowledgeBase getKnowledgeBase(UserActionContext context) throws IOException;
+
+		/**
+		 * Returns whether the current user is allowed to see this knowledge base. Providers that are not backed by a
+		 * wiki page (e.g. the file based mobile application) have no resource to check and return true.
+		 *
+		 * @param context the context of the current dialog action
+		 */
+		default boolean canView(UserActionContext context) throws IOException {
+			return true;
+		}
 	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 
 		String language = context.getParameter(PARAM_LANGUAGE);
 		List<Locale> preferredLocales = new ArrayList<>();

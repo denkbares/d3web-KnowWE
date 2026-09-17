@@ -20,7 +20,6 @@
 
 package de.knowwe.kdom.visitor;
 
-import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
@@ -54,7 +53,7 @@ public class RenderKDOMVisitor {
 		buffi.appendHtml(" <span style=\"color:black\" title=\"");
 		buffi.append(" ID: " + s.getID() + "\n");
 		buffi.appendHtml("\">");
-		buffi.append(Strings.encodeHtml(s.verbalize()));
+		buffi.appendPlainText(s.verbalize());
 		buffi.appendHtml("</span>\n <br />"); // \n only to avoid HTML-code
 												// being
 												// cut by JspWiki (String.length

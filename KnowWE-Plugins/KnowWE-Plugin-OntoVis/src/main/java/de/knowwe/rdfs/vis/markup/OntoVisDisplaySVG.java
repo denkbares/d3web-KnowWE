@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import javax.servlet.ServletContext;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -41,11 +42,17 @@ import de.knowwe.visualization.dot.DOTRenderer;
 public class OntoVisDisplaySVG extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		ServletContext servletContext = context.getServletContext();
 		if (servletContext == null) return; // at wiki startup only
 
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class), context);
 		config.setCacheFileID(Utils.getFileID(section, context));
 		File svg = new File(DOTRenderer.getFilePath(config) + ".svg");

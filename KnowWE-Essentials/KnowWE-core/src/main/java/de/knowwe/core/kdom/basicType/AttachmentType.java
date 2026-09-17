@@ -36,6 +36,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -150,12 +151,13 @@ public class AttachmentType extends AbstractType {
 
 			AttachmentChangedListener that = (AttachmentChangedListener) o;
 
-			return section.getID().equals(that.section.getID());
+			// Unchanged recompiles reuse IDs, but each listener belongs to one Section instance.
+			return section == that.section;
 		}
 
 		@Override
 		public int hashCode() {
-			return section.getID().hashCode();
+			return System.identityHashCode(section);
 		}
 
 		public void destroy() {
@@ -180,11 +182,16 @@ public class AttachmentType extends AbstractType {
 				Article article = section.getArticle();
 				ArticleManager articleManager = article.getArticleManager();
 				if (articleManager == null) return;
-				boolean alreadyQueued = articleManager.getQueuedArticles()
-						.stream().anyMatch(a -> a.getTitle().equals(article.getTitle()));
-				if (!alreadyQueued) {
-					// basically, do a full parse...
+				if (!Sections.isLive(section)) return;
+				articleManager.open();
+				try {
+					// EventManager may already have snapshotted an unregistered listener. Recheck after
+					// waiting for the registration frame, and keep it locked through the replacement.
+					if (!Sections.isLive(section)) return;
 					articleManager.registerArticle(article.getTitle(), article.getText());
+				}
+				finally {
+					articleManager.commit();
 				}
 			}
 		}

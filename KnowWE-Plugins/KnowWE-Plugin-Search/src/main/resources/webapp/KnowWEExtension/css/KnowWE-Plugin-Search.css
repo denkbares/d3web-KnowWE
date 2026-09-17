@@ -1,0 +1,982 @@
+/*
+ * Copyright (C) 2026 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+/* Colours come from variables.css only, so light and dark mode both work without a second rule set. */
+
+/* as wide as an article: the previews are rendered wiki content and want the same room */
+#knowwe-search {
+	position: relative;
+}
+
+.knowwe-search-bar input[type="search"] {
+	width: 28em;
+	max-width: 100%;
+	box-sizing: border-box;
+	padding: 0.35em 0.6em;
+	color: var(--text-color-primary);
+	background: var(--bg-color-primary);
+	border: 1px solid var(--border-color, #ccc);
+	border-radius: 4px;
+}
+
+/*
+ * Below the search box, as far from it as from the left edge: that way they read as its settings and not as the
+ * first line of the result list.
+ */
+.knowwe-search-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.2em;
+	margin: 0.6em 0 0 0.6em;
+}
+
+/*
+ * The settings, one component in both surfaces: what is searched, and beside it the variants switch.
+ *
+ * The scope is one choice of three, so it looks like one -- three segments of a single control, the chosen one filled
+ * in. As two checkboxes it read as two independent switches, which they never were.
+ */
+.knowwe-search-settings {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6em 1.2em;
+	align-items: center;
+}
+
+.knowwe-search-settings-caption {
+	font-size: 0.9em;
+	color: var(--text-color-secondary-shade);
+}
+
+/* the caption belongs to the segments, not to the switch behind them */
+.knowwe-search-settings-caption + .knowwe-search-scope {
+	margin-left: -0.8em;
+}
+
+.knowwe-search-scope {
+	display: inline-flex;
+	overflow: hidden;
+	border: 1px solid var(--bg-color-secondary-shade);
+	border-radius: 3px;
+}
+
+.knowwe-search-scope-option {
+	margin: 0;
+	padding: 0.15em 0.7em;
+	font-size: 0.9em;
+	font-weight: normal;
+	color: var(--text-color-secondary-shade);
+	cursor: pointer;
+	background: none;
+	border: none;
+	/* a line between the segments, but none on the outer edges: the frame is already there */
+	border-left: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-scope-option:first-child {
+	border-left: none;
+}
+
+.knowwe-search-scope-option:hover {
+	color: var(--text-color-primary);
+	background: var(--bg-color-secondary);
+}
+
+.knowwe-search-scope-option.is-active {
+	color: var(--text-color-primary);
+	background: var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-filter {
+	/* the template styles every label for a form: bold, with room reserved for the field below it. This one is a switch
+	   in a line of its own, and the same three read plain in the dropdown */
+	margin: 0;
+	font-size: 0.9em;
+	font-weight: normal;
+	color: var(--text-color-secondary-shade);
+	white-space: nowrap;
+	cursor: help;
+}
+
+.knowwe-search-filter input {
+	width: 0.95em;
+	height: 0.95em;
+	/*
+	 * "middle" puts the box on half the x-height, which leaves its centre a little over a pixel below the centre of the
+	 * text beside it. In a row standing on its own under the search box that shows; lifted by that much, box and label
+	 * are centred on the same line.
+	 */
+	position: relative;
+	top: -0.085em;
+	margin: 0 0.25em 0 0;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.knowwe-search-status {
+	margin: 0.6em 0 1em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+}
+
+.knowwe-search-results {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/*
+ * Icon in a column of its own, everything else indented against it: the mark gives the eye a fixed left edge, so the
+ * boundary between two results is visible without reading them. Same layout in the dropdown, hence the shared body
+ * class.
+ */
+.knowwe-search-hit {
+	display: block;
+	padding: 1em 0;
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-body {
+	min-width: 0;
+}
+
+.knowwe-search-body .border {
+	border: none;
+}
+
+.knowwe-search-icon {
+	display: flex;
+	justify-content: center;
+	padding-top: 0.15em;
+	color: var(--text-color-secondary);
+}
+
+.knowwe-search-hit:first-child {
+	border-top: none;
+}
+
+.knowwe-search-breadcrumb {
+	display: block;
+	font-size: 1.05em;
+	text-decoration: none;
+	color: var(--text-color-primary-link);
+}
+
+.knowwe-search-breadcrumb:hover > span:first-child {
+	text-decoration: underline;
+}
+
+.knowwe-search-breadcrumb .knowwe-search-separator {
+	margin: 0 0.45em;
+	color: var(--text-color-secondary);
+}
+
+.knowwe-search-breadcrumb .knowwe-search-separator:hover {
+	text-decoration: none;
+}
+
+.knowwe-search-snippet {
+	margin-top: 0.3em;
+	line-height: 1.5;
+	color: var(--text-color-primary-light);
+}
+
+.knowwe-search-more {
+	margin: 1.2em 0;
+	text-align: center;
+}
+
+.knowwe-search-more button {
+	padding: 0.4em 1.2em;
+	color: var(--text-color-secondary-shade);
+	background: transparent;
+	border: 1px solid var(--bg-color-secondary-shade);
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.knowwe-search-more button:hover {
+	background: var(--bg-color-secondary);
+}
+
+/* ------------------------------------------------------------------ quick search in the header */
+
+.knowwe-quicksearch {
+	position: relative;
+	float: right;
+	margin: 0.4em 0 0 1em;
+}
+
+.knowwe-quicksearch .border {
+	border: none;
+}
+
+.knowwe-quicksearch-input {
+	width: 16em;
+	max-width: 100%;
+	padding: 0.3em 0.6em;
+	color: var(--text-color-primary);
+	background: var(--bg-color-primary);
+	border: 1px solid var(--bg-color-secondary-shade);
+	border-radius: 3px;
+}
+
+/*
+ * A column with a scrolling list and a footer that stays put: only the hits scroll, so the way to the full result
+ * list is always one click away no matter how far down one has scrolled.
+ */
+.knowwe-quicksearch-panel {
+	position: absolute;
+	right: 0;
+	z-index: 1000;
+	display: flex;
+	flex-direction: column;
+	width: 34em;
+	max-width: 90vw;
+	max-height: 70vh;
+	/* a gap, so the panel's top edge reads as its own and not as a line hanging under the search field */
+	margin-top: 4px;
+	overflow: hidden;
+	background: var(--bg-color-primary);
+	border: 1px solid var(--bg-color-secondary-shade);
+	border-radius: 4px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+/*
+ * Only up and down. A rendered preview can hold a table far wider than the dropdown, and two pixels of overflow are
+ * enough for a horizontal scrollbar that costs more height than the sliver it reveals.
+ */
+/*
+ * A class sets display, so it beats the browser's own [hidden] rule and hiding the panel stopped hiding it: open it
+ * stayed open, closed it left its two pixels of border under the field as a stray line.
+ */
+.knowwe-quicksearch-panel[hidden] {
+	display: none;
+}
+
+.knowwe-quicksearch-list {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.knowwe-quicksearch-hit {
+	display: block;
+	padding: 0.15em 0.8em 0.45em 0;
+	text-decoration: none;
+	border-bottom: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-section.active,
+.knowwe-quicksearch-section:hover {
+	background: var(--bg-color-secondary);
+}
+
+.knowwe-quicksearch-crumb {
+	font-size: 0.95em;
+	color: var(--text-color-primary-link);
+}
+
+.knowwe-quicksearch-preview {
+	position: relative;
+	/* half again as much as before, but only where the section actually fills it -- a short preview stays short */
+	max-height: 10.5em;
+	/* see .knowwe-search-preview: room for the ring, taken off again on the outside */
+	margin: 0.2em -2px 0;
+	padding: 2px;
+	overflow: hidden;
+	font-size: 0.85em;
+	line-height: 1.4;
+}
+
+/*
+ * The whole entry is one link, so hovering underlines everything inside it including the rendered preview.
+ *
+ * It has to be switched off on the link itself: a text decoration is drawn through the descendants and cannot be
+ * taken back there, so "text-decoration: none" on the preview -- even with !important -- does nothing. Only the
+ * breadcrumb then opts back in; the preview is content, not a label.
+ */
+.knowwe-quicksearch-hit:hover,
+.knowwe-quicksearch-section.active .knowwe-quicksearch-hit,
+.knowwe-quicksearch-hit:focus {
+	text-decoration: none;
+}
+
+.knowwe-quicksearch-section:hover .knowwe-quicksearch-crumb,
+.knowwe-quicksearch-section.active .knowwe-quicksearch-crumb {
+	text-decoration: underline;
+}
+
+.knowwe-quicksearch-preview p,
+.knowwe-quicksearch-preview ul,
+.knowwe-quicksearch-preview ol,
+.knowwe-quicksearch-preview pre,
+.knowwe-quicksearch-preview table {
+	margin: 0 0 0.25em;
+}
+
+.knowwe-quicksearch-preview h1,
+.knowwe-quicksearch-preview h2,
+.knowwe-quicksearch-preview h3,
+.knowwe-quicksearch-preview h4 {
+	margin: 0;
+	font-size: 1em;
+}
+
+.knowwe-quicksearch-preview * {
+	max-height: none !important;
+	overflow: visible !important;
+}
+
+.knowwe-quicksearch-snippet {
+	display: -webkit-box;
+	overflow: hidden;
+	font-size: 0.85em;
+	line-height: 1.4;
+	color: var(--text-color-secondary-shade);
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+}
+
+.knowwe-quicksearch-all {
+	flex: 0 0 auto;
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-empty,
+.knowwe-quicksearch-all {
+	display: block;
+	padding: 0.5em 0.8em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+	/* on the left edge, where the page names are: centred, it read as a caption of the list rather than a way out of it */
+	text-align: left;
+	text-decoration: none;
+}
+
+/*
+ * The foot of the dropdown: the way to the search page on the left, the settings on the right.
+ *
+ * The two rows above it carry the border, so the foot needs none of its own -- and the link keeps the full width it had
+ * as a block, so the whole row still highlights on hover.
+ */
+.knowwe-quicksearch-foot {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-foot .knowwe-quicksearch-all,
+.knowwe-quicksearch-foot .knowwe-quicksearch-empty {
+	flex: 1 1 auto;
+	min-width: 0;
+	border-top: none;
+}
+
+/*
+ * A setting is not a result: quiet, on the right, and it says what it opens rather than showing it. The triangle turns
+ * the way it does on a folded hit, so the same gesture reads the same way everywhere in the panel.
+ */
+.knowwe-quicksearch-settings {
+	flex: 0 0 auto;
+	/* the template gives every button two pixels of margin, which left a white edge against the panel that the link on
+	   the other side does not have -- and both are the same kind of row here */
+	margin: 0;
+	padding: 0.5em 0.8em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+	white-space: nowrap;
+	cursor: pointer;
+	background: none;
+	border: none;
+}
+
+.knowwe-quicksearch-settings::before {
+	content: "▸";
+	display: inline-block;
+	/* the glyph sits low in its own box, and rotating it must stay the only thing the transform does */
+	position: relative;
+	top: -0.1em;
+	margin-right: 0.55em;
+	font-size: 0.85em;
+	transition: transform 0.1s ease-out;
+}
+
+.knowwe-quicksearch-settings.is-open::before {
+	transform: rotate(90deg);
+}
+
+.knowwe-quicksearch-settings:hover {
+	color: var(--text-color-primary);
+	background: var(--bg-color-secondary);
+}
+
+/*
+ * The filters themselves, the same three as under the search box, hidden until the settings are opened. Metrics of the
+ * row above, so the foot of the panel reads as one block. The labels have their form styling taken off: the template
+ * makes every label bold and gives it a bottom margin for the field beneath it, and there is none.
+ */
+.knowwe-quicksearch-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.9em;
+	align-items: center;
+	padding: 0.2em 0.8em 0.6em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+}
+
+.knowwe-quicksearch-filters[hidden] {
+	display: none;
+}
+
+.knowwe-quicksearch-filter {
+	margin: 0;
+	font-weight: normal;
+	white-space: nowrap;
+	cursor: help;
+}
+
+.knowwe-quicksearch-filter input {
+	width: 0.95em;
+	height: 0.95em;
+	margin: 0 0.25em 0 0;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.knowwe-quicksearch-all:hover {
+	background: var(--bg-color-secondary);
+}
+
+/* ------------------------------------------------------------------ rendered section preview */
+
+/*
+ * The wiki renders the section itself, so a hit shows real tables and markup boxes. Capped at a fifth of the
+ * viewport with a fade, because a long section must not push the next hit off the screen.
+ */
+/*
+ * The two pixels of padding are room for the ring around a match: the box has to clip (we scroll inside it to reach the
+ * match, and only a scrollable box can be scrolled), so a mark sitting against an edge would lose the side of its ring.
+ * The negative margin gives the room back, so nothing moves.
+ */
+.knowwe-search-preview {
+	position: relative;
+	max-height: 20vh;
+	margin: 0.4em -2px 0;
+	padding: 2px;
+	overflow: hidden;
+	font-size: 0.95em;
+}
+
+/*
+ * The wiki's own spacing is meant for a full page: a paragraph per line, generous margins, and the odd empty
+ * paragraph from the markup. Inside a result list that turns into a column of gaps, so it is tightened here.
+ */
+.knowwe-search-preview > :first-child {
+	margin-top: 0;
+}
+
+.knowwe-search-preview p,
+.knowwe-search-preview ul,
+.knowwe-search-preview ol,
+.knowwe-search-preview pre,
+.knowwe-search-preview table {
+	margin: 0 0 0.35em;
+}
+
+.knowwe-search-preview h1,
+.knowwe-search-preview h2,
+.knowwe-search-preview h3,
+.knowwe-search-preview h4 {
+	margin: 0 0 0.25em;
+	font-size: 1em;
+}
+
+/* a second break is a blank line the source has, e.g. between two rules -- it must stay */
+.knowwe-search-preview p:empty {
+	display: none;
+}
+
+/* an inner scroll area inside an already capped preview just traps the wheel */
+.knowwe-search-preview * {
+	max-height: none !important;
+	overflow: visible !important;
+}
+
+/*
+ * The wiki wraps every table in an inline-block, which is fine on a page where the text around it sits in paragraphs of
+ * its own. A preview is a fragment, so the sentence following a table can end up as a bare text node -- and next to an
+ * inline-block it then reads beside the table instead of below it. As a block, the order is the article's again.
+ */
+/*
+ * A paginated table shows its rows here, not its controls.
+ *
+ * "Show n entries", the page arrows, the filter and the column buttons all act on a table the reader is only looking at:
+ * a preview is capped in height and keeps the rows that matched, so there is nothing to page through or sort. Every such
+ * table brought three of those bars, which took more room than the rows they framed.
+ */
+.knowwe-search-preview .knowwe-paginationToolbar,
+.knowwe-quicksearch-preview .knowwe-paginationToolbar {
+	display: none;
+}
+
+/*
+ * And no way to download what is being previewed.
+ *
+ * Offering the export of a table from a search result is an answer to a question nobody asked there; the reader wants to
+ * see whether this is the right page. The whole control goes, not just its icon, or an empty clickable box would be left
+ * behind -- hence the :has(), which is also why the icon classes are listed rather than a single one: the wiki spells a
+ * download as fa-download, fa-arrow-down-to-line or fa-arrow-down-to-bracket, depending on where it is used.
+ */
+.knowwe-search-preview :is(a, button):has(> i[class*="fa-download"], > i[class*="fa-arrow-down-to"]),
+.knowwe-quicksearch-preview :is(a, button):has(> i[class*="fa-download"], > i[class*="fa-arrow-down-to"]),
+.knowwe-search-preview :is(a, button)[title*="ownload"],
+.knowwe-quicksearch-preview :is(a, button)[title*="ownload"],
+.knowwe-search-preview :is(a, button)[class*="download"],
+.knowwe-quicksearch-preview :is(a, button)[class*="download"],
+.knowwe-search-preview :is(a, button)[class*="export"],
+.knowwe-quicksearch-preview :is(a, button)[class*="export"] {
+	display: none;
+}
+
+.knowwe-search-preview .tablePopupParent,
+.knowwe-quicksearch-preview .tablePopupParent {
+	display: block;
+}
+
+.knowwe-search-stale {
+	margin-top: 0.2em;
+	font-size: 0.8em;
+	color: var(--text-color-secondary);
+}
+
+/* ------------------------------------------------------------------ highlighting */
+
+/*
+ * A background over the full line height touches the line above and below wherever lines sit close together, which
+ * in a dense preview is most of the time. A lighter tint on a box that does not grow with the line keeps the marks
+ * legible without them running into each other.
+ */
+/*
+ * Both by id, not by class: skin.css carries ".haddock mark { background: var(--highlight-color-dark) }", and against
+ * a class selector that rule wins simply by being loaded later. The search page happened to win through its id, the
+ * dropdown did not -- which is why only one of the two looked changed.
+ */
+#knowwe-search mark,
+#knowwe-quicksearch-panel mark {
+	display: inline;
+	padding: 0 0.15em;
+	line-height: 1;
+	color: inherit;
+	/* the plain tint first, for browsers without color-mix; the mixed one wins where it is understood */
+	background-color: var(--highlight-color-faint-yellow);
+	background-color: color-mix(in srgb, var(--highlight-color-faint-yellow) 45%, var(--bg-color-primary));
+	border-radius: 2px;
+	/*
+	 * A ring, not a border: a border on an inline element adds width and pushes the text around it. The tint only has
+	 * to hint, the ring does the pointing -- in dark mode the tint is almost nothing anyway and the ring carries the
+	 * mark on its own.
+	 */
+	box-shadow: 0 0 0 1px var(--highlight-color-dark);
+}
+
+/* ------------------------------------------------------------------ folded hits of the same page */
+
+/*
+ * A page's weaker sections sit behind one line instead of filling the list. It reads as a link rather than a button:
+ * it leads somewhere, it does not perform anything.
+ */
+.knowwe-search-folded-toggle,
+.knowwe-quicksearch-more {
+	display: block;
+	padding: 0.15em 0;
+	font-size: 0.9em;
+	color: var(--text-color-primary-link);
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.knowwe-search-folded-toggle:hover,
+.knowwe-quicksearch-more:hover {
+	text-decoration: underline;
+}
+
+.knowwe-search-folded-toggle::before,
+.knowwe-quicksearch-more::before {
+	display: inline-block;
+	margin-right: 0.4em;
+	content: "▸";
+}
+
+.knowwe-search-folded-toggle.is-open::before,
+.knowwe-quicksearch-more.is-open::before {
+	content: "▾";
+}
+
+.knowwe-search-folded-toggle:disabled,
+.knowwe-quicksearch-more:disabled {
+	color: var(--text-color-secondary);
+	cursor: default;
+}
+
+.knowwe-search-folded-hits {
+	list-style: none;
+	margin: 0.3em 0 0;
+	padding: 0;
+}
+
+/* unfolded hits belong to the entry above them, so they are indented and separated more quietly */
+.knowwe-search-folded-hits .knowwe-search-hit {
+	padding: 0.6em 0;
+	border-top: 1px dotted var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-more {
+	padding-left: 2.94em;
+	text-align: left;
+	border-bottom: 1px solid var(--bg-color-secondary-shade);
+	width: 100%;
+}
+
+/* ------------------------------------------------------------------ one block per page */
+
+/*
+ * The page name is said once, as the heading of the block; the sections below it carry only their own path. Repeating
+ * the page in front of every section is what made a page with several hits read as several unrelated results.
+ */
+/* icon in a column of its own, page name and everything under it indented against it */
+.knowwe-search-page,
+.knowwe-quicksearch-page {
+	display: grid;
+	grid-template-columns: 1.7em 1fr;
+	column-gap: 0.6em;
+	align-items: baseline;
+	font-weight: bold;
+	color: var(--text-color-primary-link);
+	text-decoration: none;
+}
+
+.knowwe-search-page:hover,
+.knowwe-quicksearch-page:hover {
+	text-decoration: underline;
+}
+
+.knowwe-search-page {
+	font-size: 1.05em;
+}
+
+.knowwe-quicksearch-page {
+	padding: 0.55em 0.8em 0.15em;
+	font-size: 0.95em;
+}
+
+.knowwe-search-section + .knowwe-search-section,
+.knowwe-search-folded-hits .knowwe-search-section {
+	margin-top: 0.6em;
+}
+
+.knowwe-search-breadcrumb {
+	font-size: 0.95em;
+}
+
+/* a page and its sections are one block, so the line goes between blocks and not between the sections */
+.knowwe-quicksearch-group + .knowwe-quicksearch-group {
+	border-top: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-quicksearch-group .knowwe-quicksearch-hit {
+	border-bottom: none;
+}
+
+.knowwe-quicksearch-group .knowwe-quicksearch-more {
+	border-bottom: none;
+}
+
+/* a block continuing the heading above it belongs to it, so it sits closer than a new section would */
+.knowwe-search-section.is-continuation + .knowwe-search-section,
+.knowwe-search-section + .knowwe-search-section.is-continuation {
+	margin-top: 0.25em;
+}
+
+/* the line under the sections lines up with their text, not with the triangles */
+.knowwe-search-folded {
+	margin-left: 2.3em;
+}
+
+/* ------------------------------------------------------------------ a section inside a page block */
+
+/*
+ * Every section keeps a triangle in a gutter of its own: it marks the row the way the document icon marks the page,
+ * and where the capped preview actually cuts something off it lifts the cap.
+ */
+/* same two columns as the page heading above, so the triangles line up with its icon */
+.knowwe-search-section,
+.knowwe-quicksearch-section {
+	display: grid;
+	grid-template-columns: 1.7em 1fr;
+	column-gap: 0.6em;
+}
+
+.knowwe-quicksearch-section {
+	grid-template-columns: 2.5em 1fr;
+}
+
+.knowwe-quicksearch-section > .knowwe-search-gutter {
+	padding-left: 0.8em;
+}
+
+/* without this the column takes its content's width and a wide preview pushes the whole row past the panel */
+.knowwe-search-section-body,
+.knowwe-quicksearch-section > .knowwe-quicksearch-hit {
+	min-width: 0;
+}
+
+/* the gutter runs the height of the whole section, the target must not -- it would swallow clicks beside the preview */
+.knowwe-search-gutter {
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+/*
+ * The glyph is small but the target must not be: it fills the width of the gutter and is padded to roughly finger
+ * height, while staying on the row it belongs to.
+ */
+.knowwe-search-grow {
+	width: 100%;
+	padding: 0.35em 0;
+	font-size: 1em;
+	line-height: 1em;
+	color: var(--text-color-primary-link);
+	text-align: center;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.knowwe-search-grow:hover:not(:disabled) {
+	background: var(--bg-color-secondary);
+	border-radius: 3px;
+}
+
+.knowwe-search-grow::before {
+	content: "▸";
+}
+
+.knowwe-search-grow.is-open::before {
+	content: "▾";
+}
+
+/* nothing to lift here, so it is a plain mark: a dot promises nothing, a triangle would */
+.knowwe-search-grow.is-static {
+	color: var(--text-color-secondary);
+	cursor: default;
+}
+
+.knowwe-search-grow.is-static::before {
+	font-size: 1.3em;
+	content: "\2022";
+}
+
+/* three times the capped height, not the whole section: one hit must not push the rest of the list off the screen */
+.knowwe-search-preview.is-expanded {
+	max-height: 60vh;
+}
+
+.knowwe-quicksearch-preview.is-expanded {
+	max-height: 31.5em;
+}
+
+/*
+ * The fade is the edge of the window, not decoration: it says "this is cut off, the rest is on the page". Drawn on a
+ * preview that fits, it whites out the last line of a section that is complete and reads as if something were missing.
+ * Hence the class, set from the measuring pass and again whenever the cap changes.
+ */
+
+/*
+ * A dropdown hit is one big link, so its rendered preview inherits the link colour and the whole section reads as if
+ * it were clickable text. Only the breadcrumb is a label; the preview is content and keeps the normal text colour.
+ */
+.knowwe-quicksearch-preview,
+.knowwe-quicksearch-snippet,
+.knowwe-search-preview,
+.knowwe-search-snippet {
+	color: var(--text-color-primary);
+}
+
+/*
+ * The same edge, sideways: a wiki table is often wider than a result and gets cut mid-cell, which without a fade reads
+ * as a line that simply stops. Top and bottom already use both pseudo elements of the preview, so this one fades the
+ * element itself out -- which also works over a table's own background, where an overlay in the page colour would not.
+ */
+/*
+ * The three fades are one mask, not overlays.
+ *
+ * An overlay is a child of the preview, and the preview scrolls: revealFirstMatch moves it down to the match, and an
+ * absolutely positioned child moves with the content, so the fade ended up in the middle of the text while the real
+ * edge stayed sharp. A mask applies to the element's own box and does not care where the content sits inside it.
+ *
+ * It also composites over whatever is behind -- a hovered row, a table with its own background -- where an overlay had
+ * to repaint the exact background colour to look right.
+ *
+ * All three layers are always present; the ones that are not wanted end at 0 and therefore cover nothing.
+ */
+.knowwe-search-preview,
+.knowwe-quicksearch-preview {
+	--fade-top: 0px;
+	--fade-bottom: 0px;
+	--fade-right: 0px;
+	-webkit-mask-image:
+		linear-gradient(to top, transparent 0, black var(--fade-bottom)),
+		linear-gradient(to bottom, transparent 0, black var(--fade-top)),
+		linear-gradient(to left, transparent 0, black var(--fade-right));
+	mask-image:
+		linear-gradient(to top, transparent 0, black var(--fade-bottom)),
+		linear-gradient(to bottom, transparent 0, black var(--fade-top)),
+		linear-gradient(to left, transparent 0, black var(--fade-right));
+	-webkit-mask-composite: source-in;
+	mask-composite: intersect;
+}
+
+/* only the last line goes: everything above it should be readable, the fade is an edge and not a curtain */
+.knowwe-search-preview.is-clipped,
+.knowwe-quicksearch-preview.is-clipped {
+	--fade-bottom: 1.2em;
+}
+
+.knowwe-search-preview.is-scrolled,
+.knowwe-quicksearch-preview.is-scrolled {
+	--fade-top: 1em;
+}
+
+.knowwe-search-preview.is-clipped-right,
+.knowwe-quicksearch-preview.is-clipped-right {
+	--fade-right: 2.5em;
+}
+
+/* ------------------------------------------------------------------ while a search is running */
+
+/*
+ * Only shown when the answer takes long enough to notice -- see BUSY_AFTER_MS. A bar rather than a spinner in the
+ * middle: it does not move the results that are already on screen, and it sits where the new ones will appear.
+ */
+#knowwe-search.is-busy::before,
+#knowwe-quicksearch-panel.is-busy::before {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 2;
+	height: 2px;
+	content: "";
+	background: linear-gradient(to right, transparent, var(--text-color-primary-link), transparent);
+	animation: knowwe-search-busy 1.1s linear infinite;
+}
+
+@keyframes knowwe-search-busy {
+	from { transform: translateX(-100%); }
+	to { transform: translateX(100%); }
+}
+
+.knowwe-quicksearch-busy {
+	display: block;
+	padding: 0.6em 0.8em;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+	text-align: center;
+}
+
+/* the marker that pulls in the next page -- it says what is happening while it is being reached */
+.knowwe-search-more-marker {
+	padding: 1em 0;
+	font-size: 0.9em;
+	color: var(--text-color-secondary);
+	text-align: center;
+}
+
+/* ------------------------------------------------------------------ create the page that is missing */
+
+/*
+ * Sits where the way to the full result list sits, and reads as an offer rather than as a result: the search is done,
+ * this is what one can do about it.
+ */
+.knowwe-search-create {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1em;
+	/*
+	 * Centred, not on the baseline: the checkbox is an inline-block, so its baseline is its bottom edge, which drags
+	 * the label's first baseline down and made the whole row five pixels taller than the line above it.
+	 */
+	align-items: center;
+	/* left, on the same edge as the hits below it, so the eye follows one line down the list */
+	justify-content: flex-start;
+	/* the same metrics as the one line rows of the result list, and a line below it against the first hit */
+	padding: 0.5em 0.8em;
+	font-size: 0.9em;
+	border-bottom: 1px solid var(--bg-color-secondary-shade);
+}
+
+.knowwe-search-create-link {
+	/*
+	 * A page name has no length limit, and a search string is a page name here. Left to grow, it pushed the checkbox
+	 * out of the row and the dropdown into a horizontal scrollbar, so the name gives way first and the offer to clone
+	 * stays where it is.
+	 */
+	min-width: 3em;
+	overflow: hidden;
+	color: var(--text-color-primary-link);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-decoration: none;
+}
+
+.knowwe-search-create-link:hover {
+	text-decoration: underline;
+}
+
+.knowwe-search-create-clone {
+	/*
+	 * The template styles every form label for a form: bold, with a bottom margin that reserves room for the field
+	 * below it. Here the label sits in a line of running text, and that margin made the row taller than the line
+	 * above it -- five pixels that read as a step in the footer.
+	 */
+	margin: 0;
+	font-weight: normal;
+	color: var(--text-color-secondary-shade);
+	white-space: nowrap;
+	cursor: help;
+}
+
+.knowwe-search-create-clone input {
+	/*
+	 * A checkbox at its own size drags the line box open below the baseline, and the row grew ten pixels taller than
+	 * the line above it. Held to the text size and centred, both rows are the same height.
+	 */
+	width: 0.95em;
+	height: 0.95em;
+	margin: 0 0.25em 0 0;
+	vertical-align: middle;
+	cursor: pointer;
+}

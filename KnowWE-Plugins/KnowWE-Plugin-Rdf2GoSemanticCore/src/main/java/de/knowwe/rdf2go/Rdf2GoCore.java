@@ -809,6 +809,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return the URI for the given string
 	 */
 	public IRI createIRI(String value) {
+		if (value.contains("<") || value.contains(">")) {
+			throw new IllegalArgumentException("The given value contains an illegal character '<' or '>'.");
+		}
 		return getValueFactory().createIRI(Rdf2GoUtils.expandNamespace(this, value));
 	}
 
@@ -1406,6 +1409,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		SparqlTask sparqlTask;
 		if (options.cached && query != null) {
 			// use case, if enabled, and we use a non-prepared query
+			// lookup and task creation have to appear atomic, so we hold the cache monitor across both
 			synchronized (this.sparqlCache) {
 				sparqlTask = this.sparqlCache.get(query);
 				if (options.lastCachedResult) {
@@ -1506,16 +1510,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public boolean clearCachedResult(String query) {
 		String completeQuery = prependPrefixesToQuery(getNamespaces(), query);
-		synchronized (this.sparqlCache) {
-			return sparqlCache.remove(completeQuery);
-		}
+		return sparqlCache.remove(completeQuery);
 	}
 
 	public SparqlCache.State getCacheState(String query) {
 		String completeQuery = prependPrefixesToQuery(getNamespaces(), query);
-		synchronized (this.sparqlCache) {
-			return sparqlCache.getState(completeQuery);
-		}
+		return sparqlCache.getState(completeQuery);
 	}
 
 	public static class Options {

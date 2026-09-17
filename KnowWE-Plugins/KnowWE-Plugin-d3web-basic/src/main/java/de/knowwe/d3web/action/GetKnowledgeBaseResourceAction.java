@@ -29,7 +29,9 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Delivers a multimedia file attached to the knowledge base through the
@@ -40,6 +42,11 @@ import de.knowwe.core.action.UserActionContext;
  * @author Volker Belli
  */
 public class GetKnowledgeBaseResourceAction extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	private static final MimetypesFileTypeMap MIMETYPE_MAP = new MimetypesFileTypeMap();
 	static {
@@ -53,6 +60,11 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 		String web = context.getParameter("web");
 		String topic = context.getParameter("topic");
 		String path = context.getPath();
+		if (!KnowWEUtils.canView(topic, context)) {
+			context.sendError(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN,
+					"You are not allowed to access resources of this knowledge base");
+			return;
+		}
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
 		if (kb == null) {
 			context.sendError(404, "The specified knowledge base does not exist.");

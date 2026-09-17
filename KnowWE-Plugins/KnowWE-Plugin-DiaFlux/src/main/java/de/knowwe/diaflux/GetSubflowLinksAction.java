@@ -25,6 +25,7 @@ import de.d3web.diaFlux.flow.ComposedNode;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -39,12 +40,21 @@ import de.knowwe.diaflux.type.FlowchartType;
 public class GetSubflowLinksAction extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String kdomid = context.getParameter("kdomid");
 
 		Section<FlowchartType> flowchart = Sections.get(kdomid, FlowchartType.class);
 		if (flowchart == null) {
 			Highlight.writeEmpty(context);
+			return;
+		}
+		if (!KnowWEUtils.canView(flowchart, context)) {
+			context.sendError(403, "You are not allowed to see the subflow links of this flowchart");
 			return;
 		}
 

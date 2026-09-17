@@ -9,13 +9,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
 /**
@@ -27,9 +26,9 @@ public class CommitOntologyAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String compileSectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(compileSectionId);
-		Section<PackageCompileType> compileSection = Sections.cast(section, PackageCompileType.class);
+		// the commit is triggered for the compiler of the requested section, so require write access to it
+		Section<PackageCompileType> compileSection = getSection(context, PackageCompileType.class);
+		KnowWEUtils.assertCanWrite(compileSection, context);
 		Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
 		Optional<PackageCompiler> optionalCompiler = packageCompilers.stream()
 				.filter(compiler -> compiler instanceof OntologyCompiler)

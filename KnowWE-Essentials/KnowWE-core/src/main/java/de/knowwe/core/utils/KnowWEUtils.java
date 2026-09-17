@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.AttachmentManager;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
@@ -115,6 +117,56 @@ public class KnowWEUtils {
 			}
 			index = buffer.indexOf(toReplace, index + 1);
 		}
+	}
+
+	/**
+	 * Returns the value of the given configuration property. The property is looked up in the wiki properties
+	 * (jspwiki[-custom].properties) first, then in the Java system properties under the same key, and finally in the
+	 * environment variables under the key transformed to environment variable style (upper case, dots replaced by
+	 * underscores, e.g. "key.subKey" becomes "KEY_SUBKEY"). Returns null if the property is not set anywhere.
+	 *
+	 * @param property the property key to get the value for
+	 * @return the property value or null if not set
+	 */
+	@Nullable
+	public static String getProperty(String property) {
+		String value = Environment.getInstance().getWikiConnector().getWikiProperty(property);
+		if (value == null) {
+			value = System.getProperty(property);
+		}
+		if (value == null) {
+			value = System.getenv(property.toUpperCase().replace(".", "_"));
+		}
+		return value;
+	}
+
+	/**
+	 * Returns the value of the given configuration property, looked up as in {@link #getProperty(String)}, or
+	 * the given default value if the property is not set anywhere.
+	 *
+	 * @param property     the property key to get the value for
+	 * @param defaultValue the value to return if the property is not set
+	 * @return the property value or the default value
+	 */
+	@NotNull
+	public static String getProperty(String property, @NotNull String defaultValue) {
+		String value = getProperty(property);
+		return value == null ? defaultValue : value;
+	}
+
+	/**
+	 * Returns the boolean value of the given configuration property, looked up as in
+	 * {@link #getProperty(String)}. Returns true only if the property is set to "true" (ignoring case and
+	 * surrounding whitespace), the given default value if the property is not set, and false otherwise.
+	 *
+	 * @param property     the property key to get the value for
+	 * @param defaultValue the value to return if the property is not set
+	 * @return the boolean property value or the default value
+	 */
+	public static boolean getPropertyFlag(String property, boolean defaultValue) {
+		String value = getProperty(property);
+		if (value == null) return defaultValue;
+		return "true".equalsIgnoreCase(value.trim());
 	}
 
 	/**
@@ -395,11 +447,24 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canView(final Article article, final UserContext context) {
+		return canView(article.getTitle(), context);
+	}
+
+	/**
+	 * Returns if the user has the read access rights to the specified article. Use this instead of {@link
+	 * #canView(Article, UserContext)} if only the title is known, e.g. because it stems from a request parameter.
+	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param context      the user context
+	 * @return true if the user has the read access rights to the article
+	 */
+	public static boolean canView(final String articleTitle, final UserContext context) {
+		if (Strings.isBlank(articleTitle)) return false;
 		final WikiConnector connector = Environment.getInstance().getWikiConnector();
 		// try nine times with catching unexpected exception from AuthorizationManager
 		for (int i = 0; i < 9; i++) {
 			try {
-				return connector.userCanViewArticle(article.getTitle(), context);
+				return connector.userCanViewArticle(articleTitle, context);
 			}
 			catch (final ConcurrentModificationException e) {
 				// do nothing a few times, because we have no influence here
@@ -408,7 +473,7 @@ public class KnowWEUtils {
 		}
 		// finally, if not passed successfully,
 		// try last time throwing the exception
-		return connector.userCanViewArticle(article.getTitle(), context);
+		return connector.userCanViewArticle(articleTitle, context);
 	}
 
 	/**
@@ -464,8 +529,67 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
 	public static void assertCanView(final Section<?> section, final UserContext context) throws NotAuthorizedException {
+		assertSectionGiven(section);
 		if (!canView(section, context)) {
 			throw new NotAuthorizedException("No view access for section '" + section.getID() + "'.");
+		}
+	}
+
+	/**
+	 * Checks whether the user has read access rights to the specified article. If not, a {@link
+	 * NotAuthorizedException} is thrown, which the action dispatcher answers with 403.
+	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param context      the user context
+	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article
+	 */
+	public static void assertCanView(final String articleTitle, final UserContext context) throws NotAuthorizedException {
+		assertTitleGiven(articleTitle);
+		if (!canView(articleTitle, context)) {
+			throw new NotAuthorizedException("No view access for article '" + articleTitle + "'.");
+		}
+	}
+
+	/**
+	 * Refuses a permission check that has no section to check, rather than failing on the missing section while
+	 * building the refusal. A request whose section is gone cannot be granted access to it.
+	 *
+	 * @param section the section the check was asked for
+	 * @throws NotAuthorizedException if no section was given
+	 */
+	private static void assertSectionGiven(final Section<?> section) throws NotAuthorizedException {
+		if (section == null) {
+			throw new NotAuthorizedException("The section the request works on does not exist, so its access cannot " +
+					"be checked. The page content is probably outdated, please reload.");
+		}
+	}
+
+	/**
+	 * Refuses a permission check that has no page to check, rather than letting it fail deep inside the wiki
+	 * connector. A request that does not name the page it works on cannot be granted access to it, so the message
+	 * names the parameters a caller may use to name it.
+	 *
+	 * @param articleTitle the title the check was asked for
+	 * @throws NotAuthorizedException if no title was given
+	 */
+	private static void assertTitleGiven(final String articleTitle) throws NotAuthorizedException {
+		if (Strings.isBlank(articleTitle)) {
+			throw new NotAuthorizedException("The request does not name the page it works on, so its access cannot " +
+					"be checked. Send the page as '" + Attributes.TOPIC + "', 'page' or 'title'.");
+		}
+	}
+
+	/**
+	 * Checks whether the user is authenticated. If not, a {@link NotAuthorizedException} is thrown, which the action
+	 * dispatcher answers with 403. Actions that declare {@code Access.AUTH} should call this, so the authentication
+	 * requirement is enforced by the action itself and not only by the dispatcher.
+	 *
+	 * @param context the user context
+	 * @throws NotAuthorizedException is thrown if no user is authenticated
+	 */
+	public static void assertUserAuth(final UserContext context) throws NotAuthorizedException {
+		if (!context.userIsAsserted()) {
+			throw new NotAuthorizedException("No authenticated user.");
 		}
 	}
 
@@ -478,6 +602,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final String articleTitle, final UserContext user) {
+		if (Strings.isBlank(articleTitle)) return false;
 		return Environment.getInstance().getWikiConnector().userCanEditArticle(
 				articleTitle, user);
 	}
@@ -504,8 +629,36 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canUpload(final Article article, final UserContext user) {
-		return Environment.getInstance().getWikiConnector().userCanUploadAttachment(
-				article.getTitle(), user);
+		return canUpload(article.getTitle(), user);
+	}
+
+	/**
+	 * Returns if the user has permission to attach files to the specified article. Use this instead of {@link
+	 * #canUpload(Article, UserContext)} if the attachment is stored by article title, because attachments can also be
+	 * added to wiki pages that are not (yet) an {@link Article}.
+	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param user         the user context
+	 * @return true if the user has the upload permissions
+	 */
+	public static boolean canUpload(final String articleTitle, final UserContext user) {
+		if (Strings.isBlank(articleTitle)) return false;
+		return Environment.getInstance().getWikiConnector().userCanUploadAttachment(articleTitle, user);
+	}
+
+	/**
+	 * Checks whether the user has permission to attach files to the specified article. If not, a {@link
+	 * NotAuthorizedException} is thrown, which the action dispatcher answers with 403.
+	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param context      the user context
+	 * @throws NotAuthorizedException is thrown if the user is not allowed to attach files to the article
+	 */
+	public static void assertCanUpload(final String articleTitle, final UserContext context) throws NotAuthorizedException {
+		assertTitleGiven(articleTitle);
+		if (!canUpload(articleTitle, context)) {
+			throw new NotAuthorizedException("No upload access for article '" + articleTitle + "'.");
+		}
 	}
 
 	/**
@@ -535,7 +688,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canWrite(final Section<?> section, final UserContext user) {
-		return canWrite(section.getArticle(), user);
+		return section != null && canWrite(section.getArticle(), user);
 	}
 
 	/**
@@ -548,8 +701,37 @@ public class KnowWEUtils {
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
 	public static void assertCanWrite(final Section<?> section, final UserContext context) throws NotAuthorizedException {
+		assertSectionGiven(section);
 		if (!canWrite(section, context)) {
 			throw new NotAuthorizedException("No write access for section '" + section.getID() + "'.");
+		}
+	}
+
+	/**
+	 * Checks whether the user has write access rights to the specified article. If not, a {@link
+	 * NotAuthorizedException} is thrown, which the action dispatcher answers with 403.
+	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param context      the user context
+	 * @throws NotAuthorizedException is thrown if the user has no write rights to the article
+	 */
+	public static void assertCanWrite(final String articleTitle, final UserContext context) throws NotAuthorizedException {
+		assertTitleGiven(articleTitle);
+		if (!canWrite(articleTitle, context)) {
+			throw new NotAuthorizedException("No write access for article '" + articleTitle + "'.");
+		}
+	}
+
+	/**
+	 * Checks whether the user has the rights to create new pages. If not, a {@link NotAuthorizedException} is thrown,
+	 * which the action dispatcher answers with 403.
+	 *
+	 * @param context the user context
+	 * @throws NotAuthorizedException is thrown if the user is not allowed to create new pages
+	 */
+	public static void assertCanCreatePages(final UserContext context) throws NotAuthorizedException {
+		if (!canCreatePages(context)) {
+			throw new NotAuthorizedException("No permission to create new articles.");
 		}
 	}
 

@@ -8,9 +8,19 @@ import java.io.IOException;
 
 import de.knowwe.dialog.repository.VersionSet;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class DeleteVersionSet extends AbstractAction {
+
+	/**
+	 * Deletes a version of the update repository, which is repository administration and is offered by the
+	 * administration pages of the dialog only.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	public static String PARAM_VERSION = "version";
 

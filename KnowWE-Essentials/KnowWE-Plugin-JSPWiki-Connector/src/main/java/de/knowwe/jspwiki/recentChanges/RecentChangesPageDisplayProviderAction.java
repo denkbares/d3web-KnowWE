@@ -19,16 +19,28 @@
 
 package de.knowwe.jspwiki.recentChanges;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class RecentChangesPageDisplayProviderAction extends AbstractAction {
+
+	/**
+	 * Writes only the caller's own session local storage, so any authenticated user may call it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.AUTH;
+	}
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		String filterType = context.getParameter("type");
 		boolean show = Boolean.parseBoolean(context.getParameter("show"));
 		JSONObject localSectionStorage = getLocalSectionStorage(context);

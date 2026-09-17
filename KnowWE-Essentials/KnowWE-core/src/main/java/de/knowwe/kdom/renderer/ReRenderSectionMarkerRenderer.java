@@ -23,6 +23,9 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.Div;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -67,6 +70,21 @@ public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 	public static void renderOpen(String secId, RenderResult result) {
 		result.appendHtml("<div class='ReRenderSectionMarker' style='display: inline;' sectionId='")
 				.append(secId).appendHtml("' rel='{id:\"").append(secId).appendHtml("\"}'>");
+	}
+
+	/**
+	 * Creates a rerender marker containing the supplied elements.
+	 *
+	 * @param sectionId stable ID of the section to rerender
+	 * @param children  marker content
+	 * @return element representing the complete rerender marker
+	 */
+	public static HtmlElement createMarker(String sectionId, HtmlProvider... children) {
+		return new Div()
+				.clazz("ReRenderSectionMarker")
+				.style("display: inline;")
+				.attributes("sectionId", sectionId, "rel", "{id:\"" + sectionId + "\"}")
+				.children(children);
 	}
 
 	public static void renderClose(RenderResult result) {

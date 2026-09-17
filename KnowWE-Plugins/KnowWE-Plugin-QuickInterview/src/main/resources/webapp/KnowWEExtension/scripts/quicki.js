@@ -846,8 +846,7 @@ KNOWWE.plugin.quicki = function() {
             jq$(this).dialog("close");
           }
         }
-      }).parent().find(".ui-dialog-titlebar-close").css("top", ".3em");
-      ;
+      });
     }
   };
 }();

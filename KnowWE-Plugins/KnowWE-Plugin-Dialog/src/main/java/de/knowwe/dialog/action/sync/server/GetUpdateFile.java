@@ -12,9 +12,19 @@ import de.knowwe.dialog.repository.VersionSet;
 
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class GetUpdateFile extends AbstractAction {
+
+	/**
+	 * Serves an update file of the repository to the dialog application, which downloads it before it could sign in
+	 * anywhere.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	public static String PARAM_FILENAME = "file";
 	public static String PARAM_CHECKSUM = "checksum";

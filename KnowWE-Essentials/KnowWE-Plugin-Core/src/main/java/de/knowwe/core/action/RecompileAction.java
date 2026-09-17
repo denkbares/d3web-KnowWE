@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 
@@ -64,12 +67,21 @@ public class RecompileAction extends AbstractAction {
 	private static final ExecutorService LOGGER_THREAD = Executors.newCachedThreadPool(runnable -> new Thread(runnable, "Recompile-Logger-Thread"));
 
 	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.WRITE;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 
 		String command = context.getParameter("command");
 		Article article = context.getArticle();
 		if (article == null) {
 			failUnexpected(context, "No article found, unable to recompile");
+			return;
+		}
+		if (!KnowWEUtils.canWrite(article, context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not allowed to recompile this article");
 			return;
 		}
 
@@ -138,31 +150,33 @@ public class RecompileAction extends AbstractAction {
 
 	public static void recompile(@NotNull Collection<Article> articlesToRecompile, @NotNull Mode mode, @NotNull String reason, @Nullable String userName) {
 		if (userName == null) userName = "SYSTEM";
-		if (articlesToRecompile.isEmpty()) return;
-		ArticleManager articleManager = articlesToRecompile.iterator().next().getArticleManager();
+		Article firstArticle = articlesToRecompile.stream().findFirst().orElse(null);
+		if (firstArticle == null) return;
+		ArticleManager articleManager = firstArticle.getArticleManager();
 		Objects.requireNonNull(articleManager);
-		Stopwatch stopwatch = new Stopwatch();
 		articleManager.open();
 		try {
+			List<Article> currentArticlesToRecompile = resolveCurrentArticles(articleManager, articlesToRecompile);
+			if (currentArticlesToRecompile.isEmpty()) return;
+			Stopwatch stopwatch = new Stopwatch();
 			LOGGER.info("Starting {} recompilation ({}). Reason: {}. User: {}",
-					mode.name(), Strings.pluralOf(articlesToRecompile.size(), "article"), reason, userName);
+					mode.name(), Strings.pluralOf(currentArticlesToRecompile.size(), "article"), reason, userName);
 			articleManager.getCompilerManager()
 					.setCompileMessage("Mode: " + mode.name() + ", reason: " + reason + ", user: " + userName);
 			if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
-				articlesToRecompile.parallelStream()
-						.forEach(article -> defaultArticleManager.queueArticle(article.getTitle(), article.getText()));
+				defaultArticleManager.recreateAndQueueArticles(currentArticlesToRecompile);
 			}
 			else {
-				for (Article recompileArticle : articlesToRecompile) {
+				for (Article recompileArticle : currentArticlesToRecompile) {
 					articleManager.registerArticle(recompileArticle.getTitle(), recompileArticle.getText());
 				}
 			}
-			stopwatch.log(LOGGER, "Sectionized " + Strings.pluralOf(articlesToRecompile.size(), "article") + " for recompilation");
-			EventManager.getInstance().fireEvent(new FullParseEvent(articlesToRecompile, userName));
+			stopwatch.log(LOGGER, "Sectionized " + Strings.pluralOf(currentArticlesToRecompile.size(), "article") + " for recompilation");
+			EventManager.getInstance().fireEvent(new FullParseEvent(currentArticlesToRecompile, userName));
 
-			if (articlesToRecompile.size() == 1) {
+			if (currentArticlesToRecompile.size() == 1) {
 				// also update all markups
-				$(articlesToRecompile.iterator().next()).successor(AttachmentUpdateMarkup.class)
+				$(currentArticlesToRecompile.get(0)).successor(AttachmentUpdateMarkup.class)
 						.stream()
 						.forEach(markup -> {
 							LOGGER.info("Checking {} for updates...", markup.get().getUrl(markup));
@@ -173,5 +187,14 @@ public class RecompileAction extends AbstractAction {
 		finally {
 			articleManager.commit();
 		}
+	}
+
+	static List<Article> resolveCurrentArticles(ArticleManager articleManager, Collection<Article> requestedArticles) {
+		return requestedArticles.stream()
+				.map(Article::getTitle)
+				.map(articleManager::getArticle)
+				.filter(Objects::nonNull)
+				.distinct()
+				.toList();
 	}
 }

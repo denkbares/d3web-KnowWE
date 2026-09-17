@@ -33,6 +33,7 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 	private float currentProgress = 0;
 	private String error = null;
 	private boolean running = false;
+	private volatile boolean cancelRequested = false;
 	private String id;
 
 	@Override
@@ -74,6 +75,16 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 			this.stopwatch.pause();
 		}
 		this.running = running;
+	}
+
+	@Override
+	public void setCancelRequested(boolean cancelRequested) {
+		this.cancelRequested = cancelRequested;
+	}
+
+	@Override
+	public boolean isCancelRequested() {
+		return this.cancelRequested;
 	}
 
 	@Override

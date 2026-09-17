@@ -29,7 +29,7 @@
 
 	<properties>
 		<!-- project version -->
-		<revision>2026.5-SNAPSHOT</revision>
+		<revision>2026.7-SNAPSHOT</revision>
 
 		<!-- cross-repo versions (default: same version) -->
 		<denkbares-Commons.version>${revision}</denkbares-Commons.version>
@@ -64,13 +64,18 @@
 		<java-diff-utils.version>4.15</java-diff-utils.version>
 
 		<!-- web -->
-		<jspwiki.version>2.12.7-SNAPSHOT</jspwiki.version>
+		<jspwiki.version>2.12.9-SNAPSHOT</jspwiki.version>
 		<tomcat.version>9.0.104</tomcat.version>
 		<stripes.version>1.7.0-async-beta</stripes.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<spring.version>4.0.5.RELEASE</spring.version>
 		<httpcore.version>4.4</httpcore.version>
 		<httpclient.version>4.5.13</httpclient.version>
+
+		<!-- search -->
+		<!-- muss zu denkbares-Internals und dem jspwiki-Fork passen, sonst liegen zwei
+			 Lucene-Versionen im WAR -->
+		<lucene.version>10.4.0</lucene.version>
 
 		<!-- apache commons -->
 		<commons-csv.version>1.4</commons-csv.version>
@@ -89,6 +94,10 @@
 		<hamcrest.version>1.3</hamcrest.version>
 
 		<!-- other -->
+		<!-- guava wird nur transitiv gebraucht; der Eintrag uebersteuert die Version-Range
+			[15.0,19.0) von org.eclipse.elk 0.3.0 (via SemanticServiceCore-Plugin-IES ->
+			CircuitLayouting -> Praline), die sonst guava 19.0-rc3 in den WAR zieht -->
+		<guava.version>33.6.0-jre</guava.version>
 		<antlr4.version>4.13.1</antlr4.version>
 		<rdf4j.version>4.3.15</rdf4j.version>
 		<poi.version>5.5.0</poi.version>
@@ -219,6 +228,50 @@
 							<rules>
 								<banDuplicatePomDependencyVersions/>
 								<banInternalDependencyVersions implementation="com.denkbares.maven.enforcer.BanInternalDependencyVersions"/>
+							</rules>
+						</configuration>
+					</execution>
+					<execution>
+						<!-- every action has to decide about the access rights of the user itself: /action/* has no
+							 security-constraint, AbstractAction checks nothing and the wiki connector does not either. -->
+						<id>enforce-action-authorization</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireAuthorizationCheck implementation="com.denkbares.maven.enforcer.RequireAuthorizationCheck">
+									<subject>action</subject>
+									<requiredType>de.knowwe.core.action.Action</requiredType>
+									<definingTypes>
+										<definingType>de.knowwe.core.action.AbstractAction</definingType>
+									</definingTypes>
+									<readCalls>
+										<readCall>de.knowwe.core.action.AbstractAction#getSection</readCall>
+										<readCall>de.knowwe.core.utils.KnowWEUtils#canView</readCall>
+										<readCall>de.knowwe.core.utils.KnowWEUtils#assertCanView</readCall>
+										<readCall>de.knowwe.core.wikiConnector.WikiConnector#userCanViewArticle</readCall>
+									</readCalls>
+									<writeCalls>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canWrite</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanWrite</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canUpload</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanUpload</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#canCreatePages</writeCall>
+										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanCreatePages</writeCall>
+										<writeCall>de.knowwe.core.kdom.parsing.Sections#replace</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanEditArticle</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanUploadAttachment</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanCreateArticles</writeCall>
+										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanDeleteArticle</writeCall>
+									</writeCalls>
+									<authCalls>
+										<authCall>de.knowwe.core.utils.KnowWEUtils#assertUserAuth</authCall>
+									</authCalls>
+									<accessMethod>requiredAccess</accessMethod>
+									<defaultAccess>WRITE</defaultAccess>
+								</requireAuthorizationCheck>
 							</rules>
 						</configuration>
 					</execution>
@@ -484,6 +537,11 @@
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Search</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
 				<version>${revision}</version>
 			</dependency>
@@ -606,6 +664,39 @@
 				<groupId>com.denkbares</groupId>
 				<artifactId>denkbares-Git-Essentials</artifactId>
 				<version>${denkbares-Internals.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>denkbares-LuceneUtils</artifactId>
+				<version>${denkbares-Internals.version}</version>
+			</dependency>
+
+			<!-- Lucene: bisher nur transitiv ueber jspwiki-knowwe-main im Classpath.
+				 KnowWE-Plugin-Search haengt direkt daran, also hier festnageln. -->
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-core</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analysis-common</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queries</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queryparser</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-highlighter</artifactId>
+				<version>${lucene.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
@@ -948,6 +1039,11 @@
 
 			<!-- ===== Third-party: logging ===== -->
 			<dependency>
+				<groupId>com.denkbares.krone</groupId>
+				<artifactId>KnowWE-Plugin-KONAP-Bundle</artifactId>
+				<version>${konap.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
 				<version>${logback.version}</version>
@@ -1052,17 +1148,6 @@
 				<groupId>org.apache.jspwiki</groupId>
 				<artifactId>jspwiki-knowwe-util</artifactId>
 				<version>${jspwiki.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jspwiki</groupId>
-				<artifactId>jspwiki-multiwiki</artifactId>
-				<version>${jspwiki.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jspwiki</groupId>
-				<artifactId>jspwiki-multiwiki</artifactId>
-				<version>${jspwiki.version}</version>
-				<type>test-jar</type>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
@@ -1231,6 +1316,11 @@
 
 			<!-- ===== Third-party: other ===== -->
 			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
 				<version>${antlr4.version}</version>
@@ -1364,8 +1454,16 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>des-plugins-public</id>
-			<url>https://repo.denkbares.com/plugins-public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<checksumPolicy>ignore</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<id>des-repo-public</id>
+			<name>Denkbares Public Repository</name>
+			<url>https://repo.denkbares.com/repo-public/</url>
 		</pluginRepository>
 		<pluginRepository>
 			<snapshots>

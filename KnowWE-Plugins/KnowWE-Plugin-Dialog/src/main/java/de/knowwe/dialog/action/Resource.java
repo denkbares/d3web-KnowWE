@@ -20,6 +20,7 @@ import de.knowwe.dialog.Utils;
 
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -32,6 +33,15 @@ import de.knowwe.core.action.UserActionContext;
  * @author Volker Belli
  */
 public class Resource extends AbstractAction {
+
+	/**
+	 * Serves the resources of the dialog itself, which the login page already needs. The requested path is kept
+	 * inside the resource folder, so no other file of the machine can be read through it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	private static final MimetypesFileTypeMap MIMETYPE_MAP = new MimetypesFileTypeMap();
 

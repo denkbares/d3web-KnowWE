@@ -101,7 +101,7 @@ KBInfo.prepareInfoObject = function(nameOrIDOrArray) {
 	var url = "KnowWE.jsp?action=GetInfoObjects&X-XSRF-TOKEN=" + document.getElementById("knowWEInfoXSRF").value;
 	new Ajax.Request(url, {
 		method: 'post',
-		parameters: {ids: JSON.stringify(nameOrIDOrArray), sectionID: nodeID},
+		parameters: {ids: JSON.stringify(nameOrIDOrArray), SectionID: nodeID},
 		onSuccess: function(transport) {
 		
 			KBInfo._updateCache(transport.responseXML);
@@ -132,7 +132,7 @@ KBInfo.searchInfoObject = function(phrase, classArray, maxCount, onResult) {
 	}
 	var phraseParam = '&phrase='+encodeURIComponent(phrase);
 	var maxCountParam = maxCount ? '&maxcount='+maxCount : '';
-	var sectionID = '&sectionID='+nodeID;
+	var sectionID = '&SectionID='+nodeID;
 	var url = "KnowWE.jsp?action=SearchInfoObjects" 
 			+ classesParam 
 			+ phraseParam

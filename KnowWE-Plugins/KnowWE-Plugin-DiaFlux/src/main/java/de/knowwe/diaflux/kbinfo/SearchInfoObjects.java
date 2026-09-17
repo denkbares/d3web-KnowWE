@@ -39,13 +39,18 @@ import de.d3web.diaFlux.flow.Flow;
 import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 
 public class SearchInfoObjects extends AbstractAction {
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -54,10 +59,11 @@ public class SearchInfoObjects extends AbstractAction {
 		String phrase = parameterMap.get("phrase");
 		String classes = parameterMap.get("classes");
 		String max = parameterMap.get("maxcount");
-		String flowchartSectionID = parameterMap.get("sectionID");
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> flowchart = getSection(context);
 
 		int maxCount = (max != null) ? Integer.parseInt(max) : 100;
-		String result = search(phrase, classes, maxCount, Sections.get(flowchartSectionID));
+		String result = search(phrase, classes, maxCount, flowchart);
 		context.setContentType("text/xml; charset=UTF-8");
 		context.getWriter().write(result);
 	}

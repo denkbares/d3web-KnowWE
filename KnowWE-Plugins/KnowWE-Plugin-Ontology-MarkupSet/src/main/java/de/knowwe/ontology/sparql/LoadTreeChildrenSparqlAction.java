@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -42,9 +43,15 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class LoadTreeChildrenSparqlAction extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String parentNodeID = context.getParameter(Attributes.PARENT_NODE_ID);
-		Section<?> section = Sections.get(context.getParameter(Attributes.SECTION_ID));
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 
 		RenderResult result = new RenderResult(context);
 		SparqlResultRenderer.getInstance()

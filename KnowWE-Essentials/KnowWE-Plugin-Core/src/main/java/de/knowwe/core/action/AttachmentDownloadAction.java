@@ -40,6 +40,14 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class AttachmentDownloadAction extends AbstractAction {
 
+	/**
+	 * Serves an attachment, so it needs read access to the article the attachment belongs to.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.READ;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String attachmentPath = context.getParameter("attachment");
@@ -57,7 +65,7 @@ public class AttachmentDownloadAction extends AbstractAction {
 
 		try (InputStream in = attachment.getInputStream(); OutputStream out = context.getOutputStream()) {
 			context.setContentType(BINARY);
-			context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+			context.setContentDisposition("attachment", filename);
 			Streams.stream(in, out);
 		}
 	}

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -20,6 +21,10 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  * @created 02.10.2023
  */
 public class HtmlElement implements HtmlProvider {
+
+	private static final Set<String> VOID_ELEMENTS = Set.of(
+			"area", "base", "br", "col", "embed", "hr", "img", "input",
+			"link", "meta", "param", "source", "track", "wbr");
 
 	private String tagName = null;
 	private final List<String> attributes = new ArrayList<>();
@@ -107,10 +112,15 @@ public class HtmlElement implements HtmlProvider {
 	public void write(RenderResult result) {
 		Objects.requireNonNull(tagName);
 		result.appendHtmlTag(tagName, attributes.toArray(String[]::new));
+		if (isVoidElement()) return; // void elements must not have children or an end tag
 		for (HtmlProvider child : children) {
 			child.write(result);
 		}
 		result.appendHtmlTag("/" + tagName);
+	}
+
+	private boolean isVoidElement() {
+		return VOID_ELEMENTS.contains(tagName.toLowerCase());
 	}
 
 	@Override
@@ -130,6 +140,7 @@ public class HtmlElement implements HtmlProvider {
 					.append("\"");
 		}
 		builder.append(">");
+		if (isVoidElement()) return builder.toString(); // void elements must not have children or an end tag
 		for (HtmlProvider child : children) {
 			builder.append(child.toString());
 		}

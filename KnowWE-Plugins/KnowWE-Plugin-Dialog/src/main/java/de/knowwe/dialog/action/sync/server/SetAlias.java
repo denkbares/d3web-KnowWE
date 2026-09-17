@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import de.knowwe.dialog.repository.VersionSet;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -17,6 +18,15 @@ import de.knowwe.core.action.UserActionContext;
  * @author Volker Belli
  */
 public class SetAlias extends AbstractAction {
+
+	/**
+	 * Points an alias of the update repository at a version, which is repository administration and is offered by
+	 * the administration pages of the dialog only.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
 
 	public static String PARAM_NAME = "name";
 	public static String PARAM_VERSION = "version";

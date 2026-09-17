@@ -30,12 +30,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 
 /**
@@ -46,17 +45,21 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  * @created 18.07.2012
  */
 public class GetProgressAction extends AbstractAction {
+
+	/**
+	 * Reads the progress of the operation of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(GetProgressAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String sectionID = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionID);
-		if (section == null) {
-			context.sendError(404, "no such section");
-			return;
-		}
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 
 		try {
 			JSONArray result = new JSONArray();
@@ -81,6 +84,7 @@ public class GetProgressAction extends AbstractAction {
 				progress.put("report", getReport(context, operation));
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
+				progress.put("cancelRequested", listener.isCancelRequested());
 				result.put(progress);
 			}
 			result.write(context.getWriter());

@@ -18,6 +18,8 @@
  */
 package de.knowwe.kdom.export;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +38,7 @@ import javax.servlet.ServletContext;
 
 import com.denkbares.utils.OS;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -47,6 +50,15 @@ import de.knowwe.core.kdom.Type;
  * @created 10.11.2012
  */
 public class RootTypeExportAction extends AbstractAction {
+
+	/**
+	 * Renders the type hierarchy to a temporary svg on the server. Not tied to any article, so any authenticated user
+	 * may call it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.AUTH;
+	}
 
 	// path of the local dot-Installation
 	private static String DOT_INSTALLATION;
@@ -66,9 +78,10 @@ public class RootTypeExportAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		String filename = "RootType.svg";
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+		context.setContentDisposition("attachment", filename);
 		DOT_INSTALLATION = "dot";
 
 		ServletContext servletContext = context.getServletContext();

@@ -10,6 +10,7 @@ import java.io.OutputStream;
 
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 
 import de.knowwe.core.action.UserActionContext;
 
@@ -23,6 +24,14 @@ import de.knowwe.core.action.UserActionContext;
  * @created 03.06.24
  */
 public class DefaultLogoAction extends AbstractAction {
+
+	/**
+	 * Serves the bundled default logo, which also has to work for anonymous users (e.g. on the login page).
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	private static final String LOGO_PATH_DARK_MODE = "/webapp/KnowWEExtension/images/knowwe-logo_dark-mode.svg";
 	private static final String LOGO_PATH_LIGHT_MODE = "/webapp/KnowWEExtension/images/knowwe-logo_light-mode.svg";

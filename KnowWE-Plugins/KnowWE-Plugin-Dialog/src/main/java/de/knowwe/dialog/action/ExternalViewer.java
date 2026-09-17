@@ -26,7 +26,9 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.OS;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.dialog.Utils;
 
 /**
  * Action that enables to call some specific external viewers.
@@ -105,10 +107,33 @@ public class ExternalViewer extends AbstractAction {
 		addViewer(fileRegex, null, application);
 	}
 
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(UserActionContext)} for the knowledge base of
+	 * the dialog, and the requested file is required to stay inside the application folder.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
+		// the viewer runs in the context of the knowledge base currently shown, so the user has to be allowed to see it
+		Utils.assertCanViewKnowledgeBase(context);
+
 		String rest = context.getPath();
+
+		// the file to open has to stay inside the application folder, otherwise the request could make the server
+		// open any file on the machine
+		File root = Utils.getRootDirectory(context).getCanonicalFile();
+		File document = new File(rest);
+		if (!document.isAbsolute()) document = new File(root, rest);
+		document = document.getCanonicalFile();
+		if (!document.toPath().startsWith(root.toPath())) {
+			context.sendError(403, "access violation, not allowed to access files outside the application folder");
+			return;
+		}
 
 		// look for registered viewer
 		String viewerApp = null;
@@ -128,7 +153,7 @@ public class ExternalViewer extends AbstractAction {
 			File file = new File(folder, viewerApp);
 			if (file.exists() && file.canExecute()) {
 				execCommand(new String[] {
-						file.getCanonicalPath(), rest }, false);
+						file.getCanonicalPath(), document.getCanonicalPath() }, false);
 				return;
 			}
 		}

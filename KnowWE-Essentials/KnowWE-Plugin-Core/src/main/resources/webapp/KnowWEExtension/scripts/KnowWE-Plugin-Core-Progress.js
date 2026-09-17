@@ -7,6 +7,28 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {}
  */
 KNOWWE.core.plugin.progress = function() {
 
+  const CANCELLING_MESSAGE = "Cancelling...";
+  const CANCELLING_TITLE = "cancelling, this may take a moment...";
+
+  // operations the user has requested to cancel, until the server confirms it with the next progress update
+  const pendingCancels = {};
+
+  function cancellingMessage(message) {
+    return message ? CANCELLING_MESSAGE + " (" + message + ")" : CANCELLING_MESSAGE;
+  }
+
+  /**
+   * Shows the user that his cancel request was received. Operations can normally not be stopped at arbitrary points,
+   * so they may keep running for a while after being canceled.
+   */
+  function markCancelling(bar) {
+    if (bar.length === 0 || bar.hasClass("long-progress-cancelling")) return;
+    bar.addClass("long-progress-cancelling");
+    bar.find(".long-progress-state").attr("title", CANCELLING_TITLE);
+    const messageElement = bar.find(".long-progress-bar-message");
+    messageElement.text(cancellingMessage(messageElement.text()));
+  }
+
   function handleErrResponse() {
     var status = this.status;
     if (status == null) status = -1;
@@ -59,6 +81,8 @@ KNOWWE.core.plugin.progress = function() {
         KNOWWE.helper.observer.subscribe("longOperationSuccessful", onSuccessCaller);
       }
 
+
+      delete pendingCancels[operationID];
 
       var progressID = new Date().getMilliseconds() + Math.floor((Math.random() * 10) + 1);
 
@@ -122,6 +146,10 @@ KNOWWE.core.plugin.progress = function() {
 
     cancelLongOperation: function(sectionID, operationID) {
 
+      // instant feedback, the progress bar update will confirm it with the next poll
+      pendingCancels[operationID] = true;
+      markCancelling(jq$('#' + operationID));
+
       var params = {
         action: 'CancelOperationAction',
         SectionID: sectionID,
@@ -142,6 +170,7 @@ KNOWWE.core.plugin.progress = function() {
     },
 
     removeLongOperation: function(sectionID, operationID) {
+      delete pendingCancels[operationID];
       jq$('#' + operationID).remove();
       hideProgress(operationID);
       removeAllErrors();
@@ -203,6 +232,7 @@ KNOWWE.core.plugin.progress = function() {
               var report = json[i].report;
               var error = json[i].error;
               var running = json[i].running;
+              var cancelling = running && (json[i].cancelRequested || pendingCancels[opId] === true);
               if (!running && progress === 0) continue;
               var bar = container.find("#" + opId);
               if (bar.length === 0) {
@@ -216,15 +246,18 @@ KNOWWE.core.plugin.progress = function() {
                   "<div class='long-progress-report'></div></div>");
                 bar = container.find("#" + opId);
               }
-              bar.find(".long-progress-state").attr('title', "click to cancel").click(function() {
+              bar.find(".long-progress-state")
+                .attr('title', cancelling ? CANCELLING_TITLE : "click to cancel")
+                .unbind("click").click(function() {
                 KNOWWE.core.plugin.progress.cancelLongOperation(sectionId, jq$(this).parent().attr('id'));
               });
               bar.removeClass("long-progress-error long-progress-success");
+              bar.toggleClass("long-progress-cancelling", !!cancelling);
 
               var percent = Math.floor(progress * 100);
               bar.find(".long-progress-bar").progressbar({value: percent});
               bar.find(".long-progress-bar-percent").text(percent + " % after " + runtime);
-              bar.find(".long-progress-bar-message").text(message);
+              bar.find(".long-progress-bar-message").text(cancelling ? cancellingMessage(message) : message);
               bar.find(".long-progress-report").html(report);
 
               if (!running) {

@@ -13,6 +13,7 @@ import org.apache.wiki.pages.PageManager;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -29,6 +30,14 @@ import de.knowwe.jspwiki.JSPWikiUserContext;
  * </ul>
  */
 public class AnnotatePageAction extends AbstractAction {
+
+	/**
+	 * Reads the change annotations of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

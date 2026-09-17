@@ -8,9 +8,18 @@ import java.io.IOException;
 import java.io.Writer;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class CheckProgress extends AbstractAction {
+
+	/**
+	 * Reports how far the dialog application has come downloading its own update, which touches no wiki content.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

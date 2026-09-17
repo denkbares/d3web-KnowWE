@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -32,6 +33,15 @@ import de.knowwe.core.action.UserActionContext;
  * @created 15.06.2011
  */
 public class InstantEditDisableAction extends AbstractAction {
+
+	/**
+	 * Only releases the edit lock of the article it is called for and reads that article's access rights, so it needs
+	 * read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

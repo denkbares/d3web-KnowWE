@@ -41,8 +41,18 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class GetCompilerSwitchContentAction extends AbstractAction {
 
+	/**
+	 * Reads the compilers and the caller's own default compiler from the session, so any authenticated user may call
+	 * it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		context.setContentType(Action.JSON);
 
 		Collection<GroupingCompiler> compilers = Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class);

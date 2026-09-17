@@ -315,13 +315,45 @@ public final class Messages {
 	 * @created 06.02.2014
 	 */
 	public static boolean hasMessages(Section<? extends Type> section, Message.Type... types) {
-		if (types.length == 0) types = Message.Type.values();
+		if (types.length == 0) return hasMessages(section);
 		for (Message.Type type : types) {
-			if (sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section)) {
-				return true;
-			}
+			if (hasMessages(section, type)) return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Checks if there are any messages of any type, for any compiler and/or independent of any compiler.
+	 *
+	 * @param section the section to be checked
+	 * @return if there are any such messages
+	 */
+	public static boolean hasMessages(Section<? extends Type> section) {
+		if (!section.getArticle().isPublished()) {
+			synchronized (section) {
+				return !getMessagesMap(section).isEmpty();
+			}
+		}
+		for (Set<Section<?>> sections : sectionsWithMessages.values()) {
+			if (sections.contains(section)) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if there are any messages of the specified type, for any compiler and/or independent of any compiler.
+	 *
+	 * @param section the section to be checked
+	 * @param type    the type of messages to be considered
+	 * @return if there are any such messages
+	 */
+	public static boolean hasMessages(Section<? extends Type> section, Message.Type type) {
+		if (!section.getArticle().isPublished()) {
+			synchronized (section) {
+				return !getMessagesMap(section, type).isEmpty();
+			}
+		}
+		return sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section);
 	}
 
 	/**
@@ -671,10 +703,12 @@ public final class Messages {
 				// store messages in map
 				messagesMap.put(source, Collections.unmodifiableCollection(messages));
 				// store section for type collections
-				for (Message message : messages) {
-					sectionsWithMessages
-							.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
-							.add(section);
+				if (section.getArticle().isPublished()) {
+					for (Message message : messages) {
+						sectionsWithMessages
+								.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+								.add(section);
+					}
 				}
 			}
 		}
@@ -817,9 +851,24 @@ public final class Messages {
 				user.getRequest()));
 	}
 
+	/** Publishes diagnostics collected locally during parsing. Serialized with message writers on this section. */
+	public static void registerMessagesSection(Section<?> section) {
+		synchronized (section) {
+			if (!section.getArticle().isPublished()) return;
+			for (Collection<Message> messages : getMessagesMap(section).values()) {
+				for (Message message : messages) {
+					sectionsWithMessages.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+							.add(section);
+				}
+			}
+		}
+	}
+
 	public static void unregisterMessagesSection(Section<?> section) {
-		for (Message.Type type : Message.Type.values()) {
-			removeSectionFromMessageTracking(type, section);
+		synchronized (section) {
+			for (Message.Type type : Message.Type.values()) {
+				removeSectionFromMessageTracking(type, section);
+			}
 		}
 	}
 

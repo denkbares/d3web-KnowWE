@@ -156,4 +156,12 @@ public interface Tool {
 	 * @created 20.02.2011
 	 */
 	String getCategory();
+
+	/**
+	 * Returns the id of the tool which is added onto the html element under "id"
+	 *
+	 * @return The id of the tool
+	 * @created 13.08.2026
+	 */
+	String getId();
 }

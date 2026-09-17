@@ -1,0 +1,63 @@
+<?xml version="1.0" ?><!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
+<!--
+  ~ Copyright (C) 2026 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+<plugin id="KnowWE-Plugin-Search" version="1.0">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+		<import plugin-id="KnowWE-Plugin-Core" />
+	</requires>
+
+	<runtime>
+		<library id="de.knowwe" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<!--
+		Opens the index and registers the service for the article events. Runs before any article exists,
+		which is fine: the index is filled once InitializedArticlesEvent reports them compiled.
+	-->
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation" id="WikiSearchInstantiation">
+		<parameter id="class" value="de.knowwe.search.WikiSearchInstantiation" />
+		<parameter id="name" value="WikiSearchInstantiation" />
+		<parameter id="description" value="Starts the section based wiki search and keeps its index in step." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<!--
+		The JSON endpoint at /action/WikiSearchAction. Web resources must be named after the plugin id,
+		otherwise KnowWEPlugin.includeDOMResources() drops them with an ERROR line.
+	-->
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="WikiSearchAction">
+		<parameter id="class" value="de.knowwe.search.action.WikiSearchAction" />
+		<parameter id="name" value="WikiSearchAction" />
+		<parameter id="description" value="Searches the wiki by section and answers with breadcrumb, snippet and anchors." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-Search.js" />
+		<parameter id="css" value="KnowWE-Plugin-Search.css" />
+	</extension>
+
+</plugin>

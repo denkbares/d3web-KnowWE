@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.AbstractFormatter;
 
@@ -17,8 +18,17 @@ import de.knowwe.core.utils.AbstractFormatter;
 
 public class RuleFormatAction extends AbstractAction {
 
+	/**
+	 * Formats the text of the rule section the editor has open, so the caller needs read access to it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		getSection(context);
 
 		String wikiText = context.getParameter("wikiText");
 		String formattedWikiText = new RuleFormatter(wikiText).format();

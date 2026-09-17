@@ -18,8 +18,6 @@
  */
 package de.knowwe.tools;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import de.knowwe.core.kdom.parsing.Section;
@@ -43,13 +41,16 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
-		// prepare tools
 		ToolSet tools = ToolUtils.getTools(sec, user);
-		final boolean hasTools = tools.hasTools();
-
-		RenderResult subResult = new RenderResult(string);
-		decoratedRenderer.render(sec, user, subResult);
-		renderToolMenuDecorator(subResult, sec.getID(), null, hasTools, string);
+		if (tools.hasTools()) {
+			// decorate in place, avoiding an intermediate buffer and copy of the rendered subtree
+			appendToolMenuDecoratorStart(sec.getID(), null, string);
+			decoratedRenderer.render(sec, user, string);
+			appendToolMenuDecoratorEnd(string);
+		}
+		else {
+			decoratedRenderer.render(sec, user, string);
+		}
 	}
 
 	public Renderer getDecoratedRenderer() {
@@ -73,29 +74,36 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 	}
 
 	public static void renderToolMenuDecorator(RenderResult innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
-
 		if (hasTools) {
-			String headerID = UUID.randomUUID().toString();
-			string.appendHtmlTag("span", "class", "toolMenuDecorated");
-
-			List<String> attributes = new ArrayList<>();
-			attributes.add("class");
-			attributes.add("toolsMenuDecorator2");
-			attributes.add("id");
-			attributes.add(headerID);
-			attributes.add("toolMenuIdentifier");
-			attributes.add(toolMenuID);
-			if (toolMenuAction != null) {
-				attributes.add("toolMenuAction");
-				attributes.add(toolMenuAction);
-			}
-			string.appendHtmlTag("span", attributes.toArray(new String[0]));
+			appendToolMenuDecoratorStart(toolMenuID, toolMenuAction, string);
 			string.append(innerText);
-			string.appendHtmlTag("/span");
-			string.appendHtmlTag("/span");
+			appendToolMenuDecoratorEnd(string);
 		}
 		else {
 			string.append(innerText);
 		}
+	}
+
+	/**
+	 * Opens the tool menu decoration. The decorated content and {@link #appendToolMenuDecoratorEnd(RenderResult)} must
+	 * be appended afterward. Use this pair to decorate in place, without buffering the content first.
+	 */
+	public static void appendToolMenuDecoratorStart(String toolMenuID, String toolMenuAction, RenderResult string) {
+		String headerID = UUID.randomUUID().toString();
+		string.appendHtmlTag("span", "class", "toolMenuDecorated");
+		// appendHtmlTag skips attributes with null values, covering the optional toolMenuAction
+		string.appendHtmlTag("span",
+				"class", "toolsMenuDecorator2",
+				"id", headerID,
+				"toolMenuIdentifier", toolMenuID,
+				"toolMenuAction", toolMenuAction);
+	}
+
+	/**
+	 * Closes the decoration opened by {@link #appendToolMenuDecoratorStart(String, String, RenderResult)}.
+	 */
+	public static void appendToolMenuDecoratorEnd(RenderResult string) {
+		string.appendHtmlTag("/span");
+		string.appendHtmlTag("/span");
 	}
 }

@@ -27,9 +27,11 @@ import java.util.List;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Triple;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.EdgeType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.NodeType;
@@ -44,6 +46,11 @@ public class GetDiffHighlightAction extends AbstractAction {
 
 	private static final String LEFT_PARENT = "LEFT";
 	private static final String RIGHT_PARENT = "RGHT";
+
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	private static final String PREFIX = "diff";
 	private static final String REMOVED = PREFIX + "Removed";
@@ -60,6 +67,12 @@ public class GetDiffHighlightAction extends AbstractAction {
 
 		Section<FlowchartType> leftFlow = Sections.get(leftkdomid, FlowchartType.class);
 		Section<FlowchartType> rightFlow = Sections.get(rightkdomid, FlowchartType.class);
+
+		if (leftFlow == null || rightFlow == null
+				|| !KnowWEUtils.canView(leftFlow, context) || !KnowWEUtils.canView(rightFlow, context)) {
+			context.sendError(403, "You are not allowed to see the highlights of this flowchart");
+			return;
+		}
 
 		Highlight leftHighlight = new Highlight(parentid + "-" + LEFT_PARENT, PREFIX);
 		Highlight rightHighlight = new Highlight(parentid + "-" + RIGHT_PARENT, PREFIX);

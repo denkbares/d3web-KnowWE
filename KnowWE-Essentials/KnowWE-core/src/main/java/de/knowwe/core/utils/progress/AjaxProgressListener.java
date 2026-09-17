@@ -74,6 +74,19 @@ public interface AjaxProgressListener extends ReadableProgressListener {
 	void setRunning(boolean running);
 
 	/**
+	 * Sets the indicator whether the user has requested to cancel the operation. Since operations can only be
+	 * interrupted at certain points of their execution, this flag allows to show the user that his cancel request has
+	 * been received, even if the operation keeps running for a while.
+	 */
+	void setCancelRequested(boolean cancelRequested);
+
+	/**
+	 * Returns whether the user has requested to cancel the operation. The operation may still be running, see
+	 * {@link #setCancelRequested(boolean)}.
+	 */
+	boolean isCancelRequested();
+
+	/**
 	 * Sets an ID for the this listener.
 	 */
 	void setId(String id);

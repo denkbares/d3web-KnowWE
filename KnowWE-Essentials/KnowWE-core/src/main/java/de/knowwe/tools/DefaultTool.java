@@ -34,17 +34,23 @@ public class DefaultTool implements Tool {
 	private final Icon icon;
 	private final String title;
 	private final String description;
+	private final String id;
 	private final String jsAction;
 	private final ActionType type;
 	private final String category;
 
 	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category) {
+		this(icon, title, description, jsAction, type, category, null);
+	}
+
+	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category, String id) {
 		this.icon = icon;
 		this.title = title;
 		this.description = description;
 		this.jsAction = jsAction;
 		this.type = type;
 		this.category = category;
+		this.id = id;
 	}
 
 	public DefaultTool(Icon icon, String title, String description, String jsAction, String category) {
@@ -84,6 +90,9 @@ public class DefaultTool implements Tool {
 	public String getCategory() {
 		return category;
 	}
+
+	@Override
+	public String getId() { return id; }
 
 	/**
 	 * Creates a new tool action that calls a server action by its name for the current user.

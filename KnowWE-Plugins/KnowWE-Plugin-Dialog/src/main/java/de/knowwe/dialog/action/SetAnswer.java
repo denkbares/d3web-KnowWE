@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
+import de.knowwe.dialog.Utils;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -44,10 +46,19 @@ import de.knowwe.core.action.UserActionContext;
  * @author Volker Belli
  */
 public class SetAnswer extends AbstractAction {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(SetAnswer.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		for (String questionID : context.getParameters().keySet()) {
 			String valueString = context.getParameter(questionID);
 			// before answering we start a heart-beat on the

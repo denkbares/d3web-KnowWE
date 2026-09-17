@@ -22,7 +22,6 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -53,13 +52,11 @@ import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.pages.PageManager;
-import org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy;
 import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
 import org.apache.wiki.structs.DefaultPageIdentifier;
 import org.apache.wiki.structs.PageIdentifier;
 import org.apache.wiki.structs.WikiPageProxy;
 import org.apache.wiki.util.FileUtil;
-import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.lib.Repository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -119,26 +116,10 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		this.repository = this.gitBridge.getRepository();
 
-		setGitCommentStrategy(properties);
+		this.gitCommentStrategy = GitCommentStrategy.fromProperties(properties);
 
 		// we run the command to build up the commit graph. It considerably accelerates the reading of the commit history (e. g. git log)
 		this.gitConnector.repo().executeCommitGraph();
-	}
-
-	private void setGitCommentStrategy(Properties properties) {
-		String commentStrategyClassName = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_COMMENT_STRATEGY, "org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy");
-		GitCommentStrategy gitCommentStrategy;
-		try {
-			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
-			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor()
-					.newInstance(new Object[] {});
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
-			   InvocationTargetException e) {
-			LOGGER.error("Comment strategy not found " + commentStrategyClassName, e);
-			gitCommentStrategy = new ChangeNoteStrategy();
-		}
-		 this.gitCommentStrategy=gitCommentStrategy;
 	}
 
 	public Repository getRepository() {
@@ -547,6 +528,13 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			LOGGER.warn("Tried to commit for user: " + user, " but there were no paths for her!");
 			return;
 		}
+		Set<String> committedPaths = this.openCommits.get(user);
+		if (committedPaths == null || committedPaths.isEmpty()) {
+			LOGGER.info("Skipping empty page transaction commit for user: {}", user);
+			this.openCommits.remove(user);
+			this.refreshCacheList.clear();
+			return;
+		}
 
 		String comment = gitCommentStrategy.getCommentForUser(user);
 		if (comment.isEmpty()) {
@@ -560,8 +548,14 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			email = userProfile.getEmail();
 		}
 
-		String commitHash = this.gitConnector.commit().commitPathsForUser(comment, username, email, this.openCommits.get(user));
-		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, this.openCommits.get(user), commitHash);
+		String commitHash = this.gitConnector.commit().commitPathsForUser(comment, username, email, committedPaths);
+		if (commitHash == null || commitHash.isBlank()) {
+			LOGGER.info("Skipping page transaction event for user {} because no commit hash was created", user);
+			this.openCommits.remove(user);
+			this.refreshCacheList.clear();
+			return;
+		}
+		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, committedPaths, commitHash);
 
 		this.openCommits.remove(user);
 		final PageManager pm = getEnginePageManager();

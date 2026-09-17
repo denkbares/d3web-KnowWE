@@ -20,23 +20,31 @@
 package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.build.CIBuildManager;
+import de.d3web.we.ci4ke.build.CIBuildProgressStream;
+import de.d3web.we.ci4ke.build.CIBuildStatus;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
+import de.knowwe.core.sse.ServerSentEventWriter;
+import de.knowwe.core.sse.ServerSentEvents;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * This action handles the ajax upate request of the ci-build progress bar on
- * the dashboard.
+ * Streams the build progress of the dashboards shown on a page as server-sent events until none of them has a
+ * queued or running build any more.
  *
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 18.07.2012
@@ -45,36 +53,71 @@ public class CIGetProgressAction extends AbstractAction {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIGetProgressAction.class);
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String name = Strings.decodeURL(context.getParameter("name"));
-		CIDashboard dashboard = CIDashboardManager.getDashboard(context.getArticleManager(), name);
-		DefaultAjaxProgressListener listener = CIBuildManager.getProgress(dashboard);
-
-		float progress;
-		String message;
-		if (listener == null) {
-			// build done, progress listener no longer available
-			progress = 1;
-			message = "Finished";
+		List<String> names = parseNames(context);
+		if (names.isEmpty()) {
+			fail(context, 400, "Parameter 'names' must be a non-empty JSON array of dashboard names");
+			return;
 		}
-		else {
-			progress = listener.getProgress();
-			message = listener.getMessage();
+		ArticleManager articleManager = context.getArticleManager();
+		for (String name : names) {
+			CIDashboard dashboard = lookupDashboard(articleManager, name);
+			if (dashboard != null && !KnowWEUtils.canView(dashboard.getDashboardArticle(), context)) {
+				context.sendError(403, "You are not allowed to see the build progress of this dashboard");
+				return;
+			}
 		}
 
-		int progressTwoDigits = (int) (progress * 100);
-		String percentString = "" + progressTwoDigits;
-		if (progressTwoDigits < 10) {
-			percentString = " " + percentString;
-		}
-		JSONObject result = new JSONObject();
+		ServerSentEventWriter sse = ServerSentEvents.open(context.getResponse());
 		try {
-			result.put("progress", percentString);
-			result.put("message", message);
-			result.write(context.getWriter());
+			new CIBuildProgressStream().stream(names,
+					name -> lookupStatus(articleManager, name),
+					name -> renderBubble(context, name),
+					CIBuildManager.getBuildChanges(), sse);
+		}
+		catch (IOException e) {
+			// the browser closed the stream, e.g. the page was left while a build was running
+			LOGGER.debug("Build progress stream for dashboards {} ended: {}", names, e.getMessage());
+		}
+	}
+
+	private static CIBuildStatus lookupStatus(ArticleManager articleManager, String name) {
+		CIDashboard dashboard = lookupDashboard(articleManager, name);
+		return dashboard == null ? null : CIBuildManager.getBuildStatus(dashboard);
+	}
+
+	private static String renderBubble(UserActionContext context, String name) {
+		CIDashboard dashboard = lookupDashboard(context.getArticleManager(), name);
+		return dashboard == null ? null : dashboard.getRenderer().renderStateBubbleHtml(context);
+	}
+
+	private static CIDashboard lookupDashboard(ArticleManager articleManager, String name) {
+		return CIDashboardManager.getDashboard(articleManager, Strings.decodeURL(name));
+	}
+
+	private static List<String> parseNames(UserActionContext context) {
+		String parameter = context.getParameter("names");
+		List<String> names = new ArrayList<>();
+		if (Strings.isBlank(parameter)) return names;
+		try {
+			JSONArray array = new JSONArray(parameter);
+			for (int i = 0; i < array.length(); i++) {
+				Object element = array.opt(i);
+				if (!(element instanceof String name) || Strings.isBlank(name)) {
+					LOGGER.warn("Ignoring dashboard name that is not a string in parameter: {}", parameter);
+					continue;
+				}
+				if (!names.contains(name)) names.add(name);
+			}
 		}
 		catch (JSONException e) {
-			LOGGER.error("Error while writing JSON message", e);
+			LOGGER.warn("Ignoring malformed dashboard names parameter: {}", parameter);
 		}
+		return names;
 	}
 }

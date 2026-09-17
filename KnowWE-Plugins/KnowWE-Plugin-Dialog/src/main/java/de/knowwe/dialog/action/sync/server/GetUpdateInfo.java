@@ -23,9 +23,19 @@ import de.knowwe.dialog.Utils;
 import de.knowwe.dialog.repository.ArchiveStorage;
 import de.knowwe.dialog.repository.VersionSet;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 public class GetUpdateInfo extends AbstractAction {
+
+	/**
+	 * Serves the list of update files the dialog application needs to find its update, before it could sign in
+	 * anywhere. It reveals nothing but the versions the repository offers.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.NONE;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

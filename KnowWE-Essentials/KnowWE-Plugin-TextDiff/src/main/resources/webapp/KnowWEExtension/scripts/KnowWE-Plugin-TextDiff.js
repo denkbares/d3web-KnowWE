@@ -33,6 +33,16 @@
  *
  *      Or call el.load() to force a refresh.
  *
+ *   4. Endpoint driven (lazy). Set data-action-url to a backend action that derives the diff
+ *      from the URL itself (query parameters) and returns the rendered shadow content. No old
+ *      or new text is needed on the host:
+ *
+ *        <knowwe-text-diff data-action-url="action/MyDiffHtmlAction?file=..."></knowwe-text-diff>
+ *
+ *      Like the other lazy modes, the fetch is deferred until the element becomes visible near
+ *      the viewport. An element inside a collapsed (display none) container therefore loads
+ *      when it is expanded.
+ *
  * Attributes:
  *   - data-context-lines: number of unchanged lines to show around each hunk; -1 disables
  *                         elision. Defaults to 3.
@@ -41,8 +51,7 @@
  *   - data-new-null:      send newText as null in lazy mode, meaning "deleted file/article".
  *   - data-status:        set by the component to 'loading' | 'ready' | 'error' so host pages
  *                         can style the loading and error placeholders via ::part or :host().
- *   - data-theme:         optional explicit 'light' | 'dark' theme override; otherwise CSS uses
- *                         prefers-color-scheme as fallback.
+ *   - data-theme:         optional explicit 'light' | 'dark' theme override
  *
  * Theming: every visual element exposes a CSS shadow part — see ::part(line added),
  * ::part(line removed), ::part(num old|new), ::part(sign), ::part(text), ::part(elided),
@@ -56,12 +65,23 @@
 	if (customElements.get('knowwe-text-diff')) return;
 
 	const DEFAULT_ACTION_URL = 'action/TextDiffAction';
+	const STYLESHEET_URL = 'KnowWEExtension/css/KnowWE-Plugin-TextDiff.css';
 
-	function withCsrf(url) {
+	function resourceUrl(path) {
+		const base = window.knowweTextDiffResourceBase;
+		return base ? new URL(path, base).toString() : path;
+	}
+
+	// the backend checks the access of the reader against the page the component sits on, so the request carries it
+	function withWikiParams(url) {
 		try {
 			const u = new URL(url, window.location.href);
 			if (typeof Wiki !== 'undefined' && Wiki.CsrfProtection) {
 				u.searchParams.set('X-XSRF-TOKEN', Wiki.CsrfProtection);
+			}
+			const page = KNOWWE.helper.getPagename();
+			if (page && !u.searchParams.has('KWiki_Topic')) {
+				u.searchParams.set('KWiki_Topic', page);
 			}
 			return u.toString();
 		}
@@ -72,6 +92,7 @@
 
 	class KnowweTextDiff extends HTMLElement {
 		connectedCallback() {
+			if (!this.hasAttribute('data-theme')) this.setAttribute('data-theme', KNOWWE.helper.getDisplayMode());
 			if (this._hasShadowContent()) {
 				this._wireExpanders();
 				return;
@@ -87,6 +108,9 @@
 		_hasLazyInputs() {
 			if (this.querySelector(':scope > [slot="old"]') !== null) return true;
 			if (this.querySelector(':scope > [slot="new"]') !== null) return true;
+			// a custom action url means the endpoint derives the diff from the url itself,
+			// so the component is lazily loadable without any old or new text inputs
+			if (this.hasAttribute('data-action-url')) return true;
 			return this.hasAttribute('data-old-text')
 					|| this.hasAttribute('data-new-text')
 					|| this.hasAttribute('data-old-null')
@@ -109,7 +133,7 @@
 		load() { return this._fetchAndRender(); }
 
 		_hasShadowContent() {
-			if (this.shadowRoot && this.shadowRoot.firstElementChild) return true;
+			if (this.shadowRoot && this.shadowRoot.querySelector('.diff-frame')) return true;
 			const tpl = this.querySelector(':scope > template[shadowrootmode]');
 			if (tpl) return this._hydrateFromTemplate(tpl);
 			return false;
@@ -158,9 +182,12 @@
 				if (!Number.isNaN(n)) payload.contextLines = n;
 			}
 
+			// the loading and error placeholders are styled by the stylesheet inside the shadow root, so it has
+			// to be present before the first response arrives (and stays if the response never arrives)
+			this._ensureStylesheet();
 			this._setStatus('loading');
 			try {
-				const res = await fetchImpl(withCsrf(url), {
+				const res = await fetchImpl(withWikiParams(url), {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json; charset=UTF-8' },
 					body: JSON.stringify(payload),
@@ -188,6 +215,15 @@
 			if (slotted !== null) return slotted;
 			const attributed = this.getAttribute(textAttribute);
 			return attributed !== null ? attributed : '';
+		}
+
+		_ensureStylesheet() {
+			const root = this.shadowRoot || this.attachShadow({ mode: 'open' });
+			if (root.querySelector('link[rel="stylesheet"]')) return;
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = resourceUrl(STYLESHEET_URL);
+			root.appendChild(link);
 		}
 
 		_writeShadow(html) {
@@ -230,7 +266,7 @@
  * generic and can contain a <knowwe-text-diff> when the change has content differences.
  *
  * Attributes:
- *   - data-change:    added | deleted | modified | renamed | renamed-modified
+ *   - data-change:    added | deleted | modified | renamed | renamed-modified | added-deleted
  *   - data-old-name:  original file/article name
  *   - data-new-name:  final file/article name
  *   - data-url:       optional URL for the displayed file/article name
@@ -239,6 +275,18 @@
  *   - data-additions: optional number of added lines
  *   - data-deletions: optional number of removed lines
  *   - data-collapsed: optional boolean attribute; collapses the body when present
+ *   - data-theme:     optional explicit 'light' | 'dark' theme override
+ *
+ * Slots:
+ *   - (default):      the body, typically a <knowwe-text-diff>
+ *   - actions:        extra controls shown in the header between the stats and the badge, for
+ *                     example links to related views. Clicks on links inside the header never
+ *                     toggle the body.
+ *
+ * Events:
+ *   - toggle: dispatched (bubbling) when the user collapses or expands the body via the header.
+ *             detail.collapsed reflects the new state. Not dispatched for programmatic
+ *             attribute changes.
  */
 (function () {
 	if (customElements.get('knowwe-file-change')) return;
@@ -254,6 +302,7 @@
 		modified: { label: 'Modified' },
 		renamed: { label: 'Renamed' },
 		'renamed-modified': { label: 'Renamed + modified' },
+		'added-deleted': { label: 'Added + deleted' },
 	};
 
 	function resourceUrl(path) {
@@ -266,6 +315,7 @@
 		if (value === 'delete' || value === 'removed') return 'deleted';
 		if (value === 'rename') return 'renamed';
 		if (value === 'rename-modified' || value === 'renamed-with-modifications') return 'renamed-modified';
+		if (value === 'add-delete' || value === 'created-deleted' || value === 'transient') return 'added-deleted';
 		return Object.prototype.hasOwnProperty.call(CHANGE_TYPES, value) ? value : 'modified';
 	}
 
@@ -296,6 +346,7 @@
 		}
 
 		connectedCallback() {
+			if (!this.hasAttribute('data-theme')) this.setAttribute('data-theme', KNOWWE.helper.getDisplayMode());
 			if (!this.hasAttribute('role')) this.setAttribute('role', 'group');
 			this._ensureShadow();
 			this._update();
@@ -325,12 +376,13 @@
 				'      <span class="file-change-stat additions" part="additions"></span>' +
 				'      <span class="file-change-stat deletions" part="deletions"></span>' +
 				'    </span>' +
+				'    <span class="file-change-actions" part="actions"><slot name="actions"></slot></span>' +
 				'    <span class="file-change-badge" part="badge"></span>' +
 				'  </header>' +
 				'  <div class="file-change-body" part="body"><slot></slot></div>' +
 				'</article>';
 			root.querySelector('.file-change-header').addEventListener('click', (event) => this._onHeaderClick(event));
-			root.querySelector('slot').addEventListener('slotchange', () => this._updateSlotState());
+			root.querySelector('slot:not([name])').addEventListener('slotchange', () => this._updateSlotState());
 		}
 
 		_update() {
@@ -376,7 +428,7 @@
 		}
 
 		_updateSlotState() {
-			const slot = this.shadowRoot && this.shadowRoot.querySelector('slot');
+			const slot = this.shadowRoot && this.shadowRoot.querySelector('slot:not([name])');
 			const hasBody = slot && slot.assignedNodes({ flatten: true }).some(hasVisibleNode);
 			this.toggleAttribute('data-empty-body', !hasBody);
 			const toggle = this.shadowRoot && this.shadowRoot.querySelector('.file-change-toggle');
@@ -386,6 +438,10 @@
 		_toggleCollapsed() {
 			if (this.hasAttribute('data-empty-body')) return;
 			this.toggleAttribute('data-collapsed');
+			this.dispatchEvent(new CustomEvent('toggle', {
+				bubbles: true,
+				detail: { collapsed: this.hasAttribute('data-collapsed') },
+			}));
 		}
 
 		_onHeaderClick(event) {

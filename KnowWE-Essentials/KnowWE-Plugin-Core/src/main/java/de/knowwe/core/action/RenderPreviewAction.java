@@ -52,6 +52,14 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class RenderPreviewAction extends AbstractAction {
 
+	/**
+	 * Renders a preview of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.READ;
+	}
+
 	private static final String OUTDATED = "<i>The specified article sections are not available, maybe the page has been changed by an other user. Please reload this page.</i>\n";
 	public static final String ATTR_MODE = "mode";
 

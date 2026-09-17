@@ -38,7 +38,7 @@ KNOWWE.helper = function() {
       if (oldValue !== newValue) {
         jq$.ajax("action/StoreLocalSectionStorageAction", {
           data: {
-            sectionID: sectionID,
+            SectionID: sectionID,
             value: newValue
           },
           type: 'post',
@@ -62,7 +62,7 @@ KNOWWE.helper = function() {
       if (oldValue !== newValue) {
         jq$.ajax("action/StoreLocalSectionStorageAction", {
           data: {
-            sectionID: sectionID,
+            SectionID: sectionID,
             value: newValue
           },
           type: 'post',
@@ -86,6 +86,13 @@ KNOWWE.helper = function() {
 
     isFontAwesomeProAvailable: function() {
       return jq$('head link[href*="font-awesome-pro"]').exists();
+    },
+
+    /**
+     * Returns the wiki's display mode, "light" or "dark".
+     */
+    getDisplayMode: function() {
+      return document.body.classList.contains('dark-mode') ? 'dark' : 'light';
     },
 
     /**

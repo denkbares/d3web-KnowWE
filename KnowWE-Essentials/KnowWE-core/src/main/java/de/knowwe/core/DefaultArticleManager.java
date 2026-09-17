@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -66,6 +67,7 @@ public class DefaultArticleManager implements ArticleManager {
 	private final AttachmentManager attachmentManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
+	private volatile boolean registrationFrameOpen;
 	private final Set<Article> added = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final Set<Article> removed = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -123,11 +125,9 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @param title the title of the article to return
 	 */
 	@Override
-	public Article getArticle(String title, KnowWESubWikiContext context) {
+	public Article getArticle(String title) {
 		if (title == null) return null;
-		String uniqueArticleName = context.toExistingUniqueOrGlobalName(title);
-		if (uniqueArticleName == null) return null;
-		return articleMap.get(uniqueArticleName.toLowerCase());
+		return articleMap.get(title.toLowerCase());
 	}
 
 	@Override
@@ -147,16 +147,16 @@ public class DefaultArticleManager implements ArticleManager {
 	 * @created 20.12.2013
 	 */
 	@Override
-	public Article registerArticle(String title, String content, KnowWESubWikiContext context) {
-		Article article = Article.createArticle(content, title, this, context);
+	public Article registerArticle(String title, String content) {
 		open();
 		try {
+			Article article = Article.createArticle(content, title, this);
 			queueArticle(article);
+			return article;
 		}
 		finally {
 			commit();
 		}
-		return article;
 	}
 
 	@Override
@@ -187,7 +187,32 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 
 	public void queueArticle(String title, String content) {
+		requireOpenRegistrationFrame();
 		queueArticle(Article.createArticle(content, title, this));
+	}
+
+	/**
+	 * Recreates the supplied articles in parallel and queues the new versions sequentially. Recreating them is required
+	 * for recompilation because the supplied instances already contain their previously sectionized KDOM. It deliberately
+	 * happens inside the registration frame, after the preceding compilation has finished. Sequential queueing keeps
+	 * {@link ArticleRegisteredEvent}s on the thread owning the frame, so their listeners may safely perform reentrant
+	 * article operations.
+	 */
+	public void recreateAndQueueArticles(Collection<Article> articles) {
+		requireOpenRegistrationFrame();
+		if (!mainLock.isHeldByCurrentThread()) {
+			throw new IllegalStateException("Only the registration frame owner can queue an article batch");
+		}
+		List<Article> sectionizedArticles = articles.parallelStream()
+				.map(article -> Article.createArticle(article.getText(), article.getTitle(), this))
+				.toList();
+		sectionizedArticles.forEach(this::queueArticle);
+	}
+
+	private void requireOpenRegistrationFrame() {
+		if (!registrationFrameOpen) {
+			throw new IllegalStateException("Cannot queue articles outside an open registration frame");
+		}
 	}
 
 	private void queueArticle(Article article) {
@@ -198,19 +223,21 @@ public class DefaultArticleManager implements ArticleManager {
 
 		String title = article.getTitle();
 
-		if (!added.add(article)) {
-			// Old action could not be overwritten so delete and add last action
-			added.remove(article);
-			added.add(article);
-		}
-
-		Article lastVersion = getArticle(title);
-		if (lastVersion != null) removed.add(lastVersion);
-
-		synchronized (originalArticleMap) {
-			Article originalArticle = articleMap.put(title.toLowerCase(), article);
-			if (!originalArticleMap.containsKey(title.toLowerCase()) && (originalArticle != null)) {
-				originalArticleMap.put(title.toLowerCase(), originalArticle);
+		synchronized (added) {
+			synchronized (originalArticleMap) {
+				article.checkPublicationPredecessor(getArticle(title));
+				if (!added.add(article)) {
+					// Old action could not be overwritten so delete and add last action
+					added.remove(article);
+					added.add(article);
+				}
+				Article originalArticle = articleMap.put(title.toLowerCase(), article);
+				if (originalArticle != null) removed.add(originalArticle);
+				if (!originalArticleMap.containsKey(title.toLowerCase()) && (originalArticle != null)) {
+					originalArticleMap.put(title.toLowerCase(), originalArticle);
+				}
+				// Publish only here, against the actual predecessor at queue time (not the version seen by the parser).
+				article.publishReplacing(originalArticle);
 			}
 		}
 
@@ -232,23 +259,21 @@ public class DefaultArticleManager implements ArticleManager {
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
 	 *
-	 * @param globalArticleName The article to delete
+	 * @param title The article to delete
 	 */
 	@Override
-	public void deleteArticle(String globalArticleName, KnowWESubWikiContext context) {
-
-		// TOTO ; fix
+	public void deleteArticle(String title) {
 		open();
 		try {
-			registerArticle(globalArticleName, "");
+			registerArticle(title, "");
 
-			deleteAfterCompile.add(globalArticleName.toLowerCase());
+			deleteAfterCompile.add(title.toLowerCase());
 		}
 		finally {
 			commit();
 		}
 
-		LOGGER.info("-> Deleted article '" + globalArticleName + "'" + " from " + web);
+		LOGGER.info("-> Deleted article '" + title + "'" + " from " + web);
 	}
 
 	@NotNull
@@ -258,8 +283,9 @@ public class DefaultArticleManager implements ArticleManager {
 	}
 
 	/**
-	 * Opens the manager for registration of articles. Only after calling the method {@link ArticleManager#commit()}
-	 * the added articles will be compiled. Make sure to always call commit in an try-finally block!<p>
+	 * Opens the manager for registration of articles, waiting for a preceding compilation before opening the outermost
+	 * frame. Only after calling the method {@link ArticleManager#commit()} the added articles will be compiled. Make sure
+	 * to always call commit in an try-finally block!<p>
 	 * <b>Attention:</b> Do not call this method synchronously from within a compilation thread.
 	 */
 	@Override
@@ -267,8 +293,30 @@ public class DefaultArticleManager implements ArticleManager {
 		if (CompilerManager.isCompileThread()) {
 			throw new IllegalStateException("Cannot register articles during compilation");
 		}
-		//noinspection LockAcquiredButNotSafelyReleased
-		mainLock.lock();
+		if (mainLock.isHeldByCurrentThread()) {
+			//noinspection LockAcquiredButNotSafelyReleased
+			mainLock.lock();
+			return;
+		}
+		while (true) {
+			//noinspection LockAcquiredButNotSafelyReleased
+			mainLock.lock();
+			if (!compilerManager.isCompiling()) {
+				registrationFrameOpen = true;
+				return;
+			}
+			// Do not hold mainLock while waiting. A compiler may wait for work on another thread, and that work must not
+			// be prevented from taking the ArticleManager lock. Once awakened, retry under mainLock to close the race with
+			// another registration frame that may have started a new compilation in the meantime.
+			mainLock.unlock();
+			try {
+				compilerManager.awaitTermination();
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Interrupted while waiting to register articles", e);
+			}
+		}
 	}
 
 	/**
@@ -289,6 +337,7 @@ public class DefaultArticleManager implements ArticleManager {
 		boolean changesCommitted = false;
 		try {
 			if (outermostCommit) {
+				registrationFrameOpen = false;
 				EventManager.getInstance().fireEvent(new ArticleManagerCommitStartEvent(this));
 				ArrayList<Section<?>> addedSections = new ArrayList<>();
 				ArrayList<Section<?>> removedSections = new ArrayList<>();
@@ -349,10 +398,15 @@ public class DefaultArticleManager implements ArticleManager {
 	public void rollback() {
 		try {
 			if (mainLock.getHoldCount() == 1) {
+				registrationFrameOpen = false;
 				synchronized (added) {
 					synchronized (originalArticleMap) {
 						if (!originalArticleMap.isEmpty()) {
-							articleMap.putAll(originalArticleMap);
+							originalArticleMap.forEach((title, original) -> {
+								Article discarded = articleMap.put(title, original);
+								// Restoring the map must also reactivate the restored version's lifecycle.
+								original.publishReplacing(discarded);
+							});
 						}
 						for (Article changed : added) {
 							if (!originalArticleMap.containsKey(changed.getTitle().toLowerCase())) {

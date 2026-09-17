@@ -14,6 +14,7 @@ import javax.servlet.ServletContext;
 
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -31,12 +32,18 @@ import de.knowwe.visualization.dot.DOTRenderer;
 public class OntoVisPdfDownload extends AbstractAction {
 
 	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
+
+	@Override
 	public void execute(UserActionContext context) throws IOException {
 		ServletContext servletContext = context.getServletContext();
 		if (servletContext == null) return; // at wiki startup only
 
 		// find graph name
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
+		// getSection also asserts the read access rights of the user for the requested section
+		Section<?> section = getSection(context);
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class), context);
 		config.setCacheFileID(Utils.getFileID(section, context));
 		File dotFile = new File(DOTRenderer.getFilePath(config) + ".dot");
@@ -46,7 +53,7 @@ public class OntoVisPdfDownload extends AbstractAction {
 		DOTRenderer.convertDot(dotFile, pdf, DOTRenderer.getCommand(config, "pdf", dotFile, pdf));
 
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + ".pdf\"");
+		context.setContentDisposition("attachment", name + ".pdf");
 
 		InputStream fis = new FileInputStream(pdf);
 		OutputStream ous = context.getOutputStream();

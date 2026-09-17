@@ -19,6 +19,8 @@
 
 package de.knowwe.event;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
@@ -38,7 +40,7 @@ public abstract class TermRenamingEvent implements Event {
 	private final Identifier replacementTerm;
 
 
-	public TermRenamingEvent(ArticleManager articleManager, UserActionContext context, Identifier term, Identifier replacementTerm) {
+	public TermRenamingEvent(ArticleManager articleManager, @Nullable UserActionContext context, Identifier term, Identifier replacementTerm) {
 		this.articleManager = articleManager;
 		this.context = context;
 		this.term = term;
@@ -57,6 +59,11 @@ public abstract class TermRenamingEvent implements Event {
 		return articleManager;
 	}
 
+	/**
+	 * The user action the rename originates from, or {@code null} if it was not triggered by one, for example when an
+	 * agent renames the term. Listeners that need a request, a session or the current article must handle both cases.
+	 */
+	@Nullable
 	public UserActionContext getContext() {
 		return context;
 	}

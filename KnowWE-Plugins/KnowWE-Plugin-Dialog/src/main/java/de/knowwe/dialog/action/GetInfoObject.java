@@ -53,6 +53,7 @@ import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;
@@ -66,6 +67,14 @@ import de.knowwe.dialog.Utils;
  * @author Volker Belli
  */
 public class GetInfoObject extends AbstractAction {
+
+	/**
+	 * The access is checked by {@link Utils#assertCanViewKnowledgeBase(de.knowwe.core.action.UserActionContext)}.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.HELPER;
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(GetInfoObject.class);
 
 	public static final String PARAM_IDS = "ids";
@@ -73,6 +82,7 @@ public class GetInfoObject extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Utils.assertCanViewKnowledgeBase(context);
 		String idsString = context.getParameter(PARAM_IDS);
 		Locale locale = Utils.parseLocale(context.getParameter(PARAM_LOCALE));
 

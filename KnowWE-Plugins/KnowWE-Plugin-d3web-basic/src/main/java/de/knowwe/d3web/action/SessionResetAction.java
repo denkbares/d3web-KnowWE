@@ -25,6 +25,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -55,6 +56,15 @@ import de.knowwe.notification.NotificationManager;
  * @created 14.03.2012
  */
 public class SessionResetAction extends AbstractAction {
+
+	/**
+	 * Only resets the user's own d3web session, so read access to the article of the knowledge base definition is
+	 * sufficient.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

@@ -20,6 +20,7 @@
 
 package de.knowwe.core.kdom;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +32,6 @@ import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.Environment.CompilationMode;
-import de.knowwe.core.KnowWESubWikiContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
@@ -58,13 +58,19 @@ public final class Article {
 	private final String web;
 	private final String text;
 	private boolean sectionized = false;
+	private enum Lifecycle { DRAFT, PUBLISHED, RETIRED }
+	private volatile Lifecycle lifecycle = Lifecycle.DRAFT;
+	private final String sectionIdNamespace;
 
 	/**
 	 * The section representing the root-node of the KDOM-tree
 	 */
 	private Section<RootType> rootSection;
+	/** Temporary parser root retained only so a failed, partial parse can be cleaned up. */
+	private Section<RootType> constructionRootSection;
 
 	private Article lastVersion;
+	private Article publicationPredecessor;
 
 	private final RootType rootType;
 
@@ -82,14 +88,6 @@ public final class Article {
 		return createArticle(text, title, manager, false);
 	}
 
-	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, @NotNull KnowWESubWikiContext context) {
-		return createArticle(text, title, manager, false, context);
-	}
-
-	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, boolean fullParse, @NotNull KnowWESubWikiContext context) {
-		return createArticle(text, title, manager.getWeb(), manager, fullParse, context);
-	}
-
 	/**
 	 * Create a new article by parsing the given text into a section tree (KDOM). Use this method if you want to add the
 	 * article to an article manager.
@@ -101,7 +99,7 @@ public final class Article {
 	 *                  versions if possible
 	 */
 	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, manager.getWeb(), manager, fullParse, KnowWESubWikiContext.getDefaultContext());
+		return createArticle(text, title, manager.getWeb(), manager, fullParse);
 	}
 
 	/**
@@ -113,19 +111,15 @@ public final class Article {
 	 * @param web   the web the article belongs to (currently unused)
 	 */
 	public static Article createTemporaryArticle(String text, String title, String web) {
-		return createArticle(text, title, web, null, true, KnowWESubWikiContext.SIMPLE_CONTEXT);
+		return createArticle(text, title, web, null, true);
 	}
 
 	public static Article createTemporaryArticle(String text, String title, String web, RootType root) {
-		return createArticle(text, title, web, null, true, root, KnowWESubWikiContext.SIMPLE_CONTEXT);
+		return createArticle(text, title, web, null, true, root);
 	}
 
-	public static Article createTemporaryArticle(String text, String title, String web, RootType root, @NotNull KnowWESubWikiContext context) {
-		return createArticle(text, title, web, null, true, root, context);
-	}
-
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, @NotNull KnowWESubWikiContext context) {
-		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType(), context);
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
+		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType());
 	}
 
 	/**
@@ -139,43 +133,51 @@ public final class Article {
 	 *                  versions if possible
 	 * @param root      RootType to be used
 	 */
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root, @NotNull KnowWESubWikiContext context) {
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
 		Article article = null;
+		boolean complete = false;
 		try {
-			article = new Article(text, title, web, manager, fullParse, root, context);
+			article = new Article(text, title, web, manager, fullParse, root);
+			article.initialize();
+			complete = true;
+			return article;
 		}
 		catch (Exception e) {
 			LOGGER.error("Exception while creating article", e);
+			return null;
 		}
-		return article;
+		finally {
+			if (!complete && article != null) article.destroy(null);
+		}
 	}
 
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @NotNull KnowWESubWikiContext context) {
-		this(text, title, web, manager, fullParse, null, context);
-	}
-
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root, @NotNull KnowWESubWikiContext context) {
+	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root) {
 		if (root == null) {
 			rootType = RootType.getInstance();
 		}
 		else {
 			rootType = root;
 		}
-		long start = System.currentTimeMillis();
-		this.title = context.getGlobalPageName(title);
+		this.title = title;
 		this.web = web;
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
 		this.articleManager = manager;
-		this.lastVersion = Environment.isInitialized() && articleManager != null
-				? Environment.getInstance().getArticle(web, title)
-				: null;
+		this.publicationPredecessor = articleManager != null ? articleManager.getArticle(title) : null;
+		// Keep the established initialization behavior: before the environment is ready, parsing must not reuse an
+		// existing KDOM. The publication predecessor is nevertheless needed independently for the ID namespace.
+		this.lastVersion = Environment.isInitialized() ? publicationPredecessor : null;
+		this.sectionIdNamespace = publicationPredecessor != null && publicationPredecessor.text.equals(cleanedText)
+				? publicationPredecessor.sectionIdNamespace : UUID.randomUUID().toString();
 
 		this.fullParse = fullParse
 				|| lastVersion == null
 				|| Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
+	}
 
-		sectionizeArticle(cleanedText);
+	private void initialize() {
+		long start = System.currentTimeMillis();
+		sectionizeArticle(text);
 
 		long time = System.currentTimeMillis() - start;
 		if (time < LOG_THRESHOLD) {
@@ -200,24 +202,76 @@ public final class Article {
 		return sectionized;
 	}
 
+	/** Whether this version has been published by its manager, rather than merely parsed as a draft. */
+	public boolean isPublished() {
+		return lifecycle == Lifecycle.PUBLISHED;
+	}
+
+	/** Retired versions may still be read, but late ID/message requests must not register them again. */
+	public boolean isRetired() {
+		return lifecycle == Lifecycle.RETIRED;
+	}
+
+	/**
+	 * Opaque namespace shared only with an unchanged predecessor, including recompiles without a wiki revision change.
+	 * Changed source, deletion/recreation and independent temporary articles receive a fresh namespace.
+	 */
+	public String getSectionIdNamespace() {
+		return sectionIdNamespace;
+	}
+
+	/**
+	 * Rejects a recompile whose unchanged predecessor was superseded by a content change while this draft was parsed.
+	 * Reusing its namespace would otherwise make pre-edit IDs valid again. Called before changing any manager state;
+	 * callers can retry with a fresh draft. Restoring an original article during rollback is a separate operation.
+	 */
+	public void checkPublicationPredecessor(@Nullable Article current) {
+		if (publicationPredecessor != null && sectionIdNamespace.equals(publicationPredecessor.sectionIdNamespace)
+				&& (current == null || !sectionIdNamespace.equals(current.sectionIdNamespace))) {
+			throw new IllegalStateException("Article changed while preparing recompile; retry: " + title);
+		}
+	}
+
+	/**
+	 * Manager-owned publication, after installing this instance in the article map and before registration events.
+	 * Construction never cleans up the predecessor. Here its global registrations are retired; this draft's requested
+	 * IDs and local diagnostics become visible. Unchanged recompiles retain ID addresses, not Section identity.
+	 * This is queue-time publication, not commit-time staging or an atomic snapshot across article, ID and diagnostic
+	 * lookups.
+	 */
+	public synchronized void publishReplacing(@Nullable Article previous) {
+		if (isTemporary() || articleManager.getArticle(title) != this) {
+			throw new IllegalStateException("Only the current managed article can be published");
+		}
+		lifecycle = Lifecycle.DRAFT;
+		if (previous != null && previous != this) previous.destroy(this);
+		lifecycle = Lifecycle.PUBLISHED;
+		publishSectionRecursively(rootSection);
+	}
+
+	private static void publishSectionRecursively(Section<?> section) {
+		Section.publishSectionID(section);
+		Messages.registerMessagesSection(section);
+		section.getChildren().forEach(Article::publishSectionRecursively);
+	}
+
 	public void clearLastVersion() {
 		// important! prevents memory leak
 		lastVersion = null;
+		publicationPredecessor = null;
 	}
 
 	private void sectionizeArticle(String text) {
 
 		// create Sections recursively
-		Section<?> dummySection = Section.createSection(text, getRootType(), null);
+		Section<RootType> dummySection = Section.createSection(text, getRootType(), null);
 		dummySection.setArticle(this);
+		constructionRootSection = dummySection;
 		getRootType().getParser().parse(text, dummySection);
 		rootSection = Sections.child(dummySection, RootType.class);
 		//noinspection ConstantConditions
 		rootSection.setParent(null);
-
-		if (lastVersion != null) {
-			lastVersion.destroy(this);
-		}
+		constructionRootSection = null;
 
 		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
 	}
@@ -226,10 +280,15 @@ public final class Article {
 	 * Destroy and cleans up stuff that was registered for the Sections of this article (like IDs and message caches).
 	 * Pass the new version of the article if available, there might be stuff that can be salvaged for it.
 	 *
-	 * @param newArticle the new version of the article, if there is on (allowed to be null in this case only)
+	 * @param newArticle the new version of the article, if there is one (allowed to be null in this case only)
 	 */
-	public void destroy(Article newArticle) {
-		unregisterSectionRecursively(this.getRootSection(), newArticle);
+	public synchronized void destroy(Article newArticle) {
+		if (isRetired()) return;
+		lifecycle = Lifecycle.RETIRED;
+		Section<?> cleanupRoot = rootSection != null ? rootSection : constructionRootSection;
+		if (cleanupRoot != null) unregisterSectionRecursively(cleanupRoot, newArticle);
+		constructionRootSection = null;
+		clearLastVersion();
 	}
 
 	private void unregisterSectionRecursively(Section<?> section, Article newArticle) {

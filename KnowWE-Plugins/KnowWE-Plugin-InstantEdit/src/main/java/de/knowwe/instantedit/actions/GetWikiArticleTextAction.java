@@ -22,6 +22,7 @@ package de.knowwe.instantedit.actions;
 import java.io.IOException;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -33,6 +34,14 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 09.07.18
  */
 public class GetWikiArticleTextAction extends AbstractGetTextAction {
+
+	/**
+	 * Returns the source text of the article it is called for, so it needs read access to that article.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.READ;
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

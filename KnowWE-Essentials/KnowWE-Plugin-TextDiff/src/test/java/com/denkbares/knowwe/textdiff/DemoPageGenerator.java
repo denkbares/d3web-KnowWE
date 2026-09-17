@@ -96,20 +96,19 @@ class DemoPageGenerator {
 				  <code>&lt;knowwe-file-change&gt;</code> with declarative shadow DOM.</p>
 				<p>
 				  <button id="toggle-dark" type="button">Toggle dark mode</button>
-				  <em style="margin-left: 1em; color: #6e7781;">sets the page class and component <code>data-theme</code></em>
+				  <em style="margin-left: 1em; color: #6e7781;">switches the body class the way the wiki does; in the wiki that only happens on page load, so the demo re-themes the components itself</em>
 				</p>
 				<script>
 				  window.knowweTextDiffResourceBase = %s;
-				  window.syncDemoTheme = () => {
-				    const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-				    document.querySelectorAll('knowwe-text-diff, knowwe-file-change')
-				      .forEach(el => el.setAttribute('data-theme', theme));
-				  };
+				  // stands in for KnowWE-helper.js, which is not available outside the wiki
+				  window.KNOWWE = { helper: { getDisplayMode: () => document.body.classList.contains('dark-mode') ? 'dark' : 'light' } };
 				  document.getElementById('toggle-dark').addEventListener('click', () => {
 				    const b = document.body;
 				    b.classList.toggle('dark-mode');
 				    b.classList.toggle('light-mode');
-				    window.syncDemoTheme();
+				    const theme = KNOWWE.helper.getDisplayMode();
+				    document.querySelectorAll('knowwe-text-diff, knowwe-file-change')
+				      .forEach(el => el.setAttribute('data-theme', theme));
 				  });
 				</script>
 				""".formatted(resourceBaseUri, jsString(resourceBaseUri)));
@@ -268,7 +267,6 @@ class DemoPageGenerator {
 				""");
 
 		page.append("<script src=\"KnowWEExtension/scripts/KnowWE-Plugin-TextDiff.js\"></script>");
-		page.append("<script>window.syncDemoTheme();</script>");
 		page.append("</body></html>");
 		return withDemoResourceUrls(page.toString(), resourceBaseUri);
 	}

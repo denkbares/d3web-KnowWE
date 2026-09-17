@@ -18,6 +18,8 @@
  */
 package de.knowwe.rdfs.vis.markup;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,6 +31,7 @@ import javax.servlet.ServletContext;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -38,8 +41,18 @@ import de.knowwe.core.action.UserActionContext;
  */
 public class OntoVisSvgD3Download extends AbstractAction {
 
+	/**
+	 * Writes a caller-supplied svg to a server-side temporary file. Not tied to any article, so any authenticated
+	 * user may call it.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 
 		ServletContext servletContext = context.getServletContext();
 

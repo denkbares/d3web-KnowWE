@@ -144,7 +144,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 				result.appendHtml("<div>");
 				result.appendHtml("<a class='action' href='javascript:")
 						.appendHtml("jq$(\"#").append(id).appendHtml("\").remove();")
-						.appendHtml(Strings.encodeHtml(tool.getAction()))
+						.appendPlainText(tool.getAction())
 						.appendHtml("'");
 			}
 			else {
@@ -152,12 +152,12 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 				result.appendHtml("<a class='action' onclick='")
 						.appendHtml("jq$(\"#").append(id).appendHtml("\").remove();'")
 						.appendHtml(" href='")
-						.appendHtml(Strings.encodeHtml(tool.getAction()))
+						.appendPlainText(tool.getAction())
 						.appendHtml("'");
 			}
 			String description = tool.getDescription();
 			if (!Strings.isBlank(description)) {
-				result.appendHtml(" title='").append(Strings.encodeHtml(description)).appendHtml("'");
+				result.appendHtml(" title='").appendPlainText(description).appendHtml("'");
 			}
 			result.appendHtml(">");
 			if (icon != null) {

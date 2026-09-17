@@ -64,7 +64,6 @@ import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.GitProviderProperties;
-import org.apache.wiki.providers.SubWikiUtils;
 import org.apache.wiki.ui.TemplateManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -367,7 +366,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	public boolean isSupportArticle(String title) {
-		return supportArticleNames.contains(SubWikiUtils.getLocalPageName(title));
+		return supportArticleNames.contains(title);
 	}
 
 	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) throws InterruptedException {

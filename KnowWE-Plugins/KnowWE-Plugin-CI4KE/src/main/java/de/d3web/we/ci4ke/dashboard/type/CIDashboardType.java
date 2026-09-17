@@ -63,7 +63,6 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kdom.dashtree.LineEndComment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -434,10 +433,8 @@ public class CIDashboardType extends DefaultMarkupType {
 		private void processOnSaveTrigger(Matcher matcher, Set<String> monitoredArticles, List<Message> msgs, Section<CIDashboardType> section) {
 			while (matcher.find()) {
 				String parameter = parseParameter(matcher.group());
-				WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-				String identifiablePageName = wikiConnector.toExistingUniqueOrGlobalName(parameter);
-				if (identifiablePageName != null) {
-					monitoredArticles.add(identifiablePageName);
+				if (Environment.getInstance().getWikiConnector().doesArticleExist(parameter)) {
+					monitoredArticles.add(parameter);
 				}
 				else {
 					Collection<Article> articles = section.getArticleManager() == null ? List.of() : section.getArticleManager()

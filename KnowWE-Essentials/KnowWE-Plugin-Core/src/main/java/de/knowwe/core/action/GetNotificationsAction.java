@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +41,17 @@ import de.knowwe.notification.NotificationManager;
  */
 public class GetNotificationsAction extends AbstractAction {
 
+	/**
+	 * Returns only the caller's own session notifications, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		NotificationManager manager = NotificationManager.getNotificationManager(context);
 		List<Notification> notifications = new ArrayList<>(manager.getNotifications());
 		Collections.reverse(notifications);

@@ -19,6 +19,8 @@
 
 package de.knowwe.core.action;
 
+import de.knowwe.core.utils.KnowWEUtils;
+
 import java.io.IOException;
 
 import org.json.JSONObject;
@@ -29,8 +31,17 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 public class StoreLocalSectionStorageAction extends AbstractAction {
 
+	/**
+	 * Writes only the caller's own session local storage, so any authenticated user may call it.
+	 */
+	@Override
+	public Action.Access requiredAccess() {
+		return Action.Access.AUTH;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		KnowWEUtils.assertUserAuth(context);
 		AbstractAction.storeLocalSectionStorage(context);
 	}
 

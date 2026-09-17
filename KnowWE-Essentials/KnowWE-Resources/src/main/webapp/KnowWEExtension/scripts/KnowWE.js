@@ -670,6 +670,36 @@ KNOWWE.core.util.form = function() {
  */
 KNOWWE.core.rerendercontent = function() {
 
+    const asynchronParameters = {reason: "asynchronRenderer", globalProcessingState: false};
+
+    /*
+     * Asynchronously rendered parts are fetched when they come into view, not when the page loads.
+     *
+     * What the server does behind such a placeholder can be expensive -- a graph layout, a query -- and a page carrying
+     * a dozen of them fired a dozen requests at once, for content the reader may never scroll down to. A little ahead
+     * of the viewport, so it is there by the time it is looked at.
+     */
+    const visibleObserver = typeof IntersectionObserver === "undefined" ? null :
+        new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (!entry.isIntersecting) return;
+                visibleObserver.unobserve(entry.target);
+                jq$(entry.target).rerender(jq$.extend({}, asynchronParameters));
+            });
+        }, {rootMargin: "200px"});
+
+    function loadWhenVisible($elements) {
+        if (!visibleObserver) {
+            $elements.rerender(jq$.extend({}, asynchronParameters));
+            return;
+        }
+        $elements.each(function() {
+            // a placeholder is watched once: it is replaced on the first load, and the replacement is not a placeholder
+            if (this.dataset.knowweAsyncWatched) return;
+            this.dataset.knowweAsyncWatched = "true";
+            visibleObserver.observe(this);
+        });
+    }
 
     return {
         /**
@@ -683,15 +713,25 @@ KNOWWE.core.rerendercontent = function() {
                 }
                 jq$(".ReRenderSectionMarker").rerender(parameters);
             });
-            let parameters = {reason: "asynchronRenderer", globalProcessingState: false};
             KNOWWE.helper.observer.subscribe("afterRerender", function() {
-                if (jq$(this).is(".asynchronRenderer")) {
-                    jq$(this).filter(".asynchronRenderer").rerender(parameters);
-                } else {
-                    jq$(this).find(".asynchronRenderer").rerender(parameters);
-                }
+                KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible(this);
             });
-            jq$(".asynchronRenderer").rerender(parameters);
+            KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible();
+        },
+
+        /**
+         * Function: loadAsynchronousWhenVisible
+         * Watches the asynchronously rendered parts inside the given element -- or the whole document, if none is
+         * given -- and fetches each one as it comes into view. Call it for content that arrived after the page was
+         * loaded, for example a search result: nothing else knows about those placeholders.
+         */
+        loadAsynchronousWhenVisible: function(element) {
+            if (!element) {
+                loadWhenVisible(jq$(".asynchronRenderer"));
+                return;
+            }
+            const $element = jq$(element);
+            loadWhenVisible($element.filter(".asynchronRenderer").add($element.find(".asynchronRenderer")));
         },
         /**
          * Function: updateNode

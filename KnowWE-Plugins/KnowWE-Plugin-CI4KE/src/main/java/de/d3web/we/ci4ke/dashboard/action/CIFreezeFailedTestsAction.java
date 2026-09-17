@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.denkbares.utils.Streams;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestResult;
@@ -42,6 +44,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -58,6 +61,11 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		Section<?> section = getSection(context);
+		if (!KnowWEUtils.canWrite(section, context)) {
+			context.sendError(HttpServletResponse.SC_FORBIDDEN,
+					"You are not allowed to freeze failed tests of this dashboard");
+			return;
+		}
 		CIDashboard dashboard = CIDashboardManager.getDashboard(
 				Sections.cast(section, CIDashboardType.class));
 
@@ -305,10 +313,18 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 		return text.replaceAll("\\b(\\d+)\\b(?!.*\\b\\d+\\b)", String.valueOf(newNumber));
 	}
 
+	/**
+	 * Creates a stable key for matching frozen report blocks. The rendered headers contain live
+	 * counts and status words, so "1 warning was" and "2 warnings were" must still match the
+	 * same frozen block. Stored freeze files can also contain rendered severity prefixes like
+	 * "__WARNING__:", which are display markup and not part of the semantic header.
+	 */
 	public static String normalizeHeader(String header) {
 		header = normalizeLink(header);
-		return header.replaceAll("\\b\\d+\\b(?!.*\\b\\d+\\b)", "REMOVE")
-				.replaceAll("REMOVE\\s+\\S+", "")
+		return header.replaceAll("(?i)^_+\\s*(success|successes|failure|failures|warning|warnings|error|errors|aborted|skipped)\\s*_+\\s*:\\s*", "")
+				.replaceAll("\\b\\d+\\b", "")
+				.replaceAll("(?i)\\b(was|were)\\b", "")
+				.replaceAll("(?i)\\b(success|successes|failure|failures|warning|warnings|error|errors|aborted|skipped)\\b", "")
 				.replaceAll("\\s{2,}", " ")
 				.trim();
 	}
@@ -321,7 +337,8 @@ public class CIFreezeFailedTestsAction extends AbstractAction {
 //	}
 
 	public static String normalizeLink(String link) {
-		return link.replaceAll("#[a-f0-9]{1,8}]", "]");
+		// Frozen reports can contain legacy short IDs or the current 32-hex lifecycle IDs.
+		return link.replaceAll("#(?:[a-f0-9]{32}|[a-f0-9]{1,8})]", "]");
 	}
 
 }

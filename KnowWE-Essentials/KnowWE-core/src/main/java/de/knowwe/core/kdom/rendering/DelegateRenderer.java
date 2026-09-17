@@ -96,6 +96,8 @@ public class DelegateRenderer implements Renderer {
 	}
 
 	private void renderMessagesPost(Section<?> subSection, UserContext user, RenderResult builder) {
+		// fast path, the vast majority of sections has no messages at all
+		if (!Messages.hasMessages(subSection)) return;
 
 		boolean renderedAny = false;
 		// Render errors post
@@ -151,6 +153,9 @@ public class DelegateRenderer implements Renderer {
 	}
 
 	private void renderMessagesPre(Section<?> subSection, UserContext user, RenderResult builder) {
+		// fast path, the vast majority of sections has no messages at all
+		if (!Messages.hasMessages(subSection)) return;
+
 		// Render warnings pre
 		Map<Compiler, Collection<Message>> warnings = Messages.getMessagesMap(
 				subSection, Message.Type.WARNING);
