@@ -632,11 +632,17 @@ public class ListSectionsRenderer<T extends Type> {
 
 	private void renderTool(RenderResult page, Tool tool) {
 		String description = tool.getDescription();
+		String id = tool.getId();
 		String tooltip = Strings.isBlank(description)
 				? tool.getTitle()
 				: tool.getTitle() + ":\n" + description;
-		page.appendHtmlTag("a", false, "title", Strings.encodeHtml(tooltip),
-				ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
+		if (id == null) {
+			page.appendHtmlTag("a", false, "title", Strings.encodeHtml(tooltip),
+					ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
+		} else {
+			page.appendHtmlTag("a", false, "title", Strings.encodeHtml(tooltip),
+					ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool), "id", Strings.encodeHtml(id));
+		}
 		if (tool.getIcon() != null) {
 			page.appendHtml(tool.getIcon().fixWidth().toHtml());
 		}
