@@ -47,12 +47,11 @@ public class RenderResult {
 	private static final int MASK_GT = patternIndex(">");
 	private static final int MASK_LT = patternIndex("<");
 
-	private static final int ASCII_RANGE = 128;
-
 	/**
-	 * For each possible first character the indices of the {@link #HTML} patterns starting with it, longest
-	 * first. Derived from HTML instead of written out, so the dispatch of {@link #maskPatternAt} cannot
-	 * drift away from the table it dispatches on.
+	 * For each character that starts a pattern the indices of the {@link #HTML} patterns starting with it,
+	 * longest first. Derived from HTML instead of written out, so the dispatch of {@link #maskPatternAt}
+	 * cannot drift away from the table it dispatches on. Indexed by the character itself, and only as long
+	 * as the largest one needs — a character beyond that starts no pattern.
 	 */
 	private static final int[][] PATTERNS_BY_FIRST_CHAR = createPatternsByFirstChar();
 
@@ -445,7 +444,11 @@ public class RenderResult {
 	 */
 	private static int maskPatternAt(CharSequence html, int index) {
 		char c = html.charAt(index);
-		if (c >= ASCII_RANGE) return -1;
+		// Beyond the table no pattern starts, so nothing here can match. This is a lookup over utf-16 code
+		// units, not over bytes: a character outside the table is one char of its own, and the surrogates of
+		// a character beyond the BMP are 0xD800-0xDFFF, so neither can ever look like the ascii character a
+		// pattern starts with.
+		if (c >= PATTERNS_BY_FIRST_CHAR.length) return -1;
 		int[] candidates = PATTERNS_BY_FIRST_CHAR[c];
 		if (candidates == null) return -1;
 		for (int candidate : candidates) {
@@ -467,12 +470,13 @@ public class RenderResult {
 	}
 
 	private static int[][] createPatternsByFirstChar() {
-		int[][] byFirstChar = new int[ASCII_RANGE][];
+		char highest = 0;
+		for (String pattern : HTML) {
+			highest = (char) Math.max(highest, pattern.charAt(0));
+		}
+		int[][] byFirstChar = new int[highest + 1][];
 		for (int i = 0; i < HTML.length; i++) {
 			char first = HTML[i].charAt(0);
-			if (first >= ASCII_RANGE) {
-				throw new IllegalStateException("mask pattern must start with an ascii character: " + HTML[i]);
-			}
 			int[] candidates = byFirstChar[first];
 			// HTML is sorted longest first, so appending keeps that order per character
 			if (candidates == null) {

@@ -138,7 +138,13 @@ public class RenderResultTest {
 				"_", "__", "___", "|", "||", "|||", "'", "''", "'''", "%", "%%",
 				"-", "--", "---", "----", "-----", "{", "{{", "{{{", "{{{{", "}", "}}", "}}}", "}}}}",
 				"a__b__c", "|| head | cell", "text ---- rule", "{{mono}} and {{{code}}}",
-				"50%% off", "C:\\path\\file", "text ends with -", "text ends with {" };
+				"50%% off", "C:\\path\\file", "text ends with -", "text ends with {",
+				// non ascii: the dispatch is indexed by the character, so characters beyond the table and the
+				// surrogates of a character beyond the BMP must never be mistaken for the start of a pattern
+				"\u00e4\u00f6\u00fc\u00df", "Bericht__f\u00fcr+Th\u00fcringen__.docx",
+				"\u4e2d\u6587|\u4e2d\u6587", "\ud83d\ude00", "a\ud83d\ude00b",
+				"__\ud83d\ude00__", "\ud83d\ude00{{x}}\ud83d\ude00", "{\ud83d\ude00{",
+				"\ud83d", "\ude00", "\ude00\ud83d", "|\ud83d|", "\uffff", "\u007f" };
 		for (String text : cases) {
 			String masked = RenderResult.mask(text, store);
 			assertEquals("mask(" + text + ")", maskReference(text), masked);
@@ -150,7 +156,7 @@ public class RenderResultTest {
 	@Test
 	public void maskMatchesReferenceScan() {
 		Random random = new Random(42);
-		char[] alphabet = "ab[]{}\\\"'<>_|-%~ ".toCharArray();
+		char[] alphabet = "ab[]{}\\\"'<>_|-%~ \u00e4\u4e2d\ud83d\ude00".toCharArray();
 		for (int run = 0; run < 2000; run++) {
 			char[] chars = new char[random.nextInt(40)];
 			for (int i = 0; i < chars.length; i++) {
@@ -222,7 +228,7 @@ public class RenderResultTest {
 	@Test
 	public void appendHtmlTagMatchesLegacy() {
 		Random random = new Random(1337);
-		char[] alphabet = "ab[]{}\\\"'<>&#%_|-~ ".toCharArray();
+		char[] alphabet = "ab[]{}\\\"'<>&#%_|-~ \u00e4\u4e2d\ud83d\ude00".toCharArray();
 		String[] tags = { "div", "span", "a" };
 		for (boolean encode : new boolean[] { true, false }) {
 			for (int run = 0; run < 500; run++) {
@@ -298,6 +304,11 @@ public class RenderResultTest {
 		for (char c = 0; c < 128; c++) {
 			assertAttributeValueIsInert(Character.toString(c));
 		}
+		// beyond ascii, including the surrogate range, where a naive dispatch could index out of its table
+		for (char c : new char[] { 128, 255, 0x00e4, 0x4e2d, 0xd7ff, 0xd800, 0xdc00, 0xdfff, 0xffff }) {
+			assertAttributeValueIsInert(Character.toString(c));
+		}
+		assertAttributeValueIsInert("\ud83d\ude00");
 		for (String pattern : HTML) {
 			assertAttributeValueIsInert(pattern);
 			assertAttributeValueIsInert("x" + pattern + "y");
