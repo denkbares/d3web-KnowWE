@@ -139,7 +139,7 @@ public class EnvironmentLifecycleTest {
 		first.onClose(() -> closed.add("first"));
 
 		Environment second = start(); // without closing the first one
-		assertFalse("the previous environment must stay open", first.isClosed());
+		assertFalse("the previous environment must stay open", first.isClosing());
 		assertTrue(closed.isEmpty());
 		assertNotSame(first, second);
 		Article secondArticle = createArticle(second);
@@ -159,7 +159,7 @@ public class EnvironmentLifecycleTest {
 
 		first.close();
 		assertEquals(List.of("first"), closed);
-		assertFalse("closing one environment leaves the other one running", second.isClosed());
+		assertFalse("closing one environment leaves the other one running", second.isClosing());
 		assertSame(secondArticle, second.getArticleManager().getArticle(TITLE));
 	}
 

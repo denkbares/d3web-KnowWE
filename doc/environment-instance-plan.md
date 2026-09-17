@@ -393,6 +393,12 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   listener per environment", der Code hing an einer beliebigen, nach Edits veralteten Section. Der Listener hält
   jetzt die Environment und leert den Hierarchie-Cache aller TermBrowser-Sections. Nachweis: Kette grün bis
   Information-Extraction, Sweep KnowWE/Experimental/SSP/DES/KRONE auf Baseline-Niveau.
+- **Zustandsnamen und `getServletContext()`** (2026-09-17, Signatur-Review Punkte 4 und 5): `isClosed()` lieferte in
+  Wahrheit das Feld `closing`, während `getService` auf `closed` prüfte — beim Rdf2GoCore-Fix musste ich erst
+  nachsehen, welches gemeint war. Jetzt gibt es beide Fragen ehrlich: `isClosing()` ab dem Beginn von `close()`
+  („darf ich damit noch arbeiten?", das meinen alle produktiven Aufrufer) und `isClosed()`, wenn alles freigegeben
+  ist. `Environment.getContext()` heißt `getServletContext()` (24 Aufrufstellen), und das Javadoc von
+  `EnvironmentService` sagt jetzt, was der Typ bedeutet, statt auf die alte Signatur zu verweisen.
 - `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.

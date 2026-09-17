@@ -380,10 +380,20 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	}
 
 	/**
-	 * Returns whether {@link #close()} has been called on this environment.
+	 * Returns whether {@link #close()} has been started on this environment. From that moment on it is shutting down
+	 * and must not be used any more, even though its services are still reachable while they are closed themselves.
+	 * This is the question almost everybody means: "may I still work with this environment?".
+	 */
+	public boolean isClosing() {
+		return closing;
+	}
+
+	/**
+	 * Returns whether {@link #close()} has finished, i.e. everything this environment owned is released. Between
+	 * {@link #isClosing()} and this, the close tasks and the services are being closed.
 	 */
 	public boolean isClosed() {
-		return closing;
+		return closed;
 	}
 
 	private void awaitCompileTerminationForShutdown() {
@@ -1078,7 +1088,10 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 		return getArticleManager().getArticle(title);
 	}
 
-	public ServletContext getContext() {
+	/**
+	 * Returns the servlet context of the wiki this environment belongs to, null outside a servlet container.
+	 */
+	public ServletContext getServletContext() {
 		return wikiConnector.getServletContext();
 	}
 

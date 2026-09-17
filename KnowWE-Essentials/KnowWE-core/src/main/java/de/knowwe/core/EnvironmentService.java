@@ -5,10 +5,14 @@
 package de.knowwe.core;
 
 /**
- * A service that is owned by an {@link Environment}, see {@link Environment#getService(Class, java.util.function.Supplier)}.
- * The environment closes its services when it is closed, in reverse order of their creation. Deliberately not an
- * {@link AutoCloseable}: callers obtain a service to use it, never to close it, so try-with-resources would be wrong
- * (and IDE inspections would demand it).
+ * Marks a service that is closed together with the {@link Environment} it belongs to, in reverse order of creation.
+ * The name says who owns it, the single method says what that means: the environment calls {@link #close()} once,
+ * nobody else ever does. A service is declared with a {@link ServiceKey} and fetched with
+ * {@link Environment#getService(ServiceKey)}; implementing this interface is optional and only says "I hold
+ * something that has to be released" (listeners, threads, caches).
+ * <p>
+ * Deliberately not an {@link AutoCloseable}: callers obtain a service to use it, never to close it, so
+ * try-with-resources would be wrong (and IDE inspections would demand it).
  *
  * @author Albrecht Striffler (denkbares GmbH) + Claude for env-instance
  * @created 09.09.2026

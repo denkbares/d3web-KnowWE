@@ -1777,7 +1777,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private boolean isEnvironmentClosing() {
 		Environment coreEnvironment = findEnvironment();
-		return coreEnvironment != null && coreEnvironment.isClosed();
+		return coreEnvironment != null && coreEnvironment.isClosing();
 	}
 
 	public RepositoryConfig getRuleSet() {

@@ -50,7 +50,7 @@ public class TestArticleManager {
 	 * {@link Environment#create(de.knowwe.core.wikiConnector.WikiConnector)} and close it themselves instead.
 	 */
 	public static synchronized Environment getEnvironment() {
-		if (environment == null || environment.isClosed()) {
+		if (environment == null || environment.isClosing()) {
 			environment = Environment.create(new DummyConnector());
 		}
 		return environment;

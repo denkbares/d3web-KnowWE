@@ -116,7 +116,7 @@ public class NotificationManager {
 	public Collection<Notification> getNotifications() {
 		List<Notification> notifications = new ArrayList<>(userNotifications.values());
 		Environment environment = this.environment;
-		if (environment != null && !environment.isClosed()) notifications.addAll(global(environment).values());
+		if (environment != null && !environment.isClosing()) notifications.addAll(global(environment).values());
 		return Collections.unmodifiableCollection(notifications);
 	}
 
@@ -191,7 +191,7 @@ public class NotificationManager {
 	public void removeNotification(String id) {
 		userNotifications.remove(id);
 		Environment environment = this.environment;
-		if (environment != null && !environment.isClosed()) global(environment).remove(id);
+		if (environment != null && !environment.isClosing()) global(environment).remove(id);
 	}
 
 }
