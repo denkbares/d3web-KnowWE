@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -74,6 +75,17 @@ public class AttachmentManager implements EventListener {
 	public void shutdown() {
 		KnowWEUtils.getEventManager(articleManager).unregister(this);
 		executor.shutdownNow();
+	}
+
+	/**
+	 * Stops the background thread like {@link #shutdown()} and waits for it to end. For tests that must not leak the
+	 * thread into the next test; the servlet shutdown does not wait.
+	 *
+	 * @return whether the thread ended within the given time
+	 */
+	public boolean shutdownAndAwait(long timeout, @NotNull TimeUnit unit) throws InterruptedException {
+		shutdown();
+		return executor.awaitTermination(timeout, unit);
 	}
 
 	@Override

@@ -399,7 +399,10 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   („darf ich damit noch arbeiten?", das meinen alle produktiven Aufrufer) und `isClosed()`, wenn alles freigegeben
   ist. `Environment.getContext()` heißt `getServletContext()` (24 Aufrufstellen), und das Javadoc von
   `EnvironmentService` sagt jetzt, was der Typ bedeutet, statt auf die alte Signatur zu verweisen.
-- `ArticleLifecycleFixture` (KnowWE-core-Tests) baut die Environment per Reflection; mit einem Test-Konstruktor/Factory ließe sich das sauber machen (Kandidat für `S2`/`S4`).
+- **`ArticleLifecycleFixture` ohne Reflection** (erledigt 2026-09-17): Die Environment baut die Fixture längst über
+  `Environment.create(connector, rootType)`; übrig war Reflection in `closeManager(...)`, die den `executor` aus dem
+  `AttachmentManager` fischte, um auf sein Ende zu warten. `AttachmentManager.shutdownAndAwait(timeout, unit)` macht
+  das jetzt sauber (der Servlet-Shutdown wartet weiterhin nicht). 143 KnowWE-core-Tests grün.
 - `getInstance()`-Deprecation erzeugt jetzt ~885 Warnungen über alle Repos. Bewusst so, als Migrationssignal; bei Bedarf mit einer Zeile zurücknehmbar.
 - `Rdf2GoCore.close()` fährt außerhalb des Servlet-Shutdowns (`ServletContextEventListener.isDestroyInProgress()`) in einem abgekoppelten `new Thread` herunter, damit Recompiles nicht blockieren. Beim `Environment.close()` (Tests!) läuft dieser Thread parallel zum Close-Task `SemanticCore.shutDownRepositoryManager()` weiter, entfernt sein Repository aus dem Manager und ließ den Manager-Shutdown mit NPE abbrechen (`getRepository(id)` null, `MaengelKatalogSearchActionTest`). `shutDownRepositoryManager()` ist seit 2026-09-08 null-sicher und fährt den Manager im `finally` herunter (denkbares-Commons). Der Thread selbst widerspricht dem Ziel "Environment schließen = alles sauber": `Rdf2GoCore` soll seine Environment kennen (`S3.M3`, `getInstance(compiler)` -> `KnowWEUtils.getEnvironment(compiler)`) und beim Schließen der Environment synchron herunterfahren bzw. die Environment auf den Thread warten.
 

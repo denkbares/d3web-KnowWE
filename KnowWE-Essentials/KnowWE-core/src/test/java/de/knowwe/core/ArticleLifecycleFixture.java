@@ -5,7 +5,6 @@
 package de.knowwe.core;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -171,21 +169,10 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	}
 
 	/** Also used by the older frame tests, whose otherwise retained listeners react to later attachment tests. */
-	public static void closeManager(DefaultArticleManager manager) throws ReflectiveOperationException, InterruptedException {
-		KnowWEUtils.getEventManager(manager).unregister(manager.getAttachmentManager());
+	public static void closeManager(DefaultArticleManager manager) throws InterruptedException {
 		manager.getCompilerManager().shutdown();
-		shutdown((ExecutorService) field(AttachmentManager.class, "executor").get(manager.getAttachmentManager()));
-	}
-
-	private static void shutdown(ExecutorService executor) throws InterruptedException {
-		executor.shutdownNow();
-		assertTrue("Test executor did not terminate", executor.awaitTermination(5, TimeUnit.SECONDS));
-	}
-
-	private static Field field(Class<?> type, String name) throws NoSuchFieldException {
-		Field field = type.getDeclaredField(name);
-		field.setAccessible(true);
-		return field;
+		assertTrue("Test executor did not terminate",
+				manager.getAttachmentManager().shutdownAndAwait(5, TimeUnit.SECONDS));
 	}
 
 	private static class Line extends AbstractType {
