@@ -19,18 +19,20 @@
 
 package de.knowwe.event;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 
 /**
  * An event signaling that a term has been renamed.
- *
+ * <p>
  * Created by Albrecht Striffler (denkbares GmbH) on 30.09.2015.
  */
 public class TermRenamingFinishEvent extends TermRenamingEvent {
 
-	public TermRenamingFinishEvent(ArticleManager articleManager, UserActionContext context, Identifier term, Identifier replacementTerm) {
+	public TermRenamingFinishEvent(ArticleManager articleManager, @Nullable UserActionContext context, Identifier term, Identifier replacementTerm) {
 		super(articleManager, context, term, replacementTerm);
 	}
 }
