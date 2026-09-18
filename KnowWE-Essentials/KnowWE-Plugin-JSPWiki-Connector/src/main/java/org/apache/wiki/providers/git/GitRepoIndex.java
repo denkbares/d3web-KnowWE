@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
 
@@ -228,33 +227,28 @@ public class GitRepoIndex {
 					cachedHead, gitHead, backward.size());
 			return buildFull(gitHead);
 		}
-		return applyForward(existing, forward, gitHead);
+		return applyForward(existing, forward.size(), gitHead);
 	}
 
 	/**
-	 * Returns a new branch index with the given (oldest-first) new commits folded into a copy of the existing per-file
-	 * lists. The existing index is left untouched so concurrent readers keep a consistent view.
+	 * Returns a new branch index with the commits between the existing HEAD and the new one folded into a copy of the
+	 * existing per-file lists. The existing index is left untouched so concurrent readers keep a consistent view.
+	 * <p>
+	 * The new commits are read in a single walk of the range, so falling behind by many commits costs one git call
+	 * rather than one per commit. A wiki whose content is written by an automated process falls behind constantly.
 	 */
-	private BranchIndex applyForward(BranchIndex existing, List<String> newCommitsOldestFirst, String gitHead) {
+	private BranchIndex applyForward(BranchIndex existing, int commitCount, String gitHead) {
+		Map<String, List<GitFileRevision>> newRevisions =
+				connector.log().revisionsByFileBetween(existing.head(), gitHead);
 		// shallow copy: untouched files keep sharing their (immutable) lists, touched files get fresh lists below
 		Map<String, List<GitFileRevision>> byFile = new LinkedHashMap<>(existing.byFile());
-		// oldest-first: inserting each commit's revision at the front of its file lists leaves the newest at the front
-		for (String commitHash : newCommitsOldestFirst) {
-			GitFileRevision revision = revisionFor(commitHash);
-			for (String path : connector.log().listChangedFilesForHash(commitHash)) {
-				List<GitFileRevision> updated = new ArrayList<>(byFile.getOrDefault(path, List.of()));
-				updated.add(0, revision);
-				byFile.put(path, updated);
-			}
-		}
-		LOGGER.debug("Fast-forwarded git index by {} commit(s) to HEAD {}.", newCommitsOldestFirst.size(), gitHead);
+		newRevisions.forEach((path, revisions) -> {
+			// both sides are newest-first, and every revision in the range is newer than every one already there
+			List<GitFileRevision> updated = new ArrayList<>(revisions);
+			updated.addAll(byFile.getOrDefault(path, List.of()));
+			byFile.put(path, updated);
+		});
+		LOGGER.debug("Fast-forwarded git index by {} commit(s) to HEAD {}.", commitCount, gitHead);
 		return new BranchIndex(gitHead, byFile);
-	}
-
-	private GitFileRevision revisionFor(String commitHash) {
-		// commitUserDataFor / commitTimeFor are cached per (immutable) hash by the connector, so this is a one-time cost
-		CommitUserData userData = connector.log().commitUserDataFor(commitHash);
-		long time = connector.log().commitTimeFor(commitHash);
-		return new GitFileRevision(commitHash, userData.user, userData.email, time, userData.message);
 	}
 }
