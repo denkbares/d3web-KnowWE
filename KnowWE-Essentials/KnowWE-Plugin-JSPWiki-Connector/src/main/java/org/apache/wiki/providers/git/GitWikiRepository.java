@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -207,10 +208,27 @@ public class GitWikiRepository {
 
 	/**
 	 * The raw content of the file at the given version, read from git. Used for attachment data, which unlike page
-	 * text has no text encoding.
+	 * text has no text encoding. Returns {@code null} if git has no such committed version of the file.
 	 */
+	@Nullable
 	public InputStream bytesAtVersion(String repoRelativePath, int version) {
-		return new ByteArrayInputStream(connector.log().getBytesForPath(repoRelativePath, version));
+		byte[] bytes = bytesAt(repoRelativePath, version);
+		return bytes == null ? null : new ByteArrayInputStream(bytes);
+	}
+
+	/**
+	 * The raw content of the file at the given version, or {@code null} if git has no such committed version. The
+	 * version is resolved against the index rather than the connector's per path cache, which is the same resolution
+	 * {@link #history} and {@link #infoAt} use and costs no git call of its own.
+	 */
+	@Nullable
+	private byte[] bytesAt(String repoRelativePath, int version) {
+		GitFileRevision revision = index.atVersion(repoRelativePath, version);
+		if (revision == null) {
+			// no committed version, which is the normal state of a git-ignored file and of one staged in an open batch
+			return null;
+		}
+		return connector.log().getBytesForCommit(revision.commitHash(), repoRelativePath);
 	}
 
 	/**
@@ -367,7 +385,8 @@ public class GitWikiRepository {
 		if (version == WikiProvider.LATEST_VERSION) {
 			return Files.readString(pageFile.toPath());
 		}
-		return connector.log().getTextForPath(id.fileName(), version);
+		byte[] bytes = bytesAt(id.fileName(), version);
+		return bytes == null ? null : new String(bytes, StandardCharsets.UTF_8);
 	}
 
 	/**

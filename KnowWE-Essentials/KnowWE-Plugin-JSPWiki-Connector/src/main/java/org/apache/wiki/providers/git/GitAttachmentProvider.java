@@ -259,7 +259,11 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		if (version == WikiProvider.LATEST_VERSION || repository.isIgnored(relPath)) {
 			return new FileInputStream(attFile);
 		}
-		return repository.bytesAtVersion(relPath, version);
+		InputStream data = repository.bytesAtVersion(relPath, version);
+		if (data == null) {
+			throw new ProviderException("Attachment " + attachment.getFileName() + " has no version " + version);
+		}
+		return data;
 	}
 
 	@Override
