@@ -390,6 +390,39 @@ public class GitWikiRepository {
 	}
 
 	/**
+	 * Text of several versions of the page, read in one go. This is the bulk form of {@link #textAtVersion}, for
+	 * callers that need many versions of one page at once, where a read per version would cost a git call each.
+	 * <p>
+	 * Every version is resolved against one index snapshot, so the returned texts belong to a single consistent
+	 * history. Text is decoded as UTF-8, as on the single version path. A version git has no content for, which
+	 * includes the one that recorded a deletion, has no entry.
+	 *
+	 * @param versions 1-based version numbers, 1 being the oldest
+	 * @return the requested versions mapped to their text
+	 */
+	public Map<Integer, String> textAtVersions(String pageName, Collection<Integer> versions) {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, pageName, -1);
+		File pageFile = id.accordingFile();
+		if (pageFile == null || !pageFile.exists()) {
+			return Map.of();
+		}
+		// one snapshot for the whole request, so two versions can never be resolved against two different histories
+		List<GitFileRevision> revisions = index.revisionsNewestFirst(id.fileName());
+		int count = revisions.size();
+		Map<GitFileAtCommit, Integer> requested = new LinkedHashMap<>();
+		for (int version : versions) {
+			if (version >= 1 && version <= count) {
+				// newest-first list, oldest-first version v is at index count - v
+				requested.put(new GitFileAtCommit(revisions.get(count - version).commitHash(), id.fileName()), version);
+			}
+		}
+		Map<Integer, String> texts = new LinkedHashMap<>();
+		connector.log().getBytesForCommits(requested.keySet())
+				.forEach((file, bytes) -> texts.put(requested.get(file), new String(bytes, StandardCharsets.UTF_8)));
+		return texts;
+	}
+
+	/**
 	 * Deletes a file (working-tree file and from git history going forward) and commits the removal, returning the
 	 * commit hash. Disk deletion and commit happen under the repository lock, so no sweep can interleave and commit the
 	 * half-done delete under the wrong author. History of the deleted file is preserved in git.

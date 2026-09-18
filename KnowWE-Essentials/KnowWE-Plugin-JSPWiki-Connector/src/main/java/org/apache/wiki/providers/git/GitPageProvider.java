@@ -201,6 +201,17 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		}
 	}
 
+	/**
+	 * Text of several versions of the page, read in one git call instead of one per version. Callers that need the
+	 * whole history of a page, page annotation for example, use this rather than {@link #getPageText} per version.
+	 * A version git has no content for has no entry, the caller decides how to fall back.
+	 *
+	 * @param versions 1-based version numbers, 1 being the oldest
+	 */
+	public Map<Integer, String> getPageTexts(String pageName, Collection<Integer> versions) {
+		return repository.textAtVersions(pageName, versions);
+	}
+
 	@Override
 	public Page getPageInfo(String pageName, int version) throws ProviderException {
 		GitPageVersion gitVersion = repository.infoAt(pageName, version);

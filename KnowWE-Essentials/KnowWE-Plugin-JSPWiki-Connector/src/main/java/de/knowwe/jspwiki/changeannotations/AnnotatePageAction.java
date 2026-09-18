@@ -13,16 +13,14 @@ import org.apache.wiki.pages.PageManager;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiUserContext;
 
 /**
- * HTTP entry point for the page annotation. The Annotate tab in {@code InfoContent.jsp}
- * renders the same HTML server-side via {@link AnnotateRenderHelper}, so this action only
- * remains for programmatic / external callers — the standard UI does not depend on it.
+ * HTTP entry point for the page annotation. The Annotate tab fetches its content from here when the user opens it,
+ * because computing the annotation reads every version of the page and must not be paid on every page info view.
  *
  * <p>Parameters:
  * <ul>

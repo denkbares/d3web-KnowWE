@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wiki.gitBridge.JSPUtils;
@@ -119,6 +121,29 @@ public class GitWikiRepositoryVersionResolutionTest {
 
 		assertEquals(2, repository.history("Article").size());
 		assertEveryVersionMatchesGit("Article");
+	}
+
+	@Test
+	public void theBulkTextReadAgreesWithTheSingleOne() throws IOException {
+		for (int version = 1; version <= 5; version++) {
+			commit("Article", "text of version " + version + "\n".repeat(version));
+		}
+		List<Integer> versions = List.of(1, 2, 3, 4, 5);
+		Map<Integer, String> bulk = repository.textAtVersions("Article", versions);
+
+		assertEquals(versions.size(), bulk.size());
+		for (int version : versions) {
+			assertEquals("version " + version, repository.textAtVersion("Article", version), bulk.get(version));
+		}
+	}
+
+	@Test
+	public void theBulkTextReadSkipsVersionsThatDoNotExist() throws IOException {
+		commit("Article", "only version");
+		Map<Integer, String> bulk = repository.textAtVersions("Article", List.of(0, 1, 2, 17));
+		assertEquals(Set.of(1), bulk.keySet());
+
+		assertTrue(repository.textAtVersions("Nowhere", List.of(1)).isEmpty());
 	}
 
 	@Test

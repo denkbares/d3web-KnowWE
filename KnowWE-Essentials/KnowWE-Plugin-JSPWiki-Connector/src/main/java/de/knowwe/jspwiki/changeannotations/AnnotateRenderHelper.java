@@ -19,9 +19,8 @@ import com.denkbares.knowwe.changeannotations.Theme;
 import com.denkbares.strings.Strings;
 
 /**
- * Glue between the engine, the cache, and the renderer for the JSPWiki side. Used by both
- * {@link AnnotatePageAction} (HTTP entry point) and {@code ChangeAnnotationsTab.jsp}
- * (server-side direct call) so the two paths stay in lock-step.
+ * Glue between the engine, the cache, and the renderer for the JSPWiki side, behind
+ * {@link AnnotatePageAction}.
  */
 public final class AnnotateRenderHelper {
 
