@@ -271,6 +271,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider implements W
 	}
 
 	@Override
+	public boolean isCommitOpen(final String user) {
+		return user != null && this.openCommits.containsKey(user);
+	}
+
+	@Override
 	public void commit(final String user, final String commitMsg) {
 		LOGGER.info("start commit");
 		try {

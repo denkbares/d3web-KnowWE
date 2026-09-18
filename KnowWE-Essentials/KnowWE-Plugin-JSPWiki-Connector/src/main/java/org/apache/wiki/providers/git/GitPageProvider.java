@@ -405,6 +405,11 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	}
 
 	@Override
+	public boolean isCommitOpen(String user) {
+		return batchRegistry.isOpen(user);
+	}
+
+	@Override
 	public void commit(String user, String commitMessage) {
 		String comment = context.commentStrategy().getCommentForUser(user);
 		if (comment.isEmpty()) {

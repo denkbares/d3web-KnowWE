@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -420,6 +421,38 @@ public interface WikiConnector {
 	 * @throws IOException if the stream cannot be read of if the content cannot be stored as an attachment
 	 */
 	WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream, boolean versioning) throws IOException;
+
+	/**
+	 * Stores several attachments of one article as a single change, where the underlying store can represent one. A
+	 * store that versions its content records them together, so they share one entry in the article's history, and a
+	 * store that does not simply writes them one after another. Either way each attachment ends up stored exactly as
+	 * {@link #storeAttachment(String, String, String, InputStream)} would have stored it on its own.
+	 * <p>
+	 * Use this over a loop of single stores whenever the whole set is known up front and belongs together, a build
+	 * writing its results for example. It says nothing about how a store groups changes and needs no transaction to be
+	 * opened or closed around it.
+	 * <p>
+	 * If the user already has a page transaction open, these attachments join it and are recorded when that
+	 * transaction is committed.
+	 *
+	 * @param title      the article the attachments belong to
+	 * @param files      the attachments to store, file name to content, stored in iteration order
+	 * @param user       the user the change is attributed to
+	 * @param changeNote what the change is, recorded where the store keeps one
+	 * @return the stored attachments, in the order they were given
+	 */
+	default List<WikiAttachment> storeAttachments(
+			String title,
+			Map<String, InputStream> files,
+			String user,
+			String changeNote
+	) throws IOException {
+		List<WikiAttachment> stored = new ArrayList<>(files.size());
+		for (Map.Entry<String, InputStream> file : files.entrySet()) {
+			stored.add(storeAttachment(title, file.getKey(), user, file.getValue()));
+		}
+		return stored;
+	}
 
 	/**
 	 * Deletes the attachment <tt>fileName</tt> from the article with the given <tt>title</tt>. If the attachment is

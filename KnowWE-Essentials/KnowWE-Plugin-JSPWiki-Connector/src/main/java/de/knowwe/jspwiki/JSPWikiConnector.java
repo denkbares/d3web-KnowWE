@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -131,6 +132,8 @@ public class JSPWikiConnector implements WikiConnector {
 	private static final int skipAfter = 10;
 	private static final Pattern ZIP_PATTERN = Pattern.compile("^([^/]+/[^/]+\\.zip)/(.+$)");
 	private static int skipCount = 0;
+	/** One lock per user name, serializing that user's bulk attachment stores against each other. */
+	private static final Map<String, Object> bulkStoreLocks = new ConcurrentHashMap<>();
 	private final ServletContext context;
 	private final Engine engine;
 
@@ -786,6 +789,63 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public List<WikiAttachment> storeAttachments(
+			String title,
+			Map<String, InputStream> files,
+			String user,
+			String changeNote
+	) throws IOException {
+		if (files.isEmpty()) {
+			return List.of();
+		}
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		// A store that cannot group changes records them one by one, and so does one that is already collecting this
+		// user's changes into a transaction somebody else owns and will close.
+		if (gitProvider == null || gitProvider.isCommitOpen(user)) {
+			return storeEach(title, files, user, changeNote);
+		}
+		// Transactions are held per user name, so two bulk stores of the same user must not overlap, otherwise one
+		// would close the other's transaction and take its files along.
+		synchronized (bulkStoreLock(user)) {
+			if (gitProvider.isCommitOpen(user)) {
+				return storeEach(title, files, user, changeNote);
+			}
+			gitProvider.openCommit(user);
+			List<WikiAttachment> stored;
+			try {
+				stored = storeEach(title, files, user, changeNote);
+			}
+			catch (IOException | RuntimeException e) {
+				gitProvider.rollback(user);
+				throw e;
+			}
+			gitProvider.commit(user, changeNote);
+			return stored;
+		}
+	}
+
+	private List<WikiAttachment> storeEach(
+			String title,
+			Map<String, InputStream> files,
+			String user,
+			String changeNote
+	) throws IOException {
+		List<WikiAttachment> stored = new ArrayList<>(files.size());
+		for (Map.Entry<String, InputStream> file : files.entrySet()) {
+			stored.add(storeAttachment(title, file.getKey(), user, file.getValue(), changeNote));
+		}
+		return stored;
+	}
+
+	/**
+	 * The lock that serializes bulk stores of one user. Interned per user name, so bulk stores of different users stay
+	 * independent, and bounded by the number of users that ever perform one.
+	 */
+	private Object bulkStoreLock(String user) {
+		return bulkStoreLocks.computeIfAbsent(String.valueOf(user), u -> new Object());
+	}
+
+	@Override
 	public void openPageTransaction(String user) {
 		GitVersioningProvider gitProvider = getGitVersioningProvider();
 		if (gitProvider != null) {
@@ -905,6 +965,11 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException {
+		return storeAttachment(title, filename, user, stream, (String) null);
+	}
+
+	private WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream,
+										   @Nullable String changeNote) throws IOException {
 		String safeName = validateAttachmentName(filename);
 		// as of validateFileName: a jsp inside the web application would be executed instead of downloaded. Only
 		// checked when storing, deleting such an attachment must stay possible.
@@ -919,6 +984,9 @@ public class JSPWikiConnector implements WikiConnector {
 
 			Attachment attachment = new Attachment(getEngine(), title, safeName);
 			attachment.setAuthor(user);
+			if (!Strings.isBlank(changeNote)) {
+				attachment.setAttribute(Attachment.CHANGENOTE, changeNote);
+			}
 			attachmentManager.storeAttachment(attachment, stream);
 			String path = toPath(title, safeName);
 			LOGGER.info("Stored attachment '" + path + "'");
