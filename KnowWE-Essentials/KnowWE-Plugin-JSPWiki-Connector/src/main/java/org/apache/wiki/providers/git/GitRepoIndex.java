@@ -65,6 +65,11 @@ public class GitRepoIndex {
 	 */
 	private static final int MAX_CACHED_BRANCHES = 4;
 
+	/**
+	 * Name of the files that carry the committed ignore rules.
+	 */
+	private static final String IGNORE_RULE_FILE = ".gitignore";
+
 	private final GitConnector connector;
 
 	/**
@@ -91,9 +96,32 @@ public class GitRepoIndex {
 	 * Immutable snapshot of one branch's history at a known {@code HEAD}: every reachable repo-relative file path to
 	 * its newest-first revisions.
 	 */
-	private record BranchIndex(String head, Map<String, List<GitFileRevision>> byFile) {
+	private record BranchIndex(String head, Map<String, List<GitFileRevision>> byFile, String ignoreRulesVersion) {
 
-		static final BranchIndex EMPTY = new BranchIndex(null, Collections.emptyMap());
+		static final BranchIndex EMPTY = new BranchIndex(null, Collections.emptyMap(), "");
+
+		BranchIndex(String head, Map<String, List<GitFileRevision>> byFile) {
+			this(head, byFile, ignoreRulesVersionOf(byFile));
+		}
+
+		/**
+		 * Every ignore rule file with the commit it was last changed in, so the value differs whenever the rules do.
+		 * Sorted, because the walk does not promise an order and two equal rule sets must produce one value.
+		 */
+		private static String ignoreRulesVersionOf(Map<String, List<GitFileRevision>> byFile) {
+			List<String> rules = new ArrayList<>();
+			byFile.forEach((path, revisions) -> {
+				if (isIgnoreRuleFile(path) && !revisions.isEmpty()) {
+					rules.add(path + "@" + revisions.get(0).commitHash());
+				}
+			});
+			Collections.sort(rules);
+			return String.join(",", rules);
+		}
+
+		private static boolean isIgnoreRuleFile(String path) {
+			return path.equals(IGNORE_RULE_FILE) || path.endsWith("/" + IGNORE_RULE_FILE);
+		}
 	}
 
 	// --- public read API (consumed by GitWikiRepository) ------------------------
@@ -153,6 +181,17 @@ public class GitRepoIndex {
 	@NotNull
 	public Map<String, List<GitFileRevision>> revisionsByFile() {
 		return Collections.unmodifiableMap(fresh().byFile());
+	}
+
+	/**
+	 * A value describing the committed ignore rules of the current branch, equal for two histories whose rules are
+	 * equal and different as soon as any of them is changed, added or removed. Callers that remember what git
+	 * answered about a path hold on to this value and discard what they remembered once it changes. Rules that are
+	 * not committed, such as the repository's own exclude file, are not covered.
+	 */
+	@NotNull
+	public String ignoreRulesVersion() {
+		return fresh().ignoreRulesVersion();
 	}
 
 	/**

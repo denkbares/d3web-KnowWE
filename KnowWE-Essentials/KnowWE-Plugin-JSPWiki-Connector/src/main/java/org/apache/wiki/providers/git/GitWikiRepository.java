@@ -89,6 +89,11 @@ public class GitWikiRepository {
 	 */
 	private static final long MAX_CACHED_BLOB_ENTRY_BYTES = 1024L * 1024;
 
+	/**
+	 * Upper bound on how many paths the ignore answers of {@link #isIgnored} are remembered for.
+	 */
+	private static final int MAX_CACHED_IGNORE_PATHS = 4096;
+
 	private final GitConnector connector;
 	private final String repoPath;
 	private final RepositoryLock lock;
@@ -99,6 +104,24 @@ public class GitWikiRepository {
 	 * a git call, and the wiki asks for the same version many times over while rendering a single request.
 	 */
 	private final GitBlobCache blobs = new GitBlobCache(MAX_CACHED_BLOB_BYTES, MAX_CACHED_BLOB_ENTRY_BYTES);
+
+	/**
+	 * Ignore answers per repo-relative path, discarded whenever the committed ignore rules change. Guarded by
+	 * {@link #ignoreLock} together with {@link #ignoreRulesVersion}.
+	 */
+	private final Map<String, Boolean> ignoredByPath = new LinkedHashMap<>(16, 0.75f, true) {
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<String, Boolean> eldest) {
+			return size() > MAX_CACHED_IGNORE_PATHS;
+		}
+	};
+
+	/**
+	 * The state of the ignore rules {@link #ignoredByPath} holds answers for, {@code null} while it is empty.
+	 */
+	private String ignoreRulesVersion;
+
+	private final Object ignoreLock = new Object();
 
 	public GitWikiRepository(GitConnector connector) {
 		this.connector = connector;
@@ -188,7 +211,7 @@ public class GitWikiRepository {
 	public String commitFile(File file, String repoRelativePath, CommitUserData userData) {
 		lock.lock();
 		try {
-			if (connector.isIgnored(repoRelativePath)) {
+			if (isIgnoredForCommit(repoRelativePath)) {
 				// guard against a file added to .gitignore but never untracked (ported life-saver)
 				untrackIgnoredFile(repoRelativePath);
 				return null;
@@ -219,9 +242,50 @@ public class GitWikiRepository {
 	/**
 	 * Whether the given repo-relative path is git-ignored. Ignored files exist on disk but have no git history, the
 	 * providers serve them from the filesystem.
+	 * <p>
+	 * The answer is remembered per path and discarded as soon as any committed ignore rule changes, because asking
+	 * git costs a process per call and the read paths ask about the same handful of paths continuously. A rule that
+	 * has only been written into the working tree takes effect once it is committed, which is how a rule reaches the
+	 * wiki in any case. Callers about to change the repository use {@link #isIgnoredForCommit} instead.
 	 */
 	public boolean isIgnored(String repoRelativePath) {
+		String rulesVersion = index.ignoreRulesVersion();
+		synchronized (ignoreLock) {
+			if (!rulesVersion.equals(ignoreRulesVersion)) {
+				ignoredByPath.clear();
+				ignoreRulesVersion = rulesVersion;
+			}
+			Boolean known = ignoredByPath.get(repoRelativePath);
+			if (known != null) {
+				return known;
+			}
+		}
+		boolean ignored = connector.isIgnored(repoRelativePath);
+		synchronized (ignoreLock) {
+			// the rules can have moved on while git was being asked, and then this answer describes the state before
+			if (rulesVersion.equals(ignoreRulesVersion)) {
+				ignoredByPath.put(repoRelativePath, ignored);
+			}
+		}
+		return ignored;
+	}
+
+	/**
+	 * Whether the given repo-relative path is git-ignored, asked of git directly. This is the form for callers that
+	 * are about to commit, delete or untrack the path, where a rule that so far exists only in the working tree must
+	 * still keep the path out of the commit.
+	 */
+	public boolean isIgnoredForCommit(String repoRelativePath) {
 		return connector.isIgnored(repoRelativePath);
+	}
+
+	/**
+	 * How many paths the ignore answers are currently remembered for. Test seam for the eviction bound.
+	 */
+	int cachedIgnoreCount() {
+		synchronized (ignoreLock) {
+			return ignoredByPath.size();
+		}
 	}
 
 	/**
@@ -499,7 +563,7 @@ public class GitWikiRepository {
 	public String removeFile(String repoRelativePath, CommitUserData userData) {
 		lock.lock();
 		try {
-			if (connector.isIgnored(repoRelativePath)) {
+			if (isIgnoredForCommit(repoRelativePath)) {
 				return null;
 			}
 			return commitRemovedPaths(List.of(repoRelativePath), userData);

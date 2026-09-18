@@ -484,7 +484,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		try {
 			return repository.withRepositoryLock(() -> {
 				List<String> relPaths = new ArrayList<>();
-				if (!repository.isIgnored(attachmentPath(attachment))) {
+				if (!repository.isIgnoredForCommit(attachmentPath(attachment))) {
 					relPaths.add(attachmentPath(attachment));
 				}
 				if (!attFile.delete()) {

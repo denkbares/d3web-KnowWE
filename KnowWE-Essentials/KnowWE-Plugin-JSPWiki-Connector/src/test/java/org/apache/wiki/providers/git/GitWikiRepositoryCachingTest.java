@@ -41,6 +41,8 @@ import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.AdditionalAnswers.delegatesTo;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -51,8 +53,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
 /**
- * Pins what {@link GitWikiRepository} remembers rather than asking git again. It is measured in git calls, because a
- * git call is a process and the cost of these paths is the number of processes they spawn.
+ * Pins what {@link GitWikiRepository} remembers rather than asking git again: the content of a file at a commit, and
+ * whether a path is ignored. Both are measured in git calls, because a git call is a process and the cost of these
+ * paths is the number of processes they spawn.
  * <p>
  * The connector is a counting stand-in in front of a real one against a real temp repository, so the answers are the
  * answers git gives and only the number of questions is under test.
@@ -151,6 +154,63 @@ public class GitWikiRepositoryCachingTest {
 		assertEquals("attachment 1", read(repository.bytesAtVersion("Article-att/note.txt", 1)));
 
 		verify(log, times(1)).getBytesForCommit(anyString(), anyString());
+	}
+
+	// --- ignore rules --------------------------------------------------------
+
+	@Test
+	public void checkingOnePathRepeatedlyAsksGitOnce() {
+		assertFalse(repository.isIgnored("Article.txt"));
+		assertFalse(repository.isIgnored("Article.txt"));
+		assertFalse(repository.isIgnored("Article.txt"));
+
+		verify(connector, times(1)).isIgnored("Article.txt");
+		assertEquals(1, repository.cachedIgnoreCount());
+	}
+
+	@Test
+	public void aCommitThatLeavesTheIgnoreRulesAloneKeepsTheAnswer() throws IOException {
+		assertFalse(repository.isIgnored("Article.txt"));
+
+		commitPage("Other", "some page");
+		commitPage("Another", "another page");
+
+		assertFalse(repository.isIgnored("Article.txt"));
+		verify(connector, times(1)).isIgnored("Article.txt");
+	}
+
+	@Test
+	public void committingAnIgnoreRuleChangesTheAnswer() throws IOException {
+		assertFalse(repository.isIgnored("Secret.txt"));
+		assertFalse(repository.isIgnored("Secret.txt"));
+		verify(connector, times(1)).isIgnored("Secret.txt");
+
+		write(".gitignore", "Secret.txt\n");
+		repository.commitFile(new File(repo, ".gitignore"), ".gitignore", userData("Alice", "ignore the secret"));
+
+		assertTrue(repository.isIgnored("Secret.txt"));
+		verify(connector, times(2)).isIgnored("Secret.txt");
+	}
+
+	@Test
+	public void removingAnIgnoreRuleChangesTheAnswerBack() throws IOException {
+		write(".gitignore", "Secret.txt\n");
+		repository.commitFile(new File(repo, ".gitignore"), ".gitignore", userData("Alice", "ignore the secret"));
+		assertTrue(repository.isIgnored("Secret.txt"));
+
+		write(".gitignore", "\n");
+		repository.commitFile(new File(repo, ".gitignore"), ".gitignore", userData("Alice", "stop ignoring it"));
+
+		assertFalse(repository.isIgnored("Secret.txt"));
+	}
+
+	@Test
+	public void theCommitFormAlwaysAsksGit() {
+		assertFalse(repository.isIgnoredForCommit("Article.txt"));
+		assertFalse(repository.isIgnoredForCommit("Article.txt"));
+
+		verify(connector, times(2)).isIgnored("Article.txt");
+		assertEquals("the commit form leaves nothing behind", 0, repository.cachedIgnoreCount());
 	}
 
 	// --- helpers -------------------------------------------------------------
