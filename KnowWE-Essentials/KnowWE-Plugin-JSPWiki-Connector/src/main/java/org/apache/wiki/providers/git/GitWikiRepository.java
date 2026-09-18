@@ -77,10 +77,28 @@ public class GitWikiRepository {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitWikiRepository.class);
 
+	/**
+	 * Upper bound on the file content held in memory by {@link #blobs}. The largest single page version in the wikis
+	 * this runs against is some tens of kilobytes, so this holds several hundred of them.
+	 */
+	private static final long MAX_CACHED_BLOB_BYTES = 16L * 1024 * 1024;
+
+	/**
+	 * Largest single file content kept in {@link #blobs}. Above this the read is served but not remembered, so one
+	 * attachment download cannot displace the page text that is read over and over.
+	 */
+	private static final long MAX_CACHED_BLOB_ENTRY_BYTES = 1024L * 1024;
+
 	private final GitConnector connector;
 	private final String repoPath;
 	private final RepositoryLock lock;
 	private final GitRepoIndex index;
+
+	/**
+	 * File content already read out of git, keyed by commit and path. Reading one version of a page or attachment is
+	 * a git call, and the wiki asks for the same version many times over while rendering a single request.
+	 */
+	private final GitBlobCache blobs = new GitBlobCache(MAX_CACHED_BLOB_BYTES, MAX_CACHED_BLOB_ENTRY_BYTES);
 
 	public GitWikiRepository(GitConnector connector) {
 		this.connector = connector;
@@ -227,7 +245,8 @@ public class GitWikiRepository {
 	/**
 	 * The raw content of the file at the given version, or {@code null} if git has no such committed version. The
 	 * version is resolved against the index rather than the connector's per path cache, which is the same resolution
-	 * {@link #history} and {@link #infoAt} use and costs no git call of its own.
+	 * {@link #history} and {@link #infoAt} use and costs no git call of its own. Content already read is served from
+	 * memory, keyed by the commit it was read at, so repeated reads of one version cost a single git call in total.
 	 */
 	@Nullable
 	private byte[] bytesAt(String repoRelativePath, int version) {
@@ -236,7 +255,29 @@ public class GitWikiRepository {
 			// no committed version, which is the normal state of a git-ignored file and of one staged in an open batch
 			return null;
 		}
-		return connector.log().getBytesForCommit(revision.commitHash(), repoRelativePath);
+		byte[] known = blobs.get(revision.commitHash(), repoRelativePath);
+		if (known != null) {
+			return known;
+		}
+		byte[] bytes = connector.log().getBytesForCommit(revision.commitHash(), repoRelativePath);
+		if (bytes != null) {
+			blobs.put(revision.commitHash(), repoRelativePath, bytes);
+		}
+		return bytes;
+	}
+
+	/**
+	 * How many file contents are held in memory. Test seam for the eviction bound.
+	 */
+	int cachedBlobCount() {
+		return blobs.size();
+	}
+
+	/**
+	 * How many bytes of file content are held in memory. Test seam for the eviction bound.
+	 */
+	long cachedBlobBytes() {
+		return blobs.bytes();
 	}
 
 	/**
