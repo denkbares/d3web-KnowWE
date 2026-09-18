@@ -45,14 +45,16 @@ public final class PageAnnotator {
 		sorted.sort(Comparator.comparingInt(VersionEntry::version));
 
 		VersionEntry first = sorted.get(0);
-		List<String> currentLines = PageLines.split(first.text());
-		List<LineBlame> currentBlames = initialBlames(first, currentLines.size());
+		// only the normalized form of a version is ever compared, and it carries from step to step because the
+		// current version of a step was the next version of the step before
+		List<String> currentNormalized = normalizeAll(PageLines.split(first.text()));
+		List<LineBlame> currentBlames = initialBlames(first, currentNormalized.size());
 
 		for (int idx = 1; idx < sorted.size(); idx++) {
 			VersionEntry next = sorted.get(idx);
-			List<String> nextLines = PageLines.split(next.text());
-			currentBlames = stepForward(currentBlames, currentLines, nextLines, next);
-			currentLines = nextLines;
+			List<String> nextNormalized = normalizeAll(PageLines.split(next.text()));
+			currentBlames = stepForward(currentBlames, currentNormalized, nextNormalized, next);
+			currentNormalized = nextNormalized;
 		}
 
 		VersionEntry latest = sorted.get(sorted.size() - 1);
@@ -70,11 +72,11 @@ public final class PageAnnotator {
 
 	private static List<LineBlame> stepForward(
 			List<LineBlame> currentBlames,
-			List<String> currentLines,
-			List<String> nextLines,
+			List<String> currentNormalized,
+			List<String> nextNormalized,
 			VersionEntry nextVersion) {
-		Patch<String> patch = DiffUtils.diff(normalizeAll(currentLines), normalizeAll(nextLines));
-		List<LineBlame> result = new ArrayList<>(nextLines.size());
+		Patch<String> patch = DiffUtils.diff(currentNormalized, nextNormalized);
+		List<LineBlame> result = new ArrayList<>(nextNormalized.size());
 
 		int ai = 0;
 		int bi = 0;
@@ -117,7 +119,7 @@ public final class PageAnnotator {
 			}
 		}
 		// Common suffix after the last delta.
-		while (ai < currentLines.size() && bi < nextLines.size()) {
+		while (ai < currentNormalized.size() && bi < nextNormalized.size()) {
 			result.add(reblame(currentBlames.get(ai), bi + 1));
 			ai++;
 			bi++;
@@ -149,7 +151,31 @@ public final class PageAnnotator {
 	 * pure indentation change does not invalidate the existing blame.
 	 */
 	static String normalizeForBlameComparison(String line) {
-		return line.replaceAll("\\s+", " ").trim();
+		StringBuilder collapsed = new StringBuilder(line.length());
+		boolean inWhitespace = false;
+		for (int i = 0; i < line.length(); i++) {
+			char character = line.charAt(i);
+			if (isWhitespace(character)) {
+				if (!inWhitespace) {
+					collapsed.append(' ');
+					inWhitespace = true;
+				}
+			}
+			else {
+				collapsed.append(character);
+				inWhitespace = false;
+			}
+		}
+		return collapsed.toString().trim();
+	}
+
+	/**
+	 * The characters a regular expression counts as whitespace. Every line of every version of a page passes through
+	 * here, and doing it with a regular expression cost more than the diff the comparison feeds.
+	 */
+	private static boolean isWhitespace(char character) {
+		return character == ' ' || character == '\t' || character == '\n'
+				|| character == '\u000B' || character == '\f' || character == '\r';
 	}
 
 }

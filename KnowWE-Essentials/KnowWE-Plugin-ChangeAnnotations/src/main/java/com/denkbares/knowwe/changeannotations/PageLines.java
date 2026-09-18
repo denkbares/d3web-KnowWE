@@ -3,6 +3,7 @@ package com.denkbares.knowwe.changeannotations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Shared line-tokenization for page texts. Both {@link PageAnnotator} and
@@ -10,6 +11,12 @@ import java.util.List;
  * blame array stays index-aligned with what the renderer emits.
  */
 final class PageLines {
+
+	/**
+	 * Any line terminator, held here because splitting is done once per version of a page and the string form of
+	 * this compiles it again for every one of them.
+	 */
+	private static final Pattern LINE_TERMINATOR = Pattern.compile("\\R");
 
 	private PageLines() {
 	}
@@ -21,7 +28,7 @@ final class PageLines {
 	 */
 	static List<String> split(String text) {
 		if (text.isEmpty()) return List.of();
-		String[] parts = text.split("\\R", -1);
+		String[] parts = LINE_TERMINATOR.split(text, -1);
 		int len = parts.length;
 		if (len > 0 && parts[len - 1].isEmpty()) len--;
 		if (len == 0) return List.of();
