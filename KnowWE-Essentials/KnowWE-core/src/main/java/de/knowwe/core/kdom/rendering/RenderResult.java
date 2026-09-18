@@ -37,6 +37,15 @@ public class RenderResult {
 			.sorted(Comparator.comparingInt(String::length).reversed())
 			.toArray(String[]::new);
 
+	// The subset of HTML that is also hidden from JSPWiki when JSPWiki markup in the content is
+	// intentionally left visible (see appendHtmlPreservingJSPWikiMarkup): the structural characters
+	// of the HTML itself (tags, attribute quoting, plugin syntax) and the link brackets, because
+	// links in tables are pre-rendered. Longest tokens first, so no token is shadowed by a prefix.
+	private static final String[] HTML_STRUCTURE = { "[{", "}]", "\\", "\"", "'", ">", "<", "[", "]" };
+	private static final int[] HTML_STRUCTURE_INDEXES = Stream.of(HTML_STRUCTURE)
+			.mapToInt(RenderResult::htmlIndex)
+			.toArray();
+
 	private final String maskKey;
 	private final String[] maskedHtml;
 	private final StringBuilder builder = new StringBuilder();
@@ -216,6 +225,25 @@ public class RenderResult {
 	}
 
 	/**
+	 * Appends HTML that may also contain JSPWiki markup and keeps both intact: the JSPWiki markup
+	 * tokens (e.g. {@code %%(color:gray)text%%}, {@code __bold__}, {@code {{monospace}}}) are not
+	 * masked, so JSPWiki renders them, while the HTML structure (tags, attribute quoting and link
+	 * brackets) is hidden from JSPWiki and restored afterwards.
+	 * <p>
+	 * Only use this for content that is explicitly allowed to contain JSPWiki markup, e.g. SPARQL
+	 * result cells with {@code @allowJSPWikiMarkup: true}. For data that must be displayed as
+	 * plain text use {@link #appendHtml(String)}, which additionally hides the JSPWiki markup
+	 * tokens, otherwise markup characters (also inside HTML attribute values) are interpreted by
+	 * JSPWiki.
+	 *
+	 * @param html the HTML to append, may contain JSPWiki markup
+	 */
+	public RenderResult appendHtmlPreservingJSPWikiMarkup(String html) {
+		builder.append(maskHtmlStructure(html));
+		return this;
+	}
+
+	/**
 	 * Appends the specified string encoded as html entities, using {@link Strings#encodeHtml(String)}.
 	 */
 	public RenderResult appendEntityEncoded(String text) {
@@ -356,6 +384,27 @@ public class RenderResult {
 			html = org.apache.commons.lang3.Strings.CS.replace(html, HTML[i], maskedHtml[i]);
 		}
 		return html;
+	}
+
+	private String maskHtmlStructure(String html) {
+		for (int index : HTML_STRUCTURE_INDEXES) {
+			html = org.apache.commons.lang3.Strings.CS.replace(html, HTML[index], maskedHtml[index]);
+		}
+		return html;
+	}
+
+	private static int htmlIndex(String token) {
+		for (int i = 0; i < HTML.length; i++) {
+			if (HTML[i].equals(token)) {
+				return i;
+			}
+		}
+		throw new IllegalArgumentException("Unknown HTML mask token: " + token);
+	}
+
+	public static String maskPreservingJSPWikiMarkup(String string, RenderResultKeyValueStore keyStore) {
+		RenderResult renderResult = new RenderResult(keyStore);
+		return renderResult.maskHtmlStructure(string);
 	}
 
 	public static String mask(String string, UserContext context) {

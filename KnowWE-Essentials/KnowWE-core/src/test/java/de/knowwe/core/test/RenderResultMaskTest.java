@@ -10,11 +10,14 @@ import de.knowwe.core.kdom.rendering.RenderResultKeyValueStore;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests that masking HTML hides all JSPWiki-interpretable tokens and that unmasking restores the exact
  * original — so HTML appended via appendHtml* (including attribute values, e.g. file names in data-*
- * attributes) survives the JSPWiki rendering pipeline unchanged.
+ * attributes) survives the JSPWiki rendering pipeline unchanged. Also tests that
+ * {@link RenderResult#appendHtmlPreservingJSPWikiMarkup(String)} keeps intentionally allowed JSPWiki
+ * markup (e.g. in SPARQL result cells) visible to JSPWiki while still hiding the HTML structure.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  */
@@ -51,6 +54,23 @@ public class RenderResultMaskTest {
 		}
 		assertFalse(masked.contains("<"));
 		assertFalse(masked.contains("\""));
+	}
+
+	@Test
+	public void preservingMarkupHidesHtmlButKeepsJSPWikiMarkup() {
+		// for content that is explicitly allowed to contain JSPWiki markup (SPARQL cells with
+		// allowJSPWikiMarkup): the HTML structure must stay hidden from JSPWiki, the markup must not,
+		// otherwise JSPWiki cannot render it and it ends up on the page as literal text
+		String html = "<span data-cell=\"x\">%%(color:gray)Text%% <i>kursiv</i> __bold__ [Link] {{mono}}</span>";
+		String masked = RenderResult.maskPreservingJSPWikiMarkup(html, STORE);
+
+		assertTrue(masked.contains("%%(color:gray)"));
+		assertTrue(masked.contains("__bold__"));
+		assertTrue(masked.contains("{{mono}}"));
+		assertFalse(masked.contains("<"));
+		assertFalse(masked.contains("\""));
+		assertFalse(masked.contains("["));
+		assertEquals(html, RenderResult.unmask(masked, STORE));
 	}
 
 	@Test

@@ -165,7 +165,10 @@ public class SparqlResultRenderer {
 			}
 			renderResult = getSparqlRenderResult(qrt, opts, user, section);
 
-			result.appendHtml(renderResult.getHTML());
+			// The cells are already masked according to opts.isAllowJSPWikiMarkup() (see renderNode(TableRow...)):
+			// if markup is allowed, it must stay visible for JSPWiki to render it, so only the HTML structure is
+			// masked here. Masking the result as a whole (appendHtml) would hide the allowed markup from JSPWiki.
+			result.appendHtmlPreservingJSPWikiMarkup(renderResult.getHTML());
 		}
 		if (opts.isBorder()) {
 			result.appendHtml("</div>");
@@ -620,7 +623,9 @@ public class SparqlResultRenderer {
 			result.append(nodeResult);
 		}
 		else {
-			result.appendJSPWikiMarkup(nodeResult);
+			// mask via the render result (and not with ~ escapes), so the tokens are restored literally after
+			// JSPWiki rendering without leaving the escape character behind
+			result.appendHtml(nodeResult);
 		}
 	}
 
