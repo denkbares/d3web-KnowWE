@@ -2,7 +2,7 @@
    Tab content for the Annotate ("blame") view, included by InfoContent.jsp.
    The annotation is fetched from AnnotatePageAction when the tab is first shown, not while the page info is
    rendered. Computing it reads every version of the page, which is far too much to pay on a view that most
-   readers never open.
+   readers never open. The fetching itself lives in the script below, next to the stylesheet it belongs with.
 --%>
 <%@ page import="org.apache.wiki.api.core.Context" %>
 <%@ page import="org.apache.wiki.api.core.Page" %>
@@ -16,48 +16,5 @@
 %>
 <c:if test="${changeAnnotationsPageName != null}">
 	<div id="changeAnnotations" data-annotate-page="<c:out value='${changeAnnotationsPageName}'/>"></div>
-	<script type="text/javascript">
-		(function () {
-			var container = document.getElementById('changeAnnotations');
-			if (!container) return;
-			var loaded = false;
-
-			function load() {
-				if (loaded) return;
-				loaded = true;
-				container.textContent = 'Loading annotations...';
-				fetch('action/AnnotatePageAction?page=' + encodeURIComponent(container.dataset.annotatePage), {
-					credentials: 'same-origin'
-				}).then(function (response) {
-					if (!response.ok) throw new Error(response.status + ' ' + response.statusText);
-					return response.text();
-				}).then(function (html) {
-					container.innerHTML = html;
-				}).catch(function (error) {
-					container.textContent = '';
-					var warning = document.createElement('p');
-					warning.className = 'warning';
-					warning.textContent = 'No annotation available: ' + error.message;
-					container.appendChild(warning);
-				});
-			}
-
-			// the tab keeps its content hidden until the user opens it, so becoming visible is the trigger. Tabs
-			// that are open on arrival are visible right away and load immediately
-			if (typeof IntersectionObserver === 'function') {
-				var observer = new IntersectionObserver(function (entries) {
-					for (var i = 0; i < entries.length; i++) {
-						if (entries[i].isIntersecting) {
-							observer.disconnect();
-							load();
-						}
-					}
-				});
-				observer.observe(container);
-			}
-			else {
-				load();
-			}
-		})();
-	</script>
+	<script type="text/javascript" src="KnowWEExtension/scripts/KnowWE-Plugin-ChangeAnnotations.js"></script>
 </c:if>

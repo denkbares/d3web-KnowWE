@@ -12,13 +12,12 @@ import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.pages.PageManager;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.Environment;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiConnector;
-import de.knowwe.jspwiki.JSPWikiUserContext;
 
 /**
  * HTTP entry point for the page annotation. The Annotate tab fetches its content from here when the user opens it,
@@ -47,7 +46,7 @@ public class AnnotatePageAction extends AbstractAction {
 			return;
 		}
 
-		Engine engine = engineFor(context);
+		Engine engine = engineFor();
 		if (engine == null) {
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Wiki engine not available.");
 			return;
@@ -77,13 +76,10 @@ public class AnnotatePageAction extends AbstractAction {
 	}
 
 	/**
-	 * The wiki engine behind this request. Action requests do not carry a wiki context, so the engine is taken from
-	 * the environment's connector for those, which is the same instance the context would have carried.
+	 * The wiki engine behind this request, taken from the environment's connector because an action request carries
+	 * no wiki context to take it from. This is the same lookup {@link KnowWEUtils#canView} uses above.
 	 */
-	private static Engine engineFor(UserActionContext context) {
-		if (context instanceof JSPWikiUserContext jsp) {
-			return jsp.getWikiContext().getEngine();
-		}
+	private static Engine engineFor() {
 		if (Environment.isInitialized()
 				&& Environment.getInstance().getWikiConnector() instanceof JSPWikiConnector connector) {
 			return connector.getEngine();
