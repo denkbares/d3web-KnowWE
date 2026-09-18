@@ -22,13 +22,17 @@ package de.d3web.we.ci4ke.build;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -63,6 +67,7 @@ public class CIPersistence {
 
 	private final boolean skipCleaning;
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
+	private static final String USER_NAME = "CI-process";
 
 	private final CIDashboard dashboard;
 	private final CIBuildCache buildCache;
@@ -111,12 +116,40 @@ public class CIPersistence {
 	}
 
 	protected void handleTestResultAttachments(BuildResult build) throws IOException {
-		for (TestResult testResult : build.getResults()) {
-			for (File file : testResult.getAttachments()) {
-				Environment.getInstance().getWikiConnector().storeAttachment(
-						dashboard.getDashboardArticle(), "CI-process", file);
+		Map<String, InputStream> attachments = new LinkedHashMap<>();
+		List<InputStream> opened = new ArrayList<>();
+		try {
+			for (TestResult testResult : build.getResults()) {
+				for (File file : testResult.getAttachments()) {
+					InputStream in = new FileInputStream(file);
+					opened.add(in);
+					attachments.put(file.getName(), in);
+				}
+			}
+			if (attachments.isEmpty()) {
+				return;
+			}
+			// one change for the whole build, rather than one per result file
+			Environment.getInstance().getWikiConnector().storeAttachments(
+					dashboard.getDashboardArticle(), attachments, USER_NAME, changeNote(build));
+		}
+		finally {
+			for (InputStream in : opened) {
+				try {
+					in.close();
+				}
+				catch (IOException e) {
+					LOGGER.warn("Could not close test result attachment stream", e);
+				}
 			}
 		}
+	}
+
+	/**
+	 * What the build writes into the history of the attachments it stores.
+	 */
+	private String changeNote(BuildResult build) {
+		return "CI build " + build.getBuildNumber() + " of " + dashboard.getDashboardName();
 	}
 
 	private void throwUnexpectedWriterError(Throwable e) throws IOException {
@@ -147,7 +180,7 @@ public class CIPersistence {
 		ByteArrayInputStream currentBuildInputStream = new ByteArrayInputStream(bytes);
 
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		String userName = "CI-process";
+		String userName = USER_NAME;
 		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
 
 		if (!skipCleaning && build.getBuildNumber() > maxBuilds) {
@@ -175,8 +208,9 @@ public class CIPersistence {
 		}
 		else {
 
-			wikiConnector.storeAttachment(
-					dashboardArticle, getAttachmentName(), userName, currentBuildInputStream);
+			// a single entry, so this is one change like the plain store, but one that carries a change note
+			wikiConnector.storeAttachments(dashboardArticle,
+					Map.of(getAttachmentName(), currentBuildInputStream), userName, changeNote(build));
 		}
 
 	}
