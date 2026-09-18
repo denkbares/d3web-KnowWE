@@ -207,6 +207,14 @@ public class GitWikiRepository {
 	}
 
 	/**
+	 * Which of the given repo-relative paths are git-ignored, checked in one go. Callers that look at a whole
+	 * directory use this instead of {@link #isIgnored} per entry, which would cost one git call each.
+	 */
+	public Set<String> ignoredPaths(Collection<String> repoRelativePaths) {
+		return connector.ignoredPaths(repoRelativePaths);
+	}
+
+	/**
 	 * The raw content of the file at the given version, read from git. Used for attachment data, which unlike page
 	 * text has no text encoding. Returns {@code null} if git has no such committed version of the file.
 	 */

@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -60,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
+import de.uniwue.d3web.gitConnector.GitFileAtCommit;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
 
 /**
@@ -268,21 +270,18 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public List<Attachment> listAttachments(Page page) throws ProviderException {
-		File dir = attachmentDir(repository(), page.getName());
+		GitWikiRepository repository = repository();
+		File dir = attachmentDir(repository, page.getName());
 		if (!dir.exists()) {
 			return Collections.emptyList();
 		}
 		List<Attachment> result = new ArrayList<>();
 		Set<String> seen = new HashSet<>();
 		File[] files = dir.listFiles(file -> !file.isHidden() && !file.isDirectory());
-		if (files != null) {
-			for (File file : files) {
-				Attachment info = getAttachmentInfo(page, JSPUtils.unmangleName(file.getName()),
-						WikiProvider.LATEST_VERSION);
-				if (info != null) {
-					result.add(info);
-					seen.add(info.getFileName());
-				}
+		if (files != null && files.length > 0) {
+			for (Attachment attachment : latestOfEach(page, files, repository)) {
+				result.add(attachment);
+				seen.add(attachment.getFileName());
 			}
 		}
 		// legacy version directories (<file>-dir); a flat file of the same name takes precedence
@@ -290,6 +289,60 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			if (seen.add(legacy.getFileName())) {
 				result.add(legacy);
 			}
+		}
+		return result;
+	}
+
+	/**
+	 * The latest version of each of the given attachment files. Ignore state, history and sizes are looked up for the
+	 * whole directory at once, so listing a page's attachments costs a fixed handful of git calls instead of one per
+	 * attachment.
+	 */
+	private List<Attachment> latestOfEach(Page page, File[] files, GitWikiRepository repository) throws ProviderException {
+		List<Attachment> attachments = new ArrayList<>(files.length);
+		List<String> relPaths = new ArrayList<>(files.length);
+		for (File file : files) {
+			Attachment attachment = new org.apache.wiki.attachment.Attachment(m_engine, page.getName(),
+					JSPUtils.unmangleName(file.getName()));
+			attachment.setVersion(WikiProvider.LATEST_VERSION);
+			attachments.add(attachment);
+			relPaths.add(attachmentPath(attachment));
+		}
+		// one index snapshot for the whole directory, so every attachment is read at the same HEAD
+		Map<String, List<GitFileRevision>> revisionsByFile = repository.revisionsByFile();
+		Set<String> ignored = repository.ignoredPaths(relPaths);
+
+		List<GitFileAtCommit> sizeRequest = new ArrayList<>(files.length);
+		for (int i = 0; i < files.length; i++) {
+			List<GitFileRevision> revisions = revisionsByFile.get(relPaths.get(i));
+			if (!ignored.contains(relPaths.get(i)) && revisions != null && !revisions.isEmpty()) {
+				sizeRequest.add(new GitFileAtCommit(revisions.get(0).commitHash(), relPaths.get(i)));
+			}
+		}
+		Map<GitFileAtCommit, Long> sizes = repository.fileSizesAt(sizeRequest);
+
+		List<Attachment> result = new ArrayList<>(files.length);
+		for (int i = 0; i < files.length; i++) {
+			String relPath = relPaths.get(i);
+			if (!attachmentFile(repository, attachments.get(i)).exists()) {
+				// the name does not map back to the file it was read from, so the inherited lookup decides, which is
+				// what serves the legacy layout and answers null for a file it does not recognize either
+				Attachment inherited = getAttachmentInfo(page, attachments.get(i).getFileName(),
+						WikiProvider.LATEST_VERSION);
+				if (inherited != null) {
+					result.add(inherited);
+				}
+				continue;
+			}
+			List<GitFileRevision> revisions = revisionsByFile.get(relPath);
+			if (ignored.contains(relPath) || revisions == null || revisions.isEmpty()) {
+				// git-ignored, or written but not yet committed, both served from the filesystem
+				result.add(filesystemAttachment(attachments.get(i), files[i]));
+				continue;
+			}
+			GitFileRevision latest = revisions.get(0);
+			Long size = sizes.get(new GitFileAtCommit(latest.commitHash(), relPath));
+			result.add(fromRevision(attachments.get(i), revisions.size(), latest, size == null ? -1 : size));
 		}
 		return result;
 	}
@@ -328,6 +381,15 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		return fromRevision(att, version, revisions.get(count - version), relPath, repository);
 	}
 
+	/**
+	 * Single-attachment form of {@link #fromRevision(Attachment, int, GitFileRevision, long)}, which fetches the one
+	 * size it needs.
+	 */
+	private Attachment fromRevision(Attachment attachment, int version, GitFileRevision revision, String relPath,
+									GitWikiRepository repository) {
+		return fromRevision(attachment, version, revision, repository.fileSizeAt(revision.commitHash(), relPath));
+	}
+
 	private Attachment filesystemAttachment(Attachment attachment, File attFile) {
 		attachment.setVersion(1);
 		attachment.setSize(attFile.length());
@@ -337,16 +399,15 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 
 	/**
 	 * Builds the attachment metadata from an index revision. Author/time/message come from the index (free after the
-	 * one walk); only the file size is fetched lazily (cached per commit+path by the connector).
+	 * one walk); the size is the one the caller looked up, since the index walk does not report sizes.
 	 */
-	private Attachment fromRevision(Attachment attachment, int version, GitFileRevision revision, String relPath,
-									GitWikiRepository repository) {
+	private Attachment fromRevision(Attachment attachment, int version, GitFileRevision revision, long size) {
 		Attachment result = new org.apache.wiki.attachment.Attachment(m_engine, attachment.getParentName(), attachment.getFileName());
 		result.setCacheable(false);
 		result.setAuthor(revision.userData().user);
 		result.setVersion(version);
 		result.setAttribute(WikiPage.CHANGENOTE, revision.message());
-		result.setSize(repository.fileSizeAt(revision.commitHash(), relPath));
+		result.setSize(size);
 		result.setLastModified(Date.from(Instant.ofEpochSecond(revision.timeSeconds())));
 		return result;
 	}
@@ -373,9 +434,17 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			}
 			List<GitFileRevision> revisions = repository.index().revisionsNewestFirst(relPath);
 			int count = revisions.size();
+			// one bulk size lookup for the whole history, a size per version would be a git call per version
+			List<GitFileAtCommit> sizeRequest = new ArrayList<>(count);
+			for (GitFileRevision revision : revisions) {
+				sizeRequest.add(new GitFileAtCommit(revision.commitHash(), relPath));
+			}
+			Map<GitFileAtCommit, Long> sizes = repository.fileSizesAt(sizeRequest);
 			List<Attachment> result = new ArrayList<>(count);
 			for (int i = 0; i < count; i++) {
-				result.add(fromRevision(attachment, count - i, revisions.get(i), relPath, repository));
+				GitFileRevision revision = revisions.get(i);
+				Long size = sizes.get(new GitFileAtCommit(revision.commitHash(), relPath));
+				result.add(fromRevision(attachment, count - i, revision, size == null ? -1 : size));
 			}
 			return result;
 		}
