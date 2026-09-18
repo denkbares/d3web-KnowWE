@@ -183,10 +183,6 @@ public class CIPersistence {
 		String userName = USER_NAME;
 		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
 
-		// Pruning works by deleting the build attachment and writing the kept builds back, which only shortens the
-		// history where deleting an attachment discards its previous versions. A store that keeps them instead
-		// records the delete and every rewrite as further versions, so pruning there lengthens the very history it
-		// is meant to bound, and a wiki on such a store switches this off in its configuration.
 		if (!KnowWEUtils.getPropertyFlag(SKIP_CLEANING, false) && build.getBuildNumber() > maxBuilds) {
 			// do big cleanup, where the older half of the builds are deleted
 			LinkedList<ByteArrayInputStream> streams = new LinkedList<>();

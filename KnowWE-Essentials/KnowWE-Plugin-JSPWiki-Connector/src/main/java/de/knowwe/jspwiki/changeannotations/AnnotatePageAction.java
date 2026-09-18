@@ -15,7 +15,9 @@ import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.Environment;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.JSPWikiUserContext;
 
 /**
@@ -74,9 +76,17 @@ public class AnnotatePageAction extends AbstractAction {
 		}
 	}
 
+	/**
+	 * The wiki engine behind this request. Action requests do not carry a wiki context, so the engine is taken from
+	 * the environment's connector for those, which is the same instance the context would have carried.
+	 */
 	private static Engine engineFor(UserActionContext context) {
 		if (context instanceof JSPWikiUserContext jsp) {
 			return jsp.getWikiContext().getEngine();
+		}
+		if (Environment.isInitialized()
+				&& Environment.getInstance().getWikiConnector() instanceof JSPWikiConnector connector) {
+			return connector.getEngine();
 		}
 		return null;
 	}
