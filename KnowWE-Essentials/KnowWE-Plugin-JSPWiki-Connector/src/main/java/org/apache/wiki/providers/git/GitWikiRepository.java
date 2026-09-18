@@ -27,8 +27,10 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitFileAtCommit;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
 import de.uniwue.d3web.gitConnector.RepositoryLock;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
@@ -219,6 +222,32 @@ public class GitWikiRepository {
 	}
 
 	/**
+	 * Sizes in bytes of the given files, each as of its own commit, fetched in one go. Callers that need a size per
+	 * version of a page, or per attachment of a page, use this instead of {@link #fileSizeAt} per entry, which would
+	 * cost one git call each.
+	 *
+	 * @return the requested files mapped to their size, with an entry for every requested file
+	 */
+	public Map<GitFileAtCommit, Long> fileSizesAt(Collection<GitFileAtCommit> files) {
+		return connector.log().getFilesizesForCommits(files);
+	}
+
+	/**
+	 * Sizes in bytes of one file as of each of the given commits, keyed by commit hash. The bulk form behind
+	 * {@link #history}, where every version of one page needs its own size.
+	 */
+	private Map<String, Long> fileSizesAt(List<GitFileRevision> revisions, String repoRelativePath) {
+		List<GitFileAtCommit> files = new ArrayList<>(revisions.size());
+		for (GitFileRevision revision : revisions) {
+			files.add(new GitFileAtCommit(revision.commitHash(), repoRelativePath));
+		}
+		Map<GitFileAtCommit, Long> sizes = fileSizesAt(files);
+		Map<String, Long> byCommitHash = new LinkedHashMap<>(revisions.size());
+		sizes.forEach((file, size) -> byCommitHash.put(file.commitHash(), size));
+		return byCommitHash;
+	}
+
+	/**
 	 * Full version history of the page, newest version first. Version numbers are branch-relative positions in the
 	 * file's git log, 1 = oldest. Returns an empty list if the file does not exist.
 	 */
@@ -232,9 +261,12 @@ public class GitWikiRepository {
 		// newest-first and version numbers are oldest-first (1 = oldest), so the newest commit gets version = count.
 		List<GitFileRevision> revisions = index.revisionsNewestFirst(id.fileName());
 		int count = revisions.size();
+		// one bulk size lookup for the whole history, a size per version would otherwise be a git call per version
+		Map<String, Long> sizes = fileSizesAt(revisions, id.fileName());
 		List<GitPageVersion> versions = new ArrayList<>(count);
 		for (int i = 0; i < count; i++) {
-			versions.add(buildVersion(id.fileName(), revisions.get(i), count - i));
+			GitFileRevision revision = revisions.get(i);
+			versions.add(buildVersion(revision, count - i, sizes.get(revision.commitHash())));
 		}
 		if (versions.isEmpty()) {
 			// the normal state of a git-ignored page and of a file staged in an open batch, both handled elsewhere
@@ -246,14 +278,14 @@ public class GitWikiRepository {
 
 	/**
 	 * Maps an index revision to a {@link GitPageVersion}. Author/email/time/message come from the index (free after the
-	 * one walk); only the file size is fetched lazily via {@link #fileSizeAt}.
+	 * one walk); the size is the one the caller looked up, since the index walk does not report sizes.
 	 */
-	private GitPageVersion buildVersion(String fileName, GitFileRevision revision, int version) {
+	private GitPageVersion buildVersion(GitFileRevision revision, int version, Long size) {
 		return new GitPageVersion(
 				version,
 				revision.commitHash(),
 				revision.userData(),
-				fileSizeAt(revision.commitHash(), fileName),
+				size == null ? -1 : size,
 				Date.from(Instant.ofEpochSecond(revision.timeSeconds()))
 		);
 	}
@@ -293,7 +325,7 @@ public class GitWikiRepository {
 		else {
 			return null;
 		}
-		return buildVersion(fileName, revision, realVersion);
+		return buildVersion(revision, realVersion, fileSizeAt(revision.commitHash(), fileName));
 	}
 
 	/**
