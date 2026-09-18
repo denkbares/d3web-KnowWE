@@ -56,6 +56,7 @@ import de.d3web.testing.BuildResultPersistenceHandler;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -65,8 +66,8 @@ public class CIPersistence {
 
 	public static int maxBuilds = 200;
 
-	private final boolean skipCleaning;
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
+	private static final String SKIP_CLEANING = "knowwe.ci.skipCleaning";
 	private static final String USER_NAME = "CI-process";
 
 	private final CIDashboard dashboard;
@@ -75,7 +76,6 @@ public class CIPersistence {
 	public CIPersistence(CIDashboard dashboard, CIBuildCache buildCache) {
 		this.dashboard = dashboard;
 		this.buildCache = buildCache;
-		skipCleaning = System.getProperty("knowwe.ci.skipCleaning") != null;
 	}
 
 	public CIPersistence(CIDashboard dashboard, CIBuildCache buildCache, int maxBuilds) {
@@ -183,7 +183,11 @@ public class CIPersistence {
 		String userName = USER_NAME;
 		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
 
-		if (!skipCleaning && build.getBuildNumber() > maxBuilds) {
+		// Pruning works by deleting the build attachment and writing the kept builds back, which only shortens the
+		// history where deleting an attachment discards its previous versions. A store that keeps them instead
+		// records the delete and every rewrite as further versions, so pruning there lengthens the very history it
+		// is meant to bound, and a wiki on such a store switches this off in its configuration.
+		if (!KnowWEUtils.getPropertyFlag(SKIP_CLEANING, false) && build.getBuildNumber() > maxBuilds) {
 			// do big cleanup, where the older half of the builds are deleted
 			LinkedList<ByteArrayInputStream> streams = new LinkedList<>();
 			streams.add(currentBuildInputStream);

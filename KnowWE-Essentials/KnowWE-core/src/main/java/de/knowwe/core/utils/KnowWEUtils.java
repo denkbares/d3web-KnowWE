@@ -155,18 +155,30 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the boolean value of the given configuration property, looked up as in
-	 * {@link #getProperty(String)}. Returns true only if the property is set to "true" (ignoring case and
-	 * surrounding whitespace), the given default value if the property is not set, and false otherwise.
+	 * Returns the boolean value of the given configuration property, looked up in the same places and the same order
+	 * as {@link #getProperty(String)}. Returns true if the property is set to "true" (ignoring case and surrounding
+	 * whitespace), the given default value if it is set nowhere, and false otherwise.
+	 * <p>
+	 * A flag given on the command line or in the environment counts as set even without a value, because
+	 * {@code -Dsome.flag} and {@code SOME_FLAG=} are how a flag is stated there and both yield an empty value. In the
+	 * wiki properties an empty value means the opposite, that the key is present but says nothing, as a settings file
+	 * can always write the value out.
 	 *
 	 * @param property     the property key to get the value for
-	 * @param defaultValue the value to return if the property is not set
+	 * @param defaultValue the value to return if the property is set nowhere
 	 * @return the boolean property value or the default value
 	 */
 	public static boolean getPropertyFlag(String property, boolean defaultValue) {
-		String value = getProperty(property);
-		if (value == null) return defaultValue;
-		return "true".equalsIgnoreCase(value.trim());
+		String configured = Environment.getInstance().getWikiConnector().getWikiProperty(property);
+		if (configured != null && !configured.isBlank()) {
+			return "true".equalsIgnoreCase(configured.trim());
+		}
+		String given = System.getProperty(property);
+		if (given == null) {
+			given = System.getenv(property.toUpperCase().replace(".", "_"));
+		}
+		if (given == null) return defaultValue;
+		return given.isBlank() || "true".equalsIgnoreCase(given.trim());
 	}
 
 	/**
