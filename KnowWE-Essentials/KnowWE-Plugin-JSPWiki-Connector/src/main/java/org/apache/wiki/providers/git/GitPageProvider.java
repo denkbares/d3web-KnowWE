@@ -456,6 +456,13 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	}
 
 	/**
+	 * The read model of the current branch's history, the source of the version numbers the wiki shows.
+	 */
+	public GitRepoIndex repositoryIndex() {
+		return repository.index();
+	}
+
+	/**
 	 * Maps repo-relative file paths back to wiki names: a flat {@code .txt} file to its page name, an attachment path
 	 * ({@code <page>-att/<file>}) to the JSPWiki attachment name {@code <page>/<file>}. The attachment layout
 	 * knowledge is deliberate: batch and sweep results genuinely contain attachment paths, and their names must be
@@ -471,12 +478,14 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	}
 
 	/**
-	 * The wiki name of a single repo-relative path. Both attachment layouts start with the {@code <page>-att}
-	 * directory, the legacy one keeps the versions of an attachment in a {@code <file>-dir} directory below it.
+	 * The wiki name of a single repo-relative path, a page name for a page file, {@code <page>/<file>} for an
+	 * attachment. Both attachment layouts start with the {@code <page>-att} directory, the legacy one keeps the
+	 * versions of an attachment in a {@code <file>-dir} directory below it. Page and attachment names are decoded
+	 * the way the git providers encode them, which is fixed to UTF-8.
 	 */
-	private String wikiName(String path) {
+	public static String wikiName(String path) {
 		String[] segments = path.replace(File.separatorChar, '/').split("/");
-		if (segments.length >= 2 && segments[0].endsWith(BasicAttachmentProvider.DIR_EXTENSION)) {
+		if (isAttachmentPath(segments)) {
 			// attachment paths were mangled by JSPUtils (hard UTF-8), so unmangle them the same way
 			String parent = JSPUtils.unmangleName(
 					segments[0].substring(0, segments[0].length() - BasicAttachmentProvider.DIR_EXTENSION.length()));
@@ -489,12 +498,31 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		return pageNameOfFile(segments[segments.length - 1]);
 	}
 
-	private String pageNameOfFile(String fileName) {
+	/**
+	 * Whether the repo-relative path is an attachment of a page, in either attachment layout.
+	 */
+	public static boolean isAttachmentPath(String path) {
+		return isAttachmentPath(path.replace(File.separatorChar, '/').split("/"));
+	}
+
+	private static boolean isAttachmentPath(String[] segments) {
+		return segments.length >= 2 && segments[0].endsWith(BasicAttachmentProvider.DIR_EXTENSION);
+	}
+
+	/**
+	 * Whether the repo-relative path is a page file, which is a text file in the repository root.
+	 */
+	public static boolean isPagePath(String path) {
+		String normalized = path.replace(File.separatorChar, '/');
+		return normalized.endsWith(FILE_EXT) && !normalized.contains("/");
+	}
+
+	private static String pageNameOfFile(String fileName) {
 		// strip the extension only as a suffix, a page may legitimately be called "Foo.txt"
 		String base = fileName.endsWith(FILE_EXT)
 				? fileName.substring(0, fileName.length() - FILE_EXT.length())
 				: fileName;
-		return unmangleName(base);
+		return JSPUtils.unmangleName(base);
 	}
 
 	@Override
