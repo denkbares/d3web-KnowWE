@@ -183,6 +183,90 @@ DenkbaresSkin.adjustPageHeight = function () {
 	jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
 };
 
+/**
+ * Propagates the background color of %%(background-color: ...) wrapper blocks to their surrounding area.
+ *
+ * If the rendered wiki content of an area (sidebar with the LeftMenu, the page, the live preview of the
+ * editor) consists of nothing but a single %%(background-color: ...) block, the background color of that
+ * block is applied to the whole area, including its padding and non-content parts like the LeftMenuFooter.
+ * Otherwise the block would only color its own content, leaving a frame in the default background color
+ * around it. Used to tell different wikis apart at a glance. Blocks that are just one part of the content
+ * (e.g. colored boxes) are left alone.
+ */
+DenkbaresSkin.WrapperBackground = {
+
+	/** elements that count as visible content even if they contain no text */
+	visualElements: 'img, svg, canvas, iframe, video, object, embed, table, hr, input:not([type=hidden]), button, select, textarea',
+
+	/** marks areas whose background color has been set by this mechanism */
+	markerAttribute: 'data-wrapper-background',
+
+	/**
+	 * Decides whether a node is visible content of its parent. Hidden nodes (display:none, e.g. scripts,
+	 * hidden inputs, edit anchors), nodes taken out of the flow (position:fixed, e.g. the right panel), and
+	 * whitespace-only text or paragraphs are not content. The check works on the node's own computed style
+	 * only, so it also works while the surrounding area itself is hidden (e.g. a collapsed sidebar).
+	 */
+	isContent: function (node) {
+		// numeric node types instead of Node.TEXT_NODE/ELEMENT_NODE: DiaFlux defines a global "Node" class that
+		// shadows the DOM interface on pages with flowcharts (or referenced knowledge bases)
+		if (node.nodeType === 3) return node.nodeValue.trim() !== '';
+		if (node.nodeType !== 1) return false;
+		const style = window.getComputedStyle(node);
+		if (style.display === 'none' || style.visibility === 'hidden' || style.position === 'fixed') return false;
+		return node.textContent.trim() !== '' || node.querySelector(this.visualElements) !== null;
+	},
+
+	/**
+	 * Returns the background color of the wrapper block if the content of contentParent consists of nothing
+	 * but one div with an (inline) background color, otherwise null.
+	 */
+	findWrapperColor: function (contentParent) {
+		let wrapper = null;
+		for (const node of contentParent.childNodes) {
+			if (!this.isContent(node)) continue;
+			if (wrapper !== null || node.nodeType !== 1 || !node.matches('div[style]')) return null;
+			wrapper = node;
+		}
+		if (wrapper === null) return null;
+		const color = jq$(wrapper).css('background-color');
+		if (!color || color === 'transparent' || color === 'rgba(0, 0, 0, 0)') return null;
+		return color;
+	},
+
+	/** applies (or removes) the background color of the wrapper block in contentParent to the area */
+	apply: function (area, contentParent) {
+		const $area = jq$(area);
+		const color = this.findWrapperColor(contentParent);
+		if (color !== null) {
+			$area.css('background-color', color).attr(this.markerAttribute, '');
+		} else if ($area.is('[' + this.markerAttribute + ']')) {
+			$area.css('background-color', '').removeAttr(this.markerAttribute);
+		}
+	},
+
+	/**
+	 * Applies the wrapper background of the content found by contentSelector (a descendant of the area, or
+	 * the area itself if omitted) to the area, and keeps it up to date when the content gets re-rendered
+	 * (e.g. the live preview in the editor, or sections re-rendered in the page).
+	 */
+	bind: function (areaSelector, contentSelector) {
+		const area = jq$(areaSelector).first();
+		if (area.length === 0) return;
+		const contentParent = contentSelector ? area.find(contentSelector).first() : area;
+		if (contentParent.length === 0) return;
+		const apply = () => this.apply(area[0], contentParent[0]);
+		apply();
+		new MutationObserver(apply).observe(contentParent[0], {childList: true});
+	},
+
+	init: function () {
+		this.bind('.sidebar', '.leftmenu');
+		this.bind('.page', '.page-content');
+		this.bind('.ajaxpreview');
+	}
+};
+
 DenkbaresSkin.cleanTrail = function () {
 	const breadcrumbs = jq$('.breadcrumb');
 	if (breadcrumbs.length === 0)
@@ -259,6 +343,7 @@ jq$(function () {
 
 	// add ID #favorites to sidebar
 	jq$(jq$('.sidebar')[0]).attr('id', 'favorites');
+	DenkbaresSkin.WrapperBackground.init();
 
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
