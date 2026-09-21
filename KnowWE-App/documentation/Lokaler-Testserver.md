@@ -41,9 +41,6 @@ eingebundene Artefakte.
 export JAVA_HOME=<jdk-25> MAVEN_OPTS=-Xmx2g
 cd <workspace>            # das Verzeichnis mit den Geschwister-Repos (KnowWE, d3web, ...)
 
-# einmalig in einem frischen Task-Repo: die Enforcer-Rules sind Plugin-Dependency aller Parent-POMs
-( cd denkbares-Maven-Plugins && mvn -o -DskipTests -Dmaven.repo.local=<task-repo> install )
-
 # Reihenfolge und Umfang ansehen ...
 python3 Maven-Parents/denkbares-Parent/build-script/build-main-workspace-parallel.py analyze --root . --target KnowWE-App
 # ... und bauen
@@ -219,7 +216,7 @@ Ende der Action ausliefert. Der Servlet-Pfad (`JSPActionServlet`, Mapping `/acti
 | `Unable to load and setup properties ... searchProvider` bzw. `ClassNotFoundException` für eine konfigurierte Klasse | Konfiguration nennt eine Klasse aus einem nicht deployten Plugin oder Branch | Eintrag in der deployten `jspwiki-custom.properties` auf den gebauten Stand setzen |
 | `Unable to find blocked tool provider` | `settings.toolmenu.json` (Seitenordner oder `KnowWEExtension/toolmenu/` in der Webapp) sperrt einen Tool-Provider, dessen Plugin fehlt; häufig ein Rest aus einem exploded WAR mit anderem Profil | Datei entfernen bzw. exploded WAR vor dem Packen löschen |
 | `The POM for com.denkbares:...:jar:<version> is missing` oder `Symbol nicht gefunden` für Cross-Repo-Klassen | Artefakt eines anderen Repos fehlt im Task-Repo oder ist veraltet | Workspace-Skript mit `--target` laufen lassen (Abschnitt 1); es baut die fehlenden Module in der richtigen Reihenfolge |
-| Bootstrap scheitert mit `denkbares-Maven-EnforcerRules ... is missing` | frisches Task-Repo, die Enforcer-Rules sind Plugin-Dependency der Parent-POMs | zuerst `denkbares-Maven-Plugins` installieren, dann das Skript erneut starten |
+| Bootstrap scheitert mit `denkbares-Maven-EnforcerRules ... is missing` | älterer Stand des Workspace-Skripts ohne die Phase *Bootstrap prerequisites* | Skript aktualisieren oder einmalig `denkbares-Maven-Plugins` ins Task-Repo installieren |
 
 ## 6. Aufräumen
 
