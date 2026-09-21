@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.uniwue.d3web.gitConnector.GitInfoExclude;
 import de.uniwue.d3web.gitConnector.impl.bare.BareGitConnector;
 
 import static org.junit.Assert.assertEquals;
@@ -298,6 +299,101 @@ public class GitAttachmentProviderTest {
 		connector.commit().addPath(page + "-att");
 		connector.commit().commitForUser(new de.uniwue.d3web.gitConnector.CommitUserData(
 				"legacy", "legacy@test.invalid", "pre-git content"));
+	}
+
+	// --- git-ignored attachments ---------------------------------------------
+
+	@Test
+	public void ignoredAttachmentIsVersionedOnTheFilesystemOnly() throws Exception {
+		excludeGenerated();
+		int commitsBefore = commitsOnBranch();
+		putAttachment("Topic", "gen-report.xml", "build 1");
+		putAttachment("Topic", "gen-report.xml", "build 2");
+
+		assertFalse(new File(pageDir, "Topic-att/gen-report.xml").exists());
+		assertTrue(new File(pageDir, "Topic-att/gen-report.xml-dir/1.xml").exists());
+		assertTrue(new File(pageDir, "Topic-att/gen-report.xml-dir/2.xml").exists());
+		assertEquals(commitsBefore, commitsOnBranch());
+		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
+
+		Attachment query = new org.apache.wiki.attachment.Attachment(engine, "Topic", "gen-report.xml");
+		assertEquals(2, attachmentProvider.getVersionHistory(query).size());
+		Attachment latest = attachmentProvider.getAttachmentInfo(new WikiPage(engine, "Topic"), "gen-report.xml",
+				WikiProvider.LATEST_VERSION);
+		assertEquals(2, latest.getVersion());
+		assertEquals("build 1", readVersion("Topic", "gen-report.xml", 1));
+		assertEquals("build 2", readVersion("Topic", "gen-report.xml", WikiProvider.LATEST_VERSION));
+		assertEquals(1, attachmentProvider.listAttachments(new WikiPage(engine, "Topic")).size());
+	}
+
+	@Test
+	public void deletingAnIgnoredAttachmentRestartsItsNumbering() throws Exception {
+		excludeGenerated();
+		putAttachment("Topic", "gen-report.xml", "build 1");
+		putAttachment("Topic", "gen-report.xml", "build 2");
+		int commitsBefore = commitsOnBranch();
+
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "Topic", "gen-report.xml");
+		att.setAuthor(AUTHOR);
+		attachmentProvider.deleteAttachment(att);
+		assertFalse(new File(pageDir, "Topic-att/gen-report.xml-dir").exists());
+
+		putAttachment("Topic", "gen-report.xml", "build 3");
+		Attachment latest = attachmentProvider.getAttachmentInfo(new WikiPage(engine, "Topic"), "gen-report.xml",
+				WikiProvider.LATEST_VERSION);
+		assertEquals(1, latest.getVersion());
+		assertEquals("build 3", readVersion("Topic", "gen-report.xml", 1));
+		assertEquals(commitsBefore, commitsOnBranch());
+	}
+
+	/**
+	 * A flat file left from the time the attachment had no ignore rule yet holds a single version and would shadow
+	 * the version directory on every read, so the first versioned write replaces it.
+	 */
+	@Test
+	public void ignoredFlatFileMakesWayForTheVersionDirectory() throws Exception {
+		putAttachment("Topic", "gen-report.xml", "tracked once");
+		excludeGenerated();
+
+		putAttachment("Topic", "gen-report.xml", "build 1");
+
+		assertFalse(new File(pageDir, "Topic-att/gen-report.xml").exists());
+		assertEquals("build 1", readVersion("Topic", "gen-report.xml", WikiProvider.LATEST_VERSION));
+	}
+
+	@Test
+	public void movingAPageTakesIgnoredAttachmentsAlongWithoutCommittingThem() throws Exception {
+		excludeGenerated();
+		putAttachment("Before", "doc.txt", "content");
+		putAttachment("Before", "gen-report.xml", "build 1");
+
+		WikiPage oldParent = new WikiPage(engine, "Before");
+		oldParent.setAuthor(AUTHOR);
+		attachmentProvider.moveAttachmentsForPage(oldParent, "After");
+
+		assertTrue(new File(pageDir, "After-att/gen-report.xml-dir/1.xml").exists());
+		assertEquals(1, commits("After-att/doc.txt"));
+		assertEquals(0, commits("After-att/gen-report.xml-dir/1.xml"));
+		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
+		assertEquals("build 1", readVersion("After", "gen-report.xml", WikiProvider.LATEST_VERSION));
+	}
+
+	/**
+	 * The page provider applies the shipped ignore template to the clone at startup, so CI builds never reach git,
+	 * no matter which plugins are installed.
+	 */
+	@Test
+	public void providerStartupExcludesCiBuilds() throws Exception {
+		int commitsBefore = commitsOnBranch();
+		putAttachment("Dashboard", "ci-build-Nightly.xml", "<build/>");
+
+		assertTrue(new File(pageDir, ".git/info/exclude").exists());
+		assertTrue(new File(pageDir, "Dashboard-att/ci-build-Nightly.xml-dir/1.xml").exists());
+		assertEquals(commitsBefore, commitsOnBranch());
+	}
+
+	private void excludeGenerated() {
+		GitInfoExclude.addEntries(pageDir, List.of("*/gen-*.xml", "*/gen-*.xml-dir"));
 	}
 
 	// --- helpers -------------------------------------------------------------

@@ -67,7 +67,12 @@ import de.uniwue.d3web.gitConnector.GitFileRevision;
 /**
  * Git-backed attachment provider for a single-wiki instance, the sibling of {@link GitPageProvider}. Stores
  * attachments flat ({@code <page>-att/<file>}) inside the same git repository the page provider uses and versions
- * them via git; the {@code OLD/} / versioned-directory mechanism of {@link BasicAttachmentProvider} is not used.
+ * them via git.
+ * <p>
+ * Git-ignored attachments (generated content such as CI builds) are the exception. Git keeps no history of them, so
+ * they are stored with the versioned-directory layout of {@link BasicAttachmentProvider} ({@code <page>-att/<file>-dir})
+ * and versioned on the filesystem only. The ignore rule has to cover that directory, an attachment whose flat path
+ * alone is ignored is served from the flat file as a single version. The {@code OLD/} mechanism is not used.
  * <p>
  * It routes to the <strong>same</strong> {@link GitWikiRepository}, batch registry and {@link WikiGitContext} as the
  * page provider (located lazily via the engine), so attachment changes share the repository, its lock, and,
@@ -188,6 +193,11 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 
 	private void putAttachmentDataLocked(Attachment attachment, byte[] bytes, File attFile, String relPath,
 										 GitWikiRepository repository) throws ProviderException {
+		// a rule that so far exists only in the working tree or exclude file must already route the write
+		if (repository.isIgnoredForCommit(relPath + ATTDIR_EXTENSION)) {
+			putVersionedOnFilesystem(attachment, bytes, attFile);
+			return;
+		}
 		File dir = attFile.getParentFile();
 		if (!dir.exists() && !dir.mkdirs()) {
 			throw new ProviderException("Could not create attachment directory " + dir.getAbsolutePath());
@@ -208,6 +218,26 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 				fireEvent(GitVersioningWikiEvent.UPDATE, attachment, commitHash, repository);
 			}
 		}
+	}
+
+	/**
+	 * Stores a git-ignored attachment with the inherited versioned-directory layout, which every read path already
+	 * falls back to. Nothing is staged or committed.
+	 */
+	private void putVersionedOnFilesystem(Attachment attachment, byte[] bytes, File attFile) throws ProviderException {
+		// a flat file of an ignored attachment holds a single version and would shadow the directory on every read
+		if (attFile.exists() && !attFile.delete()) {
+			throw new ProviderException("Could not replace attachment file " + attFile.getAbsolutePath());
+		}
+		try {
+			LOGGER.info("Saving git-ignored attachment '{}' of page '{}' to its filesystem version directory",
+					attachment.getFileName(), attachment.getParentName());
+			super.putAttachmentData(attachment, new ByteArrayInputStream(bytes));
+		}
+		catch (IOException e) {
+			throw new ProviderException("Can't write attachment " + attachment.getFileName() + ": " + e.getMessage());
+		}
+		attachment.setSize(bytes.length);
 	}
 
 	private void writeFile(Attachment attachment, byte[] bytes, File target) throws ProviderException {
@@ -490,7 +520,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 				if (!attFile.delete()) {
 					LOGGER.warn("Failed to delete attachment file on disk: {}", attFile.getAbsolutePath());
 				}
-				relPaths.addAll(deleteLegacyVersionDir(repository, legacyDir));
+				relPaths.addAll(trackedOnly(repository, deleteLegacyVersionDir(repository, legacyDir)));
 				return repository.commitRemovedPaths(relPaths, userData);
 			});
 		}
@@ -504,7 +534,20 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	/**
-	 * Deletes the files of a legacy version directory from disk and returns their repo-relative paths.
+	 * The given paths without the git-ignored ones, which git has no entry for to record a removal or a move of.
+	 * Tracked files are never reported as ignored, so a version directory committed before its ignore rule existed
+	 * still has its removal committed.
+	 */
+	private static List<String> trackedOnly(GitWikiRepository repository, List<String> relPaths) {
+		if (relPaths.isEmpty()) {
+			return relPaths;
+		}
+		Set<String> ignored = repository.ignoredPaths(relPaths);
+		return relPaths.stream().filter(path -> !ignored.contains(path)).toList();
+	}
+
+	/**
+	 * Deletes the files of a version directory from disk and returns their repo-relative paths.
 	 */
 	private static List<String> deleteLegacyVersionDir(GitWikiRepository repository, File legacyDir) throws IOException {
 		Path repoRoot = new File(repository.path()).toPath();
@@ -534,8 +577,8 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		String commitHash;
 		try {
 			// disk deletion and commit share one lock bracket, like the flat delete path
-			commitHash = repository.withRepositoryLock(
-					() -> repository.commitRemovedPaths(deleteLegacyVersionDir(repository, legacyDir), userData));
+			commitHash = repository.withRepositoryLock(() -> repository.commitRemovedPaths(
+					trackedOnly(repository, deleteLegacyVersionDir(repository, legacyDir)), userData));
 		}
 		catch (ProviderException e) {
 			throw e;
@@ -587,6 +630,9 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 					eventPages.add(oldParent.getName() + "/" + attachmentName);
 					eventPages.add(newParent + "/" + attachmentName);
 				}
+				// git-ignored files (filesystem-versioned attachments) moved along on disk but have nothing to commit
+				oldPaths = trackedOnly(repository, oldPaths);
+				newPaths = trackedOnly(repository, newPaths);
 				// the moved-in files are untracked (newFiles = true stages them in the git index, a pathspec commit
 				// cannot pick up untracked files); the moved-away paths are tracked deletions and need no staging
 				GitCommitBatchRegistry registry = backend().batchRegistry();
