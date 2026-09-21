@@ -43,6 +43,7 @@ import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.providers.AbstractFileProvider;
+import org.apache.wiki.providers.WikiGitIgnore;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.apache.wiki.providers.GitVersioningProvider;
 import org.apache.wiki.structs.WikiPageProxy;
@@ -54,6 +55,7 @@ import de.knowwe.event.GitCommitEvent;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
+import de.uniwue.d3web.gitConnector.GitInfoExclude;
 import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
@@ -107,6 +109,9 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 			RawGitExecutor.executeGitCommand(new String[] { "git", "init" }, repoPath);
 			LOGGER.info("Initialized new git repository at '{}'.", repoPath);
 		}
+		// the wiki's own ignore rules (CI builds and the like) live in .git/info/exclude, applied per clone. They must
+		// be in place before the startup sweep below, which would otherwise commit what they are meant to keep out
+		GitInfoExclude.addEntries(new File(repoPath), WikiGitIgnore.entries());
 		GitConnector connector = new CachingGitConnector(JGitBackedGitConnector.fromPath(repoPath));
 		// build the commit-graph to accelerate git-log reads
 		connector.repo().executeCommitGraph();

@@ -1,0 +1,11 @@
+# CI dashboard builds, the flat attachment file and the filesystem version directory of it
+*/ci-build*.xml
+ci-build*.xml
+*/*ci-build-*.xml
+*/ci-build*.xml-dir
+ci-build*.xml-dir
+*/*ci-build-*.xml-dir
+*.properties
+OLD
+OLD/*
+.DS_Store
