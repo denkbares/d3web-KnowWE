@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -130,6 +132,8 @@ public class JSPWikiConnector implements WikiConnector {
 	private static final int skipAfter = 10;
 	private static final Pattern ZIP_PATTERN = Pattern.compile("^([^/]+/[^/]+\\.zip)/(.+$)");
 	private static int skipCount = 0;
+	/** One lock per user name, serializing that user's bulk attachment stores against each other. */
+	private static final Map<String, Object> bulkStoreLocks = new ConcurrentHashMap<>();
 	private final ServletContext context;
 	private final Engine engine;
 
@@ -687,6 +691,32 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
+	@Override
+	@NotNull
+	public Set<String> readArticleTitlesFromPersistence() throws IOException {
+		try {
+			return getAllPagesFromPersistence().stream()
+					.map(Page::getName)
+					.collect(Collectors.toCollection(LinkedHashSet::new));
+		}
+		catch (ProviderException e) {
+			throw new IOException("Unable to read the article titles from the wiki persistence", e);
+		}
+	}
+
+	/**
+	 * All pages of the provider actually backed by the file system. The caching provider answers from its own page
+	 * list, which does not know about files that appeared or vanished behind the wiki's back, and additionally serves
+	 * pseudo pages created for links whose case does not match an existing page.
+	 */
+	private Collection<Page> getAllPagesFromPersistence() throws ProviderException {
+		PageProvider provider = getPageManager().getProvider();
+		if (provider instanceof CachingProvider cachingProvider) {
+			return cachingProvider.getRealProvider().getAllPages();
+		}
+		return provider.getAllPages();
+	}
+
 	private void reinitReferenceManager() throws WikiException {
 		if (engine instanceof WikiEngine wikiEngine) {
 			wikiEngine.initReferenceManager(true);
@@ -776,6 +806,63 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public @NotNull Properties getWikiProperties() {
 		return getEngine().getWikiProperties();
+	}
+
+	@Override
+	public List<WikiAttachment> storeAttachments(
+			String title,
+			Map<String, InputStream> files,
+			String user,
+			String changeNote
+	) throws IOException {
+		if (files.isEmpty()) {
+			return List.of();
+		}
+		GitVersioningProvider gitProvider = getGitVersioningProvider();
+		// A store that cannot group changes records them one by one, and so does one that is already collecting this
+		// user's changes into a transaction somebody else owns and will close.
+		if (gitProvider == null || gitProvider.isCommitOpen(user)) {
+			return storeEach(title, files, user, changeNote);
+		}
+		// Transactions are held per user name, so two bulk stores of the same user must not overlap, otherwise one
+		// would close the other's transaction and take its files along.
+		synchronized (bulkStoreLock(user)) {
+			if (gitProvider.isCommitOpen(user)) {
+				return storeEach(title, files, user, changeNote);
+			}
+			gitProvider.openCommit(user);
+			List<WikiAttachment> stored;
+			try {
+				stored = storeEach(title, files, user, changeNote);
+			}
+			catch (IOException | RuntimeException e) {
+				gitProvider.rollback(user);
+				throw e;
+			}
+			gitProvider.commit(user, changeNote);
+			return stored;
+		}
+	}
+
+	private List<WikiAttachment> storeEach(
+			String title,
+			Map<String, InputStream> files,
+			String user,
+			String changeNote
+	) throws IOException {
+		List<WikiAttachment> stored = new ArrayList<>(files.size());
+		for (Map.Entry<String, InputStream> file : files.entrySet()) {
+			stored.add(storeAttachment(title, file.getKey(), user, file.getValue(), changeNote));
+		}
+		return stored;
+	}
+
+	/**
+	 * The lock that serializes bulk stores of one user. Interned per user name, so bulk stores of different users stay
+	 * independent, and bounded by the number of users that ever perform one.
+	 */
+	private Object bulkStoreLock(String user) {
+		return bulkStoreLocks.computeIfAbsent(String.valueOf(user), u -> new Object());
 	}
 
 	@Override
@@ -898,6 +985,11 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException {
+		return storeAttachment(title, filename, user, stream, (String) null);
+	}
+
+	private WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream,
+										   @Nullable String changeNote) throws IOException {
 		String safeName = validateAttachmentName(filename);
 		// as of validateFileName: a jsp inside the web application would be executed instead of downloaded. Only
 		// checked when storing, deleting such an attachment must stay possible.
@@ -912,6 +1004,9 @@ public class JSPWikiConnector implements WikiConnector {
 
 			Attachment attachment = new Attachment(getEngine(), title, safeName);
 			attachment.setAuthor(user);
+			if (!Strings.isBlank(changeNote)) {
+				attachment.setAttribute(Attachment.CHANGENOTE, changeNote);
+			}
 			attachmentManager.storeAttachment(attachment, stream);
 			String path = toPath(title, safeName);
 			LOGGER.info("Stored attachment '" + path + "'");

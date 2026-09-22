@@ -114,9 +114,14 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	 * The environment of the web application this action runs in, found in its servlet context.
 	 */
 	@Override
+	public Environment findEnvironment() {
+		return Environment.findIn(servletContext);
+	}
+
+	@Override
 	@NotNull
 	public Environment getEnvironment() {
-		Environment environment = Environment.findIn(servletContext);
+		Environment environment = findEnvironment();
 		if (environment == null) {
 			throw new IllegalStateException("no KnowWE environment in the servlet context of action " + actionName);
 		}

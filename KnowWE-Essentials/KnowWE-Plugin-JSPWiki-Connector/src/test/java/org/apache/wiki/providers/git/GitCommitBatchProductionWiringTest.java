@@ -200,7 +200,7 @@ public class GitCommitBatchProductionWiringTest {
 	/**
 	 * Locking fix A: closing a batch goes through the repository's commit lock, so it is serialized against a
 	 * concurrent immediate commit (or sweep/delete/move) instead of relying on git's own {@code index.lock} retries.
-	 * The test holds the lock via {@code withCommitLock} and asserts the batch close waits for it.
+	 * The test holds the lock via {@code withRepositoryLock} and asserts the batch close waits for it.
 	 */
 	@Test
 	public void batchCloseWaitsForTheRepositoryCommitLock() throws Exception {
@@ -212,7 +212,7 @@ public class GitCommitBatchProductionWiringTest {
 		CountDownLatch releaseLock = new CountDownLatch(1);
 		Thread holder = new Thread(() -> {
 			try {
-				repository.withCommitLock(() -> {
+				repository.withRepositoryLock(() -> {
 					lockHeld.countDown();
 					releaseLock.await();
 					return null;

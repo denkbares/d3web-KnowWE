@@ -651,8 +651,13 @@ public class DefaultMarkupRenderer implements Renderer {
 	protected void appendToolbarTools(ToolSet tools, UserContext user, RenderResult result) {
 		for (Tool tool : tools) {
 			result.appendHtmlTag("div", "class", "list-group " + tool.getClass().getSimpleName());
-			result.appendHtmlTag("a", false, "class", "list-group-item", "title", tool.getDescription(), ToolUtils.getActionAttributeName(tool), ToolUtils
-					.getActionAttributeValue(tool));
+			if (tool.getId() == null){
+				result.appendHtmlTag("a", false, "class", "list-group-item", "title", tool.getDescription(), ToolUtils.getActionAttributeName(tool), ToolUtils
+						.getActionAttributeValue(tool));
+			} else {
+				result.appendHtmlTag("a", false, "class", "list-group-item", "title", tool.getDescription(), ToolUtils.getActionAttributeName(tool), ToolUtils
+						.getActionAttributeValue(tool), "id", tool.getId());
+			}
 			result.appendHtml(tool.getIcon().fixWidth().toHtml());
 			result.appendHtmlTag("/a");
 			result.appendHtmlTag("/div");

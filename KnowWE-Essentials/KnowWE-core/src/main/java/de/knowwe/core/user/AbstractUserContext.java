@@ -125,7 +125,7 @@ public abstract class AbstractUserContext implements UserContext {
 	 */
 	@Override
 	@NotNull
-	public abstract Environment getEnvironment();
+	public abstract Environment findEnvironment();
 
 	@Override
 	@NotNull

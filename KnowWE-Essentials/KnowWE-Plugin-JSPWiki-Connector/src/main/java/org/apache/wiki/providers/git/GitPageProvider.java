@@ -43,6 +43,7 @@ import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.providers.AbstractFileProvider;
+import org.apache.wiki.providers.WikiGitIgnore;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.apache.wiki.providers.GitVersioningProvider;
 import org.apache.wiki.structs.WikiPageProxy;
@@ -54,6 +55,7 @@ import de.knowwe.event.GitCommitEvent;
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
+import de.uniwue.d3web.gitConnector.GitInfoExclude;
 import de.uniwue.d3web.gitConnector.impl.bare.RawGitExecutor;
 import de.uniwue.d3web.gitConnector.impl.cached.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
@@ -67,8 +69,8 @@ import de.uniwue.d3web.gitConnector.impl.mixed.JGitBackedGitConnector;
  * cache eviction). It commits but never pushes; push policy belongs to the async push listener driven by the
  * {@link GitCommitEvent}s fired here.
  * <p>
- * All repository mutations run under the repository's commit lock. A page save brackets the file write and its commit
- * in {@link GitWikiRepository#withCommitLock}, so no sweep, delete or move can interleave between the two, and closing a
+ * All repository mutations run under the repository lock. A page save brackets the file write and its commit
+ * in {@link GitWikiRepository#withRepositoryLock}, so no sweep, delete or move can interleave between the two, and closing a
  * transaction batch commits through the same lock. A dirty working tree (crash during a save) is self-healed at
  * startup by a sweep-up reconciliation commit.
  * <p>
@@ -107,6 +109,9 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 			RawGitExecutor.executeGitCommand(new String[] { "git", "init" }, repoPath);
 			LOGGER.info("Initialized new git repository at '{}'.", repoPath);
 		}
+		// the wiki's own ignore rules (CI builds and the like) live in .git/info/exclude, applied per clone. They must
+		// be in place before the startup sweep below, which would otherwise commit what they are meant to keep out
+		GitInfoExclude.addEntries(new File(repoPath), WikiGitIgnore.entries());
 		GitConnector connector = new CachingGitConnector(JGitBackedGitConnector.fromPath(repoPath));
 		// build the commit-graph to accelerate git-log reads
 		connector.repo().executeCommitGraph();
@@ -131,7 +136,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		// bracket the file write and its commit, so no concurrent sweep, delete or move can interleave in between
 		// (a sweep would otherwise commit the half-finished save as a reconciliation commit with the wrong author)
 		try {
-			repository.withCommitLock(() -> {
+			repository.withRepositoryLock(() -> {
 				putPageTextLocked(page, text, file);
 				return null;
 			});
@@ -199,6 +204,17 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		catch (IOException e) {
 			throw new ProviderException("Could not read text of '" + pageName + "' v" + version + ": " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Text of several versions of the page, read in one git call instead of one per version. Callers that need the
+	 * whole history of a page, page annotation for example, use this rather than {@link #getPageText} per version.
+	 * A version git has no content for has no entry, the caller decides how to fall back.
+	 *
+	 * @param versions 1-based version numbers, 1 being the oldest
+	 */
+	public Map<Integer, String> getPageTexts(String pageName, Collection<Integer> versions) {
+		return repository.textAtVersions(pageName, versions);
 	}
 
 	@Override
@@ -394,6 +410,11 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	}
 
 	@Override
+	public boolean isCommitOpen(String user) {
+		return batchRegistry.isOpen(user);
+	}
+
+	@Override
 	public void commit(String user, String commitMessage) {
 		String comment = context.commentStrategy().getCommentForUser(user);
 		if (comment.isEmpty()) {
@@ -419,7 +440,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 
 	/**
 	 * The backend shared with the sibling attachment provider, so attachment changes go through the same repository
-	 * (and its commit lock), the same open transactions and the same engine context. Within a transaction, page and
+	 * (and its lock), the same open transactions and the same engine context. Within a transaction, page and
 	 * attachment changes end up in the same commit.
 	 */
 	GitWikiBackend backend() {
@@ -432,6 +453,13 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	 */
 	public GitConnector getGitConnector() {
 		return repository.connector();
+	}
+
+	/**
+	 * The read model of the current branch's history, the source of the version numbers the wiki shows.
+	 */
+	public GitRepoIndex repositoryIndex() {
+		return repository.index();
 	}
 
 	/**
@@ -450,12 +478,14 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	}
 
 	/**
-	 * The wiki name of a single repo-relative path. Both attachment layouts start with the {@code <page>-att}
-	 * directory, the legacy one keeps the versions of an attachment in a {@code <file>-dir} directory below it.
+	 * The wiki name of a single repo-relative path, a page name for a page file, {@code <page>/<file>} for an
+	 * attachment. Both attachment layouts start with the {@code <page>-att} directory, the legacy one keeps the
+	 * versions of an attachment in a {@code <file>-dir} directory below it. Page and attachment names are decoded
+	 * the way the git providers encode them, which is fixed to UTF-8.
 	 */
-	private String wikiName(String path) {
+	public static String wikiName(String path) {
 		String[] segments = path.replace(File.separatorChar, '/').split("/");
-		if (segments.length >= 2 && segments[0].endsWith(BasicAttachmentProvider.DIR_EXTENSION)) {
+		if (isAttachmentPath(segments)) {
 			// attachment paths were mangled by JSPUtils (hard UTF-8), so unmangle them the same way
 			String parent = JSPUtils.unmangleName(
 					segments[0].substring(0, segments[0].length() - BasicAttachmentProvider.DIR_EXTENSION.length()));
@@ -468,12 +498,31 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		return pageNameOfFile(segments[segments.length - 1]);
 	}
 
-	private String pageNameOfFile(String fileName) {
+	/**
+	 * Whether the repo-relative path is an attachment of a page, in either attachment layout.
+	 */
+	public static boolean isAttachmentPath(String path) {
+		return isAttachmentPath(path.replace(File.separatorChar, '/').split("/"));
+	}
+
+	private static boolean isAttachmentPath(String[] segments) {
+		return segments.length >= 2 && segments[0].endsWith(BasicAttachmentProvider.DIR_EXTENSION);
+	}
+
+	/**
+	 * Whether the repo-relative path is a page file, which is a text file in the repository root.
+	 */
+	public static boolean isPagePath(String path) {
+		String normalized = path.replace(File.separatorChar, '/');
+		return normalized.endsWith(FILE_EXT) && !normalized.contains("/");
+	}
+
+	private static String pageNameOfFile(String fileName) {
 		// strip the extension only as a suffix, a page may legitimately be called "Foo.txt"
 		String base = fileName.endsWith(FILE_EXT)
 				? fileName.substring(0, fileName.length() - FILE_EXT.length())
 				: fileName;
-		return unmangleName(base);
+		return JSPUtils.unmangleName(base);
 	}
 
 	@Override

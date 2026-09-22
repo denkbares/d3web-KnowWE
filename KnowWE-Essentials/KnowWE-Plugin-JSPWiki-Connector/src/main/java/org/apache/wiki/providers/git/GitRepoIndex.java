@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
 
@@ -66,6 +65,11 @@ public class GitRepoIndex {
 	 */
 	private static final int MAX_CACHED_BRANCHES = 4;
 
+	/**
+	 * Name of the files that carry the committed ignore rules.
+	 */
+	private static final String IGNORE_RULE_FILE = ".gitignore";
+
 	private final GitConnector connector;
 
 	/**
@@ -92,9 +96,32 @@ public class GitRepoIndex {
 	 * Immutable snapshot of one branch's history at a known {@code HEAD}: every reachable repo-relative file path to
 	 * its newest-first revisions.
 	 */
-	private record BranchIndex(String head, Map<String, List<GitFileRevision>> byFile) {
+	private record BranchIndex(String head, Map<String, List<GitFileRevision>> byFile, String ignoreRulesVersion) {
 
-		static final BranchIndex EMPTY = new BranchIndex(null, Collections.emptyMap());
+		static final BranchIndex EMPTY = new BranchIndex(null, Collections.emptyMap(), "");
+
+		BranchIndex(String head, Map<String, List<GitFileRevision>> byFile) {
+			this(head, byFile, ignoreRulesVersionOf(byFile));
+		}
+
+		/**
+		 * Every ignore rule file with the commit it was last changed in, so the value differs whenever the rules do.
+		 * Sorted, because the walk does not promise an order and two equal rule sets must produce one value.
+		 */
+		private static String ignoreRulesVersionOf(Map<String, List<GitFileRevision>> byFile) {
+			List<String> rules = new ArrayList<>();
+			byFile.forEach((path, revisions) -> {
+				if (isIgnoreRuleFile(path) && !revisions.isEmpty()) {
+					rules.add(path + "@" + revisions.get(0).commitHash());
+				}
+			});
+			Collections.sort(rules);
+			return String.join(",", rules);
+		}
+
+		private static boolean isIgnoreRuleFile(String path) {
+			return path.equals(IGNORE_RULE_FILE) || path.endsWith("/" + IGNORE_RULE_FILE);
+		}
 	}
 
 	// --- public read API (consumed by GitWikiRepository) ------------------------
@@ -154,6 +181,17 @@ public class GitRepoIndex {
 	@NotNull
 	public Map<String, List<GitFileRevision>> revisionsByFile() {
 		return Collections.unmodifiableMap(fresh().byFile());
+	}
+
+	/**
+	 * A value describing the committed ignore rules of the current branch, equal for two histories whose rules are
+	 * equal and different as soon as any of them is changed, added or removed. Callers that remember what git
+	 * answered about a path hold on to this value and discard what they remembered once it changes. Rules that are
+	 * not committed, such as the repository's own exclude file, are not covered.
+	 */
+	@NotNull
+	public String ignoreRulesVersion() {
+		return fresh().ignoreRulesVersion();
 	}
 
 	/**
@@ -228,33 +266,28 @@ public class GitRepoIndex {
 					cachedHead, gitHead, backward.size());
 			return buildFull(gitHead);
 		}
-		return applyForward(existing, forward, gitHead);
+		return applyForward(existing, forward.size(), gitHead);
 	}
 
 	/**
-	 * Returns a new branch index with the given (oldest-first) new commits folded into a copy of the existing per-file
-	 * lists. The existing index is left untouched so concurrent readers keep a consistent view.
+	 * Returns a new branch index with the commits between the existing HEAD and the new one folded into a copy of the
+	 * existing per-file lists. The existing index is left untouched so concurrent readers keep a consistent view.
+	 * <p>
+	 * The new commits are read in a single walk of the range, so falling behind by many commits costs one git call
+	 * rather than one per commit. A wiki whose content is written by an automated process falls behind constantly.
 	 */
-	private BranchIndex applyForward(BranchIndex existing, List<String> newCommitsOldestFirst, String gitHead) {
+	private BranchIndex applyForward(BranchIndex existing, int commitCount, String gitHead) {
+		Map<String, List<GitFileRevision>> newRevisions =
+				connector.log().revisionsByFileBetween(existing.head(), gitHead);
 		// shallow copy: untouched files keep sharing their (immutable) lists, touched files get fresh lists below
 		Map<String, List<GitFileRevision>> byFile = new LinkedHashMap<>(existing.byFile());
-		// oldest-first: inserting each commit's revision at the front of its file lists leaves the newest at the front
-		for (String commitHash : newCommitsOldestFirst) {
-			GitFileRevision revision = revisionFor(commitHash);
-			for (String path : connector.log().listChangedFilesForHash(commitHash)) {
-				List<GitFileRevision> updated = new ArrayList<>(byFile.getOrDefault(path, List.of()));
-				updated.add(0, revision);
-				byFile.put(path, updated);
-			}
-		}
-		LOGGER.debug("Fast-forwarded git index by {} commit(s) to HEAD {}.", newCommitsOldestFirst.size(), gitHead);
+		newRevisions.forEach((path, revisions) -> {
+			// both sides are newest-first, and every revision in the range is newer than every one already there
+			List<GitFileRevision> updated = new ArrayList<>(revisions);
+			updated.addAll(byFile.getOrDefault(path, List.of()));
+			byFile.put(path, updated);
+		});
+		LOGGER.debug("Fast-forwarded git index by {} commit(s) to HEAD {}.", commitCount, gitHead);
 		return new BranchIndex(gitHead, byFile);
-	}
-
-	private GitFileRevision revisionFor(String commitHash) {
-		// commitUserDataFor / commitTimeFor are cached per (immutable) hash by the connector, so this is a one-time cost
-		CommitUserData userData = connector.log().commitUserDataFor(commitHash);
-		long time = connector.log().commitTimeFor(commitHash);
-		return new GitFileRevision(commitHash, userData.user, userData.email, time, userData.message);
 	}
 }

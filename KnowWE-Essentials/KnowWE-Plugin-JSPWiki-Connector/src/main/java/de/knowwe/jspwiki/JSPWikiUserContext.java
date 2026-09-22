@@ -55,6 +55,11 @@ public class JSPWikiUserContext extends AbstractUserContext {
 		return Environment.of(context.getEngine().getServletContext());
 	}
 
+	@Override
+	public Environment findEnvironment() {
+		return Environment.findIn(context.getEngine().getServletContext());
+	}
+
 	private void addDefaultAttributes() {
 		// Add user
 		if (!urlParameter.containsKey(Attributes.USER)) {

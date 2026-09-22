@@ -23,18 +23,20 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.structs.DefaultPageIdentifier;
@@ -46,15 +48,19 @@ import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitFileAtCommit;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
+import de.uniwue.d3web.gitConnector.RepositoryLock;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusCommandResult;
 import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
 
 /**
  * The gateway to the wiki's git repository: the one object through which the repository is read and mutated. It owns
- * the repository's {@link GitConnector}, the commit lock that serializes every working-tree mutation (page and
- * attachment commits, deletes, moves, batch closes, the sweep-up reconciliation), and the eager {@link GitRepoIndex}
- * the lock-free history reads are served from.
+ * the repository's {@link GitConnector} and the eager {@link GitRepoIndex} the lock-free history reads are served
+ * from. Every working-tree mutation (page and attachment commits, deletes, moves, batch closes, the sweep-up
+ * reconciliation) runs under the {@link RepositoryLock} of the working tree, which the connector shares with every
+ * other connector on the same repository, so a rebase, reset or cherry-pick issued elsewhere cannot interleave with a
+ * save either.
  * <p>
  * The logic is ported from {@code GitVersioningFileProviderDelegate} but deliberately kept engine-free: it receives an
  * already-resolved {@link CommitUserData} (author, email, message) and returns engine-free {@link GitPageVersion}
@@ -65,20 +71,62 @@ import de.uniwue.d3web.gitConnector.impl.raw.status.GitStatusResultSuccess;
  * <p>
  * Batching state is <em>not</em> held here: when a user has an open transaction the provider stages paths into the
  * {@link GitCommitBatchRegistry}, which closes the batch through {@link #commitBatch}/{@link #rollbackPaths} under
- * this repository's commit lock. This class only performs the immediate, single-operation commits.
+ * the repository lock. This class only performs the immediate, single-operation commits.
  */
 public class GitWikiRepository {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitWikiRepository.class);
 
+	/**
+	 * Upper bound on the file content held in memory by {@link #blobs}. The largest single page version in the wikis
+	 * this runs against is some tens of kilobytes, so this holds several hundred of them.
+	 */
+	private static final long MAX_CACHED_BLOB_BYTES = 16L * 1024 * 1024;
+
+	/**
+	 * Largest single file content kept in {@link #blobs}. Above this the read is served but not remembered, so one
+	 * attachment download cannot displace the page text that is read over and over.
+	 */
+	private static final long MAX_CACHED_BLOB_ENTRY_BYTES = 1024L * 1024;
+
+	/**
+	 * Upper bound on how many paths the ignore answers of {@link #isIgnored} are remembered for.
+	 */
+	private static final int MAX_CACHED_IGNORE_PATHS = 4096;
+
 	private final GitConnector connector;
 	private final String repoPath;
-	private final ReentrantLock commitLock = new ReentrantLock();
+	private final RepositoryLock lock;
 	private final GitRepoIndex index;
+
+	/**
+	 * File content already read out of git, keyed by commit and path. Reading one version of a page or attachment is
+	 * a git call, and the wiki asks for the same version many times over while rendering a single request.
+	 */
+	private final GitBlobCache blobs = new GitBlobCache(MAX_CACHED_BLOB_BYTES, MAX_CACHED_BLOB_ENTRY_BYTES);
+
+	/**
+	 * Ignore answers per repo-relative path, discarded whenever the committed ignore rules change. Guarded by
+	 * {@link #ignoreLock} together with {@link #ignoreRulesVersion}.
+	 */
+	private final Map<String, Boolean> ignoredByPath = new LinkedHashMap<>(16, 0.75f, true) {
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<String, Boolean> eldest) {
+			return size() > MAX_CACHED_IGNORE_PATHS;
+		}
+	};
+
+	/**
+	 * The state of the ignore rules {@link #ignoredByPath} holds answers for, {@code null} while it is empty.
+	 */
+	private String ignoreRulesVersion;
+
+	private final Object ignoreLock = new Object();
 
 	public GitWikiRepository(GitConnector connector) {
 		this.connector = connector;
 		this.repoPath = connector.repo().getGitDirectory();
+		this.lock = connector.repositoryLock();
 		this.index = new GitRepoIndex(connector);
 	}
 
@@ -106,26 +154,19 @@ public class GitWikiRepository {
 	}
 
 	/**
-	 * Runs the given action while holding this repository's commit lock, so no commit, sweep, delete or move can
-	 * interleave with it. This is the sanctioned "I need the repo quiescent" entry point. Providers bracket a page's
-	 * file write and its commit with it, so a concurrent sweep cannot commit a half-finished save under the wrong
-	 * author. A future pull/fetch+merge after a rejected push belongs here too, combined with {@link #sweepUp} before
-	 * the branch operation. The lock is reentrant, actions may call the commit methods of this class.
+	 * Runs the given action while holding the repository lock, so no commit, sweep, delete, move, rebase, reset or
+	 * cherry-pick can interleave with it. This is the sanctioned "I need the repo quiescent" entry point. Providers
+	 * bracket a page's file write and its commit with it, so a concurrent sweep cannot commit a half-finished save
+	 * under the wrong author. The lock is reentrant, actions may call the commit methods of this class.
 	 */
-	public <T> T withCommitLock(Callable<T> action) throws Exception {
-		commitLock.lock();
-		try {
-			return action.call();
-		}
-		finally {
-			commitLock.unlock();
-		}
+	public <T> T withRepositoryLock(Callable<T> action) throws Exception {
+		return lock.call(action);
 	}
 
 	/**
 	 * Commits the given already-staged/tracked paths as one commit, returning the commit hash, or {@code null} if none
 	 * of the paths had changes left to commit. This is the closing commit of a transaction batch, taken under the same
-	 * commit lock as the immediate commits, so a batch close cannot interleave with a concurrent save, delete, move or
+	 * repository lock as the immediate commits, so a batch close cannot interleave with a concurrent save, delete, move or
 	 * sweep of this repository.
 	 *
 	 * @param paths    the repo-relative paths staged for the batch
@@ -133,26 +174,26 @@ public class GitWikiRepository {
 	 */
 	@Nullable
 	public String commitBatch(Set<String> paths, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			return connector.commit().commitPathsForUser(userData.message, userData.user, userData.email, paths);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Restores the working-tree state of the given repo-relative paths, discarding their uncommitted changes. This is
-	 * the rollback of a transaction batch, taken under the commit lock for the same reason as {@link #commitBatch}.
+	 * the rollback of a transaction batch, taken under the repository lock for the same reason as {@link #commitBatch}.
 	 */
 	public void rollbackPaths(Set<String> paths) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			connector.rollback().rollbackPaths(paths);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -168,9 +209,9 @@ public class GitWikiRepository {
 	 */
 	@Nullable
 	public String commitFile(File file, String repoRelativePath, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
-			if (connector.isIgnored(repoRelativePath)) {
+			if (isIgnoredForCommit(repoRelativePath)) {
 				// guard against a file added to .gitignore but never untracked (ported life-saver)
 				untrackIgnoredFile(repoRelativePath);
 				return null;
@@ -179,7 +220,7 @@ public class GitWikiRepository {
 			return connector.commit().changePath(file.toPath(), userData);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -189,29 +230,118 @@ public class GitWikiRepository {
 	 * Package-private: only {@link GitCommitBatchRegistry#stage} calls this, as part of staging a new file.
 	 */
 	void stageInIndex(String repoRelativePath) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			connector.commit().addPath(repoRelativePath);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Whether the given repo-relative path is git-ignored. Ignored files exist on disk but have no git history, the
 	 * providers serve them from the filesystem.
+	 * <p>
+	 * The answer is remembered per path and discarded as soon as any committed ignore rule changes, because asking
+	 * git costs a process per call and the read paths ask about the same handful of paths continuously. A rule that
+	 * has only been written into the working tree takes effect once it is committed, which is how a rule reaches the
+	 * wiki in any case. Callers about to change the repository use {@link #isIgnoredForCommit} instead.
 	 */
 	public boolean isIgnored(String repoRelativePath) {
+		String rulesVersion = index.ignoreRulesVersion();
+		synchronized (ignoreLock) {
+			if (!rulesVersion.equals(ignoreRulesVersion)) {
+				ignoredByPath.clear();
+				ignoreRulesVersion = rulesVersion;
+			}
+			Boolean known = ignoredByPath.get(repoRelativePath);
+			if (known != null) {
+				return known;
+			}
+		}
+		boolean ignored = connector.isIgnored(repoRelativePath);
+		synchronized (ignoreLock) {
+			// the rules can have moved on while git was being asked, and then this answer describes the state before
+			if (rulesVersion.equals(ignoreRulesVersion)) {
+				ignoredByPath.put(repoRelativePath, ignored);
+			}
+		}
+		return ignored;
+	}
+
+	/**
+	 * Whether the given repo-relative path is git-ignored, asked of git directly. This is the form for callers that
+	 * are about to commit, delete or untrack the path, where a rule that so far exists only in the working tree must
+	 * still keep the path out of the commit.
+	 */
+	public boolean isIgnoredForCommit(String repoRelativePath) {
 		return connector.isIgnored(repoRelativePath);
 	}
 
 	/**
-	 * The raw content of the file at the given version, read from git. Used for attachment data, which unlike page
-	 * text has no text encoding.
+	 * How many paths the ignore answers are currently remembered for. Test seam for the eviction bound.
 	 */
+	int cachedIgnoreCount() {
+		synchronized (ignoreLock) {
+			return ignoredByPath.size();
+		}
+	}
+
+	/**
+	 * Which of the given repo-relative paths are git-ignored, checked in one go. Callers that look at a whole
+	 * directory use this instead of {@link #isIgnored} per entry, which would cost one git call each.
+	 */
+	public Set<String> ignoredPaths(Collection<String> repoRelativePaths) {
+		return connector.ignoredPaths(repoRelativePaths);
+	}
+
+	/**
+	 * The raw content of the file at the given version, read from git. Used for attachment data, which unlike page
+	 * text has no text encoding. Returns {@code null} if git has no such committed version of the file.
+	 */
+	@Nullable
 	public InputStream bytesAtVersion(String repoRelativePath, int version) {
-		return new ByteArrayInputStream(connector.log().getBytesForPath(repoRelativePath, version));
+		byte[] bytes = bytesAt(repoRelativePath, version);
+		return bytes == null ? null : new ByteArrayInputStream(bytes);
+	}
+
+	/**
+	 * The raw content of the file at the given version, or {@code null} if git has no such committed version. The
+	 * version is resolved against the index rather than the connector's per path cache, which is the same resolution
+	 * {@link #history} and {@link #infoAt} use and costs no git call of its own. Content already read is served from
+	 * memory, keyed by the commit it was read at, so repeated reads of one version cost a single git call in total.
+	 */
+	@Nullable
+	private byte[] bytesAt(String repoRelativePath, int version) {
+		GitFileRevision revision = index.atVersion(repoRelativePath, version);
+		if (revision == null) {
+			// no committed version, which is the normal state of a git-ignored file and of one staged in an open batch
+			return null;
+		}
+		byte[] known = blobs.get(revision.commitHash(), repoRelativePath);
+		if (known != null) {
+			return known;
+		}
+		byte[] bytes = connector.log().getBytesForCommit(revision.commitHash(), repoRelativePath);
+		if (bytes != null) {
+			blobs.put(revision.commitHash(), repoRelativePath, bytes);
+		}
+		return bytes;
+	}
+
+	/**
+	 * How many file contents are held in memory. Test seam for the eviction bound.
+	 */
+	int cachedBlobCount() {
+		return blobs.size();
+	}
+
+	/**
+	 * How many bytes of file content are held in memory. Test seam for the eviction bound.
+	 */
+	long cachedBlobBytes() {
+		return blobs.bytes();
 	}
 
 	/**
@@ -220,6 +350,32 @@ public class GitWikiRepository {
 	 */
 	public long fileSizeAt(String commitHash, String repoRelativePath) {
 		return connector.log().getFilesizeForCommit(commitHash, repoRelativePath);
+	}
+
+	/**
+	 * Sizes in bytes of the given files, each as of its own commit, fetched in one go. Callers that need a size per
+	 * version of a page, or per attachment of a page, use this instead of {@link #fileSizeAt} per entry, which would
+	 * cost one git call each.
+	 *
+	 * @return the requested files mapped to their size, with an entry for every requested file
+	 */
+	public Map<GitFileAtCommit, Long> fileSizesAt(Collection<GitFileAtCommit> files) {
+		return connector.log().getFilesizesForCommits(files);
+	}
+
+	/**
+	 * Sizes in bytes of one file as of each of the given commits, keyed by commit hash. The bulk form behind
+	 * {@link #history}, where every version of one page needs its own size.
+	 */
+	private Map<String, Long> fileSizesAt(List<GitFileRevision> revisions, String repoRelativePath) {
+		List<GitFileAtCommit> files = new ArrayList<>(revisions.size());
+		for (GitFileRevision revision : revisions) {
+			files.add(new GitFileAtCommit(revision.commitHash(), repoRelativePath));
+		}
+		Map<GitFileAtCommit, Long> sizes = fileSizesAt(files);
+		Map<String, Long> byCommitHash = new LinkedHashMap<>(revisions.size());
+		sizes.forEach((file, size) -> byCommitHash.put(file.commitHash(), size));
+		return byCommitHash;
 	}
 
 	/**
@@ -236,9 +392,12 @@ public class GitWikiRepository {
 		// newest-first and version numbers are oldest-first (1 = oldest), so the newest commit gets version = count.
 		List<GitFileRevision> revisions = index.revisionsNewestFirst(id.fileName());
 		int count = revisions.size();
+		// one bulk size lookup for the whole history, a size per version would otherwise be a git call per version
+		Map<String, Long> sizes = fileSizesAt(revisions, id.fileName());
 		List<GitPageVersion> versions = new ArrayList<>(count);
 		for (int i = 0; i < count; i++) {
-			versions.add(buildVersion(id.fileName(), revisions.get(i), count - i));
+			GitFileRevision revision = revisions.get(i);
+			versions.add(buildVersion(revision, count - i, sizes.get(revision.commitHash())));
 		}
 		if (versions.isEmpty()) {
 			// the normal state of a git-ignored page and of a file staged in an open batch, both handled elsewhere
@@ -250,14 +409,14 @@ public class GitWikiRepository {
 
 	/**
 	 * Maps an index revision to a {@link GitPageVersion}. Author/email/time/message come from the index (free after the
-	 * one walk); only the file size is fetched lazily via {@link #fileSizeAt}.
+	 * one walk); the size is the one the caller looked up, since the index walk does not report sizes.
 	 */
-	private GitPageVersion buildVersion(String fileName, GitFileRevision revision, int version) {
+	private GitPageVersion buildVersion(GitFileRevision revision, int version, Long size) {
 		return new GitPageVersion(
 				version,
 				revision.commitHash(),
 				revision.userData(),
-				fileSizeAt(revision.commitHash(), fileName),
+				size == null ? -1 : size,
 				Date.from(Instant.ofEpochSecond(revision.timeSeconds()))
 		);
 	}
@@ -297,7 +456,7 @@ public class GitWikiRepository {
 		else {
 			return null;
 		}
-		return buildVersion(fileName, revision, realVersion);
+		return buildVersion(revision, realVersion, fileSizeAt(revision.commitHash(), fileName));
 	}
 
 	/**
@@ -339,17 +498,51 @@ public class GitWikiRepository {
 		if (version == WikiProvider.LATEST_VERSION) {
 			return Files.readString(pageFile.toPath());
 		}
-		return connector.log().getTextForPath(id.fileName(), version);
+		byte[] bytes = bytesAt(id.fileName(), version);
+		return bytes == null ? null : new String(bytes, StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Text of several versions of the page, read in one go. This is the bulk form of {@link #textAtVersion}, for
+	 * callers that need many versions of one page at once, where a read per version would cost a git call each.
+	 * <p>
+	 * Every version is resolved against one index snapshot, so the returned texts belong to a single consistent
+	 * history. Text is decoded as UTF-8, as on the single version path. A version git has no content for, which
+	 * includes the one that recorded a deletion, has no entry.
+	 *
+	 * @param versions 1-based version numbers, 1 being the oldest
+	 * @return the requested versions mapped to their text
+	 */
+	public Map<Integer, String> textAtVersions(String pageName, Collection<Integer> versions) {
+		DefaultPageIdentifier id = PageIdentifier.fromPagename(repoPath, pageName, -1);
+		File pageFile = id.accordingFile();
+		if (pageFile == null || !pageFile.exists()) {
+			return Map.of();
+		}
+		// one snapshot for the whole request, so two versions can never be resolved against two different histories
+		List<GitFileRevision> revisions = index.revisionsNewestFirst(id.fileName());
+		int count = revisions.size();
+		Map<GitFileAtCommit, Integer> requested = new LinkedHashMap<>();
+		for (int version : versions) {
+			if (version >= 1 && version <= count) {
+				// newest-first list, oldest-first version v is at index count - v
+				requested.put(new GitFileAtCommit(revisions.get(count - version).commitHash(), id.fileName()), version);
+			}
+		}
+		Map<Integer, String> texts = new LinkedHashMap<>();
+		connector.log().getBytesForCommits(requested.keySet())
+				.forEach((file, bytes) -> texts.put(requested.get(file), new String(bytes, StandardCharsets.UTF_8)));
+		return texts;
 	}
 
 	/**
 	 * Deletes a file (working-tree file and from git history going forward) and commits the removal, returning the
-	 * commit hash. Disk deletion and commit happen under the commit lock, so no sweep can interleave and commit the
+	 * commit hash. Disk deletion and commit happen under the repository lock, so no sweep can interleave and commit the
 	 * half-done delete under the wrong author. History of the deleted file is preserved in git.
 	 */
 	@Nullable
 	public String commitDelete(File file, String repoRelativePath, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (!file.delete()) {
 				LOGGER.warn("Failed to delete file on disk: {}", repoRelativePath);
@@ -357,37 +550,37 @@ public class GitWikiRepository {
 			return removeFile(repoRelativePath, userData);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Removes an already-deleted path from git and commits, returning the commit hash (or {@code null} if the path is
 	 * git-ignored). The caller is responsible for having deleted the working-tree file, inside a
-	 * {@link #withCommitLock} bracket that spans both steps.
+	 * {@link #withRepositoryLock} bracket that spans both steps.
 	 */
 	@Nullable
 	public String removeFile(String repoRelativePath, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
-			if (connector.isIgnored(repoRelativePath)) {
+			if (isIgnoredForCommit(repoRelativePath)) {
 				return null;
 			}
 			return commitRemovedPaths(List.of(repoRelativePath), userData);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Commits a set of moved paths as one commit: the (already-moved-on-disk) old paths are removed from the index and
 	 * the new paths added. Used by the attachment provider's {@code moveAttachmentsForPage}, which moves the directory
-	 * and commits inside one {@link #withCommitLock} bracket. Returns the commit hash.
+	 * and commits inside one {@link #withRepositoryLock} bracket. Returns the commit hash.
 	 */
 	@Nullable
 	public String commitMovedPaths(List<String> removedRelPaths, List<String> addedRelPaths, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (!addedRelPaths.isEmpty()) {
 				// the moved-in files are untracked, a pathspec commit cannot pick those up unstaged
@@ -403,18 +596,18 @@ public class GitWikiRepository {
 			return connector.commit().commitPathsForUser(userData.message, userData.user, userData.email, paths);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Commits the removal of paths whose working-tree files the caller has already deleted (inside the same
-	 * {@link #withCommitLock} bracket that deleted them), as one commit. Returns the commit hash, or {@code null} if
+	 * {@link #withRepositoryLock} bracket that deleted them), as one commit. Returns the commit hash, or {@code null} if
 	 * none of the paths was tracked.
 	 */
 	@Nullable
 	public String commitRemovedPaths(List<String> removedRelPaths, CommitUserData userData) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			if (removedRelPaths.isEmpty()) {
 				return null;
@@ -425,7 +618,7 @@ public class GitWikiRepository {
 					.commitPathsForUser(userData.message, userData.user, userData.email, new LinkedHashSet<>(removedRelPaths));
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
@@ -434,20 +627,20 @@ public class GitWikiRepository {
 	 * commit (no {@code --follow}), the accepted, pinned behavior of the git providers.
 	 */
 	public String commitMove(File fromFile, File toFile, CommitUserData userData) throws IOException {
-		commitLock.lock();
+		lock.lock();
 		try {
 			moveCaseSafe(fromFile, toFile);
 			return connector.commit().moveFile(fromFile.toPath(), toFile.toPath(),
 					userData.user, userData.email, userData.message);
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 
 	/**
 	 * Moves a file or directory, bouncing case-only renames through a temp name so case-insensitive filesystems do not
-	 * no-op the move. Callers that commit the move afterwards must run both steps under {@link #withCommitLock}.
+	 * no-op the move. Callers that commit the move afterwards must run both steps under {@link #withRepositoryLock}.
 	 */
 	public static void moveCaseSafe(File from, File to) throws IOException {
 		if (from.getName().equalsIgnoreCase(to.getName())) {
@@ -470,7 +663,7 @@ public class GitWikiRepository {
 	 */
 	@Nullable
 	public SweepUp sweepUp(String reason) {
-		commitLock.lock();
+		lock.lock();
 		try {
 			GitStatusCommandResult status = connector.status().get();
 			if (!(status instanceof GitStatusResultSuccess result)) {
@@ -488,7 +681,7 @@ public class GitWikiRepository {
 			return commitHash == null ? null : new SweepUp(commitHash, List.copyOf(affected));
 		}
 		finally {
-			commitLock.unlock();
+			lock.unlock();
 		}
 	}
 

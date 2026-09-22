@@ -1,36 +1,20 @@
 <%--
    Tab content for the Annotate ("blame") view, included by InfoContent.jsp.
-   Renders the <knowwe-page-annotate> server-side via AnnotateRenderHelper — no AJAX.
-   Tomcat surfaces any exception directly in the page, which makes diagnostics easier
-   than swallowing it in a fetch() error handler.
+   The annotation is fetched from AnnotatePageAction when the tab is first shown, not while the page info is
+   rendered. Computing it reads every version of the page, which is far too much to pay on a view that most
+   readers never open. The fetching itself lives in the script below, next to the stylesheet it belongs with.
 --%>
 <%@ page import="org.apache.wiki.api.core.Context" %>
 <%@ page import="org.apache.wiki.api.core.Page" %>
-<%@ page import="de.knowwe.jspwiki.changeannotations.AnnotateRenderHelper" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
 	Context changeAnnotationsContext = Context.findContext(pageContext);
 	Page changeAnnotationsPage = changeAnnotationsContext.getPage();
-	String changeAnnotationsHtml = null;
-	String changeAnnotationsError = null;
-	if (changeAnnotationsPage != null) {
-		try {
-			changeAnnotationsHtml = AnnotateRenderHelper.renderHtml(
-					changeAnnotationsContext.getEngine(),
-					changeAnnotationsPage.getName(),
-					session);
-		}
-		catch (IllegalArgumentException e) {
-			changeAnnotationsError = e.getMessage();
-		}
-	}
-	pageContext.setAttribute("changeAnnotationsHtml", changeAnnotationsHtml);
-	pageContext.setAttribute("changeAnnotationsError", changeAnnotationsError);
+	pageContext.setAttribute("changeAnnotationsPageName",
+			changeAnnotationsPage == null ? null : changeAnnotationsPage.getName());
 %>
-<c:if test="${changeAnnotationsHtml != null}">
-	${changeAnnotationsHtml}
-</c:if>
-<c:if test="${changeAnnotationsError != null}">
-	<p class="warning">No annotation available: <c:out value="${changeAnnotationsError}"/></p>
+<c:if test="${changeAnnotationsPageName != null}">
+	<div id="changeAnnotations" data-annotate-page="<c:out value='${changeAnnotationsPageName}'/>"></div>
+	<script type="text/javascript" src="KnowWEExtension/scripts/KnowWE-Plugin-ChangeAnnotations.js"></script>
 </c:if>

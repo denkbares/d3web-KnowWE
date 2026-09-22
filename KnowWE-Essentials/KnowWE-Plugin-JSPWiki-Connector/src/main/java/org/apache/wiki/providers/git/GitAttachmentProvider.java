@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -60,15 +61,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.CommitUserData;
+import de.uniwue.d3web.gitConnector.GitFileAtCommit;
 import de.uniwue.d3web.gitConnector.GitFileRevision;
 
 /**
  * Git-backed attachment provider for a single-wiki instance, the sibling of {@link GitPageProvider}. Stores
  * attachments flat ({@code <page>-att/<file>}) inside the same git repository the page provider uses and versions
- * them via git; the {@code OLD/} / versioned-directory mechanism of {@link BasicAttachmentProvider} is not used.
+ * them via git.
+ * <p>
+ * Git-ignored attachments (generated content such as CI builds) are the exception. Git keeps no history of them, so
+ * they are stored with the versioned-directory layout of {@link BasicAttachmentProvider} ({@code <page>-att/<file>-dir})
+ * and versioned on the filesystem only. The ignore rule has to cover that directory, an attachment whose flat path
+ * alone is ignored is served from the flat file as a single version. The {@code OLD/} mechanism is not used.
  * <p>
  * It routes to the <strong>same</strong> {@link GitWikiRepository}, batch registry and {@link WikiGitContext} as the
- * page provider (located lazily via the engine), so attachment changes share the repository, the commit lock, and,
+ * page provider (located lazily via the engine), so attachment changes share the repository, its lock, and,
  * within a transaction, the same commit.
  */
 public class GitAttachmentProvider extends BasicAttachmentProvider {
@@ -171,7 +178,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		byte[] bytes = data.readAllBytes();
 		// bracket the file write and its commit, like the page provider's save (no sweep may interleave)
 		try {
-			repository.withCommitLock(() -> {
+			repository.withRepositoryLock(() -> {
 				putAttachmentDataLocked(attachment, bytes, attFile, relPath, repository);
 				return null;
 			});
@@ -186,6 +193,11 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 
 	private void putAttachmentDataLocked(Attachment attachment, byte[] bytes, File attFile, String relPath,
 										 GitWikiRepository repository) throws ProviderException {
+		// a rule that so far exists only in the working tree or exclude file must already route the write
+		if (repository.isIgnoredForCommit(relPath + ATTDIR_EXTENSION)) {
+			putVersionedOnFilesystem(attachment, bytes, attFile);
+			return;
+		}
 		File dir = attFile.getParentFile();
 		if (!dir.exists() && !dir.mkdirs()) {
 			throw new ProviderException("Could not create attachment directory " + dir.getAbsolutePath());
@@ -206,6 +218,26 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 				fireEvent(GitVersioningWikiEvent.UPDATE, attachment, commitHash, repository);
 			}
 		}
+	}
+
+	/**
+	 * Stores a git-ignored attachment with the inherited versioned-directory layout, which every read path already
+	 * falls back to. Nothing is staged or committed.
+	 */
+	private void putVersionedOnFilesystem(Attachment attachment, byte[] bytes, File attFile) throws ProviderException {
+		// a flat file of an ignored attachment holds a single version and would shadow the directory on every read
+		if (attFile.exists() && !attFile.delete()) {
+			throw new ProviderException("Could not replace attachment file " + attFile.getAbsolutePath());
+		}
+		try {
+			LOGGER.info("Saving git-ignored attachment '{}' of page '{}' to its filesystem version directory",
+					attachment.getFileName(), attachment.getParentName());
+			super.putAttachmentData(attachment, new ByteArrayInputStream(bytes));
+		}
+		catch (IOException e) {
+			throw new ProviderException("Can't write attachment " + attachment.getFileName() + ": " + e.getMessage());
+		}
+		attachment.setSize(bytes.length);
 	}
 
 	private void writeFile(Attachment attachment, byte[] bytes, File target) throws ProviderException {
@@ -259,26 +291,27 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		if (version == WikiProvider.LATEST_VERSION || repository.isIgnored(relPath)) {
 			return new FileInputStream(attFile);
 		}
-		return repository.bytesAtVersion(relPath, version);
+		InputStream data = repository.bytesAtVersion(relPath, version);
+		if (data == null) {
+			throw new ProviderException("Attachment " + attachment.getFileName() + " has no version " + version);
+		}
+		return data;
 	}
 
 	@Override
 	public List<Attachment> listAttachments(Page page) throws ProviderException {
-		File dir = attachmentDir(repository(), page.getName());
+		GitWikiRepository repository = repository();
+		File dir = attachmentDir(repository, page.getName());
 		if (!dir.exists()) {
 			return Collections.emptyList();
 		}
 		List<Attachment> result = new ArrayList<>();
 		Set<String> seen = new HashSet<>();
 		File[] files = dir.listFiles(file -> !file.isHidden() && !file.isDirectory());
-		if (files != null) {
-			for (File file : files) {
-				Attachment info = getAttachmentInfo(page, JSPUtils.unmangleName(file.getName()),
-						WikiProvider.LATEST_VERSION);
-				if (info != null) {
-					result.add(info);
-					seen.add(info.getFileName());
-				}
+		if (files != null && files.length > 0) {
+			for (Attachment attachment : latestOfEach(page, files, repository)) {
+				result.add(attachment);
+				seen.add(attachment.getFileName());
 			}
 		}
 		// legacy version directories (<file>-dir); a flat file of the same name takes precedence
@@ -286,6 +319,60 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			if (seen.add(legacy.getFileName())) {
 				result.add(legacy);
 			}
+		}
+		return result;
+	}
+
+	/**
+	 * The latest version of each of the given attachment files. Ignore state, history and sizes are looked up for the
+	 * whole directory at once, so listing a page's attachments costs a fixed handful of git calls instead of one per
+	 * attachment.
+	 */
+	private List<Attachment> latestOfEach(Page page, File[] files, GitWikiRepository repository) throws ProviderException {
+		List<Attachment> attachments = new ArrayList<>(files.length);
+		List<String> relPaths = new ArrayList<>(files.length);
+		for (File file : files) {
+			Attachment attachment = new org.apache.wiki.attachment.Attachment(m_engine, page.getName(),
+					JSPUtils.unmangleName(file.getName()));
+			attachment.setVersion(WikiProvider.LATEST_VERSION);
+			attachments.add(attachment);
+			relPaths.add(attachmentPath(attachment));
+		}
+		// one index snapshot for the whole directory, so every attachment is read at the same HEAD
+		Map<String, List<GitFileRevision>> revisionsByFile = repository.revisionsByFile();
+		Set<String> ignored = repository.ignoredPaths(relPaths);
+
+		List<GitFileAtCommit> sizeRequest = new ArrayList<>(files.length);
+		for (int i = 0; i < files.length; i++) {
+			List<GitFileRevision> revisions = revisionsByFile.get(relPaths.get(i));
+			if (!ignored.contains(relPaths.get(i)) && revisions != null && !revisions.isEmpty()) {
+				sizeRequest.add(new GitFileAtCommit(revisions.get(0).commitHash(), relPaths.get(i)));
+			}
+		}
+		Map<GitFileAtCommit, Long> sizes = repository.fileSizesAt(sizeRequest);
+
+		List<Attachment> result = new ArrayList<>(files.length);
+		for (int i = 0; i < files.length; i++) {
+			String relPath = relPaths.get(i);
+			if (!attachmentFile(repository, attachments.get(i)).exists()) {
+				// the name does not map back to the file it was read from, so the inherited lookup decides, which is
+				// what serves the legacy layout and answers null for a file it does not recognize either
+				Attachment inherited = getAttachmentInfo(page, attachments.get(i).getFileName(),
+						WikiProvider.LATEST_VERSION);
+				if (inherited != null) {
+					result.add(inherited);
+				}
+				continue;
+			}
+			List<GitFileRevision> revisions = revisionsByFile.get(relPath);
+			if (ignored.contains(relPath) || revisions == null || revisions.isEmpty()) {
+				// git-ignored, or written but not yet committed, both served from the filesystem
+				result.add(filesystemAttachment(attachments.get(i), files[i]));
+				continue;
+			}
+			GitFileRevision latest = revisions.get(0);
+			Long size = sizes.get(new GitFileAtCommit(latest.commitHash(), relPath));
+			result.add(fromRevision(attachments.get(i), revisions.size(), latest, size == null ? -1 : size));
 		}
 		return result;
 	}
@@ -324,6 +411,15 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		return fromRevision(att, version, revisions.get(count - version), relPath, repository);
 	}
 
+	/**
+	 * Single-attachment form of {@link #fromRevision(Attachment, int, GitFileRevision, long)}, which fetches the one
+	 * size it needs.
+	 */
+	private Attachment fromRevision(Attachment attachment, int version, GitFileRevision revision, String relPath,
+									GitWikiRepository repository) {
+		return fromRevision(attachment, version, revision, repository.fileSizeAt(revision.commitHash(), relPath));
+	}
+
 	private Attachment filesystemAttachment(Attachment attachment, File attFile) {
 		attachment.setVersion(1);
 		attachment.setSize(attFile.length());
@@ -333,16 +429,15 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 
 	/**
 	 * Builds the attachment metadata from an index revision. Author/time/message come from the index (free after the
-	 * one walk); only the file size is fetched lazily (cached per commit+path by the connector).
+	 * one walk); the size is the one the caller looked up, since the index walk does not report sizes.
 	 */
-	private Attachment fromRevision(Attachment attachment, int version, GitFileRevision revision, String relPath,
-									GitWikiRepository repository) {
+	private Attachment fromRevision(Attachment attachment, int version, GitFileRevision revision, long size) {
 		Attachment result = new org.apache.wiki.attachment.Attachment(m_engine, attachment.getParentName(), attachment.getFileName());
 		result.setCacheable(false);
 		result.setAuthor(revision.userData().user);
 		result.setVersion(version);
 		result.setAttribute(WikiPage.CHANGENOTE, revision.message());
-		result.setSize(repository.fileSizeAt(revision.commitHash(), relPath));
+		result.setSize(size);
 		result.setLastModified(Date.from(Instant.ofEpochSecond(revision.timeSeconds())));
 		return result;
 	}
@@ -369,9 +464,17 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			}
 			List<GitFileRevision> revisions = repository.index().revisionsNewestFirst(relPath);
 			int count = revisions.size();
+			// one bulk size lookup for the whole history, a size per version would be a git call per version
+			List<GitFileAtCommit> sizeRequest = new ArrayList<>(count);
+			for (GitFileRevision revision : revisions) {
+				sizeRequest.add(new GitFileAtCommit(revision.commitHash(), relPath));
+			}
+			Map<GitFileAtCommit, Long> sizes = repository.fileSizesAt(sizeRequest);
 			List<Attachment> result = new ArrayList<>(count);
 			for (int i = 0; i < count; i++) {
-				result.add(fromRevision(attachment, count - i, revisions.get(i), relPath, repository));
+				GitFileRevision revision = revisions.get(i);
+				Long size = sizes.get(new GitFileAtCommit(revision.commitHash(), relPath));
+				result.add(fromRevision(attachment, count - i, revision, size == null ? -1 : size));
 			}
 			return result;
 		}
@@ -390,7 +493,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			deleteLegacyAttachment(attachment, repository);
 			return;
 		}
-		// disk deletion and commit happen inside commitDelete under the commit lock, so no sweep can interleave
+		// disk deletion and commit happen inside commitDelete under the repository lock, so no sweep can interleave
 		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
 		File legacyDir = legacyVersionDir(attachment.getParentName(), attachment.getFileName());
 		String commitHash = legacyDir.exists()
@@ -409,15 +512,15 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	private String deleteBothLayouts(Attachment attachment, GitWikiRepository repository, File attFile, File legacyDir,
 									 CommitUserData userData) throws ProviderException {
 		try {
-			return repository.withCommitLock(() -> {
+			return repository.withRepositoryLock(() -> {
 				List<String> relPaths = new ArrayList<>();
-				if (!repository.isIgnored(attachmentPath(attachment))) {
+				if (!repository.isIgnoredForCommit(attachmentPath(attachment))) {
 					relPaths.add(attachmentPath(attachment));
 				}
 				if (!attFile.delete()) {
 					LOGGER.warn("Failed to delete attachment file on disk: {}", attFile.getAbsolutePath());
 				}
-				relPaths.addAll(deleteLegacyVersionDir(repository, legacyDir));
+				relPaths.addAll(trackedOnly(repository, deleteLegacyVersionDir(repository, legacyDir)));
 				return repository.commitRemovedPaths(relPaths, userData);
 			});
 		}
@@ -431,7 +534,20 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	/**
-	 * Deletes the files of a legacy version directory from disk and returns their repo-relative paths.
+	 * The given paths without the git-ignored ones, which git has no entry for to record a removal or a move of.
+	 * Tracked files are never reported as ignored, so a version directory committed before its ignore rule existed
+	 * still has its removal committed.
+	 */
+	private static List<String> trackedOnly(GitWikiRepository repository, List<String> relPaths) {
+		if (relPaths.isEmpty()) {
+			return relPaths;
+		}
+		Set<String> ignored = repository.ignoredPaths(relPaths);
+		return relPaths.stream().filter(path -> !ignored.contains(path)).toList();
+	}
+
+	/**
+	 * Deletes the files of a version directory from disk and returns their repo-relative paths.
 	 */
 	private static List<String> deleteLegacyVersionDir(GitWikiRepository repository, File legacyDir) throws IOException {
 		Path repoRoot = new File(repository.path()).toPath();
@@ -461,8 +577,8 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		String commitHash;
 		try {
 			// disk deletion and commit share one lock bracket, like the flat delete path
-			commitHash = repository.withCommitLock(
-					() -> repository.commitRemovedPaths(deleteLegacyVersionDir(repository, legacyDir), userData));
+			commitHash = repository.withRepositoryLock(() -> repository.commitRemovedPaths(
+					trackedOnly(repository, deleteLegacyVersionDir(repository, legacyDir)), userData));
 		}
 		catch (ProviderException e) {
 			throw e;
@@ -492,7 +608,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		// bracket the directory move and its commit (or staging), so no concurrent sweep can commit the half-done
 		// move as a reconciliation commit with the wrong author
 		try {
-			commitHash = repository.withCommitLock(() -> {
+			commitHash = repository.withRepositoryLock(() -> {
 				File oldDir = attachmentDir(repository, oldParent.getName());
 				File newDir = attachmentDir(repository, newParent);
 				if (!oldDir.isDirectory()) {
@@ -514,6 +630,9 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 					eventPages.add(oldParent.getName() + "/" + attachmentName);
 					eventPages.add(newParent + "/" + attachmentName);
 				}
+				// git-ignored files (filesystem-versioned attachments) moved along on disk but have nothing to commit
+				oldPaths = trackedOnly(repository, oldPaths);
+				newPaths = trackedOnly(repository, newPaths);
 				// the moved-in files are untracked (newFiles = true stages them in the git index, a pathspec commit
 				// cannot pick up untracked files); the moved-away paths are tracked deletions and need no staging
 				GitCommitBatchRegistry registry = backend().batchRegistry();

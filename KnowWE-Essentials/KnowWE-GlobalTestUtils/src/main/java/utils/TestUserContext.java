@@ -273,6 +273,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	@Override
+	public Environment findEnvironment() {
+		return article.findEnvironment();
+	}
+
+	@Override
 	public ArticleManager getArticleManager() {
 		// temporary test articles have no article manager, the environment's one is the wiki's
 		ArticleManager manager = article.getArticleManager();

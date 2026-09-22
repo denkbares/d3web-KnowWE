@@ -7,15 +7,18 @@ package com.denkbares.versioning.server;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -115,8 +118,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
-			ensureSuccessfulResponse(response, "Loading GitLab repositories");
-			String jsonString = EntityUtils.toString(response.getEntity());
+			String jsonString = requireBody(response, "Loading GitLab repositories");
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<GitLabApiRepository> data = objectMapper.readValue(jsonString, new TypeReference<>() {
 			});
@@ -127,9 +129,13 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		catch (HttpException e) {
 			throw e;
 		}
+		catch (IOException e) {
+			LOGGER.warn("Failed to load GitLab repositories.", e);
+			throw transientFailure("Loading GitLab repositories", e);
+		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to load GitLab repositories.", e);
-			throw new HttpException("Failed to load repositories", e);
+			throw unknownFailure("Loading GitLab repositories", e);
 		}
 	}
 
@@ -143,28 +149,100 @@ public class GitLabGitServerConnector implements GitServerConnector {
 	 * The secret as a bearer token, which GitLab accepts for personal access tokens and OAuth tokens alike, where the
 	 * PRIVATE-TOKEN header carries only the former.
 	 */
-	private BasicHeader getRequestTokenHeader() {
+	private BasicHeader getRequestTokenHeader() throws GitServerException {
 		UserCredentials current = credentials();
 		if (current == null) {
-			throw new IllegalStateException("No credentials for the git server, its API cannot be called.");
+			throw new GitServerException(GitServerException.Reason.NOT_AUTHORIZED, 0,
+					"There are no credentials for the git server, so it cannot be asked anything.");
 		}
 		return new BasicHeader("Authorization", "Bearer " + current.password);
 	}
 
-	private void ensureSuccessfulResponse(HttpResponse response, String operation) throws IOException, HttpException {
-		int statusCode = response.getStatusLine().getStatusCode();
-		if (statusCode < 300) {
-			return;
-		}
+	/**
+	 * The body of a successful response. A response that is not successful is logged and turned into a
+	 * {@link GitServerException} naming what the status means for this operation, with the sentence the server
+	 * wrote where it wrote one.
+	 */
+	private String requireBody(HttpResponse response, String operation) throws IOException, GitServerException {
+		return requireBody(response, operation, Map.of());
+	}
 
+	/**
+	 * @param statusReasons what a status means for this operation in particular, where it differs from the general
+	 *                      reading of it
+	 */
+	private String requireBody(HttpResponse response, String operation,
+							   Map<Integer, GitServerException.Reason> statusReasons) throws IOException, GitServerException {
+		int statusCode = response.getStatusLine().getStatusCode();
 		String responseBody = readResponseBody(response);
+		if (statusCode < 300) {
+			return responseBody;
+		}
+		throw failure(response, operation, responseBody, statusReasons);
+	}
+
+	private GitServerException failure(HttpResponse response, String operation, String responseBody,
+									   Map<Integer, GitServerException.Reason> statusReasons) {
+		int statusCode = response.getStatusLine().getStatusCode();
 		if (responseBody.isBlank()) {
 			LOGGER.warn("{} failed. GitLab response status: {}", operation, response.getStatusLine());
 		}
 		else {
 			LOGGER.warn("{} failed. GitLab response status: {}. Response body: {}", operation, response.getStatusLine(), responseBody);
 		}
-		throw new HttpException(operation + " failed with status " + statusCode);
+		GitServerException.Reason reason = statusReasons.getOrDefault(statusCode, reasonOf(statusCode));
+		String serverMessage = serverMessage(responseBody);
+		String message = operation + " failed with status " + statusCode
+				+ (serverMessage.isBlank() ? "" : ": " + serverMessage);
+		return new GitServerException(reason, statusCode, message);
+	}
+
+	/**
+	 * What a status means where the operation it was answered to says nothing more specific about it.
+	 */
+	private static GitServerException.Reason reasonOf(int statusCode) {
+		return switch (statusCode) {
+			case HttpStatus.SC_UNAUTHORIZED, HttpStatus.SC_FORBIDDEN -> GitServerException.Reason.NOT_AUTHORIZED;
+			case HttpStatus.SC_NOT_FOUND, HttpStatus.SC_GONE -> GitServerException.Reason.NOT_FOUND;
+			case HttpStatus.SC_BAD_REQUEST, HttpStatus.SC_UNPROCESSABLE_ENTITY -> GitServerException.Reason.REJECTED;
+			case HttpStatus.SC_CONFLICT -> GitServerException.Reason.CONFLICT;
+			// 429 is the rate limit, which http core does not name
+			case HttpStatus.SC_REQUEST_TIMEOUT, 429 -> GitServerException.Reason.TRANSIENT;
+			default -> statusCode >= 500 ? GitServerException.Reason.TRANSIENT : GitServerException.Reason.UNKNOWN;
+		};
+	}
+
+	/**
+	 * The sentence GitLab wrote about a failure, taken from the message or error field of the body, which carries a
+	 * text, a list of texts, or a map of field names to texts alike. Empty where the body says nothing.
+	 */
+	private static String serverMessage(String responseBody) {
+		if (responseBody == null || responseBody.isBlank()) {
+			return "";
+		}
+		try {
+			JsonNode root = new ObjectMapper().readTree(responseBody);
+			JsonNode message = root.has("message") ? root.get("message") : root.get("error");
+			if (message == null) {
+				return "";
+			}
+			StringBuilder texts = new StringBuilder();
+			collectTexts(message, texts);
+			return texts.toString().trim();
+		}
+		catch (Exception e) {
+			// a body that is no json of the expected shape says nothing beyond the status
+			return "";
+		}
+	}
+
+	private static void collectTexts(JsonNode node, StringBuilder texts) {
+		if (node.isValueNode()) {
+			if (!texts.isEmpty()) texts.append(" ");
+			texts.append(node.asText());
+			return;
+		}
+		node.forEach(child -> collectTexts(child, texts));
 	}
 
 	private String readResponseBody(HttpResponse response) throws IOException {
@@ -172,6 +250,19 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			return "";
 		}
 		return EntityUtils.toString(response.getEntity());
+	}
+
+	/**
+	 * A failure of the http contact itself, which says nothing about the request and may well pass.
+	 */
+	private static GitServerException transientFailure(String operation, Exception cause) {
+		return new GitServerException(GitServerException.Reason.TRANSIENT, 0,
+				operation + " failed: " + cause.getMessage(), cause);
+	}
+
+	private static GitServerException unknownFailure(String operation, Exception cause) {
+		return new GitServerException(GitServerException.Reason.UNKNOWN, 0,
+				operation + " failed: " + cause.getMessage(), cause);
 	}
 
 	@Override
@@ -271,9 +362,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
-			ensureSuccessfulResponse(response, "Finding GitLab repository");
-
-			String jsonString = EntityUtils.toString(response.getEntity());
+			String jsonString = requireBody(response, "Finding GitLab repository");
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<GitLabApiRepository> data = objectMapper.readValue(jsonString, new TypeReference<>() {
 			});
@@ -288,9 +377,14 @@ public class GitLabGitServerConnector implements GitServerConnector {
 		catch (HttpException e) {
 			throw e;
 		}
+		catch (IOException e) {
+			LOGGER.warn("Failed to find GitLab repository '{}'.", repoName, e);
+			throw transientFailure("Finding GitLab repository", e);
+		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to find GitLab repository '{}'.", repoName, e);
-			throw new HttpException("Failed to find repository", e);
+			throw new GitServerException(GitServerException.Reason.NOT_FOUND, 0,
+					"The repository '" + repoName + "' is not among the repositories of this server.", e);
 		}
 	}
 
@@ -312,27 +406,22 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setHeader(getRequestTokenHeader());
 
 			HttpResponse response = httpClient.execute(request);
-			ensureSuccessfulResponse(response, "Listing GitLab merge requests");
-			String jsonString = EntityUtils.toString(response.getEntity());
+			String jsonString = requireBody(response, "Listing GitLab merge requests");
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<GitLabApiMergeRequest> data = objectMapper.readValue(jsonString, new TypeReference<>() {
 			});
-			return data.stream()
-					.map(mr ->
-							new MergeRequest(
-									mr.iid, mr.title, mr.source_branch, mr.target_branch,
-									MergeRequestState.valueOf(mr.state.toUpperCase()),
-									MergeRequestStatus.valueOf(mr.merge_status.toUpperCase()),
-									mr.web_url
-							))
-					.toList();
+			return data.stream().map(GitLabGitServerConnector::toMergeRequest).toList();
 		}
 		catch (HttpException e) {
 			throw e;
 		}
+		catch (IOException e) {
+			LOGGER.warn("Failed to list GitLab merge requests for repository {} and source branch '{}'.", repositoryId, sourceBranch, e);
+			throw transientFailure("Listing GitLab merge requests", e);
+		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to list GitLab merge requests for repository {} and source branch '{}'.", repositoryId, sourceBranch, e);
-			throw new HttpException("Failed to find merge requests", e);
+			throw unknownFailure("Listing GitLab merge requests", e);
 		}
 	}
 
@@ -350,6 +439,7 @@ public class GitLabGitServerConnector implements GitServerConnector {
 
 	@Override
 	public MergeRequest createMergeRequest(int repositoryId, String sourceBranch, String targetBranch) throws RuntimeException, HttpException {
+		String operation = "Creating GitLab merge request";
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPost httpPost = new HttpPost(
 					this.serverApiURL + "/projects/" + repositoryId + "/merge_requests"
@@ -367,29 +457,111 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			httpPost.setEntity(new StringEntity(requestDto.toString(), ContentType.APPLICATION_JSON));
 
 			HttpResponse response = httpClient.execute(httpPost);
-			ensureSuccessfulResponse(response, "Creating GitLab merge request");
-			String jsonResponseString = EntityUtils.toString(response.getEntity());
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CONFLICT) {
+				return existingMergeRequest(response, operation, repositoryId, sourceBranch, targetBranch);
+			}
+			String jsonResponseString = requireBody(response, operation);
 			ObjectMapper objectMapper = new ObjectMapper();
 			GitLabApiMergeRequest responseDto = objectMapper.readValue(jsonResponseString, new TypeReference<>() {
 			});
-			return new MergeRequest(
-					responseDto.iid, responseDto.title,
-					responseDto.source_branch, responseDto.target_branch,
-					MergeRequestState.valueOf(responseDto.state.toUpperCase()),
-					MergeRequestStatus.valueOf(responseDto.merge_status.toUpperCase()),
-					responseDto.web_url);
+			return toMergeRequest(responseDto);
 		}
 		catch (HttpException e) {
 			throw e;
 		}
+		catch (IOException e) {
+			LOGGER.warn("Failed to create GitLab merge request from '{}' to '{}' in repository {}.", sourceBranch, targetBranch, repositoryId, e);
+			throw transientFailure(operation, e);
+		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to create GitLab merge request from '{}' to '{}' in repository {}.", sourceBranch, targetBranch, repositoryId, e);
-			throw new HttpException("Failed to create merge request", e);
+			throw unknownFailure(operation, e);
+		}
+	}
+
+	/**
+	 * What a refused creation means, which GitLab answers with the same status whether the branch carries an open
+	 * merge request already or the request is impossible for another reason. An open merge request onto the same
+	 * target is the one that was asked for and is answered instead; one onto another target is named as such, so a
+	 * caller can point at it; anything else keeps the sentence the server wrote.
+	 */
+	private MergeRequest existingMergeRequest(
+		HttpResponse response,
+		String operation,
+		int repositoryId,
+		String sourceBranch,
+		String targetBranch
+	) throws IOException, HttpException {
+		String responseBody = readResponseBody(response);
+		List<MergeRequest> open = openMergeRequests(repositoryId, sourceBranch);
+		MergeRequest sameTarget = open.stream()
+				.filter(candidate -> candidate.targetBranch().equals(targetBranch))
+				.findFirst()
+				.orElse(null);
+		if (sameTarget != null) {
+			LOGGER.info("Merge request {} from '{}' to '{}' in repository {} is open already, continuing with it.",
+					sameTarget.id(), sourceBranch, targetBranch, repositoryId);
+			return sameTarget;
+		}
+		MergeRequest otherTarget = open.stream().findFirst().orElse(null);
+		if (otherTarget != null) {
+			throw new GitServerException(GitServerException.Reason.MERGE_REQUEST_EXISTS, HttpStatus.SC_CONFLICT,
+					"The branch '" + sourceBranch + "' has an open merge request onto '" + otherTarget.targetBranch()
+							+ "', so it cannot be merged into '" + targetBranch + "' as well.", otherTarget, null);
+		}
+		throw failure(response, operation, responseBody, Map.of());
+	}
+
+	/**
+	 * The merge requests of the branch that are still to be decided, newest first.
+	 */
+	private List<MergeRequest> openMergeRequests(int repositoryId, String sourceBranch) throws HttpException {
+		return listMergeRequests(repositoryId, sourceBranch).stream().filter(MergeRequest::isOpen).toList();
+	}
+
+	private static MergeRequest toMergeRequest(GitLabApiMergeRequest dto) {
+		return new MergeRequest(
+				dto.iid, dto.title, dto.source_branch, dto.target_branch,
+				state(dto.state), mergeStatus(dto.merge_status), detail(dto), dto.web_url);
+	}
+
+	/**
+	 * What the server says about the mergeability beyond the coarse status, which is the detailed status where it
+	 * names one, and the error of the last merge attempt otherwise.
+	 */
+	private static @Nullable String detail(GitLabApiMergeRequest dto) {
+		if (dto.detailed_merge_status != null && !dto.detailed_merge_status.isBlank()) return dto.detailed_merge_status;
+		if (dto.merge_error != null && !dto.merge_error.isBlank()) return dto.merge_error;
+		return null;
+	}
+
+	private static MergeRequestState state(@Nullable String state) {
+		try {
+			return MergeRequestState.valueOf(String.valueOf(state).toUpperCase());
+		}
+		catch (IllegalArgumentException e) {
+			LOGGER.warn("The git server named an unknown merge request state '{}'.", state);
+			return MergeRequestState.OPENED;
+		}
+	}
+
+	/**
+	 * A status the server does not name, or names in a word this code does not know, is read as unchecked, which is
+	 * the one reading that keeps a caller from merging on an assumption.
+	 */
+	private static MergeRequestStatus mergeStatus(@Nullable String mergeStatus) {
+		try {
+			return MergeRequestStatus.valueOf(String.valueOf(mergeStatus).toUpperCase());
+		}
+		catch (IllegalArgumentException e) {
+			LOGGER.warn("The git server named an unknown merge status '{}'.", mergeStatus);
+			return MergeRequestStatus.UNCHECKED;
 		}
 	}
 
 	@Override
 	public MergeRequest mergeMergeRequest(int repositoryId, int mergeRequestIid, String commitMessage) throws RuntimeException, HttpException {
+		String operation = "Merging GitLab merge request";
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPut request = new HttpPut(
 					this.serverApiURL + "/projects/" + repositoryId + "/merge_requests/" + mergeRequestIid + "/merge"
@@ -408,25 +580,34 @@ public class GitLabGitServerConnector implements GitServerConnector {
 			request.setEntity(new StringEntity(dto.toString(), ContentType.APPLICATION_JSON));
 
 			HttpResponse response = httpClient.execute(request);
-			ensureSuccessfulResponse(response, "Merging GitLab merge request");
-			String jsonString = EntityUtils.toString(response.getEntity());
+			String jsonString = requireBody(response, operation, MERGE_STATUS_REASONS);
 			ObjectMapper objectMapper = new ObjectMapper();
 			GitLabApiMergeRequest data = objectMapper.readValue(jsonString, new TypeReference<>() {
 			});
 
-			return new MergeRequest(
-					data.iid, data.title,
-					data.source_branch, data.target_branch,
-					MergeRequestState.valueOf(data.state.toUpperCase()),
-					MergeRequestStatus.valueOf(data.merge_status.toUpperCase()),
-					data.web_url);
+			return toMergeRequest(data);
 		}
 		catch (HttpException e) {
 			throw e;
 		}
+		catch (IOException e) {
+			LOGGER.warn("Failed to merge GitLab merge request {} in repository {}.", mergeRequestIid, repositoryId, e);
+			throw transientFailure(operation, e);
+		}
 		catch (Exception e) {
 			LOGGER.warn("Failed to merge GitLab merge request {} in repository {}.", mergeRequestIid, repositoryId, e);
-			throw new HttpException("Failed to merge branch", e);
+			throw unknownFailure(operation, e);
 		}
 	}
+
+	/**
+	 * What the statuses of a refused merge mean, which GitLab reads differently here than elsewhere: 405 for a merge
+	 * request that is not in a state to be merged, 406 for branches that contradict each other, and 409 for a branch
+	 * that moved on since.
+	 */
+	private static final Map<Integer, GitServerException.Reason> MERGE_STATUS_REASONS = Map.of(
+			HttpStatus.SC_METHOD_NOT_ALLOWED, GitServerException.Reason.NOT_MERGEABLE,
+			HttpStatus.SC_NOT_ACCEPTABLE, GitServerException.Reason.CONFLICT,
+			HttpStatus.SC_CONFLICT, GitServerException.Reason.OUT_OF_DATE
+	);
 }

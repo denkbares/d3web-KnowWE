@@ -103,16 +103,21 @@ KNOWWE.plugin.ci4ke = function() {
   }
 
   /*
+   * URL of the progress stream for the given dashboard names. The stream has to be requested through the action
+   * servlet: requests to KnowWE.jsp pass the JSPWiki filter, which buffers the whole response and delivers it only
+   * after the action returned, so the events would all arrive at once when the build is finished.
+   */
+  function streamUrl(names) {
+    return "action/CIGetProgressAction?names=" + encodeURIComponent(JSON.stringify([...names]));
+  }
+
+  /*
    * Opens the progress stream for the given dashboard names, replacing a stream that is already open. Events are
    * dispatched per dashboard, the stream is closed once every followed dashboard reported a finished build.
    */
   function openStream(names) {
     closeStream();
-    const url = KNOWWE.core.util.getURL({
-      action: "CIGetProgressAction",
-      names: [...names]
-    });
-    const source = new EventSource(url);
+    const source = new EventSource(streamUrl(names));
     pageStream = { source: source, names: new Set(names) };
     let failures = 0;
 

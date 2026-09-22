@@ -4,10 +4,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
+import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.pages.PageManager;
+import org.apache.wiki.providers.CachingProvider;
+import org.apache.wiki.providers.git.GitPageProvider;
 
 import com.denkbares.knowwe.changeannotations.PageAnnotation;
 import com.denkbares.knowwe.changeannotations.PageAnnotator;
@@ -41,9 +45,12 @@ public final class JspWikiPageAnnotator {
 		PageManager pageManager = engine.getManager(PageManager.class);
 		List<? extends Page> history = pageManager.getVersionHistory(pageName);
 		if (history == null || history.isEmpty()) return List.of();
+		Map<Integer, String> bulkTexts = bulkTexts(pageManager, pageName, history);
 		List<VersionEntry> result = new ArrayList<>(history.size());
 		for (Page page : history) {
-			String text = pageManager.getPureText(pageName, page.getVersion());
+			String text = bulkTexts.containsKey(page.getVersion())
+					? bulkTexts.get(page.getVersion())
+					: pageManager.getPureText(pageName, page.getVersion());
 			String author = page.getAuthor();
 			Date lastModified = page.getLastModified();
 			Instant date = lastModified == null ? Instant.EPOCH : lastModified.toInstant();
@@ -56,5 +63,24 @@ public final class JspWikiPageAnnotator {
 					text == null ? "" : text));
 		}
 		return result;
+	}
+
+	/**
+	 * Text of every version in the history, read in one call where the page store can do that, empty otherwise. An
+	 * empty result, or one missing a version, leaves the caller reading that version on its own.
+	 */
+	private static Map<Integer, String> bulkTexts(PageManager pageManager, String pageName, List<? extends Page> history) {
+		PageProvider provider = pageManager.getProvider();
+		if (provider instanceof CachingProvider caching) {
+			provider = caching.getRealProvider();
+		}
+		if (!(provider instanceof GitPageProvider gitProvider)) {
+			return Map.of();
+		}
+		List<Integer> versions = new ArrayList<>(history.size());
+		for (Page page : history) {
+			versions.add(page.getVersion());
+		}
+		return gitProvider.getPageTexts(pageName, versions);
 	}
 }

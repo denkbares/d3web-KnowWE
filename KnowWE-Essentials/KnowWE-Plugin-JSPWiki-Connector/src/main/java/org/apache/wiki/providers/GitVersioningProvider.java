@@ -42,6 +42,15 @@ public interface GitVersioningProvider {
 	void openCommit(String user);
 
 	/**
+	 * Whether the given user currently has a batch open, so a caller can tell whether its own changes will be
+	 * collected by someone else's batch rather than committed on their own. A caller that opens and closes a batch of
+	 * its own has to check this first, otherwise it would close a batch it does not own.
+	 *
+	 * @param user the wiki user name to check
+	 */
+	boolean isCommitOpen(String user);
+
+	/**
 	 * Commits all changes collected for the given user since {@link #openCommit(String)}, one git
 	 * commit per affected repository, and closes the batch.
 	 *

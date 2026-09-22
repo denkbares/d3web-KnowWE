@@ -178,7 +178,7 @@ public class GitWikiRepositoryTest {
 	}
 
 	/**
-	 * The write+commit bracket: while a provider holds {@link GitWikiRepository#withCommitLock}, a concurrent sweep-up
+	 * The write+commit bracket: while a provider holds {@link GitWikiRepository#withRepositoryLock}, a concurrent sweep-up
 	 * must wait, so it can never commit a half-finished save as a reconciliation commit with the wrong author. After
 	 * the bracket committed the save itself, the sweep finds a clean tree and does nothing.
 	 */
@@ -190,7 +190,7 @@ public class GitWikiRepositoryTest {
 
 		Thread saver = new Thread(() -> {
 			try {
-				repository.withCommitLock(() -> {
+				repository.withRepositoryLock(() -> {
 					// the dirty window: file written, commit not made yet
 					writePage("Bracketed", "saved content");
 					insideBracket.countDown();

@@ -81,6 +81,14 @@ public class TableUtils {
 		return null;
 	}
 
+	public static Section<TableCellContent> getCell(Section<? extends TableLine> lineSection, int col) {
+		List<Section<TableCellContent>> cells = Sections.successors(lineSection, TableCellContent.class);
+		if (cells.size() > col) {
+			return cells.get(col);
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the column of the table in which the current cell occurs.
 	 *
@@ -304,9 +312,9 @@ public class TableUtils {
 	 * For the current row, return the first cell with the given header. If there are multiple columns with the same
 	 * header, the first one from the left is returned.
 	 *
-	 * @param rowSection    the section of the row or a successor
-	 * @param columnHeaderRegex  the column header for which we want the cell in the current row
-	 * @param cellTypeClass the type of the section we want to extract from the cell
+	 * @param rowSection        the section of the row or a successor
+	 * @param columnHeaderRegex the column header for which we want the cell in the current row
+	 * @param cellTypeClass     the type of the section we want to extract from the cell
 	 * @return the section with the given type in the cell with the given header in the current row
 	 */
 	public static <T extends Type> Section<T> getInRowRegex(Section<?> rowSection, String columnHeaderRegex, Class<T> cellTypeClass) {
@@ -317,9 +325,9 @@ public class TableUtils {
 	 * For the current row, return the cell with the given header. Use this method if the table contains
 	 * multiple columns with the same header. The given 0-based index specifies which of those columns will be used.
 	 *
-	 * @param rowSection    the section of the row or a successor
-	 * @param columnHeaderRegex  the column header for which we want the cell in the current row
-	 * @param cellTypeClass the type of the section we want to extract from the cell
+	 * @param rowSection        the section of the row or a successor
+	 * @param columnHeaderRegex the column header for which we want the cell in the current row
+	 * @param cellTypeClass     the type of the section we want to extract from the cell
 	 * @return the section with the given type in the cell with the given header in the current row
 	 */
 	@Nullable

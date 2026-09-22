@@ -124,7 +124,7 @@ public class TestUtils {
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
 				map, new TestHttpServletRequest(), null, null, new TestAuthenticationManager()) {
 			@Override
-			public @NotNull Environment getEnvironment() {
+			public @NotNull Environment findEnvironment() {
 				return environment;
 			}
 		};
