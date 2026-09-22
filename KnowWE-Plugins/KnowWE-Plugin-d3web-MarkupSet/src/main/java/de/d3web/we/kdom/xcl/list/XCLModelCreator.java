@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.object.SolutionDefinition;
 import de.d3web.xcl.XCLModel;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -44,6 +45,9 @@ public class XCLModelCreator implements D3webCompileScript<XCLSolutionDefinition
 	public void compile(D3webCompiler compiler, Section<XCLSolutionDefinition> definition) throws CompilerMessage {
 
 		if (isRestrictedSolution(compiler, definition)) return;
+		if (isNoDeliverySolution(compiler, definition)) {
+			return;
+		}
 
 		// prepare sections and solution
 		Section<DefaultMarkupType> markup = Sections.ancestor(definition, DefaultMarkupType.class);
@@ -76,6 +80,10 @@ public class XCLModelCreator implements D3webCompileScript<XCLSolutionDefinition
 	}
 
 	public boolean isRestrictedSolution(D3webCompiler compiler, Section<XCLSolutionDefinition> section) {
+		return false;
+	}
+
+	public boolean isNoDeliverySolution(D3webCompiler compiler, Section<? extends SolutionDefinition> section) {
 		return false;
 	}
 
