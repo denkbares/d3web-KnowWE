@@ -73,6 +73,11 @@ public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 		public void compile(D3webCompiler compiler, Section<T> section) throws CompilerMessage {
 			PSAction action = createAction(compiler, section);
 			storeAction(compiler, action, section);
+			// without an action the rule still compiles, but never does anything, so at least make it visible
+			if (action == null) {
+				throw CompilerMessage.warning("No valid action could be created from '" + section.getText()
+						.trim() + "', the rule will have no effect");
+			}
 		}
 
 		@Override
