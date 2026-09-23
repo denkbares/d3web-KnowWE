@@ -122,8 +122,9 @@ public class KnowWEUtils {
 	/**
 	 * Returns the value of the given configuration property. The property is looked up in the wiki properties
 	 * (jspwiki[-custom].properties) first, then in the Java system properties under the same key, and finally in the
-	 * environment variables under the key transformed to environment variable style (upper case, dots replaced by
-	 * underscores, e.g. "key.subKey" becomes "KEY_SUBKEY"). Returns null if the property is not set anywhere.
+	 * environment variables under the key transformed to environment variable style (upper case, dots and dashes
+	 * replaced by underscores, e.g. "key.sub-key" becomes "KEY_SUB_KEY"). Returns null if the property is not set
+	 * anywhere.
 	 *
 	 * @param property the property key to get the value for
 	 * @return the property value or null if not set
@@ -135,9 +136,16 @@ public class KnowWEUtils {
 			value = System.getProperty(property);
 		}
 		if (value == null) {
-			value = System.getenv(property.toUpperCase().replace(".", "_"));
+			value = System.getenv(environmentVariableOf(property));
 		}
 		return value;
+	}
+
+	/**
+	 * The environment variable a property is read from, as environment variables cannot carry dots or dashes.
+	 */
+	private static String environmentVariableOf(String property) {
+		return property.toUpperCase().replace('.', '_').replace('-', '_');
 	}
 
 	/**
@@ -175,7 +183,7 @@ public class KnowWEUtils {
 		}
 		String given = System.getProperty(property);
 		if (given == null) {
-			given = System.getenv(property.toUpperCase().replace(".", "_"));
+			given = System.getenv(environmentVariableOf(property));
 		}
 		if (given == null) return defaultValue;
 		return given.isBlank() || "true".equalsIgnoreCase(given.trim());
