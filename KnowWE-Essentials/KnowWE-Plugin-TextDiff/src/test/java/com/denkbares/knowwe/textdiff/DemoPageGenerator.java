@@ -17,9 +17,26 @@ class DemoPageGenerator {
 			Files.createDirectories(target.getParent());
 		}
 		Path resourceBase = findWebappResourceBase();
-		Files.writeString(target, buildPage(resourceBase.toUri().toString()));
+		Path themeVariables = findThemeVariables(resourceBase);
+		Files.writeString(target, buildPage(resourceBase.toUri().toString(),
+				themeVariables == null ? null : themeVariables.toUri().toString()));
 		System.out.println("Wrote demo to " + target.toAbsolutePath());
 		System.out.println("Using resources from " + resourceBase);
+		System.out.println(themeVariables == null
+				? "KnowWE theme variables not found, the components show their fallback colors"
+				: "Using KnowWE theme variables from " + themeVariables);
+	}
+
+	/**
+	 * The theme variables of the wiki, which the components follow where a page defines them. They live in the
+	 * resources module next to this plugin, a demo without them shows the fallback colors only.
+	 */
+	private static Path findThemeVariables(Path resourceBase) {
+		for (Path path = resourceBase; path != null; path = path.getParent()) {
+			Path candidate = path.resolve("KnowWE-Resources/src/main/webapp/KnowWEExtension/css/variables.css");
+			if (Files.isRegularFile(candidate)) return candidate.normalize();
+		}
+		return null;
 	}
 
 	private static Path findWebappResourceBase() throws Exception {
@@ -53,7 +70,7 @@ class DemoPageGenerator {
 			   && Files.isRegularFile(path.resolve("KnowWEExtension/css/KnowWE-Plugin-TextDiff.css"));
 	}
 
-	private static String buildPage(String resourceBaseUri) {
+	private static String buildPage(String resourceBaseUri, String themeVariablesUri) {
 
 		String oldShort = "= Title =\nFirst line.\nSecond line.\nThird line.\n";
 		String newShort = "= Title =\nFirst line.\nSecond line, edited.\nThird line.\nFourth line added.\n";
@@ -80,10 +97,11 @@ class DemoPageGenerator {
 				<meta charset="utf-8">
 				<base href="%s">
 				<title>KnowWE TextDiff demo</title>
+				%s
 				<style>
 				  body { font: 14px system-ui, sans-serif; max-width: 960px; margin: 2em auto; padding: 0 1em; transition: background 0.15s, color 0.15s; }
-				  body.light-mode { background: #ffffff; color: #1f2328; }
-				  body.dark-mode  { background: #0d1117; color: #e6edf3; }
+				  body.light-mode { background: var(--bg-color-primary, #ffffff); color: var(--text-color-primary, #1f2328); }
+				  body.dark-mode  { background: var(--bg-color-primary, #0d1117); color: var(--text-color-primary, #e6edf3); }
 				  body.dark-mode h2 { border-bottom-color: #30363d; }
 				  section { margin: 2em 0; }
 				  h2 { border-bottom: 1px solid #d0d7de; padding-bottom: 0.25em; }
@@ -96,6 +114,7 @@ class DemoPageGenerator {
 				  <code>&lt;knowwe-file-change&gt;</code> with declarative shadow DOM.</p>
 				<p>
 				  <button id="toggle-dark" type="button">Toggle dark mode</button>
+				  <button id="toggle-variables" type="button">Toggle KnowWE theme variables</button>
 				  <em style="margin-left: 1em; color: #6e7781;">switches the body class the way the wiki does; in the wiki that only happens on page load, so the demo re-themes the components itself</em>
 				</p>
 				<script>
@@ -110,8 +129,15 @@ class DemoPageGenerator {
 				    document.querySelectorAll('knowwe-text-diff, knowwe-file-change')
 				      .forEach(el => el.setAttribute('data-theme', theme));
 				  });
+				  // compares the wiki look with the fallback colors the components have on any other page
+				  document.getElementById('toggle-variables').addEventListener('click', () => {
+				    const link = document.getElementById('knowwe-variables');
+				    if (link) link.disabled = !link.disabled;
+				  });
 				</script>
-				""".formatted(resourceBaseUri, jsString(resourceBaseUri)));
+				""".formatted(resourceBaseUri,
+				themeVariablesUri == null ? "" : "<link id=\"knowwe-variables\" rel=\"stylesheet\" href=\"" + themeVariablesUri + "\">",
+				jsString(resourceBaseUri)));
 
 		page.append("<section><h2>1. Short edit</h2>")
 				.append(DiffHtmlRenderer.renderTextDiff(new TextDiff(oldShort, newShort)))

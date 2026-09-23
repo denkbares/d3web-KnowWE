@@ -8,16 +8,16 @@
  */
 
 :host {
-	/* Surface */
-	--diff-fg: #1f2328;
-	--diff-fg-muted: #59636e;
-	--diff-bg: #ffffff;
-	--diff-border: #d1d9e0;
+	/* Surface, following the KnowWE theme variables where the host page defines them */
+	--diff-fg: var(--text-color-primary, #1f2328);
+	--diff-fg-muted: var(--text-color-secondary-shade, #59636e);
+	--diff-bg: var(--bg-color-primary, #ffffff);
+	--diff-border: var(--border-color-default, #d1d9e0);
 	--diff-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
 
 	/* Gutter (line numbers) */
-	--diff-num-fg: #59636e;
-	--diff-num-bg: #f6f8fa;
+	--diff-num-fg: var(--text-color-secondary-shade, #59636e);
+	--diff-num-bg: var(--bg-color-secondary, #f6f8fa);
 
 	/* Added — three tonal layers: line bg, num gutter, sign emphasis */
 	--diff-added-bg: #e6ffec;
@@ -32,13 +32,13 @@
 	--diff-removed-fg: #cf222e;
 
 	/* Elision (collapsed-context expander) */
-	--diff-elide-bg: #f6f8fa;
-	--diff-elide-fg: #59636e;
+	--diff-elide-bg: var(--bg-color-secondary, #f6f8fa);
+	--diff-elide-fg: var(--text-color-secondary-shade, #59636e);
 	--diff-elide-hover-bg: #ddf4ff;
 	--diff-elide-hover-fg: #0969da;
 
 	/* Typography & geometry */
-	--diff-font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	--diff-font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, "Courier New", monospace;
 	--diff-font-size: 12.5px;
 	--diff-line-height: 1.6;
 	--diff-tab-size: 4;
@@ -79,14 +79,15 @@
 /* --- Dark theme ---------------------------------------------------------- */
 
 :host([data-theme="dark"]) {
-	--diff-fg: #f0f6fc;
-	--diff-fg-muted: #9198a1;
-	--diff-bg: #0d1117;
-	--diff-border: #3d444d;
+	--diff-fg: var(--text-color-primary, #f0f6fc);
+	--diff-fg-muted: var(--text-color-secondary, #9198a1);
+	--diff-bg: var(--bg-color-primary, #0d1117);
+	/* the dark KnowWE theme has transparent default borders, a frame needs a visible one */
+	--diff-border: var(--color-grey, #3d444d);
 	--diff-shadow: 0 1px 0 rgba(1, 4, 9, 0.2);
 
-	--diff-num-fg: #9198a1;
-	--diff-num-bg: #151b23;
+	--diff-num-fg: var(--text-color-secondary, #9198a1);
+	--diff-num-bg: var(--bg-color-secondary, #151b23);
 
 	--diff-added-bg: rgba(46, 160, 67, 0.15);
 	--diff-added-num-bg: rgba(46, 160, 67, 0.3);
@@ -98,8 +99,8 @@
 	--diff-removed-emph-bg: rgba(248, 81, 73, 0.4);
 	--diff-removed-fg: #f85149;
 
-	--diff-elide-bg: #151b23;
-	--diff-elide-fg: #9198a1;
+	--diff-elide-bg: var(--bg-color-secondary, #151b23);
+	--diff-elide-fg: var(--text-color-secondary, #9198a1);
 	--diff-elide-hover-bg: rgba(56, 139, 253, 0.15);
 	--diff-elide-hover-fg: #58a6ff;
 }
@@ -252,22 +253,21 @@
  * ---------------------------------------------------------------------- */
 
 :host {
-	--file-change-bg: #ffffff;
-	--file-change-header-bg: #f6f8fa;
-	--file-change-header-hover-bg: #eef2f5;
-	--file-change-fg: #1f2328;
-	--file-change-muted-fg: #59636e;
-	--file-change-border: #d1d9e0;
+	--file-change-bg: var(--bg-color-primary, #ffffff);
+	--file-change-header-bg: var(--bg-color-secondary, #f6f8fa);
+	--file-change-header-hover-bg: var(--bg-color-secondary-shade, #eef2f5);
+	--file-change-fg: var(--text-color-primary, #1f2328);
+	--file-change-muted-fg: var(--text-color-secondary-shade, #59636e);
+	--file-change-border: var(--border-color-default, #d1d9e0);
 	--file-change-blue: #0969da;
 	--file-change-blue-bg: #ddf4ff;
 	--file-change-purple: #8250df;
 	--file-change-purple-bg: #fbefff;
 	--file-change-radius: 6px;
-	--file-change-control-bg: #ffffff;
-	--file-change-control-hover-bg: #f3f4f6;
+	--file-change-control-bg: var(--bg-color-primary, #ffffff);
+	--file-change-control-hover-bg: var(--bg-color-secondary-shade, #f3f4f6);
 	--file-change-focus: #0969da;
-	--file-change-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-	--file-change-mono-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	--file-change-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Liberation Sans", Helvetica, Arial, sans-serif;
 
 	display: block;
 	white-space: normal;
@@ -275,18 +275,18 @@
 }
 
 :host([data-theme="dark"]) {
-	--file-change-bg: #0d1117;
-	--file-change-header-bg: #151b23;
-	--file-change-header-hover-bg: #1f2630;
-	--file-change-fg: #f0f6fc;
-	--file-change-muted-fg: #9198a1;
-	--file-change-border: #3d444d;
+	--file-change-bg: var(--bg-color-primary, #0d1117);
+	--file-change-header-bg: var(--bg-color-secondary, #151b23);
+	--file-change-header-hover-bg: var(--bg-color-secondary-shade, #1f2630);
+	--file-change-fg: var(--text-color-primary, #f0f6fc);
+	--file-change-muted-fg: var(--text-color-secondary, #9198a1);
+	--file-change-border: var(--color-grey, #3d444d);
 	--file-change-blue: #58a6ff;
 	--file-change-blue-bg: rgba(56, 139, 253, 0.15);
 	--file-change-purple: #bc8cff;
 	--file-change-purple-bg: rgba(163, 113, 247, 0.15);
-	--file-change-control-bg: #212830;
-	--file-change-control-hover-bg: #262c36;
+	--file-change-control-bg: var(--bg-color-primary, #212830);
+	--file-change-control-hover-bg: var(--bg-color-secondary-shade, #262c36);
 	--file-change-focus: #58a6ff;
 }
 
@@ -309,8 +309,8 @@
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	min-height: 39px;
-	padding: 7px 12px 7px 8px;
+	min-height: 32px;
+	padding: 4px 12px 4px 8px;
 	background: var(--file-change-header-bg);
 	border-bottom: 1px solid var(--file-change-border);
 	box-sizing: border-box;
@@ -437,8 +437,8 @@
 	gap: 7px;
 	min-width: 0;
 	flex: 1 1 auto;
-	font-size: 13px;
-	font-weight: 600;
+	font-size: 14px;
+	font-weight: 500;
 	line-height: 1.4;
 	color: var(--file-change-fg);
 }
@@ -453,7 +453,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-family: var(--file-change-mono-family);
 	color: inherit;
 	text-decoration: none;
 	border-radius: 4px;
@@ -503,7 +502,7 @@
 	gap: 6px;
 	flex: 0 0 auto;
 	margin-left: auto;
-	font-family: var(--file-change-mono-family);
+	font-variant-numeric: tabular-nums;
 	font-size: 12.5px;
 	font-weight: 600;
 	line-height: 1;
