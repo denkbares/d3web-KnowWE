@@ -703,6 +703,11 @@ td .information, td .info, td .warning, td .error {
 	padding: 0.5em;
 }
 
+/* the version selector is a block button, which has no margin of its own to keep it apart from the diff below */
+.diffbody > p.btn-block {
+	margin-bottom: 1em;
+}
+
 /* .diffnote equals .information */
 td.diffadd, td.diffrem, td.diff {
 	font: 110% Monaco, "Courier New", Courier, monospace;
