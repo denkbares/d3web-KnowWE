@@ -28,6 +28,9 @@
     </description>
     <display-name>KnowWE</display-name>
 
+    <!-- Parameters a filter reads before JSPWiki sets the request encoding would otherwise be decoded as ISO-8859-1 -->
+    <request-character-encoding>UTF-8</request-character-encoding>
+
    <!--
    Supported starting from servlet specification 2.5
    Credit:  https://raibledesigns.com/rd/entry/trim_spaces_in_your_jsp1
