@@ -61,7 +61,11 @@
 	if (!(wikiContext.getPage() instanceof Attachment) && deleteAdmin == null && !KnowWEUtils.allowPageDeletionForNonAdmin(wikiContext.getName())) {
 		String deleteText = "Deleted by " + wikiContext.getCurrentUser()
 				.getName() + " at " + FORMATTER.format(LocalDateTime.now());
-		wiki.getManager(PageManager.class).putPageText(wikiContext.getPage(), deleteText);
+		// the context's page describes the latest version, so saving it as is would credit the previous author
+		Page deletion = wikiContext.getPage().clone();
+		deletion.setAuthor(wikiContext.getCurrentUser().getName());
+		deletion.setAttribute(Page.CHANGENOTE, "Deleted page");
+		wiki.getManager(PageManager.class).putPageText(deletion, deleteText);
 		response.sendRedirect(wikiContext.getURL(ContextEnum.PAGE_VIEW.getRequestContext(), wikiContext.getName()));
 		return;
 	}
