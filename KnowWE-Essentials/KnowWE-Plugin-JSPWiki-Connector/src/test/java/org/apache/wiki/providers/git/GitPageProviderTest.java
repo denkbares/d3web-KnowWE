@@ -237,6 +237,18 @@ public class GitPageProviderTest {
 	}
 
 	@Test
+	public void saveOfListedPageDoesNotInheritPreviousMessage() throws ProviderException {
+		putPage("Topic", "v1");
+
+		// the caching layer serves listing entries as the current page, so they are the basis of the next write too
+		Page listed = byName(provider.getAllPages(), "Topic");
+		assertNull(listed.getAttribute(WikiPage.CHANGENOTE));
+		provider.putPageText(listed, "v2");
+
+		assertEquals("Edited Topic", provider.getVersionHistory("Topic").get(0).getAttribute(WikiPage.CHANGENOTE));
+	}
+
+	@Test
 	public void getAllPagesListsWithGitMetadataFromTheIndex() throws ProviderException {
 		putPage("Welcome", "content");
 		putPage("Topic", "v1");
