@@ -152,6 +152,7 @@ public class XCLRelation extends AbstractType {
 			// get the models to add the relation to
 			List<XCLModel> models = getCorrespondingXCLModels(compiler, section);
 			if (models.isEmpty()) {
+				if (isNoDeliverySolution(compiler, section)) return Messages.noMessage();
 				return Messages.asList(new Message(getMessageLevel(compiler),
 						D3webUtils.getD3webBundle().getString("KnowWE.xcllist.relationfail")));
 			}
@@ -162,6 +163,10 @@ public class XCLRelation extends AbstractType {
 				xclModel.addRelation(relation);
 			}
 			return Messages.noMessage();
+		}
+
+		protected boolean isNoDeliverySolution(D3webCompiler compiler, Section<XCLRelation> section) {
+			return false;
 		}
 
 		protected Message.Type getMessageLevel(D3webCompiler compiler) {

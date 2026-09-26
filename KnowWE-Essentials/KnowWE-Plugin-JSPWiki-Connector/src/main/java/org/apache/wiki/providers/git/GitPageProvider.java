@@ -223,14 +223,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		if (gitVersion != null) {
 			Page page = WikiPageProxy.fromUserData(pageName, gitVersion.version(), gitVersion.userData(),
 					gitVersion.size(), gitVersion.date(), m_engine);
-			if (version == WikiProvider.LATEST_VERSION) {
-				// The current/live page is the basis for the next save or delete. It must NOT carry a change note:
-				// ChangeNoteStrategy would otherwise hand that note straight back as the next commit's message, so the
-				// previous commit's message would silently round-trip into the new commit. Per-version history entries
-				// (getVersionHistory) keep their commit message as the change note for display.
-				page.removeAttribute(Page.CHANGENOTE);
-			}
-			return page;
+			return version == WikiProvider.LATEST_VERSION ? withoutChangeNote(page) : page;
 		}
 		// not in git (yet): a file staged in an open batch but not committed, serve it from the filesystem
 		File file = findPage(pageName);
@@ -243,6 +236,18 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 			return page;
 		}
 		return null;
+	}
+
+	/**
+	 * The current page is the basis for the next save or delete, so it must not carry a change note.
+	 */
+	private static Page withoutChangeNote(Page page) {
+		// ChangeNoteStrategy would hand the note back as the next commit's message, so the previous commit's message
+		// would silently round-trip into the new commit. This holds for every source of the current page, including
+		// the listing, because CachingProvider serves those entries as the latest page info. Per-version history
+		// entries (getVersionHistory) keep their commit message as the change note for display.
+		page.removeAttribute(Page.CHANGENOTE);
+		return page;
 	}
 
 	@Override
@@ -288,8 +293,8 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 	private Page buildListingPage(String pageName, File wikiFile, @Nullable List<GitFileRevision> revisions) {
 		if (revisions != null && !revisions.isEmpty()) {
 			GitFileRevision latest = revisions.get(0);
-			return WikiPageProxy.fromUserData(pageName, revisions.size(), latest.userData(), wikiFile.length(),
-					Date.from(Instant.ofEpochSecond(latest.timeSeconds())), m_engine);
+			return withoutChangeNote(WikiPageProxy.fromUserData(pageName, revisions.size(), latest.userData(),
+					wikiFile.length(), Date.from(Instant.ofEpochSecond(latest.timeSeconds())), m_engine));
 		}
 		WikiPageProxy page = new WikiPageProxy(m_engine, pageName);
 		page.setHistoryProvider(repository.connector());
