@@ -299,6 +299,10 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
 - [x] master eingemergt (2026-09-09): KnowWE f85e756f7 (Konflikte in `Article`, `Section`, `Messages`: String-IDs mit Namespace und Publikation bei Queue-Zeit aus master, `SectionRegistry` pro Environment hält jetzt `Map<String, Section>`, Sperren auf der Registry), KnowWE-DES f667721bf + ad71597b1 (neue Task-Tools und `CoomExportTool` auf die Environment-APIs angepasst)
 - [x] Consumer-Repos geklont (2026-09-07): Experimental, KnowWE-DES, KnowWE-SSP, KRONE (enthält KnowWE-KONAP-Integration), Information-Extraction. Zusammen mit denkbares-Internals sind das alle Repos mit `Environment.getInstance()`-Aufrufern.
 - [x] Consumer-Check (2026-09-15, statisch gegen `Projects/Main`, nach dem Entfernen der APIs): GINA, KMW, KnowledgeConverter, d3web-Player-Platform importieren kein `de.knowwe` (0 Treffer). SemanticServicePlatform: die lebenden `SSP-*`-Module nutzen nur `de.knowwe.export.*` (`denkbares-WikiExport`, unverändert); der einzige `Environment.getInstance()`/`DEFAULT_WEB`-Nutzer `denkbares-TEKNO-Studio` ist im `denkbares-IE-Apps`-Reactor auskommentiert (toter Code) und im env-instance-Zweig von Information-Extraction bereits auf `HeadlessKnowWE` migriert (dort 0 `getInstance()`-Reste). Kein Klon/Kompilierlauf nötig.
+- [x] CBX-Integrationstests (`Projects/EnvInstance/KnowWE-SSP-Integration-Tests`, eigener Git-Checkout, Branch `env-instance`) wieder grün. Regel: **immer einzeln** fahren (`reuseForks=false`, je eigener Fork, viel RAM).
+  - [x] `CBXHeadlessAppQuickTest` 8, `-TurretTest` 26, `-ChassisTest` 24, `-PZHTest` 22, `-SchulungTest` 23, `-WisentTest` 18 — alle **0 Failures/0 Errors** (mit `TZ=Europe/Berlin`, `-Xmx12G`). `OntologyBridgeReproTest` 1 skipped (bewusst `@Disabled`, manuelles Repro-Template).
+  - [x] CBX-Plugin-eigene Modultests nach dem Merge: 99/99 grün.
+  - Ursachen der anfänglichen Fehler und Fix (master nachziehen) s. Protokoll 2026-09-26.
 
 ## Offene Punkte / Beobachtungen
 
@@ -484,6 +488,28 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
 
 ## Arbeitsumgebung
 
+### Sandbox-Setup (Stand 2026-09-25, gilt für diese VM/openCode-Session)
+
+- Das Home ist ein **Overlay**: nur `~/.m2` und `~/denkbares` überleben einen Neustart (plus die eingebackenen
+  `~/.local/bin/maven-workspace-split`). `~/.local/share/maven` und `~/.mavenrc` sind nach jedem Neustart weg.
+- Deshalb vor jedem `mvn` **sourcen**: `source Projects/EnvInstance/tools/mvn-env.sh`. Das installiert Maven 3.9.16
+  persistent nach `~/.m2/.tools/` (nicht `~/denkbares/.tools`: auch das ist Overlay), legt `~/.mavenrc` neu an, setzt `JAVA_HOME=/usr/lib/jvm/zulu-25-amd64`,
+  `MVN_REAL` und den Wrapper-`PATH`. Danach `command -v mvn` = Wrapper, `ls ~/.m2/repository` = `cached` + Workspace-Namen.
+- Workspace-Prefix der Kopie ist `EnvInstance` (`~/.m2/repository/EnvInstance`), die Kette ist dort schon installiert.
+- Die frühere `build-chain.sh`/`run-consumer-tests.sh`/`env-instance-repo`-Welt existiert hier **nicht**; es gilt das
+  workspace-gesplittete Repo (`~/.m2/repository/<Workspace>/`), offline mit `-o`.
+- **Workflow-Wunsch des Nutzers: bei Builds/Testläufen alle ~30 s ein Statusupdate.** Umsetzung: Lauf im Hintergrund
+  nach `Projects/EnvInstance/logs/<name>.log` schreiben und den Log per separater Calls pollen (das Log liegt im
+  persistenten Workspace, nicht in `/tmp`, das der Neustart löscht). Der Fortschritt ist gut an `tail` + `ps` (CPU%,
+  ELAPSED) sichtbar; Surefire meldet die Testanzahl erst am Klassenende, bei `reuseForks=false` also einmal pro Klasse.
+- **`TZ=Europe/Berlin` ist Pflicht** (im Bootstrap gesetzt): die VM läuft UTC, die CBX-Erwartungsdateien wurden in
+  Europe/Berlin erzeugt. Ohne die Variable schlagen alle zeitstempelhaltigen Vergleiche fehl (1970-01-01 00:00 statt
+  01:00, `+0000` statt `+0200`, 13:03 statt 14:03).
+- CBX-Integrationstests: im Modul `KnowWE-SSP-Integration-Tests/KnowWE-Plugin-CBX-Integration-Tests`, Surefire
+  `reuseForks=false`, `argLine -Xmx12G` (VM hat 16 GB) → immer **einzeln** starten.
+
+### Ursprüngliche Arbeitsumgebung (Referenz)
+
 - Klone: `Projects/EnvInstance/<Repo>`, `origin` = git.denkbares.com, Remote `main-local` = `Projects/Main/<Repo>`.
   Repos: Maven-Parents, denkbares-Commons, d3web, d3web-DES, denkbares-Internals, jspwiki, KnowWE, Experimental, KnowWE-DES, KnowWE-SSP, KRONE, Information-Extraction.
 - Cross-Repo-Abhängigkeiten der Consumer sind zyklisch auf Property-Ebene (KnowWE-DES <-> KnowWE-SSP <-> Experimental <-> KRONE). Was lokal nicht gebaut ist, zieht Maven als Snapshot von repo.denkbares.com; die Reihenfolge in `build-chain.sh` ist daher nur eine Näherung. coom, GINA, d3web-Player-Platform kommen komplett von dort.
@@ -501,6 +527,79 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
 
 ## Protokoll
 
+- 2026-09-27: **Breiten-Test-Sweep über alle Consumer-Repos** (nach den master-Merges, jeweils `mvn -o test`):
+  | Repo | Tests | Failures | Errors | Bewertung |
+  |---|---|---|---|---|
+  | KnowWE | 599 | 0 | 0 | grün (12 skipped) |
+  | KnowWE-SSP | 137 | 0 | 0 | grün |
+  | Experimental | 95 | 0 | 0 | grün |
+  | KnowWE-DES | 833 | 0 | 20 | nur `GeneratorAppTest` (`dot`/Graphviz fehlt = Baseline) |
+  | KRONE | 499 | 4 | 5 | s. u. |
+  - **KRONE-Fehler klassifiziert** (isoliert nachgefahren, teils mit `JAVA_TOOL_OPTIONS=-Xmx8g`):
+    - Heap-abhängig (KRONE-Root-`argLine` hat kein `-Xmx`, nur den Mockito-Agent): mit 8g ist
+      `DeductionSolutionSpaceTestTest` **grün**; `CoomModelWriterTest` OOMt nicht mehr, scheitert dann aber inhaltlich
+      (`Unexpected behavior objects (156828)`) — `CoomModelWriterKSWTest` analog OOM.
+    - Extern/netzabhängig (Baseline): `ConfigitBridgeCompileProductVariantsTest` (`ZipException: zip file is empty`),
+      `BridgeBuilderHeadlessTest` (NPE), `VariantDstdTestConfigIntegrationTest` (Configit-Bridge).
+    - **Ungeklärt**: `GruppierungenModelBuilderTest`, `GruppierungTableLineTest`,
+      `WD6SymbolicDeductionRuleCompileScriptTest`. Test **und** Produktivcode sind master-identisch
+      (`git diff master HEAD` leer), die Erwartung weicht aber ab (`Gruppierung_ActiveOptionA_OptionB` vs.
+      `Gruppierung_Active_2`, "statement is null") → Verdacht auf geändertes Verhalten einer geteilten Abhängigkeit
+      (KnowWE-core/coom auf env-instance) oder auf master bereits rote Tests. Braucht master-Vergleichslauf.
+  - **Werkzeug KRONE:** Surefire-`argLine` im KRONE-Root-POM verdrahtet
+    `-javaagent:${settings.localRepository}/org/mockito/mockito-core/5.23.0/…`. Im gesplitteten Repo liegt Mockito aber
+    unter `cached/`, der Fork starb am Start ("No tests to run", 0 Tests). Fix im Bootstrap `tools/mvn-env.sh`:
+    Symlink `~/.m2/repository/org/mockito` → `~/.m2/repository/cached/org/mockito`. Danach liefen die KRONE-Tests.
+- 2026-09-26 (später): **`master` in alle Repos nachgezogen.** Hinterher hingen `d3web` (1), `d3web-DES` (1),
+  `denkbares-Internals` (3) und `KnowWE-DES` (8) — die übrigen hatten `master` schon. `d3web`/`d3web-DES`
+  fast-forward, die anderen konfliktfrei bis auf KnowWE-DES: Git-Konflikte in `AgentInstantiation`
+  (`DESvLLMServer`→`DESServer`, env-aware `Property.VLLM_SERVER.value(env)`) und `ReviewVersions`
+  (`index(Environment,…)` statt `Environment.getInstance()`); dazu ein **semantischer** Merge-Konflikt in
+  `TaskChanges`/`TaskChangesTest` (neuer master-Code rief die `web`-lose `getReviewChanges`-Signatur). Gelöst:
+  `Environment` durch `TaskChanges` und `GetDiffAction.getReviewChanges` gereicht, `ReviewVersions.at/index` auf
+  `@Nullable Environment` (Tests ohne Wiki), `TaskChangesTest` übergibt `null`.
+  Die merges brachten neue Abhängigkeiten, die es im Workspace noch nicht gab; alle aus `Projects/Main` nach
+  `EnvInstance` installiert: `denkbares-inference` (`-DES`, `-vLLM`, `AgentUtils`, …),
+  `denkbares-Clingo`/`-SQLite-Search` (aus Internals, da `reaxcel` an pnpm scheitert), `coom` (Retrieval-Module),
+  `d3web-Player-Platform`. Dabei `jspwiki-wikipages` (Sprachmodule) gebaut, damit `jspwiki-war` und dann
+  `KnowWE-Resources` durchlaufen; KnowWE und KnowWE-DES vollständig installiert (52/52 bzw. 42/42).
+- 2026-09-26: **`CBXHeadlessAppTurretTest` grün (26/26).** Zwei Ursachen für die vorherigen 8 Failures:
+  - **7 Zeitzonen**: VM UTC, Erwartungsdateien Europe/Berlin → `TZ=Europe/Berlin` im Bootstrap `tools/mvn-env.sh`.
+    Nachgewiesen: mit TZ schrumpften die 8 Failures auf 1 (26/1).
+  - **1 echter (`testCIDashboards`)**: `env-instance` fehlten die master-Commits der „no delivery"-Reihe. KnowWE-SSP war
+    3 Commits hinter master (`5e574585c Do not add no delivery solutions to KB` aktiviert den `isNoDeliverySolution`-Filter
+    in `WiresTest`, `900e43c89`, `d4e1582b1`), KnowWE 7 Commits (`ae46832e1` liefert die Hooks `isNoDeliverySolution` in
+    `XCLModelCreator`/`XCLRelation`, ohne die die KnowWE-SSP-Overrides nicht kompilieren). `git merge master` in beiden
+    Repos konfliktfrei; danach `KnowWE-Plugins/KnowWE-Plugin-d3web-MarkupSet` und `KnowWE-Plugin-CBX` neu installiert und
+    Turret erneut → 26/26. Also kein Refactoring-Bug, sondern ein fehlender master-Stand.
+  - **Werkzeug**: Beim Rebuild brach die Offline-Auflösung von `org.apache.jspwiki:*:2.12.9-SNAPSHOT` ab, weil Mavens
+    Remote-Cache (`~/.m2/repository/cached`) auf einen Timestamp-Snapshot (`…-20260924.015502-45`) zeigte, dessen Jar nie
+    geladen wurde. Fix: jspwiki lokal neu bauen/installieren (`mvn -o -pl jspwiki-war -am install -DskipTests`; `jspwiki-war`
+    selbst scheitert an fehlendem `jspwiki-knowwe-wikipages-en`, Module 1–11 reichen). Maven-Install jetzt persistent unter
+    `~/.m2/.tools` (nicht `~/denkbares/.tools`, das der Neustart löscht).
+  - **Ergebnis**: `Quick` 8, `Turret` 26, `Chassis` 24, `PZH` 22, `Schulung` 23, `Wisent` 18 — alle grün;
+    `OntologyBridgeReproTest` `@Disabled` (1 skipped). CBX-Plugin-Modultests 99/99. Nach dem Merge die geänderten
+    KnowWE-Module neu installiert (`KnowWE-core`, `-Plugin-TextDiff`, `-Plugin-JSPWiki-Connector`, `-Plugin-d3web-MarkupSet`);
+    voller KnowWE-Reinstall bricht nur an `KnowWE-Resources` (WAR braucht `jspwiki-knowwe-war`, das offline an
+    `jspwiki-knowwe-wikipages-en` scheitert) — für die Tests irrelevant. Integrations-Modul-POM: `argLine` auf `-Xmx12G`
+    gesenkt (VM 16 GB).
+- 2026-09-25: Start der CBX-Integrationsetests. Sandbox-Build-Umgebung neu aufgebaut (Maven 3.9.16 fehlte nach dem
+  Neustart, `~/.mavenrc` ebenso): persistentes Bootstrap `tools/mvn-env.sh` angelegt, Logs nach
+  `Projects/EnvInstance/logs/`. `test-compile` grün, `CBXHeadlessAppQuickTest` grün (8 Tests, 26 s) bei `-Xmx8G`;
+  Surefire-`argLine` im Modul-POM auf `-Xmx12G` erhöht (VM 16 GB).
+  **`CBXHeadlessAppTurretTest`: 26 Tests, 8 Failures, 0 Errors** (876 s, kein OOM; RAM war mit 14/15 GB + ~5 GB Swap
+  am Limit, der Fork lief aber durchgehend mit >300 % CPU, kein GC-Stillstand; Laufzeit pro Klasse ~15 min).
+  Fehlerbild nach Ursache:
+  - **7 Zeitzonen-Diffs (umgebungsbedingt, kein Code-Bug):** VM läuft UTC, Erwartung Europe/Berlin.
+    `testAdapterTestStepCreation`, `testTsm/Malfunction/TestStep/SolutionsIncrementalCompilation` (alle dieselbe Datei
+    `CreatedAdapterTestSteps/XPS-A6M-A3-Turm.txt`: `1970-01-01 01:00` vs. `00:00`), `testMeasurementVisualisation`
+    (`03.02.2021 14:03` vs. `13:03`), `testInterviewAnalyser` (`2020-10-08 13:43:39.703 +0200` vs. `11:43:39.703 +0000`).
+    Fix: `TZ=Europe/Berlin` im Bootstrap; Verifikationslauf war beim Neustart noch offen.
+  - **1 echter Inhaltsunterschied `testCIDashboards` (`CI-Dashboard-Tests/A7P-HUN.txt`):** erwartet 17 „existing but
+    ignores solutions" Warnungen, tatsächlich 16; konkret fehlt
+    `** The wire [7|Cable W289#hash] with signal 'TURM BUS CAN GND' has a solution but is ignored.`
+    Zusätzlich drei Zeilen CRLF-vs-LF (`* [Solution A11fufa.S1/S2`, `|Solution A11fufa.S1/S2`). Zu klären, ob echte
+    Regression oder veraltete Erwartungsdatei; NICHT blind per Updater überschreiben.
 - 2026-09-16: Review-Befunde behoben. (1) `KnowWE.jsp` und `JSDebugger.jsp` riefen noch das gelöschte
   `Environment.isInitialized()`/`initInstance()`; JSPs werden nicht mitkompiliert, der Bruch wäre erst zur Laufzeit
   aufgefallen. Der Block ist seit `KnowWEPlugin.initialize` (`Environment.create`) überflüssig und entfernt; die
