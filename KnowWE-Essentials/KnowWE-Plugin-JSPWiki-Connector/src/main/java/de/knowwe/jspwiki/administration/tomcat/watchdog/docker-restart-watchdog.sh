@@ -44,8 +44,10 @@ log "------------------------------------------------------------"
 if [ -f "$FLAG_FILE" ]; then
     log "Flag detected -> attempting to restart container '$CONTAINER_NAME'"
     
+    log "Before restart: $(docker inspect -f 'State={{.State.Status}}, StartedAt={{.State.StartedAt}}' "$CONTAINER_NAME" 2>&1)"
+
     # Docker Container neustarten
-    if docker restart "$CONTAINER_NAME" >/dev/null 2>&1; then
+    if output=$(docker restart "$CONTAINER_NAME" 2>&1); then
         log "Container '$CONTAINER_NAME' restarted successfully."
         
         # Flag löschen
@@ -55,7 +57,7 @@ if [ -f "$FLAG_FILE" ]; then
             log "ERROR removing flag: $?"
         fi
     else
-        log "ERROR while restarting container '$CONTAINER_NAME'. Ist der Name korrekt?"
+        log "ERROR while restarting container '$CONTAINER_NAME' (running as $(whoami)): $output"
     fi
 fi
 

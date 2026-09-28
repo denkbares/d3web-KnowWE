@@ -56,10 +56,63 @@ KNOWWE.plugin.jspwikiConnector.restartWebApp = function() {
 };
 
 KNOWWE.plugin.jspwikiConnector.restartTomcat = function() {
-  if (confirm("Are you sure you want to restart tomcat? This may take a while...")) {
-    KNOWWE.editCommons.showAjaxLoader();
-    setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-tomcat"}).done(() => window.location.reload()), 12000);
-  }
+  if (!confirm("Are you sure you want to restart tomcat? This may take a while...")) return;
+
+  const messageId = "tomcat-restart";
+  const pollInterval = 3000;
+  // give up waiting for tomcat to come back after this time
+  const maxWaitMillis = 10 * 60 * 1000;
+  const started = Date.now();
+  let jvmStartTime = null;
+
+  const getStatus = function(type) {
+    return jq$.ajax({
+      url: "action/AdministrationToolProvider?type=" + type,
+      dataType: "json",
+      cache: false,
+      timeout: 10000
+    });
+  };
+
+  const stop = function(showMessage) {
+    KNOWWE.editCommons.hideAjaxLoader();
+    KNOWWE.notification.removeNotification(messageId);
+    showMessage();
+  };
+
+  const handleStatus = function(status) {
+    if (jvmStartTime !== null && status.jvmStartTime !== jvmStartTime) {
+      // a new JVM answers, so the restart was successful
+      window.location.reload();
+      return;
+    }
+    jvmStartTime = status.jvmStartTime;
+    if (status.pending) {
+      KNOWWE.notification.warn("Restarting Tomcat", status.message, messageId);
+      poll();
+    }
+    else {
+      stop(() => KNOWWE.notification.error("Tomcat restart failed", status.message
+        + " Details are in the wiki log (Download recent logs).", messageId));
+    }
+  };
+
+  const poll = function() {
+    if (Date.now() - started > maxWaitMillis) {
+      stop(() => KNOWWE.notification.error("Tomcat restart failed",
+        "Tomcat did not come back within " + (maxWaitMillis / 60000) + " minutes. Please contact the server administrator.",
+        messageId));
+      return;
+    }
+    setTimeout(() => getStatus("restart-tomcat-status").done(handleStatus).fail(() => {
+      // tomcat is shutting down or starting, wait for it to be available again
+      KNOWWE.notification.warn("Restarting Tomcat", "The server is currently not available, waiting for it to come back...", messageId);
+      poll();
+    }), pollInterval);
+  };
+
+  KNOWWE.editCommons.showAjaxLoader();
+  getStatus("restart-tomcat").done(handleStatus).fail(jqXHR => stop(() => KNOWWE.notification.error_jqXHR(jqXHR)));
 };
 
 KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {

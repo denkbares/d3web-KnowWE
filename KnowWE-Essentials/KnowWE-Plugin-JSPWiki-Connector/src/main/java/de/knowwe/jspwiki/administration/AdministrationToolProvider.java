@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
+import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.Iterators;
@@ -68,6 +71,8 @@ import de.knowwe.util.Icon;
  */
 public class AdministrationToolProvider extends AbstractAction implements ToolProvider {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdministrationToolProvider.class);
+
 	public static final String THREAD_DUMP = "thread-dump";
 	public static final String THREAD_DUMP_JCMD = "thread-dump-jcmd";
 	public static final String LOGS_RECENT = "logs-recent";
@@ -75,6 +80,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 	public static final String LOGS_ALL = "logs-all";
 	public static final String RESTART_WEBAPP = "restart-webapp";
 	public static final String RESTART_TOMCAT = "restart-tomcat";
+	public static final String RESTART_TOMCAT_STATUS = "restart-tomcat-status";
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext user) {
@@ -147,7 +153,8 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 					Tool.CATEGORY_EXECUTE);
 
 			DefaultTool restartTomcat;
-			if (TomcatServiceRestarter.isWatchdogHealthy()) {
+			String watchdogProblem = TomcatServiceRestarter.getWatchdogProblem();
+			if (watchdogProblem == null) {
 				restartTomcat = new DefaultTool(Icon.REFRESH,
 						"Restart Tomcat",
 						"Restart the tomcat server - this may take a while.",
@@ -158,7 +165,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 			else {
 				restartTomcat = new DefaultTool(Icon.WARNING,
 						"Unavailable: Restart Tomcat",
-						"Restart the tomcat server - this may take a while.",
+						"Restart functionality currently not available: " + watchdogProblem,
 						"alert('Tomcat restart functionality currently not available or not set up.')",
 						Tool.ActionType.ONCLICK,
 						Tool.CATEGORY_EXECUTE);
@@ -206,12 +213,32 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 		else if (RESTART_WEBAPP.equals(type)) {
 			JmxWebAppRestarter.reload(context.getServletContext());
 		}
-		else if (RESTART_TOMCAT.equals(type) && TomcatServiceRestarter.isWatchdogHealthy()) {
-			TomcatServiceRestarter.signalRestart();
+		else if (RESTART_TOMCAT.equals(type)) {
+			String watchdogProblem = TomcatServiceRestarter.getWatchdogProblem();
+			if (watchdogProblem != null) {
+				LOGGER.warn("Tomcat restart requested by {}, but the restart watchdog is not available: {}",
+						context.getUserName(), watchdogProblem);
+				fail(context, HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Tomcat restart is currently not available: " + watchdogProblem);
+			}
+			writeRestartStatus(context, TomcatServiceRestarter.signalRestart(context.getUserName()));
+		}
+		else if (RESTART_TOMCAT_STATUS.equals(type)) {
+			writeRestartStatus(context, TomcatServiceRestarter.getRestartStatus());
 		}
 		else {
 			failUnexpected(context, "Unknown tool type: " + type);
 		}
+	}
+
+	private void writeRestartStatus(UserActionContext context, TomcatServiceRestarter.RestartStatus status) throws IOException {
+		JSONObject json = new JSONObject();
+		json.put("state", status.state().name());
+		json.put("pending", status.state().isPending());
+		json.put("message", status.message());
+		// allows the client to recognize that it is talking to a new JVM after the restart
+		json.put("jvmStartTime", ManagementFactory.getRuntimeMXBean().getStartTime());
+		context.setContentType(JSON);
+		context.getWriter().write(json.toString());
 	}
 
 	private void downloadThreadDump(UserActionContext context, String threadDump, String fileName) throws IOException {
