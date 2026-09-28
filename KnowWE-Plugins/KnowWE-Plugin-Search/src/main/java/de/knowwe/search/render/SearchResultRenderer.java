@@ -40,6 +40,8 @@ import de.knowwe.core.preview.PreviewManager;
 import de.knowwe.core.preview.PreviewRenderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.JSPWikiMarkupUtils;
+import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.search.index.ArticleChunker;
@@ -72,13 +74,36 @@ public class SearchResultRenderer {
 	 */
 	private static final int MAX_LINE_LENGTH = 8000;
 
+	/** Longest wiki source a preview is rendered from, zero switches previews off. */
+	public static final String PROPERTY_MAX_SOURCE_LENGTH = "knowwe.search.preview.maxSourceLength";
+
+	/** Longest output a preview may render to before the snippet is shown instead. */
+	public static final String PROPERTY_MAX_HTML_LENGTH = "knowwe.search.preview.maxHtmlLength";
+
+	private static final int DEFAULT_MAX_SOURCE_LENGTH = 20_000;
+	private static final int DEFAULT_MAX_HTML_LENGTH = 100_000;
+
 	/** The same rule that cut the article into index documents, so a preview shows exactly what was indexed. */
 	private final ArticleChunker chunker = new ArticleChunker();
+
+	private final int maxSourceLength;
+	private final int maxHtmlLength;
+
+	public SearchResultRenderer() {
+		this(intProperty(PROPERTY_MAX_SOURCE_LENGTH, DEFAULT_MAX_SOURCE_LENGTH),
+				intProperty(PROPERTY_MAX_HTML_LENGTH, DEFAULT_MAX_HTML_LENGTH));
+	}
+
+	SearchResultRenderer(int maxSourceLength, int maxHtmlLength) {
+		this.maxSourceLength = maxSourceLength;
+		this.maxHtmlLength = maxHtmlLength;
+	}
 
 	/**
 	 * @return the rendered section, or null when it cannot be rendered — the caller then falls back to the snippet
 	 */
 	public @Nullable Rendered render(@NotNull SectionAnchor anchor, @NotNull UserContext user) {
+		if (maxSourceLength <= 0) return null;
 		SectionAnchor.Resolution resolution = anchor.resolve(user.getArticleManager());
 		Section<?> section = resolution.section();
 		if (section == null) return null;
@@ -88,21 +113,32 @@ public class SearchResultRenderer {
 		// html for every keystroke of the same search
 		String cacheKey = section.getID();
 		String cached = PreviewCache.getInstance().get(anchor.title(), cacheKey, user.getUserName());
-		if (cached != null) return new Rendered(cached, resolution.stale());
+		if (cached != null) return cached.isEmpty() ? null : new Rendered(cached, resolution.stale());
 
 		try {
 			RenderResult result = new RenderResult(user);
 			PreviewRenderer renderer = previewRendererFor(section);
 			if (renderer != null) {
 				Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
-				renderer.render(previewSection == null ? section : previewSection, everything(section), user, result);
+				if (previewSection == null) previewSection = section;
+				if (isTooLong(previewSources(previewSection))) return null;
+				renderer.render(previewSection, everything(section), user, result);
 			}
 			else {
-				renderChunk(section, user, result);
+				List<Section<?>> sections = chunkSections(section);
+				if (isTooLong(sections)) return null;
+				for (Section<?> content : sections) {
+					result.append(content, user);
+				}
 			}
 			String html = toHtml(result, user);
 			// a placeholder has nothing to read yet and still is not empty -- its content arrives when it is on screen
 			if (!hasVisibleText(html) && !isAsynchronous(html)) html = markupContents(section, user);
+			if (html.length() > maxHtmlLength) {
+				// remembered as empty so the next keystroke does not pay for the same oversized rendering again
+				PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), "");
+				return null;
+			}
 			// an empty frame says less than the indexed text, and it looks like something failed to load
 			if (!hasVisibleText(html) && !isAsynchronous(html)) return null;
 			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
@@ -149,11 +185,13 @@ public class SearchResultRenderer {
 	 *
 	 * @return the rendered contents and annotations, or an empty string when the hit is not in a markup block
 	 */
-	private static String markupContents(Section<?> section, UserContext user) {
+	private String markupContents(Section<?> section, UserContext user) {
 		Section<DefaultMarkupType> markup = section.get() instanceof DefaultMarkupType
 				? Sections.cast(section, DefaultMarkupType.class)
 				: Sections.ancestor(section, DefaultMarkupType.class);
 		if (markup == null) return "";
+		// the markup can be larger than the preview section that was measured before
+		if (isTooLong(List.of(markup))) return "";
 		RenderResult result = new RenderResult(user);
 		MARKUP_RENDERER.renderContentsAndAnnotations(markup, user, result);
 		return toHtml(result, user);
@@ -172,7 +210,35 @@ public class SearchResultRenderer {
 	private static final DefaultMarkupRenderer MARKUP_RENDERER = new DefaultMarkupRenderer();
 
 	/**
-	 * Renders the piece of the article the hit stands for, section by section, the way the article renders it.
+	 * Whether the given sections hold more wiki source than a preview may be rendered from.
+	 * <p>
+	 * Checked before rendering because a markup like a COOM combination table has thousands of rows, and rendering
+	 * those costs the server a wiki pass over megabytes and the browser a page it cannot lay out anymore.
+	 */
+	private boolean isTooLong(List<? extends Section<?>> sections) {
+		long length = 0;
+		for (Section<?> section : sections) {
+			length += section.getText().length();
+			if (length > maxSourceLength) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * The sections a preview renderer reaches from the given preview section.
+	 * <p>
+	 * A heading is a single line of source, but {@code HeaderPreviewRenderer} renders everything up to the next
+	 * heading of the same level, including any markup block below it.
+	 */
+	private static List<? extends Section<?>> previewSources(Section<?> previewSection) {
+		if (previewSection.get() instanceof HeaderType) {
+			return JSPWikiMarkupUtils.getContent(Sections.cast(previewSection, HeaderType.class), true);
+		}
+		return List.of(previewSection);
+	}
+
+	/**
+	 * The piece of the article the hit stands for, rendered section by section the way the article renders it.
 	 * <p>
 	 * Which sections those are is not decided here: the chunker that cut the article into index documents is asked
 	 * again, and the chunk anchored at this section is the one that was indexed. Deriving the range a second time in
@@ -182,12 +248,6 @@ public class SearchResultRenderer {
 	 * Chunking is a read only walk over the finished KDOM of a single article, and every preview is cached, so asking
 	 * again is cheaper than keeping a second copy of the rule.
 	 */
-	private void renderChunk(Section<?> section, UserContext user, RenderResult result) {
-		for (Section<?> content : chunkSections(section)) {
-			result.append(content, user);
-		}
-	}
-
 	private List<Section<?>> chunkSections(Section<?> section) {
 		Article article = section.getArticle();
 		if (article == null) return List.of(section);
@@ -341,6 +401,18 @@ public class SearchResultRenderer {
 		int start = end;
 		while (end < masked.length() && (Character.isLetterOrDigit(masked.charAt(end)))) end++;
 		return end == start ? null : masked.substring(start, end).toLowerCase(java.util.Locale.ROOT);
+	}
+
+	private static int intProperty(String property, int defaultValue) {
+		String value = KnowWEUtils.getProperty(property);
+		if (value == null || value.isBlank()) return defaultValue;
+		try {
+			return Integer.parseInt(value.trim());
+		}
+		catch (NumberFormatException e) {
+			LOGGER.warn("Ignoring {}={}, it is not a number", property, value);
+			return defaultValue;
+		}
 	}
 
 	/**
