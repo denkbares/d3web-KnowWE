@@ -87,4 +87,26 @@ public class PreviewCacheTest {
 		assertNull(cache.get("Seite 0", "s0", "albrecht"));
 		assertEquals("<p>2499</p>", cache.get("Seite 2499", "s2499", "albrecht"));
 	}
+
+	@Test
+	public void itStaysBoundedInSize() {
+		String large = "x".repeat(1_000_000);
+		for (int i = 0; i < 30; i++) {
+			cache.put("Seite " + i, "s" + i, "albrecht", large);
+		}
+		assertEquals(20, cache.size());
+		assertNull(cache.get("Seite 0", "s0", "albrecht"));
+		assertEquals(large, cache.get("Seite 29", "s29", "albrecht"));
+	}
+
+	@Test
+	public void forgottenEntriesFreeTheirSize() {
+		String large = "x".repeat(1_000_000);
+		for (int i = 0; i < 20; i++) {
+			cache.put("Seite " + i, "s" + i, "albrecht", large);
+		}
+		cache.invalidate("Seite 0");
+		cache.put("Seite 20", "s20", "albrecht", large);
+		assertEquals(large, cache.get("Seite 1", "s1", "albrecht"));
+	}
 }
