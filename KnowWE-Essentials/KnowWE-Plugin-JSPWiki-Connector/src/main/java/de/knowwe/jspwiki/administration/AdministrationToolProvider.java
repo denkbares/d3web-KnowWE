@@ -159,7 +159,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 				restartTomcat = new DefaultTool(Icon.REFRESH,
 						"Restart Tomcat",
 						"Restart the tomcat server - this may take a while."
-						+ (serviceStatus == null ? "" : " Watchdog: " + serviceStatus),
+						+ (serviceStatus == null ? "" : "\nWatchdog: " + serviceStatus),
 						"KNOWWE.plugin.jspwikiConnector.restartTomcat()",
 						Tool.ActionType.ONCLICK,
 						Tool.CATEGORY_EXECUTE);

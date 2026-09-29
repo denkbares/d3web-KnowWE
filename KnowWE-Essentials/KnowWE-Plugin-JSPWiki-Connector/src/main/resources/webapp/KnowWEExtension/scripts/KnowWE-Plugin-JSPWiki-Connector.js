@@ -104,7 +104,12 @@ KNOWWE.plugin.jspwikiConnector.restartTomcat = function() {
         messageId));
       return;
     }
-    setTimeout(() => getStatus("restart-tomcat-status").done(handleStatus).fail(() => {
+    setTimeout(() => getStatus("restart-tomcat-status").done(handleStatus).fail(jqXHR => {
+      if (jqXHR.status === 401 || jqXHR.status === 403) {
+        // a server answers, but does not know our session any more (it was lost by the restart), so reload to log in again
+        window.location.reload();
+        return;
+      }
       // tomcat is shutting down or starting, wait for it to be available again
       KNOWWE.notification.warn("Restarting Tomcat", "The server is currently not available, waiting for it to come back...", messageId);
       poll();
