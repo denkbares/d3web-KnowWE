@@ -105,10 +105,16 @@ nicht verwendet.
   Flag, dann startet die Abfrage gar nicht erst.
 - `SparqlTask.cancel(...)`: ruft immer `callable.cancel(reason)` und dann `super.cancel(false)` auf, **nie mit
   Interrupt**.
-- **Aufräumen der `Thread.stop()`-Reste:** Die GraphDB-Probleme, wegen denen der Reaper abgeschaltet wurde, kamen
-  von `Thread.stop()`. Deshalb entfernen: `SparqlTask.stop()` samt `LockSupport.unpark`, den auskommentierten
-  Aufruf `sparqlReaperPool.execute(new SparqlTaskReaper(this))` in `SparqlTask.run()` und das Feld `thread`, falls
-  es danach nicht mehr gebraucht wird. Die Klasse `SparqlTaskReaper` und der Pool existieren nicht mehr.
+- **Aufräumen der Reste von `Thread.stop()` und Interrupt:** Die GraphDB-Probleme, wegen denen der Reaper
+  abgeschaltet wurde, kamen von `Thread.stop()`. Mit dem Abbruch per `close()` braucht es auch die Abfragen auf
+  Interrupts nicht mehr. Entfernen:
+  - `SparqlTask.stop()` samt `LockSupport.unpark`, den auskommentierten Aufruf
+    `sparqlReaperPool.execute(new SparqlTaskReaper(this))` in `SparqlTask.run()` und das Feld `thread`, falls es
+    danach nicht mehr gebraucht wird. Die Klasse `SparqlTaskReaper` und der Pool existieren nicht mehr.
+  - in `SparqlCallable.call()` die Prüfung `Thread.currentThread().isInterrupted()`, die ein halbes Ergebnis
+    verwirft (ein Abbruch endet jetzt immer mit Exception),
+  - in SemanticCore die Prüfung in `TupleQueryResult.cachedAndClosed()` (siehe oben),
+  - jeden Aufruf von `cancel(true)` bzw. `Future.cancel(true)` auf SPARQL-Tasks.
 - **Registry laufender Abfragen** in `Rdf2GoCore`: jeder Task, der gestartet wird, gecacht oder nicht, meldet sich
   an und nach dem Ende wieder ab. Die Registry ist die Grundlage für Phase 2, 4 und 5 und kommt ohne GraphDB aus.
   Pro Eintrag: Abfragetext, Priorität, Zeitlimit, Start- und Laufzeit, Zustand (wartend/laufend), anfordernde
@@ -159,6 +165,19 @@ worden, statt 10 Minuten weiterzulaufen.
     „Try again“ startet selbst neu).
   - Das Zeitlimit gilt für den neuen Lauf wieder voll. Die Wartezeit des Aufrufers kann sich so höchstens
     verdoppeln.
+- **Nur noch ein Zeitlimit statt zweier.** Heute stoppt die Datenbank eine Abfrage nach `timeout`, der wartende
+  Aufrufer gibt aber erst nach `2 × timeout` auf (`sparqlTask.get(2 × timeout)`). Das Doppelte soll die Wartezeit
+  in der Warteschlange abdecken. Gibt der Aufrufer auf, läuft der Task trotzdem weiter und bleibt im Cache.
+  Künftig bekommt nur noch der **Task** ein Budget, der Aufrufer wartet einfach auf sein Ende:
+  - Warteschlange: Wartet ein Task länger als `timeout` auf einen Thread, wird er abgebrochen, bevor er startet
+    (Grund: „waited too long in queue“).
+  - Ausführung: wie bisher `setMaxExecutionTime(timeout)` in der Datenbank.
+  - Der Aufrufer wartet ohne eigenes Zeitlimit auf das Ende des Tasks. Das kommt spätestens nach `2 × timeout`,
+    denselben Wert wie heute, aber jetzt an einer Stelle festgelegt, und danach läuft nichts weiter.
+  - Das gilt für gecachte wie ungecachte Abfragen. Der Sonderweg für Abfragen beim Kompilieren (fester Timeout
+    2 min, siehe Abschnitt 7) bleibt vorerst.
+  - Test: eine Abfrage, die länger in der Warteschlange steht als ihr Zeitlimit, wird abgebrochen und nicht
+    mehr gestartet; eine lange Abfrage endet nach dem Zeitlimit, und der Aufrufer bekommt den Timeout.
 - **Risiko Aushungern:** Wird öfter kompiliert oder committet, als eine Abfrage dauert, kommt sie nie zu Ende.
   Heute läuft sie dann doppelt, künftig nie fertig. Das ist die bewusst gewählte, ressourcenschonende Seite. Der
   Zustand ist in der Übersicht sichtbar („mehrfach abgebrochen“), und Phase 3 begrenzt das automatische Neustarten.
@@ -248,3 +267,38 @@ worden, statt 10 Minuten weiterzulaufen.
   häufigen Änderungen dadurch gar nicht mehr fertig werden (siehe Aushungern in Phase 2).
 - **Automatischer Neustart nach Abbruch** (Phase 2): höchstens einmal pro Aufruf, damit bei Dauer-Commits keine
   Schleife entsteht.
+
+---
+
+## 7. Kandidaten für spätere Vereinfachung
+
+Nicht Teil dieses Plans. Bei der Analyse für diesen Plan ist aufgefallen, dass rund um die Ausführung in `Rdf2GoCore` mehr
+Maschinerie steckt als nötig. Vor jeder Änderung ist zu klären, ob der ursprüngliche Grund noch besteht.
+
+- **GraphDB nur aus eigenen Pool-Threads.** Seit `d0a508d5e` (2022, „make sure to access GraphDB only via Threads
+  that can be garbage collected after disposal of the repository“) laufen alle Zugriffe über die Pools des Cores,
+  weil GraphDB ThreadLocals an zugreifende Threads hängt. In langlebigen Threads (Tomcat, Compile) hielte das nach
+  dem Schließen das Repository im Speicher. Außerdem schützen die Pool-Threads vor Interrupts, die GraphDB-Dateien
+  beschädigen können (siehe Experiment). **Klären:** ob GraphDB 10 noch solche ThreadLocals hinterlässt. Möglicher
+  Test: Core öffnen, aus einem Thread abfragen, Core schließen, danach die ThreadLocals des Threads prüfen. Solange
+  das nicht geklärt ist, bleibt das Prinzip.
+- **Drei Varianten für die synchrone Übergabe an einen Pool-Thread** (`runInThread(Runnable)`,
+  `runInThread(Runnable, Pool)`, `runInIOThread(RunnableWithIO)`, Ergebnisse und Exceptions über
+  `AtomicReference`). Zusammenfassen zu einer Methode `<T> T callInCoreThread(Callable<T>, Pool)`. Dabei auch
+  beheben: Ein `InterruptedException` beim Warten wird heute nur geloggt, der Aufrufer macht weiter, als wäre die
+  Aufgabe fertig, eventuell mit Ergebnis `null`.
+- **IO-Pool mit `PriorityBlockingQueue`**, obwohl alle Aufgaben Priorität 0 haben. **Klären**, ob dort je
+  Prioritäten gebraucht wurden, sonst ein normaler Pool mit fester Größe.
+- **Sonderweg für Abfragen im Compile-Thread** in `Rdf2GoCore.sparql`: eigener Aufbau des Callables, fester Timeout
+  von 2 min, eigenes Logging, am Cache und am Usage-Lock vorbei („they are not needed in that context and do even
+  cause problems“). **Klären**, welche Probleme Cache und Lock dort machten, dann in den normalen Weg einbauen
+  (ohne Cache, Priorität 0).
+- **`CachedTupleQueryResult`** (SemanticCore): ein geteiltes Ergebnisobjekt für alle Threads, der Iterator liegt in
+  einem `ThreadLocal`, deshalb ruft `sparqlSelect` in drei Varianten `resetIterator()` auf. Die ThreadLocals in
+  Tomcat-Threads halten nebenbei Ergebnislisten im Speicher. Alternative: pro Aufruf eine leichte Sicht auf die
+  gemeinsame, unveränderliche Liste. **Klären**, ob Aufrufer sich auf die Identität des Objekts verlassen.
+- **Vorschau über `lastCachedResult` + `CacheMissException`**: Der Renderer holt das veraltete Ergebnis über eine
+  in `RuntimeException` verpackte Exception als Steuerfluss. Alternative: direkte Abfrage wie
+  `getCachedResult(query)` bzw. `getState(query)`, drei Stellen betroffen.
+- **Auskommentierter Code** in `getMaxSparqlThreadCount` (Begrenzung auf `getNumberOfSupportedParallelConnections`).
+  **Klären**, ob die Idee noch gebraucht wird, sonst entfernen.
