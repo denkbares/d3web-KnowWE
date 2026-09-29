@@ -19,8 +19,18 @@ param(
 # --- Configuration ---
 # $PSScriptRoot is not reliably set in parameter defaults of Windows PowerShell 5.1, so the default is resolved here
 if (-not $RestartDir) { $RestartDir = $PSScriptRoot }
-$RestartDir     = $RestartDir.TrimEnd('\', '/')
-$flagPath       = Join-Path $RestartDir "restart.flag"      # Restart request, written by the wiki
+# a trailing backslash before the closing quote (-RestartDir "C:\tomcat-restart-test\") escapes the quote, so the
+# value then ends with a quote and a blank
+$RestartDir     = $RestartDir.Trim(' ', '"').TrimEnd('\', '/')
+# without the directory nothing can be logged, so end visibly (last run result 0x1 in the task scheduler) instead of
+# running on silently; the directory is not created, so a typo in -RestartDir is noticed
+$restartDirExists = $false
+try { $restartDirExists = Test-Path -LiteralPath $RestartDir -PathType Container -ErrorAction Stop } catch { }
+if (-not $restartDirExists) {
+    Write-Error "Restart directory '$RestartDir' does not exist"
+    exit 1
+}
+$flagPath      = Join-Path $RestartDir "restart.flag"      # Restart request, written by the wiki
 $alivePath      = Join-Path $RestartDir "watchdog.alive"    # Heartbeat with the service state, read by the wiki
 $pidPath        = Join-Path $RestartDir "tomcat.pid"        # Process id of the wiki, written by the wiki at startup
 $logFile        = Join-Path $RestartDir "watchdog.log"      # Log of this script, read by the wiki

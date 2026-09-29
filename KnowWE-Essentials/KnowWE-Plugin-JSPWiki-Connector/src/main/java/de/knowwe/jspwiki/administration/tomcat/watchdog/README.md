@@ -248,7 +248,10 @@ Für eine weitere Instanz, z. B. ein Testsystem:
 3. Eine eigene geplante Aufgabe für dieses Verzeichnis anlegen (Abschnitt 2 der Windows-Einrichtung), entweder
    - mit einer unveränderten Kopie des Skripts im neuen Verzeichnis (`C:\tomcat-restart-test\watchdog.ps1`
      verwendet dann `C:\tomcat-restart-test`), oder
-   - mit dem vorhandenen Skript und `-RestartDir "C:\tomcat-restart-test"` in den Argumenten der Aufgabe.
+   - mit dem vorhandenen Skript und `-RestartDir "C:\tomcat-restart-test"` in den Argumenten der Aufgabe. Das
+     Verzeichnis muss existieren, sonst beendet sich die Aufgabe sofort (Taskplaner: „Letztes Ausführungsergebnis“
+     `(0x1)`). Kein `\` vor dem schließenden Anführungszeichen: Windows liest `\"` als Anführungszeichen, ein
+     folgendes `-ServicePattern` wird dann Teil des Verzeichnisses.
 4. Bei ähnlich benannten Diensten zusätzlich `-ServicePattern` je Aufgabe setzen, z. B. `TomcatTest*`. Das Muster
    greift nur als Rückfall, wenn der Dienst nicht über die PID gefunden wird, sollte aber nur den eigenen Dienst
    treffen.
@@ -310,7 +313,8 @@ und schreibt ins Wiki-Log:
   siehe [„Sonderfall“](#-sonderfall-mehrere-tomcat-instanzen-auf-einem-server).
 - *The watchdog reports: Tomcat service not found: …*: Der Watchdog findet den Dienst nicht. Dahinter steht,
   was er versucht hat, z. B. dass kein Dienst auf `-ServicePattern` passt oder mehrere laufen.
-- *heartbeat file … does not exist*: Watchdog nicht eingerichtet oder nie gelaufen.
+- *heartbeat file … does not exist*: Watchdog nicht eingerichtet oder nie gelaufen. Zeigt der Taskplaner als
+  „Letztes Ausführungsergebnis“ `(0x1)`, gibt es das Verzeichnis aus `-RestartDir` nicht.
 - *heartbeat file … was last updated N s ago*: Watchdog läuft nicht mehr. Status der geplanten Aufgabe prüfen.
 - *watchdog log file … does not exist*: Watchdog nie gestartet oder falsches Verzeichnis.
 - *Cannot write to …*: Das Tomcat-Konto hat keine Schreibrechte (Abschnitt 3). Details stehen im Wiki-Log unter
