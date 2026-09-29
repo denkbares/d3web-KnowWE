@@ -2,15 +2,30 @@
 # Tomcat Restart Watchdog
 # Monitors a flag file and restarts the Tomcat service when found
 # with detailed logging for debugging permission issues
+#
+# Parameters (both optional):
+#   -RestartDir      directory shared with the wiki (-Dknowwe.tomcat.restart.dir of the Tomcat),
+#                    default: the directory of this script, e.g. C:\tomcat-restart
+#   -ServicePattern  only services matching this name pattern are restarted, default: Tomcat*
+# Several Tomcats on one server need one directory and one watchdog task each, e.g.
+#   powershell.exe -File "C:\tomcat-restart-test\watchdog.ps1"     (a copy of this script, no changes needed)
+#   powershell.exe -File "C:\tomcat-restart\watchdog.ps1" -RestartDir "D:\restart\test" -ServicePattern "TomcatTest*"
 # ==============================================================
+param(
+    [string]$RestartDir = "",
+    [string]$ServicePattern = "Tomcat*"
+)
 
 # --- Configuration ---
-$flagPath       = "C:\tomcat-restart\restart.flag"      # Path to flag file
-$alivePath      = "C:\tomcat-restart\watchdog.alive"    # Path to heartbeat file
-$pidPath        = "C:\tomcat-restart\tomcat.pid"        # Process id of the wiki, written by the wiki at startup
-$servicePattern = "Tomcat*"                             # Only services matching this name pattern are restarted
-$logFile        = "C:\tomcat-restart\watchdog.log"      # Path to log file
-$logMaxSize     = 1048576                               # 1 MB
+# $PSScriptRoot is not reliably set in parameter defaults of Windows PowerShell 5.1, so the default is resolved here
+if (-not $RestartDir) { $RestartDir = $PSScriptRoot }
+$RestartDir     = $RestartDir.TrimEnd('\', '/')
+$flagPath       = Join-Path $RestartDir "restart.flag"      # Restart request, written by the wiki
+$alivePath      = Join-Path $RestartDir "watchdog.alive"    # Heartbeat with the service state, read by the wiki
+$pidPath        = Join-Path $RestartDir "tomcat.pid"        # Process id of the wiki, written by the wiki at startup
+$logFile        = Join-Path $RestartDir "watchdog.log"      # Log of this script, read by the wiki
+$servicePattern = $ServicePattern
+$logMaxSize     = 1048576                                   # 1 MB
 
 # The Tomcat service is determined on every run, so a new service name (e.g. after a Tomcat update) needs no change
 # here: first the service running the process id the wiki has written (into the flag or tomcat.pid), otherwise the
@@ -114,6 +129,7 @@ Log "------------------------------------------------------------"
 Log "Watchdog started as user: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
 Log "Running from: $PSScriptRoot"
 Log "Monitoring flag: $flagPath"
+Log "Service pattern: $servicePattern"
 $lastServiceState = Describe-TomcatService (Resolve-TomcatService)
 Log $lastServiceState
 Log "------------------------------------------------------------"

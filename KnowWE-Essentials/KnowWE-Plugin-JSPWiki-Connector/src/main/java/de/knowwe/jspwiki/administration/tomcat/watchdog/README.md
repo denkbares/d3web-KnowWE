@@ -54,42 +54,19 @@ C:\tomcat-restart\            (Linux/Docker: /knowwe/tomcat-restart/)
  ├── watchdog.log             Log des Watchdogs (wird automatisch erstellt)
  ├── watchdog.alive           Heartbeat mit Dienstzustand, alle ~10 s aktualisiert (wird automatisch erstellt)
  ├── tomcat.pid               Prozess-ID des Wikis, schreibt das Wiki bei jedem Start
- ├── instances\               eine Heartbeat-Datei je laufendem Wiki, siehe „Mehrere Tomcats“
+ ├── instances\               eine Heartbeat-Datei je laufendem Wiki (Erkennung mehrerer Tomcat-Instanzen)
  ├── restart.flag             Neustart-Anforderung mit PID (legt das Wiki an, löscht der Watchdog)
  └── restart-test.flag        kurzzeitig vom Wiki angelegt, um die Schreibrechte zu prüfen
 ```
 
-Das Wiki liest das Verzeichnis aus der System-Property **`knowwe.tomcat.restart.dir`**. Ohne Property gilt
-`C:\tomcat-restart\` (Windows) bzw. `/knowwe/tomcat-restart/` (sonst). Die Pfade in den Skripten sind **fest
-eingetragen**. Wer das Verzeichnis ändert, muss deshalb die Property **und** die Pfade im Skript anpassen.
+Im Regelfall läuft auf einem Server genau ein Tomcat, und es ist nichts zu konfigurieren: Wiki und Watchdog
+verwenden `C:\tomcat-restart\` (Windows) bzw. `/knowwe/tomcat-restart/` (Linux/Docker). Beim Start schreibt das
+Wiki ins Wiki-Log, welches Verzeichnis es verwendet, z. B.
+`Tomcat restart watchdog directory: C:\tomcat-restart\ (default, -Dknowwe.tomcat.restart.dir is not set)`.
 
-### Mehrere Tomcats auf einem Server
-
-Jeder Tomcat braucht ein **eigenes Verzeichnis und einen eigenen Watchdog**: `-Dknowwe.tomcat.restart.dir`
-je Tomcat setzen, das Skript je Verzeichnis kopieren, dort die Pfade oben im Skript anpassen und je Kopie eine
-eigene geplante Aufgabe anlegen. Teilen sich mehrere Tomcats ein Verzeichnis, gibt es `tomcat.pid`,
-`restart.flag` und die Dienstzeile in `watchdog.alive` nur einmal für alle, ein Neustart könnte also den falschen
-Tomcat treffen.
-
-Das Wiki erkennt diesen Fall. Jedes Wiki legt beim Start eine Datei `instances\<zufällige ID>.instance` an, mit
-PID, Rechnername, Startzeit und `catalina.base`. Die ID ist bei jedem Start neu. Die PID taugt nicht als Name,
-weil sie sich zwischen Rechnern bzw. Containern wiederholt, in Containern ist sie oft sogar immer gleich. Das Wiki
-aktualisiert die Datei alle 30 s, schreibt sie neu, falls sie fehlt, und löscht sie beim Herunterfahren.
-
-Findet ein Wiki die Datei eines **anderen laufenden** Tomcats, sperrt es den Neustart: „Unavailable“ am Button,
-503 bei der Aktion, Warnung beim Start. Die Meldung nennt beide Tomcats. Geprüft wird bei jedem Aufruf der
-Administration-Seite und bei jedem Klick. Der Zustand **heilt** deshalb von selbst: Ist der andere Tomcat weg,
-ist der Neustart beim nächsten Laden der Seite wieder möglich.
-
-Wann eine andere Datei als „weg“ gilt:
-- **Selber Rechner:** sofort, wenn der Prozess mit ihrer PID nicht mehr läuft, etwa bei einem abgeschossenen
-  Tomcat, der seine Datei nicht mehr löschen konnte. Die Datei wird dann gelöscht.
-- **Allgemein:** wenn sie seit mehr als 90 s nicht aktualisiert wurde. Das gilt für Tomcats auf anderen Rechnern
-  bzw. in anderen Containern, deren Prozess das Wiki nicht sehen kann. Es gilt auch, wenn die PID eines beendeten
-  Tomcats inzwischen ein anderer Prozess bekommen hat: Die Datei wird nicht mehr aktualisiert, der scheinbare
-  Konflikt hält also höchstens 90 s. Solche Dateien vom selben Rechner werden gelöscht, fremde nach einem Tag.
-- **Kein Konflikt** ist eine Datei vom selben Rechner mit der eigenen PID, also eine zweite Web-App im selben
-  Tomcat. Die wird ohnehin mit neu gestartet.
+Das Verzeichnis lässt sich auf beiden Seiten ändern (Wiki: System-Property `knowwe.tomcat.restart.dir`, Skript:
+`-RestartDir` bzw. zweites Argument). Das ist nur für den Sonderfall mehrerer Tomcat-Instanzen auf einem Server
+vorgesehen, siehe [„Sonderfall: mehrere Tomcat-Instanzen auf einem Server“](#-sonderfall-mehrere-tomcat-instanzen-auf-einem-server).
 
 ---
 
@@ -97,20 +74,22 @@ Wann eine andere Datei als „weg“ gilt:
 
 ### 1. Skript ablegen und anpassen
 
-`tomcat-restart-watchdog.ps1` als **`C:\tomcat-restart\watchdog.ps1`** ablegen.
+`tomcat-restart-watchdog.ps1` als **`C:\tomcat-restart\watchdog.ps1`** ablegen. Das Skript verwendet das
+Verzeichnis, in dem es liegt.
 
 Ein Dienstname muss **nicht** eingetragen werden. Der Watchdog bestimmt den Dienst bei jedem Durchlauf neu,
 ein neuer Dienstname nach einem Tomcat-Update braucht also keine Änderung am Skript:
 1. Der Dienst, der die Prozess-ID aus `restart.flag` bzw. `tomcat.pid` ausführt, auch wenn die JVM als
    Kindprozess des Dienstes läuft.
-2. Sonst der einzige Dienst, dessen Name auf `$servicePattern` passt (Standard `Tomcat*`). Passen mehrere,
+2. Sonst der einzige Dienst, dessen Name auf `-ServicePattern` passt (Standard `Tomcat*`). Passen mehrere,
    der einzige davon, der gerade läuft.
 
-Oben im Skript ggf. anpassen:
-- **`$servicePattern`**: Nur Dienste mit passendem Namen werden neu gestartet, falls der Tomcat-Dienst anders
-  heißt, z. B. `KnowSEC*`. Den Dienstnamen (nicht den Anzeigenamen) zeigt `Get-Service` oder `services.msc` →
-  Eigenschaften → „Dienstname“.
-- die Pfade `$flagPath`, `$alivePath`, `$pidPath` und `$logFile`, falls nicht `C:\tomcat-restart` verwendet wird.
+Im Skript muss nichts angepasst werden. Optional sind zwei Parameter in den Argumenten der Aufgabe (Abschnitt 2):
+- **`-ServicePattern`** (Standard `Tomcat*`): Nur Dienste mit passendem Namen werden neu gestartet. Nur setzen,
+  falls der Tomcat-Dienst anders heißt, z. B. `KnowSEC*`. Den Dienstnamen (nicht den Anzeigenamen) zeigt
+  `Get-Service` oder `services.msc` → Eigenschaften → „Dienstname“.
+- **`-RestartDir`** (Standard: Verzeichnis des Skripts): nur für mehrere Tomcat-Instanzen auf einem Server, siehe
+  [„Sonderfall“](#-sonderfall-mehrere-tomcat-instanzen-auf-einem-server).
 
 ### 2. Geplante Aufgabe einrichten
 
@@ -137,6 +116,7 @@ Oben im Skript ggf. anpassen:
     ```
     -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "C:\tomcat-restart\watchdog.ps1"
     ```
+    Optional dahinter `-ServicePattern "KnowSEC*"` (Abschnitt 1).
     Keine Umleitung wie `*> datei.log` anhängen. Die Aufgabenplanung startet `powershell.exe` ohne Shell, die
     Umleitung würde nur als Argument an das Skript weitergereicht. Alle Meldungen stehen in `watchdog.log`.
   - **Starten in (optional):**
@@ -215,12 +195,13 @@ und ein gespeichertes Kennwort, das nicht ablaufen darf.
 
 Das Watchdog-Skript ist **nicht** im WAR enthalten, es wird als eigene Datei `tomcat-restart-watchdog.ps1`
 mitgeliefert. Erst das Skript, dann das WAR einspielen: Das neue Skript funktioniert auch mit dem alten Wiki (es
-findet den Dienst dann über `$servicePattern`), das neue Wiki mit einem alten Skript meldet dagegen
+findet den Dienst dann über `-ServicePattern`), das neue Wiki mit einem alten Skript meldet dagegen
 `outdated watchdog script?`.
 
 1. **Skript ersetzen:** Die neue `tomcat-restart-watchdog.ps1` als `C:\tomcat-restart\watchdog.ps1` ablegen.
-   Einen Dienstnamen nicht mehr eintragen, nur `$servicePattern` anpassen, falls der Tomcat-Dienst nicht mit
-   `Tomcat` beginnt (Abschnitt 1).
+   Im Skript nichts mehr eintragen, weder Dienstnamen noch Pfade. Beginnt der Tomcat-Dienst nicht mit `Tomcat`,
+   `-ServicePattern` in den Argumenten der Aufgabe setzen (Abschnitt 1). Frühere Anpassungen im alten Skript
+   (Dienstname, Pfade) entfallen.
 2. **Aufgabe neu starten**, sonst läuft das alte Skript weiter. Taskplaner → „Tomcat Restart Watchdog“ →
    „Beenden“, dann „Ausführen“, oder in einer PowerShell als Administrator:
    ```powershell
@@ -242,8 +223,73 @@ findet den Dienst dann über `$servicePattern`), das neue Wiki mit einem alten S
    Optional ein Test-Klick: Nach dem Neustart lädt die Seite von selbst neu und zeigt die Anmeldung, weil die
    Sitzung mit dem Neustart endet.
 
-Nutzen zwei laufende Tomcats auf dem Server dasselbe `C:\tomcat-restart` (z. B. Test und Produktion), ist der
-Button danach mit Begründung gesperrt, siehe „Mehrere Tomcats auf einem Server“.
+Sollten auf dem Server mehrere Tomcat-Instanzen dasselbe `C:\tomcat-restart` verwenden, ist der Button danach mit
+Begründung gesperrt, siehe [„Sonderfall“](#-sonderfall-mehrere-tomcat-instanzen-auf-einem-server).
+
+---
+
+## 🧩 Sonderfall: mehrere Tomcat-Instanzen auf einem Server
+
+Dieser Abschnitt ist nur relevant, falls auf einem Server mehrere Tomcat-Instanzen mit KnowWE betrieben werden,
+etwa ein Test- und ein Produktivsystem. Derzeit ist das nicht vorgesehen. Die Beschreibung dient der Vorsorge und
+erklärt die Schutzmechanismen, die im Wiki dafür vorhanden sind.
+
+### Einrichtung
+
+Jede Tomcat-Instanz benötigt ein eigenes Verzeichnis und eine eigene Watchdog-Aufgabe. Teilen sich mehrere
+Instanzen ein Verzeichnis, gibt es `tomcat.pid`, `restart.flag` und die Dienstzeile in `watchdog.alive` nur einmal
+für alle, ein Neustart könnte also die falsche Instanz treffen.
+
+Für eine weitere Instanz, z. B. ein Testsystem:
+1. Verzeichnis anlegen, z. B. `C:\tomcat-restart-test`, mit Schreibrechten für das Konto dieses Tomcat-Dienstes
+   (Abschnitt 3 der Windows-Einrichtung).
+2. In dieser Instanz die System-Property `-Dknowwe.tomcat.restart.dir=C:\tomcat-restart-test` setzen (siehe
+   unten) und die Instanz neu starten. Die bestehende Instanz behält den Standard `C:\tomcat-restart`.
+3. Eine eigene geplante Aufgabe für dieses Verzeichnis anlegen (Abschnitt 2 der Windows-Einrichtung), entweder
+   - mit einer unveränderten Kopie des Skripts im neuen Verzeichnis (`C:\tomcat-restart-test\watchdog.ps1`
+     verwendet dann `C:\tomcat-restart-test`), oder
+   - mit dem vorhandenen Skript und `-RestartDir "C:\tomcat-restart-test"` in den Argumenten der Aufgabe.
+4. Bei ähnlich benannten Diensten zusätzlich `-ServicePattern` je Aufgabe setzen, z. B. `TomcatTest*`. Das Muster
+   greift nur als Rückfall, wenn der Dienst nicht über die PID gefunden wird, sollte aber nur den eigenen Dienst
+   treffen.
+
+Das Wiki schreibt beim Start ins Wiki-Log, welches Verzeichnis es verwendet (`… (from
+-Dknowwe.tomcat.restart.dir)`). Zeigen Wiki und Watchdog auf verschiedene Verzeichnisse, findet das Wiki keinen
+Heartbeat, und der Button zeigt „Unavailable“ mit dem Verzeichnis, in dem das Wiki gesucht hat.
+
+**System-Property setzen.** Die Property gilt für die gesamte Tomcat-Instanz, also für alle Wikis darin. Diese
+gehören ohnehin zusammen, weil ein Neustart alle betrifft. Nach dem Setzen die Instanz neu starten.
+- Tomcat als Windows-Dienst: in `tomcat9w.exe //ES//<Dienstname>` → Reiter „Java“ → „Java Options“ eine Zeile
+  `-Dknowwe.tomcat.restart.dir=C:\tomcat-restart-test` ergänzen, oder per Kommandozeile:
+  ```powershell
+  & "C:\…\Tomcat 9.0\bin\tomcat9.exe" //US//<Dienstname> ++JvmOptions "-Dknowwe.tomcat.restart.dir=C:\tomcat-restart-test"
+  ```
+- Tomcat über `startup.bat`/`catalina.sh`: in `bin\setenv.bat` `set "CATALINA_OPTS=%CATALINA_OPTS% -Dknowwe.tomcat.restart.dir=…"`
+  bzw. in `bin/setenv.sh` `CATALINA_OPTS="$CATALINA_OPTS -Dknowwe.tomcat.restart.dir=…"`.
+- Docker: siehe [README-Docker.md](README-Docker.md).
+
+### Erkennung einer Fehlkonfiguration
+
+Die Erkennung ist immer aktiv, auch ohne jede Konfiguration. Sie greift vor allem dann, wenn eine weitere Instanz
+eingerichtet wird, ohne ihr ein eigenes Verzeichnis zu geben. Dazu legt jedes Wiki beim Start eine Datei
+`instances\<zufällige ID>.instance` an, mit PID, Rechnername, Startzeit und `catalina.base`. Die ID ist bei jedem Start neu. Die PID taugt nicht als Name,
+weil sie sich zwischen Rechnern bzw. Containern wiederholt, in Containern ist sie oft sogar immer gleich. Das Wiki
+aktualisiert die Datei alle 30 s, schreibt sie neu, falls sie fehlt, und löscht sie beim Herunterfahren.
+
+Findet ein Wiki die Datei einer **anderen laufenden** Tomcat-Instanz, sperrt es den Neustart: „Unavailable“ am Button,
+503 bei der Aktion, Warnung beim Start. Die Meldung nennt beide Tomcats. Geprüft wird bei jedem Aufruf der
+Administration-Seite und bei jedem Klick. Der Zustand **heilt** deshalb von selbst: Ist der andere Tomcat weg,
+ist der Neustart beim nächsten Laden der Seite wieder möglich.
+
+Wann eine andere Datei als „weg“ gilt:
+- **Selber Rechner:** sofort, wenn der Prozess mit ihrer PID nicht mehr läuft, etwa bei einem abgeschossenen
+  Tomcat, der seine Datei nicht mehr löschen konnte. Die Datei wird dann gelöscht.
+- **Allgemein:** wenn sie seit mehr als 90 s nicht aktualisiert wurde. Das gilt für Tomcats auf anderen Rechnern
+  bzw. in anderen Containern, deren Prozess das Wiki nicht sehen kann. Es gilt auch, wenn die PID eines beendeten
+  Tomcats inzwischen ein anderer Prozess bekommen hat: Die Datei wird nicht mehr aktualisiert, der scheinbare
+  Konflikt hält also höchstens 90 s. Solche Dateien vom selben Rechner werden gelöscht, fremde nach einem Tag.
+- **Kein Konflikt** ist eine Datei vom selben Rechner mit der eigenen PID, also eine zweite Web-App im selben
+  Tomcat. Die wird ohnehin mit neu gestartet.
 
 ---
 
@@ -260,10 +306,10 @@ und schreibt ins Wiki-Log:
   eingerichtet.
 
 **Button zeigt „Unavailable: Restart Tomcat“.** Der Tooltip nennt den Grund:
-- *Several Tomcats use the restart directory …*: Mehrere laufende Tomcats teilen sich das Verzeichnis, siehe
-  „Mehrere Tomcats auf einem Server“. Jedem ein eigenes Verzeichnis geben.
+- *Several Tomcats use the restart directory …*: Mehrere laufende Tomcat-Instanzen verwenden dasselbe Verzeichnis,
+  siehe [„Sonderfall“](#-sonderfall-mehrere-tomcat-instanzen-auf-einem-server).
 - *The watchdog reports: Tomcat service not found: …*: Der Watchdog findet den Dienst nicht. Dahinter steht,
-  was er versucht hat, z. B. dass kein Dienst auf `$servicePattern` passt oder mehrere laufen.
+  was er versucht hat, z. B. dass kein Dienst auf `-ServicePattern` passt oder mehrere laufen.
 - *heartbeat file … does not exist*: Watchdog nicht eingerichtet oder nie gelaufen.
 - *heartbeat file … was last updated N s ago*: Watchdog läuft nicht mehr. Status der geplanten Aufgabe prüfen.
 - *watchdog log file … does not exist*: Watchdog nie gestartet oder falsches Verzeichnis.
@@ -284,7 +330,8 @@ Serverzugriff ist dafür nicht nötig.
 
 Häufige Fehler im `watchdog.log`:
 - `ERROR Tomcat service not found: …` bzw. `Flag detected …, but cannot restart: …`: Der Dienst passt nicht auf
-  `$servicePattern`, oder es laufen mehrere passende Dienste. `$servicePattern` anpassen.
+  `-ServicePattern`, oder es laufen mehrere passende Dienste. `-ServicePattern` in den Argumenten der Aufgabe
+  anpassen und die Aufgabe neu starten.
 - `Service state changed: …`: Der Dienstzustand hat sich geändert, z. B. beim Neustart oder weil der Dienst nach
   einem Tomcat-Update anders heißt. Nur zur Information.
 - `ERROR while restarting service …: … kann nicht geöffnet werden … Zugriff verweigert` (bzw. `Access is denied`):
@@ -319,6 +366,11 @@ im Skript zwar angepasst, die laufende Aufgabe aber nicht neu gestartet)
   - Ein zweiter Tomcat auf demselben Rechner wird erkannt. Vorher galt er als beendet, weil Java unter Windows
     Prozesse anderer Dienste nicht öffnen darf, seine Datei unter `instances/` wurde gelöscht.
   - Der Tooltip zeigt den Dienstzustand in einer eigenen Zeile. Neuer Abschnitt „Update auf eine neue Version“.
+- **Keine festen Pfade mehr in den Skripten:** Das PowerShell-Skript nutzt das Verzeichnis, in dem es liegt, oder
+  `-RestartDir`. Das Dienstmuster ist der Parameter `-ServicePattern`. Das Docker-Skript nimmt das Verzeichnis als
+  zweites Argument oder aus `RESTART_DIR`. Mehrere Tomcats brauchen damit keine angepassten Kopien des Skripts.
+  Das Wiki loggt beim Start, welches Verzeichnis es nutzt und ob es aus `-Dknowwe.tomcat.restart.dir` kommt. Die
+  README beschreibt, wie man die Property im Windows-Dienst, per `setenv` und im Docker-Container setzt.
 
 **2026-09-28** (nach der Rückmeldung, dass der letzte Neustart nicht funktioniert hat und auch im Log keine hilfreichen Infos zu finden waren)
 

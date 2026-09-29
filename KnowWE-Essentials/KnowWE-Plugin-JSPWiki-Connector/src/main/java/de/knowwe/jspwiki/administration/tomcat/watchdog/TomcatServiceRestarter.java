@@ -73,6 +73,11 @@ public class TomcatServiceRestarter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TomcatServiceRestarter.class);
 
+	/**
+	 * System property with the directory shared with the watchdog, it must match the directory of the watchdog.
+	 */
+	public static final String RESTART_DIR_PROPERTY = "knowwe.tomcat.restart.dir";
+
 	// Resolve service directory from environment, fallback to default
 	private static final String SERVICE_DIR = resolveServiceDir();
 	// --- Configuration paths (adjust as needed) ---
@@ -139,8 +144,8 @@ public class TomcatServiceRestarter {
 	private static boolean shutdownListenerRegistered = false;
 
 	private static String resolveServiceDir() {
-		// Prefer environment variable "knowwe.tomcat.restart.dir", else default
-		String dir = System.getProperty("knowwe.tomcat.restart.dir", OS.WINDOWS.isCurrentOS() ? "C:\\tomcat-restart\\" : "/knowwe/tomcat-restart/");
+		// Prefer the system property (set per Tomcat, e.g. -Dknowwe.tomcat.restart.dir=C:\tomcat-restart-test), else default
+		String dir = System.getProperty(RESTART_DIR_PROPERTY, OS.WINDOWS.isCurrentOS() ? "C:\\tomcat-restart\\" : "/knowwe/tomcat-restart/");
 		// Normalize to end with a separator/backslash for concatenation below
 		if (!dir.endsWith("/") && !dir.endsWith("\\")) {
 			dir += File.separator;
@@ -193,10 +198,13 @@ public class TomcatServiceRestarter {
 	 * somebody actually needs the restart.
 	 */
 	public static void onStartup() {
+		String source = System.getProperty(RESTART_DIR_PROPERTY) == null
+				? "default, -D" + RESTART_DIR_PROPERTY + " is not set" : "from -D" + RESTART_DIR_PROPERTY;
 		if (!new File(SERVICE_DIR).isDirectory()) {
-			LOGGER.info("Tomcat restart watchdog is not set up (no directory {})", SERVICE_DIR);
+			LOGGER.info("Tomcat restart watchdog is not set up (no directory {}, {})", SERVICE_DIR, source);
 			return;
 		}
+		LOGGER.info("Tomcat restart watchdog directory: {} ({})", SERVICE_DIR, source);
 		writePidFile();
 		registerInstance();
 		if (!new File(ALIVE_PATH).exists()) {

@@ -6,12 +6,16 @@
 # ==============================================================
 
 # --- Configuration ---
-# Passen Sie diese Pfade an Ihre Server-Umgebung an!
-FLAG_FILE="/knowwe/tomcat-restart/restart.flag"
-ALIVE_FILE="/knowwe/tomcat-restart/watchdog.alive"
-LOG_FILE="/knowwe/tomcat-restart/watchdog.log"
-LOG_MAX_SIZE=1048576 # 1 MB
+# Aufruf: docker-restart-watchdog.sh <containername> [<verzeichnis>]
+# Das Verzeichnis ist das mit dem Container geteilte (-Dknowwe.tomcat.restart.dir im Container), alternativ per
+# Umgebungsvariable RESTART_DIR, Standard /knowwe/tomcat-restart. Mehrere Container brauchen je ein eigenes.
 CONTAINER_NAME="$1" # Name Ihres Docker-Containers
+RESTART_DIR="${2:-${RESTART_DIR:-/knowwe/tomcat-restart}}"
+RESTART_DIR="${RESTART_DIR%/}"
+FLAG_FILE="$RESTART_DIR/restart.flag"
+ALIVE_FILE="$RESTART_DIR/watchdog.alive"
+LOG_FILE="$RESTART_DIR/watchdog.log"
+LOG_MAX_SIZE=1048576 # 1 MB
 
 # --- Helper: Logging ---
 log() {

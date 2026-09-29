@@ -14,27 +14,37 @@ sind für beide Varianten gleich und stehen in der [README.md](README.md). Hier 
 Argument:
 
 ```bash
-/knowwe/tomcat-restart/docker-restart-watchdog.sh <containername>
+docker-restart-watchdog.sh <containername> [<verzeichnis>]
 ```
 
-### Pfade
+### Verzeichnis
 
-Oben im Skript sind die Pfade fest eingetragen:
+Standard ist `/knowwe/tomcat-restart`. Darin liegen `restart.flag`, `watchdog.alive` und `watchdog.log`. Ein
+anderes Verzeichnis (zweites Argument oder Umgebungsvariable `RESTART_DIR`) ist nur für mehrere Container auf einem
+Host vorgesehen, siehe unten.
 
+Das Verzeichnis muss **in den Container gemountet** sein, unter dem Pfad, den das Wiki verwendet (Standard
+`/knowwe/tomcat-restart/`), z. B. `-v /knowwe/tomcat-restart:/knowwe/tomcat-restart`. Der Tomcat-Benutzer im
+Container braucht dort Schreibrechte. Er legt das Flag und die Test-Datei `restart-test.flag` an, ohne
+Schreibrechte zeigt das Wiki „Unavailable: Restart Tomcat“.
+
+### Nur falls mehrere Container auf einem Host laufen
+
+Dieser Fall ist derzeit nicht vorgesehen und nur der Vollständigkeit halber beschrieben. Jeder Container benötigt
+dann ein **eigenes** Host-Verzeichnis und einen eigenen Aufruf des Skripts. Am einfachsten wird jedes
+Host-Verzeichnis im Container nach `/knowwe/tomcat-restart` gemountet. Der Container braucht dann keine
+Einstellung, nur der Watchdog-Aufruf bekommt das Host-Verzeichnis:
+
+```bash
+docker run … -v /knowwe/tomcat-restart-test:/knowwe/tomcat-restart …
+docker-restart-watchdog.sh knowsec-test /knowwe/tomcat-restart-test
 ```
-FLAG_FILE="/knowwe/tomcat-restart/restart.flag"
-ALIVE_FILE="/knowwe/tomcat-restart/watchdog.alive"
-LOG_FILE="/knowwe/tomcat-restart/watchdog.log"
-```
 
-Das Verzeichnis `/knowwe/tomcat-restart` muss **in den Container gemountet** sein, und zwar unter dem Pfad, den
-das Wiki verwendet. Standard ist `/knowwe/tomcat-restart/`, abweichend über `-Dknowwe.tomcat.restart.dir`. Der
-Tomcat-Benutzer im Container braucht dort Schreibrechte. Er legt das Flag und die Test-Datei
-`restart-test.flag` an, ohne Schreibrechte zeigt das Wiki „Unavailable: Restart Tomcat“.
-
-Mehrere Container brauchen je ein **eigenes** Host-Verzeichnis und einen eigenen Aufruf des Skripts, eine Kopie
-mit angepassten Pfaden. Teilen sich Container ein Verzeichnis, erkennt das Wiki das an den Dateien unter
-`instances/` und sperrt den Neustart, siehe [README.md](README.md), „Mehrere Tomcats auf einem Server“.
+Soll der Pfad im Container abweichen, wird er über die System-Property gesetzt, z. B.
+`-e CATALINA_OPTS="-Dknowwe.tomcat.restart.dir=/restart"` beim `docker run` bzw. unter `environment:` in der
+Compose-Datei. Teilen sich Container versehentlich ein Verzeichnis, erkennt das Wiki dies an den Dateien unter
+`instances/` und sperrt den Neustart, siehe [README.md](README.md), Abschnitt „Sonderfall: mehrere
+Tomcat-Instanzen auf einem Server“.
 
 ### Regelmäßiger Aufruf
 
@@ -49,7 +59,7 @@ Start eine Warnung ins Wiki-Log und zeigt „Unavailable“.
 - Ein Cron-Job im Minutentakt reicht dafür **nicht**.
 - Geeignet ist z. B. ein systemd-Timer mit `OnUnitActiveSec=10s` oder eine Schleife:
   ```bash
-  while true; do /knowwe/tomcat-restart/docker-restart-watchdog.sh <containername>; sleep 10; done
+  while true; do /knowwe/tomcat-restart/docker-restart-watchdog.sh <containername> [<verzeichnis>]; sleep 10; done
   ```
 
 Jeder Aufruf schreibt einen Startblock ins Log. Das Log wird ab 1 MB nach `watchdog.log.old` rotiert.
@@ -57,7 +67,7 @@ Jeder Aufruf schreibt einen Startblock ins Log. Das Log wird ab 1 MB nach `watch
 ### Berechtigungen
 
 Das aufrufende Konto braucht Rechte für `docker restart` und `docker inspect`, also root oder die Gruppe
-`docker`. Außerdem muss es in `/knowwe/tomcat-restart` schreiben und das vom Container angelegte Flag löschen
+`docker`. Außerdem muss es im Verzeichnis schreiben und das vom Container angelegte Flag löschen
 dürfen.
 
 ---
@@ -92,6 +102,8 @@ ist der Containername falsch, oder das Konto darf `docker inspect` nicht ausfüh
   das Wiki einen falschen Containernamen schon beim Start und nicht erst beim Klick auf „Restart Tomcat“. Die
   PID-Datei `tomcat.pid`, die das Wiki schreibt, braucht die Docker-Variante nicht.
 - Teilen sich mehrere Container ein Verzeichnis, sperrt das Wiki den Neustart mit Warnung.
+- Das Verzeichnis ist nicht mehr fest eingetragen: zweites Argument oder `RESTART_DIR`, Standard wie bisher
+  `/knowwe/tomcat-restart`.
 
 **2026-09-28**
 
