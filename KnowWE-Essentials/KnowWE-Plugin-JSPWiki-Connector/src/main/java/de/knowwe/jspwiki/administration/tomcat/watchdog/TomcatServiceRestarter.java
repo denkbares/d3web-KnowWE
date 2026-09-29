@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -318,13 +319,19 @@ public class TomcatServiceRestarter {
 	}
 
 	private static boolean isProcessAlive(String pid) {
+		long processId;
 		try {
-			return ProcessHandle.of(Long.parseLong(pid)).map(ProcessHandle::isAlive).orElse(false);
+			processId = Long.parseLong(pid);
 		}
 		catch (NumberFormatException e) {
 			// unreadable pid, rather keep it than remove the file of a running Tomcat, the age decides
 			return true;
 		}
+		Optional<ProcessHandle> process = ProcessHandle.of(processId);
+		if (process.isPresent()) return process.get().isAlive();
+		// on Windows, ProcessHandle.of is empty for processes we are not allowed to open, e.g. another Tomcat service,
+		// but they are listed in the snapshot of all processes
+		return ProcessHandle.allProcesses().anyMatch(other -> other.pid() == processId);
 	}
 
 	private static String getHostName() {
