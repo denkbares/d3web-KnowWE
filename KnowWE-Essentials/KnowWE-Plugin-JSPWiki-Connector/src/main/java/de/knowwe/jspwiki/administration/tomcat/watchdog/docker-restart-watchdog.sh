@@ -61,5 +61,10 @@ if [ -f "$FLAG_FILE" ]; then
     fi
 fi
 
-# Heartbeat aktualisieren
-echo "$(date -u +'%Y-%m-%d %H:%M:%SZ')" > "$ALIVE_FILE" || log "ERROR updating alive file"
+# Heartbeat aktualisieren: erste Zeile Zeitstempel, zweite Zeile Zustand des Containers (OK/ERROR), liest das Wiki
+if state=$(docker inspect -f '{{.State.Status}}' "$CONTAINER_NAME" 2>&1); then
+    container_state="OK Container '$CONTAINER_NAME': State=$state"
+else
+    container_state="ERROR Container '$CONTAINER_NAME' not found or not accessible (running as $(whoami)): $state"
+fi
+printf '%s\n%s\n' "$(date -u +'%Y-%m-%d %H:%M:%SZ')" "$container_state" > "$ALIVE_FILE" || log "ERROR updating alive file"

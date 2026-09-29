@@ -21,10 +21,22 @@ package de.knowwe.jspwiki.administration.tomcat.watchdog;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +56,14 @@ import de.knowwe.core.ServletContextEventListener;
  * picks up the flag and whether Tomcat actually shuts down afterwards. If not,
  * the problem is logged together with the tail of the watchdog log, so it can
  * be analyzed from the wiki logs without access to the server.
+ * <p>
+ * The wiki writes its process id to {@code tomcat.pid} (and into the flag), so the watchdog can find the Tomcat
+ * service without a configured service name. The watchdog reports the state of that service in the second line of
+ * {@code watchdog.alive}, which is checked at startup and shown at the restart tool.
+ * <p>
+ * Every wiki using the directory registers itself with a heartbeat file in {@code instances/}. If several running
+ * Tomcats share the directory, a restart could hit the wrong one (and the pid and service state only describe one of
+ * them), so the restart is disabled with a warning instead.
  *
  * @author Albrecht Striffler (denkbares GmbH), ChatGPT
  * @created 20.10.2025
@@ -58,6 +78,7 @@ public class TomcatServiceRestarter {
 	private static final String FLAG_PATH = SERVICE_DIR + "restart.flag";
 	private static final String FLAG_TEST_PATH = SERVICE_DIR + "restart-test.flag";
 	private static final String LOG_PATH = SERVICE_DIR + "watchdog.log";
+	private static final String PID_PATH = SERVICE_DIR + "tomcat.pid";
 
 	// If alive file not updated for more than X minutes, assume watchdog is inactive
 	private static final String ALIVE_PATH = SERVICE_DIR + "watchdog.alive";
@@ -69,6 +90,18 @@ public class TomcatServiceRestarter {
 	private static final long SHUTDOWN_TIMEOUT_SECONDS = 120;
 	private static final long MONITOR_INTERVAL_MILLIS = 2000;
 	private static final int WATCHDOG_LOG_TAIL_LINES = 20;
+	// time the watchdog gets after startup to report the service state for the pid we have written
+	private static final long STARTUP_CHECK_DELAY_SECONDS = 30;
+	private static final String STATUS_ERROR_PREFIX = "ERROR";
+
+	private static final String INSTANCES_DIR = SERVICE_DIR + "instances" + File.separator;
+	private static final String INSTANCE_SUFFIX = ".instance";
+	private static final long INSTANCE_HEARTBEAT_SECONDS = 30;
+	// an instance file not updated for this long belongs to a Tomcat that is gone (e.g. killed)
+	private static final long INSTANCE_MAX_AGE_SECONDS = 90;
+	// left over instance files older than this are removed
+	private static final long INSTANCE_CLEANUP_AGE_SECONDS = 24 * 60 * 60;
+	private static final String INSTANCE_FILE = INSTANCES_DIR + UUID.randomUUID() + INSTANCE_SUFFIX;
 
 	public enum RestartState {
 		/**
@@ -140,9 +173,10 @@ public class TomcatServiceRestarter {
 			if (!parent.exists() && !parent.mkdirs()) {
 				throw new IOException("Cannot create directory: " + parent);
 			}
-			Files.createFile(flag.toPath());
-			LOGGER.info("Tomcat restart requested by {}, created restart flag {} for the watchdog", user, FLAG_PATH);
+			LOGGER.info("Tomcat restart requested by {}, creating restart flag {} for the watchdog", user, FLAG_PATH);
 		}
+		// the pid tells the watchdog which service to restart, also if the flag was left over
+		Files.writeString(flag.toPath(), "pid=" + ProcessHandle.current().pid() + System.lineSeparator());
 
 		registerShutdownListener();
 		status = new RestartStatus(RestartState.REQUESTED, "Restart requested, waiting for the watchdog to pick it up.");
@@ -150,6 +184,186 @@ public class TomcatServiceRestarter {
 		monitor.setDaemon(true);
 		monitor.start();
 		return status;
+	}
+
+	/**
+	 * Called at startup of the wiki: publishes the process id for the watchdog and checks, after the watchdog had
+	 * time to pick it up, whether a restart would work. Problems are logged as warnings, so they are noticed before
+	 * somebody actually needs the restart.
+	 */
+	public static void onStartup() {
+		if (!new File(SERVICE_DIR).isDirectory()) {
+			LOGGER.info("Tomcat restart watchdog is not set up (no directory {})", SERVICE_DIR);
+			return;
+		}
+		writePidFile();
+		registerInstance();
+		if (!new File(ALIVE_PATH).exists()) {
+			LOGGER.info("Tomcat restart watchdog is not set up (no heartbeat file {})", ALIVE_PATH);
+			return;
+		}
+		Thread check = new Thread(() -> {
+			try {
+				Thread.sleep(STARTUP_CHECK_DELAY_SECONDS * 1000);
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				return;
+			}
+			String problem = getWatchdogProblem();
+			if (problem == null) {
+				LOGGER.info("Tomcat restart watchdog is ready: {}", Objects.requireNonNullElse(getWatchdogServiceStatus(),
+						"running, but it does not report the service state (outdated watchdog script?)"));
+			}
+			else {
+				LOGGER.warn("Restarting Tomcat via the watchdog will currently not work: {}", problem);
+			}
+		}, "Tomcat-Restart-Watchdog-Check");
+		check.setDaemon(true);
+		check.start();
+	}
+
+	/**
+	 * Writes the heartbeat file of this instance and keeps it up to date until the web app is destroyed.
+	 */
+	private static void registerInstance() {
+		Properties properties = new Properties();
+		properties.setProperty("pid", String.valueOf(ProcessHandle.current().pid()));
+		properties.setProperty("host", getHostName());
+		properties.setProperty("started", Instant.now().toString());
+		properties.setProperty("catalina.base", String.valueOf(System.getProperty("catalina.base")));
+		Path file = Path.of(INSTANCE_FILE);
+		try {
+			writeInstanceFile(file, properties);
+		}
+		catch (IOException e) {
+			LOGGER.warn("Cannot register this Tomcat in {}, other Tomcats using the same restart directory cannot detect it",
+					INSTANCES_DIR, e);
+			return;
+		}
+		ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor(runnable -> {
+			Thread thread = new Thread(runnable, "Tomcat-Restart-Instance-Heartbeat");
+			thread.setDaemon(true);
+			return thread;
+		});
+		heartbeat.scheduleAtFixedRate(() -> {
+			try {
+				// rewritten if it is gone, e.g. removed by hand or by another Tomcat
+				if (!file.toFile().setLastModified(System.currentTimeMillis())) writeInstanceFile(file, properties);
+			}
+			catch (IOException e) {
+				LOGGER.warn("Cannot update the heartbeat of this Tomcat in {}", file, e);
+			}
+		}, INSTANCE_HEARTBEAT_SECONDS, INSTANCE_HEARTBEAT_SECONDS, TimeUnit.SECONDS);
+		ServletContextEventListener.registerOnContextDestroyedTask(event -> {
+			heartbeat.shutdownNow();
+			try {
+				Files.deleteIfExists(file);
+			}
+			catch (IOException e) {
+				LOGGER.warn("Cannot remove the heartbeat file {} of this Tomcat", file, e);
+			}
+		});
+	}
+
+	private static void writeInstanceFile(Path file, Properties properties) throws IOException {
+		Files.createDirectories(file.getParent());
+		try (OutputStream out = Files.newOutputStream(file)) {
+			properties.store(out, "Tomcat using this restart directory, see TomcatServiceRestarter");
+		}
+	}
+
+	/**
+	 * Returns descriptions of the other running Tomcats that use the same restart directory. Files of Tomcats that
+	 * are gone are ignored, and removed if they are from this machine or older than a day.
+	 */
+	private static List<String> getOtherInstances() {
+		File[] files = new File(INSTANCES_DIR).listFiles((dir, name) -> name.endsWith(INSTANCE_SUFFIX));
+		if (files == null) return List.of();
+		String ownFile = new File(INSTANCE_FILE).getName();
+		String ownHost = getHostName();
+		List<String> others = new ArrayList<>();
+		for (File file : files) {
+			if (file.getName().equals(ownFile)) continue;
+			long age = getAgeSeconds(file);
+			if (age > INSTANCE_CLEANUP_AGE_SECONDS) {
+				// left over by a Tomcat that did not shut down properly
+				//noinspection ResultOfMethodCallIgnored
+				file.delete();
+				continue;
+			}
+			Properties properties = new Properties();
+			try (InputStream in = Files.newInputStream(file.toPath())) {
+				properties.load(in);
+			}
+			catch (IOException e) {
+				continue;
+			}
+			String host = properties.getProperty("host", "?");
+			String pid = properties.getProperty("pid", "?");
+			boolean sameHost = host.equals(ownHost);
+			// another web app in this Tomcat (same JVM) is restarted together with us, so it is no conflict
+			if (sameHost && pid.equals(String.valueOf(ProcessHandle.current().pid()))) continue;
+			// a Tomcat that is gone: on this machine its process is not running (e.g. killed before it could remove
+			// its file), in general its file is no longer updated (this also covers a pid reused by another process)
+			if ((sameHost && !isProcessAlive(pid)) || age > INSTANCE_MAX_AGE_SECONDS) {
+				//noinspection ResultOfMethodCallIgnored
+				if (sameHost) file.delete();
+				continue;
+			}
+			others.add("process " + pid + " on " + host + ", started " + properties.getProperty("started", "?")
+					   + ", catalina.base " + properties.getProperty("catalina.base", "?"));
+		}
+		return others;
+	}
+
+	private static boolean isProcessAlive(String pid) {
+		try {
+			return ProcessHandle.of(Long.parseLong(pid)).map(ProcessHandle::isAlive).orElse(false);
+		}
+		catch (NumberFormatException e) {
+			// unreadable pid, rather keep it than remove the file of a running Tomcat, the age decides
+			return true;
+		}
+	}
+
+	private static String getHostName() {
+		String host = System.getenv(OS.WINDOWS.isCurrentOS() ? "COMPUTERNAME" : "HOSTNAME");
+		if (host != null && !host.isBlank()) return host;
+		try {
+			return InetAddress.getLocalHost().getHostName();
+		}
+		catch (IOException e) {
+			return "unknown";
+		}
+	}
+
+	private static void writePidFile() {
+		try {
+			Files.writeString(Path.of(PID_PATH), ProcessHandle.current().pid() + System.lineSeparator());
+		}
+		catch (IOException e) {
+			LOGGER.warn("Cannot write process id to {}, the watchdog has to rely on the configured service name", PID_PATH, e);
+		}
+	}
+
+	/**
+	 * Returns the state of the Tomcat service as reported by the watchdog in the second line of the heartbeat file,
+	 * starting with "OK" or "ERROR", or null if the watchdog does not report it (e.g. older watchdog scripts).
+	 */
+	public static @Nullable String getWatchdogServiceStatus() {
+		File alive = new File(ALIVE_PATH);
+		if (!alive.exists()) return null;
+		try {
+			// strip the BOM Windows PowerShell writes with UTF8 encoding
+			String content = new String(Files.readAllBytes(alive.toPath()), StandardCharsets.UTF_8).replace("\uFEFF", "");
+			List<String> lines = content.lines().map(String::trim).filter(line -> !line.isEmpty()).toList();
+			return lines.size() < 2 ? null : lines.get(1);
+		}
+		catch (IOException e) {
+			LOGGER.warn("Cannot read watchdog heartbeat file {}", ALIVE_PATH, e);
+			return null;
+		}
 	}
 
 	/**
@@ -193,7 +407,7 @@ public class TomcatServiceRestarter {
 			if (shutdownStarted) return;
 			String message = "The watchdog removed the restart flag, but Tomcat did not shut down within "
 							 + SHUTDOWN_TIMEOUT_SECONDS + " s. The restart most likely failed, see " + LOG_PATH
-							 + " on the server (e.g. wrong service name or missing permission to restart the service).";
+							 + " on the server (e.g. Tomcat service not found or missing permission to restart the service).";
 			LOGGER.error("{}\n{}", message, getWatchdogLogTail());
 			status = new RestartStatus(RestartState.NOT_RESTARTED, message);
 		}
@@ -256,6 +470,17 @@ public class TomcatServiceRestarter {
 		}
 		if (!isWatchdogActive()) {
 			return "The watchdog heartbeat file " + ALIVE_PATH + " was last updated " + getAgeSeconds(alive) + " s ago, the watchdog is probably not running.";
+		}
+		List<String> otherInstances = getOtherInstances();
+		if (!otherInstances.isEmpty()) {
+			return "Several Tomcats use the restart directory " + SERVICE_DIR + ": this one (process "
+				   + ProcessHandle.current().pid() + ") and " + String.join("; ", otherInstances)
+				   + ". A restart could hit the wrong Tomcat, so it is disabled. Give each Tomcat its own directory "
+				   + "(-Dknowwe.tomcat.restart.dir) and its own watchdog.";
+		}
+		String serviceStatus = getWatchdogServiceStatus();
+		if (serviceStatus != null && serviceStatus.startsWith(STATUS_ERROR_PREFIX)) {
+			return "The watchdog reports: " + serviceStatus.substring(STATUS_ERROR_PREFIX.length()).trim();
 		}
 		if (!new File(LOG_PATH).exists()) {
 			return "The watchdog log file " + LOG_PATH + " does not exist.";

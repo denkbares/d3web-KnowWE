@@ -5,11 +5,16 @@
 # ==============================================================
 
 # --- Configuration ---
-$flagPath   = "C:\tomcat-restart\restart.flag"      # Path to flag file
-$alivePath  = "C:\tomcat-restart\watchdog.alive"    # Path to heartbeat file
-$service    = "Tomcat9"                             # Service name
-$logFile    = "C:\tomcat-restart\watchdog.log"      # Path to log file
-$logMaxSize = 1048576                               # 1 MB
+$flagPath       = "C:\tomcat-restart\restart.flag"      # Path to flag file
+$alivePath      = "C:\tomcat-restart\watchdog.alive"    # Path to heartbeat file
+$pidPath        = "C:\tomcat-restart\tomcat.pid"        # Process id of the wiki, written by the wiki at startup
+$servicePattern = "Tomcat*"                             # Only services matching this name pattern are restarted
+$logFile        = "C:\tomcat-restart\watchdog.log"      # Path to log file
+$logMaxSize     = 1048576                               # 1 MB
+
+# The Tomcat service is determined on every run, so a new service name (e.g. after a Tomcat update) needs no change
+# here: first the service running the process id the wiki has written (into the flag or tomcat.pid), otherwise the
+# only service matching $servicePattern.
 
 # --- Helper: Write timestamped log lines (UTF-8, so the web app can read them) ---
 function Log([string]$message) {
@@ -29,17 +34,68 @@ function Describe-Error($err) {
     return $text
 }
 
-# --- Helper: Describe the current state and logon account of the service ---
-function Describe-Service {
+# --- Helper: Read a process id from a file, either plain or as "pid=<number>" ---
+function Read-ProcessId([string]$path) {
+    if (-not (Test-Path $path)) { return $null }
     try {
-        $svc = Get-CimInstance -ClassName Win32_Service -Filter "Name='$service'" -ErrorAction Stop
-        if (-not $svc) {
-            return "Service '$service' NOT FOUND - check the service name configured in this script"
-        }
-        return "Service '$service': State=$($svc.State), StartMode=$($svc.StartMode), Account=$($svc.StartName), ProcessId=$($svc.ProcessId)"
-    } catch {
-        return "Could not query service '$service': $(Describe-Error $_)"
+        $content = Get-Content -Path $path -Raw -ErrorAction Stop
+        if ($content -match '(\d+)') { return [int]$Matches[1] }
+    } catch { }
+    return $null
+}
+
+# --- Helper: Find the service running the given process id (or its parent, if the JVM runs as child process) ---
+function Find-ServiceByProcessId([int]$processId) {
+    $svc = Get-CimInstance -ClassName Win32_Service -Filter "ProcessId=$processId" -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -like $servicePattern } | Select-Object -First 1
+    if ($svc) { return $svc }
+    $proc = Get-CimInstance -ClassName Win32_Process -Filter "ProcessId=$processId" -ErrorAction SilentlyContinue
+    if ($proc -and $proc.ParentProcessId) {
+        return Get-CimInstance -ClassName Win32_Service -Filter "ProcessId=$($proc.ParentProcessId)" -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -like $servicePattern } | Select-Object -First 1
     }
+    return $null
+}
+
+# --- Helper: Determine the Tomcat service; returns the service (or $null) and a description of how it was found ---
+function Resolve-TomcatService {
+    $tried = @()
+    foreach ($source in @($flagPath, $pidPath)) {
+        $processId = Read-ProcessId $source
+        if ($processId) {
+            $svc = Find-ServiceByProcessId $processId
+            if ($svc) { return @{ Service = $svc; Description = "found via process id $processId from $source" } }
+            $tried += "no service '$servicePattern' runs process id $processId from $source"
+        }
+    }
+    try {
+        $candidates = @(Get-CimInstance -ClassName Win32_Service -ErrorAction Stop | Where-Object { $_.Name -like $servicePattern })
+    } catch {
+        return @{ Service = $null; Description = "could not list services: $(Describe-Error $_)" }
+    }
+    if ($candidates.Count -eq 1) {
+        return @{ Service = $candidates[0]; Description = "only service matching '$servicePattern'" }
+    }
+    # e.g. the service of an old Tomcat version is still installed, but no longer running
+    $running = @($candidates | Where-Object { $_.State -eq 'Running' })
+    if ($running.Count -eq 1) {
+        return @{ Service = $running[0]; Description = "only running service matching '$servicePattern'" }
+    }
+    if ($candidates.Count -eq 0) {
+        $tried += "no service matches '$servicePattern'"
+    } else {
+        $tried += "several services match '$servicePattern' ($(($candidates | ForEach-Object { $_.Name }) -join ', '))"
+    }
+    return @{ Service = $null; Description = ($tried -join "; ") }
+}
+
+# --- Helper: One line describing the resolved service, starting with OK or ERROR (reported to the wiki) ---
+function Describe-TomcatService($resolved) {
+    if (-not $resolved.Service) {
+        return "ERROR Tomcat service not found: $($resolved.Description)"
+    }
+    $svc = $resolved.Service
+    return "OK Service '$($svc.Name)' ($($resolved.Description)): State=$($svc.State), StartMode=$($svc.StartMode), Account=$($svc.StartName), ProcessId=$($svc.ProcessId)"
 }
 
 # --- Helper: Rotate log if it gets too large ---
@@ -58,25 +114,33 @@ Log "------------------------------------------------------------"
 Log "Watchdog started as user: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
 Log "Running from: $PSScriptRoot"
 Log "Monitoring flag: $flagPath"
-Log (Describe-Service)
+$lastServiceState = Describe-TomcatService (Resolve-TomcatService)
+Log $lastServiceState
 Log "------------------------------------------------------------"
 
 # --- Main loop ---
 while ($true) {
     try {
+        $resolved = Resolve-TomcatService
         if (Test-Path $flagPath) {
             $owner = "unknown"
             try { $owner = (Get-Acl $flagPath).Owner } catch { }
-            Log "Flag detected (created by $owner) -> attempting to restart service '$service'"
-            Log "Before restart: $(Describe-Service)"
-            $started = Get-Date
-            try {
-                Restart-Service -Name $service -Force -ErrorAction Stop
-                Log "Service '$service' restarted successfully after $([int]((Get-Date) - $started).TotalSeconds) s."
-            } catch {
-                Log "ERROR while restarting service after $([int]((Get-Date) - $started).TotalSeconds) s: $(Describe-Error $_)"
+            if (-not $resolved.Service) {
+                Log "Flag detected (created by $owner), but cannot restart: $(Describe-TomcatService $resolved)"
+            } else {
+                $name = $resolved.Service.Name
+                Log "Flag detected (created by $owner) -> attempting to restart service '$name'"
+                Log "Before restart: $(Describe-TomcatService $resolved)"
+                $started = Get-Date
+                try {
+                    Restart-Service -Name $name -Force -ErrorAction Stop
+                    Log "Service '$name' restarted successfully after $([int]((Get-Date) - $started).TotalSeconds) s."
+                } catch {
+                    Log "ERROR while restarting service '$name' after $([int]((Get-Date) - $started).TotalSeconds) s: $(Describe-Error $_)"
+                }
+                $resolved = Resolve-TomcatService
+                Log "After restart: $(Describe-TomcatService $resolved)"
             }
-            Log "After restart: $(Describe-Service)"
             try {
                 # removed even if the restart failed, so the flag does not trigger an unexpected restart later
                 Remove-Item $flagPath -Force -ErrorAction Stop
@@ -85,9 +149,18 @@ while ($true) {
                 Log "ERROR removing flag: $(Describe-Error $_)"
             }
         }
-        # Heartbeat-Datei aktualisieren
+
+        # log changes of the service state, e.g. when the service was renamed or removed
+        $serviceState = Describe-TomcatService $resolved
+        $stateKey = { param($s) $s -replace ', ProcessId=\d+$', '' -replace 'process id \d+', 'process id' }
+        if ((& $stateKey $serviceState) -ne (& $stateKey $lastServiceState)) {
+            Log "Service state changed: $serviceState"
+            $lastServiceState = $serviceState
+        }
+
+        # heartbeat: first line time stamp, second line the service state, read by the wiki
         try {
-            Set-Content -Path $alivePath -Value (Get-Date -Format 'u') -ErrorAction Stop
+            Set-Content -Path $alivePath -Value @((Get-Date -Format 'u'), $serviceState) -Encoding UTF8 -ErrorAction Stop
         } catch {
             Log "ERROR updating alive file: $(Describe-Error $_)"
         }

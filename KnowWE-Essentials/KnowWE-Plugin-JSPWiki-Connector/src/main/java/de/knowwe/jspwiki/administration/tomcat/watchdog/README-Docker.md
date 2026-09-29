@@ -32,11 +32,19 @@ das Wiki verwendet. Standard ist `/knowwe/tomcat-restart/`, abweichend über `-D
 Tomcat-Benutzer im Container braucht dort Schreibrechte. Er legt das Flag und die Test-Datei
 `restart-test.flag` an, ohne Schreibrechte zeigt das Wiki „Unavailable: Restart Tomcat“.
 
+Mehrere Container brauchen je ein **eigenes** Host-Verzeichnis und einen eigenen Aufruf des Skripts, eine Kopie
+mit angepassten Pfaden. Teilen sich Container ein Verzeichnis, erkennt das Wiki das an den Dateien unter
+`instances/` und sperrt den Neustart, siehe [README.md](README.md), „Mehrere Tomcats auf einem Server“.
+
 ### Regelmäßiger Aufruf
 
 Das Skript prüft **einmal** auf das Flag, aktualisiert `watchdog.alive` und beendet sich. Es muss deshalb
 regelmäßig aufgerufen werden, und zwar **häufiger als alle 60 s**. Sonst meldet das Wiki den Watchdog
 zwischendurch als inaktiv, weil `watchdog.alive` älter als 60 s ist.
+
+In der zweiten Zeile von `watchdog.alive` steht der Containerzustand (`OK Container '…': State=running` bzw.
+`ERROR Container '…' not found or not accessible …`). Das Wiki zeigt ihn am Button. Bei `ERROR` schreibt es beim
+Start eine Warnung ins Wiki-Log und zeigt „Unavailable“.
 
 - Ein Cron-Job im Minutentakt reicht dafür **nicht**.
 - Geeignet ist z. B. ein systemd-Timer mit `OnUnitActiveSec=10s` oder eine Schleife:
@@ -71,9 +79,19 @@ Meldungen im `watchdog.log`:
 | `ERROR removing flag: …` | Neustart war erfolgreich, aber das Flag konnte nicht gelöscht werden. Rechte auf das Verzeichnis prüfen, sonst startet der Container beim nächsten Aufruf erneut |
 | `Fehler: Kein Container-Name übergeben!` | Das Skript wurde ohne Argument aufgerufen |
 
+Den Containerzustand meldet das Skript nicht im Log, sondern in `watchdog.alive`. Steht dort `ERROR Container …`,
+ist der Containername falsch, oder das Konto darf `docker inspect` nicht ausführen.
+
 ---
 
 ## 📝 Änderungen
+
+**2026-09-29**
+
+- Der Heartbeat `watchdog.alive` enthält in der zweiten Zeile den Containerzustand (`OK …`/`ERROR …`). So erkennt
+  das Wiki einen falschen Containernamen schon beim Start und nicht erst beim Klick auf „Restart Tomcat“. Die
+  PID-Datei `tomcat.pid`, die das Wiki schreibt, braucht die Docker-Variante nicht.
+- Teilen sich mehrere Container ein Verzeichnis, sperrt das Wiki den Neustart mit Warnung.
 
 **2026-09-28**
 

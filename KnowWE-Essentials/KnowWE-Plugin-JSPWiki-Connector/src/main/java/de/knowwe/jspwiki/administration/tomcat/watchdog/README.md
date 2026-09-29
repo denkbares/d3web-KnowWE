@@ -24,12 +24,20 @@ Einrichtung der Docker-Variante steht in [README-Docker.md](README-Docker.md).
 ```
 Wiki (Tomcat-Konto)                         Watchdog (eigenes Konto)
 ───────────────────                         ────────────────────────
-Button „Restart Tomcat“ sichtbar,  ◄──────  schreibt alle ~10 s watchdog.alive
-  wenn watchdog.alive < 60 s alt,           schreibt watchdog.log
+Beim Start: schreibt eigene PID    ──────►  sucht alle ~10 s den Tomcat-Dienst
+  nach tomcat.pid                             (über die PID, sonst über den Namen)
+                                   ◄──────  schreibt watchdog.alive:
+                                              Zeitstempel + „OK …“ / „ERROR …“
+30 s nach dem Start: Warnung im             schreibt watchdog.log
+  Wiki-Log, wenn ein Neustart nicht
+  funktionieren würde
+Button „Restart Tomcat“ sichtbar,
+  wenn watchdog.alive < 60 s alt,
+  der Watchdog den Dienst gefunden hat,
   watchdog.log existiert und
   das Verzeichnis beschreibbar ist
 Klick → legt restart.flag an       ──────►  findet restart.flag
-                                            → startet Dienst/Container neu
+  (enthält die PID)                         → startet den Dienst/Container neu
                                             → löscht restart.flag
 Wiki prüft nach: Wurde das Flag
   abgeholt? Fährt der Tomcat herunter?
@@ -44,8 +52,10 @@ Alle Dateien liegen in einem gemeinsamen Verzeichnis:
 C:\tomcat-restart\            (Linux/Docker: /knowwe/tomcat-restart/)
  ├── watchdog.ps1             das Skript (Windows)
  ├── watchdog.log             Log des Watchdogs (wird automatisch erstellt)
- ├── watchdog.alive           Heartbeat, alle ~10 s aktualisiert (wird automatisch erstellt)
- ├── restart.flag             Neustart-Anforderung (legt das Wiki an, löscht der Watchdog)
+ ├── watchdog.alive           Heartbeat mit Dienstzustand, alle ~10 s aktualisiert (wird automatisch erstellt)
+ ├── tomcat.pid               Prozess-ID des Wikis, schreibt das Wiki bei jedem Start
+ ├── instances\               eine Heartbeat-Datei je laufendem Wiki, siehe „Mehrere Tomcats“
+ ├── restart.flag             Neustart-Anforderung mit PID (legt das Wiki an, löscht der Watchdog)
  └── restart-test.flag        kurzzeitig vom Wiki angelegt, um die Schreibrechte zu prüfen
 ```
 
@@ -53,17 +63,54 @@ Das Wiki liest das Verzeichnis aus der System-Property **`knowwe.tomcat.restart.
 `C:\tomcat-restart\` (Windows) bzw. `/knowwe/tomcat-restart/` (sonst). Die Pfade in den Skripten sind **fest
 eingetragen**. Wer das Verzeichnis ändert, muss deshalb die Property **und** die Pfade im Skript anpassen.
 
+### Mehrere Tomcats auf einem Server
+
+Jeder Tomcat braucht ein **eigenes Verzeichnis und einen eigenen Watchdog**: `-Dknowwe.tomcat.restart.dir`
+je Tomcat setzen, das Skript je Verzeichnis kopieren, dort die Pfade oben im Skript anpassen und je Kopie eine
+eigene geplante Aufgabe anlegen. Teilen sich mehrere Tomcats ein Verzeichnis, gibt es `tomcat.pid`,
+`restart.flag` und die Dienstzeile in `watchdog.alive` nur einmal für alle, ein Neustart könnte also den falschen
+Tomcat treffen.
+
+Das Wiki erkennt diesen Fall. Jedes Wiki legt beim Start eine Datei `instances\<zufällige ID>.instance` an, mit
+PID, Rechnername, Startzeit und `catalina.base`. Die ID ist bei jedem Start neu. Die PID taugt nicht als Name,
+weil sie sich zwischen Rechnern bzw. Containern wiederholt, in Containern ist sie oft sogar immer gleich. Das Wiki
+aktualisiert die Datei alle 30 s, schreibt sie neu, falls sie fehlt, und löscht sie beim Herunterfahren.
+
+Findet ein Wiki die Datei eines **anderen laufenden** Tomcats, sperrt es den Neustart: „Unavailable“ am Button,
+503 bei der Aktion, Warnung beim Start. Die Meldung nennt beide Tomcats. Geprüft wird bei jedem Aufruf der
+Administration-Seite und bei jedem Klick. Der Zustand **heilt** deshalb von selbst: Ist der andere Tomcat weg,
+ist der Neustart beim nächsten Laden der Seite wieder möglich.
+
+Wann eine andere Datei als „weg“ gilt:
+- **Selber Rechner:** sofort, wenn der Prozess mit ihrer PID nicht mehr läuft, etwa bei einem abgeschossenen
+  Tomcat, der seine Datei nicht mehr löschen konnte. Die Datei wird dann gelöscht.
+- **Allgemein:** wenn sie seit mehr als 90 s nicht aktualisiert wurde. Das gilt für Tomcats auf anderen Rechnern
+  bzw. in anderen Containern, deren Prozess das Wiki nicht sehen kann. Es gilt auch, wenn die PID eines beendeten
+  Tomcats inzwischen ein anderer Prozess bekommen hat: Die Datei wird nicht mehr aktualisiert, der scheinbare
+  Konflikt hält also höchstens 90 s. Solche Dateien vom selben Rechner werden gelöscht, fremde nach einem Tag.
+- **Kein Konflikt** ist eine Datei vom selben Rechner mit der eigenen PID, also eine zweite Web-App im selben
+  Tomcat. Die wird ohnehin mit neu gestartet.
+
 ---
 
 ## 🪟 Einrichtung unter Windows
 
 ### 1. Skript ablegen und anpassen
 
-`tomcat-restart-watchdog.ps1` als **`C:\tomcat-restart\watchdog.ps1`** ablegen. Dann oben im Skript prüfen:
+`tomcat-restart-watchdog.ps1` als **`C:\tomcat-restart\watchdog.ps1`** ablegen.
 
-- **`$service`**: der Dienstname des Tomcat, nicht der Anzeigename. Standard ist `Tomcat9`. Den tatsächlichen
-  Namen zeigt `Get-Service *tomcat*` oder `services.msc` → Eigenschaften → „Dienstname“.
-- die Pfade `$flagPath`, `$alivePath` und `$logFile`, falls nicht `C:\tomcat-restart` verwendet wird.
+Ein Dienstname muss **nicht** eingetragen werden. Der Watchdog bestimmt den Dienst bei jedem Durchlauf neu,
+ein neuer Dienstname nach einem Tomcat-Update braucht also keine Änderung am Skript:
+1. Der Dienst, der die Prozess-ID aus `restart.flag` bzw. `tomcat.pid` ausführt, auch wenn die JVM als
+   Kindprozess des Dienstes läuft.
+2. Sonst der einzige Dienst, dessen Name auf `$servicePattern` passt (Standard `Tomcat*`). Passen mehrere,
+   der einzige davon, der gerade läuft.
+
+Oben im Skript ggf. anpassen:
+- **`$servicePattern`**: Nur Dienste mit passendem Namen werden neu gestartet, falls der Tomcat-Dienst anders
+  heißt, z. B. `KnowSEC*`. Den Dienstnamen (nicht den Anzeigenamen) zeigt `Get-Service` oder `services.msc` →
+  Eigenschaften → „Dienstname“.
+- die Pfade `$flagPath`, `$alivePath`, `$pidPath` und `$logFile`, falls nicht `C:\tomcat-restart` verwendet wird.
 
 ### 2. Geplante Aufgabe einrichten
 
@@ -104,7 +151,8 @@ eingetragen**. Wer das Verzeichnis ändert, muss deshalb die Property **und** di
 - „Beenden, wenn die Aufgabe länger als ... läuft“ → deaktivieren
 - „Wenn die Aufgabe bereits ausgeführt wird → Keine neue Instanz starten“ → aktivieren
 
-Speichern. Nach Änderungen am Skript die Aufgabe beenden und neu starten, das Skript läuft in einer Endlosschleife.
+Speichern. **Nach Änderungen am Skript die Aufgabe beenden und neu starten.** Das Skript läuft in einer
+Endlosschleife und liest Änderungen sonst nicht ein.
 
 ### 3. Berechtigungen
 
@@ -143,18 +191,21 @@ und ein gespeichertes Kennwort, das nicht ablaufen darf.
    [2026-10-01 10:23:14] Watchdog started as user: NT-AUTORITÄT\SYSTEM
    [2026-10-01 10:23:14] Running from: C:\tomcat-restart
    [2026-10-01 10:23:14] Monitoring flag: C:\tomcat-restart\restart.flag
-   [2026-10-01 10:23:14] Service 'Tomcat9': State=Running, StartMode=Auto, Account=NT AUTHORITY\LocalService, ProcessId=4711
+   [2026-10-01 10:23:14] OK Service 'Tomcat90122' (found via process id 4711 from C:\tomcat-restart\tomcat.pid): State=Running, StartMode=Auto, Account=NT AUTHORITY\LocalService, ProcessId=4711
    [2026-10-01 10:23:14] ------------------------------------------------------------
    ```
-   Steht dort `Service 'Tomcat9' NOT FOUND`, stimmt `$service` nicht.
-3. **Alive-Datei prüfen:** Der Zeitstempel von `C:\tomcat-restart\watchdog.alive` muss sich alle ~10 s ändern.
+   Beginnt die Dienstzeile mit `ERROR Tomcat service not found`, hat der Watchdog den Dienst nicht gefunden, der
+   Rest der Zeile nennt den Grund.
+3. **Alive-Datei prüfen:** `C:\tomcat-restart\watchdog.alive` muss sich alle ~10 s ändern. Die zweite Zeile ist
+   dieselbe Dienstzeile (`OK …` bzw. `ERROR …`).
 4. **Im Wiki:** Auf der Administration-Seite muss „Restart Tomcat“ erscheinen, nicht „Unavailable: Restart
-   Tomcat“. Ein Klick startet den Tomcat neu. Im `watchdog.log` steht dann:
+   Tomcat“. Der Tooltip zeigt die Dienstzeile des Watchdogs. Nach einem Neustart des Wikis steht im Wiki-Log
+   `Tomcat restart watchdog is ready: OK …`. Ein Klick startet den Tomcat neu. Im `watchdog.log` steht dann:
    ```
-   [2026-10-01 10:30:02] Flag detected (created by NT-AUTORITÄT\LOKALER DIENST) -> attempting to restart service 'Tomcat9'
-   [2026-10-01 10:30:02] Before restart: Service 'Tomcat9': State=Running, ...
-   [2026-10-01 10:30:14] Service 'Tomcat9' restarted successfully after 12 s.
-   [2026-10-01 10:30:14] After restart: Service 'Tomcat9': State=Running, ...
+   [2026-10-01 10:30:02] Flag detected (created by NT-AUTORITÄT\LOKALER DIENST) -> attempting to restart service 'Tomcat90122'
+   [2026-10-01 10:30:02] Before restart: OK Service 'Tomcat90122' (found via process id 4711 from C:\tomcat-restart\restart.flag): State=Running, ...
+   [2026-10-01 10:30:14] Service 'Tomcat90122' restarted successfully after 12 s.
+   [2026-10-01 10:30:14] After restart: OK Service 'Tomcat90122' (...): State=Running, ...
    [2026-10-01 10:30:14] Flag removed successfully.
    ```
    Ohne Wiki lässt sich der Watchdog testen, indem man die Datei von Hand anlegt:
@@ -164,7 +215,21 @@ und ein gespeichertes Kennwort, das nicht ablaufen darf.
 
 ## 🔍 Fehlersuche
 
+**Warnung beim Start des Wikis.** 30 s nach dem Start prüft das Wiki, ob ein Neustart funktionieren würde,
+und schreibt ins Wiki-Log:
+- `Tomcat restart watchdog is ready: OK …`: alles in Ordnung.
+- `Restarting Tomcat via the watchdog will currently not work: …`: Der Grund steht dahinter, dieselben Gründe
+  wie bei „Unavailable“ unten. So fällt ein Problem nach einem Deployment auf, bevor jemand den Neustart braucht.
+- `… it does not report the service state (outdated watchdog script?)`: Der Watchdog läuft, ist aber ein altes
+  Skript ohne Dienstzeile. Neues Skript einspielen und die Aufgabe neu starten.
+- `Tomcat restart watchdog is not set up`: Verzeichnis oder `watchdog.alive` fehlen, es ist kein Watchdog
+  eingerichtet.
+
 **Button zeigt „Unavailable: Restart Tomcat“.** Der Tooltip nennt den Grund:
+- *Several Tomcats use the restart directory …*: Mehrere laufende Tomcats teilen sich das Verzeichnis, siehe
+  „Mehrere Tomcats auf einem Server“. Jedem ein eigenes Verzeichnis geben.
+- *The watchdog reports: Tomcat service not found: …*: Der Watchdog findet den Dienst nicht. Dahinter steht,
+  was er versucht hat, z. B. dass kein Dienst auf `$servicePattern` passt oder mehrere laufen.
 - *heartbeat file … does not exist*: Watchdog nicht eingerichtet oder nie gelaufen.
 - *heartbeat file … was last updated N s ago*: Watchdog läuft nicht mehr. Status der geplanten Aufgabe prüfen.
 - *watchdog log file … does not exist*: Watchdog nie gestartet oder falsches Verzeichnis.
@@ -179,12 +244,15 @@ Serverzugriff ist dafür nicht nötig.
 | Meldung im Wiki-Log | Bedeutung | Typische Ursache |
 |---|---|---|
 | `The watchdog did not process the restart flag within 60 s` | Das Flag wurde nicht abgeholt. Das Wiki löscht es dann selbst, damit später kein unerwarteter Neustart ausgelöst wird | Watchdog hängt oder beobachtet ein anderes Verzeichnis. Docker: `docker restart` fehlgeschlagen, siehe [README-Docker.md](README-Docker.md) |
-| `The watchdog removed the restart flag, but Tomcat did not shut down within 120 s` | Der Watchdog hat es versucht, der Tomcat lief aber weiter | Falscher Dienstname, fehlende Rechte zum Beenden des Dienstes. Die genaue Meldung steht in den mitgeloggten `watchdog.log`-Zeilen (`ERROR while restarting service …`) |
+| `The watchdog removed the restart flag, but Tomcat did not shut down within 120 s` | Der Watchdog hat es versucht, der Tomcat lief aber weiter | Dienst nicht gefunden, fehlende Rechte zum Beenden des Dienstes. Die genaue Meldung steht in den mitgeloggten `watchdog.log`-Zeilen (`… cannot restart: ERROR Tomcat service not found …` bzw. `ERROR while restarting service …`) |
 | `restart flag … already exists since N s` | Beim Klick lag schon ein altes Flag | Ein früherer Versuch wurde nicht verarbeitet |
 | `but the restart watchdog is not available` | Klick, obwohl der Watchdog nicht verfügbar ist | siehe „Unavailable“ oben |
 
 Häufige Fehler im `watchdog.log`:
-- `Service 'Tomcat9' NOT FOUND`: `$service` an den tatsächlichen Dienstnamen anpassen.
+- `ERROR Tomcat service not found: …` bzw. `Flag detected …, but cannot restart: …`: Der Dienst passt nicht auf
+  `$servicePattern`, oder es laufen mehrere passende Dienste. `$servicePattern` anpassen.
+- `Service state changed: …`: Der Dienstzustand hat sich geändert, z. B. beim Neustart oder weil der Dienst nach
+  einem Tomcat-Update anders heißt. Nur zur Information.
 - `ERROR while restarting service …: … kann nicht geöffnet werden … Zugriff verweigert` (bzw. `Access is denied`):
   Die Aufgabe läuft nicht als SYSTEM bzw. ohne Rechte auf den Dienst.
 - `Flag detected …` ohne folgende Zeile: `Restart-Service` hängt, meist weil der Tomcat nicht herunterfährt.
@@ -194,6 +262,23 @@ Häufige Fehler im `watchdog.log`:
 ---
 
 ## 📝 Änderungen
+
+**2026-09-29** (der Neustart schlug fehl, weil nach einem Tomcat-Update der Dienstname nicht mehr stimmte: Er war
+im Skript zwar angepasst, die laufende Aufgabe aber nicht neu gestartet)
+
+- **Dienst ohne festen Namen:** Das Wiki schreibt beim Start seine Prozess-ID nach `tomcat.pid` und in
+  `restart.flag`. Der Watchdog findet den Dienst über diese PID, sonst als einzigen (laufenden) Dienst, der auf
+  `$servicePattern` passt (Standard `Tomcat*`). Er bestimmt den Dienst bei jedem Durchlauf neu, ein neuer
+  Dienstname nach einem Tomcat-Update braucht also keine Änderung und keinen Neustart der Aufgabe. `$service`
+  entfällt.
+- **Probleme fallen vor dem Klick auf:** Der Watchdog schreibt den Dienstzustand (`OK …`/`ERROR …`) als zweite
+  Zeile in `watchdog.alive` und loggt Änderungen. Das Wiki wertet das aus: 30 s nach dem Start eine Warnung im
+  Wiki-Log, wenn ein Neustart nicht funktionieren würde, „Unavailable“ mit Grund am Button, und im Tooltip des
+  verfügbaren Buttons der gefundene Dienst. Ein altes Watchdog-Skript ohne Dienstzeile wird beim Start gemeldet.
+- **Mehrere Tomcats im selben Verzeichnis:** Jedes Wiki registriert sich mit einer Heartbeat-Datei unter
+  `instances/`. Läuft ein anderer Tomcat mit demselben Verzeichnis, ist der Neustart mit Warnung gesperrt, statt
+  womöglich den falschen Tomcat zu treffen.
+- **Docker:** Der Heartbeat enthält ebenso den Containerzustand, siehe [README-Docker.md](README-Docker.md).
 
 **2026-09-28** (nach der Rückmeldung, dass der letzte Neustart nicht funktioniert hat und auch im Log keine hilfreichen Infos zu finden waren)
 
