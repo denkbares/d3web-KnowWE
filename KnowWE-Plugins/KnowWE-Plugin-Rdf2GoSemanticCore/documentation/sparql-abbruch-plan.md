@@ -104,7 +104,11 @@ nicht verwendet.
   `volatile`-Feld halten. `cancel(reason)` ruft `close()` darauf auf. Ein Abbruch vor dem Start setzt nur das
   Flag, dann startet die Abfrage gar nicht erst.
 - `SparqlTask.cancel(...)`: ruft immer `callable.cancel(reason)` und dann `super.cancel(false)` auf, **nie mit
-  Interrupt**. `stop()` und den auskommentierten Reaper entfernen.
+  Interrupt**.
+- **Aufräumen der `Thread.stop()`-Reste:** Die GraphDB-Probleme, wegen denen der Reaper abgeschaltet wurde, kamen
+  von `Thread.stop()`. Deshalb entfernen: `SparqlTask.stop()` samt `LockSupport.unpark`, den auskommentierten
+  Aufruf `sparqlReaperPool.execute(new SparqlTaskReaper(this))` in `SparqlTask.run()` und das Feld `thread`, falls
+  es danach nicht mehr gebraucht wird. Die Klasse `SparqlTaskReaper` und der Pool existieren nicht mehr.
 - **Registry laufender Abfragen** in `Rdf2GoCore`: jeder Task, der gestartet wird, gecacht oder nicht, meldet sich
   an und nach dem Ende wieder ab. Die Registry ist die Grundlage für Phase 2, 4 und 5 und kommt ohne GraphDB aus.
   Pro Eintrag: Abfragetext, Priorität, Zeitlimit, Start- und Laufzeit, Zustand (wartend/laufend), anfordernde
@@ -224,9 +228,7 @@ worden, statt 10 Minuten weiterzulaufen.
   nachziehen, dann aber zusammen mit `6e8925e61`.
 - Reihenfolge: Phase 1 → 2 → 3, jeweils als eigener Commit mit Tests. Phase 4 und 5 bauen auf Phase 1 auf und
   können danach parallel entstehen.
-- Vor dem Start mit K. Herud abstimmen (letzte Änderung an `SparqlCache`). Außerdem klären, wer den Reaper damals
-  wegen der GraphDB-Probleme deaktiviert hat und welche Probleme das waren. Vermutlich kamen sie von
-  `Thread.stop()`, das dieser Plan nicht mehr verwendet.
+- Vor dem Start mit K. Herud abstimmen (letzte Änderung an `SparqlCache`).
 
 ---
 
