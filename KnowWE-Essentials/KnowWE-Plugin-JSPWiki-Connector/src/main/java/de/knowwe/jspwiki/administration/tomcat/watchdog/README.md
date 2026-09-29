@@ -211,6 +211,40 @@ und ein gespeichertes Kennwort, das nicht ablaufen darf.
    Ohne Wiki lässt sich der Watchdog testen, indem man die Datei von Hand anlegt:
    `echo test > C:\tomcat-restart\restart.flag`.
 
+### 5. Update auf eine neue Version
+
+Das Watchdog-Skript ist **nicht** im WAR enthalten, es wird als eigene Datei `tomcat-restart-watchdog.ps1`
+mitgeliefert. Erst das Skript, dann das WAR einspielen: Das neue Skript funktioniert auch mit dem alten Wiki (es
+findet den Dienst dann über `$servicePattern`), das neue Wiki mit einem alten Skript meldet dagegen
+`outdated watchdog script?`.
+
+1. **Skript ersetzen:** Die neue `tomcat-restart-watchdog.ps1` als `C:\tomcat-restart\watchdog.ps1` ablegen.
+   Einen Dienstnamen nicht mehr eintragen, nur `$servicePattern` anpassen, falls der Tomcat-Dienst nicht mit
+   `Tomcat` beginnt (Abschnitt 1).
+2. **Aufgabe neu starten**, sonst läuft das alte Skript weiter. Taskplaner → „Tomcat Restart Watchdog“ →
+   „Beenden“, dann „Ausführen“, oder in einer PowerShell als Administrator:
+   ```powershell
+   Stop-ScheduledTask "Tomcat Restart Watchdog"; Start-ScheduledTask "Tomcat Restart Watchdog"
+   ```
+   Die Aufgabe muss als `SYSTEM` mit höchsten Privilegien laufen.
+3. **Watchdog prüfen:** Am Ende von `watchdog.log` steht ein neuer Startblock mit
+   `Watchdog started as user: NT-AUTORITÄT\SYSTEM` und `OK Service '…' (…): State=Running, …`. Bei
+   `ERROR Tomcat service not found: …` nennt der Rest der Zeile den Grund.
+4. **Schreibrechte erneuern:** Das Wiki legt jetzt auch `tomcat.pid` und den Unterordner `instances\` an, die
+   Rechte des Tomcat-Kontos müssen also für den ganzen Ordner vererbt werden (`(OI)(CI)`, Abschnitt 3):
+   ```powershell
+   icacls "C:\tomcat-restart" /grant "*S-1-5-19:(OI)(CI)(M)"
+   ```
+5. **WAR einspielen** wie gewohnt (Tomcat stoppen, WAR ersetzen, Tomcat starten).
+6. **Nach dem Start prüfen:** Etwa 30 s nach dem Start steht im Wiki-Log `Tomcat restart watchdog is ready: OK
+   Service '…'`, sonst `Restarting Tomcat via the watchdog will currently not work: …` mit dem Grund. Auf der
+   Administration-Seite steht „Restart Tomcat“ (nicht „Unavailable: …“), der Tooltip nennt den gefundenen Dienst.
+   Optional ein Test-Klick: Nach dem Neustart lädt die Seite von selbst neu und zeigt die Anmeldung, weil die
+   Sitzung mit dem Neustart endet.
+
+Nutzen zwei laufende Tomcats auf dem Server dasselbe `C:\tomcat-restart` (z. B. Test und Produktion), ist der
+Button danach mit Begründung gesperrt, siehe „Mehrere Tomcats auf einem Server“.
+
 ---
 
 ## 🔍 Fehlersuche
@@ -279,6 +313,12 @@ im Skript zwar angepasst, die laufende Aufgabe aber nicht neu gestartet)
   `instances/`. Läuft ein anderer Tomcat mit demselben Verzeichnis, ist der Neustart mit Warnung gesperrt, statt
   womöglich den falschen Tomcat zu treffen.
 - **Docker:** Der Heartbeat enthält ebenso den Containerzustand, siehe [README-Docker.md](README-Docker.md).
+- **Nach dem Test unter Windows** (Windows 10, PowerShell 5.1, Tomcat 9 als Dienst unter „Lokaler Dienst“):
+  - Nach dem Neustart lädt die Seite neu, auch wenn die Sitzung weg ist. Vorher beantwortete der neue Tomcat die
+    Statusabfrage mit 403 und die Seite wartete endlos („waiting for it to come back…“).
+  - Ein zweiter Tomcat auf demselben Rechner wird erkannt. Vorher galt er als beendet, weil Java unter Windows
+    Prozesse anderer Dienste nicht öffnen darf, seine Datei unter `instances/` wurde gelöscht.
+  - Der Tooltip zeigt den Dienstzustand in einer eigenen Zeile. Neuer Abschnitt „Update auf eine neue Version“.
 
 **2026-09-28** (nach der Rückmeldung, dass der letzte Neustart nicht funktioniert hat und auch im Log keine hilfreichen Infos zu finden waren)
 
