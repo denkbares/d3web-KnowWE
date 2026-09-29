@@ -30,7 +30,7 @@ if (-not $restartDirExists) {
     Write-Error "Restart directory '$RestartDir' does not exist"
     exit 1
 }
-$flagPath      = Join-Path $RestartDir "restart.flag"      # Restart request, written by the wiki
+$flagPath       = Join-Path $RestartDir "restart.flag"      # Restart request, written by the wiki
 $alivePath      = Join-Path $RestartDir "watchdog.alive"    # Heartbeat with the service state, read by the wiki
 $pidPath        = Join-Path $RestartDir "tomcat.pid"        # Process id of the wiki, written by the wiki at startup
 $logFile        = Join-Path $RestartDir "watchdog.log"      # Log of this script, read by the wiki
