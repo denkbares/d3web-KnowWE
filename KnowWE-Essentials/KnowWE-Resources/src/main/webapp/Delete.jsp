@@ -37,6 +37,7 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="de.knowwe.core.utils.KnowWEUtils" %>
+<%@ page import="javax.servlet.http.HttpServletResponse" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 
 <%!
@@ -57,8 +58,17 @@
 	String deleteall = request.getParameter("delete-all");
 	String delete = request.getParameter("delete");
 
+	boolean isAttachment = wikiContext.getPage() instanceof Attachment;
+	boolean allowPageDeletionForNonAdmin = !isAttachment && KnowWEUtils.allowPageDeletionForNonAdmin(wikiContext.getName());
 
-	if (!(wikiContext.getPage() instanceof Attachment) && deleteAdmin == null && !KnowWEUtils.allowPageDeletionForNonAdmin(wikiContext.getName())) {
+	// the button for deleting the page including its history is only shown to admins, but this has to be checked here too
+	if (deleteAdmin != null && !isAttachment && !allowPageDeletionForNonAdmin && !wikiContext.hasAdminPermissions()) {
+		log.warn("Denied deleting page " + wikiContext.getName() + " including its revision history, user is no admin. User=" + request.getRemoteUser() + ", host=" + HttpUtil.getRemoteAddress(request));
+		response.sendError(HttpServletResponse.SC_FORBIDDEN, "Only administrators can delete a page including its revision history.");
+		return;
+	}
+
+	if (!isAttachment && deleteAdmin == null && !allowPageDeletionForNonAdmin) {
 		String deleteText = "Deleted by " + wikiContext.getCurrentUser()
 				.getName() + " at " + FORMATTER.format(LocalDateTime.now());
 		wiki.getManager(PageManager.class).putPageText(wikiContext.getPage(), deleteText);
