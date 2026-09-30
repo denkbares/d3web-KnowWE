@@ -974,6 +974,12 @@ public class JSPWikiConnector implements WikiConnector {
 			boolean wasLocked = isArticleLocked(title);
 			if (!wasLocked) lockArticle(title, user);
 
+			// the attachments go with the page, like in PageManager#deletePage(String), but keeping the author
+			AttachmentManager attachmentManager = getAttachmentManager();
+			for (org.apache.wiki.api.core.Attachment attachment : attachmentManager.listAttachments(page)) {
+				attachment.setAuthor(user);
+				attachmentManager.deleteAttachment(attachment);
+			}
 			getPageManager().deletePage(page);
 
 			if (!wasLocked) unlockArticle(title, user);

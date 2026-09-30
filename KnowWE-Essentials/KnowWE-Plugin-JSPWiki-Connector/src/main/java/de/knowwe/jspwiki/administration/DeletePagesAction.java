@@ -48,7 +48,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.ArticleDeletedEvent;
 import de.knowwe.event.ArticleUpdateEvent;
-import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
 
 /**
@@ -327,8 +326,8 @@ public class DeletePagesAction extends AbstractAction {
 			}
 			for (Entry entry : deferredDeletes) {
 				try {
-					// like Delete.jsp: deletes the attachments as well (other than WikiConnector.deleteArticle)
-					((JSPWikiConnector) connector).getPageManager().deletePage(entry.getName());
+					// deletes the attachments as well
+					connector.deleteArticle(entry.getName(), user);
 					LOGGER.info("Deleted page {} including its revision history", entry.getName());
 				}
 				catch (Exception e) {
