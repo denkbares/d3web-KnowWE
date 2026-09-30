@@ -150,6 +150,14 @@ public interface ArticleManager {
 	void commit();
 
 	/**
+	 * Returns whether the current thread opened this manager with {@link #open()} and has not committed yet. Changes
+	 * registered then are only compiled with the (outermost) commit of that thread.
+	 */
+	default boolean isOpenedByCurrentThread() {
+		return false;
+	}
+
+	/**
 	 * Call this method after opening with {@link ArticleManager#open()} in case an error occurred and the changes on
 	 * file system have been rolled back also. This could be done in conjunction with a rollback abel FileProvider
 	 * (i.e. GitVersioningFileProvider).

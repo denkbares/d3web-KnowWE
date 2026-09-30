@@ -999,13 +999,15 @@ public class JSPWikiConnector implements WikiConnector {
 
 	/**
 	 * Removes the article from the article manager (as the KnowWEPlugin would when the page is deleted) and waits for
-	 * the compilation. Afterwards the KnowWEPlugin finds no article any more and does nothing. Skipped for pages that
-	 * are not compiled and on compile threads, where the article manager cannot be opened. If the caller holds the
-	 * article manager open itself, the compilation only starts with its commit and can't be awaited here.
+	 * the compilation. Afterwards the KnowWEPlugin finds no article any more and does nothing. Skipped, so the
+	 * KnowWEPlugin removes the article as before, for pages that are not compiled, on compile threads (the article
+	 * manager cannot be opened there), and if the caller holds the article manager open itself: the compilation would
+	 * only start with its commit, so it cannot be awaited here.
 	 */
 	private void compileDeletion(String title) {
 		if (CompilerManager.isCompileThread()) return;
 		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		if (articleManager.isOpenedByCurrentThread()) return;
 		Article article = articleManager.getArticle(title);
 		if (article == null) return;
 		articleManager.open();
