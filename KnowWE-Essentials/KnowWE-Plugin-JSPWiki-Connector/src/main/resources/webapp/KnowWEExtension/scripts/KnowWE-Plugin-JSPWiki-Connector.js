@@ -150,9 +150,6 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
   const report = dialog.find(".delete-pages-report");
   const getMode = () => dialog.find("input[name=delete-pages-mode]:checked").val();
 
-  // a shown report no longer fits as soon as the input changes
-  namesArea.on("input", () => report.empty());
-  dialog.find("input[name=delete-pages-mode]").on("change", () => report.empty());
 
   const request = function(preview) {
     KNOWWE.editCommons.showAjaxLoader();
@@ -166,6 +163,7 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
   };
 
   const countOk = result => result.results.filter(entry => entry.status === "OK").length;
+  const pages = count => count + (count === 1 ? " page" : " pages");
 
   const renderReport = function(result) {
     report.empty();
@@ -175,7 +173,7 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     }
     const groups = {};
     result.results.forEach(entry => (groups[entry.status] = groups[entry.status] || []).push(entry));
-    const title = result.preview ? "Preview (nothing changed yet):" : "Done:";
+    const title = result.preview ? "Preview:" : "Done:";
     report.append(jq$("<p class='delete-pages-report-title'>").text(title));
     ["OK", "FAILED", "NOT_FOUND", "NO_PERMISSION", "ALREADY_CLEARED", "DUPLICATE"].forEach(status => {
       const entries = groups[status];
@@ -184,7 +182,7 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
       const details = jq$("<details>").addClass("delete-pages-" + status.toLowerCase());
       // problems are shown expanded, the (possibly long) list of pages that are fine is collapsed
       if (status !== "OK") details.attr("open", "open");
-      details.append(jq$("<summary>").text(entries.length + " " + (entries.length === 1 ? "page" : "pages") + " " + label));
+      details.append(jq$("<summary>").text(pages(entries.length) + " " + label));
       const list = jq$("<ul>");
       entries.forEach(entry => list.append(jq$("<li>").text(entry.page + (entry.message ? ": " + entry.message : ""))));
       details.append(list);
@@ -192,24 +190,60 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     });
   };
 
-  const preview = () => request(true).done(renderReport);
+  // The action button first shows the preview together with the question, and only a second click clears or deletes
+  // the previewed pages. The question is asked in the dialog instead of with confirm(): embedded browsers may suppress
+  // native dialogs and silently answer "no".
+  let confirming = false;
+  const actionButton = () => dialog.dialog("widget").find(".delete-pages-action");
 
-  const perform = function() {
-    // always show the preview first, so the confirmation can tell what will happen
-    request(true).done(result => {
-      renderReport(result);
-      const count = countOk(result);
-      if (count === 0) return;
-      const question = result.mode === "CLEAR"
-        ? "Really clear " + count + " pages? The content can be restored from the page history."
-        : "Really delete " + count + " pages including their attachments and revision history? This cannot be undone!";
-      // give the report the chance to render before the (blocking) confirmation
-      setTimeout(() => {
-        if (!confirm(question)) return;
-        request(false).done(renderReport);
-      }, 50);
-    });
+  const reset = function() {
+    confirming = false;
+    report.empty();
+    const verb = getMode() === "CLEAR" ? "Clear" : "Delete";
+    actionButton().button("option", "label", verb + " (Preview)")
+      .removeClass("delete-pages-warning delete-pages-danger");
   };
+
+  const askToConfirm = function(result) {
+    const count = countOk(result);
+    const clear = result.mode === "CLEAR";
+    if (count === 0) {
+      if (result.results.length > 0) report.append(jq$("<p></p>", document).text(clear ? "Nothing to clear." : "Nothing to delete."));
+      return;
+    }
+    const their = count === 1 ? "its" : "their";
+    const question = clear
+      ? "Really clear " + pages(count) + "? The content can be restored from the page history."
+      : "Really delete " + pages(count) + " including " + their + " attachments and revision history? This cannot be undone!";
+    const box = jq$("<div class='delete-pages-confirm'></div>", document)
+      .addClass(clear ? "delete-pages-confirm-warning" : "delete-pages-confirm-danger")
+      .text(question);
+    report.append(box);
+    box[0].scrollIntoView({ block: "nearest" });
+    actionButton().button("option", "label", (clear ? "Clear " : "Delete ") + pages(count))
+      .addClass(clear ? "delete-pages-warning" : "delete-pages-danger")
+      .trigger("focus");
+    confirming = true;
+  };
+
+  const act = function() {
+    if (confirming) {
+      request(false).done(result => {
+        reset();
+        renderReport(result);
+      });
+    }
+    else {
+      request(true).done(result => {
+        renderReport(result);
+        askToConfirm(result);
+      });
+    }
+  };
+
+  // what was previewed and confirmed must be what gets changed, so every change of the input starts over
+  namesArea.on("input", reset);
+  dialog.find("input[name=delete-pages-mode]").on("change", reset);
 
   dialog.dialog({
     title: "Delete multiple pages",
@@ -217,13 +251,14 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     resizable: true,
     width: Math.min(800, jq$(window).width() * 0.9),
     maxHeight: jq$(window).height() * 0.9,
+    classes: { "ui-dialog": "delete-pages-frame" },
     close: () => dialog.dialog("destroy").remove(),
     buttons: [
-      { text: "Preview", click: preview },
-      { text: "Delete", "class": "delete-pages-perform", click: perform },
+      { text: "Clear (Preview)", "class": "delete-pages-action", click: act },
       { text: "Close", click: () => dialog.dialog("close") }
     ]
   });
+  reset();
 };
 
 KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {

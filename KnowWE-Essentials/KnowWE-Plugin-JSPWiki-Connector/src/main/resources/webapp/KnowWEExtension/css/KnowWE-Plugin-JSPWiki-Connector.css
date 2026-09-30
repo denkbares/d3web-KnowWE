@@ -201,12 +201,33 @@
 	opacity: 1;
 }
 
-/* the jQuery UI icon sprite for the close button is not available, so show a plain "x" instead */
-.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close {
+/* the jQuery UI theme sets a smaller font (Arial 1.1em), use the one of the wiki pages (the dialog is a child of the body) */
+.ui-dialog.delete-pages-frame,
+.ui-dialog.delete-pages-frame .ui-dialog-title,
+.ui-dialog.delete-pages-frame .ui-dialog-content,
+.ui-dialog.delete-pages-frame .ui-button,
+.ui-dialog.delete-pages-frame input,
+.ui-dialog.delete-pages-frame textarea {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+.ui-dialog.delete-pages-frame .ui-dialog-title {
+	font-weight: bold;
+}
+
+.ui-dialog.delete-pages-frame .delete-pages-names {
+	font-family: monospace;
+}
+
+/* the jQuery UI icon sprite for the close button is not available, so show a plain "x" instead, centered vertically */
+.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close {
+	top: 50%;
 	width: 24px;
 	height: 24px;
-	margin-top: -12px;
+	margin: 0;
 	padding: 0;
+	transform: translateY(-50%);
 	border: none;
 	background: none;
 	text-indent: 0;
@@ -215,25 +236,55 @@
 	cursor: pointer;
 }
 
-.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close .ui-icon {
+.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close .ui-icon {
 	display: none;
 }
 
-.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close::before {
+.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close::before {
 	content: "\00d7";
 	font-size: 20px;
 	line-height: 24px;
 }
 
-.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close:hover::before {
+.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close:hover::before {
 	color: #c9302c;
 }
+
+.delete-pages-dialog .delete-pages-confirm {
+	margin: 0.8em 0 0.3em;
+	padding: 0.6em 0.8em;
+	border-left: 4px solid;
+}
+
+.delete-pages-dialog .delete-pages-confirm-warning {
+	border-left-color: #ec971f;
+	background: #fcf8e3;
+}
+
+.delete-pages-dialog .delete-pages-confirm-danger {
+	border-left-color: #c9302c;
+	background: #fdf2f2;
+}
+
+/* KnowWE sets the colors of all dialog buttons with !important (KnowWE-Plugin-CompositeEdit.css), so the confirming
+   action button needs it as well: yellow for what can be undone, red for what cannot */
+.ui-dialog.delete-pages-frame .ui-button.delete-pages-warning {
+	color: #fff !important;
+	background-color: #f0ad4e !important;
+	border-color: #eea236 !important;
+}
+
+.ui-dialog.delete-pages-frame .ui-button.delete-pages-danger {
+	color: #fff !important;
+	background-color: #d9534f !important;
+	border-color: #d43f3a !important;
+}
+
 
 .delete-pages-dialog .delete-pages-names {
 	width: 100%;
 	height: 14em;
 	box-sizing: border-box;
-	font-family: monospace;
 }
 
 .delete-pages-dialog .delete-pages-mode label {
