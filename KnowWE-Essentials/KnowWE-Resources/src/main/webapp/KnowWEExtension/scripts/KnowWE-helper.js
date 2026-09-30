@@ -80,8 +80,15 @@ KNOWWE.helper = function() {
      * @returns the local section storage as a JSON object (or string if desired)
      */
     getLocalSectionStorage: function(sectionID, asString) {
-      let storageString = localStorage.getItem(sectionID) || "{}";
-      return asString ? storageString : JSON.parse(storageString);
+      let storageString = (sectionID && localStorage.getItem(sectionID)) || "{}";
+      if (asString) return storageString;
+      try {
+        return JSON.parse(storageString);
+      } catch (e) {
+        // key collision with foreign (non-JSON) local storage entries
+        console.warn("Ignoring invalid local section storage for " + sectionID, e);
+        return {};
+      }
     },
 
     isFontAwesomeProAvailable: function() {
