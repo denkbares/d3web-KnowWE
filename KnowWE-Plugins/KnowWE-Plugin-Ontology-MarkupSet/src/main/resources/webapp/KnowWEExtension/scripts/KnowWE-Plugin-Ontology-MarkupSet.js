@@ -74,7 +74,7 @@ KNOWWE.plugin.sparql.downloadExcel = function(id, paramFilename, actionClass, fi
     cache: false,
     success: function(json) {
       window.location = "action/SparqlDownloadAction?SectionID=" + id +
-        "&filename=" + paramFilename +
+        "&filename=" + encodeURIComponent(paramFilename) +
         "&download=true" +
         "&downloadFile=" + json["downloadFile"] +
         "&filtered=" + filtered;

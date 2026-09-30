@@ -150,9 +150,21 @@ public class JSPWikiMarkupUtils {
 		if (lastHeadline != null) {
 			fileName += " " + lastHeadline;
 		}
-		fileName = fileName.replaceAll("%%\\([^)]+\\)", "")
+		return toFileName(fileName);
+	}
+
+	/**
+	 * Turns the given text, e.g. a page title followed by a headline, into a file name for downloads. Markup and
+	 * special characters are removed, but letters and digits of all languages (e.g. umlauts) are kept.
+	 *
+	 * @param text the text to create the file name from
+	 * @return the file name, without any extension
+	 */
+	public static String toFileName(String text) {
+		// \w would only match ascii letters and remove umlauts, so use the unicode categories instead
+		String fileName = text.replaceAll("%%\\([^)]+\\)", "")
 				.replaceAll("%", "")
-				.replaceAll("[^\\w-_ ]", "");
+				.replaceAll("[^\\p{L}\\p{M}\\p{N}_ -]", "");
 		fileName = Strings.ellipsis(fileName, 100, "");
 		fileName = Strings.trim(fileName);
 		return Strings.encodeFileName(fileName);
