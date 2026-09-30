@@ -36,6 +36,7 @@
 <%@ page import="org.joda.time.DateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.time.LocalDateTime" %>
+<%@ page import="de.knowwe.core.Environment" %>
 <%@ page import="de.knowwe.core.utils.KnowWEUtils" %>
 <%@ page import="javax.servlet.http.HttpServletResponse" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
@@ -93,7 +94,13 @@
 	if (deleteall != null || deleteAdmin != null) {
 		log.info("Deleting page " + pagereq + ". User=" + request.getRemoteUser() + ", host=" + HttpUtil.getRemoteAddress(request));
 
-		wiki.getManager(PageManager.class).deletePage(pagereq);
+		if (wikipage instanceof Attachment) {
+			wiki.getManager(PageManager.class).deletePage(pagereq);
+		}
+		else {
+			// deletes the attachments as well, but only after the page is compiled away, which may still need them
+			Environment.getInstance().getWikiConnector().deleteArticle(pagereq, wikiContext.getCurrentUser().getName());
+		}
 
 		FixedQueue trail = (FixedQueue) session.getAttribute(BreadcrumbsTag.BREADCRUMBTRAIL_KEY);
 		if (trail != null) {
