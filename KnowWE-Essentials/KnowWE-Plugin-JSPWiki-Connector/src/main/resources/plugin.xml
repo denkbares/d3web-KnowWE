@@ -26,6 +26,23 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DeletePagesToolProvider">
+		<parameter id="class" value="de.knowwe.jspwiki.administration.DeletePagesToolProvider" />
+		<parameter id="name" value="DeletePagesToolProvider" />
+		<parameter id="description" value="Offers the dialog to delete multiple pages at once" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="Administration" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DeletePagesAction">
+		<parameter id="class" value="de.knowwe.jspwiki.administration.DeletePagesAction" />
+		<parameter id="name" value="DeletePagesAction" />
+		<parameter id="description" value="Clears or deletes multiple pages at once, or previews what would happen" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation" id="TomcatRestartWatchdogInstantiation">
 		<parameter id="class" value="de.knowwe.jspwiki.administration.tomcat.watchdog.TomcatRestartWatchdogInstantiation" />
 		<parameter id="name" value="TomcatRestartWatchdogInstantiation" />

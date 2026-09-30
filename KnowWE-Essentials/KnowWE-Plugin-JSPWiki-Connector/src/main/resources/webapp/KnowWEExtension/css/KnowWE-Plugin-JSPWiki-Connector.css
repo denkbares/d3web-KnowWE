@@ -200,3 +200,66 @@
 .copy-tooltipster.visible {
 	opacity: 1;
 }
+
+/* the jQuery UI icon sprite for the close button is not available, so show a plain "x" instead */
+.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close {
+	width: 24px;
+	height: 24px;
+	margin-top: -12px;
+	padding: 0;
+	border: none;
+	background: none;
+	text-indent: 0;
+	font-size: 0;
+	color: inherit;
+	cursor: pointer;
+}
+
+.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close .ui-icon {
+	display: none;
+}
+
+.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close::before {
+	content: "\00d7";
+	font-size: 20px;
+	line-height: 24px;
+}
+
+.ui-dialog:has(> .delete-pages-dialog) .ui-dialog-titlebar-close:hover::before {
+	color: #c9302c;
+}
+
+.delete-pages-dialog .delete-pages-names {
+	width: 100%;
+	height: 14em;
+	box-sizing: border-box;
+	font-family: monospace;
+}
+
+.delete-pages-dialog .delete-pages-mode label {
+	display: block;
+	margin: 0.3em 0;
+	font-weight: normal;
+}
+
+.delete-pages-dialog .delete-pages-report-title {
+	margin: 0.8em 0 0.3em;
+	font-weight: bold;
+}
+
+.delete-pages-dialog .delete-pages-report summary {
+	display: list-item;
+	cursor: pointer;
+}
+
+.delete-pages-dialog .delete-pages-report ul {
+	max-height: 12em;
+	overflow-y: auto;
+	margin: 0.2em 0 0.5em;
+}
+
+.delete-pages-dialog .delete-pages-failed summary,
+.delete-pages-dialog .delete-pages-not_found summary,
+.delete-pages-dialog .delete-pages-no_permission summary {
+	color: #c9302c;
+}

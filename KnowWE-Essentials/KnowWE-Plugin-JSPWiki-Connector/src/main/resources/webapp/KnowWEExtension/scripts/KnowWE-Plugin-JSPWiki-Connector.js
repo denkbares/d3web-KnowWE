@@ -120,6 +120,112 @@ KNOWWE.plugin.jspwikiConnector.restartTomcat = function() {
   getStatus("restart-tomcat").done(handleStatus).fail(jqXHR => stop(() => KNOWWE.notification.error_jqXHR(jqXHR)));
 };
 
+KNOWWE.plugin.jspwikiConnector.deletePages = function() {
+
+  const statusLabels = {
+    NOT_FOUND: "not found",
+    NO_PERMISSION: "no permission",
+    DUPLICATE: "listed more than once",
+    ALREADY_CLEARED: "already cleared",
+    FAILED: "failed"
+  };
+  const okLabel = function(result) {
+    const verb = result.mode === "CLEAR" ? "cleared" : "deleted";
+    return result.preview ? "will be " + verb : verb;
+  };
+
+  const dialog = jq$(
+    "<div class='delete-pages-dialog'>" +
+    "<p>One page name per line, the names have to match exactly (upper and lower case do not matter).</p>" +
+    "<textarea class='delete-pages-names' spellcheck='false'></textarea>" +
+    "<div class='delete-pages-mode'>" +
+    "<label><input type='radio' name='delete-pages-mode' value='CLEAR' checked> " +
+    "Clear pages (the content can be restored from the page history)</label>" +
+    "<label><input type='radio' name='delete-pages-mode' value='DELETE'> " +
+    "Delete pages including their attachments and revision history (cannot be undone)</label>" +
+    "</div>" +
+    "<div class='delete-pages-report'></div>" +
+    "</div>", document); // the dialog is attached to the document of its content, so create it in this one
+  const namesArea = dialog.find(".delete-pages-names");
+  const report = dialog.find(".delete-pages-report");
+  const getMode = () => dialog.find("input[name=delete-pages-mode]:checked").val();
+
+  // a shown report no longer fits as soon as the input changes
+  namesArea.on("input", () => report.empty());
+  dialog.find("input[name=delete-pages-mode]").on("change", () => report.empty());
+
+  const request = function(preview) {
+    KNOWWE.editCommons.showAjaxLoader();
+    return jq$.ajax({
+      url: "action/DeletePagesAction",
+      method: "POST",
+      dataType: "json",
+      data: { pages: namesArea.val(), mode: getMode(), preview: preview }
+    }).always(() => KNOWWE.editCommons.hideAjaxLoader())
+      .fail(jqXHR => KNOWWE.notification.error_jqXHR(jqXHR));
+  };
+
+  const countOk = result => result.results.filter(entry => entry.status === "OK").length;
+
+  const renderReport = function(result) {
+    report.empty();
+    if (result.results.length === 0) {
+      report.append(jq$("<p>").text("No page names entered."));
+      return;
+    }
+    const groups = {};
+    result.results.forEach(entry => (groups[entry.status] = groups[entry.status] || []).push(entry));
+    const title = result.preview ? "Preview (nothing changed yet):" : "Done:";
+    report.append(jq$("<p class='delete-pages-report-title'>").text(title));
+    ["OK", "FAILED", "NOT_FOUND", "NO_PERMISSION", "ALREADY_CLEARED", "DUPLICATE"].forEach(status => {
+      const entries = groups[status];
+      if (!entries) return;
+      const label = status === "OK" ? okLabel(result) : statusLabels[status];
+      const details = jq$("<details>").addClass("delete-pages-" + status.toLowerCase());
+      // problems are shown expanded, the (possibly long) list of pages that are fine is collapsed
+      if (status !== "OK") details.attr("open", "open");
+      details.append(jq$("<summary>").text(entries.length + " " + (entries.length === 1 ? "page" : "pages") + " " + label));
+      const list = jq$("<ul>");
+      entries.forEach(entry => list.append(jq$("<li>").text(entry.page + (entry.message ? ": " + entry.message : ""))));
+      details.append(list);
+      report.append(details);
+    });
+  };
+
+  const preview = () => request(true).done(renderReport);
+
+  const perform = function() {
+    // always show the preview first, so the confirmation can tell what will happen
+    request(true).done(result => {
+      renderReport(result);
+      const count = countOk(result);
+      if (count === 0) return;
+      const question = result.mode === "CLEAR"
+        ? "Really clear " + count + " pages? The content can be restored from the page history."
+        : "Really delete " + count + " pages including their attachments and revision history? This cannot be undone!";
+      // give the report the chance to render before the (blocking) confirmation
+      setTimeout(() => {
+        if (!confirm(question)) return;
+        request(false).done(renderReport);
+      }, 50);
+    });
+  };
+
+  dialog.dialog({
+    title: "Delete multiple pages",
+    modal: true,
+    resizable: true,
+    width: Math.min(800, jq$(window).width() * 0.9),
+    maxHeight: jq$(window).height() * 0.9,
+    close: () => dialog.dialog("destroy").remove(),
+    buttons: [
+      { text: "Preview", click: preview },
+      { text: "Delete", "class": "delete-pages-perform", click: perform },
+      { text: "Close", click: () => dialog.dialog("close") }
+    ]
+  });
+};
+
 KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
 
   const timeDisplay = document.getElementById("compile-warning");
