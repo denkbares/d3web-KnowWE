@@ -202,26 +202,26 @@
 }
 
 /* the jQuery UI theme sets a smaller font (Arial 1.1em), use the one of the wiki pages (the dialog is a child of the body) */
-.ui-dialog.delete-pages-frame,
-.ui-dialog.delete-pages-frame .ui-dialog-title,
-.ui-dialog.delete-pages-frame .ui-dialog-content,
-.ui-dialog.delete-pages-frame .ui-button,
-.ui-dialog.delete-pages-frame input,
-.ui-dialog.delete-pages-frame textarea {
+.ui-dialog.admin-tool-dialog,
+.ui-dialog.admin-tool-dialog .ui-dialog-title,
+.ui-dialog.admin-tool-dialog .ui-dialog-content,
+.ui-dialog.admin-tool-dialog .ui-button,
+.ui-dialog.admin-tool-dialog input,
+.ui-dialog.admin-tool-dialog textarea {
 	font-family: inherit;
 	font-size: inherit;
 }
 
-.ui-dialog.delete-pages-frame .ui-dialog-title {
+.ui-dialog.admin-tool-dialog .ui-dialog-title {
 	font-weight: bold;
 }
 
-.ui-dialog.delete-pages-frame .delete-pages-names {
+.ui-dialog.admin-tool-dialog .delete-pages-names {
 	font-family: monospace;
 }
 
 /* the jQuery UI icon sprite for the close button is not available, so show a plain "x" instead, centered vertically */
-.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close {
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close {
 	top: 50%;
 	width: 24px;
 	height: 24px;
@@ -236,17 +236,17 @@
 	cursor: pointer;
 }
 
-.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close .ui-icon {
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close .ui-icon {
 	display: none;
 }
 
-.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close::before {
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close::before {
 	content: "\00d7";
 	font-size: 20px;
 	line-height: 24px;
 }
 
-.ui-dialog.delete-pages-frame .ui-dialog-titlebar-close:hover::before {
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close:hover::before {
 	color: #c9302c;
 }
 
@@ -267,14 +267,14 @@
 }
 
 /* KnowWE sets the colors of all dialog buttons with !important (KnowWE-Plugin-CompositeEdit.css), so the confirming
-   action button needs it as well: yellow for what can be undone, red for what cannot */
-.ui-dialog.delete-pages-frame .ui-button.delete-pages-warning {
+   buttons of the admin tools need it as well: yellow for what can be undone, red for what cannot */
+.ui-dialog.admin-tool-dialog .ui-button.admin-tool-warning {
 	color: #fff !important;
 	background-color: #f0ad4e !important;
 	border-color: #eea236 !important;
 }
 
-.ui-dialog.delete-pages-frame .ui-button.delete-pages-danger {
+.ui-dialog.admin-tool-dialog .ui-button.admin-tool-danger {
 	color: #fff !important;
 	background-color: #d9534f !important;
 	border-color: #d43f3a !important;

@@ -48,15 +48,48 @@ KNOWWE.plugin.jspwikiConnector.setReadOnly = function(active) {
   new _KA(options).send();
 };
 
+/**
+ * Asks for confirmation in a dialog of the page and calls onConfirm if confirmed. Used instead of confirm(), which
+ * embedded browsers may suppress: they answer "no" without showing anything. The severity "warning" (yellow) or
+ * "danger" (red) colors the confirming button.
+ */
+KNOWWE.plugin.jspwikiConnector.confirmAction = function(title, question, confirmText, severity, onConfirm) {
+  // the dialog is attached to the document of its content, so create it in this one
+  const box = jq$("<div class='admin-tool-question'></div>", document).text(question);
+  box.dialog({
+    title: title,
+    modal: true,
+    resizable: false,
+    width: Math.min(480, jq$(window).width() * 0.9),
+    classes: { "ui-dialog": "admin-tool-dialog" },
+    close: () => box.dialog("destroy").remove(),
+    buttons: [
+      {
+        text: confirmText, "class": "admin-tool-" + severity, click: () => {
+          box.dialog("close");
+          onConfirm();
+        }
+      },
+      { text: "Cancel", click: () => box.dialog("close") }
+    ]
+  });
+};
+
 KNOWWE.plugin.jspwikiConnector.restartWebApp = function() {
-  if (confirm("Are you sure you want to restart the web app? This may take a while...")) {
-    KNOWWE.editCommons.showAjaxLoader();
-    setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-webapp"}).done(() => window.location.reload()), 500);
-  }
+  KNOWWE.plugin.jspwikiConnector.confirmAction("Restart web app",
+    "Are you sure you want to restart the web app? This may take a while...", "Restart web app", "warning", () => {
+      KNOWWE.editCommons.showAjaxLoader();
+      setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-webapp"}).done(() => window.location.reload()), 500);
+    });
 };
 
 KNOWWE.plugin.jspwikiConnector.restartTomcat = function() {
-  if (!confirm("Are you sure you want to restart tomcat? This may take a while...")) return;
+  KNOWWE.plugin.jspwikiConnector.confirmAction("Restart Tomcat",
+    "Are you sure you want to restart Tomcat? This may take a while...", "Restart Tomcat", "warning",
+    KNOWWE.plugin.jspwikiConnector.performTomcatRestart);
+};
+
+KNOWWE.plugin.jspwikiConnector.performTomcatRestart = function() {
 
   const messageId = "tomcat-restart";
   const pollInterval = 3000;
@@ -201,7 +234,7 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     report.empty();
     const verb = getMode() === "CLEAR" ? "Clear" : "Delete";
     actionButton().button("option", "label", verb + " (Preview)")
-      .removeClass("delete-pages-warning delete-pages-danger");
+      .removeClass("admin-tool-warning admin-tool-danger");
   };
 
   const askToConfirm = function(result) {
@@ -221,7 +254,7 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     report.append(box);
     box[0].scrollIntoView({ block: "nearest" });
     actionButton().button("option", "label", (clear ? "Clear " : "Delete ") + pages(count))
-      .addClass(clear ? "delete-pages-warning" : "delete-pages-danger")
+      .addClass(clear ? "admin-tool-warning" : "admin-tool-danger")
       .trigger("focus");
     confirming = true;
   };
@@ -251,7 +284,7 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     resizable: true,
     width: Math.min(800, jq$(window).width() * 0.9),
     maxHeight: jq$(window).height() * 0.9,
-    classes: { "ui-dialog": "delete-pages-frame" },
+    classes: { "ui-dialog": "admin-tool-dialog" },
     close: () => dialog.dialog("destroy").remove(),
     buttons: [
       { text: "Clear (Preview)", "class": "delete-pages-action", click: act },

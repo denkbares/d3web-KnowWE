@@ -168,7 +168,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 				restartTomcat = new DefaultTool(Icon.WARNING,
 						"Unavailable: Restart Tomcat",
 						"Restart functionality currently not available: " + watchdogProblem,
-						"alert('Tomcat restart functionality currently not available or not set up.')",
+						"KNOWWE.notification.warn('Restart Tomcat', 'Tomcat restart functionality currently not available or not set up.')",
 						Tool.ActionType.ONCLICK,
 						Tool.CATEGORY_EXECUTE);
 			}
