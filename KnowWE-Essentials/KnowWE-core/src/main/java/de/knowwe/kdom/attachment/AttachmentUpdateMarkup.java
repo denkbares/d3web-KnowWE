@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -188,6 +189,17 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section) {
 		performUpdate(section, false, false);
+	}
+
+	/**
+	 * Updates the given sections of this markup type, e.g. all of them on one article. Subclasses may override it to
+	 * update the sections together, e.g. to change the article only once. By default, each section is updated on its
+	 * own, see {@link #performUpdate(Section, boolean, boolean)}.
+	 */
+	public void performUpdates(Collection<? extends Section<? extends AttachmentUpdateMarkup>> sections, boolean force, boolean allowWaitForOtherDownloads) {
+		for (Section<? extends AttachmentUpdateMarkup> section : sections) {
+			performUpdate(section, force, allowWaitForOtherDownloads);
+		}
 	}
 
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force, boolean allowWaitForOtherDownloads) {

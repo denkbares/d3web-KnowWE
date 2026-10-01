@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -548,6 +549,19 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				+ Strings.trimRight(referenceText)
 				+ "\n";
 		replacements.put(closingTag.getID(), initializedText);
+	}
+
+	/**
+	 * Polls all given markups together, so their updates change each page only once (see
+	 * {@link InterWikiImportUpdateService#pollMarkups(Collection, boolean)}).
+	 */
+	@Override
+	public void performUpdates(Collection<? extends Section<? extends AttachmentUpdateMarkup>> sections, boolean force, boolean allowWaitForOtherDownloads) {
+		List<Section<InterWikiImportMarkup>> markups = sections.stream()
+				.map(section -> $(section).closest(InterWikiImportMarkup.class).getFirst())
+				.filter(Objects::nonNull)
+				.toList();
+		UPDATE_SERVICE.pollMarkups(markups, force);
 	}
 
 	/**

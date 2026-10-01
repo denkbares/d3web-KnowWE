@@ -133,17 +133,16 @@ public final class InterWikiImportUpdateService {
 	};
 
 	private void forceUpdateAfterSave(ArticleManager articleManager, List<String> titles) {
+		List<Section<InterWikiImportMarkup>> markups = new ArrayList<>();
 		for (String title : titles) {
-			try {
-				Article article = articleManager.getArticle(title);
-				if (article == null) continue;
-				for (Section<InterWikiImportMarkup> markup : $(article).successor(InterWikiImportMarkup.class)) {
-					pollSingleMarkup(markup, true);
-				}
-			}
-			catch (RuntimeException e) {
-				LOGGER.warn("Unable to update InterWikiImports after saving page {}", title, e);
-			}
+			Article article = articleManager.getArticle(title);
+			if (article != null) markups.addAll($(article).successor(InterWikiImportMarkup.class).asList());
+		}
+		try {
+			pollMarkups(markups, true);
+		}
+		catch (RuntimeException e) {
+			LOGGER.warn("Unable to update InterWikiImports after saving pages {}", titles, e);
 		}
 	}
 
@@ -160,19 +159,32 @@ public final class InterWikiImportUpdateService {
 	 * prevents an unnecessary new attachment version when the content has not changed.
 	 */
 	public void pollSingleMarkup(Section<InterWikiImportMarkup> markup, boolean force) {
-		if (!Sections.isLive(markup)) return;
-		if (!AttachmentUpdateMarkup.isAutoUpdatingActive() && !force) return;
-		String wiki = InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup));
-		if (wiki.isBlank()) return;
+		pollMarkups(List.of(markup), force);
+	}
 
-		ImportInfo snapshot = new ImportInfo(
-				markup.getID(),
-				wiki,
-				markup.get().getPageName(markup),
-				markup.get().getSectionName(markup),
-				force ? null : markup.get().getLatestChange(markup),
-				markup.get().getImportSourceLabel(markup),
-				markup.get().getImportSourceLink(markup));
+	/**
+	 * Polls the given markups together, like {@link #pollSingleMarkup(Section, boolean)}: one request
+	 * per source wiki and one page change for all their updates. Polling the markups of a page one by
+	 * one would let each update write the page based on its previous text, so the update of one markup
+	 * (e.g. its {@code @latestChange}) would be overwritten by the next one.
+	 */
+	public void pollMarkups(Collection<Section<InterWikiImportMarkup>> markups, boolean force) {
+		if (!AttachmentUpdateMarkup.isAutoUpdatingActive() && !force) return;
+		Map<String, List<ImportInfo>> snapshotsByWiki = new LinkedHashMap<>();
+		for (Section<InterWikiImportMarkup> markup : markups) {
+			if (!Sections.isLive(markup)) continue;
+			String wiki = InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup));
+			if (wiki.isBlank()) continue;
+			snapshotsByWiki.computeIfAbsent(wiki, k -> new ArrayList<>()).add(new ImportInfo(
+					markup.getID(),
+					wiki,
+					markup.get().getPageName(markup),
+					markup.get().getSectionName(markup),
+					force ? null : markup.get().getLatestChange(markup),
+					markup.get().getImportSourceLabel(markup),
+					markup.get().getImportSourceLink(markup)));
+		}
+		if (snapshotsByWiki.isEmpty()) return;
 
 		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
@@ -181,11 +193,14 @@ public final class InterWikiImportUpdateService {
 
 		articleManager.open();
 		try {
-			List<ImportInfo> snapshots = List.of(snapshot);
-			PollResult result = pollSource(wiki, snapshots);
-			recordOutcome(snapshots, result);
-			if (!result.updates().isEmpty()) {
-				processUpdates(result.updates());
+			List<InterWikiChanges.Update> updates = new ArrayList<>();
+			for (Map.Entry<String, List<ImportInfo>> entry : snapshotsByWiki.entrySet()) {
+				PollResult result = pollSource(entry.getKey(), entry.getValue());
+				recordOutcome(entry.getValue(), result);
+				updates.addAll(result.updates());
+			}
+			if (!updates.isEmpty()) {
+				processUpdates(updates);
 			}
 		}
 		finally {

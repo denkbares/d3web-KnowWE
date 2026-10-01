@@ -21,10 +21,13 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +47,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
@@ -180,12 +184,14 @@ public class RecompileAction extends AbstractAction {
 				Article previousArticle = currentArticlesToRecompile.get(0);
 				Article recreatedArticle = Objects.requireNonNullElse(
 						articleManager.getArticle(previousArticle.getTitle()), previousArticle);
-				$(recreatedArticle).successor(AttachmentUpdateMarkup.class)
-						.stream()
-						.forEach(markup -> {
-							LOGGER.info("Checking {} for updates...", markup.get().getUrl(markup));
-							markup.get().performUpdate(markup, true, false);
-						});
+				// update all markups of a type together, so they can change the article only once
+				Map<AttachmentUpdateMarkup, List<Section<AttachmentUpdateMarkup>>> markupsByType =
+						$(recreatedArticle).successor(AttachmentUpdateMarkup.class).stream()
+								.collect(Collectors.groupingBy(Section::get, LinkedHashMap::new, Collectors.toList()));
+				markupsByType.forEach((type, markups) -> {
+					markups.forEach(markup -> LOGGER.info("Checking {} for updates...", markup.get().getUrl(markup)));
+					type.performUpdates(markups, true, false);
+				});
 			}
 		}
 		finally {
