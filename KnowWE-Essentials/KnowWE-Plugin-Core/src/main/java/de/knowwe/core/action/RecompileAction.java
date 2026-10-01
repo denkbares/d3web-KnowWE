@@ -175,8 +175,12 @@ public class RecompileAction extends AbstractAction {
 			EventManager.getInstance().fireEvent(new FullParseEvent(currentArticlesToRecompile, userName));
 
 			if (currentArticlesToRecompile.size() == 1) {
-				// also update all markups
-				$(currentArticlesToRecompile.get(0)).successor(AttachmentUpdateMarkup.class)
+				// also update all markups, using the recreated article, as the sections of the previous version are no
+				// longer live (updates on them would be skipped or report to sections no longer rendered)
+				Article previousArticle = currentArticlesToRecompile.get(0);
+				Article recreatedArticle = Objects.requireNonNullElse(
+						articleManager.getArticle(previousArticle.getTitle()), previousArticle);
+				$(recreatedArticle).successor(AttachmentUpdateMarkup.class)
 						.stream()
 						.forEach(markup -> {
 							LOGGER.info("Checking {} for updates...", markup.get().getUrl(markup));

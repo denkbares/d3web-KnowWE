@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,17 +32,25 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.action.Action;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.event.ArticleManagerCommitDoneEvent;
+import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.jspwiki.ActionAllowListChecker;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public final class InterWikiImportUpdateService {
 
@@ -79,9 +88,63 @@ public final class InterWikiImportUpdateService {
 			poller.shutdownNow();
 		});
 		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
+		EventManager.getInstance().registerListener(pageSaveListener);
 
 		poller.scheduleWithFixedDelay(this::pollAllSources, 0, pollIntervalMillis,
 				TimeUnit.MILLISECONDS);
+	}
+
+	/** Titles of saved pages, whose new version has not been committed yet (lower case). */
+	private final Set<String> savedTitles = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * Saving a page always fetches the source text of its imports again (force update), so changes of
+	 * the import markup itself, e.g. added or changed {@code @replacement} / {@code @regexReplacement}
+	 * annotations, are applied right away instead of only after the next change in the source wiki.
+	 * The byte comparison in {@code updateAttachmentWithSourceText} prevents new attachment versions
+	 * for unchanged content.
+	 * <p>
+	 * The save is fired before the new version is registered, so the update is triggered once the
+	 * commit containing the page is done. Startup and recompiles fire no save, so they trigger nothing.
+	 */
+	private final EventListener pageSaveListener = new EventListener() {
+		@Override
+		public Collection<Class<? extends Event>> getEvents() {
+			return List.of(ArticleUpdateEvent.class, ArticleManagerCommitDoneEvent.class);
+		}
+
+		@Override
+		public void notify(Event event) {
+			if (event instanceof ArticleUpdateEvent updateEvent) {
+				String title = updateEvent.getTitle();
+				// attachments are reported with their path, they contain no import markups to be updated
+				if (title != null && !title.contains("/")) savedTitles.add(title.toLowerCase());
+			}
+			else if (event instanceof ArticleManagerCommitDoneEvent commitEvent) {
+				if (savedTitles.isEmpty()) return;
+				List<String> titles = commitEvent.getCommittedTitles().stream()
+						.filter(title -> savedTitles.remove(title.toLowerCase()))
+						.toList();
+				if (titles.isEmpty() || !AttachmentUpdateMarkup.isAutoUpdatingActive()) return;
+				ArticleManager articleManager = commitEvent.getArticleManager();
+				poller.execute(() -> forceUpdateAfterSave(articleManager, titles));
+			}
+		}
+	};
+
+	private void forceUpdateAfterSave(ArticleManager articleManager, List<String> titles) {
+		for (String title : titles) {
+			try {
+				Article article = articleManager.getArticle(title);
+				if (article == null) continue;
+				for (Section<InterWikiImportMarkup> markup : $(article).successor(InterWikiImportMarkup.class)) {
+					pollSingleMarkup(markup, true);
+				}
+			}
+			catch (RuntimeException e) {
+				LOGGER.warn("Unable to update InterWikiImports after saving page {}", title, e);
+			}
+		}
 	}
 
 	public void register(Section<InterWikiImportMarkup> markup) {
@@ -281,7 +344,8 @@ public final class InterWikiImportUpdateService {
 			}
 
 			boolean attachmentChanged = markup.get().updateAttachmentWithSourceText(markup, update.sourceText());
-			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)) {
+			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)
+					&& !update.sourceLatestChange().equals(markup.get().getLatestChange(markup))) {
 				markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
 			}
 			updatedImports++;
