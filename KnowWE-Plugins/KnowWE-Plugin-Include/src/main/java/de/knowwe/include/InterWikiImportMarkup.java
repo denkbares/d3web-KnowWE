@@ -285,18 +285,31 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	boolean collectTrackingAcceptedAtReplacement(Section<InterWikiImportMarkup> section, Instant acceptedAt, Map<String, String> replacements) {
+		SectionReplacement replacement = getTrackingAcceptedAtReplacement(section, acceptedAt);
+		if (replacement == null) return false;
+		replacements.put(replacement.section().getID(), replacement.text());
+		return true;
+	}
+
+	/**
+	 * Returns the replacement that sets {@code @trackingAcceptedAt}: either the content of the existing
+	 * annotation, or the closing tag of the markup with the annotation inserted in front of it.
+	 */
+	@Nullable
+	private SectionReplacement getTrackingAcceptedAtReplacement(Section<InterWikiImportMarkup> section, Instant acceptedAt) {
 		Section<?> acceptedAtContent = DefaultMarkupType.getAnnotationContentSection(section, TRACKING_ACCEPTED_AT_ANNOTATION);
 		if (acceptedAtContent != null) {
-			replacements.put(acceptedAtContent.getID(), acceptedAt.toString());
-			return true;
+			return new SectionReplacement(acceptedAtContent, acceptedAt.toString());
 		}
 
 		Section<?> closingTag = $(section).children().getLast();
-		if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return false;
-		replacements.put(closingTag.getID(),
+		if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return null;
+		return new SectionReplacement(closingTag,
 				"\n@" + TRACKING_ACCEPTED_AT_ANNOTATION + ": " + acceptedAt
 						+ "\n" + Strings.trimLeft(closingTag.getText()));
-		return true;
+	}
+
+	private record SectionReplacement(Section<?> section, String text) {
 	}
 
 	boolean shouldUpdateLatestChange(Section<InterWikiImportMarkup> section, boolean attachmentChanged) {
@@ -362,6 +375,17 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return attachment.getDate().toInstant();
 	}
 
+	/**
+	 * Returns the reference text as it was when the tracking differences were acknowledged, i.e. the
+	 * newest attachment version stored not after {@code acceptedAt}. Returns {@code null} if that
+	 * version is not available (anymore), e.g. because the attachment was stored without versioning
+	 * at that time.
+	 */
+	@Nullable
+	String getTrackingAcceptedReferenceText(Section<InterWikiImportMarkup> section, Instant acceptedAt) throws IOException {
+		return InterWikiTrackingService.findReferenceTextAt(getWikiAttachment(section), acceptedAt);
+	}
+
 	@Nullable
 	Instant getTrackingAcceptedAt(Section<InterWikiImportMarkup> section) {
 		String acceptedAt = DefaultMarkupType.getAnnotation(section, TRACKING_ACCEPTED_AT_ANNOTATION);
@@ -395,7 +419,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return new int[] { compareStart, compareEnd };
 	}
 
-	boolean collectSwitchToReferenceReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
+	/**
+	 * Replaces the local content below the markup with the current reference text and sets
+	 * {@code @trackingAcceptedAt} (if possible), as the user explicitly took over the reference. Both
+	 * changes are done in one replacement of the article text, as they cannot be combined with section
+	 * replacements.
+	 */
+	boolean collectSwitchToReferenceReplacement(Section<InterWikiImportMarkup> section, Instant acceptedAt, Map<String, String> replacements) throws IOException {
 		String referenceText = getTrackingReferenceText(section);
 		if (referenceText == null) return false;
 
@@ -404,7 +434,17 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		Article article = section.getArticle();
 		String articleText = article.getText();
-		String newArticleText = articleText.substring(0, range[0])
+		String textUpToLocalContent = articleText.substring(0, range[0]);
+		// without a closing tag the annotation cannot be inserted, then switch without acknowledging
+		SectionReplacement acceptedAtReplacement = getTrackingAcceptedAtReplacement(section, acceptedAt);
+		if (acceptedAtReplacement != null) {
+			int acceptedAtStart = acceptedAtReplacement.section().getOffsetInArticle();
+			int acceptedAtEnd = acceptedAtStart + acceptedAtReplacement.section().getTextLength();
+			textUpToLocalContent = articleText.substring(0, acceptedAtStart)
+					+ acceptedAtReplacement.text()
+					+ articleText.substring(acceptedAtEnd, range[0]);
+		}
+		String newArticleText = textUpToLocalContent
 				+ "\n\n" + Strings.trimRight(referenceText) + "\n"
 				+ articleText.substring(range[1]);
 		replacements.put(article.getRootSection().getID(), newArticleText);
@@ -439,7 +479,9 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			InterWikiTrackingService.TrackingStatus status = InterWikiTrackingService.getTrackingStatus(section);
 			if (status.warningActive()) {
 				Messages.storeMessage(section, TrackingMessages.class,
-						Messages.warning("InterWikiImport tracking differences are not acknowledged yet."));
+						Messages.warning(status.sourceChanges() == null
+								? "InterWikiImport tracking differences are not acknowledged yet."
+								: "InterWikiImport tracking reference changed since the last acknowledgement."));
 			}
 		}
 		catch (IOException e) {
@@ -521,6 +563,16 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (markup == null) return;
 		UPDATE_SERVICE.pollSingleMarkup(markup, force);
+	}
+
+	/**
+	 * Tracking mode keeps the history of the reference attachment, so the reference text at the time
+	 * of the last acknowledgement can be restored and only the source changes since then have to be
+	 * reviewed.
+	 */
+	@Override
+	protected boolean isVersioning(Section<? extends AttachmentUpdateMarkup> section) {
+		return isTrackingMode(section);
 	}
 
 	@Override
@@ -721,24 +773,40 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				case EQUAL -> result.append(new HtmlElement("p").clazz("success")
 						.content("Tracking mode: local content matches the reference."));
 				case UNACCEPTED_DIFF -> {
-					result.append(new HtmlElement("p").clazz("note")
-							.content("Tracking mode: local content differs from the reference."));
-					trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(renderTrackingDiff(diff, user)));
-					renderDiffActionButtons(markup, user, result, true, null);
+					TextDiff sourceChanges = trackingStatus.sourceChanges();
+					if (sourceChanges == null) {
+						result.append(new HtmlElement("p").clazz("note")
+								.content("Tracking mode: local content differs from the reference."));
+						trackingStatus.diffOptional().ifPresent(diff -> result.appendHtml(renderTrackingDiff(diff, user)));
+						renderDiffActionButtons(markup, user, result, true, null);
+					}
+					else {
+						result.append(new HtmlElement("p").clazz("note")
+								.content("Tracking mode: the reference changed since the last acknowledgement. Changes in the source wiki:"));
+						result.appendHtml(renderTrackingDiff(sourceChanges, user));
+						String diffContainerId = "tracking-diff-" + markup.getID();
+						renderDiffActionButtons(markup, user, result, true, diffContainerId);
+						renderHiddenTrackingDiff(trackingStatus, diffContainerId, user, result);
+					}
 				}
 				case ACCEPTED_DIFF -> {
 					result.append(new HtmlElement("p").clazz("note")
 							.content("Tracking mode: local content differs from the reference (already acknowledged)."));
 					String diffContainerId = "tracking-diff-" + markup.getID();
 					renderDiffActionButtons(markup, user, result, false, diffContainerId);
-					trackingStatus.diffOptional().ifPresent(diff -> result.append(
-							new HtmlElement("div")
-									.attributes("id", diffContainerId, "style", "display:none;")
-									.children(new HtmlNode(renderTrackingDiff(diff, user)))));
+					renderHiddenTrackingDiff(trackingStatus, diffContainerId, user, result);
 				}
 				default -> result.append(new HtmlElement("p").clazz("note")
 						.content("Tracking mode: status currently unavailable."));
 			}
+		}
+
+		private void renderHiddenTrackingDiff(InterWikiTrackingService.TrackingStatus trackingStatus, String diffContainerId,
+				UserContext user, RenderResult result) {
+			trackingStatus.diffOptional().ifPresent(diff -> result.append(
+					new HtmlElement("div")
+							.attributes("id", diffContainerId, "style", "display:none;")
+							.children(new HtmlNode(renderTrackingDiff(diff, user)))));
 		}
 
 		private String renderTrackingDiff(TextDiff diff, UserContext user) {

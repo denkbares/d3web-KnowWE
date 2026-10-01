@@ -1,6 +1,7 @@
 package de.knowwe.include;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +15,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Replaces the local content below an InterWikiImport tracking markup with the current
- * reference text from the source wiki, effectively discarding local edits in that range.
+ * reference text from the source wiki, effectively discarding local edits in that range. As the
+ * reference is taken over explicitly, this also acknowledges it ({@code @trackingAcceptedAt}).
  */
 public class SwitchInterWikiTrackingToReferenceAction extends AbstractAction {
 
@@ -49,7 +51,7 @@ public class SwitchInterWikiTrackingToReferenceAction extends AbstractAction {
 		}
 
 		Map<String, String> replacements = new HashMap<>();
-		boolean ok = markup.get().collectSwitchToReferenceReplacement(markup, replacements);
+		boolean ok = markup.get().collectSwitchToReferenceReplacement(markup, Instant.now(), replacements);
 		if (!ok || replacements.isEmpty()) {
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to build replacement.");
 			return;
