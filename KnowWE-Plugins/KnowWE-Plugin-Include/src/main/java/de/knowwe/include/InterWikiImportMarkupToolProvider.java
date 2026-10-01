@@ -64,7 +64,7 @@ public class InterWikiImportMarkupToolProvider implements ToolProvider {
 					+ "}).done(function(){window.location.reload();})"
 					+ ".fail(function(xhr){"
 					+ "KNOWWE.notification.error(null,"
-					+ "xhr.responseText || 'Unable to acknowledge tracking differences.',"
+					+ "KNOWWE.plugin.include.errorMessage(xhr, 'Unable to acknowledge tracking differences.'),"
 					+ "'tracking-accept',10000);"
 					+ "});"
 					+ "})();";
