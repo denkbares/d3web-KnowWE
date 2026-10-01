@@ -216,6 +216,7 @@ Ende der Action ausliefert. Der Servlet-Pfad (`JSPActionServlet`, Mapping `/acti
 | `Unable to load and setup properties ... searchProvider` bzw. `ClassNotFoundException` für eine konfigurierte Klasse | Konfiguration nennt eine Klasse aus einem nicht deployten Plugin oder Branch | Eintrag in der deployten `jspwiki-custom.properties` auf den gebauten Stand setzen |
 | `Unable to find blocked tool provider` | `settings.toolmenu.json` (Seitenordner oder `KnowWEExtension/toolmenu/` in der Webapp) sperrt einen Tool-Provider, dessen Plugin fehlt; häufig ein Rest aus einem exploded WAR mit anderem Profil | Datei entfernen bzw. exploded WAR vor dem Packen löschen |
 | `The POM for com.denkbares:...:jar:<version> is missing` oder `Symbol nicht gefunden` für Cross-Repo-Klassen | Artefakt eines anderen Repos fehlt im Task-Repo oder ist veraltet | Workspace-Skript mit `--target` laufen lassen (Abschnitt 1); es baut die fehlenden Module in der richtigen Reihenfolge |
+| `Unexpected response 404 while polling http://localhost:8080/KnowWE/_action/GetWikiChangesSinceAction` (`%%InterWikiImport`, z. B. Import aus dem eigenen Wiki) | Der Poller nutzt per Default den Action-Pfad `_action/`; lokal ist nur `action/*` gemappt | `-Dknowwe.attachments.update.actionFragment=action` in `CATALINA_OPTS` |
 | Bootstrap scheitert mit `denkbares-Maven-EnforcerRules ... is missing` | älterer Stand des Workspace-Skripts ohne die Phase *Bootstrap prerequisites* | Skript aktualisieren oder einmalig `denkbares-Maven-Plugins` ins Task-Repo installieren |
 
 ## 6. Aufräumen
