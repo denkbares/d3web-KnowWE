@@ -921,7 +921,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				}
 				renderReview(markup, review, localText, user, result);
 			}
-			renderComparison(markup, options, trackingStatus.trackingAcceptedAt(), locale, user, result);
+			renderComparison(markup, options, localText, trackingStatus.trackingAcceptedAt(), locale, user, result);
 		}
 
 		private void renderReview(Section<InterWikiImportMarkup> markup, InterWikiTrackingService.DiffOption review,
@@ -948,17 +948,19 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		 * acknowledging.
 		 */
 		private void renderComparison(Section<InterWikiImportMarkup> markup, List<InterWikiTrackingService.DiffOption> options,
-				@Nullable Instant acceptedAt, Locale locale, UserContext user, RenderResult result) {
+				String localText, @Nullable Instant acceptedAt, Locale locale, UserContext user, RenderResult result) {
 			HtmlElement select = new HtmlElement("select").attributes(
 					"id", "tracking-compare-select-" + markup.getID(),
 					"class", "tracking-diff-select",
 					"onchange", "KNOWWE.plugin.include.showTrackingComparison('" + markup.getID() + "')");
-			// the complete comparison first, then the changes since the previous versions, newest first
-			InterWikiTrackingService.DiffOption complete = options.get(options.size() - 1);
-			select.children(createComparisonOption(complete, acceptedAt, locale));
+			// the changes since the previous versions, newest first (so each entry shows more changes), at last
+			// the complete comparison, which is preselected
 			for (InterWikiTrackingService.DiffOption option : options.subList(0, options.size() - 1)) {
-				select.children(createComparisonOption(option, acceptedAt, locale));
+				// entries without anything to apply are of no interest here
+				if (isApplicable(option, localText)) select.children(createComparisonOption(option, acceptedAt, locale));
 			}
+			InterWikiTrackingService.DiffOption complete = options.get(options.size() - 1);
+			select.children(createComparisonOption(complete, acceptedAt, locale).attributes("selected", "selected"));
 			HtmlElement controls = new Div().clazz("tracking-action-buttons").children(
 					new Span().clazz("tracking-diff-selection").children(new Span().plainText("Show:"), select));
 			if (KnowWEUtils.canWrite(markup, user)) {
