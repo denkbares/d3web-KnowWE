@@ -3,6 +3,7 @@ package de.knowwe.include;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -93,12 +94,19 @@ final class InterWikiTrackingService {
 		// reference text changed after the last acceptance. Then only the source changes since the
 		// acknowledged reference version have to be reviewed, not all local differences again.
 		boolean warningActive;
+		boolean changesContained = false;
 		TextDiff sourceChanges = null;
 		String acceptedReferenceText = acceptedAt == null ? null : acceptedReferenceLookup.find(acceptedAt);
 		if (acceptedReferenceText != null) {
 			String normalizedAcceptedReference = normalizeForComparison(acceptedReferenceText);
 			warningActive = !normalizedAcceptedReference.equals(normalizedReference);
-			if (warningActive) sourceChanges = new TextDiff(normalizedAcceptedReference, normalizedReference);
+			if (warningActive) {
+				sourceChanges = new TextDiff(normalizedAcceptedReference, normalizedReference);
+				// the local content already contains the changes (probably made by the same author), so
+				// there is nothing to review
+				changesContained = normalizedLocal.equals(applySourceChanges(normalizedAcceptedReference, normalizedReference, normalizedLocal));
+				if (changesContained) warningActive = false;
+			}
 		}
 		else {
 			// acknowledged reference version is unknown (e.g. acknowledged before the attachment was
@@ -108,7 +116,7 @@ final class InterWikiTrackingService {
 		}
 
 		return new TrackingStatus(
-				warningActive ? State.UNACCEPTED_DIFF : State.ACCEPTED_DIFF,
+				changesContained ? State.CONTAINED_DIFF : warningActive ? State.UNACCEPTED_DIFF : State.ACCEPTED_DIFF,
 				warningActive,
 				localComparisonAvailable,
 				referenceBlank,
@@ -189,17 +197,26 @@ final class InterWikiTrackingService {
 	 * @param version      the reference version the changes are shown since, or {@link #ALL_CHANGES}
 	 * @param date         the date of that version, {@code null} for {@link #ALL_CHANGES}
 	 * @param baseText     the reference text of that version
-	 * @param appliedText  the local content after applying the changes, {@code null} on a conflict
-	 * @param acknowledged whether the option shows the changes since the last acknowledgement
+	 * @param appliedText    the local content after applying the changes, {@code null} on a conflict
+	 * @param overriddenText the local content after applying the changes, the source winning on a conflict
+	 * @param acknowledged   whether the option shows the changes since the last acknowledgement
 	 */
-	record DiffOption(int version, @Nullable Instant date, String baseText, @Nullable String appliedText, boolean acknowledged) {
+	record DiffOption(int version, @Nullable Instant date, String baseText, @Nullable String appliedText,
+					  String overriddenText, boolean acknowledged) {
 
 		boolean conflict() {
 			return appliedText == null;
 		}
 
+		/**
+		 * The local content after applying the changes, on a conflict the source winning.
+		 */
+		String resultText() {
+			return appliedText == null ? overriddenText : appliedText;
+		}
+
 		DiffOption asAcknowledged() {
-			return new DiffOption(version, date, baseText, appliedText, true);
+			return new DiffOption(version, date, baseText, appliedText, overriddenText, true);
 		}
 	}
 
@@ -260,13 +277,14 @@ final class InterWikiTrackingService {
 
 	private static DiffOption getAllChangesOption(String referenceText) {
 		String reference = normalizeForComparison(referenceText);
-		return new DiffOption(ALL_CHANGES, null, reference, reference, false);
+		return new DiffOption(ALL_CHANGES, null, reference, reference, reference, false);
 	}
 
 	private static DiffOption createDiffOption(WikiAttachment attachment, ReferenceVersion version, String referenceText, String localText, boolean acknowledged) throws IOException {
 		String baseText = normalizeForComparison(Streams.getTextAndClose(attachment.getInputStream(version.version())));
-		return new DiffOption(version.version(), version.date(), baseText,
-				applySourceChanges(baseText, referenceText, localText), acknowledged);
+		String appliedText = applySourceChanges(baseText, referenceText, localText);
+		return new DiffOption(version.version(), version.date(), baseText, appliedText,
+				appliedText != null ? appliedText : overrideSourceChanges(baseText, referenceText, localText), acknowledged);
 	}
 
 	/**
@@ -305,6 +323,74 @@ final class InterWikiTrackingService {
 			result.addAll(position, change.lines());
 		}
 		return String.join("\n", result);
+	}
+
+	/**
+	 * Like {@link #applySourceChanges(String, String, String)}, but on a conflict the source wins: the
+	 * conflicting lines get the text of the source, the local deviations elsewhere are kept. The lines are
+	 * aligned by the lines unchanged on both sides, between them see {@link #mergeChunk}.
+	 */
+	static String overrideSourceChanges(@Nullable String acceptedReference, @Nullable String currentReference, @Nullable String local) {
+		String merged = applySourceChanges(acceptedReference, currentReference, local);
+		if (merged != null) return merged;
+
+		List<String> base = toLines(normalizeForComparison(acceptedReference));
+		List<String> source = toLines(normalizeForComparison(currentReference));
+		List<String> localLines = toLines(normalizeForComparison(local));
+		int[] sourceIndex = unchangedLines(base, source);
+		int[] localIndex = unchangedLines(base, localLines);
+
+		List<String> result = new ArrayList<>();
+		int baseStart = 0, sourceStart = 0, localStart = 0;
+		while (true) {
+			// the next base line unchanged on both sides, or the end
+			int baseEnd = baseStart;
+			while (baseEnd < base.size() && (sourceIndex[baseEnd] < 0 || localIndex[baseEnd] < 0)) baseEnd++;
+			int sourceEnd = baseEnd < base.size() ? sourceIndex[baseEnd] : source.size();
+			int localEnd = baseEnd < base.size() ? localIndex[baseEnd] : localLines.size();
+			result.addAll(mergeChunk(base.subList(baseStart, baseEnd), source.subList(sourceStart, sourceEnd), localLines.subList(localStart, localEnd)));
+			if (baseEnd >= base.size()) break;
+			result.add(base.get(baseEnd));
+			baseStart = baseEnd + 1;
+			sourceStart = sourceEnd + 1;
+			localStart = localEnd + 1;
+		}
+		return String.join("\n", result);
+	}
+
+	/**
+	 * Merges the lines between two lines unchanged on both sides, the source wins on a conflict: the lines
+	 * are paired in order, a line changed by the source gets the line of the source, otherwise the local
+	 * line is kept; of the remaining lines, the ones of the source are taken if it changed them.
+	 */
+	private static List<String> mergeChunk(List<String> base, List<String> source, List<String> local) {
+		if (local.equals(base)) return source;
+		if (source.equals(base) || source.equals(local)) return local;
+		int paired = Math.min(base.size(), Math.min(source.size(), local.size()));
+		List<String> merged = new ArrayList<>();
+		for (int line = 0; line < paired; line++) {
+			merged.add(source.get(line).equals(base.get(line)) ? local.get(line) : source.get(line));
+		}
+		List<String> baseRest = base.subList(paired, base.size());
+		List<String> sourceRest = source.subList(paired, source.size());
+		merged.addAll(sourceRest.equals(baseRest) ? local.subList(paired, local.size()) : sourceRest);
+		return merged;
+	}
+
+	/**
+	 * Returns for each base line its index in the target, or -1 if the line was changed or deleted.
+	 */
+	private static int[] unchangedLines(List<String> base, List<String> target) {
+		int[] index = new int[base.size()];
+		Arrays.fill(index, -1);
+		int baseLine = 0, targetLine = 0;
+		for (AbstractDelta<String> delta : DiffUtils.diff(base, target).getDeltas()) {
+			while (baseLine < delta.getSource().getPosition()) index[baseLine++] = targetLine++;
+			baseLine += delta.getSource().size();
+			targetLine += delta.getTarget().size();
+		}
+		while (baseLine < base.size()) index[baseLine++] = targetLine++;
+		return index;
 	}
 
 	/**
@@ -377,7 +463,12 @@ final class InterWikiTrackingService {
 		/** Diff exists and requires user acknowledgement. */
 		UNACCEPTED_DIFF,
 		/** Diff exists but was already acknowledged for current reference timestamp. */
-		ACCEPTED_DIFF
+		ACCEPTED_DIFF,
+		/**
+		 * Diff exists, and the reference changed since the acknowledgement, but the local content
+		 * already contains these changes, so they need no review.
+		 */
+		CONTAINED_DIFF
 	}
 
 	/**

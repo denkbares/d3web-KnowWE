@@ -106,7 +106,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String LATEST_CHANGE_ANNOTATION = "latestChange";
 	private static final String TRACKING_ACCEPTED_AT_ANNOTATION = "trackingAcceptedAt";
 
-	/** Maximum number of entries of the "Differences since" selection, including all changes to the reference. */
+	/** Maximum number of entries of the "Compare with source" selection, including the complete comparison. */
 	private static final int MAX_DIFF_OPTIONS = 10;
 
 	private static final InterWikiImportUpdateService UPDATE_SERVICE = new InterWikiImportUpdateService();
@@ -439,12 +439,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	/**
-	 * Replaces the local content below the markup with the given text and sets
-	 * {@code @trackingAcceptedAt} (if possible), as the user explicitly took over the shown differences.
-	 * Both changes are done in one replacement of the article text, as they cannot be combined with
-	 * section replacements.
+	 * Replaces the local content below the markup with the given text and, if {@code acceptedAt} is
+	 * given, sets {@code @trackingAcceptedAt} (if possible). Both changes are done in one replacement of
+	 * the article text, as they cannot be combined with section replacements.
 	 */
-	boolean collectLocalContentReplacement(Section<InterWikiImportMarkup> section, String localText, Instant acceptedAt, Map<String, String> replacements) {
+	boolean collectLocalContentReplacement(Section<InterWikiImportMarkup> section, String localText, @Nullable Instant acceptedAt, Map<String, String> replacements) {
 		int[] range = getLocalComparisonRange(section);
 		if (range == null) return false;
 
@@ -452,7 +451,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		String articleText = article.getText();
 		String textUpToLocalContent = articleText.substring(0, range[0]);
 		// without a closing tag the annotation cannot be inserted, then replace without acknowledging
-		SectionReplacement acceptedAtReplacement = getTrackingAcceptedAtReplacement(section, acceptedAt);
+		SectionReplacement acceptedAtReplacement = acceptedAt == null ? null : getTrackingAcceptedAtReplacement(section, acceptedAt);
 		if (acceptedAtReplacement != null) {
 			int acceptedAtStart = acceptedAtReplacement.section().getOffsetInArticle();
 			int acceptedAtEnd = acceptedAtStart + acceptedAtReplacement.section().getTextLength();
@@ -505,7 +504,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				Messages.storeMessage(section, TrackingMessages.class,
 						Messages.warning(status.sourceChanges() == null
 								? "InterWikiImport tracking differences are not acknowledged yet."
-								: "InterWikiImport tracking reference changed since the last acknowledgement."));
+								: "InterWikiImport source changed since the last acknowledgement."));
 			}
 		}
 		catch (IOException e) {
@@ -632,33 +631,29 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	/**
-	 * Renders the diff of the given "Differences since" entry: what applying it changes in the local
-	 * content, or on a conflict the changes of the reference since that version. The element tells by
-	 * {@code data-applicable} whether the entry can be applied.
+	 * Renders the diff of the given entry: what applying it changes in the local content, on a conflict
+	 * with the source winning. The element tells by {@code data-applicable} whether applying changes
+	 * anything and by {@code data-conflict} whether local changes are overridden.
 	 */
-	static HtmlElement renderDiffOption(InterWikiTrackingService.DiffOption option, String referenceText, String localText, UserContext user) {
+	static HtmlElement renderDiffOption(InterWikiTrackingService.DiffOption option, String localText, UserContext user) {
 		String local = InterWikiTrackingService.normalizeForComparison(localText);
-		HtmlElement element = new Div().attributes("data-applicable", String.valueOf(isApplicable(option, localText)));
-		if (option.conflict()) {
-			String reference = InterWikiTrackingService.normalizeForComparison(referenceText);
-			element.children(
-					new P().clazz("warning").plainText("These changes of the source wiki overlap local deviations and cannot be applied automatically."),
-					new HtmlNode(renderTrackingDiff(new TextDiff(option.baseText(), reference), user)));
-		}
-		else if (local.equals(option.appliedText())) {
+		HtmlElement element = new Div().attributes(
+				"data-applicable", String.valueOf(isApplicable(option, localText)),
+				"data-conflict", String.valueOf(option.conflict()));
+		if (local.equals(option.resultText())) {
 			element.children(new P().clazz("note").plainText("No changes to apply, the local content already contains them."));
 		}
 		else {
-			element.children(new HtmlNode(renderTrackingDiff(new TextDiff(local, option.appliedText()), user)));
+			element.children(new HtmlNode(renderTrackingDiff(new TextDiff(local, option.resultText()), user)));
 		}
 		return element;
 	}
 
 	/**
-	 * Whether applying the entry changes the local content (and it does not conflict).
+	 * Whether applying the entry changes the local content (on a conflict the source winning).
 	 */
 	static boolean isApplicable(InterWikiTrackingService.DiffOption option, String localText) {
-		return !option.conflict() && !InterWikiTrackingService.normalizeForComparison(localText).equals(option.appliedText());
+		return !InterWikiTrackingService.normalizeForComparison(localText).equals(option.resultText());
 	}
 
 	// Mirrors DefaultLogoAction#getLogoPath: derive light/dark from the user's "DisplayMode"
@@ -839,12 +834,12 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				trackingStatus = InterWikiTrackingService.getTrackingStatus(markup);
 			}
 			catch (IOException e) {
-				result.append(new HtmlElement("p").clazz("warning").content("Unable to read tracking reference attachment: " + e.getMessage()));
+				result.append(new HtmlElement("p").clazz("warning").content("Unable to read the source content: " + e.getMessage()));
 				return;
 			}
 
 			if (trackingStatus.state() == InterWikiTrackingService.State.MISSING_REFERENCE) {
-				result.append(new HtmlElement("p").clazz("note").content("Tracking reference attachment not (yet) available"));
+				result.append(new HtmlElement("p").clazz("note").content("Source content not (yet) available"));
 				return;
 			}
 
@@ -864,30 +859,29 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		private void renderInitializationButton(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			result.append(new HtmlElement("p").clazz("note")
-					.content("Tracking mode: local copy is empty. Insert the current reference text from the source wiki below the markup as a starting point."));
+					.content("Tracking mode: local copy is empty. Insert the current text of the source below the markup as a starting point."));
 			result.append(new HtmlElement("button")
 					.attributes("type", "button",
 							"class", "tracking-action-button",
 							"onclick", buildTrackingActionScript(
 									"InitInterWikiTrackingLocalCopyAction", markup.getID(),
 									"tracking-init", "Unable to initialize local copy.", null))
-					.content("Insert reference text below"));
+					.content("Insert source text below"));
 		}
 
 		/**
-		 * Renders the selection of the shown differences ("Differences since"), the buttons to apply the
-		 * shown differences and to acknowledge them (if not acknowledged yet), and below the one shown diff.
-		 * If not acknowledged yet, the changes since the last acknowledgement are shown (all differences if
-		 * that is unknown), otherwise the diff is shown after choosing an entry.
+		 * Renders the differences of a tracking markup: if not acknowledged yet, the changes to review
+		 * (what applying them changes in the local content) with the buttons to apply and to acknowledge
+		 * them, and in any case the collapsed "Compare with source" to look at the complete comparison or
+		 * the changes since a previous version.
 		 */
-		private void renderDiffControls(Section<InterWikiImportMarkup> markup, InterWikiTrackingService.TrackingStatus trackingStatus,
-				UserContext user, RenderResult result, boolean unacknowledged) {
-			WikiAttachment attachment;
+		private void renderTrackingDifferences(Section<InterWikiImportMarkup> markup, InterWikiTrackingService.TrackingStatus trackingStatus,
+				UserContext user, RenderResult result) {
+			String localText = markup.get().getTrackingLocalComparisonText(markup);
 			String referenceText;
 			List<InterWikiTrackingService.DiffOption> options;
-			String localText = markup.get().getTrackingLocalComparisonText(markup);
 			try {
-				attachment = markup.get().getWikiAttachment(markup);
+				WikiAttachment attachment = markup.get().getWikiAttachment(markup);
 				referenceText = markup.get().getTrackingReferenceText(markup);
 				if (attachment == null || referenceText == null || localText == null) return;
 				Instant acceptedAt = trackingStatus.trackingAcceptedAt();
@@ -895,74 +889,121 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				options = InterWikiTrackingService.getDiffOptions(attachment, referenceText, localText, acceptedVersion, MAX_DIFF_OPTIONS);
 			}
 			catch (IOException e) {
-				result.append(new P().clazz("warning").plainText("Unable to read tracking reference versions: " + e.getMessage()));
+				result.append(new P().clazz("warning").plainText("Unable to read the versions of the source: " + e.getMessage()));
 				return;
 			}
-			InterWikiTrackingService.DiffOption selected = !unacknowledged ? null : options.stream()
-					.filter(InterWikiTrackingService.DiffOption::acknowledged)
-					.findFirst()
-					.orElse(options.get(options.size() - 1));
-
-			HtmlElement select = new HtmlElement("select").attributes(
-					"id", "tracking-diff-select-" + markup.getID(),
-					"class", "tracking-diff-select",
-					"onchange", "KNOWWE.plugin.include.showTrackingDiff('" + markup.getID() + "')");
-			if (selected == null) {
-				select.children(new HtmlElement("option").attributes("value", "", "selected", "selected").plainText("Choose..."));
-			}
 			Locale locale = getLocale(user);
-			for (InterWikiTrackingService.DiffOption option : options) {
-				HtmlElement element = new HtmlElement("option")
-						.attributes("value", String.valueOf(option.version()))
-						.plainText(getDiffOptionLabel(option, locale));
-				if (option == selected) element.attributes("selected", "selected");
-				select.children(element);
-			}
 
-			HtmlElement controls = new Div().clazz("tracking-action-buttons").children(
-					new Span().clazz("tracking-diff-selection").children(
-							new Span().clazz("tracking-diff-label").plainText("Differences since:"),
-							select));
-			if (KnowWEUtils.canWrite(markup, user)) {
-				HtmlElement apply = new HtmlElement("button")
-						.attributes("type", "button",
-								"class", "tracking-action-button",
-								"id", "tracking-apply-" + markup.getID(),
-								"onclick", "KNOWWE.plugin.include.applyTrackingDiff('" + markup.getID() + "')")
-						.plainText("Apply shown differences and acknowledge");
-				// hidden until an entry is chosen, disabled for entries that cannot be applied
-				if (selected == null) apply.style("display:none;");
-				else if (!isApplicable(selected, localText)) apply.attributes("disabled", "disabled");
-				controls.children(apply);
-				if (unacknowledged) {
-					controls.children(new HtmlElement("button")
-							.attributes("type", "button",
-									"class", "tracking-action-button",
-									"onclick", buildTrackingActionScript(
-											"AcceptInterWikiTrackingDiffAction", markup.getID(),
-											"tracking-accept", "Unable to acknowledge tracking differences.", null))
-							.plainText("Acknowledge differences"));
-				}
+			if (trackingStatus.state() == InterWikiTrackingService.State.ACCEPTED_DIFF) {
+				result.append(new P().clazz("note").children(
+						new PlainTextNode("Tracking mode: local content differs from the source, but changes were acknowledged"),
+						new HtmlNode(Icon.CHECKED.addColor(Color.OK).addClasses("tracking-check").toHtml())));
 			}
-			result.append(controls);
-
-			HtmlElement diff = new Div().id("tracking-diff-" + markup.getID()).clazz("tracking-diff");
-			if (selected == null) {
-				diff.style("display:none;");
+			else if (trackingStatus.state() == InterWikiTrackingService.State.CONTAINED_DIFF) {
+				result.append(new P().clazz("note").children(
+						new PlainTextNode("Tracking mode: local content differs from the source, but all changes of the source since the last acknowledgement are already contained locally"),
+						new HtmlNode(Icon.CHECKED.addColor(Color.OK).addClasses("tracking-check").toHtml())));
 			}
 			else {
-				diff.children(renderDiffOption(selected, referenceText, localText, user));
+				// the changes since the last acknowledgement, or all differences if that is unknown
+				InterWikiTrackingService.DiffOption review = trackingStatus.sourceChanges() == null ? null : options.stream()
+						.filter(InterWikiTrackingService.DiffOption::acknowledged)
+						.findFirst()
+						.orElse(null);
+				if (review == null) {
+					review = options.get(options.size() - 1);
+					result.append(new P().clazz("note").plainText("Tracking mode: local content differs from the source and was not acknowledged yet."));
+				}
+				else {
+					result.append(new P().clazz("note").plainText("Tracking mode: the source changed since the last acknowledgement ("
+							+ InterWikiImportAnnotationFormat.formatDateTime(Objects.requireNonNull(trackingStatus.trackingAcceptedAt()), locale, ZoneId.systemDefault())
+							+ ")."));
+				}
+				renderReview(markup, review, localText, user, result);
 			}
-			result.append(diff);
+			renderComparison(markup, options, trackingStatus.trackingAcceptedAt(), locale, user, result);
 		}
 
-		private static String getDiffOptionLabel(InterWikiTrackingService.DiffOption option, Locale locale) {
-			if (option.version() == InterWikiTrackingService.ALL_CHANGES) return "All changes to reference";
-			String label = InterWikiImportAnnotationFormat.formatDateTime(Objects.requireNonNull(option.date()), locale, ZoneId.systemDefault());
-			List<String> markers = new ArrayList<>();
-			if (option.acknowledged()) markers.add("acknowledged");
-			if (option.conflict()) markers.add("conflict");
-			return markers.isEmpty() ? label : label + " (" + String.join(", ", markers) + ")";
+		private void renderReview(Section<InterWikiImportMarkup> markup, InterWikiTrackingService.DiffOption review,
+				String localText, UserContext user, RenderResult result) {
+			result.append(new Div().clazz("tracking-diff").children(renderDiffOption(review, localText, user)));
+			if (!KnowWEUtils.canWrite(markup, user)) return;
+			HtmlElement buttons = new Div().clazz("tracking-action-buttons");
+			String acknowledge = buildTrackingActionScript("AcceptInterWikiTrackingDiffAction", markup.getID(),
+					"tracking-accept", "Unable to acknowledge tracking differences.", null);
+			if (isApplicable(review, localText)) {
+				String label = review.conflict()
+						? "Override local changes by applying shown changes from source and acknowledge"
+						: "Apply shown changes from source and acknowledge";
+				buttons.children(createButton(label, "KNOWWE.plugin.include.applyTrackingChanges('" + markup.getID() + "', "
+						+ review.version() + ", true, " + review.conflict() + ")"));
+			}
+			buttons.children(createButton("Acknowledge differences", acknowledge));
+			result.append(buttons);
+		}
+
+		/**
+		 * Renders the collapsed "Compare with source": the complete comparison with the source or the
+		 * changes since a previous version (loaded when expanded), and the button to apply them without
+		 * acknowledging.
+		 */
+		private void renderComparison(Section<InterWikiImportMarkup> markup, List<InterWikiTrackingService.DiffOption> options,
+				@Nullable Instant acceptedAt, Locale locale, UserContext user, RenderResult result) {
+			HtmlElement select = new HtmlElement("select").attributes(
+					"id", "tracking-compare-select-" + markup.getID(),
+					"class", "tracking-diff-select",
+					"onchange", "KNOWWE.plugin.include.showTrackingComparison('" + markup.getID() + "')");
+			// the complete comparison first, then the changes since the previous versions, newest first
+			InterWikiTrackingService.DiffOption complete = options.get(options.size() - 1);
+			select.children(createComparisonOption(complete, acceptedAt, locale));
+			for (InterWikiTrackingService.DiffOption option : options.subList(0, options.size() - 1)) {
+				select.children(createComparisonOption(option, acceptedAt, locale));
+			}
+			HtmlElement controls = new Div().clazz("tracking-action-buttons").children(
+					new Span().clazz("tracking-diff-selection").children(new Span().plainText("Show:"), select));
+			if (KnowWEUtils.canWrite(markup, user)) {
+				controls.children(createButton("Apply shown changes",
+						"KNOWWE.plugin.include.applyTrackingComparison('" + markup.getID() + "')")
+						.attributes("id", "tracking-compare-apply-" + markup.getID()));
+			}
+			result.append(new HtmlElement("details")
+					.clazz("iwi-comparison")
+					.attributes("ontoggle", "KNOWWE.plugin.include.showTrackingComparison('" + markup.getID() + "')")
+					.children(
+							new HtmlElement("summary").plainText("Compare with source"),
+							controls,
+							new Div().id("tracking-compare-" + markup.getID()).clazz("tracking-diff")));
+		}
+
+		private static HtmlElement createComparisonOption(InterWikiTrackingService.DiffOption option, @Nullable Instant acceptedAt, Locale locale) {
+			return new HtmlElement("option")
+					.attributes("value", String.valueOf(option.version()))
+					.plainText(getComparisonLabel(option, acceptedAt, locale));
+		}
+
+		/**
+		 * Labels the entry by the date of the version, the one of the last acknowledgement by the date of the
+		 * acknowledgement (as in the status message).
+		 */
+		private static String getComparisonLabel(InterWikiTrackingService.DiffOption option, @Nullable Instant acceptedAt, Locale locale) {
+			if (option.version() == InterWikiTrackingService.ALL_CHANGES) return "Complete comparison with source";
+			List<String> details = new ArrayList<>();
+			String label;
+			if (option.acknowledged() && acceptedAt != null) {
+				label = "Changes since last acknowledgement";
+				details.add(InterWikiImportAnnotationFormat.formatDateTime(acceptedAt, locale, ZoneId.systemDefault()));
+			}
+			else {
+				label = "Changes since " + InterWikiImportAnnotationFormat.formatDateTime(Objects.requireNonNull(option.date()), locale, ZoneId.systemDefault());
+			}
+			if (option.conflict()) details.add("conflict");
+			return details.isEmpty() ? label : label + " (" + String.join(", ", details) + ")";
+		}
+
+		private static HtmlElement createButton(String label, String onclick) {
+			return new HtmlElement("button")
+					.attributes("type", "button", "class", "tracking-action-button", "onclick", onclick)
+					.plainText(label);
 		}
 
 		private static String buildTrackingActionScript(String action, String sectionId, String notificationKey, String fallbackError, @Nullable String confirmMessage) {
@@ -992,19 +1033,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				RenderResult result) {
 			switch (trackingStatus.state()) {
 				case EQUAL -> result.append(new HtmlElement("p").clazz("success")
-						.content("Tracking mode: local content matches the reference."));
-				case UNACCEPTED_DIFF -> {
-					result.append(new HtmlElement("p").clazz("note").content(trackingStatus.sourceChanges() == null
-							? "Tracking mode: local content differs from the reference."
-							: "Tracking mode: the reference changed since the last acknowledgement."));
-					renderDiffControls(markup, trackingStatus, user, result, true);
-				}
-				case ACCEPTED_DIFF -> {
-					result.append(new HtmlElement("p").clazz("note").children(
-							new PlainTextNode("Tracking mode: local content differs from the reference, but changes were acknowledged "),
-							new HtmlNode(Icon.CHECKED.addColor(Color.OK).toHtml())));
-					renderDiffControls(markup, trackingStatus, user, result, false);
-				}
+						.content("Tracking mode: local content matches the source."));
+				case UNACCEPTED_DIFF, ACCEPTED_DIFF, CONTAINED_DIFF -> renderTrackingDifferences(markup, trackingStatus, user, result);
 				default -> result.append(new HtmlElement("p").clazz("note")
 						.content("Tracking mode: status currently unavailable."));
 			}

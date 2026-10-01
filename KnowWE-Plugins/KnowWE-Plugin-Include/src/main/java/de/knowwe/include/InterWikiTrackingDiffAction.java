@@ -47,15 +47,15 @@ public class InterWikiTrackingDiffAction extends AbstractAction {
 		String referenceText = markup.get().getTrackingReferenceText(markup);
 		String localText = markup.get().getTrackingLocalComparisonText(markup);
 		if (attachment == null || referenceText == null || localText == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Tracking reference or local content not (yet) available.");
+			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Source or local content not (yet) available.");
 			return;
 		}
 		InterWikiTrackingService.DiffOption option = InterWikiTrackingService.getDiffOption(attachment, version, referenceText, localText);
 		if (option == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Version " + version + " of the reference is not available.");
+			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Version " + version + " of the source is not available.");
 			return;
 		}
 		context.setContentType(HTML);
-		context.getWriter().write(InterWikiImportMarkup.renderDiffOption(option, referenceText, localText, context).toString());
+		context.getWriter().write(InterWikiImportMarkup.renderDiffOption(option, localText, context).toString());
 	}
 }

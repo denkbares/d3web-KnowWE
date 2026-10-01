@@ -16,7 +16,12 @@
 	white-space: initial;
 	background-color: var(--bg-color-frame);
 	padding: 0.25em 1em 0.75em;
-	margin-bottom: 1em;
+}
+
+/* similar space above and below the shaded markup, a bit more below */
+.defaultMarkupFrame.type_InterWikiImport {
+	margin-top: 1em;
+	margin-bottom: 1.25em;
 }
 
 .type_InterWikiImport .iwi-imported-content {
@@ -27,6 +32,11 @@
 
 .type_InterWikiImport .include-refresh {
 	padding: 0 .5em;
+}
+
+/* same distance to the text as the refresh icon */
+.type_InterWikiImport .tracking-check {
+	margin-left: .5em;
 }
 
 .type_InterWikiImport .include-deactivate, .type_InterWikiImport .help-tool  {
@@ -97,6 +107,26 @@
 	gap: 0.5em;
 	margin-top: 0.5em;
 	flex-wrap: wrap;
+}
+
+.type_InterWikiImport .iwi-comparison {
+	margin-top: 0.75em;
+}
+
+.type_InterWikiImport .iwi-comparison > summary {
+	font-size: 0.9em;
+	display: list-item;
+	list-style: disclosure-closed inside;
+	color: var(--text-color-secondary);
+	cursor: pointer;
+}
+
+.type_InterWikiImport .iwi-comparison[open] > summary {
+	list-style-type: disclosure-open;
+}
+
+.type_InterWikiImport .iwi-comparison > .tracking-action-buttons {
+	margin-top: 0.5em;
 }
 
 .type_InterWikiImport .iwi-configuration {

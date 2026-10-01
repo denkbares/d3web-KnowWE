@@ -103,6 +103,16 @@ public class InterWikiTrackingServiceTest {
 	}
 
 	@Test
+	public void changesAlreadyContainedNeedNoReview() throws Exception {
+		// the source added the TKZ, the local content (with its deviation) already contains it
+		TrackingStatus status = InterWikiTrackingService.computeTrackingStatus(REFERENCE_WITH_TKZ,
+				"line a\nline b (local)\nTKZ 4711\nline c", ACCEPTED, T2, at -> REFERENCE);
+		assertEquals(State.CONTAINED_DIFF, status.state());
+		assertFalse(status.warningActive());
+		assertNotNull(status.sourceChanges());
+	}
+
+	@Test
 	public void restoredIdenticalReferenceAfterAcknowledgementKeepsAcknowledgement() throws Exception {
 		// newer timestamp, but same content (e.g. re-stored attachment) must not re-activate the warning
 		TrackingStatus status = InterWikiTrackingService.computeTrackingStatus(REFERENCE, LOCAL, ACCEPTED, T2, at -> REFERENCE + "\n");
@@ -231,6 +241,21 @@ public class InterWikiTrackingServiceTest {
 				attachment, reference, "a\nb\nc", 1, 2);
 		assertEquals(List.of(1, InterWikiTrackingService.ALL_CHANGES), limited.stream().map(InterWikiTrackingService.DiffOption::version).toList());
 		assertTrue(limited.get(0).acknowledged());
+	}
+
+	@Test
+	public void overrideSourceChanges() {
+		String base = "rot\nblau\ngruen";
+		String source = "rot\nweiss\ngruen";
+		// the source wins on the conflicting line
+		assertEquals("rot\nweiss\ngruen", InterWikiTrackingService.overrideSourceChanges(base, source, "rot\nblau (lokal)\ngruen"));
+		// local deviations elsewhere are kept, also directly next to the conflict
+		assertEquals("rot (lokal)\nweiss\ngruen", InterWikiTrackingService.overrideSourceChanges(base, source, "rot (lokal)\nblau (lokal)\ngruen"));
+		assertEquals("rot\nweiss\ngruen (lokal)\nschwarz", InterWikiTrackingService.overrideSourceChanges(base, source, "rot\nblau (lokal)\ngruen (lokal)\nschwarz"));
+		// without a conflict like applying the changes
+		assertEquals("rot (lokal)\nweiss\ngruen", InterWikiTrackingService.overrideSourceChanges(base, source, "rot (lokal)\nblau\ngruen"));
+		// different number of lines in the conflict: the source lines replace the local ones
+		assertEquals("rot\nweiss\nschwarz\ngruen", InterWikiTrackingService.overrideSourceChanges(base, "rot\nweiss\nschwarz\ngruen", "rot\nblau (lokal)\ngruen"));
 	}
 
 	@Test

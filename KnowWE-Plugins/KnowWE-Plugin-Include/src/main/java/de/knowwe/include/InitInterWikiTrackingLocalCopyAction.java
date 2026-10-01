@@ -19,7 +19,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class InitInterWikiTrackingLocalCopyAction extends AbstractAction {
 
-	private static final String CHANGE_NOTE = "Initialize local copy from InterWikiImport tracking reference";
+	private static final String CHANGE_NOTE = "Initialize local copy from InterWikiImport source";
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -46,7 +46,7 @@ public class InitInterWikiTrackingLocalCopyAction extends AbstractAction {
 
 		if (!trackingStatus.canInitializeFromReference()) {
 			context.sendError(HttpServletResponse.SC_CONFLICT,
-					"Local copy can only be initialized when the reference is not empty and the local area below the markup is still empty.");
+					"Local copy can only be initialized when the source is not empty and the local area below the markup is still empty.");
 			return;
 		}
 

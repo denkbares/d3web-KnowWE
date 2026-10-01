@@ -75,22 +75,38 @@ KNOWWE.plugin.include.errorMessage = function(xhr, fallback) {
 };
 
 /**
- * Loads and shows the diff of the entry chosen in "Differences since" of an InterWikiImport in tracking mode,
- * and enables "Apply shown differences and acknowledge" if the entry can be applied.
+ * Applies the changes of the tracking source since the given version (or all differences for version -1)
+ * to the local content, optionally acknowledging them and optionally overriding conflicting local changes.
  */
-KNOWWE.plugin.include.showTrackingDiff = function(sectionId) {
-	const container = document.getElementById('tracking-diff-' + sectionId);
-	const select = document.getElementById('tracking-diff-select-' + sectionId);
-	const apply = document.getElementById('tracking-apply-' + sectionId);
-	if (!container || !select) return;
-	if (apply) {
-		apply.disabled = true;
-		apply.style.display = select.value === '' ? 'none' : '';
-	}
-	if (select.value === '') {
-		container.style.display = 'none';
-		return;
-	}
+KNOWWE.plugin.include.applyTrackingChanges = function(sectionId, version, acknowledge, override) {
+	// no confirmation, the shown diff tells what happens
+	jq$.ajax({
+		url : KNOWWE.core.util.getURL({
+			action : 'ApplyInterWikiTrackingChangesAction',
+			SectionID : sectionId,
+			version : version,
+			acknowledge : acknowledge,
+			override : !!override
+		}),
+		type : 'post',
+		cache : false
+	}).done(function() {
+		window.location.reload();
+	}).fail(function(xhr) {
+		KNOWWE.notification.error(null, KNOWWE.plugin.include.errorMessage(xhr, 'Unable to apply the differences.'), 'tracking-apply', 10000);
+	});
+};
+
+/**
+ * Loads and shows the diff of the entry chosen in "Compare with source" (only while expanded), and
+ * adapts the button to the entry.
+ */
+KNOWWE.plugin.include.showTrackingComparison = function(sectionId) {
+	const container = document.getElementById('tracking-compare-' + sectionId);
+	const select = document.getElementById('tracking-compare-select-' + sectionId);
+	const apply = document.getElementById('tracking-compare-apply-' + sectionId);
+	if (!container || !select || !container.closest('details').open) return;
+	if (apply) apply.disabled = true;
 	jq$.ajax({
 		url : KNOWWE.core.util.getURL({
 			action : 'InterWikiTrackingDiffAction',
@@ -100,33 +116,24 @@ KNOWWE.plugin.include.showTrackingDiff = function(sectionId) {
 		cache : false
 	}).done(function(html) {
 		container.innerHTML = html;
-		container.style.display = 'block';
 		const diff = container.firstElementChild;
-		if (apply) apply.disabled = !(diff && diff.dataset.applicable === 'true');
+		if (!apply) return;
+		const conflict = diff && diff.dataset.conflict === 'true';
+		apply.disabled = !(diff && diff.dataset.applicable === 'true');
+		apply.dataset.override = String(conflict);
+		apply.textContent = conflict ? 'Override local changes by applying shown changes' : 'Apply shown changes';
 	}).fail(function(xhr) {
 		KNOWWE.notification.error(null, KNOWWE.plugin.include.errorMessage(xhr, 'Unable to load the differences.'), 'tracking-diff', 10000);
 	});
 };
 
 /**
- * Applies the shown differences of an InterWikiImport in tracking mode and acknowledges them.
+ * Applies the entry chosen in "Compare with source" without acknowledging, as other changes of the
+ * source may still be pending.
  */
-KNOWWE.plugin.include.applyTrackingDiff = function(sectionId) {
-	const select = document.getElementById('tracking-diff-select-' + sectionId);
-	if (!select || select.value === '') return;
-	// all changes to the reference replace the local content
-	if (select.value === '-1' && !confirm('Replace the local content below the markup with the current reference text from the source wiki? Local deviations in this range will be lost.')) return;
-	jq$.ajax({
-		url : KNOWWE.core.util.getURL({
-			action : 'ApplyInterWikiTrackingChangesAction',
-			SectionID : sectionId,
-			version : select.value
-		}),
-		type : 'post',
-		cache : false
-	}).done(function() {
-		window.location.reload();
-	}).fail(function(xhr) {
-		KNOWWE.notification.error(null, KNOWWE.plugin.include.errorMessage(xhr, 'Unable to apply the differences.'), 'tracking-apply', 10000);
-	});
+KNOWWE.plugin.include.applyTrackingComparison = function(sectionId) {
+	const select = document.getElementById('tracking-compare-select-' + sectionId);
+	const apply = document.getElementById('tracking-compare-apply-' + sectionId);
+	if (!select) return;
+	KNOWWE.plugin.include.applyTrackingChanges(sectionId, select.value, false, apply && apply.dataset.override === 'true');
 };
