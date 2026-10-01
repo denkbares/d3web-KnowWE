@@ -19,6 +19,7 @@
 
 package de.knowwe.core.utils.progress;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class LongOperationUtilsTest {
 			assertSame(operation, LongOperationUtils.getLongOperation(section, operationId));
 		}
 		finally {
-			EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(articleManager, true));
+			EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(articleManager, Set.of(article.getTitle())));
 			article.destroy(null);
 			ArticleLifecycleFixture.closeManager(articleManager);
 		}

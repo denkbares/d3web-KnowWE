@@ -21,6 +21,7 @@ package de.knowwe.search;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -95,7 +96,7 @@ public class WikiSearchServiceTest {
 
 		write("Neu", "!! Kapitel\nEnthaelt Schrumpfschlauch.\n");
 		service.notify(new ArticleRegisteredEvent(article("Neu")));
-		service.notify(new ArticleManagerCommitDoneEvent(manager(), true));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of("Neu")));
 		service.awaitIdle();
 
 		assertEquals("Neu › Kapitel", firstHit("Schrumpfschlauch"));
@@ -124,7 +125,7 @@ public class WikiSearchServiceTest {
 
 		write("Wandelbar", "!! Kapitel\nEnthaelt Klemmleiste.\n");
 		service.notify(new ArticleRegisteredEvent(article("Wandelbar")));
-		service.notify(new ArticleManagerCommitDoneEvent(manager(), true));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of("Wandelbar")));
 		service.awaitIdle();
 
 		assertTrue("the old text must be gone", search("Zwirbelfassung").isEmpty());
@@ -160,7 +161,7 @@ public class WikiSearchServiceTest {
 		service.notify(new ArticleDeletedEvent(article("Alter Name")));
 		write("Neuer Name", "!! Kapitel\nEnthaelt Xylofonhalter.\n");
 		service.notify(new ArticleRegisteredEvent(article("Neuer Name")));
-		service.notify(new ArticleManagerCommitDoneEvent(manager(), true));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of("Neuer Name")));
 		service.awaitIdle();
 
 		// asked as presence, not as rank: what ranks where is decided elsewhere, and the shared Environment holds the
@@ -182,7 +183,7 @@ public class WikiSearchServiceTest {
 
 		PreviewCache.getInstance().put("Zwischengespeichert", "s1", "albrecht", "<p>alter Stand</p>");
 		service.notify(new ArticleRegisteredEvent(article("Zwischengespeichert")));
-		service.notify(new ArticleManagerCommitDoneEvent(manager(), true));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of("Zwischengespeichert")));
 		service.awaitIdle();
 
 		assertNull("an edited page must not answer with the preview of its former text",
@@ -196,14 +197,14 @@ public class WikiSearchServiceTest {
 
 		write("Unbestaetigt", "!! Kapitel\nEnthaelt Sternenstaubkonverter.\n");
 		service.notify(new ArticleRegisteredEvent(article("Unbestaetigt")));
-		service.notify(new ArticleManagerCommitDoneEvent(manager(), false));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of()));
 		service.awaitIdle();
 
 		assertTrue("a commit that reports no changes must leave the pending page pending",
 				search("Sternenstaubkonverter").isEmpty());
 
 		// and the next real commit picks it up
-		service.notify(new ArticleManagerCommitDoneEvent(manager(), true));
+		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of("Unbestaetigt")));
 		service.awaitIdle();
 		assertEquals("Unbestaetigt › Kapitel", firstHit("Sternenstaubkonverter"));
 	}

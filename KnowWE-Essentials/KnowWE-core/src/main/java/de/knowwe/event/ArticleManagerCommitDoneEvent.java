@@ -19,18 +19,44 @@
 
 package de.knowwe.event;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.ArticleManager;
 
+/**
+ * Fired after the outermost commit of an {@link ArticleManager}, once the registered and removed articles
+ * have been handed to the compilation.
+ */
 public class ArticleManagerCommitDoneEvent extends ArticleManagerEvent {
 
-	private final boolean changesCommitted;
+	private final Set<String> committedTitles;
 
-	public ArticleManagerCommitDoneEvent(ArticleManager articleManager, boolean changesCommitted) {
+	/**
+	 * @param committedTitles the titles of the articles registered or removed with this commit, empty if
+	 *                        nothing has been committed
+	 */
+	public ArticleManagerCommitDoneEvent(ArticleManager articleManager, @NotNull Collection<String> committedTitles) {
 		super(articleManager);
-		this.changesCommitted = changesCommitted;
+		this.committedTitles = Collections.unmodifiableSet(new LinkedHashSet<>(committedTitles));
 	}
 
+	/**
+	 * Returns the titles of the articles registered or removed with this commit, as given by the articles
+	 * (not normalized to lower case). The set is empty if nothing has been committed.
+	 */
+	public @NotNull Set<String> getCommittedTitles() {
+		return committedTitles;
+	}
+
+	/**
+	 * Returns whether any article has been registered or removed with this commit.
+	 */
 	public boolean changesCommitted() {
-		return changesCommitted;
+		return !committedTitles.isEmpty();
 	}
 }
