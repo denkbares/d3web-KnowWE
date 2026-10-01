@@ -108,12 +108,21 @@ public class CompilerManager implements EventListener {
 	}
 
 	/**
-	 * Blocks the start of new compilation cycles until the returned {@link AutoCloseable} is closed. Use with
+	 * Block of the start of new compilation cycles, see {@link #blockCompilation()}. Closing it releases the block
+	 * (repeated closing has no effect), it never throws an exception.
+	 */
+	public interface CompilationBlock extends AutoCloseable {
+		@Override
+		void close();
+	}
+
+	/**
+	 * Blocks the start of new compilation cycles until the returned {@link CompilationBlock} is closed. Use with
 	 * try-with-resources to ensure the block is always released.
 	 * Method also waits for the current compilation to finish before blocking, an InterruptedException is thrown if the
 	 * thread is interrupted while waiting for compilation to finish.
 	 */
-	public AutoCloseable blockCompilation() {
+	public CompilationBlock blockCompilation() {
 		if (isCompileThread()) {
 			LOGGER.warn("blockCompilation was called from a compile thread; skipping to avoid deadlock.");
 			return () -> {
