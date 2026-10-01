@@ -20,8 +20,11 @@
 package de.knowwe.include;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,15 +69,24 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 		List<Section<AttachmentUpdateMarkup>> attachmentMarkups = $(context.getArticleManager()).
 				successor(AttachmentUpdateMarkup.class).asList();
 		LOGGER.info("Starting to update all {} attachments", attachmentMarkups.size());
+		// update the markups of one type on one article together, so they can change the article only once
+		// (e.g. InterWikiImports writing their @latestChange), different groups are still updated in parallel
+		Collection<List<Section<AttachmentUpdateMarkup>>> groups = attachmentMarkups.stream()
+				.collect(Collectors.groupingBy(markup -> new UpdateGroup(markup.get(), markup.getTitle()),
+						LinkedHashMap::new, Collectors.toList()))
+				.values();
 		AtomicLong counter = new AtomicLong(0);
-		attachmentMarkups.parallelStream().forEach(markup -> {
-			markup.get().performUpdate(markup, true, true);
-			long current = counter.incrementAndGet();
-			if (current % 100 == 0) {
-				stopwatch.log(LOGGER, "Updated " + current + "/" + attachmentMarkups.size() + " attachments");
+		groups.parallelStream().forEach(markups -> {
+			markups.get(0).get().performUpdates(markups, true, true);
+			long before = counter.getAndAdd(markups.size());
+			if ((before + markups.size()) / 100 > before / 100) {
+				stopwatch.log(LOGGER, "Updated " + (before + markups.size()) + "/" + attachmentMarkups.size() + " attachments");
 			}
 		});
 		stopwatch.log(LOGGER, "Updated all " + attachmentMarkups.size() + " attachments");
+	}
+
+	private record UpdateGroup(AttachmentUpdateMarkup type, String title) {
 	}
 
 	@Override
