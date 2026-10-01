@@ -25,9 +25,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -58,8 +60,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.elements.A;
+import de.knowwe.core.kdom.rendering.elements.Div;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.kdom.rendering.elements.HtmlNode;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
+import de.knowwe.core.kdom.rendering.elements.PlainTextNode;
 import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.kdom.rendering.elements.TextNode;
 import de.knowwe.core.report.Message;
@@ -69,6 +74,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -660,6 +666,85 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			}
 		}
 
+		/**
+		 * Renders the annotations as label/value list, with formatted dates, links and replacements.
+		 * Values that cannot be formatted (or carry errors) are rendered as usual.
+		 */
+		@Override
+		protected void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, String parentTag, String elementTag) {
+			HtmlElement list = new Div().clazz("markupAnnotations iwi-annotations");
+			for (Section<AnnotationType> annotation : annotations) {
+				String name = annotation.get().getName();
+				list.children(new Div()
+						.clazz("markupAnnotation iwi-annotation")
+						.attributes("data-name", name)
+						.children(
+								new Span().clazz("iwi-annotation-label").plainText(InterWikiImportAnnotationFormat.getLabel(name)),
+								new Span().clazz("iwi-annotation-value").children(getAnnotationValue(annotation, name, user))));
+			}
+			result.append(list);
+		}
+
+		private HtmlProvider[] getAnnotationValue(Section<AnnotationType> annotation, String name, UserContext user) {
+			Section<AnnotationContentType> content = $(annotation).successor(AnnotationContentType.class).getFirst();
+			Section<InterWikiImportMarkup> markup = $(annotation).closest(InterWikiImportMarkup.class).getFirst();
+			HtmlProvider plainValue = result -> {
+				if (content != null) result.append(content, user);
+			};
+			if (content == null || markup == null
+					|| !Messages.getMessages(content, Message.Type.ERROR, Message.Type.WARNING).isEmpty()) {
+				return new HtmlProvider[] { plainValue };
+			}
+			String text = Strings.trim(content.getText());
+			switch (name) {
+				case WIKI_ANNOTATION -> {
+					return new HtmlProvider[] {
+							new A().attributes("href", normalizeWiki(text)).plainText(InterWikiImportAnnotationFormat.formatWiki(text)) };
+				}
+				case PAGE_ANNOTATION -> {
+					URL url = markup.get().getUrl(markup, "Wiki.jsp?page=", false);
+					if (url == null) return new HtmlProvider[] { new PlainTextNode(text) };
+					return new HtmlProvider[] {
+							new A().attributes("href", url.toString().replaceAll("%23.+$", "")).plainText(text) };
+				}
+				case MODE_ANNOTATION -> {
+					return new HtmlProvider[] { new PlainTextNode(InterWikiImportAnnotationFormat.formatMode(text)) };
+				}
+				case COMPILE_ANNOTATION -> {
+					return new HtmlProvider[] { new PlainTextNode("false".equalsIgnoreCase(text) ? "No" : "Yes") };
+				}
+				case LATEST_CHANGE_ANNOTATION, TRACKING_ACCEPTED_AT_ANNOTATION -> {
+					Instant instant = InterWikiChanges.parseInstant(text);
+					if (instant == null) return new HtmlProvider[] { plainValue };
+					HtmlElement date = new Span().title(instant.toString())
+							.plainText(InterWikiImportAnnotationFormat.formatDateTime(instant, getLocale(user), ZoneId.systemDefault()));
+					return new HtmlProvider[] { date, new Span().clazz("iwi-annotation-hint")
+							.plainText(InterWikiImportAnnotationFormat.formatRelative(instant, Instant.now())) };
+				}
+				case REPLACEMENT, REGEX_REPLACEMENT -> {
+					String[] parts = InterWikiImportAnnotationFormat.splitReplacement(text);
+					if (parts == null) return new HtmlProvider[] { plainValue };
+					return new HtmlProvider[] {
+							new HtmlElement("code").plainText(parts[0]),
+							new Span().clazz("iwi-annotation-arrow").plainText("\u2192"),
+							new HtmlElement("code").plainText(parts[1]) };
+				}
+				default -> {
+					return new HtmlProvider[] { plainValue };
+				}
+			}
+		}
+
+		private static Locale getLocale(UserContext user) {
+			try {
+				return user.getLocale();
+			}
+			catch (RuntimeException e) {
+				// no request available, e.g. for asynchronous rendering
+				return Locale.ENGLISH;
+			}
+		}
+
 		@Override
 		public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
 			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
@@ -870,12 +955,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				long lastRun = markup.get().timeSinceLastRun(markup);
 				String message;
 				if (lastRun < Long.MAX_VALUE) {
-					String lastRunDisplay = getDisplay(lastRun);
-					message = "Last check for changes was " + lastRunDisplay + " ago";
-					long lastChange = markup.get().timeSinceLastChange(markup);
-					if (lastChange < Long.MAX_VALUE) {
-						String lastChangeDisplay = getDisplay(lastChange);
-						message += ", last change was " + lastChangeDisplay + " ago";
+					Instant now = Instant.now();
+					message = "Last check for changes: "
+							+ InterWikiImportAnnotationFormat.formatRelative(now.minusMillis(lastRun), now);
+					// the change in the source (@latestChange), not the local update of the attachment
+					Instant latestChange = markup.get().getLatestChange(markup);
+					if (latestChange != null) {
+						message += ", last change in source: " + InterWikiImportAnnotationFormat.formatRelative(latestChange, now);
 					}
 				}
 				else {

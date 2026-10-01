@@ -89,3 +89,39 @@
 	margin-top: 0.5em;
 	flex-wrap: wrap;
 }
+
+.type_InterWikiImport .iwi-annotations {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	gap: 0.25em 1.25em;
+	margin-top: 0.75em;
+	padding-top: 0.6em;
+	border-top: 1px solid var(--border-color-table);
+	font-size: 0.9em;
+}
+
+.type_InterWikiImport .iwi-annotations .iwi-annotation {
+	display: contents;
+}
+
+.type_InterWikiImport .iwi-annotation-label {
+	color: var(--text-color-secondary);
+}
+
+.type_InterWikiImport .iwi-annotation-value {
+	overflow-wrap: anywhere;
+}
+
+.type_InterWikiImport .iwi-annotation-value code {
+	white-space: pre-wrap;
+}
+
+.type_InterWikiImport .iwi-annotation-hint {
+	color: var(--text-color-secondary);
+	margin-left: 0.5em;
+}
+
+.type_InterWikiImport .iwi-annotation-arrow {
+	color: var(--text-color-secondary);
+	padding: 0 0.4em;
+}
