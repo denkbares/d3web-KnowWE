@@ -87,6 +87,9 @@ public class CompilerManager implements EventListener {
 	private volatile String compileMessage = null;
 	private volatile Date lastCompilationStart;
 
+	// a compilation delayed this long (partially) by blocks of blockCompilation() is logged
+	private static final long BLOCKED_COMPILATION_WARN_MILLIS = 10_000;
+
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
 		this.compilerCache = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -132,7 +135,7 @@ public class CompilerManager implements EventListener {
 		synchronized (lock) {
 			while (running != null) {
 				try {
-					LOGGER.info("Waiting to block compilation until current compilation finishes.");
+					LOGGER.debug("Waiting to block compilation until current compilation finishes.");
 					lock.wait();
 				}
 				catch (InterruptedException e) {
@@ -144,7 +147,7 @@ public class CompilerManager implements EventListener {
 			}
 
 			compilationBlockers++;
-			LOGGER.info("Compilation blocked. Active blockers: {}", compilationBlockers);
+			LOGGER.debug("Compilation blocked. Active blockers: {}", compilationBlockers);
 
 			AtomicBoolean closedTracker = new AtomicBoolean(false);
 			return () -> {
@@ -152,9 +155,9 @@ public class CompilerManager implements EventListener {
 					synchronized (lock) {
 						compilationBlockers--;
 						if (compilationBlockers == 0) {
-							LOGGER.info("Compilation unblocked. No more active blockers.");
+							LOGGER.debug("Compilation unblocked. No more active blockers.");
 						} else {
-							LOGGER.info("Compilation block released. Remaining blockers: {}", compilationBlockers);
+							LOGGER.debug("Compilation block released. Remaining blockers: {}", compilationBlockers);
 						}
 						lock.notifyAll();
 					}
@@ -280,7 +283,10 @@ public class CompilerManager implements EventListener {
 	public void compile(List<Section<?>> added, List<Section<?>> removed) {
 		synchronized (lock) {
 			boolean interrupted = false;
+			boolean blocked = false;
+			long waitStart = System.currentTimeMillis();
 			while (running != null || compilationBlockers > 0) {
+				if (compilationBlockers > 0) blocked = true;
 				try {
 					lock.wait();
 				}
@@ -290,6 +296,10 @@ public class CompilerManager implements EventListener {
 				}
 			}
 			if (interrupted) Thread.currentThread().interrupt();
+			long waited = System.currentTimeMillis() - waitStart;
+			if (blocked && waited > BLOCKED_COMPILATION_WARN_MILLIS) {
+				LOGGER.warn("Compilation was delayed by {} ms, partially because it was blocked (see blockCompilation())", waited);
+			}
 			lastCompilationStart = new Date();
 			compileMessage = pendingCompileMessage;
 			pendingCompileMessage = null;
