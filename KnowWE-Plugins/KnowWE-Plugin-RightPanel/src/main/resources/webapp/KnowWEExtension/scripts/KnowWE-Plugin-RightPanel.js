@@ -46,6 +46,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	let tabResizeObserver = null;
 
+	let panelResizeObserver = null;
+
 	jq$(window).resize(function () {
 		if (showSidebar) {
 			windowWidth = jq$(window).width();
@@ -146,14 +148,39 @@ KNOWWE.core.plugin.rightPanel = function () {
 		rightPanel.css({
 			position: 'fixed',
 			width: '100%',
+			height: '', // the height is only set on the right side
 			top: 'auto',
 			right: 'auto'
 		});
 		rightPanelScroll();
-		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', 'auto');
-		const currentHeight = jq$(KNOWWE.core.util.getPageContentSelector).height();
-		const rightPanelHeight = jq$('#rightPanel').height();
-		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', (currentHeight + rightPanelHeight) + 'px');
+		updatePageForBottomPanel();
+	}
+
+	/**
+	 * Leaves room for the panel below the content. A padding (instead of a fixed height) still lets
+	 * the content grow and shrink.
+	 */
+	function updatePageForBottomPanel() {
+		const $pageContent = jq$(KNOWWE.core.util.getPageContentSelector()).css('padding-bottom', '');
+		const padding = parseFloat($pageContent.css('padding-bottom')) || 0;
+		$pageContent.css('padding-bottom', (padding + rightPanel.outerHeight()) + 'px');
+	}
+
+	/**
+	 * The height of the panel on the bottom changes with its content (switching tabs, collapsing
+	 * tools, lazy loading), so the room left for it has to follow.
+	 */
+	function observePanelHeight() {
+		if (typeof ResizeObserver === "undefined") return;
+		if (panelResizeObserver) panelResizeObserver.disconnect();
+		let lastHeight = null;
+		panelResizeObserver = new ResizeObserver(function () {
+			const height = rightPanel[0].getBoundingClientRect().height;
+			if (height === lastHeight) return;
+			lastHeight = height;
+			if (showSidebar && isOnBottom) updatePageForBottomPanel();
+		});
+		panelResizeObserver.observe(rightPanel[0]);
 	}
 
 	function moveRightPanelToRight() {
@@ -165,7 +192,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		});
 		setRightPanelWidth(getStoredRightPanelWidth(), false);
 		rightPanelScroll();
-		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', 'auto');
+		jq$(KNOWWE.core.util.getPageContentSelector()).css('padding-bottom', '');
 	}
 
 	function makeRightPanelResizable() {
@@ -259,6 +286,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function removeRightPanel() {
 		hideMountedPanel();
+		jq$(KNOWWE.core.util.getPageContentSelector()).css('padding-bottom', '');
 		isOnBottom = false;
 		jq$(window).resize();
 	}
@@ -313,6 +341,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}
 
 		rightPanel.removeAttr('hidden');
+		observePanelHeight();
 		return true;
 	}
 
