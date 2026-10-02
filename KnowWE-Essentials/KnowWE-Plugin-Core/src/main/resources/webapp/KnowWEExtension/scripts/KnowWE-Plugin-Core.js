@@ -978,17 +978,23 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
       });
 
       // The sidebar is resizable and toggles via display:none, both without a css transition on
-      // the sidebar itself, so the handlers above do not fire for it. Watch the width of the page
-      // instead, that way the headers are recalculated while and after the sidebar width changes.
+      // the sidebar itself, so the handlers above do not fire for it. Content may also change its
+      // height without any event, e.g. by expanding a <details> element above a table. Watch the
+      // width of the page and the height of its content instead (the page itself does not shrink,
+      // the skin sets its min-height), that way the headers are recalculated after such changes.
       if (window.ResizeObserver && !pageResizeObserver) {
         let page = document.querySelector(".haddock .page");
         if (page) {
-          let lastPageWidth = page.getBoundingClientRect().width;
+          let content = page.querySelector(".page-content") || page;
+          let getSize = function() {
+            return page.getBoundingClientRect().width + "x" + content.getBoundingClientRect().height;
+          };
+          let lastSize = getSize();
           let updateScheduled = false;
           pageResizeObserver = new ResizeObserver(function() {
-            let width = page.getBoundingClientRect().width;
-            if (width === lastPageWidth) return; // height changes are already covered by contentChange
-            lastPageWidth = width;
+            let size = getSize();
+            if (size === lastSize) return;
+            lastSize = size;
             if (updateScheduled) return; // coalesce, resizing produces one event per frame
             updateScheduled = true;
             window.requestAnimationFrame(function() {
@@ -997,6 +1003,7 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
             });
           });
           pageResizeObserver.observe(page);
+          if (content !== page) pageResizeObserver.observe(content);
         }
       }
     }
