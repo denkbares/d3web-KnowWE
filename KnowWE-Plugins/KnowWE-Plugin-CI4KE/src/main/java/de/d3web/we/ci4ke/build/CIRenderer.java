@@ -135,10 +135,10 @@ public class CIRenderer {
 			sb.appendHtml("<td>");
 
 			sb.appendHtml("<a onclick=\"_CI.refreshBuildDetails('"
-						  + dashboardNameEncoded + "','"
-						  + buildNr + "','" + indexFromBack + "');_CI.refreshBuildList('"
-						  + dashboardNameEncoded + "', " + buildNr + ",'"
-						  + indexFromBack + "','" + numberOfBuilds + "');\">");
+					+ dashboardNameEncoded + "','"
+					+ buildNr + "','" + indexFromBack + "');_CI.refreshBuildList('"
+					+ dashboardNameEncoded + "', " + buildNr + ",'"
+					+ indexFromBack + "','" + numberOfBuilds + "');\">");
 
 			// _CI.refreshBuildList('"+ dashboardNameEncoded + "', " + buildNr +
 			// ");
@@ -172,13 +172,13 @@ public class CIRenderer {
 	private String makeNavButton(int numberOfBuilds, int latestDisplayedBuildNumber, String sign, Icon icon, boolean visible) {
 		String display = visible ? "visible" : "hidden";
 		return "<button display='" + display + "' "
-			   + "onclick=\"_CI.refreshBuildList('"
-			   + dashboardNameEncoded + "', -1 ,"
-			   + (latestDisplayedBuildNumber + sign + numberOfBuilds)
-			   + ",'" + numberOfBuilds
-			   + "');\" style=\"visibility:" + display + ";\">"
-			   + icon.addClasses("knowwe-blue").toHtml()
-			   + "</button>";
+				+ "onclick=\"_CI.refreshBuildList('"
+				+ dashboardNameEncoded + "', -1 ,"
+				+ (latestDisplayedBuildNumber + sign + numberOfBuilds)
+				+ ",'" + numberOfBuilds
+				+ "');\" style=\"visibility:" + display + ";\">"
+				+ icon.addClasses("knowwe-blue").toHtml()
+				+ "</button>";
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class CIRenderer {
 	public void renderBuildDetails(UserContext context, BuildResult build, RenderResult result) {
 
 		result.appendHtml("<div id='" + dashboardNameEncoded
-						  + "-column-middle' class='ci-column-middle'>");
+				+ "-column-middle' class='ci-column-middle'>");
 
 		if (build != null) {
 			appendBuildHeadline(build, result);
@@ -305,35 +305,60 @@ public class CIRenderer {
 		closeCollapse(renderResult);
 	}
 
+	/**
+	 * Render a test result in a collapsible box without requiring a dashboard name
+	 *
+	 * @param context
+	 * @param testResult
+	 * @param renderResult
+	 */
+	public static void renderCollapsibleBox(UserContext context, TestResult testResult, RenderResult renderResult) {
+		Message summary = testResult.getSummary();
+		Type type = (summary == null) ? Type.ERROR : summary.getType();
+
+		openCollapse(type, renderResult, null, null);
+		renderResultTitle(testResult, renderResult);
+		openMessageBlock(type, renderResult);
+
+		appendMessage(context, testResult, renderResult);
+
+		closeMessageBlock(renderResult);
+		closeCollapse(renderResult);
+	}
+
 	private void openCollapse(Type type, RenderResult renderResult) {
+		openCollapse(type, renderResult, dashboardName, dashboardNameEncoded);
+	}
+
+	private static void openCollapse(Type type, RenderResult renderResult, String dashboardName, String dashboardNameEncoded) {
 		renderResult.appendHtml("<div class='ci-collapsible-box'>");
 
 		String styleExpand = showCollapsed(type) ? "" : "style='display:none' ";
 		renderResult.appendHtml("<span " + styleExpand + "class='expandCIMessage' onclick='KNOWWE.plugin.ci4ke.expandMessage(this)'>");
-		renderBuildStatus(type, false, Icon.EXPAND, renderResult);
+		renderBuildStatus(type, false, Icon.EXPAND, dashboardName, dashboardNameEncoded, renderResult);
 		renderResult.appendHtml("</span>");
 
 		String styleCollapse = showCollapsed(type) ? "style='display:none' " : "";
 		renderResult.appendHtml("<span " + styleCollapse + "class='collapseCIMessage' onclick='KNOWWE.plugin.ci4ke.collapseMessage(this)'>");
-		renderBuildStatus(type, false, Icon.COLLAPSE, renderResult);
+		renderBuildStatus(type, false, Icon.COLLAPSE, dashboardName, dashboardNameEncoded, renderResult);
 		renderResult.appendHtml("</span>");
 	}
 
-	private void closeCollapse(RenderResult renderResult) {
+	private static void closeCollapse(RenderResult renderResult) {
 		renderResult.appendHtml("</div>\n");
 	}
 
-	private void openMessageBlock(Type type, RenderResult renderResult) {
+	private static void openMessageBlock(Type type, RenderResult renderResult) {
 		// not visible at beginning
 		String styleCollapse = showCollapsed(type) ? "style='display:none' " : "";
 		renderResult.appendHtml("<div " + styleCollapse + "class='ci-message'>");
 	}
 
-	private boolean showCollapsed(Type type) {
+	private static boolean showCollapsed(Type type) {
 		return type == null || type == Type.SUCCESS || type == Type.SKIPPED || type == Type.ABORTED;
 	}
 
-	private void closeMessageBlock(RenderResult renderResult) {
+	private static void closeMessageBlock(RenderResult renderResult) {
 		renderResult.appendHtml("</div>");
 	}
 
@@ -464,7 +489,7 @@ public class CIRenderer {
 		}
 	}
 
-	private void appendMessage(UserContext context, TestResult testResult, RenderResult renderResult) {
+	private static void appendMessage(UserContext context, TestResult testResult, RenderResult renderResult) {
 		Collection<String> failedTests = testResult.getTestObjectsWithUnexpectedOutcome();
 		CountingSet<Message.Type> typeCount = new CountingSet<>();
 		Test<?> test = TestManager.findTest(testResult.getTestName());
@@ -481,7 +506,7 @@ public class CIRenderer {
 		}
 
 		if (failedTests.isEmpty() && test instanceof AbstractTest &&
-			((AbstractTest<?>) test).renderResultsOfSucceededTests()) {
+				((AbstractTest<?>) test).renderResultsOfSucceededTests()) {
 			for (String succeededTests : testResult.getTestObjectsWithExpectedOutcome()) {
 				de.d3web.testing.Message message = testResult.getMessageForTestObject(succeededTests);
 				doRenderResults(context, testResult, renderResult, test, succeededTests, message);
@@ -526,7 +551,7 @@ public class CIRenderer {
 		}
 	}
 
-	private void doRenderResults(UserContext context, TestResult testResult, RenderResult renderResult, Test<?> test, String testObjectName, Message message) {
+	private static void doRenderResults(UserContext context, TestResult testResult, RenderResult renderResult, Test<?> test, String testObjectName, Message message) {
 		if (test instanceof ResultRenderer) {
 			((ResultRenderer) test).renderResultMessage(context, testObjectName, message, testResult, renderResult);
 		}
@@ -612,8 +637,12 @@ public class CIRenderer {
 	}
 
 	public void renderBuildStatus(Type resultType, boolean checkRunning, Icon icon, RenderResult result) {
-
 		boolean running = checkRunning && CIBuildManager.isRunning(dashboard);
+		renderBuildStatus(resultType, running, icon, dashboardName, dashboardNameEncoded, result);
+	}
+
+	public static void renderBuildStatus(Type resultType, boolean running, Icon icon, String dashboardName, String dashboardNameEncoded, RenderResult result) {
+
 		String css, text;
 
 		if (running) {
@@ -658,7 +687,7 @@ public class CIRenderer {
 
 	public void renderDashboardHeader(BuildResult latestBuild, RenderResult result) {
 		result.appendHtml("<div class='ci-header' id='ci-header_"
-						  + dashboard.getDashboardName() + "'>");
+				+ dashboard.getDashboardName() + "'>");
 
 		CIRenderer renderer = dashboard.getRenderer();
 		if (latestBuild != null) {
@@ -684,16 +713,16 @@ public class CIRenderer {
 				: "";
 
 		string.appendHtml("<span " +
-						  "class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>");
+				"class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>");
 		appendAbortButton(string);
 		string.appendHtml("<span class='ci-progress-value-wrap'><span class='ci-progress-value' id='"
-						  + dashboardNameEncoded + "_progress-value'>0%");
+				+ dashboardNameEncoded + "_progress-value'>0%");
 		string.appendHtml("</span> <span class='ci-progress-duration' id='"
-						  + dashboardNameEncoded + "_progress-duration'>")
+						+ dashboardNameEncoded + "_progress-duration'>")
 				.append(elapsedDuration)
 				.appendHtml("</span></span>");
 		string.appendHtml("<span class='ci-progess-text' id='"
-						  + dashboardNameEncoded + "_progress-text'>")
+						+ dashboardNameEncoded + "_progress-text'>")
 				.append(initialMessage)
 				.appendHtml("</span>");
 		string.appendHtml("</span>");
@@ -709,21 +738,21 @@ public class CIRenderer {
 
 	private void appendAbortButton(RenderResult string) {
 		string.appendHtml("<a href=\"javascript:_CI.stopRunningBuild('"
-						  + dashboardNameEncoded
-						  + "', '"
-						  + dashboard.getDashboardArticle()
-						  + "', '"
-						  + KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
-												   + dashboardNameEncoded)
-						  + "')\"><img class='tooltipster ci-abort-build' height='16' title='Stops the current build' " +
-						  "src='KnowWEExtension/images/cross.png' /></a>");
+				+ dashboardNameEncoded
+				+ "', '"
+				+ dashboard.getDashboardArticle()
+				+ "', '"
+				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
+				+ dashboardNameEncoded)
+				+ "')\"><img class='tooltipster ci-abort-build' height='16' title='Stops the current build' " +
+				"src='KnowWEExtension/images/cross.png' /></a>");
 	}
 
 	public void renderForecastIcon(int buildCount, int failedCount, RenderResult result) {
 
 		int score = (buildCount > 0) ? (100 * (buildCount - failedCount)) / buildCount : 0;
 		String imgForecast = "<img class='ci-forecast' src='KnowWEExtension/ci4ke/images/22x22/%s.png' "
-							 + "align='absmiddle' alt='%<s' title='%s'>";
+				+ "align='absmiddle' alt='%<s' title='%s'>";
 
 		if (score == 0) {
 			imgForecast = String.format(imgForecast, "health-00to19",
