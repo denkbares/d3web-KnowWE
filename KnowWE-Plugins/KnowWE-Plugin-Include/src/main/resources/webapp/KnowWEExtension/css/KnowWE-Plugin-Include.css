@@ -201,3 +201,13 @@
 .tracking-diff {
 	margin-top: 0.5em;
 }
+
+.tracking-diff-title {
+	margin: 0 0 0.25em;
+	color: var(--text-color-secondary);
+}
+
+/* the next section after a diff, the title of the changes to apply or the note that nothing is to apply */
+.tracking-diff knowwe-text-diff + p {
+	margin-top: 1em;
+}

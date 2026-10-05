@@ -3,14 +3,19 @@ package de.knowwe.include;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.knowwe.textdiff.DiffRenderOptions;
 import com.denkbares.knowwe.textdiff.TextDiff;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
@@ -104,7 +109,7 @@ final class InterWikiTrackingService {
 				sourceChanges = new TextDiff(normalizedAcceptedReference, normalizedReference);
 				// the local content already contains the changes (probably made by the same author), so
 				// there is nothing to review
-				changesContained = normalizedLocal.equals(applySourceChanges(normalizedAcceptedReference, normalizedReference, normalizedLocal));
+				changesContained = containsSourceChanges(normalizedAcceptedReference, normalizedReference, normalizedLocal);
 				if (changesContained) warningActive = false;
 			}
 		}
@@ -214,10 +219,6 @@ final class InterWikiTrackingService {
 		String resultText() {
 			return appliedText == null ? overriddenText : appliedText;
 		}
-
-		DiffOption asAcknowledged() {
-			return new DiffOption(version, date, baseText, appliedText, overriddenText, true);
-		}
 	}
 
 	/**
@@ -240,7 +241,8 @@ final class InterWikiTrackingService {
 				// shows the same as the next newer entry (or nothing to apply)
 				if (!option.acknowledged()) continue;
 				if (!options.isEmpty()) {
-					options.set(options.size() - 1, options.get(options.size() - 1).asAcknowledged());
+					// the acknowledged version replaces the newer entry, so the changes are shown since then
+					options.set(options.size() - 1, option);
 					acknowledgedContained = true;
 					continue;
 				}
@@ -283,8 +285,10 @@ final class InterWikiTrackingService {
 	private static DiffOption createDiffOption(WikiAttachment attachment, ReferenceVersion version, String referenceText, String localText, boolean acknowledged) throws IOException {
 		String baseText = normalizeForComparison(Streams.getTextAndClose(attachment.getInputStream(version.version())));
 		String appliedText = applySourceChanges(baseText, referenceText, localText);
-		return new DiffOption(version.version(), version.date(), baseText, appliedText,
-				appliedText != null ? appliedText : overrideSourceChanges(baseText, referenceText, localText), acknowledged);
+		String overriddenText = appliedText != null ? appliedText : overrideSourceChanges(baseText, referenceText, localText);
+		// e.g. differently aligned repeated lines may conflict, though the source winning changes nothing
+		if (overriddenText.equals(normalizeForComparison(localText))) appliedText = overriddenText;
+		return new DiffOption(version.version(), version.date(), baseText, appliedText, overriddenText, acknowledged);
 	}
 
 	/**
@@ -293,31 +297,22 @@ final class InterWikiTrackingService {
 	 * applied at its position in the local text, shifted by the local insertions and deletions before
 	 * it, so local deviations elsewhere are kept. Returns {@code null} if a change overlaps a local
 	 * deviation (conflict), then nothing is applied. Changes the local content already contains
-	 * identically are skipped.
+	 * identically are skipped, as well as changes only of lines deleted locally (see
+	 * {@link Merge#isInLocallyDeletedLines}), as the local content does not want these parts of the source.
 	 */
 	@Nullable
 	static String applySourceChanges(@Nullable String acceptedReference, @Nullable String currentReference, @Nullable String local) {
-		List<String> base = toLines(normalizeForComparison(acceptedReference));
-		List<String> localLines = toLines(normalizeForComparison(local));
-		List<Change> sourceChanges = toChanges(DiffUtils.diff(base, toLines(normalizeForComparison(currentReference))).getDeltas());
-		List<Change> localChanges = toChanges(DiffUtils.diff(base, localLines).getDeltas());
-
-		List<String> result = new ArrayList<>(localLines);
+		Merge merge = new Merge(acceptedReference, currentReference, local);
+		List<String> result = new ArrayList<>(merge.localLines);
 		// apply from the end, so the positions of the changes before stay valid
+		List<Change> sourceChanges = merge.getSourceChangesToApply();
 		for (int i = sourceChanges.size() - 1; i >= 0; i--) {
 			Change change = sourceChanges.get(i);
 			int offset = 0;
-			boolean alreadyApplied = false;
-			for (Change localChange : localChanges) {
-				if (localChange.equals(change)) {
-					// the local content already contains the change
-					alreadyApplied = true;
-					break;
-				}
-				if (overlaps(change.start(), change.end(), localChange.start(), localChange.end())) return null;
+			for (Change localChange : merge.localChanges) {
+				if (overlaps(change, localChange)) return null;
 				if (localChange.end() <= change.start()) offset += localChange.lines().size() - (localChange.end() - localChange.start());
 			}
-			if (alreadyApplied) continue;
 			int position = change.start() + offset;
 			result.subList(position, position + change.end() - change.start()).clear();
 			result.addAll(position, change.lines());
@@ -326,112 +321,264 @@ final class InterWikiTrackingService {
 	}
 
 	/**
+	 * Whether the changes to apply to the local text have to be shown in addition to the changes of the
+	 * reference: if their diffs would look different, as the local text differs at or around the changed
+	 * lines (e.g. lines changed by the reference do not exist locally, or the local text has other lines
+	 * next to them). If the local text is unchanged there, the changes of the reference suffice.
+	 */
+	static boolean isLocalChangesDiffNeeded(TextDiff referenceChanges, TextDiff localChanges) {
+		return !getShownLines(localChanges).equals(getShownLines(referenceChanges));
+	}
+
+	/**
+	 * Returns the lines a rendered diff shows: the added and removed lines and the unchanged lines around
+	 * them, without their line numbers.
+	 */
+	private static List<String> getShownLines(TextDiff diff) {
+		List<TextDiff.Line> lines = diff.lines();
+		int context = DiffRenderOptions.defaults().contextLines();
+		if (context < 0) context = lines.size(); // all lines are shown
+		boolean[] visible = new boolean[lines.size()];
+		for (int i = 0; i < lines.size(); i++) {
+			if (lines.get(i).status() == TextDiff.Line.Status.COMMON) continue;
+			for (int j = Math.max(0, i - context); j <= Math.min(lines.size() - 1, i + context); j++) {
+				visible[j] = true;
+			}
+		}
+		// like the renderer, a single hidden line is shown instead of being elided
+		for (int i = 0; i < lines.size(); i++) {
+			boolean single = !visible[i] && (i == 0 || visible[i - 1]) && (i == lines.size() - 1 || visible[i + 1]);
+			if (single && lines.size() > 1) visible[i] = true;
+		}
+		List<String> shown = new ArrayList<>();
+		for (int i = 0; i < lines.size(); i++) {
+			if (visible[i]) shown.add(lines.get(i).status() + ":" + lines.get(i).text());
+		}
+		return shown;
+	}
+
+	/**
+	 * Why changes of the reference are not applied to the local text.
+	 */
+	enum SkipReason {
+		/** The local text already contains the change. */
+		CONTAINED,
+		/** The changed lines do not exist locally (anymore). */
+		NOT_EXISTING_LOCALLY
+	}
+
+	/**
+	 * Returns why the changes of the reference since the acknowledged version are not applied to the local
+	 * text, for all changes that are not applied.
+	 */
+	static Set<SkipReason> getSkipReasons(@Nullable String acceptedReference, @Nullable String currentReference, @Nullable String local) {
+		Merge merge = new Merge(acceptedReference, currentReference, local);
+		Set<SkipReason> reasons = EnumSet.noneOf(SkipReason.class);
+		for (Delta delta : merge.sourceDeltas) {
+			if (merge.isMadeLocally(delta)) reasons.add(SkipReason.CONTAINED);
+			else if (merge.isInLocallyDeletedLines(delta)) reasons.add(SkipReason.NOT_EXISTING_LOCALLY);
+			else if (splitDeletions(delta.changes()).stream().anyMatch(merge::isContainedLocally)) reasons.add(SkipReason.CONTAINED);
+		}
+		return reasons;
+	}
+
+	/**
+	 * Whether the local text already contains all changes of the reference since the acknowledged
+	 * version, i.e. they were also made locally, so there is nothing to review. Deletions are compared as
+	 * a whole here: lines deleted by the source within a larger block deleted locally are not considered
+	 * as made locally (the local content just does not want that part), so they are still to be reviewed.
+	 */
+	static boolean containsSourceChanges(@Nullable String acceptedReference, @Nullable String currentReference, @Nullable String local) {
+		Merge merge = new Merge(acceptedReference, currentReference, local);
+		return merge.sourceDeltas.stream().allMatch(merge::isMadeLocally);
+	}
+
+	/**
 	 * Like {@link #applySourceChanges(String, String, String)}, but on a conflict the source wins: the
-	 * conflicting lines get the text of the source, the local deviations elsewhere are kept. The lines are
-	 * aligned by the lines unchanged on both sides, between them see {@link #mergeChunk}.
+	 * changes of the source are applied to the accepted reference, together with the local changes not
+	 * touching the lines changed by the source. So only the conflicting lines get the text of the source,
+	 * the local deviations elsewhere are kept. Local deletions are considered line by line, so lines
+	 * deleted locally stay deleted, unless the source changed them.
 	 */
 	static String overrideSourceChanges(@Nullable String acceptedReference, @Nullable String currentReference, @Nullable String local) {
 		String merged = applySourceChanges(acceptedReference, currentReference, local);
 		if (merged != null) return merged;
 
-		List<String> base = toLines(normalizeForComparison(acceptedReference));
-		List<String> source = toLines(normalizeForComparison(currentReference));
-		List<String> localLines = toLines(normalizeForComparison(local));
-		int[] sourceIndex = unchangedLines(base, source);
-		int[] localIndex = unchangedLines(base, localLines);
-
-		List<String> result = new ArrayList<>();
-		int baseStart = 0, sourceStart = 0, localStart = 0;
-		while (true) {
-			// the next base line unchanged on both sides, or the end
-			int baseEnd = baseStart;
-			while (baseEnd < base.size() && (sourceIndex[baseEnd] < 0 || localIndex[baseEnd] < 0)) baseEnd++;
-			int sourceEnd = baseEnd < base.size() ? sourceIndex[baseEnd] : source.size();
-			int localEnd = baseEnd < base.size() ? localIndex[baseEnd] : localLines.size();
-			result.addAll(mergeChunk(base.subList(baseStart, baseEnd), source.subList(sourceStart, sourceEnd), localLines.subList(localStart, localEnd)));
-			if (baseEnd >= base.size()) break;
-			result.add(base.get(baseEnd));
-			baseStart = baseEnd + 1;
-			sourceStart = sourceEnd + 1;
-			localStart = localEnd + 1;
+		Merge merge = new Merge(acceptedReference, currentReference, local);
+		List<Change> sourceChanges = merge.getSourceChangesToApply();
+		List<Change> changes = new ArrayList<>(sourceChanges);
+		for (Change localChange : merge.localChanges) {
+			if (sourceChanges.stream().noneMatch(sourceChange -> overlaps(sourceChange, localChange))) {
+				changes.add(localChange);
+			}
+		}
+		// apply from the end, so the positions of the changes before stay valid; of changes at the same
+		// position, the insertion is applied last, so it ends up before the replaced lines, and of
+		// insertions at the same position, the local one, so it ends up before the one of the source
+		changes.sort(Comparator.comparingInt(Change::start).thenComparingInt(Change::end).reversed());
+		List<String> result = new ArrayList<>(merge.base);
+		for (Change change : changes) {
+			result.subList(change.start(), change.end()).clear();
+			result.addAll(change.start(), change.lines());
 		}
 		return String.join("\n", result);
 	}
 
 	/**
-	 * Merges the lines between two lines unchanged on both sides, the source wins on a conflict: the lines
-	 * are paired in order, a line changed by the source gets the line of the source, otherwise the local
-	 * line is kept; of the remaining lines, the ones of the source are taken if it changed them.
+	 * The changes of the reference and of the local text, both since the acknowledged version (the base),
+	 * as deltas, i.e. the blocks of changed lines. For merging, deletions are considered line by line, so
+	 * the deletion of a line on both sides is recognized as the same change, also within larger deleted
+	 * blocks.
 	 */
-	private static List<String> mergeChunk(List<String> base, List<String> source, List<String> local) {
-		if (local.equals(base)) return source;
-		if (source.equals(base) || source.equals(local)) return local;
-		int paired = Math.min(base.size(), Math.min(source.size(), local.size()));
-		List<String> merged = new ArrayList<>();
-		for (int line = 0; line < paired; line++) {
-			merged.add(source.get(line).equals(base.get(line)) ? local.get(line) : source.get(line));
+	private static final class Merge {
+		private final List<String> base;
+		private final List<String> localLines;
+		private final List<Delta> sourceDeltas;
+		private final List<Delta> localDeltas;
+		/** The local changes with deletions line by line. */
+		private final List<Change> localChanges;
+		private final Set<Integer> locallyDeletedLines = new HashSet<>();
+
+		private Merge(@Nullable String acceptedReference, @Nullable String currentReference, @Nullable String local) {
+			this.base = toLines(normalizeForComparison(acceptedReference));
+			this.localLines = toLines(normalizeForComparison(local));
+			this.sourceDeltas = toDeltas(base, toLines(normalizeForComparison(currentReference)));
+			this.localDeltas = toDeltas(base, localLines);
+			this.localChanges = splitDeletions(localDeltas.stream().flatMap(delta -> delta.changes().stream()).toList());
+			for (Change change : localChanges) {
+				if (change.lines().isEmpty()) locallyDeletedLines.add(change.start());
+			}
 		}
-		List<String> baseRest = base.subList(paired, base.size());
-		List<String> sourceRest = source.subList(paired, source.size());
-		merged.addAll(sourceRest.equals(baseRest) ? local.subList(paired, local.size()) : sourceRest);
-		return merged;
-	}
 
-	/**
-	 * Returns for each base line its index in the target, or -1 if the line was changed or deleted.
-	 */
-	private static int[] unchangedLines(List<String> base, List<String> target) {
-		int[] index = new int[base.size()];
-		Arrays.fill(index, -1);
-		int baseLine = 0, targetLine = 0;
-		for (AbstractDelta<String> delta : DiffUtils.diff(base, target).getDeltas()) {
-			while (baseLine < delta.getSource().getPosition()) index[baseLine++] = targetLine++;
-			baseLine += delta.getSource().size();
-			targetLine += delta.getTarget().size();
+		/**
+		 * The changes of the source not yet contained in the local text and not of deltas only of lines
+		 * deleted locally. A delta only partly of lines deleted locally is applied completely, so it
+		 * conflicts with the local deletion.
+		 */
+		private List<Change> getSourceChangesToApply() {
+			return sourceDeltas.stream()
+					.filter(delta -> !isInLocallyDeletedLines(delta))
+					.flatMap(delta -> splitDeletions(delta.changes()).stream())
+					.filter(change -> !isContainedLocally(change))
+					.toList();
 		}
-		while (baseLine < base.size()) index[baseLine++] = targetLine++;
-		return index;
-	}
 
-	/**
-	 * A change of the base lines [start, end) to the given lines (an insertion has start == end).
-	 */
-	private record Change(int start, int end, List<String> lines) {
-	}
-
-	/**
-	 * Converts the deltas to changes of single lines: the lines of a delta are paired in order as
-	 * replacements, the remaining lines become one insertion (or deletion) at its end. So changes of
-	 * neighboring lines on both sides do not overlap, and a change contained in a larger one of the other
-	 * side is recognized as already applied. Applying the changes still results in the target of the delta.
-	 */
-	private static List<Change> toChanges(List<AbstractDelta<String>> deltas) {
-		List<Change> changes = new ArrayList<>();
-		for (AbstractDelta<String> delta : deltas) {
-			int start = delta.getSource().getPosition();
-			List<String> source = delta.getSource().getLines();
-			List<String> target = delta.getTarget().getLines();
-			int paired = Math.min(source.size(), target.size());
-			for (int line = 0; line < paired; line++) {
-				if (!source.get(line).equals(target.get(line))) {
-					changes.add(new Change(start + line, start + line + 1, List.of(target.get(line))));
+		/**
+		 * Whether the local text contains the change: the same change was made locally, or for an
+		 * insertion, the local text inserted these lines (and maybe more) at the same position.
+		 */
+		private boolean isContainedLocally(Change change) {
+			for (Change localChange : localChanges) {
+				if (localChange.equals(change)) return true;
+				if (change.isInsertion() && localChange.isInsertion() && localChange.start() == change.start()
+						&& Collections.indexOfSubList(localChange.lines(), change.lines()) >= 0) {
+					return true;
 				}
 			}
-			if (source.size() != target.size()) {
-				changes.add(new Change(start + paired, start + source.size(), List.copyOf(target.subList(paired, target.size()))));
-			}
+			return false;
 		}
-		return changes;
+
+		/**
+		 * Whether the delta of the source was also made locally exactly like this (deletions as a whole,
+		 * so lines deleted by the source within a larger block deleted locally are not made locally).
+		 */
+		private boolean isMadeLocally(Delta delta) {
+			List<Change> madeLocally = localDeltas.stream().flatMap(localDelta -> localDelta.changes().stream()).toList();
+			return madeLocally.containsAll(delta.changes());
+		}
+
+		/**
+		 * Whether the delta only concerns lines deleted locally: all its lines are deleted locally, or for
+		 * an insertion, the lines around it (one of them may be the start or end).
+		 */
+		private boolean isInLocallyDeletedLines(Delta delta) {
+			if (delta.start() < delta.end()) {
+				for (int line = delta.start(); line < delta.end(); line++) {
+					if (!locallyDeletedLines.contains(line)) return false;
+				}
+				return true;
+			}
+			boolean deletedBefore = locallyDeletedLines.contains(delta.start() - 1);
+			boolean deletedAfter = locallyDeletedLines.contains(delta.start());
+			return (deletedBefore || deletedAfter)
+					&& (deletedBefore || delta.start() == 0)
+					&& (deletedAfter || delta.start() == base.size());
+		}
 	}
 
 	/**
-	 * Whether two changes of the base lines [start, end) touch the same lines, or insert at the same
-	 * position (an insertion has start == end).
+	 * Splits the deletions of several lines into deletions of single lines.
 	 */
-	private static boolean overlaps(int start1, int end1, int start2, int end2) {
-		if (start1 == end1 && start2 == end2) return start1 == start2;
-		if (start1 == end1) return start2 < start1 && start1 < end2;
-		if (start2 == end2) return start1 < start2 && start2 < end1;
+	private static List<Change> splitDeletions(List<Change> changes) {
+		List<Change> split = new ArrayList<>();
+		for (Change change : changes) {
+			if (!change.lines().isEmpty()) {
+				split.add(change);
+				continue;
+			}
+			for (int line = change.start(); line < change.end(); line++) {
+				split.add(new Change(line, line + 1, List.of()));
+			}
+		}
+		return split;
+	}
+
+	/**
+	 * A change of the base lines [start, end) to the given lines.
+	 */
+	private record Change(int start, int end, List<String> lines) {
+		boolean isInsertion() {
+			return start == end;
+		}
+	}
+
+	/**
+	 * A block of changed base lines [start, end) (empty for an insertion), with its changes.
+	 */
+	private record Delta(int start, int end, List<Change> changes) {
+	}
+
+	/**
+	 * Returns the deltas from the base to the target. The lines of a delta are paired in order as
+	 * changes of single lines, the remaining lines become one insertion (or deletion) at its end. So
+	 * changes of neighboring lines on both sides do not overlap, and the change of a line contained in a
+	 * larger delta of the other side is recognized as already applied. Applying the changes still results
+	 * in the target of the delta.
+	 */
+	private static List<Delta> toDeltas(List<String> base, List<String> target) {
+		List<Delta> deltas = new ArrayList<>();
+		for (AbstractDelta<String> delta : DiffUtils.diff(base, target).getDeltas()) {
+			int start = delta.getSource().getPosition();
+			List<String> source = delta.getSource().getLines();
+			List<String> targetLines = delta.getTarget().getLines();
+			List<Change> changes = new ArrayList<>();
+			int paired = Math.min(source.size(), targetLines.size());
+			for (int line = 0; line < paired; line++) {
+				if (!source.get(line).equals(targetLines.get(line))) {
+					changes.add(new Change(start + line, start + line + 1, List.of(targetLines.get(line))));
+				}
+			}
+			if (source.size() != targetLines.size()) {
+				changes.add(new Change(start + paired, start + source.size(), List.copyOf(targetLines.subList(paired, targetLines.size()))));
+			}
+			deltas.add(new Delta(start, start + source.size(), changes));
+		}
+		return deltas;
+	}
+
+	/**
+	 * Whether a change of the source and a local change touch the same base lines. Insertions at the same
+	 * position only overlap if the source inserts the local lines (and more), so the source winning loses
+	 * nothing. Otherwise both are kept, the lines of the source after the local ones (if the source
+	 * inserts the same lines as the local content and less, they are already applied).
+	 */
+	private static boolean overlaps(Change sourceChange, Change localChange) {
+		int start1 = sourceChange.start(), end1 = sourceChange.end(), start2 = localChange.start(), end2 = localChange.end();
+		if (sourceChange.isInsertion() && localChange.isInsertion()) {
+			return start1 == start2 && Collections.indexOfSubList(sourceChange.lines(), localChange.lines()) >= 0;
+		}
+		if (sourceChange.isInsertion()) return start2 < start1 && start1 < end2;
+		if (localChange.isInsertion()) return start1 < start2 && start2 < end1;
 		return start1 < end2 && start2 < end1;
 	}
 

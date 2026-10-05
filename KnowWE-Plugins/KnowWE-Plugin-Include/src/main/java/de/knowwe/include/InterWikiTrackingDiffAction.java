@@ -10,9 +10,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
- * Renders the diff of a "Differences since" entry (parameter {@code version}, a previous version of
- * the tracking reference or {@link InterWikiTrackingService#ALL_CHANGES}): what applying the changes of
- * the reference since that version changes in the local content.
+ * Renders the diffs of a "Compare with source" entry (parameter {@code version}, a previous version of
+ * the tracking reference or {@link InterWikiTrackingService#ALL_CHANGES}), see
+ * {@link InterWikiImportMarkup#renderDiffOption}.
  */
 public class InterWikiTrackingDiffAction extends AbstractAction {
 
@@ -56,6 +56,6 @@ public class InterWikiTrackingDiffAction extends AbstractAction {
 			return;
 		}
 		context.setContentType(HTML);
-		context.getWriter().write(InterWikiImportMarkup.renderDiffOption(option, localText, context).toString());
+		context.getWriter().write(InterWikiImportMarkup.renderDiffOption(option, referenceText, localText, context).toString());
 	}
 }

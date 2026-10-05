@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -631,22 +632,57 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	/**
-	 * Renders the diff of the given entry: what applying it changes in the local content, on a conflict
-	 * with the source winning. The element tells by {@code data-applicable} whether applying changes
-	 * anything and by {@code data-conflict} whether local changes are overridden.
+	 * Renders the diff of the given entry. For the changes since a previous version, these are the
+	 * changes in the source, and additionally what applying them changes in the local content (on a
+	 * conflict with the source winning), if that differs, e.g. as lines changed by the source do not
+	 * exist locally. For all differences to the source, it is what applying them changes in the local
+	 * content. The element tells by {@code data-applicable} whether applying changes anything and by
+	 * {@code data-conflict} whether local changes are overridden.
 	 */
-	static HtmlElement renderDiffOption(InterWikiTrackingService.DiffOption option, String localText, UserContext user) {
+	static HtmlElement renderDiffOption(InterWikiTrackingService.DiffOption option, String referenceText, String localText, UserContext user) {
 		String local = InterWikiTrackingService.normalizeForComparison(localText);
 		HtmlElement element = new Div().attributes(
 				"data-applicable", String.valueOf(isApplicable(option, localText)),
 				"data-conflict", String.valueOf(option.conflict()));
-		if (local.equals(option.resultText())) {
-			element.children(new P().clazz("note").plainText("No changes to apply, the local content already contains them."));
+		TextDiff localChanges = new TextDiff(local, option.resultText());
+		if (option.version() == InterWikiTrackingService.ALL_CHANGES) {
+			if (local.equals(option.resultText())) {
+				element.children(new P().clazz("note").plainText("No changes to apply, the local content already contains them."));
+			}
+			else {
+				element.children(new HtmlNode(renderTrackingDiff(localChanges, user)));
+			}
+			return element;
+		}
+
+		TextDiff sourceChanges = new TextDiff(option.baseText(), InterWikiTrackingService.normalizeForComparison(referenceText));
+		element.children(new P().clazz("tracking-diff-title").plainText("Changes in the source:"));
+		if (sourceChanges.stats().equals(new TextDiff.Stats(0, 0))) {
+			element.children(new P().clazz("note").plainText("No changes in the source."));
 		}
 		else {
-			element.children(new HtmlNode(renderTrackingDiff(new TextDiff(local, option.resultText()), user)));
+			element.children(new HtmlNode(renderTrackingDiff(sourceChanges, user)));
+		}
+		if (local.equals(option.resultText())) {
+			element.children(new P().clazz("note").plainText(getNothingToApplyText(
+					InterWikiTrackingService.getSkipReasons(option.baseText(), referenceText, local))));
+		}
+		else if (InterWikiTrackingService.isLocalChangesDiffNeeded(sourceChanges, localChanges)) {
+			element.children(new P().clazz("tracking-diff-title").plainText("Changes to apply to the local content:"));
+			element.children(new HtmlNode(renderTrackingDiff(localChanges, user)));
 		}
 		return element;
+	}
+
+	private static String getNothingToApplyText(Set<InterWikiTrackingService.SkipReason> reasons) {
+		boolean contained = reasons.contains(InterWikiTrackingService.SkipReason.CONTAINED);
+		boolean notExisting = reasons.contains(InterWikiTrackingService.SkipReason.NOT_EXISTING_LOCALLY);
+		if (contained && notExisting) {
+			return "Nothing to apply to the local content, it already contains some of these changes, the other changed lines do not exist locally.";
+		}
+		if (contained) return "Nothing to apply to the local content, it already contains these changes.";
+		if (notExisting) return "Nothing to apply to the local content, the changed lines do not exist locally.";
+		return "Nothing to apply to the local content.";
 	}
 
 	/**
@@ -870,10 +906,10 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 
 		/**
-		 * Renders the differences of a tracking markup: if not acknowledged yet, the changes to review
-		 * (what applying them changes in the local content) with the buttons to apply and to acknowledge
-		 * them, and in any case the collapsed "Compare with source" to look at the complete comparison or
-		 * the changes since a previous version.
+		 * Renders the differences of a tracking markup: if not acknowledged yet, the changes of the source
+		 * to review (and what applying them changes in the local content, see {@link #renderDiffOption})
+		 * with the buttons to apply and to acknowledge them, and in any case the collapsed "Compare with
+		 * source" to look at the complete comparison or the changes since a previous version.
 		 */
 		private void renderTrackingDifferences(Section<InterWikiImportMarkup> markup, InterWikiTrackingService.TrackingStatus trackingStatus,
 				UserContext user, RenderResult result) {
@@ -919,14 +955,14 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 							+ InterWikiImportAnnotationFormat.formatDateTime(Objects.requireNonNull(trackingStatus.trackingAcceptedAt()), locale, ZoneId.systemDefault())
 							+ ")."));
 				}
-				renderReview(markup, review, localText, user, result);
+				renderReview(markup, review, referenceText, localText, user, result);
 			}
 			renderComparison(markup, options, localText, trackingStatus.trackingAcceptedAt(), locale, user, result);
 		}
 
 		private void renderReview(Section<InterWikiImportMarkup> markup, InterWikiTrackingService.DiffOption review,
-				String localText, UserContext user, RenderResult result) {
-			result.append(new Div().clazz("tracking-diff").children(renderDiffOption(review, localText, user)));
+				String referenceText, String localText, UserContext user, RenderResult result) {
+			result.append(new Div().clazz("tracking-diff").children(renderDiffOption(review, referenceText, localText, user)));
 			if (!KnowWEUtils.canWrite(markup, user)) return;
 			HtmlElement buttons = new Div().clazz("tracking-action-buttons");
 			String acknowledge = buildTrackingActionScript("AcceptInterWikiTrackingDiffAction", markup.getID(),
