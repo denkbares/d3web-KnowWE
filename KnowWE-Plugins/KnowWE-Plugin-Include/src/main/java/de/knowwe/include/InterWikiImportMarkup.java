@@ -668,7 +668,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					InterWikiTrackingService.getSkipReasons(option.baseText(), referenceText, local))));
 		}
 		else if (InterWikiTrackingService.isLocalChangesDiffNeeded(sourceChanges, localChanges)) {
-			element.children(new P().clazz("tracking-diff-title").plainText("Changes to apply to the local content:"));
+			element.children(new P().clazz("tracking-diff-title").plainText("The following changes can be applied to the local content:"));
 			element.children(new HtmlNode(renderTrackingDiff(localChanges, user)));
 		}
 		return element;
