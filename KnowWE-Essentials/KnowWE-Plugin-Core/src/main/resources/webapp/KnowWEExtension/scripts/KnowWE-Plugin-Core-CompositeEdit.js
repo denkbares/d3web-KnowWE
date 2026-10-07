@@ -739,6 +739,9 @@ KNOWWE.plugin.compositeEditTool = function() {
                 }
               ]
             });
+            // keep the term name in the title selectable, the rest of the titlebar still drags the dialog
+            _CE.dialogDiv.dialog("widget").draggable("option", "cancel",
+              ".ui-dialog-content, .ui-dialog-titlebar-close, .objectinfo-header-name");
           }
           enableInitialDialogState();
           highlightTermDefinitions();
