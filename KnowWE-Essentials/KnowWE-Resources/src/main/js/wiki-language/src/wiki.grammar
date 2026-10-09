@@ -1,0 +1,99 @@
+// JSPWiki markup with KnowWE markup blocks. Lines are separated by newline tokens and hold at most one block. All
+// tokens that are only valid at the start of a line come from the external tokenizer, which checks the position.
+
+@top Document { line? (newline line?)* }
+
+@external tokens lineStart from "./line-tokens.js" {
+  MarkupOpen, MarkupContent, MarkupClose, HeadingMark, ListMark, DefinitionMark, HorizontalRule, TableMark
+}
+
+line {
+  Markup |
+  Heading |
+  ListItem |
+  Definition |
+  TableRow |
+  HorizontalRule |
+  Paragraph
+}
+
+Markup { MarkupOpen MarkupContent? MarkupClose? }
+
+Heading { HeadingMark (inline | Pipe)* }
+
+ListItem { ListMark (inline | Pipe)* }
+
+Definition { DefinitionMark (inline | Pipe)* }
+
+TableRow { TableMark (inline | CellSeparator)* }
+
+Paragraph { inline (inline | Pipe)* }
+
+inline {
+  Bold |
+  Italic |
+  Monospace |
+  Preformatted |
+  Link |
+  Plugin |
+  Escape |
+  LineBreak |
+  Text |
+  SpecialChar
+}
+
+Bold { BoldMark boldInner* BoldMark }
+
+boldInner {
+  Italic |
+  Monospace |
+  Preformatted |
+  Link |
+  Plugin |
+  Escape |
+  LineBreak |
+  Text |
+  SpecialChar |
+  Pipe
+}
+
+Italic { ItalicMark italicInner* ItalicMark }
+
+italicInner {
+  Bold |
+  Monospace |
+  Preformatted |
+  Link |
+  Plugin |
+  Escape |
+  LineBreak |
+  Text |
+  SpecialChar |
+  Pipe
+}
+
+Link { LinkOpen LinkContent? (LinkSeparator LinkContent?)* LinkClose }
+
+@tokens {
+  newline { "\r"? "\n" }
+
+  CellSeparator { "|" "|"? }
+  Pipe { "|" }
+
+  BoldMark { "__" }
+  ItalicMark { "''" }
+  Monospace { "{{" ![}\n]* "}}" }
+  Preformatted { "{{{" (![}] | "}" ![}] | "}}" ![}])* "}}}" }
+  Plugin { "[{" (![}] | "}" ![\]])* "}]" }
+  LinkOpen { "[" }
+  LinkClose { "]" }
+  LinkSeparator { "|" }
+  LinkContent { ![|\]\n]+ }
+  Escape { "~" ![\n] | "[[" }
+  LineBreak { "\\\\" }
+
+  Text { ![\n\r\[\]{}|~'_%!*#;\-\\] ![\n\r\[\]{}|~'_%\\]* }
+  SpecialChar { $[\]{}~'_%!*#;\-\\] }
+
+  @precedence { Preformatted, Monospace, Plugin, Escape, LineBreak, BoldMark, ItalicMark, SpecialChar }
+}

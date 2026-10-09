@@ -1,0 +1,22 @@
+{
+  "name": "knowwe-wiki-language",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CodeMirror language for JSPWiki markup with KnowWE markup blocks and a registry for embedded languages",
+  "type": "module",
+  "scripts": {
+    "build": "vite build && node scripts/copy.mjs",
+    "test": "vite build && node test/parse.mjs"
+  },
+  "dependencies": {
+    "@codemirror/language": "6.11.2",
+    "@codemirror/state": "6.5.2",
+    "@lezer/common": "1.2.3",
+    "@lezer/highlight": "1.2.1",
+    "@lezer/lr": "1.4.2"
+  },
+  "devDependencies": {
+    "@lezer/generator": "1.7.3",
+    "vite": "7.1.3"
+  }
+}

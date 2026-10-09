@@ -1,0 +1,20 @@
+// Default content of a KnowWE markup block: annotation lines and plain text. Plugins may replace this parser for
+// their markups through the language registry.
+
+@top MarkupBody { line? (newline line?)* }
+
+line { Annotation | Line }
+
+Annotation { AnnotationName AnnotationValue? }
+
+Line { (Text | At)+ }
+
+@tokens {
+  newline { "\r"? "\n" }
+  AnnotationName { $[ \t]* "@" $[a-zA-Z0-9_\-]+ $[ \t]* $[:=]? }
+  AnnotationValue { ![\n\r]+ }
+  Text { ![\n\r@] ![\n\r]* }
+  At { "@" }
+
+  @precedence { AnnotationName, Text, At }
+}
