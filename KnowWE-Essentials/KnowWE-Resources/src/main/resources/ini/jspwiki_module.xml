@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Registers additional JSPWiki editors shipped by KnowWE. JSPWiki merges all jspwiki_module.xml files found on the
+    classpath, so the editors of jspwiki-main stay available.
+-->
+<modules>
+	<editor name="codemirror">
+		<author>denkbares GmbH</author>
+		<path>editors/codemirror.jsp</path>
+		<minVersion>2.12</minVersion>
+	</editor>
+</modules>

@@ -1,0 +1,159 @@
+/*
+ * Copyright (C) 2026 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+/* Layout of the CodeMirror page editor, see editors/codemirror.jsp. Editor internals are themed in its script. */
+
+.knowwe-editor {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--border-color-default, #e2e2e9);
+	border-radius: 6px;
+	background-color: var(--bg-color-primary, #fff);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+	overflow: hidden;
+}
+
+.knowwe-editor-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	background-color: var(--bg-color-secondary, #f6f6f6);
+	border-bottom: 1px solid var(--border-color-default, #e2e2e9);
+}
+
+.knowwe-editor-group {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.knowwe-editor-group-right {
+	margin-left: auto;
+}
+
+.knowwe-editor-toolbar .btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 32px;
+	padding: 0 12px;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 4px;
+	box-shadow: none;
+}
+
+.knowwe-editor-group-right .btn {
+	width: 34px;
+	padding: 0;
+	justify-content: center;
+	color: var(--text-color-secondary-shade, #666);
+}
+
+.knowwe-editor-group-right .btn.active {
+	background-color: var(--highlight-color-light, #d9edf7);
+	color: var(--text-color-primary, #000);
+}
+
+.knowwe-editor-cancel {
+	margin-left: 8px;
+}
+
+.knowwe-editor-switch .btn {
+	width: auto;
+	padding: 0 8px;
+}
+
+.knowwe-editor-switch .dropdown-menu > li.active > a {
+	font-weight: bold;
+	background-color: transparent;
+	color: var(--text-color-primary, #000);
+}
+
+.knowwe-editor-changenote {
+	flex: 1 1 240px;
+	max-width: 480px;
+	height: 32px;
+	font-size: 13px;
+	border-radius: 4px;
+	box-shadow: none;
+}
+
+.knowwe-editor-surface {
+	height: 60vh;
+	min-height: 320px;
+	position: relative;
+}
+
+.knowwe-editor-surface .cm-editor {
+	height: 100%;
+}
+
+.knowwe-editor-surface .cm-editor.cm-focused {
+	outline: none;
+}
+
+.knowwe-editor-source {
+	display: none;
+}
+
+.knowwe-editor-fallback .knowwe-editor-source {
+	display: block;
+	width: 100%;
+	min-height: 320px;
+	border: none;
+	padding: 8px;
+	font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+	background-color: var(--bg-color-primary, #fff);
+	color: var(--text-color-primary, #000);
+}
+
+.knowwe-editor-fallback .knowwe-editor-surface,
+.knowwe-editor-fallback .knowwe-editor-group-right {
+	display: none;
+}
+
+.knowwe-editor-statusbar {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 4px 12px;
+	font-size: 12px;
+	color: var(--text-color-secondary, #888);
+	background-color: var(--bg-color-secondary, #f6f6f6);
+	border-top: 1px solid var(--border-color-default, #e2e2e9);
+}
+
+.knowwe-editor-dirty {
+	color: var(--color-orange, #e08a00);
+}
+
+.knowwe-editor-dirty[hidden] {
+	display: none;
+}
+
+.knowwe-editor-signature {
+	margin-top: 16px;
+}
+
+.knowwe-editor-signature .form-group {
+	max-width: 480px;
+}
