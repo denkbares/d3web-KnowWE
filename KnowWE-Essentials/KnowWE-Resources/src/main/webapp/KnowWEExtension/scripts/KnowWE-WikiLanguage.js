@@ -1072,17 +1072,60 @@ var KnowWEWikiLanguage = (function(exports, _lezer_common, _lezer_highlight, _co
 			"{"
 		] } }
 	});
+	/** Returns the level of the heading node, 3 for the largest heading "!!!" and 1 for the smallest "!". */
+	function headingLevel(heading) {
+		const mark = heading.getChild("HeadingMark");
+		return mark ? mark.to - mark.from : 1;
+	}
+	/**
+	* Returns the end of the section of the heading node, the start of the next heading of the same or a larger level in
+	* the same block, or the end of that block. Returns -1 if the section may continue beyond the parsed text.
+	*/
+	function sectionEnd(heading, treeLength, docLength) {
+		const level = headingLevel(heading);
+		for (let next = heading.nextSibling; next; next = next.nextSibling) {
+			if (next.name === "Heading" && headingLevel(next) >= level) return next.from;
+			if (next.name === "StyleMark") return next.from;
+		}
+		const end = heading.parent.to;
+		return end >= treeLength && treeLength < docLength ? -1 : end;
+	}
+	function foldSection(state, lineStart, lineEnd) {
+		const tree = (0, _codemirror_language.syntaxTree)(state);
+		let heading = tree.resolve(lineStart, 1);
+		while (heading && heading.name !== "Heading") heading = heading.parent;
+		if (!heading || heading.from !== lineStart) return null;
+		let end = sectionEnd(heading, tree.length, state.doc.length);
+		if (end < 0) {
+			const mark = "!".repeat(headingLevel(heading));
+			const first = state.doc.lineAt(tree.length);
+			let pos = first.from;
+			for (const lines = state.doc.iterLines(first.number); !lines.next().done;) {
+				if (lines.value.startsWith(mark)) break;
+				pos += lines.value.length + 1;
+			}
+			end = Math.min(pos, state.doc.length);
+		}
+		const from = Math.max(lineEnd, state.doc.lineAt(heading.to).to);
+		while (end > from && /\s/.test(state.doc.sliceString(end - 1, end))) end--;
+		return end > from ? {
+			from,
+			to: end
+		} : null;
+	}
 	/** The CodeMirror language support for JSPWiki pages. */
 	function wiki() {
-		return new _codemirror_language.LanguageSupport(wikiLanguage);
+		return new _codemirror_language.LanguageSupport(wikiLanguage, _codemirror_language.foldService.of(foldSection));
 	}
 	//#endregion
 	exports.defineMarkups = defineMarkups;
 	exports.getLanguage = getLanguage;
+	exports.headingLevel = headingLevel;
 	exports.markupContentParser = markupContentParser;
 	exports.markupName = markupName;
 	exports.parser = parser;
 	exports.registerLanguage = registerLanguage;
+	exports.sectionEnd = sectionEnd;
 	exports.unregisterLanguage = unregisterLanguage;
 	exports.wiki = wiki;
 	exports.wikiLanguage = wikiLanguage;

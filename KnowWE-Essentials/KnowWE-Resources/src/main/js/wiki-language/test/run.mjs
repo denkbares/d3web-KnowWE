@@ -5,7 +5,9 @@
 // JSON object after the name configures the test, {"markups": null} parses without markup definitions.
 import {readdirSync, readFileSync} from "node:fs";
 import {testTree} from "@lezer/generator/test";
-import {defineMarkups, parser, registerLanguage, unregisterLanguage} from "../dist/wiki-language.mjs";
+import {EditorState} from "@codemirror/state";
+import {foldable} from "@codemirror/language";
+import {defineMarkups, parser, registerLanguage, unregisterLanguage, wiki} from "../dist/wiki-language.mjs";
 import {buildParser} from "@lezer/generator";
 import {checkCoverage, checkIncremental, checkNesting, errorOffsets} from "./checks.mjs";
 import {MARKUPS} from "./markups.mjs";
@@ -83,6 +85,32 @@ for (const unit of ["%%a ", "{{", "%%a\n", "__a ''b {{c %%d "]) {
     } catch (error) {
         report("deep nesting of " + JSON.stringify(unit), error);
     }
+}
+
+// a heading folds its section up to the next heading of the same or a larger level, the folded text is marked by < >
+const FOLDS = [
+    ["!! A<\ntext\n! B\nmore>\n\n!! C", 1],
+    ["! A<\ntext>\n!! B\nmore", 1],
+    ["!!! A<\n!! B\ntext>\n!!! C", 1],
+    ["!! B<\ntext>\n\n\n!!! C", 1],
+    ["! A\n!! B", 1],
+    ["!! A<\ntext\n%%Rule\nIF a THEN b\n/%>\n", 1],
+    ["%%style\n!! A<\ntext>\n/%\n!! B", 2],
+    ["! [Link|\nPage]<\ntext>", 1],
+    ["text\n!! A", 1],
+    ["text\n!! A", 2],
+    // the editor state parses only the start of a long document, the rest is searched for headings
+    ["!! A<\n" + "text\n\n".repeat(5000) + "! B\nmore>\n!!! C", 1],
+];
+for (const [marked, line] of FOLDS) {
+    const text = marked.replace(/[<>]/g, "");
+    const from = marked.indexOf("<");
+    const expected = from < 0 ? null : {from, to: marked.indexOf(">") - 1};
+    const state = EditorState.create({doc: text, extensions: wiki()});
+    const {from: start, to: end} = state.doc.line(line);
+    const actual = foldable(state, start, end);
+    report("fold " + JSON.stringify(marked), JSON.stringify(actual) === JSON.stringify(expected)
+        ? null : new Error(`expected ${JSON.stringify(expected)} but got ${JSON.stringify(actual)}`));
 }
 
 console.log(failures ? `${failures} of ${failures + passed} tests failed` : `all ${passed} tests passed`);
