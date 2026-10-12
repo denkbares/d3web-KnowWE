@@ -21,14 +21,19 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -126,6 +131,12 @@ public class DefaultMarkupType extends AbstractType {
 	private static final String INLINE_CONTENT = "$NAME$\\h*[:=\\h]\\h*([^/][^$]*?)";
 	private final static String SECTION_REGEXP_INLINE = "%%" + INLINE_CONTENT + "[%/]%|%%$NAME$\\h+[%/]%" +
 			"|\\[\\{" + INLINE_CONTENT + "\\}\\]";
+
+	// the type tree is built once per environment, so the markups are cached for the root type they were found in
+	private static volatile InstalledMarkups installedMarkups;
+
+	private record InstalledMarkups(RootType root, List<DefaultMarkup> markups) {
+	}
 
 	private DefaultMarkup markup;
 
@@ -353,5 +364,26 @@ public class DefaultMarkupType extends AbstractType {
 		String regex = isInline ? SECTION_REGEXP_INLINE : SECTION_REGEXP_BLOCK;
 		String regexp = regex.replace("$NAME$", name);
 		return Pattern.compile(regexp, FLAGS);
+	}
+
+	/**
+	 * Returns the markups of all default markup types in the type tree, one per name.
+	 */
+	@SuppressWarnings("unused") // used in codemirror.jsp
+	public static List<DefaultMarkup> getInstalledMarkups() {
+		RootType root = RootType.getInstance();
+		InstalledMarkups installed = installedMarkups;
+		if (installed == null || installed.root() != root) {
+			List<DefaultMarkup> markups = new ArrayList<>();
+			Set<String> names = new HashSet<>();
+			for (Type type : Types.getAllChildrenTypesRecursive(root)) {
+				if (type instanceof DefaultMarkupType markupType && names.add(markupType.getMarkup().getName())) {
+					markups.add(markupType.getMarkup());
+				}
+			}
+			installed = new InstalledMarkups(root, Collections.unmodifiableList(markups));
+			installedMarkups = installed;
+		}
+		return installed.markups();
 	}
 }
