@@ -165,8 +165,7 @@ var KnowWEWikiLanguage = (function(exports, common, highlight, language, lr) {
         ListMark: highlight.tags.list,
         DefinitionMark: highlight.tags.list,
         TableMark: highlight.tags.punctuation,
-        MarkupOpen: highlight.tags.keyword,
-        MarkupClose: highlight.tags.keyword
+        "MarkupOpen MarkupClose": highlight.tags.tagName
       }),
       language.foldNodeProp.add({
         Markup(node) {

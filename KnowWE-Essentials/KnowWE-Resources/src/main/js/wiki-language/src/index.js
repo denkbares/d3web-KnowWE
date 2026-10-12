@@ -61,8 +61,7 @@ export const parser = wikiParser.configure({
             ListMark: t.list,
             DefinitionMark: t.list,
             TableMark: t.punctuation,
-            MarkupOpen: t.keyword,
-            MarkupClose: t.keyword,
+            "MarkupOpen MarkupClose": t.tagName,
         }),
         foldNodeProp.add({
             Markup(node) {

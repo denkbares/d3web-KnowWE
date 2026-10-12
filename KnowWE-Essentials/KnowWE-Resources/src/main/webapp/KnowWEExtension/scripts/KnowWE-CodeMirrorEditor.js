@@ -32,15 +32,16 @@
 			return;
 		}
 
-		const {Compartment, EditorState} = CodeMirror.state;
+		const {Compartment, EditorState, RangeSetBuilder} = CodeMirror.state;
 		const {
 			EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter, drawSelection,
-			dropCursor, rectangularSelection, crosshairCursor, highlightSpecialChars
+			dropCursor, rectangularSelection, crosshairCursor, highlightSpecialChars, ViewPlugin, Decoration
 		} = CodeMirror.view;
 		const {defaultKeymap, history, historyKeymap, indentWithTab, undo, redo} = CodeMirror.commands;
 		const {searchKeymap, highlightSelectionMatches, openSearchPanel, closeSearchPanel, searchPanelOpen} = CodeMirror.search;
 		const {
-			bracketMatching, indentOnInput, indentUnit, foldGutter, foldKeymap, HighlightStyle, syntaxHighlighting
+			bracketMatching, indentOnInput, indentUnit, foldGutter, foldKeymap, HighlightStyle, syntaxHighlighting,
+			syntaxTree
 		} = CodeMirror.language;
 		const {closeBrackets, closeBracketsKeymap} = CodeMirror.autocomplete;
 		const {tags} = CodeMirror.lezer.highlight;
@@ -111,6 +112,13 @@
 			// must stay translucent, an opaque active line would cover the selection layer underneath
 			".cm-activeLine": {
 				backgroundColor: "rgba(66, 139, 230, 0.07)"
+			},
+			".cm-markup-line": {
+				backgroundColor: "var(--syntax-block-bg, rgba(26, 55, 102, 0.022))"
+			},
+			// stacks the active line on top of the block tint, both set the background of the same line element
+			".cm-markup-line.cm-activeLine": {
+				backgroundImage: "linear-gradient(rgba(66, 139, 230, 0.07), rgba(66, 139, 230, 0.07))"
 			},
 			".cm-gutters": {
 				backgroundColor: "var(--bg-color-secondary, #f6f6f6)",
@@ -198,33 +206,74 @@
 		});
 
 		// Colors for syntax nodes of the wiki language and of embedded markup languages, see KnowWE-WikiLanguage.js.
-		// Embedded languages use the standard Lezer tags, so the common ones are styled here as well.
+		// Embedded languages use the standard Lezer tags. Color marks markup, statement keywords, annotations,
+		// definitions, values and comments, bold marks markup delimiters, block keywords and type definitions.
+		// References and the remaining syntax keep the text color, secondary syntax is muted.
+		const text = "var(--syntax-text, #000)";
+		const muted = "var(--syntax-muted, #868c95)";
+		const markup = "var(--syntax-markup, #1a3766)";
+		const definition = "var(--syntax-definition, #45607f)";
+		const annotation = "var(--syntax-annotation, #0f6b74)";
+		const value = "var(--syntax-value, #357a28)";
 		const highlightStyle = HighlightStyle.define([
-			{tag: tags.heading, fontWeight: "bold", color: "var(--text-color-default-head, #036)"},
+			{tag: tags.heading, fontWeight: "bold", color: text},
 			{tag: tags.strong, fontWeight: "bold"},
 			{tag: tags.emphasis, fontStyle: "italic"},
-			{tag: tags.monospace, backgroundColor: "var(--bg-color-secondary, #f6f6f6)", color: "var(--color-pink, #b95d71)"},
-			{tag: tags.link, color: "var(--text-color-primary-link, #173a64)", textDecoration: "underline"},
-			{tag: tags.processingInstruction, color: "var(--color-purple, #6f42c1)"},
-			{tag: tags.escape, color: "var(--text-color-secondary, #888)"},
-			{tag: tags.contentSeparator, color: "var(--text-color-secondary, #888)"},
-			{tag: tags.list, color: "var(--color-orange, #e08a00)", fontWeight: "bold"},
-			{tag: tags.punctuation, color: "var(--text-color-secondary, #888)"},
-			{tag: tags.keyword, color: "var(--color-blue, #1a56b0)", fontWeight: "bold"},
-			{tag: tags.annotation, color: "var(--color-green-dark, #006400)", fontWeight: "bold"},
-			{tag: tags.attributeValue, color: "var(--color-green, #008000)"},
-			{tag: tags.attributeName, color: "var(--color-green-dark, #006400)"},
-			{tag: tags.comment, color: "var(--text-color-secondary, #888)", fontStyle: "italic"},
-			{tag: tags.string, color: "var(--color-green, #008000)"},
-			{tag: tags.number, color: "var(--color-pink, #b95d71)"},
-			{tag: tags.bool, color: "var(--color-pink, #b95d71)"},
-			{tag: tags.operator, color: "var(--text-color-primary-light, #333)"},
-			{tag: tags.atom, color: "var(--color-pink, #b95d71)"},
-			{tag: [tags.typeName, tags.unit], color: "var(--color-purple, #6f42c1)"},
-			{tag: [tags.definition(tags.variableName), tags.definition(tags.propertyName)], color: "var(--color-blue, #1a56b0)"},
-			{tag: tags.variableName, color: "var(--text-color-primary, #000)"},
-			{tag: tags.invalid, textDecoration: "underline wavy var(--color-red, #c00)"}
+			{tag: tags.monospace, color: text, backgroundColor: "var(--syntax-code-bg, #f1f3f5)", borderRadius: "3px"},
+			{tag: tags.link, color: "var(--syntax-link, #173a64)"},
+			{tag: [tags.processingInstruction, tags.escape, tags.contentSeparator, tags.list], color: muted},
+			{tag: [tags.punctuation, tags.meta], color: muted},
+			{tag: tags.tagName, color: markup, fontWeight: "600"},
+			{tag: tags.annotation, color: annotation, fontWeight: "600"},
+			{tag: tags.attributeName, color: annotation},
+			{tag: tags.definitionKeyword, color: markup, fontWeight: "600"},
+			{tag: tags.controlKeyword, color: markup},
+			{tag: tags.definition(tags.typeName), color: definition, fontWeight: "600"},
+			{tag: [tags.definition(tags.propertyName), tags.definition(tags.variableName)], color: definition},
+			{tag: [tags.string, tags.number, tags.bool, tags.atom], color: value},
+			// attribute values are strings in Lezer, but annotation values read as plain text next to their name
+			{tag: tags.attributeValue, color: text},
+			{tag: tags.comment, color: "var(--syntax-comment, #6b737d)", fontStyle: "italic"},
+			{tag: tags.invalid, textDecoration: "underline wavy var(--syntax-invalid, #e81818)"}
 		]);
+
+		// faint background on every line of a markup block, so embedded languages read as their own region
+		const markupLine = Decoration.line({class: "cm-markup-line"});
+		const markupTint = ViewPlugin.fromClass(class {
+			constructor(view) {
+				this.decorations = this.build(view);
+			}
+
+			update(update) {
+				if (update.docChanged || update.viewportChanged
+					|| syntaxTree(update.startState) !== syntaxTree(update.state)) {
+					this.decorations = this.build(update.view);
+				}
+			}
+
+			build(view) {
+				const builder = new RangeSetBuilder();
+				const doc = view.state.doc;
+				let last = -1;
+				for (const {from, to} of view.visibleRanges) {
+					syntaxTree(view.state).iterate({
+						from, to, enter(node) {
+							if (node.name !== "Markup") return;
+							const end = doc.lineAt(Math.min(node.to, to)).number;
+							for (let n = doc.lineAt(Math.max(node.from, from)).number; n <= end; n++) {
+								const line = doc.line(n);
+								if (line.from > last) {
+									builder.add(line.from, line.from, markupLine);
+									last = line.from;
+								}
+							}
+							return false;
+						}
+					});
+				}
+				return builder.finish();
+			}
+		}, {decorations: plugin => plugin.decorations});
 
 		// the wiki language is optional, so the editor still works if its script is missing
 		const language = typeof KnowWEWikiLanguage !== "undefined" ? [KnowWEWikiLanguage.wiki()] : [];
@@ -264,6 +313,7 @@
 				highlightSelectionMatches(),
 				syntaxHighlighting(highlightStyle),
 				language,
+				markupTint,
 				EditorState.tabSize.of(4),
 				indentUnit.of(detectIndentUnit(source.value)),
 				wrapping.of(isWrapping() ? EditorView.lineWrapping : []),

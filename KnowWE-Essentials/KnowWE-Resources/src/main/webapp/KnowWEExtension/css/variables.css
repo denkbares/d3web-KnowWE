@@ -198,6 +198,17 @@
 	--icon-color-hover: #2B2B2B;
 	--icon-popper-color: #FFF;
 	--icon-popper-color-hover: #E0E0E0;
+
+	/* -------- syntax highlighting -------- */
+
+	--syntax-muted: #868c95;
+	--syntax-markup: #1a3766;
+	--syntax-definition: #45607f;
+	--syntax-annotation: #0f6b74;
+	--syntax-value: #357a28;
+	--syntax-comment: #6b737d;
+	--syntax-code-bg: #f1f3f5;
+	--syntax-block-bg: rgba(26, 55, 102, 0.022);
 }
 
 
@@ -386,6 +397,17 @@
 	--icon-color-hover: #F0F0F0;
 	--icon-popper-color: #1F1F1F;
 	--icon-popper-color-hover: #2A2A2B;
+
+	/* -------- syntax highlighting -------- */
+
+	--syntax-muted: #80878f;
+	--syntax-markup: #8db8f2;
+	--syntax-definition: #a9bdd6;
+	--syntax-annotation: #6cc5cc;
+	--syntax-value: #9fcf87;
+	--syntax-comment: #8f969e;
+	--syntax-code-bg: #34363a;
+	--syntax-block-bg: rgba(255, 255, 255, 0.018);
 }
 
 /* ######################################################## */
@@ -497,6 +519,11 @@
 	--icon-button-color-hover: var(--icon-color-hover);
 	--icon-button-popper-color: var(--icon-popper-color);
 	--icon-button-popper-color-hover: var(--icon-popper-color-hover);
+
+	/* syntax highlighting */
+	--syntax-text: var(--text-color-primary);
+	--syntax-link: var(--text-color-primary-link);
+	--syntax-invalid: var(--color-red);
 }
 
 /* ############################################################## */
