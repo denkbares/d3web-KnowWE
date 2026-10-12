@@ -15,3 +15,8 @@ Plugins should pin the same package versions as this project for type checking. 
 
     pnpm install
     pnpm build
+
+## Versions
+
+`@lezer/lr` must stay at 1.4.10 or later. Earlier versions move skipped comments into the preceding node when more
+than 25 characters are skipped, which produces malformed trees in the COOM grammar.
