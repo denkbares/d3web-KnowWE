@@ -1,20 +1,14 @@
-// Default content of a KnowWE markup block: annotation lines and plain text. Plugins may replace this parser for
-// their markups through the language registry.
+// Default body of a KnowWE markup with its content followed by annotations "@name value", like the ContentType and
+// AnnotationType of DefaultMarkupType. Content ends at the first line starting with an annotation, and the value of an
+// annotation runs over the following lines up to the next annotation. Plugins may replace this parser for their
+// markups through the language registry.
 
-@top MarkupBody { line? (newline line?)* }
+@external tokens bodyTokens from "./content-tokens.js" {
+  DeclarationComment, bodyText, AnnotationName, AnnotationValue, space
+}
 
-line { Annotation | Line }
+@skip { space }
+
+@top MarkupBody { DeclarationComment? bodyText? Annotation* }
 
 Annotation { AnnotationName AnnotationValue? }
-
-Line { (Text | At)+ }
-
-@tokens {
-  newline { "\r"? "\n" }
-  AnnotationName { $[ \t]* "@" $[a-zA-Z0-9_\-]+ $[ \t]* $[:=]? }
-  AnnotationValue { ![\n\r]+ }
-  Text { ![\n\r@] ![\n\r]* }
-  At { "@" }
-
-  @precedence { AnnotationName, Text, At }
-}

@@ -1,0 +1,229 @@
+# Heading levels, more marks are a larger heading
+!!! Large
+!! Medium
+! Small
+==>
+Document(Heading(HeadingMark),Heading(HeadingMark),Heading(HeadingMark))
+
+# A fourth mark is heading text
+!!!!Four
+==>
+Document(Heading(HeadingMark))
+
+# Headings hold inline markup
+!!![Hello|http://www.google.com/] __bold__
+==>
+Document(Heading(HeadingMark,Link(LinkMark,LinkText,LinkMark,URL,LinkMark),Bold(BoldMark,BoldMark)))
+
+# A heading ends with its line
+!Title
+text
+==>
+Document(Heading(HeadingMark),Paragraph)
+
+# Line start marks only count in column zero
+ !not a heading
+a ! b
+  * not a list
+  ----
+==>
+Document(Paragraph)
+
+# An empty line separates paragraphs
+one
+two
+
+three
+==>
+Document(Paragraph,Paragraph)
+
+# A line of blanks does not separate paragraphs
+a
+   
+b
+==>
+Document(Paragraph)
+
+# Several empty lines
+a
+
+
+
+b
+==>
+Document(Paragraph,Paragraph)
+
+# Lists of both kinds, depth by the number of marks
+* one
+** two
+# three
+#* mixed
+==>
+Document(List(ListItem(ListMark),ListItem(ListMark),ListItem(ListMark),ListItem(ListMark)))
+
+# A list mark needs no blank
+*a
+==>
+Document(List(ListItem(ListMark)))
+
+# A line starting with a blank continues the list item
+* One
+  continuing.
+* Two
+==>
+Document(List(ListItem(ListMark),ListItem(ListMark)))
+
+# An indented mark continues the item as text
+* a
+  * b
+==>
+Document(List(ListItem(ListMark)))
+
+# A list ends at a line that does not start with a mark or a blank
+* a
+Should be normal.
+* b
+	tab ends the list
+==>
+Document(List(ListItem(ListMark)),Paragraph,List(ListItem(ListMark)),Paragraph)
+
+# Two lists separated by an empty line
+* a
+
+* b
+==>
+Document(List(ListItem(ListMark)),List(ListItem(ListMark)))
+
+# A list directly after a paragraph line
+text
+* item
+==>
+Document(Paragraph,List(ListItem(ListMark)))
+
+# Definition with term and description
+;term:the description
+==>
+Document(Definition(DefinitionMark,DefinitionTerm,DescriptionMark,DefinitionDescription))
+
+# Definition without term, used for comments
+;:''Comment here.''
+==>
+Document(Definition(DefinitionMark,DescriptionMark,DefinitionDescription(Italic(ItalicMark,ItalicMark))))
+
+# The first colon separates, later ones are text
+;a:b:c
+==>
+Document(Definition(DefinitionMark,DefinitionTerm,DescriptionMark,DefinitionDescription))
+
+# A colon inside a link does not separate
+;[Wiki:Page]:desc
+==>
+Document(Definition(DefinitionMark,DefinitionTerm(Link(LinkMark,LinkTarget,LinkMark)),DescriptionMark,DefinitionDescription))
+
+# A definition without colon has only a term
+;term
+next
+==>
+Document(Definition(DefinitionMark,DefinitionTerm),Paragraph)
+
+# Table with header and data rows
+|| Heading 1 || Heading 2
+| ''Gobble'' | Bar \\ foo
+| [Main] | [SandBox]
+==>
+Document(Table(TableRow(TableHeader(HeaderMark),TableHeader(HeaderMark)),TableRow(TableCell(CellMark,Italic(ItalicMark,ItalicMark)),TableCell(CellMark,LineBreak)),TableRow(TableCell(CellMark,Link(LinkMark,LinkTarget,LinkMark)),TableCell(CellMark,Link(LinkMark,LinkTarget,LinkMark)))))
+
+# Each separator decides the kind of its cell
+| a || b | c
+==>
+Document(Table(TableRow(TableCell(CellMark),TableHeader(HeaderMark),TableCell(CellMark))))
+
+# A trailing separator opens an empty cell
+| a | b |
+==>
+Document(Table(TableRow(TableCell(CellMark),TableCell(CellMark),TableCell(CellMark))))
+
+# A table ends at a line that does not start with a separator
+| a
+text
+| b
+==>
+Document(Table(TableRow(TableCell(CellMark))),Paragraph,Table(TableRow(TableCell(CellMark))))
+
+# A line of blanks ends a table
+| a
+ 
+| b
+==>
+Document(Table(TableRow(TableCell(CellMark))),Paragraph,Table(TableRow(TableCell(CellMark))))
+
+# A table directly after a paragraph line
+Testtable
+||header|cell
+==>
+Document(Paragraph,Table(TableRow(TableHeader(HeaderMark),TableCell(CellMark))))
+
+# Escaped separator in a cell
+|Cell 1| Cell~| 2
+==>
+Document(Table(TableRow(TableCell(CellMark),TableCell(CellMark,Escape))))
+
+# Horizontal rules need four dashes
+----
+------
+---
+==>
+Document(HorizontalRule,HorizontalRule,Paragraph)
+
+# Text after a rule is a paragraph
+----Foo
+more
+==>
+Document(HorizontalRule,Paragraph)
+
+# Dashes in a line are text
+Bar----Foo
+==>
+Document(Paragraph)
+
+# Preformatted block in column zero
+{{{
+code __not bold__ [no link]
+
+still code
+}}}
+==>
+Document(Preformatted(CodeMark,CodeText,CodeMark))
+
+# Text after a preformatted block
+{{{x}}} after
+next
+==>
+Document(Preformatted(CodeMark,CodeText,CodeMark),Paragraph)
+
+# A tilde escapes the end of preformatted text
+{{{a ~}}} b}}}
+==>
+Document(Preformatted(CodeMark,CodeText,CodeMark))
+
+# A fourth brace belongs to the preformatted text
+{{{{x}}}}
+==>
+Document(Preformatted(CodeMark,CodeText,CodeMark),Paragraph)
+
+# Unclosed preformatted text is marked
+{{{
+code
+==>
+Document(Paragraph(Unclosed))
+
+# A tilde in column zero makes the line plain text
+~!x
+~* y
+==>
+Document(Paragraph(Escape,Escape))
+
+# A plugin in column zero makes the rest of the line plain text
+[{SET a=b}]* x
+==>
+Document(Paragraph(Metadata(PluginMark,PluginKeyword,ParameterName,ParameterValue,PluginMark)))

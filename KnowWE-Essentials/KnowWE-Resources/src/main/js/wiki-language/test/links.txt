@@ -1,0 +1,84 @@
+# Page link
+This should be a [hyperlink]
+==>
+Document(Paragraph(Link(LinkMark,LinkTarget,LinkMark)))
+
+# Link with text
+[here|HyperLink#heading]
+==>
+Document(Paragraph(Link(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark)))
+
+# Link with attributes
+[text|Page|target='_blank' class='x']
+==>
+Document(Paragraph(Link(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark,LinkAttributes(Attribute(AttributeName,AttributeValue),Attribute(AttributeName,AttributeValue)),LinkMark)))
+
+# Further separators belong to the attributes
+[a|b|c|d]
+==>
+Document(Paragraph(Link(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark,LinkAttributes,LinkMark)))
+
+# External links
+[http://www.regex.fi/] [link|http://www.regex.fi/] [mail|mailto:foo@bar.com]
+==>
+Document(Paragraph(Link(LinkMark,URL,LinkMark),Link(LinkMark,LinkText,LinkMark,URL,LinkMark),Link(LinkMark,LinkText,LinkMark,URL,LinkMark)))
+
+# InterWiki link
+[link|JSPWiki:HyperLink]
+==>
+Document(Paragraph(Link(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark)))
+
+# Footnote anchor and references
+[#1] Here's the footnote. A reference[1] and a named one[Footnote name|1]. [2-The other|#2]
+==>
+Document(Paragraph(Footnote(LinkMark,LinkTarget,LinkMark),FootnoteReference(LinkMark,LinkTarget,LinkMark),FootnoteReference(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark),Footnote(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark)))
+
+# Empty target underlines the text
+[underscore|] []
+==>
+Document(Paragraph(Link(LinkMark,LinkText,LinkMark,LinkMark),Link(LinkMark,LinkMark)))
+
+# A link may span lines
+[a
+link|Page]
+==>
+Document(Paragraph(Link(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark)))
+
+# A link ends at the first closing bracket
+[a\]b]
+==>
+Document(Paragraph(Link(LinkMark,LinkTarget,LinkMark)))
+
+# An unclosed bracket is marked and the rest stays markup
+x [y __bold__
+==>
+Document(Paragraph(Unclosed,Bold(BoldMark,BoldMark)))
+
+# A stray closing bracket is text
+] This ] text
+==>
+Document(Paragraph)
+
+# Separators in a link do not split table cells
+|[Cell 3|ReallyALink]|Cell 4
+==>
+Document(Table(TableRow(TableCell(CellMark,Link(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark)),TableCell(CellMark))))
+
+# Link text is not markup
+[__bold__|Page]
+==>
+Document(Paragraph(Link(LinkMark,LinkText,LinkMark,LinkTarget,LinkMark)))
+
+# A markup declaration ends the scan for the closing bracket
+[unclosed
+%%Rule
+IF a THEN b
+/%
+]
+==>
+Document(Paragraph(Unclosed),Markup(MarkupOpen,MarkupBody,MarkupClose),Paragraph)
+
+# Blanks around the equals sign of an attribute
+[||o = 'v']
+==>
+Document(Paragraph(Link(LinkMark,LinkMark,LinkMark,LinkAttributes(Attribute(AttributeName,AttributeValue)),LinkMark)))

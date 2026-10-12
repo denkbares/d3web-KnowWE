@@ -221,7 +221,7 @@
 			{tag: tags.emphasis, fontStyle: "italic"},
 			{tag: tags.monospace, color: text, backgroundColor: "var(--syntax-code-bg, #f1f3f5)", borderRadius: "3px"},
 			{tag: tags.link, color: "var(--syntax-link, #173a64)"},
-			{tag: [tags.processingInstruction, tags.escape, tags.contentSeparator, tags.list], color: muted},
+			{tag: [tags.processingInstruction, tags.escape, tags.character, tags.contentSeparator, tags.list], color: muted},
 			{tag: [tags.punctuation, tags.meta], color: muted},
 			{tag: tags.tagName, color: markup, fontWeight: "600"},
 			{tag: tags.annotation, color: annotation, fontWeight: "600"},

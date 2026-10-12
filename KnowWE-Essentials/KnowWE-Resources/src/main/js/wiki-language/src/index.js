@@ -4,6 +4,8 @@ import {foldNodeProp, LanguageSupport, LRLanguage} from "@codemirror/language";
 import {parser as wikiParser} from "./wiki.grammar";
 import {parser as contentParser} from "./content.grammar";
 
+export {defineMarkups} from "./markups.js";
+
 /**
  * Registry of parsers for the bodies of KnowWE markup blocks, keyed by the markup name in lower case. Plugins
  * register the parser of their markup here before the editor is created.
@@ -27,48 +29,63 @@ export function getLanguage(markupName) {
     return registry.get(markupName.toLowerCase()) ?? null;
 }
 
-function markupName(open, input) {
-    return input.read(open.from, open.to).trim().replace(/^%%/, "").replace(/\s*[:=]$/, "").trim();
+/** Returns the name of the markup declared by the given opening, without "%%" and separator. */
+export function markupName(open, input) {
+    return input.read(open.from, open.to).trim().replace(/^%%/, "").replace(/[\s:=]*$/, "");
 }
 
-/** Parser for the default body of a markup block: annotation lines and plain text. */
+/** Parser for the default body of a markup block with its content, a declaration comment and annotations. */
 export const markupContentParser = contentParser.configure({
     props: [
         styleTags({
+            DeclarationComment: t.lineComment,
             AnnotationName: t.annotation,
             AnnotationValue: t.attributeValue,
         }),
     ],
 });
 
+// folds a block from the end of its first line to the start of its closing line, or to its end
+function foldBlock(node, state) {
+    const first = state.doc.lineAt(node.from);
+    const last = node.lastChild;
+    const closed = last && (last.name === "MarkupClose" || last.name === "StyleMark" || last.name === "CodeMark");
+    const end = closed ? state.doc.lineAt(last.from).from - 1 : node.to;
+    return end > first.to ? {from: first.to, to: end} : null;
+}
+
 /** Parser for JSPWiki markup, embedding registered parsers into the bodies of markup blocks. */
 export const parser = wikiParser.configure({
     props: [
         styleTags({
             "Heading/...": t.heading,
-            HeadingMark: t.processingInstruction,
+            "HeadingMark ListMark DefinitionMark DescriptionMark": t.list,
+            "BoldMark ItalicMark MonospaceMark CodeMark": t.processingInstruction,
             "Bold/...": t.strong,
             "Italic/...": t.emphasis,
-            Monospace: t.monospace,
-            Preformatted: t.monospace,
-            Link: t.link,
-            LinkContent: t.link,
-            "LinkOpen LinkClose LinkSeparator": t.punctuation,
-            Plugin: t.processingInstruction,
+            "Monospace/... InlineCode/... Preformatted/...": t.monospace,
+            "TableHeader/...": t.strong,
+            "CellMark HeaderMark": t.punctuation,
+            "Link/... Footnote/... FootnoteReference/...": t.link,
+            URL: t.url,
+            LinkMark: t.punctuation,
+            "LinkAttributes/...": t.meta,
+            "Plugin/... Variable/... AccessRule/... Metadata/...": t.processingInstruction,
+            PluginName: t.macroName,
+            PluginMark: t.punctuation,
+            "StyleMark StyleDeclaration": t.meta,
+            StyleClass: t.className,
             Escape: t.escape,
-            LineBreak: t.contentSeparator,
-            HorizontalRule: t.contentSeparator,
-            ListMark: t.list,
-            DefinitionMark: t.list,
-            TableMark: t.punctuation,
+            Entity: t.character,
+            "LineBreak HorizontalRule": t.contentSeparator,
             "MarkupOpen MarkupClose": t.tagName,
+            Unclosed: t.invalid,
         }),
         foldNodeProp.add({
-            Markup(node) {
-                const open = node.firstChild;
-                const close = node.lastChild;
-                if (!open || !close || close.name !== "MarkupClose") return null;
-                return {from: open.to, to: close.from};
+            "Markup StyleBlock Preformatted": foldBlock,
+            Plugin(node, state) {
+                const first = state.doc.lineAt(node.from);
+                return node.to - 2 > first.to ? {from: first.to, to: node.to - 2} : null;
             },
         }),
     ],
@@ -83,6 +100,10 @@ export const parser = wikiParser.configure({
 export const wikiLanguage = LRLanguage.define({
     name: "jspwiki",
     parser,
+    languageData: {
+        // apostrophes and quotes are prose in wiki text, so only brackets close automatically
+        closeBrackets: {brackets: ["(", "[", "{"]},
+    },
 });
 
 /** The CodeMirror language support for JSPWiki pages. */
