@@ -21,7 +21,9 @@ closing line, or the rest of the declaration line for single line markups.
 
     KnowWEWikiLanguage.registerLanguage("COOM:DSL", coomParser);
 
-Register before the editor is created, for example in the script of the plugin loaded through `plugin.xml`.
+Register at the top level of a script declared as `module` parameter of the markup's Type extension in
+`plugin.xml`. Module scripts run before the document is loaded and the editor is created on that event, so
+the registration always precedes the first parse.
 Markups without a registered parser use the default body parser with annotation highlighting. The registered
 parser must be built against the same `@lezer/lr` as the vendored bundle, so plugin builds externalize
 `@lezer/lr` to `CodeMirror.lezer.lr` and the other packages likewise, see `vite.config.mjs` for the mapping.

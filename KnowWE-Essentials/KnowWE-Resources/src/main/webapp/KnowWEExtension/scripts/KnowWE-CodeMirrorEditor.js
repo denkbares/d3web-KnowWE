@@ -191,8 +191,9 @@
 			{tag: tags.number, color: "var(--color-pink, #b95d71)"},
 			{tag: tags.bool, color: "var(--color-pink, #b95d71)"},
 			{tag: tags.operator, color: "var(--text-color-primary-light, #333)"},
-			{tag: tags.typeName, color: "var(--color-purple, #6f42c1)"},
-			{tag: tags.definition(tags.variableName), color: "var(--color-blue, #1a56b0)"},
+			{tag: tags.atom, color: "var(--color-pink, #b95d71)"},
+			{tag: [tags.typeName, tags.unit], color: "var(--color-purple, #6f42c1)"},
+			{tag: [tags.definition(tags.variableName), tags.definition(tags.propertyName)], color: "var(--color-blue, #1a56b0)"},
 			{tag: tags.variableName, color: "var(--text-color-primary, #000)"},
 			{tag: tags.invalid, textDecoration: "underline wavy var(--color-red, #c00)"}
 		]);

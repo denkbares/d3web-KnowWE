@@ -10,6 +10,11 @@ import {parser as contentParser} from "./content.grammar";
  */
 const registry = new Map();
 
+/**
+ * Registers the Lezer parser for the body of the markup with the given name. Call this at the top level of a
+ * module script declared in the plugin.xml of the markup. Module scripts run before the document is loaded, and
+ * the editor is created on that event, so every registration precedes the first parse.
+ */
 export function registerLanguage(markupName, parser) {
     registry.set(markupName.toLowerCase(), parser);
 }
