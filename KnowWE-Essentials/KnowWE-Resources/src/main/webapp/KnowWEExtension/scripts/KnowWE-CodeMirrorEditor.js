@@ -39,7 +39,9 @@
 		} = CodeMirror.view;
 		const {defaultKeymap, history, historyKeymap, indentWithTab, undo, redo} = CodeMirror.commands;
 		const {searchKeymap, highlightSelectionMatches, openSearchPanel, closeSearchPanel, searchPanelOpen} = CodeMirror.search;
-		const {bracketMatching, indentOnInput, foldGutter, foldKeymap, HighlightStyle, syntaxHighlighting} = CodeMirror.language;
+		const {
+			bracketMatching, indentOnInput, indentUnit, foldGutter, foldKeymap, HighlightStyle, syntaxHighlighting
+		} = CodeMirror.language;
 		const {closeBrackets, closeBracketsKeymap} = CodeMirror.autocomplete;
 		const {tags} = CodeMirror.lezer.highlight;
 
@@ -49,9 +51,35 @@
 		const position = root.querySelector(".knowwe-editor-position");
 		const dirtyLabel = root.querySelector(".knowwe-editor-dirty");
 
-		const initialText = source.value;
 		const wrapping = new Compartment();
 		let submitting = false;
+
+		/**
+		 * Guesses the indentation unit from the indented lines of the text, so new indentation matches the page.
+		 * Tabs win over spaces on a tie. Among space indented lines, the smallest common leading width wins, since
+		 * deeper levels are multiples of the unit.
+		 */
+		function detectIndentUnit(text) {
+			const widths = new Map();
+			let tabs = 0, spaces = 0;
+			for (const line of text.split("\n", 5000)) {
+				if (line.charCodeAt(0) === 9) {
+					tabs++;
+				} else if (line.charCodeAt(0) === 32) {
+					const width = line.length - line.trimStart().length;
+					if (width === line.length || width > 8) continue;
+					spaces++;
+					widths.set(width, (widths.get(width) || 0) + 1);
+				}
+			}
+			if (tabs >= spaces) return "\t";
+			const threshold = Math.max(...widths.values()) / 4;
+			let best = 4;
+			for (const [width, count] of widths) {
+				if (count >= threshold && width < best) best = width;
+			}
+			return " ".repeat(best);
+		}
 
 		const theme = EditorView.theme({
 			"&": {
@@ -210,49 +238,54 @@
 					+ "  ·  " + update.state.doc.lines + " lines";
 			}
 			if (update.docChanged) {
-				const dirty = update.state.doc.toString() !== initialText;
+				const dirty = !update.state.doc.eq(initialDoc);
 				dirtyLabel.hidden = !dirty;
 				root.classList.toggle("knowwe-editor-is-dirty", dirty);
 			}
 		});
 
-		const view = new EditorView({
-			parent: surface,
-			state: EditorState.create({
-				doc: initialText,
-				extensions: [
-					lineNumbers(),
-					foldGutter(),
-					highlightActiveLineGutter(),
-					highlightSpecialChars(),
-					history(),
-					drawSelection(),
-					dropCursor(),
-					EditorState.allowMultipleSelections.of(true),
-					indentOnInput(),
-					bracketMatching(),
-					closeBrackets(),
-					rectangularSelection(),
-					crosshairCursor(),
-					highlightActiveLine(),
-					highlightSelectionMatches(),
-					syntaxHighlighting(highlightStyle),
-					language,
-					wrapping.of(isWrapping() ? EditorView.lineWrapping : []),
-					keymap.of([
-						{key: "Mod-s", run: () => { save(); return true; }},
-						...closeBracketsKeymap,
-						...defaultKeymap,
-						...searchKeymap,
-						...historyKeymap,
-						...foldKeymap,
-						indentWithTab
-					]),
-					theme,
-					updateStatus
-				]
-			})
+		const state = EditorState.create({
+			doc: source.value,
+			extensions: [
+				lineNumbers(),
+				foldGutter(),
+				highlightActiveLineGutter(),
+				highlightSpecialChars(),
+				history(),
+				drawSelection(),
+				dropCursor(),
+				EditorState.allowMultipleSelections.of(true),
+				indentOnInput(),
+				bracketMatching(),
+				closeBrackets(),
+				rectangularSelection(),
+				crosshairCursor(),
+				highlightActiveLine(),
+				highlightSelectionMatches(),
+				syntaxHighlighting(highlightStyle),
+				language,
+				EditorState.tabSize.of(4),
+				indentUnit.of(detectIndentUnit(source.value)),
+				wrapping.of(isWrapping() ? EditorView.lineWrapping : []),
+				keymap.of([
+					{key: "Mod-s", run: () => { save(); return true; }},
+					...closeBracketsKeymap,
+					...defaultKeymap,
+					...searchKeymap,
+					...historyKeymap,
+					...foldKeymap,
+					indentWithTab
+				]),
+				theme,
+				updateStatus
+			]
 		});
+		const initialDoc = state.doc;
+		const view = new EditorView({parent: surface, state});
+
+		function isDirty() {
+			return !view.state.doc.eq(initialDoc);
+		}
 
 		// seed the status bar once, the update listener only fires on changes
 		position.textContent = "Ln 1, Col 1  ·  " + view.state.doc.lines + " lines";
@@ -330,6 +363,7 @@
 			link.addEventListener("click", event => {
 				event.preventDefault();
 				if (typeof Wiki !== "undefined" && typeof Wiki.prefs === "function") {
+					if (isDirty() && !window.confirm("Discard the unsaved changes and switch the editor?")) return;
 					Wiki.prefs("editor", link.dataset.editor);
 					submitting = true;
 					window.location.reload();
@@ -343,7 +377,7 @@
 		});
 
 		window.addEventListener("beforeunload", event => {
-			if (!submitting && view.state.doc.toString() !== initialText) {
+			if (!submitting && isDirty()) {
 				event.preventDefault();
 				event.returnValue = "";
 			}

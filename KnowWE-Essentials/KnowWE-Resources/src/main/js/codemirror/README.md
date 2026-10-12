@@ -18,5 +18,8 @@ Plugins should pin the same package versions as this project for type checking. 
 
 ## Versions
 
+CodeMirror relies on the native `Array.from`, for example to validate the indent unit. The MooTools bundled in the
+JSPWiki haddock template therefore omits its 1.5 compat alias of `Array.from`, see the JSPWiki fork.
+
 `@lezer/lr` must stay at 1.4.10 or later. Earlier versions move skipped comments into the preceding node when more
 than 25 characters are skipped, which produces malformed trees in the COOM grammar.
