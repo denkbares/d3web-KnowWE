@@ -24,6 +24,13 @@
 <%@ page import="org.apache.wiki.ui.*" %>
 <%@ page import="org.apache.wiki.util.TextUtil" %>
 <%@ page import="org.apache.wiki.utils.WikiPageUtils" %>
+<%@ page import="org.json.JSONArray" %>
+<%@ page import="org.json.JSONObject" %>
+<%@ page import="de.knowwe.core.kdom.RootType" %>
+<%@ page import="de.knowwe.core.kdom.Type" %>
+<%@ page import="de.knowwe.core.kdom.Types" %>
+<%@ page import="de.knowwe.kdom.defaultMarkup.DefaultMarkup" %>
+<%@ page import="de.knowwe.kdom.defaultMarkup.DefaultMarkupType" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -43,7 +50,21 @@
    String version = "?version=" + WikiPageUtils.getJarVersion();
    String editorStylesheet = context.getURL( none, "KnowWEExtension/css/KnowWE-CodeMirrorEditor.css" ) + version;
    String editorScript = context.getURL( none, "KnowWEExtension/scripts/KnowWE-CodeMirrorEditor.js" ) + version;
+
+   // the wiki language tells KnowWE markups from JSPWiki styles by the names of the installed markups
+   JSONArray markups = new JSONArray();
+   Set<String> markupNames = new HashSet<>();
+   for( Type type : Types.getAllChildrenTypesRecursive( RootType.getInstance() ) ) {
+      if( !( type instanceof DefaultMarkupType ) ) continue;
+      DefaultMarkup markup = ( ( DefaultMarkupType ) type ).getMarkup();
+      if( markupNames.add( markup.getName() ) ) {
+         markups.put( new JSONObject().put( "name", markup.getName() ).put( "inline", markup.isInline() ) );
+      }
+   }
 %>
+<script>
+  if (typeof KnowWEWikiLanguage !== "undefined") KnowWEWikiLanguage.defineMarkups(<%= markups.toString() %>);
+</script>
 <wiki:RequestResource type="stylesheet" resource="<%=editorStylesheet%>" />
 <wiki:RequestResource type="script" resource="<%=editorScript%>" />
 <c:set var='context'><wiki:Variable var='requestcontext' /></c:set>
