@@ -527,6 +527,22 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
 
 ## Protokoll
 
+- 2026-10-13: **`S4.7`-Folgefehler aus dem Kundenwiki-Vergleich mit Master.** (1) „Unknown TSM ID class" massenhaft
+  beim Start und TSM-IDs doppelt als `Activity` und `TsmId` registriert: Ursache war das geplugte CompileScript
+  `TSMTermTurtleDefinitionHandler` (CBX, Scope `TurtleContent/**/Predicate`), das `ssc:tsmId`-Literale in `%%Turtle`
+  als `TsmId`-Definition registriert. Auf Master war es tot: das JVM-Singleton `PredicateObjectSentenceList` wurde
+  einmal über den kürzesten Pfad `OntologyTableMarkup/AnnotationType/AnnotationContentType` dekoriert, der Scope
+  griff nie (per Master-Nachbildung im Typbaum belegt: 0 von 4 `Predicate` mit Script, auf dem Branch 6). Seit
+  `0430c0b8b` hat jedes Turtle-Konstrukt eigene Instanzen, das Script lief. Entfernt (Extension + Klasse).
+  (2) Beim Fabrik-Sweep verlorene Zeilen: `NonSolutionElementsMarkup` ohne `CommentLineType` (Kommentare wurden
+  `TsmIdReferencePath`s), KRONE `GruppierungsmodulMarkup` ohne Pflicht-Annotation `@module`. Wiederhergestellt.
+  Scan über alle Repos (Konfigurationsaufrufe pro Datei Merge-Base vs. HEAD, normalisiert; neu ungenutzte Imports;
+  pfadgebundene plugin.xml-Scopes in früher geteilte Teilbäume) fand keine weiteren Fälle. Regressionstest
+  `BikeWikiTsmRegistrationTest` (CBX, Bike-Wiki per `-Dcbx.bike.wiki=<pfad>`, sonst übersprungen): JSPWiki-artiges
+  Laden, keine Doppelregistrierung spezifisch/`TsmId`, keine Warnungen, `NonSolutionElements`-Kommentare; mit Script
+  bzw. ohne `CommentLineType` nachweislich rot. CBX-Modul 104 Tests grün. KRONE-Modul offline nicht baubar
+  (DES-Artefakte fehlen im `EnvInstance`-Bereich), Änderung dort nur 3 Zeilen analog Master.
+
 - 2026-09-27: **Breiten-Test-Sweep über alle Consumer-Repos** (nach den master-Merges, jeweils `mvn -o test`):
   | Repo | Tests | Failures | Errors | Bewertung |
   |---|---|---|---|---|
