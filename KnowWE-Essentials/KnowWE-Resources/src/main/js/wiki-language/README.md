@@ -59,6 +59,13 @@ annotation highlighting. The registered parser must be built against the same `@
 plugin builds externalize `@lezer/lr` to `CodeMirror.lezer.lr` and the other packages likewise, see
 `vite.config.mjs` for the mapping.
 
+A plugin may register a highlight style along with the parser. It colors the nodes of the embedded language in place
+of the editor's style, which still colors the wiki text around the block. Scope the style to the language and
+register the language's parser, so the embedded trees carry the language the scope refers to.
+
+    const style = HighlightStyle.define(specs, {scope: coomLanguage});
+    KnowWEWikiLanguage.registerLanguage("COOM:DSL", coomLanguage.parser, {highlight: style});
+
 ## Building and testing
 
     pnpm install

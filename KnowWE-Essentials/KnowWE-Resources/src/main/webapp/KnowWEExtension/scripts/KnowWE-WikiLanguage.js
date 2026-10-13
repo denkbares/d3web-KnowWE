@@ -1,4 +1,4 @@
-var KnowWEWikiLanguage = (function(exports, _lezer_common, _lezer_highlight, _codemirror_language, _lezer_lr) {
+var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _lezer_highlight, _codemirror_language, _lezer_lr) {
 	Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 	//#region src/markups.js
 	var FALLBACK_NAME = "[A-Za-z][\\w.\\-]*(?::[\\w.\\-]+)*";
@@ -988,16 +988,25 @@ var KnowWEWikiLanguage = (function(exports, _lezer_common, _lezer_highlight, _co
 	* register the parser of their markup here before the editor is created.
 	*/
 	var registry = /* @__PURE__ */ new Map();
+	/** Highlight styles registered with a language, keyed by the markup name in lower case. */
+	var highlights = /* @__PURE__ */ new Map();
 	/**
 	* Registers the Lezer parser for the body of the markup with the given name. Call this at the top level of a
 	* module script declared in the plugin.xml of the markup. Module scripts run before the document is loaded, and
 	* the editor is created on that event, so every registration precedes the first parse.
+	*
+	* The optional highlight style colors the nodes of the language in place of the editor's style. Scope it to the
+	* language (`HighlightStyle.define(specs, {scope: language})`) and register `language.parser`, which marks the
+	* embedded trees with that language. Properties the style leaves out still come from the editor's style.
 	*/
-	function registerLanguage(markupName, parser) {
+	function registerLanguage(markupName, parser, { highlight } = {}) {
 		registry.set(markupName.toLowerCase(), parser);
+		if (highlight) highlights.set(markupName.toLowerCase(), highlight);
+		else highlights.delete(markupName.toLowerCase());
 	}
 	function unregisterLanguage(markupName) {
 		registry.delete(markupName.toLowerCase());
+		highlights.delete(markupName.toLowerCase());
 	}
 	function getLanguage(markupName) {
 		return registry.get(markupName.toLowerCase()) ?? null;
@@ -1115,7 +1124,8 @@ var KnowWEWikiLanguage = (function(exports, _lezer_common, _lezer_highlight, _co
 	}
 	/** The CodeMirror language support for JSPWiki pages. */
 	function wiki() {
-		return new _codemirror_language.LanguageSupport(wikiLanguage, _codemirror_language.foldService.of(foldSection));
+		const styles = [...new Set(highlights.values())].map((style) => _codemirror_state.Prec.high((0, _codemirror_language.syntaxHighlighting)(style)));
+		return new _codemirror_language.LanguageSupport(wikiLanguage, [_codemirror_language.foldService.of(foldSection), ...styles]);
 	}
 	//#endregion
 	exports.defineMarkups = defineMarkups;
@@ -1130,4 +1140,4 @@ var KnowWEWikiLanguage = (function(exports, _lezer_common, _lezer_highlight, _co
 	exports.wiki = wiki;
 	exports.wikiLanguage = wikiLanguage;
 	return exports;
-})({}, CodeMirror.lezer.common, CodeMirror.lezer.highlight, CodeMirror.language, CodeMirror.lezer.lr);
+})({}, CodeMirror.state, CodeMirror.lezer.common, CodeMirror.lezer.highlight, CodeMirror.language, CodeMirror.lezer.lr);
