@@ -185,9 +185,7 @@
         data: data
       }).done(function(data, status, jqXHR) {
         if (!data || (data.trim && data.trim() === "")) {
-          if (showGlobalProcessingState()) {
-            KNOWWE.core.util.updateProcessingState(-1);
-          }
+          // (the processing state is reset in always(), as for all other responses)
           return; // nothing to rerender
         }
         if (checkReplaceNeeded) {
