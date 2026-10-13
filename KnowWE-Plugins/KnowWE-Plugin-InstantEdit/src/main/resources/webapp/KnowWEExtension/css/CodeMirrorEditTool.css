@@ -1,0 +1,10 @@
+/* Instant edit of a section in the CodeMirror editor, see CodeMirrorEditTool.js. Editor internals are themed in KnowWE-Editor.js. */
+
+.codeMirrorEditTool {
+	margin-bottom: 8px;
+	text-align: left;
+}
+
+.codeMirrorEditTool .cm-editor {
+	font-size: 13px;
+}
