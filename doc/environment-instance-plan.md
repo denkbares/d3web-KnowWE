@@ -527,6 +527,19 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
 
 ## Protokoll
 
+- 2026-10-13 (später): **`main-local/master` erneut in alle Repos gemergt** (Versionssprung auf `2026.8-SNAPSHOT`,
+  jspwiki `2.12.10-SNAPSHOT`). Konflikte: KnowWE `DefaultArticleManager`/`LongOperationUtilsTest` (`committedTitles`
+  am EventManager der Environment), `InterWikiImportUpdateService` (Masters Sammel-Polling + Page-Save-Listener als
+  Environment-Service neu aufgesetzt, Listener am EventManager der Environment, Abmeldung in `close()`),
+  `InterWikiImportMarkup`; KnowWE-DES `CoomCompiler`, `GetModelOverviewAction`, `RegressionTest`. Nachgezogen:
+  neue COOM-CI-Tests auf `renderResultTitle(UserContext, …)`, `SearchResultRenderer` liest seine Limits über die
+  Environment, neue Master-Tests mit eigener Environment, doppelte Test-Dependencies in der COOM-POM (beide Seiten
+  hatten sie ergänzt). **Master-WIP:** `CIContainerTest` (`384dea3db`) nutzt ein nicht committetes
+  `CIContainerMarkup`; auf dem Stand davor gehalten (Kommentar im Commit). Kette 2026.8 gebaut (dafür
+  `denkbares-Maven-Plugins`, `denkbares-inference`, `KMW`, `SemanticServicePlatform`, `coom` neu aus `Main`
+  geklont; GINA-/SSP-Plugin-Jars per `install-file` mit `.flattened-pom.xml` aus Main). Tests: KnowWE-core/Search/
+  Include 330, COOM 66, CBX 104 (inkl. Bike) grün. Offen: `PreviewCache` (Search) ist noch JVM-statisch.
+
 - 2026-10-13: **`S4.7`-Folgefehler aus dem Kundenwiki-Vergleich mit Master.** (1) „Unknown TSM ID class" massenhaft
   beim Start und TSM-IDs doppelt als `Activity` und `TsmId` registriert: Ursache war das geplugte CompileScript
   `TSMTermTurtleDefinitionHandler` (CBX, Scope `TurtleContent/**/Predicate`), das `ssc:tsmId`-Literale in `%%Turtle`

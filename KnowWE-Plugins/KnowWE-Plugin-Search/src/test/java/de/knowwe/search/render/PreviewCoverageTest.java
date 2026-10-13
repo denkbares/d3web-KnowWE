@@ -64,7 +64,7 @@ public class PreviewCoverageTest {
 	private static final String WEB = "default_web";
 
 	private final ArticleChunker chunker = new ArticleChunker();
-	private final SearchResultRenderer renderer = new SearchResultRenderer();
+	private SearchResultRenderer renderer;
 	private UserContext user;
 
 	@Before
@@ -73,6 +73,7 @@ public class PreviewCoverageTest {
 		DummyConnector connector = new DummyConnector();
 		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
 		environment = Environment.create(connector);
+		renderer = new SearchResultRenderer(environment);
 		// after the environment, and built from a registered article: a context built from a name alone carries a
 		// temporary article, whose article manager is null -- and the renderer resolves its anchor through that manager
 		user = null;

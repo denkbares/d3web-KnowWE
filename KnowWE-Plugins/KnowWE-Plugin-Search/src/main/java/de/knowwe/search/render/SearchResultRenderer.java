@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -88,9 +89,12 @@ public class SearchResultRenderer {
 	private final int maxSourceLength;
 	private final int maxHtmlLength;
 
-	public SearchResultRenderer() {
-		this(intProperty(PROPERTY_MAX_SOURCE_LENGTH, DEFAULT_MAX_SOURCE_LENGTH),
-				intProperty(PROPERTY_MAX_HTML_LENGTH, DEFAULT_MAX_HTML_LENGTH));
+	/**
+	 * Creates a renderer with the preview limits configured for the specified environment.
+	 */
+	public SearchResultRenderer(@NotNull Environment environment) {
+		this(intProperty(environment, PROPERTY_MAX_SOURCE_LENGTH, DEFAULT_MAX_SOURCE_LENGTH),
+				intProperty(environment, PROPERTY_MAX_HTML_LENGTH, DEFAULT_MAX_HTML_LENGTH));
 	}
 
 	SearchResultRenderer(int maxSourceLength, int maxHtmlLength) {
@@ -402,8 +406,8 @@ public class SearchResultRenderer {
 		return end == start ? null : masked.substring(start, end).toLowerCase(java.util.Locale.ROOT);
 	}
 
-	private static int intProperty(String property, int defaultValue) {
-		String value = KnowWEUtils.getProperty(property);
+	private static int intProperty(Environment environment, String property, int defaultValue) {
+		String value = KnowWEUtils.getProperty(environment, property);
 		if (value == null || value.isBlank()) return defaultValue;
 		try {
 			return Integer.parseInt(value.trim());
