@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.denkbares.utils.Stopwatch;
-
-import org.apache.commons.lang3.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
@@ -39,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compilers;
@@ -112,8 +110,7 @@ public class GitAutoUpdater {
 		// Warten bis der KnowWe-Compiler fertig ist
 		Compilers.awaitTermination(articleManager.getCompilerManager());
 
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+		Stopwatch stopwatch = new Stopwatch();
 
 		articleManager.open();
 		fileProvider.pushLock();
@@ -179,9 +176,8 @@ public class GitAutoUpdater {
 			KnowWEUtils.getEventManager(articleManager).fireEvent(new FullParseEvent(article, null));
 		}
 
-		stopWatch.stop();
-			LOGGER.info("Update of wiki lasts " + stopWatch);
-		}
+		stopwatch.log(LOGGER, "Update of wiki lasts");
+	}
 
 	private boolean abortRebase(Git git) throws GitAPIException {
 		boolean pullAfterReset = false;

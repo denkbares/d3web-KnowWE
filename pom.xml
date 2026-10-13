@@ -1041,13 +1041,13 @@
 				<artifactId>KONAP-Plugin-COOM</artifactId>
 				<version>${KRONE.version}</version>
 			</dependency>
-
-			<!-- ===== Third-party: logging ===== -->
 			<dependency>
 				<groupId>com.denkbares.krone</groupId>
 				<artifactId>KnowWE-Plugin-KONAP-Bundle</artifactId>
-				<version>${konap.version}</version>
+				<version>${KRONE.version}</version>
 			</dependency>
+
+			<!-- ===== Third-party: logging ===== -->
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-core</artifactId>
