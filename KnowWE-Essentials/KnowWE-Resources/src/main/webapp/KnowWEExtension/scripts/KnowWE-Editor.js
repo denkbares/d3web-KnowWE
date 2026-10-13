@@ -294,8 +294,8 @@ window.KnowWEEditor = (function () {
 	 * of the wiki language and the registered markups, folding, search, history, completion and the KnowWE theme.
 	 *
 	 * Options are the text as `doc`, the title of the edited `article`, the `mode` "page" for an editor that fills
-	 * its parent or "section" for one that grows with its content, whether to `wrap` lines, `onSave(view)` called on
-	 * Mod-S, `onChange(update)` called on every view update and further `extensions`.
+	 * its parent and tints markup blocks or "section" for one that grows with its content, whether to `wrap` lines,
+	 * `onSave(view)` called on Mod-S, `onChange(update)` called on every view update and further `extensions`.
 	 */
 	function create(parent, options = {}) {
 		const {EditorState} = CodeMirror.state;
@@ -356,7 +356,7 @@ window.KnowWEEditor = (function () {
 				highlightSelectionMatches(),
 				syntaxHighlighting(parts.highlightStyle),
 				language,
-				parts.markupTint,
+				mode === "page" ? parts.markupTint : [],
 				EditorState.tabSize.of(4),
 				indentUnit.of(detectIndentUnit(doc)),
 				parts.wrapping.of(options.wrap === false ? [] : EditorView.lineWrapping),
