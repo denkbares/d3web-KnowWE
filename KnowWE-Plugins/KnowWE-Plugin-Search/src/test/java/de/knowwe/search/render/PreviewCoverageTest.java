@@ -77,8 +77,6 @@ public class PreviewCoverageTest {
 		// after the environment, and built from a registered article: a context built from a name alone carries a
 		// temporary article, whose article manager is null -- and the renderer resolves its anchor through that manager
 		user = null;
-		// the fixtures reuse section ids across tests, and a cached preview would answer for the wrong one
-		PreviewCache.getInstance().clear();
 	}
 
 	@Test

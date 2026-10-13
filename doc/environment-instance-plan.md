@@ -538,7 +538,9 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   `CIContainerMarkup`; auf dem Stand davor gehalten (Kommentar im Commit). Kette 2026.8 gebaut (dafür
   `denkbares-Maven-Plugins`, `denkbares-inference`, `KMW`, `SemanticServicePlatform`, `coom` neu aus `Main`
   geklont; GINA-/SSP-Plugin-Jars per `install-file` mit `.flattened-pom.xml` aus Main). Tests: KnowWE-core/Search/
-  Include 330, COOM 66, CBX 104 (inkl. Bike) grün. Offen: `PreviewCache` (Search) ist noch JVM-statisch.
+  Include 330, COOM 66, CBX 104 (inkl. Bike) grün. Nachtrag: Masters `CIContainerMarkup` kam nach, damit
+  `CIContainerTest` auf Masters Stand (Typen per Fabrik); `PreviewCache` (Search) ist jetzt ein Environment-Service
+  (`PreviewCache.of(environment)`) statt JVM-statisch.
 
 - 2026-10-13: **`S4.7`-Folgefehler aus dem Kundenwiki-Vergleich mit Master.** (1) „Unknown TSM ID class" massenhaft
   beim Start und TSM-IDs doppelt als `Activity` und `TsmId` registriert: Ursache war das geplugte CompileScript

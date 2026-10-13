@@ -36,8 +36,7 @@ public class PreviewCacheTest {
 
 	@Before
 	public void setUp() {
-		cache = PreviewCache.getInstance();
-		cache.clear();
+		cache = new PreviewCache();
 	}
 
 	@Test

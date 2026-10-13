@@ -181,13 +181,13 @@ public class WikiSearchServiceTest {
 		service.notify(new InitializedArticlesEvent(manager()));
 		service.awaitIdle();
 
-		PreviewCache.getInstance().put("Zwischengespeichert", "s1", "albrecht", "<p>alter Stand</p>");
+		PreviewCache.of(environment).put("Zwischengespeichert", "s1", "albrecht", "<p>alter Stand</p>");
 		service.notify(new ArticleRegisteredEvent(article("Zwischengespeichert")));
 		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of("Zwischengespeichert")));
 		service.awaitIdle();
 
 		assertNull("an edited page must not answer with the preview of its former text",
-				PreviewCache.getInstance().get("Zwischengespeichert", "s1", "albrecht"));
+				PreviewCache.of(environment).get("Zwischengespeichert", "s1", "albrecht"));
 	}
 
 	@Test

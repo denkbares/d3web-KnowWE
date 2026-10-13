@@ -115,7 +115,8 @@ public class SearchResultRenderer {
 		// the query is not part of this: the matches are marked in the browser, so the same section renders the same
 		// html for every keystroke of the same search
 		String cacheKey = section.getID();
-		String cached = PreviewCache.getInstance().get(anchor.title(), cacheKey, user.getUserName());
+		PreviewCache cache = PreviewCache.of(user.getEnvironment());
+		String cached = cache.get(anchor.title(), cacheKey, user.getUserName());
 		if (cached != null) return cached.isEmpty() ? null : new Rendered(cached, resolution.stale());
 
 		try {
@@ -139,12 +140,12 @@ public class SearchResultRenderer {
 			if (!hasVisibleText(html) && !isAsynchronous(html)) html = markupContents(section, user);
 			if (html.length() > maxHtmlLength) {
 				// remembered as empty so the next keystroke does not pay for the same oversized rendering again
-				PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), "");
+				cache.put(anchor.title(), cacheKey, user.getUserName(), "");
 				return null;
 			}
 			// an empty frame says less than the indexed text, and it looks like something failed to load
 			if (!hasVisibleText(html) && !isAsynchronous(html)) return null;
-			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
+			cache.put(anchor.title(), cacheKey, user.getUserName(), html);
 			return new Rendered(html, resolution.stale());
 		}
 		catch (RuntimeException e) {

@@ -227,7 +227,7 @@ public class WikiSearchService implements EventListener, EnvironmentService {
 		}
 		else if (event instanceof ArticleDeletedEvent deleted) {
 			String title = deleted.getArticle().getTitle();
-			PreviewCache.getInstance().invalidate(title);
+			PreviewCache.of(environment).invalidate(title);
 			submit(() -> index.removePage(title));
 		}
 		else if (event instanceof AttachmentStoredEvent stored) {
@@ -248,7 +248,7 @@ public class WikiSearchService implements EventListener, EnvironmentService {
 			});
 		}
 		else if (event instanceof FullParseEvent fullParse) {
-			PreviewCache.getInstance().clear();
+			PreviewCache.of(environment).clear();
 			reindex(fullParse.getArticles());
 		}
 	}
@@ -269,7 +269,7 @@ public class WikiSearchService implements EventListener, EnvironmentService {
 		for (String title : titles) {
 			Article article = articleManager.getArticle(title);
 			// its sections are about to change, so a preview rendered from the old text must not survive
-			PreviewCache.getInstance().invalidate(title);
+			PreviewCache.of(environment).invalidate(title);
 			updates.add(new PageUpdate(title, article == null ? List.of() : documents.build(article)));
 		}
 		submit(() -> {

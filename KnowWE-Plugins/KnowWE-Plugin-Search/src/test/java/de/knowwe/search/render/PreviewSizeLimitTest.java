@@ -55,7 +55,6 @@ public class PreviewSizeLimitTest {
 		DummyConnector connector = new DummyConnector();
 		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
 		environment = Environment.create(connector);
-		PreviewCache.getInstance().clear();
 	}
 
 	@Test
@@ -89,7 +88,7 @@ public class PreviewSizeLimitTest {
 		SearchResultRenderer renderer = new SearchResultRenderer(1_000_000, 100);
 		assertNull(render(renderer, article, 0));
 		String sectionId = chunker.chunk(article).get(0).anchor().getID();
-		assertEquals("", PreviewCache.getInstance().get(article.getTitle(), sectionId, user.getUserName()));
+		assertEquals("", PreviewCache.of(environment).get(article.getTitle(), sectionId, user.getUserName()));
 		assertNull(render(renderer, article, 0));
 	}
 
