@@ -64,14 +64,23 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 
 		postProcessHTML: function (id) {
 			if (!available()) return fallback().postProcessHTML(id);
-			const view = KnowWEEditor.create(document.getElementById(createContainerID(id)), {
-				doc: _EC.getWikiText(id),
-				article: KNOWWE.helper.getPagename(),
-				mode: "section",
-				wrap: isWrapping()
-			});
-			editors[id] = {view: view, initialDoc: view.state.doc};
-			view.focus();
+			const container = document.getElementById(createContainerID(id));
+			try {
+				const view = KnowWEEditor.create(container, {
+					doc: _EC.getWikiText(id),
+					article: KNOWWE.helper.getPagename(),
+					mode: "section",
+					wrap: isWrapping()
+				});
+				editors[id] = {view: view, initialDoc: view.state.doc};
+				view.focus();
+			} catch (error) {
+				// any failure ends in the textarea of the default tool, which the other functions use without an editor
+				console.error("CodeMirror editor could not be started, falling back to the plain textarea", error);
+				delete editors[id];
+				container.outerHTML = fallback().generateHTML(id);
+				fallback().postProcessHTML(id);
+			}
 		},
 
 		unloadCondition: function (id) {

@@ -26,11 +26,27 @@
 
 	const WRAP_STORAGE_KEY = "knowwe.editor.wrap";
 
+	/**
+	 * Shows the plain textarea instead of the editor. The textarea is the form field, so saving keeps working.
+	 */
+	function fallback(root, error) {
+		console.error("CodeMirror editor could not be started, falling back to the plain textarea", error);
+		root.classList.add("knowwe-editor-fallback");
+		const surface = root.querySelector(".knowwe-editor-surface");
+		if (surface) surface.replaceChildren();
+		const position = root.querySelector(".knowwe-editor-position");
+		if (position) position.textContent = "The editor could not be started, editing as plain text";
+		const dirtyLabel = root.querySelector(".knowwe-editor-dirty");
+		if (dirtyLabel) dirtyLabel.hidden = true;
+	}
+
+	function isFallback(root) {
+		return root.classList.contains("knowwe-editor-fallback");
+	}
+
 	function init(root) {
 		if (typeof KnowWEEditor === "undefined" || !KnowWEEditor.isAvailable()) {
-			console.error("CodeMirror bundle is not available, falling back to the plain textarea");
-			root.classList.add("knowwe-editor-fallback");
-			return;
+			throw new Error("CodeMirror bundle is not available");
 		}
 
 		const {undo, redo} = CodeMirror.commands;
@@ -157,13 +173,15 @@
 			});
 		});
 
+		// after a late failure the textarea holds the text, which must not be overwritten by the editor
 		form.addEventListener("submit", () => {
 			submitting = true;
-			syncSource();
+			if (!isFallback(root)) syncSource();
 		});
 
 		window.addEventListener("beforeunload", event => {
-			if (!submitting && isDirty()) {
+			const dirty = isFallback(root) ? source.value !== source.defaultValue : isDirty();
+			if (!submitting && dirty) {
 				event.preventDefault();
 				event.returnValue = "";
 			}
@@ -175,7 +193,13 @@
 	}
 
 	function ready() {
-		document.querySelectorAll(".knowwe-editor").forEach(init);
+		document.querySelectorAll(".knowwe-editor").forEach(root => {
+			try {
+				init(root);
+			} catch (error) {
+				fallback(root, error);
+			}
+		});
 	}
 
 	if (document.readyState === "loading") {
