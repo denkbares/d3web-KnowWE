@@ -382,6 +382,11 @@ table.list-sections thead th {
 	white-space: pre;
 }
 
+/* the floating copy of the header covers the rows scrolled below it, so it must not be transparent */
+table.list-sections.floatThead-table thead th {
+	background-color: var(--bg-color-primary);
+}
+
 table.list-sections td,
 table.list-sections th {
 	padding: 1px 0.25em;
