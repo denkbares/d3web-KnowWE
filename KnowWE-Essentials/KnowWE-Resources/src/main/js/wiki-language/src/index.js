@@ -5,45 +5,11 @@ import {foldNodeProp, foldService, LanguageSupport, LRLanguage, syntaxHighlighti
 import {parser as wikiParser} from "./wiki.grammar";
 import {parser as contentParser} from "./content.grammar";
 
+import {getMarkup, markupHighlightStyles, markupName} from "./registry.js";
+
 export {defineMarkups} from "./markups.js";
-
-/**
- * Registry of parsers for the bodies of KnowWE markup blocks, keyed by the markup name in lower case. Plugins
- * register the parser of their markup here before the editor is created.
- */
-const registry = new Map();
-
-/** Highlight styles registered with a language, keyed by the markup name in lower case. */
-const highlights = new Map();
-
-/**
- * Registers the Lezer parser for the body of the markup with the given name. Call this at the top level of a
- * module script declared in the plugin.xml of the markup. Module scripts run before the document is loaded, and
- * the editor is created on that event, so every registration precedes the first parse.
- *
- * The optional highlight style colors the nodes of the language in place of the editor's style. Scope it to the
- * language (`HighlightStyle.define(specs, {scope: language})`) and register `language.parser`, which marks the
- * embedded trees with that language. Properties the style leaves out still come from the editor's style.
- */
-export function registerLanguage(markupName, parser, {highlight} = {}) {
-    registry.set(markupName.toLowerCase(), parser);
-    if (highlight) highlights.set(markupName.toLowerCase(), highlight);
-    else highlights.delete(markupName.toLowerCase());
-}
-
-export function unregisterLanguage(markupName) {
-    registry.delete(markupName.toLowerCase());
-    highlights.delete(markupName.toLowerCase());
-}
-
-export function getLanguage(markupName) {
-    return registry.get(markupName.toLowerCase()) ?? null;
-}
-
-/** Returns the name of the markup declared by the given opening, without "%%" and separator. */
-export function markupName(open, input) {
-    return input.read(open.from, open.to).trim().replace(/^%%/, "").replace(/[\s:=]*$/, "");
-}
+export {registerMarkup, unregisterMarkup, getMarkup, markupName} from "./registry.js";
+export {articleTitle, markupBlock, completeMarkup} from "./block.js";
 
 /** Parser for the default body of a markup block with its content, a declaration comment and annotations. */
 export const markupContentParser = contentParser.configure({
@@ -104,7 +70,7 @@ export const parser = wikiParser.configure({
         if (node.name !== "MarkupContent") return null;
         const open = node.node.prevSibling;
         if (!open || open.name !== "MarkupOpen") return null;
-        return {parser: getLanguage(markupName(open, input)) ?? markupContentParser};
+        return {parser: getMarkup(markupName(open, input))?.parser ?? markupContentParser};
     }),
 });
 
@@ -165,6 +131,6 @@ function foldSection(state, lineStart, lineEnd) {
 /** The CodeMirror language support for JSPWiki pages. */
 export function wiki() {
     // the styles of embedded languages take precedence, so their rules win over those of the editor's style
-    const styles = [...new Set(highlights.values())].map(style => Prec.high(syntaxHighlighting(style)));
+    const styles = markupHighlightStyles().map(style => Prec.high(syntaxHighlighting(style)));
     return new LanguageSupport(wikiLanguage, [foldService.of(foldSection), ...styles]);
 }

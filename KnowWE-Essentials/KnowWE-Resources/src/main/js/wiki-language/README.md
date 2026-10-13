@@ -46,25 +46,58 @@ JSPWiki styles. Names are case insensitive regular expressions, like in KnowWE.
 Without definitions every `%%Name` declaration in block form is a markup, and a single line declaration if a colon
 or equals sign follows the name.
 
-A plugin registers the Lezer parser for the body of its markup by name. The name is matched case insensitively
-against the name in the `%%Name` declaration. The parser receives the text between the declaration and the closing
-line, starting with the rest of the declaration line, or the content of a single line or inline markup.
+A markup contributes to the editor through one registration by name. The name is matched case insensitively against
+the name in the `%%Name` declaration. All fields are optional.
 
-    KnowWEWikiLanguage.registerLanguage("COOM:DSL", coomParser);
+    KnowWEWikiLanguage.registerMarkup("COOM:DSL", {parser: coomParser, complete: completeCoom});
 
 Register at the top level of a script declared as `module` parameter of the markup's Type extension in
-`plugin.xml`. Module scripts run before the document is loaded and the editor is created on that event, so the
-registration always precedes the first parse. Markups without a registered parser use the default body parser with
-annotation highlighting. The registered parser must be built against the same `@lezer/lr` as the vendored bundle, so
-plugin builds externalize `@lezer/lr` to `CodeMirror.lezer.lr` and the other packages likewise, see
-`vite.config.mjs` for the mapping.
+`plugin.xml`. Module scripts run before the document is loaded and editors are created on that event or later, so
+the registration always precedes the first parse. A registered parser must be built against the same `@lezer/lr` as
+the vendored bundle, so plugin builds externalize `@lezer/lr` to `CodeMirror.lezer.lr` and the other packages
+likewise, see `vite.config.mjs` for the mapping.
 
-A plugin may register a highlight style along with the parser. It colors the nodes of the embedded language in place
+### Body parser
+
+The parser receives the text between the declaration and the closing line, starting with the rest of the declaration
+line, or the content of a single line or inline markup. Markups without a registered parser use the default body
+parser with annotation highlighting.
+
+A markup may register a highlight style along with the parser. It colors the nodes of the embedded language in place
 of the editor's style, which still colors the wiki text around the block. Scope the style to the language and
 register the language's parser, so the embedded trees carry the language the scope refers to.
 
     const style = HighlightStyle.define(specs, {scope: coomLanguage});
-    KnowWEWikiLanguage.registerLanguage("COOM:DSL", coomLanguage.parser, {highlight: style});
+    KnowWEWikiLanguage.registerMarkup("COOM:DSL", {parser: coomLanguage.parser, highlight: style});
+
+### Completion
+
+The editor installs a single completion source, `completeMarkup`. It finds the markup block at the caret and calls
+the `complete` function registered for it. Markups without a parser can offer completions as well.
+
+    function completeCoom(block, context) {
+        const word = context.matchBefore(/\w*/);
+        if (!word || (word.from === word.to && !context.explicit)) return null;
+        return {from: word.from, options: [{label: "feature"}], validFor: /^\w*$/};
+    }
+
+`complete(block, context)` returns a `CompletionResult`, null or a promise of either. All positions are relative to
+the start of the block body, both in the arguments and in the result, so the same code serves the page editor and
+the instant edit of a single section. Only `apply` functions of the options get document positions, since they act
+on the editor view.
+
+The block describes the markup at the caret.
+
+- `name` is the markup name as declared.
+- `text` is the body, `from` and `to` its range in the document.
+- `annotations` lists the annotations of the body with `name`, `value` and the ranges `from`, `to`, `valueFrom` and
+  `valueTo`. They are read like `DefaultMarkupType` does, also for markups with their own parser.
+- `tree` is the Lezer tree of the body if the markup registered a parser, else null.
+- `article` is the title of the edited article, if the editor knows it.
+
+The context offers `pos`, `explicit`, `aborted`, `addEventListener("abort", listener)` and `matchBefore(regexp)`
+like a CodeMirror `CompletionContext`. `matchBefore` never reaches back before the body. A promise that resolves
+after the query was aborted is dropped.
 
 ## Building and testing
 
@@ -72,8 +105,8 @@ register the language's parser, so the embedded trees carry the language the sco
     pnpm build
     pnpm test
 
-`pnpm test` checks the syntax trees of the examples in `test/*.txt`, and parses random documents made of markup
-fragments. Every input must parse without error nodes, and incremental parses after edits must equal fresh parses.
+`pnpm test` checks the syntax trees of the examples in `test/*.txt`, the block context and completion dispatch in
+`test/complete.mjs`, and parses random documents made of markup fragments. Every input must parse without error nodes, and incremental parses after edits must equal fresh parses.
 
     node test/corpus.mjs <wiki directory>...
     node test/fuzz.mjs 400 1 3000

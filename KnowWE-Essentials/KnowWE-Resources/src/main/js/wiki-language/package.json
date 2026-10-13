@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build && node scripts/copy.mjs",
-    "test": "vite build && node test/run.mjs && node test/fuzz.mjs"
+    "test": "vite build && node test/run.mjs && node test/complete.mjs && node test/fuzz.mjs"
   },
   "dependencies": {
     "@codemirror/language": "6.11.2",
@@ -16,6 +16,7 @@
     "@lezer/lr": "1.4.10"
   },
   "devDependencies": {
+    "@codemirror/autocomplete": "6.18.6",
     "@lezer/generator": "1.7.3",
     "vite": "8.3.4"
   }

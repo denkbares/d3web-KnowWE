@@ -7,7 +7,7 @@ import {readdirSync, readFileSync} from "node:fs";
 import {testTree} from "@lezer/generator/test";
 import {EditorState} from "@codemirror/state";
 import {foldable} from "@codemirror/language";
-import {defineMarkups, parser, registerLanguage, unregisterLanguage, wiki} from "../dist/wiki-language.mjs";
+import {defineMarkups, parser, registerMarkup, unregisterMarkup, wiki} from "../dist/wiki-language.mjs";
 import {buildParser} from "@lezer/generator";
 import {checkCoverage, checkIncremental, checkNesting, errorOffsets} from "./checks.mjs";
 import {MARKUPS} from "./markups.mjs";
@@ -50,7 +50,7 @@ const strict = parser.configure({strict: true});
 for (const file of readdirSync(dir).filter(name => name.endsWith(".txt")).sort()) {
     for (const {name, config, text, expected} of readTests(readFileSync(dir + file, "utf8"))) {
         defineMarkups("markups" in config ? config.markups : MARKUPS);
-        if (config.language) registerLanguage(config.language, words);
+        if (config.language) registerMarkup(config.language, {parser: words});
         try {
             // every input is valid wiki markup, so the strict parser must not fail
             const tree = strict.parse(text);
@@ -67,7 +67,7 @@ for (const file of readdirSync(dir).filter(name => name.endsWith(".txt")).sort()
         } catch (error) {
             report(file + ": " + name, error);
         } finally {
-            if (config.language) unregisterLanguage(config.language);
+            if (config.language) unregisterMarkup(config.language);
         }
     }
 }

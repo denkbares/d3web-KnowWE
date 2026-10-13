@@ -982,39 +982,155 @@ var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _l
 		tokenPrec: 0
 	});
 	//#endregion
-	//#region src/index.js
+	//#region src/registry.js
+	/** Contributions of markups to the editor, keyed by the markup name in lower case. */
+	var markups = /* @__PURE__ */ new Map();
 	/**
-	* Registry of parsers for the bodies of KnowWE markup blocks, keyed by the markup name in lower case. Plugins
-	* register the parser of their markup here before the editor is created.
-	*/
-	var registry = /* @__PURE__ */ new Map();
-	/** Highlight styles registered with a language, keyed by the markup name in lower case. */
-	var highlights = /* @__PURE__ */ new Map();
-	/**
-	* Registers the Lezer parser for the body of the markup with the given name. Call this at the top level of a
-	* module script declared in the plugin.xml of the markup. Module scripts run before the document is loaded, and
-	* the editor is created on that event, so every registration precedes the first parse.
+	* Registers what the markup with the given name contributes to the editor. The name is matched case insensitively
+	* against the name in the `%%Name` declaration. All fields are optional.
 	*
-	* The optional highlight style colors the nodes of the language in place of the editor's style. Scope it to the
-	* language (`HighlightStyle.define(specs, {scope: language})`) and register `language.parser`, which marks the
-	* embedded trees with that language. Properties the style leaves out still come from the editor's style.
+	* The `parser` is the Lezer parser for the body of the markup. It receives the text between the declaration and the
+	* closing line, starting with the rest of the declaration line, or the content of a single line or inline markup.
+	* Markups without a parser use the default body parser with annotation highlighting.
+	*
+	* The function `complete(block, context)` offers completions in the body of the markup. It returns a
+	* `CompletionResult`, null or a promise of either. The block describes the markup at the caret as `markupBlock`
+	* does. The context holds `pos`, `explicit`, `aborted`, `addEventListener` and `matchBefore` like a
+	* `CompletionContext`. Positions in the context and in the result are relative to the start of the body. Only the
+	* `apply` functions of the options get document positions, since they act on the editor.
+	*
+	* The `highlight` style colors the nodes of the parser in place of the editor's style. Scope it to the language
+	* (`HighlightStyle.define(specs, {scope: language})`) and register `language.parser`, which marks the embedded trees
+	* with that language. Properties the style leaves out still come from the editor's style.
+	*
+	* Call this at the top level of a module script declared in the plugin.xml of the markup. Module scripts run before
+	* the document is loaded, and editors are created on that event or later, so every registration precedes the first
+	* parse. A second registration for the same name replaces the first.
 	*/
-	function registerLanguage(markupName, parser, { highlight } = {}) {
-		registry.set(markupName.toLowerCase(), parser);
-		if (highlight) highlights.set(markupName.toLowerCase(), highlight);
-		else highlights.delete(markupName.toLowerCase());
+	function registerMarkup(name, { parser = null, complete = null, highlight = null } = {}) {
+		markups.set(name.toLowerCase(), {
+			parser,
+			complete,
+			highlight
+		});
 	}
-	function unregisterLanguage(markupName) {
-		registry.delete(markupName.toLowerCase());
-		highlights.delete(markupName.toLowerCase());
+	function unregisterMarkup(name) {
+		markups.delete(name.toLowerCase());
 	}
-	function getLanguage(markupName) {
-		return registry.get(markupName.toLowerCase()) ?? null;
+	/** Returns the contribution registered for the markup name, or null. */
+	function getMarkup(name) {
+		return markups.get(name.toLowerCase()) ?? null;
+	}
+	/** Returns the distinct highlight styles of all registered markups. */
+	function markupHighlightStyles() {
+		return [...new Set([...markups.values()].map((markup) => markup.highlight).filter(Boolean))];
 	}
 	/** Returns the name of the markup declared by the given opening, without "%%" and separator. */
 	function markupName(open, input) {
 		return input.read(open.from, open.to).trim().replace(/^%%/, "").replace(/[\s:=]*$/, "");
 	}
+	//#endregion
+	//#region src/block.js
+	/** The title of the article the edited text belongs to, null if unknown. */
+	var articleTitle = _codemirror_state.Facet.define({ combine: (values) => values.length ? values[0] : null });
+	function annotations(body, text) {
+		const result = [];
+		if (!body || body.type.name !== "MarkupBody") body = parser$1.parse(text);
+		for (let node = body.topNode.firstChild; node; node = node.nextSibling) {
+			if (node.name !== "Annotation") continue;
+			const name = node.getChild("AnnotationName");
+			const value = node.getChild("AnnotationValue");
+			result.push({
+				name: text.slice(name.from, name.to).replace(/^@/, "").replace(/[\s:=]*$/, ""),
+				value: value ? text.slice(value.from, value.to) : "",
+				from: node.from,
+				to: node.to,
+				valueFrom: value ? value.from : node.to,
+				valueTo: value ? value.to : node.to
+			});
+		}
+		return result;
+	}
+	/**
+	* Describes the markup block whose body contains the position, or returns null. The description holds the markup
+	* `name` as declared, the body `text` with its document range `from` and `to`, the `annotations` of the body (name,
+	* value and the ranges `from`, `to`, `valueFrom`, `valueTo`), the Lezer `tree` of the body if the markup registered
+	* a parser, and the `article` title of the editor. Positions of annotations and tree are relative to the body.
+	*/
+	function markupBlock(state, pos) {
+		let markup = (0, _codemirror_language.syntaxTree)(state).resolveInner(pos, -1);
+		while (markup && markup.name !== "Markup" && markup.name !== "InlineMarkup") markup = markup.parent;
+		if (!markup) return null;
+		const cursor = markup.cursor(_lezer_common.IterMode.IgnoreMounts);
+		if (!cursor.firstChild() || cursor.name !== "MarkupOpen") return null;
+		const name = markupName(cursor, { read: (from, to) => state.sliceDoc(from, to) });
+		let from = cursor.to, to = markup.to, mounted = null;
+		while (cursor.nextSibling()) if (cursor.name === "MarkupContent") {
+			from = cursor.from;
+			to = cursor.to;
+			mounted = cursor.tree?.prop(_lezer_common.NodeProp.mounted)?.tree ?? null;
+		} else if (cursor.name === "MarkupClose") to = Math.min(to, cursor.from);
+		if (pos < from || pos > to) return null;
+		const text = state.sliceDoc(from, to);
+		const parser = getMarkup(name)?.parser;
+		return {
+			name,
+			text,
+			from,
+			to,
+			annotations: annotations(mounted, text),
+			tree: parser && mounted ? mounted : null,
+			article: state.facet(articleTitle)
+		};
+	}
+	function shiftResult(result, offset) {
+		if (!result) return null;
+		const { map, ...shifted } = result;
+		shifted.from = result.from + offset;
+		if (result.to != null) shifted.to = result.to + offset;
+		if (typeof result.validFor === "function") {
+			const validFor = result.validFor;
+			shifted.validFor = (text, from, to, state) => validFor(text, from - offset, to - offset, state);
+		}
+		return shifted;
+	}
+	function anchorAtEnd(expr) {
+		return expr.source.endsWith("$") ? expr : new RegExp("(?:" + expr.source + ")$", expr.flags);
+	}
+	/**
+	* Completion source that offers the completions of the markup at the caret. It hands the markup block and a body
+	* relative context to the `complete` function the markup registered and moves the result into the document.
+	*/
+	function completeMarkup(context) {
+		const block = markupBlock(context.state, context.pos);
+		if (!block) return null;
+		const complete = getMarkup(block.name)?.complete;
+		if (!complete) return null;
+		const offset = block.from;
+		const result = complete(block, {
+			pos: context.pos - offset,
+			explicit: context.explicit,
+			get aborted() {
+				return context.aborted;
+			},
+			addEventListener: (type, listener, options) => context.addEventListener(type, listener, options),
+			matchBefore(expr) {
+				const line = context.state.doc.lineAt(context.pos);
+				const start = Math.max(line.from, offset, context.pos - 250);
+				const text = context.state.sliceDoc(start, context.pos);
+				const found = text.search(anchorAtEnd(expr));
+				return found < 0 ? null : {
+					from: start + found - offset,
+					to: context.pos - offset,
+					text: text.slice(found)
+				};
+			}
+		});
+		if (result && typeof result.then === "function") return result.then((resolved) => context.aborted ? null : shiftResult(resolved, offset));
+		return shiftResult(result, offset);
+	}
+	//#endregion
+	//#region src/index.js
 	/** Parser for the default body of a markup block with its content, a declaration comment and annotations. */
 	var markupContentParser = parser$1.configure({ props: [(0, _lezer_highlight.styleTags)({
 		DeclarationComment: _lezer_highlight.tags.lineComment,
@@ -1069,7 +1185,7 @@ var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _l
 			if (node.name !== "MarkupContent") return null;
 			const open = node.node.prevSibling;
 			if (!open || open.name !== "MarkupOpen") return null;
-			return { parser: getLanguage(markupName(open, input)) ?? markupContentParser };
+			return { parser: getMarkup(markupName(open, input))?.parser ?? markupContentParser };
 		})
 	});
 	var wikiLanguage = _codemirror_language.LRLanguage.define({
@@ -1124,19 +1240,22 @@ var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _l
 	}
 	/** The CodeMirror language support for JSPWiki pages. */
 	function wiki() {
-		const styles = [...new Set(highlights.values())].map((style) => _codemirror_state.Prec.high((0, _codemirror_language.syntaxHighlighting)(style)));
+		const styles = markupHighlightStyles().map((style) => _codemirror_state.Prec.high((0, _codemirror_language.syntaxHighlighting)(style)));
 		return new _codemirror_language.LanguageSupport(wikiLanguage, [_codemirror_language.foldService.of(foldSection), ...styles]);
 	}
 	//#endregion
+	exports.articleTitle = articleTitle;
+	exports.completeMarkup = completeMarkup;
 	exports.defineMarkups = defineMarkups;
-	exports.getLanguage = getLanguage;
+	exports.getMarkup = getMarkup;
 	exports.headingLevel = headingLevel;
+	exports.markupBlock = markupBlock;
 	exports.markupContentParser = markupContentParser;
 	exports.markupName = markupName;
 	exports.parser = parser;
-	exports.registerLanguage = registerLanguage;
+	exports.registerMarkup = registerMarkup;
 	exports.sectionEnd = sectionEnd;
-	exports.unregisterLanguage = unregisterLanguage;
+	exports.unregisterMarkup = unregisterMarkup;
 	exports.wiki = wiki;
 	exports.wikiLanguage = wikiLanguage;
 	return exports;
