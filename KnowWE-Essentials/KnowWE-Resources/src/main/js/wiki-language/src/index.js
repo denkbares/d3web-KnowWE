@@ -8,8 +8,8 @@ import {parser as contentParser} from "./content.grammar";
 import {getMarkup, markupHighlightStyles, markupName} from "./registry.js";
 
 export {defineMarkups} from "./markups.js";
-export {registerMarkup, unregisterMarkup, getMarkup, markupName} from "./registry.js";
-export {articleTitle, markupBlock, completeMarkup} from "./block.js";
+export {registerMarkup, unregisterMarkup, getMarkup, markupName, registerCompletion, unregisterCompletion} from "./registry.js";
+export {articleTitle, markupBlock, completeMarkup, completionSources} from "./block.js";
 
 /** Parser for the default body of a markup block with its content, a declaration comment and annotations. */
 export const markupContentParser = contentParser.configure({

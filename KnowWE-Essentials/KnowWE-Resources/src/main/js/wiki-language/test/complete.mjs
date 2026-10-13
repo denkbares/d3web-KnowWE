@@ -4,7 +4,8 @@ import {ensureSyntaxTree} from "@codemirror/language";
 import {CompletionContext} from "@codemirror/autocomplete";
 import {buildParser} from "@lezer/generator";
 import {
-    articleTitle, completeMarkup, defineMarkups, markupBlock, registerMarkup, unregisterMarkup, wiki,
+    articleTitle, completeMarkup, completionSources, defineMarkups, markupBlock, registerCompletion, registerMarkup,
+    unregisterCompletion, unregisterMarkup, wiki,
 } from "../dist/wiki-language.mjs";
 
 let failures = 0, passed = 0;
@@ -180,6 +181,26 @@ await test("context passes explicit and aborted through", () => {
     equal([seen.explicit, seen.aborted], [true, false], "before");
     abort(ctx);
     equal([seen.aborted, fired], [true, true], "after");
+});
+
+await test("page completions apply where no markup completes", () => {
+    const calls = [];
+    const page = ctx => (calls.push(ctx.pos), {from: ctx.pos, options: [{label: ctx.state.facet(articleTitle)}]});
+    registerCompletion(page);
+    registerCompletion(page);
+    registerMarkup("Dummy", {parser: words, complete: () => null});
+    registerMarkup("Plain", {});
+    const sources = completionSources();
+    equal(sources.length, 2, "sources");
+    const run = marked => sources[1](context(marked));
+    equal(run("te|xt").options[0].label, "Main", "wiki text");
+    equal(run("%%Dum|my\nx\n/%") !== null, true, "declaration");
+    equal(run("%%Plain\nx|\n/%") !== null, true, "markup without complete");
+    equal(run("%%Dummy\nx|\n/%"), null, "markup with complete");
+    equal(calls, [2, 5, 9], "calls");
+    unregisterCompletion(page);
+    unregisterMarkup("Plain");
+    equal(completionSources().length, 1, "unregistered");
 });
 
 unregisterMarkup("Dummy");

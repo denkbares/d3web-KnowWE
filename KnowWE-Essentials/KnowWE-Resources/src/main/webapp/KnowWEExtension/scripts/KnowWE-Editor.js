@@ -318,7 +318,7 @@ window.KnowWEEditor = (function () {
 			language.push(
 				KnowWEWikiLanguage.wiki(),
 				KnowWEWikiLanguage.articleTitle.of(options.article ?? null),
-				autocompletion({override: [KnowWEWikiLanguage.completeMarkup]})
+				autocompletion({override: KnowWEWikiLanguage.completionSources()})
 			);
 		} else {
 			console.warn("KnowWE wiki language is not available, editing without highlighting");

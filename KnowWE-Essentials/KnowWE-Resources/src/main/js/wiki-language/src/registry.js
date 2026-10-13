@@ -45,3 +45,27 @@ export function markupHighlightStyles() {
 export function markupName(open, input) {
     return input.read(open.from, open.to).trim().replace(/^%%/, "").replace(/[\s:=]*$/, "");
 }
+
+/** Completion sources for the whole page, in the order of registration. */
+const completions = [];
+
+/**
+ * Registers a CodeMirror completion source for the whole page. It applies wherever the caret is not in the body of a
+ * markup that registered its own `complete` function, which takes precedence. The source receives the usual
+ * `CompletionContext` with document positions, and finds the article title in the `articleTitle` facet of the state.
+ *
+ * Register before editors are created, like markups. Registering the same source again has no effect.
+ */
+export function registerCompletion(source) {
+    if (!completions.includes(source)) completions.push(source);
+}
+
+export function unregisterCompletion(source) {
+    const index = completions.indexOf(source);
+    if (index >= 0) completions.splice(index, 1);
+}
+
+/** Returns the registered completion sources for the whole page. */
+export function pageCompletions() {
+    return [...completions];
+}

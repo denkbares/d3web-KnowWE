@@ -1029,6 +1029,26 @@ var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _l
 	function markupName(open, input) {
 		return input.read(open.from, open.to).trim().replace(/^%%/, "").replace(/[\s:=]*$/, "");
 	}
+	/** Completion sources for the whole page, in the order of registration. */
+	var completions = [];
+	/**
+	* Registers a CodeMirror completion source for the whole page. It applies wherever the caret is not in the body of a
+	* markup that registered its own `complete` function, which takes precedence. The source receives the usual
+	* `CompletionContext` with document positions, and finds the article title in the `articleTitle` facet of the state.
+	*
+	* Register before editors are created, like markups. Registering the same source again has no effect.
+	*/
+	function registerCompletion(source) {
+		if (!completions.includes(source)) completions.push(source);
+	}
+	function unregisterCompletion(source) {
+		const index = completions.indexOf(source);
+		if (index >= 0) completions.splice(index, 1);
+	}
+	/** Returns the registered completion sources for the whole page. */
+	function pageCompletions() {
+		return [...completions];
+	}
 	//#endregion
 	//#region src/block.js
 	/** The title of the article the edited text belongs to, null if unknown. */
@@ -1128,6 +1148,17 @@ var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _l
 		});
 		if (result && typeof result.then === "function") return result.then((resolved) => context.aborted ? null : shiftResult(resolved, offset));
 		return shiftResult(result, offset);
+	}
+	function markupCompletes(state, pos) {
+		const block = markupBlock(state, pos);
+		return Boolean(block && getMarkup(block.name)?.complete);
+	}
+	/**
+	* Returns the completion sources of an editor, the markup completion first and then the registered page completions,
+	* which stay silent where a markup offers its own.
+	*/
+	function completionSources() {
+		return [completeMarkup, ...pageCompletions().map((source) => (context) => markupCompletes(context.state, context.pos) ? null : source(context))];
 	}
 	//#endregion
 	//#region src/index.js
@@ -1246,6 +1277,7 @@ var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _l
 	//#endregion
 	exports.articleTitle = articleTitle;
 	exports.completeMarkup = completeMarkup;
+	exports.completionSources = completionSources;
 	exports.defineMarkups = defineMarkups;
 	exports.getMarkup = getMarkup;
 	exports.headingLevel = headingLevel;
@@ -1253,8 +1285,10 @@ var KnowWEWikiLanguage = (function(exports, _codemirror_state, _lezer_common, _l
 	exports.markupContentParser = markupContentParser;
 	exports.markupName = markupName;
 	exports.parser = parser;
+	exports.registerCompletion = registerCompletion;
 	exports.registerMarkup = registerMarkup;
 	exports.sectionEnd = sectionEnd;
+	exports.unregisterCompletion = unregisterCompletion;
 	exports.unregisterMarkup = unregisterMarkup;
 	exports.wiki = wiki;
 	exports.wikiLanguage = wikiLanguage;

@@ -72,7 +72,7 @@ register the language's parser, so the embedded trees carry the language the sco
 
 ### Completion
 
-The editor installs a single completion source, `completeMarkup`. It finds the markup block at the caret and calls
+The editor installs the completion source `completeMarkup`. It finds the markup block at the caret and calls
 the `complete` function registered for it. Markups without a parser can offer completions as well.
 
     function completeCoom(block, context) {
@@ -98,6 +98,16 @@ The block describes the markup at the caret.
 The context offers `pos`, `explicit`, `aborted`, `addEventListener("abort", listener)` and `matchBefore(regexp)`
 like a CodeMirror `CompletionContext`. `matchBefore` never reaches back before the body. A promise that resolves
 after the query was aborted is dropped.
+
+### Page completion
+
+Completion that is not bound to one markup, for example of markup names or wiki links, registers a CodeMirror
+completion source for the whole page. It receives the `CompletionContext` with document positions and applies
+wherever the caret is not in the body of a markup with its own `complete` function.
+
+    KnowWEWikiLanguage.registerCompletion(context => ...);
+
+The editor queries `completionSources()`, the markup completion followed by the page completions.
 
 ## Building and testing
 

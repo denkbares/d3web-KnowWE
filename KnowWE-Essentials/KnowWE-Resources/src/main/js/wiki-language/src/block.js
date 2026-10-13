@@ -2,7 +2,7 @@ import {Facet} from "@codemirror/state";
 import {IterMode, NodeProp} from "@lezer/common";
 import {syntaxTree} from "@codemirror/language";
 import {parser as contentParser} from "./content.grammar";
-import {getMarkup, markupName} from "./registry.js";
+import {getMarkup, markupName, pageCompletions} from "./registry.js";
 
 /** The title of the article the edited text belongs to, null if unknown. */
 export const articleTitle = Facet.define({combine: values => values.length ? values[0] : null});
@@ -118,4 +118,20 @@ export function completeMarkup(context) {
         return result.then(resolved => context.aborted ? null : shiftResult(resolved, offset));
     }
     return shiftResult(result, offset);
+}
+
+// whether the markup at the position offers its own completions, which replace those of the page
+function markupCompletes(state, pos) {
+    const block = markupBlock(state, pos);
+    return Boolean(block && getMarkup(block.name)?.complete);
+}
+
+/**
+ * Returns the completion sources of an editor, the markup completion first and then the registered page completions,
+ * which stay silent where a markup offers its own.
+ */
+export function completionSources() {
+    const page = pageCompletions()
+        .map(source => context => markupCompletes(context.state, context.pos) ? null : source(context));
+    return [completeMarkup, ...page];
 }
