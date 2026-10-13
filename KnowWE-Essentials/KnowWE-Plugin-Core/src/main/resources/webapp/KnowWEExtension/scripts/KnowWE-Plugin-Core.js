@@ -931,6 +931,16 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
         responsiveContainer: function($table) {
           return $table.closest(".zebra-table, .scroll-parent");
         },
+        // a table inside a box scrolling vertically (having a max-height) floats its header inside that box,
+        // otherwise the header floats along with the page far beyond the visible part of the table, and sticks below
+        // the page header as soon as the box is scrolled (an empty result lets the header float with the page);
+        // the max-height is required, because horizontal scrolling (overflow-x) also turns overflow-y into auto
+        scrollContainer: function($table) {
+          return $table.parentsUntil(".page-content").filter(function() {
+            const $box = jq$(this);
+            return /(auto|scroll)/.test($box.css("overflow-y")) && $box.css("max-height") !== "none";
+          }).first();
+        },
         zIndex: 400 // has to be < than wiki header, which is 1001
       });
 
