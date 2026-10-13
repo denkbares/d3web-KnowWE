@@ -72,6 +72,11 @@ public class ReRenderContentPartAction extends AbstractAction {
 	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReRenderContentPartAction.class);
 
+	/**
+	 * Parameter identifying the instance of the page (e.g. browser tab) requesting the rerendering.
+	 */
+	public static final String PAGE_INSTANCE = "pageInstance";
+
 	private static final AtomicLong THREAD_COUNTER = new AtomicLong();
 	private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(runnable -> {
 		Thread thread = new Thread(runnable, "Rerender-Thread-" + THREAD_COUNTER.incrementAndGet());
@@ -150,7 +155,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	 * request thread waits per user and section to rerender.
 	 */
 	private static String renderAndCancelOngoingRenders(UserActionContext context, Section<?> section) throws IOException {
-		String key = generateKey(context, section);
+		String key = generateKey(context, section.getID());
 		UserActionContext contextCopy = new AsyncActionContext(context);
 		Future<String> renderFuture = EXECUTOR.submit(() -> render(contextCopy, section));
 		return awaitRenderAndCancelPrevious(context, key, renderFuture);
@@ -185,9 +190,15 @@ public class ReRenderContentPartAction extends AbstractAction {
 		return null;
 	}
 
+	/**
+	 * Returns the key of the requests replacing each other: the same section rerendered for the same user, but only in
+	 * the same instance of the page (e.g. browser tab), otherwise the tabs of a user would cancel each other's
+	 * rerendering, and the cancelled tab would keep its outdated content.
+	 */
 	@NotNull
-	private static String generateKey(UserActionContext context, Section<?> section) {
-		return context.getUserName() + "_" + section.getID();
+	static String generateKey(UserActionContext context, String sectionId) {
+		String pageInstance = context.getParameter(PAGE_INSTANCE);
+		return context.getUserName() + "_" + (pageInstance == null ? "" : pageInstance + "_") + sectionId;
 	}
 
 	private static String render(UserActionContext context, Section<?> section) {
