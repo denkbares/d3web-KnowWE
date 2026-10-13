@@ -97,6 +97,15 @@ public class HtmlElement implements HtmlProvider {
 	}
 
 	/**
+	 * Add text content to this element, rendered literally as plain text (neither as HTML nor as JSPWiki
+	 * markup). Will be added as a {@link PlainTextNode}.
+	 */
+	public HtmlElement plainText(String text) {
+		children(new PlainTextNode(text));
+		return this;
+	}
+
+	/**
 	 * Add children to this HTML element
 	 */
 

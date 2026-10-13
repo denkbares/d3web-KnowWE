@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,27 +32,33 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.DefaultArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.EnvironmentService;
 import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.Action;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.event.ArticleManagerCommitDoneEvent;
+import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.jspwiki.ActionAllowListChecker;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
-import de.knowwe.core.EnvironmentService;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public final class InterWikiImportUpdateService implements EnvironmentService {
+
 	public static final ServiceKey<InterWikiImportUpdateService> SERVICE = ServiceKey.of(InterWikiImportUpdateService.class, environment -> {
 		InterWikiImportUpdateService service = new InterWikiImportUpdateService(environment);
 		service.initialize();
 		return service;
 	});
-
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiImportUpdateService.class);
 
@@ -69,15 +76,6 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		}
 	});
 
-	/**
-	 * The environment of the wiki whose imports this service keeps up to date.
-	 */
-	private final Environment environment;
-
-	private InterWikiImportUpdateService(@NotNull Environment environment) {
-		this.environment = environment;
-	}
-
 	private record ImportInfo(String sectionId, String wiki, String page, @Nullable String sectionHeading,
 	                          @Nullable Instant latestChange, @Nullable String from, @Nullable String link) {
 	}
@@ -87,6 +85,15 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		private PollResult {
 			updates = List.copyOf(updates);
 		}
+	}
+
+	/**
+	 * The environment of the wiki whose imports this service keeps up to date.
+	 */
+	private final Environment environment;
+
+	private InterWikiImportUpdateService(@NotNull Environment environment) {
+		this.environment = environment;
 	}
 
 	/**
@@ -100,15 +107,69 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	@Override
 	public void close() {
 		LOGGER.info("Shutting down InterWikiImport update poller.");
+		environment.getEventManager().unregister(pageSaveListener);
 		poller.shutdownNow();
 	}
 
 	public void initialize() {
 		if (!initialized.compareAndSet(false, true)) return;
 		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
+		environment.getEventManager().registerListener(pageSaveListener);
 
 		poller.scheduleWithFixedDelay(this::pollAllSources, 0, pollIntervalMillis,
 				TimeUnit.MILLISECONDS);
+	}
+
+	/** Titles of saved pages, whose new version has not been committed yet (lower case). */
+	private final Set<String> savedTitles = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * Saving a page always fetches the source text of its imports again (force update), so changes of
+	 * the import markup itself, e.g. added or changed {@code @replacement} / {@code @regexReplacement}
+	 * annotations, are applied right away instead of only after the next change in the source wiki.
+	 * The byte comparison in {@code updateAttachmentWithSourceText} prevents new attachment versions
+	 * for unchanged content.
+	 * <p>
+	 * The save is fired before the new version is registered, so the update is triggered once the
+	 * commit containing the page is done. Startup and recompiles fire no save, so they trigger nothing.
+	 */
+	private final EventListener pageSaveListener = new EventListener() {
+		@Override
+		public Collection<Class<? extends Event>> getEvents() {
+			return List.of(ArticleUpdateEvent.class, ArticleManagerCommitDoneEvent.class);
+		}
+
+		@Override
+		public void notify(Event event) {
+			if (event instanceof ArticleUpdateEvent updateEvent) {
+				String title = updateEvent.getTitle();
+				// attachments are reported with their path, they contain no import markups to be updated
+				if (title != null && !title.contains("/")) savedTitles.add(title.toLowerCase());
+			}
+			else if (event instanceof ArticleManagerCommitDoneEvent commitEvent) {
+				if (savedTitles.isEmpty()) return;
+				List<String> titles = commitEvent.getCommittedTitles().stream()
+						.filter(title -> savedTitles.remove(title.toLowerCase()))
+						.toList();
+				if (titles.isEmpty() || !AttachmentUpdateMarkup.isAutoUpdatingActive(environment)) return;
+				ArticleManager articleManager = commitEvent.getArticleManager();
+				poller.execute(() -> forceUpdateAfterSave(articleManager, titles));
+			}
+		}
+	};
+
+	private void forceUpdateAfterSave(ArticleManager articleManager, List<String> titles) {
+		List<Section<InterWikiImportMarkup>> markups = new ArrayList<>();
+		for (String title : titles) {
+			Article article = articleManager.getArticle(title);
+			if (article != null) markups.addAll($(article).successor(InterWikiImportMarkup.class).asList());
+		}
+		try {
+			pollMarkups(markups, true);
+		}
+		catch (RuntimeException e) {
+			LOGGER.warn("Unable to update InterWikiImports after saving pages {}", titles, e);
+		}
 	}
 
 	public void register(Section<InterWikiImportMarkup> markup) {
@@ -124,32 +185,48 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	 * prevents an unnecessary new attachment version when the content has not changed.
 	 */
 	public void pollSingleMarkup(Section<InterWikiImportMarkup> markup, boolean force) {
-		if (!Sections.isLive(markup)) return;
+		pollMarkups(List.of(markup), force);
+	}
+
+	/**
+	 * Polls the given markups together, like {@link #pollSingleMarkup(Section, boolean)}: one request
+	 * per source wiki and one page change for all their updates. Polling the markups of a page one by
+	 * one would let each update write the page based on its previous text, so the update of one markup
+	 * (e.g. its {@code @latestChange}) would be overwritten by the next one.
+	 */
+	public void pollMarkups(Collection<Section<InterWikiImportMarkup>> markups, boolean force) {
 		if (!AttachmentUpdateMarkup.isAutoUpdatingActive(environment) && !force) return;
-		String wiki = InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup));
-		if (wiki.isBlank()) return;
+		Map<String, List<ImportInfo>> snapshotsByWiki = new LinkedHashMap<>();
+		for (Section<InterWikiImportMarkup> markup : markups) {
+			if (!Sections.isLive(markup)) continue;
+			String wiki = InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup));
+			if (wiki.isBlank()) continue;
+			snapshotsByWiki.computeIfAbsent(wiki, k -> new ArrayList<>()).add(new ImportInfo(
+					markup.getID(),
+					wiki,
+					markup.get().getPageName(markup),
+					markup.get().getSectionName(markup),
+					force ? null : markup.get().getLatestChange(markup),
+					markup.get().getImportSourceLabel(markup),
+					markup.get().getImportSourceLink(markup)));
+		}
+		if (snapshotsByWiki.isEmpty()) return;
 
-		ImportInfo snapshot = new ImportInfo(
-				markup.getID(),
-				wiki,
-				markup.get().getPageName(markup),
-				markup.get().getSectionName(markup),
-				force ? null : markup.get().getLatestChange(markup),
-				markup.get().getImportSourceLabel(markup),
-				markup.get().getImportSourceLink(markup));
-
-		ArticleManager articleManager = markup.getArticleManager();
+		ArticleManager articleManager = environment.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 			defaultArticleManager.awaitInitialization();
 		}
 
 		articleManager.open();
 		try {
-			List<ImportInfo> snapshots = List.of(snapshot);
-			PollResult result = pollSource(wiki, snapshots);
-			recordOutcome(snapshots, result);
-			if (!result.updates().isEmpty()) {
-				processUpdates(result.updates());
+			List<InterWikiChanges.Update> updates = new ArrayList<>();
+			for (Map.Entry<String, List<ImportInfo>> entry : snapshotsByWiki.entrySet()) {
+				PollResult result = pollSource(entry.getKey(), entry.getValue());
+				recordOutcome(entry.getValue(), result);
+				updates.addAll(result.updates());
+			}
+			if (!updates.isEmpty()) {
+				processUpdates(updates);
 			}
 		}
 		finally {
@@ -308,7 +385,8 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 			}
 
 			boolean attachmentChanged = markup.get().updateAttachmentWithSourceText(markup, update.sourceText());
-			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)) {
+			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)
+					&& !update.sourceLatestChange().equals(markup.get().getLatestChange(markup))) {
 				markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
 			}
 			updatedImports++;

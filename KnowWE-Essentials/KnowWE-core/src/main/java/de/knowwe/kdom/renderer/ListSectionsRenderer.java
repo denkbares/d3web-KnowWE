@@ -89,6 +89,7 @@ public class ListSectionsRenderer<T extends Type> {
 	private Function<Section<T>, Boolean> greyoutFunction; // decides which lines are greyed out
 
 	private String emptyText = "-- no entries --";
+	private boolean stickyHeader = true;
 	private Set<Integer> skipSearch = new HashSet<>();
 	private String filterProviderAction;
 
@@ -490,6 +491,19 @@ public class ListSectionsRenderer<T extends Type> {
 		return this;
 	}
 
+	/**
+	 * Specifies whether the header of the list floats at the top of the page (or of the scrolling box containing the
+	 * list), while the list is scrolled. By default, the header floats, but e.g. a short (paginated) list does not need
+	 * a floating header.
+	 *
+	 * @param stickyHeader true if the header should float, false otherwise
+	 * @return this instance to chain builder calls
+	 */
+	public ListSectionsRenderer<T> stickyHeader(boolean stickyHeader) {
+		this.stickyHeader = stickyHeader;
+		return this;
+	}
+
 	protected String getEmptyText() {
 		return emptyText;
 	}
@@ -500,7 +514,7 @@ public class ListSectionsRenderer<T extends Type> {
 			return;
 		}
 
-		page.appendHtmlTag("table", "class", "list-sections" + (headers.isEmpty() ? "" : " sticky-header"));
+		page.appendHtmlTag("table", "class", "list-sections" + (headers.isEmpty() || !stickyHeader ? "" : " sticky-header"));
 		renderHeader(page);
 		page.append("\n");
 		int index = 0;

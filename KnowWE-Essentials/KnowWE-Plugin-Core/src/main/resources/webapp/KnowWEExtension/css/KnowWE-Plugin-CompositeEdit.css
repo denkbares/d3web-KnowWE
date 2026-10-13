@@ -37,6 +37,25 @@
 	padding: 0 0 0 0;
 }
 
+/* the term name is excluded from dragging (see createCompositeEditDialog), give it some slack so selecting it is easy;
+   the title gets the extra room, so the slack is not clipped by its overflow and the layout stays the same */
+.ui-dialog .ui-dialog-title:has(> .objectinfo-header-name) {
+	padding: 6px 0;
+	margin: calc(.1em - 6px) 0 calc(.1em - 6px) -8px;
+}
+
+.ui-dialog-title .objectinfo-header-name {
+	display: inline-block;
+	padding: 6px 10px 6px 8px;
+	margin: -6px 0;
+	cursor: text;
+	user-select: text;
+}
+
+.ui-dialog-title .objectinfo-header-class {
+	margin-left: 0;
+}
+
 /*.ui-dialog-titlebar.ui-widget-header {*/
 /*	border: 1px solid var(--border-color-table);*/
 /*}*/

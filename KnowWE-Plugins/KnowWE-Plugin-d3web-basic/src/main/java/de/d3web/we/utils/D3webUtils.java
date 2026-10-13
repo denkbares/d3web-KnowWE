@@ -59,6 +59,7 @@ import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Fact;
+import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodUserSelected;
@@ -350,6 +351,15 @@ public class D3webUtils {
 	}
 
 	public static void setFindingSynchronized(Fact fact, Session session, UserContext context) {
+		// the fact may be created for an object of another knowledge base than the session's one, e.g. of the
+		// compiler's current knowledge base, while a pinned session still uses a previous one
+		Fact sessionFact = adaptToSession(fact, session);
+		if (sessionFact == null) {
+			LOGGER.warn("Unable to set fact, because '" + fact.getTerminologyObject().getName() +
+						"' does not exist in the knowledge base of the session.");
+			return;
+		}
+		fact = sessionFact;
 		try {
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (session) {
@@ -379,6 +389,28 @@ public class D3webUtils {
 		if (context != null) {
 			KnowWEUtils.getEventManager(context).fireEvent(new FindingSetEvent(fact, session, context));
 		}
+	}
+
+	/**
+	 * Returns a fact that can be set into the specified session. If the fact's terminology object belongs to another
+	 * knowledge base than the session's one (e.g. to the compiler's current knowledge base, while the session still
+	 * uses a previous one), a fact for the session's object with the same name is created. Otherwise, the fact itself is
+	 * returned.
+	 *
+	 * @param fact    the fact to be set into the session
+	 * @param session the session to set the fact into
+	 * @return the fact for the session, or null if there is no such object (of the same class) in the session's
+	 * knowledge base
+	 */
+	@Nullable
+	public static Fact adaptToSession(Fact fact, Session session) {
+		TerminologyObject object = fact.getTerminologyObject();
+		KnowledgeBase base = session.getKnowledgeBase();
+		if (object.getKnowledgeBase() == base) return fact;
+		TerminologyObject sessionObject = base.getManager().search(object.getName());
+		if (sessionObject == null || sessionObject.getClass() != object.getClass()) return null;
+		Object source = (fact.getSource() == object) ? sessionObject : fact.getSource();
+		return FactFactory.createFact(sessionObject, fact.getValue(), source, fact.getPSMethod());
 	}
 
 	/**

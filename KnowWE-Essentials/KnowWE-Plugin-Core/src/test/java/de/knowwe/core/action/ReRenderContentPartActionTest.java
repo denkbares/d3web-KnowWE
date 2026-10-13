@@ -90,6 +90,29 @@ public class ReRenderContentPartActionTest {
 		}
 	}
 
+	/** The tabs of a user must not cancel each other's rerendering of the same section, but repeated requests of a tab do. */
+	@Test
+	public void requestsOfOtherPageInstancesDoNotReplaceEachOther() {
+		String sectionId = UUID.randomUUID().toString();
+		String tab = ReRenderContentPartAction.generateKey(createContext("user", "tab"), sectionId);
+		assertEquals(tab, ReRenderContentPartAction.generateKey(createContext("user", "tab"), sectionId));
+		assertNotEquals(tab, ReRenderContentPartAction.generateKey(createContext("user", "other-tab"), sectionId));
+		assertNotEquals(tab, ReRenderContentPartAction.generateKey(createContext("other-user", "tab"), sectionId));
+		assertNotEquals(tab, ReRenderContentPartAction.generateKey(createContext("user", "tab"), "other-section"));
+		// requests without page instance (e.g. of older clients) still replace each other
+		assertEquals(ReRenderContentPartAction.generateKey(createContext("user", null), sectionId),
+				ReRenderContentPartAction.generateKey(createContext("user", null), sectionId));
+	}
+
+	private static UserActionContext createContext(String userName, String pageInstance) {
+		return (UserActionContext) Proxy.newProxyInstance(ReRenderContentPartActionTest.class.getClassLoader(),
+				new Class<?>[]{UserActionContext.class}, (proxy, method, args) -> switch (method.getName()) {
+					case "getUserName" -> userName;
+					case "getParameter" -> ReRenderContentPartAction.PAGE_INSTANCE.equals(args[0]) ? pageInstance : null;
+					default -> throw new AssertionError("Unexpected action access: " + method.getName());
+				});
+	}
+
 	/** The shared browser error handler distinguishes an outdated section (409) from a deleted page (404). */
 	@Test
 	public void obsoleteSectionIdRequestsReloadThroughConflictResponse() throws Exception {

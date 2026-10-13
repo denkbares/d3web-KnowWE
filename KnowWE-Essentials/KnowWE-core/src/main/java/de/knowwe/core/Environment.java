@@ -142,10 +142,6 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	private volatile boolean closing = false;
 
 	/**
-	 * Returns whether this environment has finished its initialization (articles and compilers are set up). While it
-	 * is not ready, parsing must not reuse an existing KDOM.
-	 */
-	/**
 	 * Returns this environment, so that an environment can be passed wherever a {@link HasEnvironment} is expected.
 	 */
 	@NotNull

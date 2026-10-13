@@ -94,6 +94,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	private Predicate<Section<T>> noFilterPredicate = Predicates.TRUE();
 	private Predicate<Section<T>> alwaysShowPredicate = Predicates.FALSE();
 	private int noFilterLimit = -1;
+	private int initialCount = DEFAULT_COUNT;
 
 	private String emptyText = "-- no entries --";
 	private String searchHint = null;
@@ -189,6 +190,18 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 */
 	public GroupedFilterListSectionsRenderer<T> filter(String name, Function<Section<T>, Double> filter, Function<String, Double> phraseToDoubleParser) {
 		this.numKeyFilterProviders.put(name, new Pair<>(filter, phraseToDoubleParser));
+		return this;
+	}
+
+	/**
+	 * Specifies the number of sections shown per page, unless the user has chosen another number. By default, 50
+	 * sections are shown per page.
+	 *
+	 * @param count the number of sections per page, should be one of the offered options (10, 25, 50, ...)
+	 * @return this instance to chain method calls
+	 */
+	public GroupedFilterListSectionsRenderer<T> defaultCount(int count) {
+		initialCount = count;
 		return this;
 	}
 
@@ -417,7 +430,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 	private int getCountFromCookie() {
 		String countFromCookie = getCookieContent("list-section.count." + id);
-		if (Strings.isBlank(countFromCookie) || !COUNT_OPTIONS.containsKey(countFromCookie)) return DEFAULT_COUNT;
+		if (Strings.isBlank(countFromCookie) || !COUNT_OPTIONS.containsKey(countFromCookie)) return initialCount;
 		return COUNT_OPTIONS.get(countFromCookie);
 	}
 

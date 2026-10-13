@@ -992,7 +992,10 @@ KNOWWE.core.plugin.pagination = function() {
         // select correct elements
         $paginationWrapper = $paginationWrapper.find(".knowwe-paginationWrapper");
       }
-      decoratePagination($paginationWrapper);
+      // the rerendered element may contain no (or several) tables
+      $paginationWrapper.each(function() {
+        decoratePagination(jq$(this));
+      });
     },
 
     initialDecorateTables: function() {

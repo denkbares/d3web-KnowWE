@@ -201,7 +201,7 @@ KNOWWE.core.util = function() {
             let indicator = jq$("#KnowWEProcessingIndicator");
             if (!indicator.exists()) {
                 // fallback, happens for example on Edit.jsp
-                jq$("body").append("<i id='KnowWEProcessingIndicator' class='fa-light fa-spin fa-circle-notch ajaxloader fa-7x' " +
+                jq$("body").append("<i id='KnowWEProcessingIndicator' class='fa-regular fa-spin fa-circle-notch ajaxloader fa-7x' " +
                     "style='display:none'>"
                     + "</i>");
             }

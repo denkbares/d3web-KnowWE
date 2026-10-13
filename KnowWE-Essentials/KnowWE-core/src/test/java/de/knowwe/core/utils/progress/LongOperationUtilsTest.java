@@ -19,12 +19,12 @@
 
 package de.knowwe.core.utils.progress;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleLifecycleFixture;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.DefaultArticleManager;
@@ -66,7 +66,7 @@ public class LongOperationUtilsTest {
 			assertSame(operation, LongOperationUtils.getLongOperation(section, operationId));
 		}
 		finally {
-			KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleManagerCommitDoneEvent(articleManager, true));
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleManagerCommitDoneEvent(articleManager, Set.of(article.getTitle())));
 			article.destroy(null);
 			ArticleLifecycleFixture.closeManager(articleManager);
 		}

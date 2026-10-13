@@ -134,6 +134,8 @@
 
   jq$.rerenderCounter = 0;
   jq$.lastRerenderRequests = {};
+  // identifies this page instance (e.g. browser tab), so the rerendering of other tabs does not cancel ours
+  jq$.rerenderPageInstance = Math.random().toString(36).substring(2);
 
   /**
    * Rerenders the selected elements. For now, the complete default markups or ReRenderSectionMarkers are rerendered.
@@ -166,6 +168,7 @@
       const data = {
         SectionID: id,
         counter: currentCounter,
+        pageInstance: jq$.rerenderPageInstance,
 				localSectionStorage: KNOWWE.helper.getLocalSectionStorage(id, true)
       };
       jq$.extend(data, options);
@@ -185,9 +188,7 @@
         data: data
       }).done(function(data, status, jqXHR) {
         if (!data || (data.trim && data.trim() === "")) {
-          if (showGlobalProcessingState()) {
-            KNOWWE.core.util.updateProcessingState(-1);
-          }
+          // (the processing state is reset in always(), as for all other responses)
           return; // nothing to rerender
         }
         if (checkReplaceNeeded) {

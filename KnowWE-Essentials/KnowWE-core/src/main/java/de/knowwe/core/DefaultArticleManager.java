@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -341,7 +342,7 @@ public class DefaultArticleManager implements ArticleManager {
 		}
 
 		boolean outermostCommit = mainLock.getHoldCount() == 1;
-		boolean changesCommitted = false;
+		Set<String> committedTitles = new LinkedHashSet<>();
 		try {
 			if (outermostCommit) {
 				registrationFrameOpen = false;
@@ -352,9 +353,11 @@ public class DefaultArticleManager implements ArticleManager {
 					synchronized (removed) {
 						for (Article article : added) {
 							addedSections.add(article.getRootSection());
+							committedTitles.add(article.getTitle());
 						}
 						for (Article article : removed) {
 							removedSections.add(article.getRootSection());
+							committedTitles.add(article.getTitle());
 						}
 						added.clear();
 						removed.clear();
@@ -364,7 +367,6 @@ public class DefaultArticleManager implements ArticleManager {
 					addedSections.sort(Comparator.naturalOrder());
 					removedSections.sort(Comparator.naturalOrder());
 					compilerManager.compile(addedSections, removedSections);
-					changesCommitted = true;
 				}
 				originalArticleMap.clear();
 				synchronized (deleteAfterCompile) {
@@ -382,7 +384,7 @@ public class DefaultArticleManager implements ArticleManager {
 		finally {
 			mainLock.unlock();
 			if (outermostCommit) {
-				KnowWEUtils.getEventManager(this).fireEvent(new ArticleManagerCommitDoneEvent(this, changesCommitted));
+				KnowWEUtils.getEventManager(this).fireEvent(new ArticleManagerCommitDoneEvent(this, committedTitles));
 			}
 		}
 	}
