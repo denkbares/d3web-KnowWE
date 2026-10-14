@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build xmlns="http://www.denkbares.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" date="2012-12-17 23:55:05.005" duration="0" xsi:schemaLocation="http://www.denkbares.com build_result.xsd">
+<test configuration="" name="UnusedNode" numberOfSuccessfullyTestedObjects="1"/>
+</build>

@@ -1,0 +1,44 @@
+!! Path of Javascript and CSS Files
+
+The files have to be saved in the library. The path there for Javascript files is 
+{{{library/KnowWEExtensions/scripts/javascriptfile.js}}}
+
+For CSS files its:
+
+{{{library/KnowWEExtensions/css/cssfile.css}}}
+
+!! Register the Files
+
+The files have to be registred in the plugin.xml. This happens with a parameter id line. The parameter id line is added to the desired plugin. Plugins with css or javascript files can be for example [actions|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/action/Action.html], [types|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/Type.html], [renderer|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/rendering/Renderer.html], [toolprovider|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/tools/ToolProvider.html] and [taghandler|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/taghandler/TagHandler.html].
+
+\\
+
+For Javascript files it looks like:
+%%prettify
+{{{<parameter id="script" value="javascriptfile.js" />}}}
+/%
+
+For CSS files:
+%%prettify
+{{{<parameter id="css" value="cssfile.css" />}}}
+/%
+
+!! Example
+
+%%prettify
+{{{
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
+		id="ObjectInfoTagHandler">
+		<parameter id="class" value="de.knowwe.core.taghandler.ObjectInfoTagHandler" />
+		<parameter id="name" value="ObjectInfoTagHandler" />
+		<parameter id="description" value="TagHandler ObjectInfoTagHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="css" value="jqautocomplete.css" />
+		<parameter id="script" value="KnowWE-Plugin-Core.js" />
+	</extension>
+}}}
+/%
+%%tags
+howto Javascript CSS
+%

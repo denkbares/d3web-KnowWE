@@ -1,0 +1,29 @@
+!!! d3web - The Open-Source Diagnostic Platform 
+
+\\
+
+[{Image src='Main/denker_100.png' style='position:absolute;opacity:0.3;'}]
+
+%%(margin-left:120px;margin-top:-5px;max-width:900px;min-height:96px;) 
+d3web introduces the open-source diagnostic platform, being able to apply different problem solving methodologies at the same time. The d3web platform contains a set of [applications and modules|Products] for [developing knowledge|KnowWE], [testing knowledge|Testing-App] and finally [applying the knowledge|Mobile-App] onto a given problem situation. It is based on a highly efficient, multi-language [diagnostic engine|D3web-Core], used in a [wide range of industrial, governmental and non-commercial projects|Success Stories].
+%%
+
+
+!! Platform Overview
+
+[{Image src='Main/pickers_100.png' width=248 height=105 style='position:absolute;opacity:0.3;'}]
+
+%%(margin-left:120px;margin-top:-5px;min-height:96px;) 
+The d3web diagnostic platform consists of some basic applications that can be used to develop and execute knowledge bases:
+* [KnowWE]: Knowledge Wiki Environment, to develop and test your own knowledge bases
+* [d3web-Mobile|Mobile-App]: A stand-alone application to easily run a knowledge base (Win, Mac, Linux)
+* [droid3web|Droid3web-App]: An Android application to run any d3web knowledge base on a smartphone
+%%
+
+!! Quick Start
+On these pages you will find a lot more of interesting things for diagnostics. An excellent point to start are the [Success Stories] and the [screencasts section|Tutorial]. \\
+To obtain a first impression of d3web, you may also consult the [knowledge base examples | Demos]. There you will get a good overview of the capabilities of the d3web platform.\\ __Enjoy!__
+
+%%(color:gray;text-align:right;position:relative;top:25px;)
+Image credits: Dave & Margie Hill / Kleerup licensed CC-BY-SA 2.0; Daniel Stockman licensed CC-BY-SA 2.0
+%%

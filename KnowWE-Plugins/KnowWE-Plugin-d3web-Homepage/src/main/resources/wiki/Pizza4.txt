@@ -1,0 +1,39 @@
+!!! Simplest pizza ontology.
+
+%%ConceptVisualization 
+  @concept: http://www.pizza.com/ontologies/pizza4.owl#Pizza
+  @excludeNodes: owl:Thing, rdfs:Class, rdf:Resource, owl:Nothing, pizza:DomainConcept
+  @excludeRelations: rdf:type, owl:sameAs, owl:equivalentClass, owl:equivalentProperty, rdfs:subPropertyOf
+  @showInverse: false
+  @width: 2000
+%
+
+
+%%SparqlVisualization 
+SELECT ?source ?edge ?target WHERE {
+?source rdfs:subClassOf ?x .
+?x ?edge ?target .
+FILTER (?source != ?target) .
+FILTER (STRSTARTS(STR(?source), "http://www.pizza.com/ontologies/pizza4.owl")) .
+FILTER (STRSTARTS(STR(?target), "http://www.pizza.com/ontologies/pizza4.owl")) .
+} 
+%
+
+
+!SPARQL query displaying all pizzas in pizza4.owl
+
+
+%%Sparql
+SELECT ?Pizza WHERE {
+?Pizza rdfs:subClassOf <http://www.pizza.com/ontologies/pizza4.owl#Pizza> .
+FILTER (!STRSTARTS(STR(?Pizza), "_")) .
+}
+ORDER BY ?Pizza
+%
+
+%%Ontology 
+@import: pizza4.owl
+@ruleset: OWL_HORST_OPTIMIZED
+%
+
+%%Package pizza4

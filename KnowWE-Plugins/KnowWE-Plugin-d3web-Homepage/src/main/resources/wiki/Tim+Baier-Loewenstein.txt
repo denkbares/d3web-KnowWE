@@ -1,0 +1,32 @@
+[{ALLOW view Authenticated}]
+[{ALLOW edit Tim Baier-Loewenstein}]
+
+
+! Contact
+
+Tim Baier-Löwenstein\\
+Dräger Medical GmbH\\
+Moislinger Allee 53-55, 23542 Lübeck\\
+Tim.Baier-Loewenstein [[at] draeger.com\\ 
+[http://www.draeger.com]
+
+! About Me
+
+My main focus is using KnowWE to develop medical knowledge-based solutions for Dräger.
+
+
+! d3web Activities
+
+* Knowledge Engineering
+* Adaptation of d3web-Core for software solutions 
+
+
+
+! Open tasks
+
+%%TodoList 
+  @user: Tim Baier-Loewenstein
+%
+
+%%Tags Users
+

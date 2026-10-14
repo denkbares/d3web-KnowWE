@@ -1,0 +1,100 @@
+[{TableOfContents }]
+
+!!Introduction
+
+TestCases or SequentialTestCases in particular allow to verify that derived solution states and abstract questions match the expectations defined the respective TestCase.\\
+This article describes how to create a SequentialTestCase in your Java workspace. If you want to know how to use and define a TestCase in KnowWE, you can learn more on the following wiki article: [Doc TestCase]
+
+!!Getting started
+
+To create a SequentialTestCase you need the information you want to set and check and you also need the knowledge base for which the SequentialTestCase should be used.
+
+Loading a knowledge base from a .d3web-file is pretty simple and can be done with the code snipplets presented on the page [How-To Load a Knowledge Base].
+
+To instantiate a SequentialTestCase just use the default constructor:
+
+%%prettify 
+{{{
+SequentialTestCase stc = new SequentialTestCase();
+}}}
+/%
+
+!!Adding RatedTestCases to SequentialTestCases
+
+A SequentialTestCases can contain multiple RatedTestCases. These RatedTestCases contain the actual inputs and checks for the knowledge base and are sequentially applied to the testing session. For each RatedTestCase it is also possible to set a timestamp for which the RatedTestCase will then be applied to the session.
+
+After instantiating the RatedTestCase, you can add three types of elements:
+# __Finding__: Contains a Question and a Value that will be set in the testing session.
+# __ExpectedFinding__: Contains a Question and a Value that will be checked after the findings are set in the testing session.
+# __RatedSolution__: Contains a Solution and a Rating or State for this Solution to be checked after the findings are set in the testing session.
+
+%%prettify 
+{{{
+RatedTestCase rtc = new RatedTestCase();
+rtc.setTimeStamp(date);
+rtc.add(new Finding(question, value));
+rtc.addExpectedFinding(new Finding(question, value));
+rtc.addExpected(new RatedSolution(solution, rating));
+}}}
+/%
+
+The variables question and solution are the well known objects that can be retrieved from your knowledge base:
+
+%%prettify 
+{{{
+knowledgeBase.getManager().search(name)
+}}}
+
+As the value a Finding expects an object of the type QuestionValue. In most cases this will be a ChoiceValue or a NumValue, which can be instantiated with a simple String or double.
+
+%%prettify 
+{{{
+ChoiceValue value = new ChoiceValue("Yes");
+NumValue nValue = new NumValue(1.5);
+}}}
+/%
+
+The persistence of SequentialTestCases allows to write multiple SequentialTestCases into one repository inside one XML file. Therefore the persistence methods expect and return lists of SequentialTestCases.\\
+The boolean needed in the method to export SequentialTestCases should be set to {{false}}.
+
+%%prettify 
+{{{
+TestPersistence.getInstance().writeCases(outputSteam, stcs, false)
+}}}
+/%
+
+Export SequentialTestCases with the following code:
+
+%%prettify 
+{{{
+List<SequentialTestCase> stcs = TestPersistence.getInstance().loadCases(inputStream, knowledgebase);
+}}}
+/%Import SequentialTestCases with the following code:
+
+
+SequentialTestCases have an easy to use XML persistence.
+
+!!Importing and exporting SequentialTestCase from and to XML
+
+
+%%prettify 
+{{{
+StateRating stateRating = new StateRating("ESTABLISHED");
+}}}
+/%If you just want to more generally check if a solution is for example established, you can instantiate a StateRating which either expects a String with the verbalization of one of the possible States for d3web solutions ({{EXCLUDED, UNCLEAR, SUGGESTED or ESTABLISHED}}) or an actual {{de.d3web.core.knowledge.terminology.Rating}}.
+
+
+
+
+%%prettify 
+{{{
+ScoreRating scoreRating = new ScoreRating(10);
+}}}
+/%If you want to check a very specific score for the derived solution you can just instantiate ScoreRating with a double or an actual {{de.d3web.scoring.Score}}\\
+
+
+
+RatedSolutions expect an object with the interface {{de.d3web.empiricaltesting.Rating}}. There are two classes implementing this Interface:
+# ScoreRating
+# StateRating
+

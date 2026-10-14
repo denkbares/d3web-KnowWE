@@ -1,0 +1,35 @@
+!!! Creating new article
+
+Create a link [[New Page] in an existing wiki article, that points to a new (not existing) article. When you save the article, the view should show a link to 'New Page'. By clicking on this link, a new article is created.
+
+!!! Modifying an existing article
+
+Simply go to the article and click the 'Edit' button on the top right. Please note, that sometimes the wiki may require special rights to edit a page, for instance, being logged in as a user or being a user of a particular group. In the default setting, however, everybody can edit every article in the wiki.
+
+!!! Adding/removing attachments
+
+You can add attachments (e.g., images) to any wiki page. Simply click the 'Attach' button on the top middle of the article and upload the attachment.
+
+You may reference an attached image, for example, by the following markup
+
+{{{[{Image src='image.jpg' 
+   width='300' height='212' align='left'
+   caption='Your caption text.'}]
+}}}
+
+Attachments other than images are referenced by linking to them in the following manner:
+
+{{{[Some optional text | PAGE_NAME/NAME_OF_ATTACHMENT]
+}}}
+
+Attachments can be removed only by users with administrator privileges. Only these will see a delete button in the attachment tab for the corresponding attachments. Please note, that a administrator need to be logged-in before being able to use the delete button.
+
+!!! Conflicts
+
+If someone happens to edit the same page as you at the same time, JSPWiki will prevent you from doing changes and show a conflict page instead. Sorry to say, but the first one to make changes wins...
+
+__A word of warning:__ If you use the Back button of your browser to go into the Edit page, you will almost certainly get a conflict. This is because the browser thinks its still editing an earlier copy of the page.
+
+%%tags
+Documentation attachment article
+%

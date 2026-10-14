@@ -1,0 +1,25 @@
+%%Package questiontest
+
+%%Solution
+Huhu
+%
+
+%%Question 
+Fragebogen1
+- Fragebogen2
+-- Frage1 [yn]
+-- Frage2 [yn]
+%
+
+%%Question
+Fragebogen1
+- Fragebogen3
+-- Frage1 [yn]
+-- Frage2 [yn]
+%
+
+%%KnowledgeBase 
+  
+%
+
+[{KnowWEPlugin renderKnowledge}]

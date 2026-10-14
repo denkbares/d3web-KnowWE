@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<builds actualBuildStatus="SUCCESSFUL">
+  <build executed="05.06.2011 11:11:55" nr="1" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 11:12:02" nr="2" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 11:13:41" nr="3" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 12:33:34" nr="4" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 12:34:15" nr="5" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 12:39:18" nr="6" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 12:41:49" nr="7" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 12:42:10" nr="8" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 12:43:03" nr="9" result="SUCCESSFUL">
+    <tests />
+  </build>
+  <build executed="05.06.2011 12:53:47" nr="10" result="FAILED">
+    <tests>
+      <test name="IsolatedInterfaceNodeInDiaFluxModel" result="FAILED" message="&lt;br&gt;&#xA;Isolated start/exit nodes in flow: StarterFlow" />
+    </tests>
+  </build>
+  <build executed="05.06.2011 12:54:44" nr="11" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedInterfaceNodeInDiaFluxModel" result="SUCCESSFUL" message=": OK." />
+    </tests>
+  </build>
+  <build executed="05.06.2011 12:59:45" nr="12" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" message=": OK." />
+    </tests>
+  </build>
+  <build executed="05.06.2011 12:59:50" nr="13" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" message=": OK." />
+    </tests>
+  </build>
+  <build executed="05.06.2011 13:00:02" nr="14" result="FAILED">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="FAILED" message="&lt;br&gt;&#xA;Isolated node in flow: StarterFlow" />
+    </tests>
+  </build>
+  <build executed="05.06.2011 13:00:18" nr="15" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" message=": OK." />
+    </tests>
+  </build>
+  <build executed="28.07.2011 16:36:49" nr="16" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" configuration="knowledge base article: Tester" />
+    </tests>
+  </build>
+  <build executed="28.07.2011 16:36:54" nr="17" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" configuration="knowledge base article: Tester" />
+    </tests>
+  </build>
+  <build executed="11.03.2012 07:04:17" nr="18" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="11.03.2012 07:21:12" nr="19" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="11.03.2012 08:12:07" nr="20" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 08:31:49" nr="21" duration="12" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 09:37:07" nr="22" duration="34" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 10:47:35" nr="23" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 12:51:07" nr="24" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 12:56:18" nr="25" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 14:13:54" nr="26" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 15:07:32" nr="27" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 15:54:25" nr="28" duration="9" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 16:01:44" nr="29" duration="2" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="20.04.2012 16:12:13" nr="30" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="23.04.2012 15:29:44" nr="31" duration="1" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="30.04.2012 09:51:27" nr="32" duration="7" result="SUCCESSFUL">
+    <tests>
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" />
+    </tests>
+  </build>
+</builds>
+

@@ -1,0 +1,111 @@
+%%information
+The gradient function used in this demo is only available using a commercial extension. Please contact info@denkbares.com for more information.
+/%
+
+This is a simple knowledge base to demonstrate the gradient of a time-valued temperature value. For incoming values of ''Temperature'' (concerning the last 20 seconds) the gradient is calculated by the variable ''Gradient''. Based on its value, the DiaFlux knowledge base derives the value of the abstraction ''Progression''.
+
+
+!!! Interview (and Derivation)
+
+Try the temporal progression of the value of "Temperature" by iteratively entering values for "Temperature".
+
+%%QuickInterview 
+
+%
+
+
+!!! Knowledge Base
+
+
+%%DiaFlux
+<flowchart fcid="flow_e087e5af" name="Main" icon="sanduhr.gif" width="568" height="244" autostart="true" idCounter="21">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="40" top="31"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_11">
+		<position left="20" top="107"></position>
+		<action markup="KnOffice"><![CDATA[Temperature]]></action>
+	</node>
+
+	<node fcid="#node_14">
+		<position left="188" top="107"></position>
+		<action markup="timeDB"><![CDATA["Gradient" = eval(gradient(Temperature[0s, -20s]))]]></action>
+	</node>
+
+	<node fcid="#node_15">
+		<position left="243" top="20"></position>
+		<action markup="KnOffice"><![CDATA["Progression" = "increase"]]></action>
+	</node>
+
+	<node fcid="#node_18">
+		<position left="453" top="107"></position>
+		<action markup="KnOffice"><![CDATA["Progression" = "constant"]]></action>
+	</node>
+
+	<node fcid="#node_20">
+		<position left="243" top="193"></position>
+		<action markup="KnOffice"><![CDATA["Progression" = "decrease"]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_12">
+		<origin>#node_2</origin>
+		<target>#node_11</target>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_11</origin>
+		<target>#node_14</target>
+		<guard markup="KnOffice"><![CDATA[KNOWN["Temperature"]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_17">
+		<origin>#node_14</origin>
+		<target>#node_15</target>
+		<guard markup="KnOffice"><![CDATA["Gradient" > 0]]></guard>
+	</edge>
+
+	<edge fcid="#rule_19">
+		<origin>#node_14</origin>
+		<target>#node_18</target>
+		<guard markup="KnOffice"><![CDATA["Gradient" = 0]]></guard>
+	</edge>
+
+	<edge fcid="#rule_21">
+		<origin>#node_14</origin>
+		<target>#node_20</target>
+		<guard markup="KnOffice"><![CDATA["Gradient" < 0]]></guard>
+	</edge>
+
+</flowchart>
+%
+
+__Terminology:__
+
+%%Question
+Questions
+- Temperature [num] {°C}
+- Gradient [num] <abstract>
+- Progression [oc] <abstract>
+-- decrease
+-- constant
+-- increase
+%
+
+
+!!! Knowledge Base Administration
+
+%%KnowledgeBase
+Temperature example. 
+%
+
+%%Package DemoTemperature
+
+%%tags
+DemoTemperature
+%

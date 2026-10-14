@@ -1,0 +1,19 @@
+!!! How to generate a todo list
+
+Using the todo-plugin ([Doc Todo]) tasks can be defined within the wiki content. The TodoList-plugin allows to generate a list of all todo-task of the wiki.
+
+{{{
+%%TodoList
+
+%
+}}}
+
+[{Image src='TodoList-screenshot.png' width='..' caption='Screenshot of a generated Todo-list' height='..' align='center' style='..' class='..' }]
+
+
+!! Related Docs 
+
+* [Doc Todo]
+%%tags
+Documentation todo
+%

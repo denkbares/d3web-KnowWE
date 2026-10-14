@@ -1,0 +1,34 @@
+[{TableOfContents }]
+
+
+!!! Definition
+
+The ExpectedSparqlResult markup allows to define an expected result set for some sparql query. Then the CI-Test ''SparqlResultTable'' (see [Doc CIDashboard]) can be used to test a query against an expected result set. 
+
+{{{
+%% ExpectedSparqlResult...
+}}}
+
+After the SPARQL statement the following annotations can be inserted:
+
+|| Annotation	|| Description	
+|  @name	|  Assignes a name to this ExpectedSparqlResult markup expression. The name can/should be used as reference for the test object in the definition of the corresponding SparqlResultTable test in the CI-Dashboard .	
+|  @sparql	|  The name of the sparql query that should be testet against this result set.	
+
+
+!!! Example
+
+The expected result set is defined as a table. The columns are matched to the sequence of the variables of the associated sparql query. Here, the sparql query named ''functionalProperties'' is associated.
+
+{{{
+%%ExpectedSparqlResult 
+|ssc:hasConnectorSource
+|ssc:targetPin
+|ssc:sourcePin
+|ssc:isSubComponentOf
+|ssc:hasConnectorTarget
+
+@name: functionalPropertiesExpected
+@sparql: functionalProperties
+%
+}}}

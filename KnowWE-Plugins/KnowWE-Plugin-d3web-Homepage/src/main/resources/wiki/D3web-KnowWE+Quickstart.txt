@@ -1,0 +1,49 @@
+KnowWE is a Semantic Wiki for the development of knowledge-based applications.
+
+
+!!! System Requirements
+
+Installation of KnowWE requires the __Java SE Development Kit (JDK)__ in version 8 or newer. A JRE is not sufficient since the release [Watney|Watney - Release Notes]. For operating systems, the distribution runs with Windows, Mac OS, and Linux.
+We officially support Firefox 3.6 or higher and Google Chrome. Currently, the Internet Explorer and Safari is not officially supported, although Internet Explorer 11/Edge and Safari should work fine.
+
+
+!!! Installation
+
+There are different distribution packages available for KnowWE. Older releases just provided the semantic wiki part of the d3web-KnowWE project (the folder {{KnowWE-Tomcat}} also referenced below). Since the release [Watney|Watney - Release Notes], we switched to a more comprehensive distribution package, which also contains the core libraries of d3web (to embed and run d3web knowledge bases in your own software or app) and documentation and sources for both. So the downloadable zip file now contains the following folders:
+
+* __d3web__ (Java libraries to embed and run d3web knowledge bases in your own software or app, also sources and documentation)
+* __KnowWE__ (The wiki to create and test d3web knowledge bases, also sources and documentation)
+* Licenses
+
+To install KnowWE, just extract the downloaded distribution zip file to any location and then navigate to the folder KnowWE inside it. There, extract the file {{KnowWE-Tomcat.zip}} to the destination you want to run KnowWE from (like your program or application directory). Basically it is an Apache Tomcat ([http://tomcat.apache.org/]) web server, pre-configured with the KnowWE webapp.
+
+\\Additional Notes:
+
+* __Backup:__ If you are already using a previous version of KnowWE, move your old KnowWE folder to a different location first. Make sure that you are able to reuse the wiki articles you have created before.
+* __wikicontent (optional):__ If you have used KnowWE before, you may copy your {{wikicontent}} directory to the unpacked {{KnowWE-Tomcat/wikicontent}} directory of the new installation.
+* __Linux/Mac users:__ When unpacking the KnowWE-Tomcat zip file, sometimes the user rights are not correctly set. In this case, you may simply add read/write access to the entire KnowWE-Tomcat folder (including sub-directories), for instance by "{{chmod -R 777 *}}".
+
+
+!!! Running
+
+# __Start Tomcat server:__ In the extracted directory, navigate to the directory {{bin}} and start the server by calling the script {{startup.bat}} (MS-Windows) or {{startup.sh}} (Mac OS X/Linux)
+# __Surf:__ Open your web browser and enter the link {{http://localhost:8080/KnowWE/}}
+
+
+!!! Configuration
+
+JSPWiki (on which KnowWE is build) provides the configuration file {{jspwiki-custom.properties}}, which can be used to configure stuff like the folder of the wiki files, templates, application name, and more. See [https://jspwiki-wiki.apache.org/Wiki.jsp?page=Configuration] for more information.\\
+\\
+%%quote 
+{{KnowWE-Tomcat/webapps/KnowWE/WEB-INF/classes/jspwiki-custom.properties}}
+/%
+
+
+!!! Security
+
+To manage wiki user and group rights, edit the file {{jspwiki.policy}}. See [https://jspwiki-wiki.apache.org/Wiki.jsp?page=Wiki.Admin.Security] for more information.\\
+\\
+
+%%quote 
+{{KnowWE-Tomcat/webapps/KnowWE/WEB-INF/jspwiki.policy}}
+/%

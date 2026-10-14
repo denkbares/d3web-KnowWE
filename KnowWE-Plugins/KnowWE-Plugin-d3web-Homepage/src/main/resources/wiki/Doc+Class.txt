@@ -1,0 +1,27 @@
+[{TableOfContents}]
+
+!!! Definition
+
+The markup to define (RDFS) classes goes as follows:
+
+{{{
+%%Class...
+}}}
+
+!!! Example
+
+To define a class representing a Person:
+
+{{{
+%%Class Person
+}}}
+
+
+The class markup also allows for the definition of properties using annotations:
+
+{{{
+%%Class Person @property livesIn
+}}}
+
+In that example additionally to the class ''Person'' also a property ''livesIn'' is defined. 
+

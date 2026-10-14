@@ -1,0 +1,277 @@
+%%information
+The functionalities described on this page are only available using a commercial extension. Please contact info@denkbares.com for more information.
+/%
+
+
+Expressions allow to use mathematical formulas to be used in d3web knowledge bases. In every formula you may access existing questions and their values, as well as predefined constants. The results of those formulas may be used to assign it to an existing question (e.g. in a rule action) or as a condition in a rule.
+
+This tutorial is built in three chapters:
+# The [supported markups|Doc Expressions#Supported Markups] and how expression can be used there.
+# The [expression syntax|Doc Expressions#Expression syntax] with detailed information on the expression's capabilities.
+# A [function reference table|Doc Expressions#Function Reference] with a list of all available functions and their documentation.
+
+
+!!! Supported Markups
+
+The expressions are integrated in a bunch of existing markups, as well as defining some additional markups.
+
+
+! Rules
+
+Expression can be used in {{~%~%Rule}} markup in both conditions and actions. In both, it must be surrounded by {{eval(...)}} containing the expression. When using the expression as a condition, the expression must result to a boolean value, otherwise an error is signaled and the rule will not be created. The rule will fire if the condition evaluates to "true". In the following example the rule will fire of the gradient of question "measurement" is above 1 during the last 10 seconds.
+
+{{{
+%%Rule 
+IF eval(gradient(measurement[-10s, 0s]) > 1)
+THEN ...
+%
+}}}
+
+For rule actions the expression can be used to assign the resulting value to an abstract question. The expression is also surrounded by {{eval(...)}}, preceded by the question to be assigned. Please note that the questions type must be compatible to the result of the expression, otherwise an error is signaled and the rule will not be created. In the following example the question myGradient will be assigned to the gradient, the question "measurement" had during the last 10 seconds:
+
+{{{
+%%Rule 
+IF measurement = known
+THEN myGradient = eval(gradient(measurement[-10s, 0s]) )
+%
+}}}
+
+
+! Direct question assignment
+
+Using the markup {{~%~%Variable}} you can directly assign the result of an expression to an existing question. Please note that the questions type must be compatible to the result of the expression, otherwise an error is signaled and the assignment will not be created. Unlike using the expressions in rules, no {{eval(...)}} is required. The assignment is always kept up-to-date, so the value of the assigned question is never outdated.
+
+{{{
+%%Variable myGradient = gradient( measurement[-10s,0s] )
+}}}
+
+
+! Defining Constants
+
+Constants are helpful to define values that have a special meaning and therefore naming it. Those constants can be of any type (e.g. number, date, boolean) and can be used in any expression instead the direct value. This gives you the possibility to also alter the constant's value in the wiki without altering all the usages of the value. 
+
+Defining a constant is identical to defining a direct question assignment, but instead of a predefined question the constant name is to be written left to the expression. The type of the constant is automatically derived by the result of the expression. Note that defining a constant, neither questions nor other constants are allowed to be used in the defining expression. See some examples:
+
+
+{{{
+// define a numeric constant
+%%Constant pi = 3.14159265358979323846
+
+// define a date constant (see special date notation)
+%%Constant bostonTeaParty = #1773-12-16#
+
+// you may also use operators and functions
+%%Constant silvesterParty = #1999-12-31# + 19h + 30min
+%%Constant pi_of_Archimedes = 3 + 9552/67441
+
+// using other constants is NOT ALLOWED!!! --> error signaled
+%%Constant invalidDeclaration = 2*pi
+}}}
+
+
+! Flowcharts
+
+Expressions can also be used in the flowchart graphical editor. Similar to rules the expressions can be used as both assignments in nodes and conditions on arrows.
+
+[{Image src='Doc Expressions/Flowchart edit formula.png' caption='Using expressions for assignment'}]
+
+[{Image src='Doc Expressions/Flowchart edit guard formula.png' caption='Using expressions as conditions'}]
+
+
+!!! Expression syntax
+
+
+! Basic calculations
+
+You can write expression in a natural operator infix-notation. For mathematical calculations you can use the common operators "+", "-", "*", "/" to addition, subtraction, multiplication and division. In addition the infix operator "^" for power is also defined. The operators have their priority as usual in algebra (1: "^"; 2: "*", "/"; 3: "+", "-"). Brackets can be used to change priority of evaluation.
+
+{{{
+// examples of valid expressions
+1 + 3        // result is 4
+2 ^ 16 - 1   // result is 65635
+2 ^ (16 - 1) // result is 32768
+}}}
+
+
+! Types and literals
+
+Each element in an expression has a defined result type. The following types are defined: numbers, booleans, durations, time-points and strings. In the examples above, only numbers are used. By typing a number in an expression you have defined a literal constant. But also the other types have their literal constants to be used in expressions:
+
+|| Type || Syntax || Description / Example
+| Number | <DD> \\ <DD>.<DD> \\ <DD>.<DD>e+-<DD> | <DD> is any number character sequence. Defines a number literal constant, either an integer number or an rational number or a floating point number in exponent notation. Examples are "12" or "125.17" or "1.1e-23".
+| Boolean | "true" \\ "false" | Defines a boolean literal constant either being true or false.
+| Duration | <NUMBER>"ms" \\ <NUMBER>"s" or "sec" \\ <NUMBER>"min" \\ <NUMBER>"h" \\ <NUMBER>"d" | <NUMBER> is a number literal constant as described above. It is appended by a duration unit which may be "ms" for milliseconds, "s" or "sec" for seconds, "min" for minutes, "h" for "hours" or "d" for days. Examples are "1.5d" for 36 hours of time or "1s" for one second.
+| Time-Point | #YYYY-MM-DD# | Defines a date as a time-point, where "YYYY" is the year, "MM" is the month (1-12) and "DD" is the day of the month. The time-point literal is always at 0:00 o'clock of the specified date. If a special time is meant, simply add a duration to the date. Examples are "#2000-01-01#" for the millenium sylvester and "#1999-12-31# + 19h" for the party starting at 7pm the day before.
+| String | '<any_characters_here>' | Defines a string literal constant. Please note the single quotes to be used for string literals. If the string shall contain a single quote character use "\'" inside the string literal. Examples are "'my string'" or "'quote means \' here'".
+
+For each type there is also a history of that type available. A history is the evolution of a single value over a certain range in time. A history consists of a sequence of past values. Each value is associated with a time-point when the value has been set. For a history, each value is assumed to be valid from its time-point until the next value of the history has been set.
+
+
+! Boolean expressions
+
+
+For comparing values the operators "=" (or "==", which is identical), "<", "<=", ">", ">=" and "!=" are defined. The result of these compare operators are a boolean value, "true" or "false" to be more precise. For booleans there are also some additional infix operators defined: "&" for "logical and" and "|" for "logical or", as well as "&&" and "||" which are identical to "&" and "|". You can also use "!" for logical negation.
+
+
+{{{
+// example comparators
+1 >= 3          // true
+2^16-1 == 65535 // true
+
+// example boolean operators
+true & false    // false
+true | false    // true
+true & !false   // true
+}}}
+
+
+! Using functions
+
+There are a lot of functions provided, that can be applied to a set of arguments. See [function reference table|Doc Expressions#Function Reference] for a complete set of all available functions. Each function has a number of signatures describing the arguments allowed to be used for the function. 
+
+A function is called by writing the function name followed by brackets. Inside the brackets the arguments of the function can be listed, separated by ",". Examples of functions are:
+
+{{{
+floor( 3.23 )          // results to 3
+average( 1, 2, 3, 4 )  // results to 2.5
+}}}
+
+Each of the infix operators available have also a corresponding function. By looking in the [function reference table|Doc Expressions#Function Reference] you can see to what argument types the operators can be applied to.
+
+
+|| Operator || Function || Desciption
+| ^ | pow | Returns the value of the first argument raised to the power of the second argument.
+| * | mult | Returns the product of the two arguments.
+| / | div | Returns the ratio of the two arguments.
+| + | plus | Returns the sum of the two arguments.
+| - | minus | Returns the difference of the two arguments.
+| ! | not | Returns true, if the argument is false, and vica verse.
+| &, && | and | Returns false, if one argument is false.
+| ~|, ~|~| | or | Returns true, if one argument is true.
+| =, == | equal | Returns true, if both argument are equal, false otherwise.
+| != | unequal | Returns true, if both argument are not equal, false otherwise.
+| < | lt | Returns true, if the first argument is less than the second one, false otherwise.
+| <= | le | Returns true, if the first argument is less or equal than the second one, false otherwise.
+| > | gt | Returns true, if the first argument is greater than the second one, false otherwise.
+| >= | ge | Returns true, if the first argument is greater or equal than the second one, false otherwise.
+| ~[~] | -- | Access the full history to a certain question. This operator has no functional equivalent.
+| ~[...~] | valueAt | Access a value of a history to a certain time.
+| ~[..., ...~] | subHistory | Access a sub-history in a certain time range. If there is not value directly at the start of the subhistory, the next earlier value will be included.
+| !~[..., ...~] | strictSubHistory | Access a sub-history in a certain time range. The sub-history will not contain values that were set before the given start.
+
+
+! Access question and solution values
+
+You can access the current value of a question by simply writing the question's or solution's name in a formula. If the name contains any non-alphanumeric characters, you can use double quotes on the name. Referring to a question or solution, the current (most recent) value is used when the expression is evaluated.
+
+{{{
+// access question values
+floor(myQuestion + 1)             // using the current value of myQuestion
+floor("My special question" + 1)  // using the current value of the question "My special question"
+}}}
+
+
+Using questions or solutions, you can also use the special ~[~]-operator, that allows you to access a past value of the object or it's whole history. Please note that this is only allowed for questions and solutions that are recorded in the time database. This is the default behaviour, but may be altered setting the object's property "history" to "false". The ~[~]-operator has different possible usages:
+* __<object-name>~[~]__: \\ Returns the whole history of the object with the name <object-name>. It contains every known value of the object since the session has been started.
+* __<object-name>~[<time-point>~]__: \\ Returns the value of the object with the name <object-name> that has been valid for the specified <time-point>. If the object has not been set to that time-point, the most recent value before that time will be used. If the object had not been set at all till the specified time, "undefined" is returned.
+* __<object-name>~[<time-point>, <time-point>~]__: \\ Returns the sub-history of the object with the name <object-name> starting from the earlier of the two time-points and lasting to the latter one. The sub-history contains all values of the object's full history that have been valid during the specified interval. This lead to that the sub-history usually starts before the specified time-points and have their latest value before the latter of those specified time-points.
+* __<object-name>!~[<time-point>, <time-point>~]__: \\ Returns the strict sub-history of the object with the name <object-name> starting from the earlier of the two time-points and lasting to the latter one. The sub-history contains all values of the object's full history that have been set during the specified interval. In contrast to the 'normal' sub-history, this strict sub-history will not maybe start before the specified earlier time-point, but only at that earlier time-point or later (but of course not later than the later time-point).
+
+
+{{{
+// access question values
+myQuestion[now - 10min]  // using the value of myQuestion 10 minutes ago
+
+// access question histories
+average(myQuestion[])                 // average of all values myQuestion had before (incl. current one)
+average(myQuestion[now-10min, now])   // average of the last 10 minutes
+average(myQuestion![now-10min, now])  // average of all values that were set between 10 minutes ago and now 
+}}}
+
+Instead of using time-points, the operator also allows to use durations (e.g. "10min"). Using a duration means that you refer to the time the specified duration ago. Regardless to whether the duration is positive or negative, the operator always goes into the past starting at the "recent time". This "recent time" is the latest time the object has been set, but not from the global variable 'now'. Especially for rarely set objects this can make a big difference.
+
+{{{
+// using durations instead of time-points
+myQuestion[10min]                  // using the value of myQuestion 10 minutes before its latest value
+average(myQuestion[-10min, 0min])  // average of the last 10 minutes since the latest value
+average(myQuestion[10min, 0min])   // identical to the line above
+}}}
+
+Using questions in formulas, the questions will be interpreted as following:
+* __~[num~]__: Number 
+* __~[yn~]__: Boolean
+* __~[oc~]__: Number (Its value is a natural/integer number, starting at 1 for the first choice, 2 for the second one and so on.)
+* __~[mc~]__: -- (These questions are not allowed to be used in expressions, since no appropriate interpretation can be defined.)
+* __~[date~]__: Time-Point
+* __~[text~]__: String
+
+Using solutions in formulas the solution's value is a numeric integer value as following:
+* __EXCLUDED__: 0
+* __UNCLEAR__: 1
+* __SUGGESTED__: 2
+* __ESTABLISHED__: 3
+
+
+! Access question choices
+
+You can also access the choices of the questions as constant symbols. The choices have their value defined by "1" for the first choice of a question, "2" for the second one, and so on. Since the name of choices are not unique, but identical named choices may have different values for different question, it is necessary to link the choice to the correct question.
+
+Usually in expression you can simply write the choice, after you have used the question before. To have this simple rule, there is complex identification behind, you usually not get noticed of. Here it is how the choices are matched to their choice-questions (both, ~[oc~] and ~[yn~]):
+# If you use a choice-question in a function call, its choices are known in every following argument of that function. Thus in "equal(myQuestion, ...)", the choices of myQuestion are known at the second argument.
+# If multiple questions are used all choices of all questions are known to the following arguments. Thus in "average(myQuestion1, myQuestion2, ...)" the third argument can refer to choices of both questions.
+# Choices does not overwrite other literal symbols. Choices of questions will not be overwritten by the following question's choices.
+# If a question is used in a sub-expression, being a functions argument, the choices of the question are also known at the following arguments of the function, if the sub-expression's result "still refers to the choice-question". This is a complex thing, so see the example "equal(max(myQuestion[]), myChoice)". Here the function max still refers the to values of myQuestion, thus myChoice can be used to refer to a choice of myQuestion. In contrast, "equal(gradient(myQuestion[]), myChoice)" will fail, because the gradient has a complete different meaning.
+# Infix-operators are treated exactly as their functional notation. Thus "question = foo" is identical to "equal(question, foo)".
+
+As mentioned you usually not in charge to be aware of this rule. Simply use choices natural to after their questions:
+
+{{{
+myQuestion[-10s] = myChoice
+myQuestion = myChoice && myOtherQuestion = myOtherChoice
+average( myQuestion[] ) > myChoice
+}}}
+
+You can also directly refer to any choice of any question, under ignorance of all the rules above. To do that simply use the question name, append "#" and the choice name. If the question or choice contains any special characters or white-spaces use double quotes around the whole literal:
+
+{{{
+// direct access to choices
+myQuestion#myChoice
+"My special question#my special choice"
+}}}
+
+
+! Access solution states
+
+You can also access the states of a solution as constant symbols, similar to question choices. The states have their value defined by "0" if the solution is excluded, "1" for neutral, "2" for suggested and "3" for established solutions. 
+Usually the rating states for a certain solution can be accessed by their name (e.g. "ESTABLISHED"). The behavior is identical to choice questions, thus refer to the [section above | Doc Expressions#Access question choices] for more details. 
+
+{{{
+mySolution[-10s] = ESTABLISHED
+median( mySolution[] ) >= SUGGESTED
+}}}
+
+
+! Special keywords
+
+There is also a number of special literal tokens defined when using expression. Those tokens are:
+* __start__: time-point representing the start of the d3web-session. It will be initialized once and never be changed during the session. Please note that the start time is not tied to the system's clock, it might differ from that.
+* __now__: time-point representing the most recent time of the d3web-session. It will update frequently, every time any value is set at a newer time or if the time database is explicitly told to proceed in time. Please note that the now time is not tied to the system's clock, it might differ from that.
+* __true__, __false__: boolean literals for the true and false value
+* __pi__: the value of pi, defined as 3.141592653589793
+* __e__: the value of e, defined as 2.718281828459045
+
+
+! Undefined values
+
+When using questions in expressions, their values may be ''undefined'', e.g. no value has been set to the question. In addition also functions may return ''undefined'', e.g. calculating the average of an empty history. Most functions will return undefined if any of it's arguments is undefined. Otherwise, function's behavior on undefined values is denoted by the individual functions.
+
+
+!!! Function Reference
+
+Below you see all functions that come with the TimeDB plugin by default. If you need additional functionality that is not covered by the provided functions, you might consider defining your own specialized function using Javascript. See __[Doc Javascript Functions]__ for more info.
+
+[{KnowWEPlugin ExpressionDoc}]
+
+%%tags
+Documentation formulas Expressions timedb variables expressions
+%

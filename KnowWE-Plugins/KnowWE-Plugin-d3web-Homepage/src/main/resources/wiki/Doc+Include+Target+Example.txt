@@ -1,0 +1,9 @@
+!Included text
+
+This text is not part of the article [Doc Include], but [Doc Include Target Example]
+
+!Included image 
+
+Here we have an images that will also show ob when including this section.
+[{Image  src='Doc Include Target Example/d3web logo.png' }]
+

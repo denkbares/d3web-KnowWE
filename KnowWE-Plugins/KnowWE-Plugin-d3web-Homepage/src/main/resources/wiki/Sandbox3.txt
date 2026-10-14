@@ -1,0 +1,25 @@
+%%knowledgebase
+
+
+%
+
+%%package wb-package
+
+%%Question 
+"U1" #1.0
+- "X" [yn]
+%
+
+%%Question 
+"U2"
+- "X" [yn]
+%
+
+%%Question 
+"U3"
+- "Y" [yn]
+%
+
+%%QuickInterview 
+  
+%

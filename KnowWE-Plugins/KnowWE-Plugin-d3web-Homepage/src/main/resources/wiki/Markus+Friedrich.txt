@@ -1,0 +1,22 @@
+[{Image src='profil2.jpg' align='left'}]
+
+
+!!! Contact
+
+denkbares GmbH \\
+Friedrich-Bergius-Ring 15 \\
+97076 Würzburg
+
+mailto:markus.friedrich@denkbares.com \\
+[http://www.denkbares.com]
+
+!!! About
+
+Software engineer with main focus on d3web (core).
+
+
+!!! Todos
+%%TodoList 
+  @user: Markus Friedrich
+%
+

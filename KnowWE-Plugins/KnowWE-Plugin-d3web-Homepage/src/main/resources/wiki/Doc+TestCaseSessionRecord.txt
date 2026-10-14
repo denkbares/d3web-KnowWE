@@ -1,0 +1,24 @@
+!!!SessionRecords
+It is also possible to rerun recorded session records. The record has to be uploaded to the wiki and can be referenced with a TestCaseSessionRecord Section:
+{{{
+%%TestCaseSessionRecord 
+  @file: session-protocol car.xml
+  @package: demo
+%
+}}}
+
+
+[{Image src='TestCaseSessionRecord-screenshot.png' caption='Screenshot of a TestCaseSessionRecord markup' width='..' height='..' align='center' style='..' class='..' }]
+
+The session will then be available in the TestCasePlayer to be run. \\
+The annotation file specifies the filename of the session record file. In one TestCaseSessionRecord multiple files can be referenced by using multiple file annotations or by using regular expressions. Files from other wiki pages can be referenced by adding their pagename followed by a "/".
+
+
+!! Related Doc Pages
+
+* [Doc TestCase]
+* [Doc TestCaseTable]
+* [Doc TestCasePlayer]
+%%tags
+Documentation testcase
+%

@@ -1,0 +1,57 @@
+!!! Loading a Knowledge Base
+
+The central class of the knowledge base persistence is the {{PersistenceManager}} that organizes the reading and writing of a knowledge base by a collection of plugins (KnowledgeReader, KnowledgeWriter, FragmentHandler).
+A d3web knowledge base is a jar file consisting of several files (mostly XML), and different plugins handle the different files contained in the jar. 
+We refer to [How-To Knowledge Persistence] for a detailed description of how to implement your own PersistenceHandler plugin.
+
+Of course the plugin manager has to be initialized. To run a small demo, you can use same initialization as in JUnit tests [How-To Initialize Plugin Manager for JUnit Tests]. After initialization, you are able to load the knowledge base into a KnowledgeBase instance by the following call
+
+%%prettify 
+{{{
+KnowledgeBase knowledgeBase = persistenceManager.load(new File(knowledgeFilename));
+}}}
+/%
+
+where {{knowledgeFilename}} is a simple file path, such as "/temp/carDiagnosis.jar".
+
+!! Play a little bit around
+
+You are able to return the list of all solutions ([Solution Javadoc|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/core/knowledge/terminology/Solution.html]) by 
+
+%%prettify 
+{{{
+List<Solution> solutions = knowledgeBase.getManager().getSolutions();
+}}}
+/%
+
+Analogously, you retrieve a flat list of all questions of the knowledge base by
+
+%%prettify 
+{{{
+List<Question> questions = knowledgeBase.getManager().getQuestions();
+}}}
+/%
+
+
+!! The Complete Code Example
+
+%%prettify 
+{{{
+// Initializing the plugins for the persistence 
+InitPluginManager.init();
+PersistenceManager persistenceManager = PersistenceManager.getInstance();
+// Load knowledge base
+KnowledgeBase knowledgeBase = persistenceManager.load(new File(knowledgeFilename));
+
+List<Solution> solutions = knowledgeBase.getManager().getSolutions();
+System.out.println(solutions);
+
+List<Question> questions = knowledgeBase.getManager().getQuestions();
+System.out.println(questions);
+}}}
+/%
+
+ 
+%%tags 
+howto
+%

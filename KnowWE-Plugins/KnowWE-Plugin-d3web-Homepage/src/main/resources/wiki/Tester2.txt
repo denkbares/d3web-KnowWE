@@ -1,0 +1,223 @@
+%%Package dfstest
+
+%%prettify
+
+{{{ 
+<das><ist/><ein/>
+</das>
+}}}
+
+/%
+
+%%KnowledgeBase 
+  DiaFlux DFS Test
+%
+
+%%Question
+  FB
+  - Frage1 [oc]
+  -- ja
+  -- nein
+  - Frage2 [oc]
+  -- ja
+  -- nein
+  - Frage3 [oc]
+  -- ja 
+  -- nein
+  - Frage4 [num]
+  - Frage5 [num]
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_2c75ea92" name="startFlow" icon="sanduhr.gif" width="750" height="185" autostart="true" idCounter="20">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="225" top="16"></position>
+		<action markup="KnOffice">Frage1</action>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="83" top="27"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="585" top="104"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_6">
+		<position left="396" top="16"></position>
+		<action markup="KnOffice">Frage2</action>
+	</node>
+
+	<node fcid="#node_15">
+		<position left="225" top="93"></position>
+		<action markup="KnOffice">CALL[sub1(Start)]</action>
+	</node>
+
+	<node fcid="#node_18">
+		<position left="581" top="27"></position>
+		<action markup="KnOffice">CALL[sub2(Start)]</action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_4">
+		<origin>#node_3</origin>
+		<target>#node_2</target>
+	</edge>
+
+	<edge fcid="#rule_7">
+		<origin>#node_2</origin>
+		<target>#node_6</target>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_2</origin>
+		<target>#node_15</target>
+	</edge>
+
+	<edge fcid="#rule_17">
+		<origin>#node_15</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice">PROCESSED[sub1]</guard>
+	</edge>
+
+	<edge fcid="#rule_19">
+		<origin>#node_18</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice">PROCESSED[sub2]</guard>
+	</edge>
+
+	<edge fcid="#rule_20">
+		<origin>#node_6</origin>
+		<target>#node_18</target>
+	</edge>
+
+</flowchart>
+
+
+
+
+
+
+
+ 
+  
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_218bea52" name="sub1" icon="sanduhr.gif" width="550" height="165" autostart="false" idCounter="19">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="50" top="44"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="438" top="51"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_14">
+		<position left="179" top="84"></position>
+		<action markup="KnOffice">CALL[sub2(Start)]</action>
+	</node>
+
+	<node fcid="#node_17">
+		<position left="223" top="24"></position>
+		<action markup="KnOffice">Frage3</action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_15">
+		<origin>#node_2</origin>
+		<target>#node_14</target>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_14</origin>
+		<target>#node_3</target>
+		<guard markup="KnOffice">PROCESSED[sub2]</guard>
+	</edge>
+
+	<edge fcid="#rule_18">
+		<origin>#node_17</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_19">
+		<origin>#node_2</origin>
+		<target>#node_17</target>
+	</edge>
+
+</flowchart>
+
+
+
+
+
+
+ 
+  
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_2fa62381" name="sub2" icon="sanduhr.gif" width="550" height="174" autostart="false" idCounter="15">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_3">
+		<position left="39" top="41"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="429" top="68"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_10">
+		<position left="236" top="30"></position>
+		<action markup="KnOffice">Frage4</action>
+	</node>
+
+	<node fcid="#node_13">
+		<position left="236" top="97"></position>
+		<action markup="KnOffice">Frage5</action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_11">
+		<origin>#node_3</origin>
+		<target>#node_10</target>
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#node_10</origin>
+		<target>#node_7</target>
+	</edge>
+
+	<edge fcid="#rule_14">
+		<origin>#node_3</origin>
+		<target>#node_13</target>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_13</origin>
+		<target>#node_7</target>
+	</edge>
+
+</flowchart>
+
+
+ 
+  
+%

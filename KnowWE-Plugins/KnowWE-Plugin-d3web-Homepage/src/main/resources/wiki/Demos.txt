@@ -1,0 +1,18 @@
+This pages gives a brief overview of the existing example knowledge bases.
+
+|  [{Image src='bmi.png' width='80' link='Wiki.jsp?page=Body-Mass-Index'}]	|  __Body Mass Index__ \\ This very simple example of a knowledge base derives the body-mass-index (BMI) of a person based on weight and height. The knowledge base consists of a single article defining a two questions and an easy to understand flow chart. \\ ''[more... | Body-Mass-Index]''	
+|  [{Image src='carfaults.png' width='80' link='Wiki.jsp?page=Demo - Main - Car Diagnosis'}]	|  __Car Diagnostics__\\This demo knowledge base covers some exemplary faults of a car. Each fault is represented with text and its corresponding knowledge on a single wiki article. No flow chart based knowledge representation is used within this knowledge base. \\ ''[more... | Demo - Main - Car Diagnosis]''	
+|  [{Image src='temperature.png' width='80' link='Wiki.jsp?page=Demo - Temperature'}]	|  __Temperature__ \\ This is a simple knowledge base to demonstrate the gradient of a time-valued temperature value. For incoming values of Temperature the gradient over time is calculated. \\ ''[more... | Demo - Temperature]''	
+|  [{Image src='diaflux.png' width='80' link='Wiki.jsp?page=Doc Diaflux'}]	|  __DiaFlux Example__ \\ This simple example derives solutions according to a given temperature. It explains the graphical workflow authoring plugin for KnowWE called DiaFlux. \\ ''[more... | Doc Diaflux]''	
+|  [{Image src='printerproblems.png' width='80' link='Wiki.jsp?page=Tutorial Printer Problems'}]	|  __Tutorial Printer Problems__\\ This - very well documented - tutorial derives reasons for printer problems with an example knowledge base. The tutorial demonstrates the functionality of KnowWE: stating with the set up of a new knowledge base, formalization of knowledge and finally testing of the knowledge base. \\ ''[more... | Tutorial Printer Problems]''	
+|  [{Image src='attach/Demo%20-%20JD%20Ontology/Dean-portrait.jpg' width='50' align='center' link='Wiki.jsp?page=Demo - JD Ontology'}]	|  __James Dean Ontology Demo__\\ This is a demo for the development of ontologies using KnowWE. We use the example of an ontology textbook describing James Dean and his movies.\\ ''[more... | Demo - JD Ontology]''	
+|[{Image src='attach/Demo%20-%20Simpsons/simpsons_family.png' width='80' link='Wiki.jsp?page=Demo - Simpsons'}] | __Simpsons Ontology__\\A small demo containing some characters of the Simpsons comic television seriens.\\''[more... |Demo - Simpsons]‘‘
+|  [{Image src='ontologies.png' width='80' link='Wiki.jsp?page=Demo - Ontology'}]	|  __KickAss Ontology Demo__\\ This is a demo for the development of ontologies using KnowWE. We create a simple ontology for movies and their characters and add the movies "KickAss" and "KickAss2" as examples.\\ ''[more... | Demo - Ontology]''	
+|  [{Image src='denkBike.png' width='80' link='Wiki.jsp?page=Bike%20Diagnosis'}]	|  __Bike Ontology Demo__\\ This is a demo knowledge base that covers some exemplary faults of a bike.\\ ''[more... | Bike Diagnosis]''
+
+%%tags 
+Demos Examples Knowledge base
+%
+
+
+__Note:__ We are happy to receive your own demos!

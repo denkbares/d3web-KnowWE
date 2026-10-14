@@ -1,0 +1,32 @@
+All open source parts of d3web and KnowWE are developed under the [GNU Lesser General Public License 3|http://www.gnu.org/licenses/lgpl.html]
+
+d3web-KnowWE contains various dependencies. On this page we list the licences and dependencies they are used for.
+	
+* [GNU Lesser General Public License 3|http://www.gnu.org/licenses/lgpl.html]
+** d3web KnowWE
+** JPF
+** PlantUML
+* [GNU Lesser General Public License 2.1|https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html]
+** JGraphT
+* [Apache 2.0|https://www.apache.org/licenses/LICENSE-2.0]
+** log4j
+** jspwiki
+** commons
+** poi
+** spring
+* [BSD|https://opensource.org/licenses/BSD-3-Clause]
+** hamcrest
+** xmlunit
+* [EPL|https://www.eclipse.org/legal/epl-2.0/]
+** RDF4J
+* [GraphDB-Free-License|http://graphdb.ontotext.com/LICENSE-GraphDB-Free.txt]
+** graphdb-free-runtime
+* [JDOM Project License|https://github.com/hunterhacker/jdom/blob/master/LICENSE.txt]
+** jdom
+* [JUnit Project License|https://junit.org/junit4/license.html]
+** JUnit
+* [MIT|https://opensource.org/licenses/MIT]
+** javaxdelta
+** jQuery
+* [SLF4J|http://www.slf4j.org/license.html]
+** slf4j

@@ -1,0 +1,10 @@
+%%CIDashboard
+  @name: CI Body-Mass-Index
+  @trigger: onSave "Body-Mass-Index"
+  @test: EmptyQuestionnaire "Body-Mass-Index"
+  @test: UnusedNode "Body-Mass-Index"
+  @test: NoAutostart "Body-Mass-Index"
+  @test: StandardQuestionDerivedByAbstraction "Body-Mass-Index"
+  @test: CombinedFlowRuleAbstraction "Body-Mass-Index"
+  @test: IncompleteChoiceQuestion "Body-Mass-Index"
+%

@@ -1,0 +1,47 @@
+! Preliminaries
+
+KnowWE is commonly used to develop and maintain a knowledge base. 
+Later, the built knowledge base is deployed and used in the context of a larger application.
+For this reason, it becomes important to load knowledge bases and run problem-solving sessions without the KnowWE context.
+
+The following notes explain how to develop your own Eclipse project with all plugins required to run a d3web application.
+
+
+! Create your Eclipse Project
+
+# Simply start a new Java project and create (if not already done) a new folder {{lib}}.
+# Copy all d3web jars (including necessary foreign jars) into the lib folder (these jars can be easily accessed from {{d3web/lib}} in the current [KnowWE Distribution|Downloads])
+# Java Project Properties: Project->Build Path->Libraries: Add all jars as Jar libraries to the project
+
+
+! Some Demo Code
+
+In your own code, you are first required to load the plugins for the knowledge base persistence etc.; this is accomplished by the {{JPFPluginManager}}. 
+
+%%prettify 
+{{{
+private void demo() throws IOException {
+    // Initializing the plugins for the persistence 
+    JPFPluginManager.init("lib");
+		
+    // Loading the knowledge base and do some retrieval of solutions and questions
+    PersistenceManager persistenceManager = PersistenceManager.getInstance();
+    String knowledgeFilename = "/temp/knowledgebase.d3web";
+    // Load knowledge base
+    KnowledgeBase knowledgeBase = persistenceManager.load(new File(knowledgeFilename ));
+
+    List<Solution> solutions = knowledgeBase.getManager().getSolutions();
+    System.out.println(solutions);
+
+    List<Question> questions = knowledgeBase.getManager().getQuestions();
+    System.out.println(questions);
+}
+
+}}}
+/%
+
+For further code, for instance, how to run a problem-solving session, we refer to [How-To Create a Session].
+
+%%tags 
+howto Stand-Alone
+%

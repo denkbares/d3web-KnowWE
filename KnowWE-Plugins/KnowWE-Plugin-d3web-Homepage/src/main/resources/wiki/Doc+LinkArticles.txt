@@ -1,0 +1,39 @@
+!!! LinkArticles
+
+The LinkArticles markup creates a list of links with all articles which use a given package, markup or title.
+
+
+!!Syntax
+
+The syntax of the LinkArticles markup is defined as follows 
+
+{{{ 
+%%LinkArticles
+@package: package-name		// adds article which use the mentioned package to the list
+@titles: "article-title-regex"	// adds articles with a title that maches the given regex to the list
+@markup: "markup-name"		// adds articles which contain the markup with the given name to the list
+@template: prefix link.replace("target","replacement")\\
+						// modifies the presentation of the links, while
+						// prefix is optional and adds a prefix to each link,
+						// .replace also is optional and replaces the
+						// target String with the replacement in each link
+						// two backslashes at the end will create a line break
+						// after each link
+@exclude: "regex"		// exclude all links which match this regex
+%
+}}}
+
+All annotations are optional, but at least one package-, titles- or markup-annotation is needed to be able to create a list.
+
+The annotations packages, titles, markup and exclude can be used multiple times to add additional articles to the list.
+
+
+!!Example
+
+{{{
+%%LinkArticles
+@package demo
+@template: * link.replace("Demo -","")
+@exclude: Demo - Master
+%
+}}}

@@ -1,0 +1,55 @@
+!!! Introduction
+This page summarizes the different types of knowledge formalization that are provided by KnowWE. \\
+To organize... TODO
+In KnowWE, knowledge-bases for diagnostic problem-solving can be created ad-hoc in the wiki. 
+
+!!! Defining a Knowledge Base
+
+A new knowledge base is defined by the {{KnowledgeBase}} Markup. The following example defines a new knowledge base with the id {{CAR_FAULTS_DEMO_ID}} having the specified comment. 
+All knowledge defined in the package "demo" are included in this knowledge base.
+With the optional annotation 'filename' you can specify a filename of the knowledge base when downloaded from the wiki. Otherwise, the name of the knowledge base is used as filename.
+
+%%prettify 
+{{{%%KnowledgeBase 
+Car faults diagnosis
+@ID: CAR_FAULTS_DEMO_ID
+@Author: joba
+@Affiliation: denkbares GmbH
+@Status: BETA
+@Version: 21
+@Comment: Example car fault diagnosis knowledge base.
+@uses: demo
+@filename: demo.d3web
+/%}}}
+/%
+
+That way, all knowledge defined throughout the wiki is included, when it is declared in the package "demo".
+Please note, that any knowledge markup ends in the default package "default", until it is defined otherwise.  
+
+
+
+!!! Terminology knowledge
+* Questions: Use {{%%Question}} - see [Defining questions|Doc Questions] for a detailed information.
+* Solutions: Use {{%%Solution}} - see [Defining solutions|Doc Solutions] for a detailed information.
+
+
+
+!!! Derivation knowledge
+* Decision Trees Use {{%%Question}} - see [Defining questions|Doc Questions] for a detailed information.
+* Rules Use {{%%Rule}} - see [Defining rules|Doc Rules] for a detailed information.
+* Set-covering knowledge Use {{%%CoveringList}} - see [Defining set-covering knowledge|Doc CoveringList] for a detailed information.
+
+
+!!! Useful Advices
+
+We strongly recommend to make extensive use of copy & paste to avoid typos that could lead to misinterpretation or malfunctions. 
+
+Once you have begun to define some knowledge - say, for example, a question hierarchy - you may use copy & paste to insert question names wherever you need them (e.g., in rules...). That way you can ensure an identical naming.
+
+''An exact accordance of the names throughout all knowledge definitions is a required condition for a correct problem-solving behavior. ''
+
+%%tags
+ Documentation knowledgebase question solution rule coveringList xcl
+%
+ 
+

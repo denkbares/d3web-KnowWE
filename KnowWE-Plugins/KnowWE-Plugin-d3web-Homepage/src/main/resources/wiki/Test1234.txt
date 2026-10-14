@@ -1,0 +1,117 @@
+%%Package test1234
+
+%%QuickInterview 
+  
+%
+
+%%Knowledgebase
+
+%
+
+%%Question
+QuestionYN1 [yn]
+QuestionYN2 [yn]
+QuestionYN3 [yn]
+%
+
+%%Solution
+Done
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_c4f4ece2" name="New Flowchart" icon="sanduhr.gif" width="455" height="465" autostart="true" idCounter="19">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="164" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="157" top="435"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="140" top="83"></position>
+		<action markup="KnOffice"><![CDATA[ALWAYS[QuestionYN1]]]></action>
+	</node>
+
+	<node fcid="#XX_5">
+		<position left="140" top="239"></position>
+		<action markup="KnOffice"><![CDATA[QuestionYN3]]></action>
+	</node>
+
+	<node fcid="#XX_6">
+		<position left="140" top="165"></position>
+		<action markup="KnOffice"><![CDATA[QuestionYN2]]></action>
+	</node>
+
+	<node fcid="#node_14">
+		<position left="154" top="361"></position>
+		<action markup="KnOffice"><![CDATA[Done = P7]]></action>
+	</node>
+
+	<node fcid="#node_18">
+		<position left="367" top="94"></position>
+		<snapshot>Snapshot</snapshot>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_7">
+		<origin>#node_2</origin>
+		<target>#node_4</target>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_4</origin>
+		<target>#XX_6</target>
+		<guard markup="KnOffice"><![CDATA["QuestionYN1" = "Yes"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_9">
+		<origin>#XX_6</origin>
+		<target>#XX_5</target>
+		<guard markup="KnOffice"><![CDATA["QuestionYN2" = "Yes"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_13">
+		<origin>#node_4</origin>
+		<target>#node_14</target>
+		<guard markup="KnOffice"><![CDATA["QuestionYN1" = "No"]]></guard>
+		<routingPoint x="-176" y="0.4748201438848921" />
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#XX_5</origin>
+		<target>#node_14</target>
+		<guard markup="KnOffice"><![CDATA["QuestionYN3" = "Yes"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_14</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#XX_6</origin>
+		<target>#node_18</target>
+		<guard markup="KnOffice"><![CDATA["QuestionYN2" = "No"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_11">
+		<origin>#XX_5</origin>
+		<target>#node_18</target>
+		<guard markup="KnOffice"><![CDATA["QuestionYN3" = "No"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_19">
+		<origin>#node_18</origin>
+		<target>#node_4</target>
+	</edge>
+
+</flowchart>
+
+%

@@ -1,0 +1,29 @@
+%%QuickInterview 
+  
+%
+
+%%Question
+Input [num]
+Date [date]
+%
+
+%%Variable
+Date = latestChange(Input[])
+%
+
+%%TestCasePlayer 
+  
+%
+
+%%TestCaseTable 
+|| Time	|| Checks	|| Input	
+|  0s	|  Date = /1970-01-01 01:00.+/	|  1	
+%
+
+%%Package
+timecheck
+%
+
+%%Knowledgebase
+
+%

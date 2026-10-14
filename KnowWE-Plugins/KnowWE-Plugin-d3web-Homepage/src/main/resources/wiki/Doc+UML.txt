@@ -1,0 +1,42 @@
+!!! How to create UML diagrams
+
+The UML-Plugin gives you the ability to easily add and maintain simple UML diagrams on your wiki pages. To do that you can specify the contents of the diagram as textual markup. The resulting diagram will be auto-layouted by the system and displayed as a graphic on the page.
+
+{{{
+%%UML 
+left to right direction 
+  :Account-Manager: --> (3. Project) 
+  (3. Project) <|-- (3.1 Project Concept) 
+  (3. Project) <|-- (3.2 Project Implementation) 
+  (3. Project) <|-- (3.3 Project Delivery) 
+  (3. Project) <|-- (3.4 Education and Training) 
+  (3.1 Project Concept) <-- :Developer\nSupporter:
+  (3.2 Project Implementation)  <-- :Developer\nSupporter:
+  (3.3 Project Delivery)  <-- :Quality Manager:
+/%
+}}}
+
+
+%%UML 
+left to right direction 
+  :Account-Manager: --> (3. Project) 
+  (3. Project) <|-- (3.1 Project Concept) 
+  (3. Project) <|-- (3.2 Project Implementation) 
+  (3. Project) <|-- (3.3 Project Delivery) 
+  (3. Project) <|-- (3.4 Education and Training) 
+  (3.1 Project Concept) <-- :Developer\nSupporter:
+  (3.2 Project Implementation)  <-- :Developer\nSupporter:
+  (3.3 Project Delivery)  <-- :Quality Manager:
+/%
+
+! Annotations and their possible values
+
+|| Annotations	    || Range	    || Description
+| format 	    | PNG, SVG	    | Defines the output format for the resulting image to be included
+
+The syntax in the diagrams is baes on PlantUML syntax. For more detailed information about PlantUML and its syntax, consult the [PlantUML website | http://plantuml.sourceforge.net/].
+
+ 
+%%tags
+Documentation
+%

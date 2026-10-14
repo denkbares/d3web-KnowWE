@@ -1,0 +1,38 @@
+!!! Resources
+
+Additional resources can be added to a knowledge base either as text or a binary file (e.g. multimedia file).
+
+The markup allows to specify a path name. The file content will be stored inside the knowledge bases resources under that specified path name. If no path name is used, the attachment name is used for the filename and the article name as the parent folder.
+
+!! Text resource example
+The following example stores the text "Hello, I am a resource!" in the downloaded d3web knowledge base under the file {{{multimedia/resource.txt}}}.
+
+{{{%%Resource
+Hello, I am a resource!
+@path: Resource.txt
+%
+}}}
+
+
+!! File attachment example
+
+The following example stores the file "specification.text" as an additional resource in the knowledge base. The text file was added as a local attachment, i.e., an attachment of the article in which the markup is used:
+
+{{{%%Resource
+@src=specification.txt
+@path: pathAndFileInKB.txt
+%
+}}}
+
+To add attachments from other wiki sites, not only the filename, but also the name of the article, the file actually is attached to, needs to be specified with the "src" markup, like:
+
+{{{%%Resource
+@src=articlename/filename
+@path: pathAndFileInKB.txt
+%
+}}}
+
+%%tags
+ Documentation resource 
+%
+ 

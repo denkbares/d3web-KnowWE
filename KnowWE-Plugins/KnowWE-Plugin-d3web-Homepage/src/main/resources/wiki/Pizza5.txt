@@ -1,0 +1,50 @@
+!!! Pizza5 ontology
+
+
+!!! General Domain Model
+
+We first define some classes framing the example domain.
+
+
+! Classes and properties without individuals 
+
+%%turtle
+pizza5:Pizza a rdfs:Class.
+pizza5:PizzaBase a rdfs:Class.
+pizza5:PizzaTopping a rdfs:Class.
+
+pizza5:hasBase a rdf:Property .
+pizza5:hasTopping a rdf:Property .
+
+pizza5:Pizza pizza5:hasBase pizza5:PizzaBase .
+pizza5:Pizza pizza5:hasTopping pizza5:PizzaTopping .
+%
+
+!!! SqaralVisualization
+
+%%SparqlVisualization
+SELECT ?x ?y ?z WHERE {
+	?x ?y ?z.
+	FILTER (STRSTARTS(STR(?x), "http://example.org")) .
+	FILTER (STRSTARTS(STR(?z), "http://example.org")) .
+	FILTER (?x != ?z) . 
+}
+%
+
+
+!!! ConceptVisualization
+%%ConceptVisualization
+@concept: pizza5:Pizza
+@excludeRelations: rdfs:subClassOf
+%
+
+%%package pizza5
+
+%%ontology
+  pizza5 ontology
+  @ruleset: OWL_HORST_OPTIMIZED
+%
+
+%%namespace 
+  pizza5 http://example.org#
+%

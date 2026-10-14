@@ -1,0 +1,132 @@
+%%Package dmp_domain1
+
+%%QuickInterview 
+ 
+ @package dmp_domain1_starter 
+%
+
+%%ShowSolutions 
+  @package dmp_domain1_starter 
+%
+
+%%KnowledgeBase 
+  @uses: dmp_common
+  @uses: dmp_domain1
+  @uses: dmp_domain1_starter
+%
+
+%%Question
+Domain1
+- Domain1Q1 [yn]
+- Domain1Q2 [yn]
+%
+
+%%Solution 
+Domain1 Alert
+%
+
+%%DiaFlux
+<flowchart fcid="flow_9e98bf41" name="New Flowchart" icon="sanduhr.gif" width="175" height="366" autostart="true" idCounter="8">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="53" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="20" top="117"></position>
+		<action markup="KnOffice"><![CDATA[CALL["Domain Selector"(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="24" top="233"></position>
+		<action markup="KnOffice"><![CDATA[CALL["Domain1 Flow1"(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="53" top="336"></position>
+		<exit>Exit</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_4">
+		<origin>#node_2</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_6">
+		<origin>#node_3</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Domain Selector]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_5</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA[IS_ACTIVE["Domain1 Flow1"(Exit)]]]></guard>
+	</edge>
+
+</flowchart> 
+  
+  @package: dmp_domain1_starter
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_0273c8d6" name="Domain1 Flow1" icon="sanduhr.gif" width="160" height="396" autostart="false" idCounter="10">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="46" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="30" top="102"></position>
+		<action markup="KnOffice"><![CDATA[Domain1Q1]]></action>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="30" top="210"></position>
+		<action markup="KnOffice"><![CDATA[Domain1Q2]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="46" top="366"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="20" top="286"></position>
+		<action markup="KnOffice"><![CDATA["Domain1 Alert" = P7]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_5">
+		<origin>#node_2</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_6">
+		<origin>#node_3</origin>
+		<target>#node_4</target>
+		<guard markup="KnOffice"><![CDATA["Domain1Q1" = "Yes"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_4</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice"><![CDATA["Domain1Q2" = "Yes"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_9</origin>
+		<target>#node_7</target>
+	</edge>
+
+</flowchart> 
+  
+%

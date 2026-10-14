@@ -1,0 +1,117 @@
+[{Image src='denkPrint2012.jpg' width='300' align='right' style='margin-right:30px; margin-top:30px' }]
+
+
+!!! Printer Problems Diagnosis
+
+This small demo example shows the basic functionality of KnowWE and its corresponding knowledge representations for the formalization of diagnostic knowledge.
+
+We build a knowledge base for deriving the reasons for the faults of an imaginary printer.
+
+[{TableOfContents title='Contents' numbered='true'}]
+
+
+!!! Set-Up
+
+
+!! Annotate Wiki Articles
+
+Every article containing knowledge of the printer example needs to be tagged in a special manner. 
+We choose the tag name {{Printer_Demo}} and we insert the annotation 
+
+{{{
+%%Package Printer_Demo
+}}}
+
+into every particular article containing knowledge.
+
+
+!! Define the Knowledge Base Center
+
+In general, the knowledge base can be distributed across many wiki articles (each of them tagged with {{Printer_Demo}}).
+Therefore, we need to define a place where all knowledge elements are collected into a single knowledge base.
+For this, we use the {{KnowledgeBase}} markup in the following manner:
+
+{{{
+%%KnowledgeBase 
+  Printer Fault Diagnosis Demo 
+  @author: joba
+  @version: 1.0
+  @uses: Printer_Demo
+%
+}}}
+
+By inserting the markup the following center is provided:
+
+%%KnowledgeBase 
+  Printer Fault Diagnosis Demo 
+  @author: joba
+  @version: 1.0
+  @uses: Printer_Demo
+%
+
+
+!!! Terminology
+
+In the first step we need to define the terminology of the planned system, i.e., the questions (inputs into the system) and the solutions (outputs of the system).
+The definition of terms for questions and solutions is described in the article [Tutorial Printer Problem - Terminology].
+
+
+!!! Derivation Knowledge using DiaFlux Models
+
+After the definition of the terminology we need to define knowledge elements that implement the derivation and dialog behavior of the knowledge base.
+For that, d3web/KnowWE provides a number of alternatives ranging from scoring rules, decision trees to set-covering models.
+In this tutorial we show how to implement the derivation knowledge as a DiaFlux flowchart model: 
+[DiaFlux implementation|Tutorial Printer Problem - DiaFlux]
+
+
+!!! Manually Testing the Knowledge Base 
+
+Now we can test the knowledge base by running a dialog. 
+
+
+!! Quick Interview
+
+A simple test dialog interface can be created by inserting the markup
+
+{{{
+%%QuickInterview %
+%%ShowSolutions %
+}}}
+
+into the same article, where {{KnowledgeBase}} is defined. 
+The markup will provide an interface for the user:
+
+%%QuickInterview %
+
+%%ShowSolutions %
+
+
+!! Interactive Single-Question Dialog (free-to-use)
+
+Additionally, an interactive single-question dialog is available (provided by denkbares GmbH). 
+Here, only the currently active question is shown that should be answered by the user. 
+Derived solutions are printed at the end of the dialog session.
+
+The dialog is started by using the tools menu of the {{KnowledgeBase}} markup as shown in the image below.
+
+[{Image src='Printer Problem denkbares Dialog.png' width='800' align='left' caption='Starting the interactive dialog interface.'  }]
+
+\\
+\\
+An example dialog of the interactive interview is depicted in the following screenshot.
+
+[{Image src='Printer Problem denkbares Dialog2.png' width='800' align='left' caption='An example run of the interactive denkbares dialog interface.' }]
+
+\\
+
+
+!!! Automated Testing
+
+The knowledge base can be tested continuously by defining test cases and continuous integration test. 
+See the article [Tutorial Printer Testcases] for more information.
+
+%%Package Printer_Demo
+
+%%tags
+printerProblems tutorial
+%

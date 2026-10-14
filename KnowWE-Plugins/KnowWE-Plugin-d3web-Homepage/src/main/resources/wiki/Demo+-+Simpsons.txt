@@ -1,0 +1,383 @@
+!!! The Simpsons - An example Ontology for tutorial purposes
+
+The Simpsons is a popular comic televisions series. A comprehensive overview (in german) is [Simpsonspedia|http://simpsonspedia.net].\\
+This page shows, how we implement the simpsons ontology in KnowWE.
+
+Also, please check out our visualization docs, which are based on the ontology defined here: [Doc SparqlVisualization], [Doc ConceptVisualization]
+
+[{Image src='Demo - Simpsons/simpsons_family.png' width='150px' align='left'}]
+
+!!! General Domain Model
+
+We first define some classes framing the example domain.
+
+! Classes
+
+%%turtle
+si:SimpsonsConcept a rdfs:Class.
+
+si:LivingBeing rdfs:subClassOf si:SimpsonsConcept;
+	rdfs:label "Lebewesen"@de, "Living being"@en.
+
+si:Human
+   rdfs:subClassOf si:LivingBeing ;
+   rdfs:label "Mensch"@de, "Human"@en .
+
+si:Animal
+    rdfs:subClassOf si:LivingBeing ;
+   rdfs:label "Tier"@de, "Animal"@en .
+
+si:GenderType 
+   rdfs:subClassOf si:SimpsonsConcept ;
+   rdfs:label "Geschlecht"@de, "Gender"@en .
+
+si:male
+   rdf:type si:GenderType ;
+   rdfs:label "männlich"@de, "male"@en .
+
+si:female
+   rdf:type si:GenderType ;
+   rdfs:label "weiblich"@de, "female"@en .
+
+si:Building
+   rdfs:subClassOf si:SimpsonsConcept ;
+   rdfs:label "Gebäude"@de, "Building"@en .
+   
+si:Location
+   rdfs:subClassOf si:SimpsonsConcept ;
+   rdfs:label "Ort"@de, "Location"@en .
+   
+si:Powerplant   
+   rdfs:subClassOf si:Building ;
+   rdfs:label "Kraftwerk"@de, "Power plant"@en .
+%
+
+Some (alternative ways) to express negations.
+
+%%Turtle 
+[] rdf:type     owl:AllDisjointClasses ;
+   owl:members  ( si:Human  si:Building si:GenderType) .
+
+si:GenderType owl:disjointWith si:Human .
+
+%
+
+! Properties
+
+rdfs:range si:Human;
+   rdfs:domain si:Human.
+
+%%turtle
+si:livesIn
+   rdf:type rdf:Property .
+
+si:relatedWith 
+   owl:inverseOf si:relatedWith;
+   rdf:type owl:ReflexiveProperty.
+
+si:parent
+   rdf:type owl:AsymmetricProperty ;
+   rdfs:subPropertyOf si:relatedWith .
+   
+si:spouse
+   rdf:type rdf:Property .
+
+si:husband
+   rdfs:subPropertyOf si:spouse .
+   
+si:wife
+   rdfs:subPropertyOf si:spouse ;
+   owl:inverseOf husband.
+   
+si:spouse owl:propertyDisjointWith si:parent .
+      
+si:child
+   rdf:type rdf:Property ;
+   rdfs:subPropertyOf si:relatedWith ;
+   owl:inverseOf si:parent .
+
+si:mother
+   rdf:type rdf:Property ;
+   rdfs:subPropertyOf si:parent .
+
+si:father
+   rdf:type rdf:Property ;
+   rdfs:subPropertyOf si:parent .
+
+si:grandparent 
+   rdf:type rdf:Property ; 
+   owl:propertyChainAxiom  ( si:parent  si:parent ) .
+   
+si:grandfather 
+   rdf:type rdf:Property ; 
+   rdfs:subPropertyOf si:grandparent;
+   owl:propertyChainAxiom  ( si:parent  si:father ) .
+
+
+si:sibling
+   rdf:type owl:SymmetricProperty ;
+   rdf:type owl:TransitiveProperty ;
+   owl:inverseOf si:sibling;
+   rdfs:subPropertyOf si:relatedWith .
+   
+si:gender
+   rdf:type rdf:Property ;
+   rdfs:domain si:LivingBeing;
+   rdfs:range si:GenderType.
+   
+si:age rdf:type rdf:Property .   
+
+si:worksAt rdf:type rdf:Property .
+
+si:owns rdf:type rdf:Property ;
+   rdfs:range si:Ownership;
+   owl:minCardinality "1" .
+   
+si:Ownership
+	rdfs:subClassOf si:SimpsonsConcept.
+
+si:amount rdf:type rdf:Property .
+
+si:ownType rdf:type rdf:Property .
+%
+
+! NegativeObjectPropertyAssertion
+
+Bart never wants to be a female.
+
+%%turtle
+ []  rdf:type               owl:NegativePropertyAssertion ;
+     owl:sourceIndividual   si:bart ;
+     owl:assertionProperty  si:gender ;
+     owl:targetIndividual   si:female .
+%
+
+!!! Illustrative Instances
+
+We now insert some characters and things of the Simpsons world.
+
+%%Turtle
+si:springfield
+   rdf:type si:Location ;
+   rdfs:label "Springfield" .
+
+si:homer
+   rdfs:label "Homer Simpson" ;
+   rdf:type si:Human ;
+   si:age "36" ;
+   si:gender si:male ;
+   si:father si:abraham ;
+   si:worksAt si:burns_powerplant;
+   si:livesIn si:springfield .
+
+si:marge
+   rdfs:label "Marge Simpson" ;
+   rdf:type si:Human ;
+   si:age "34" ;
+   si:husband si:homer ;
+   si:gender si:female ;
+   si:livesIn si:springfield .
+
+si:bart
+   rdfs:label "Bart Simpson" ;
+   rdf:type si:Human ;
+   si:age "10" ;
+   si:gender si:male ;
+   si:sibling si:lisa, si:maggie ;
+   si:mother si:marge ;
+   si:father si:homer ;
+   si:livesIn si:springfield .
+   
+si:lisa 
+   rdfs:label "Lisa Simpson" ;
+   rdf:type si:Human ;
+   si:age "8" ;
+   si:gender si:female ;
+   si:mother si:marge ;
+   si:father si:homer ;
+   si:livesIn si:springfield .
+
+si:maggie 
+   rdfs:label "Maggie Simpson" ;
+   rdf:type si:Human ;
+   si:age "1" ;
+   si:sibling si:lisa ;
+   si:gender si:female ;
+   si:mother si:marge ;
+   si:father si:homer ;
+   si:livesIn si:springfield .
+   
+si:abraham
+   rdfs:label "Abraham Simpson" ;
+   rdf:type si:Human ;
+   si:mother si:yuma ;
+   si:livesIn si:retirement_home;
+   si:gender si:male .
+   
+si:retirement_home
+	rdf:type si:Location;
+	rdfs:label "Ruhestandspalast"@de.
+
+si:yuma
+   rdfs:label "Yuma Hickman" ;
+   rdf:type si:Human ;
+   si:gender si:female .
+
+
+si:burns_dog
+   rdf:type si:Animal ;
+   rdfs:label "Mr. Burns' dog" .
+
+si:burns_powerplant
+   rdf:type si:Powerplant ;
+   rdfs:label "Mr. Burns' nuclear power plant" .
+%
+
+We can also introduce blank nodes to represent the belongings of Mr. Burns.
+
+%%Turtle 
+si:burns
+   rdf:type si:Human ;
+   rdfs:label "Charles Montgomery Burns" ;
+   si:livesIn si:springfield;
+   si:gender si:male ;
+   si:owns 
+   [ si:amount "3" ; si:ownType si:burns_dog ], 
+   si:burns_powerplant.
+
+%
+
+!!! Sample Queries
+
+Ok, we can test/query the ontology by inserting some SPARQL statements.
+
+! Simple start
+
+Show me all instances of Human and also show their labels.
+
+%%Sparql 
+SELECT ?x ?name
+WHERE {
+  ?x rdf:type si:Human ;
+     rdfs:label ?name .
+}
+@border: true
+@zebramode: true
+@showQuery: true
+%
+
+! Barts Grand-Pa
+
+Use property paths in SPARQL.
+
+%%Sparql 
+SELECT ?name
+WHERE {
+  si:bart si:father/si:father ?name .
+}
+@border: true
+@zebramode: true
+@showQuery: true
+%
+
+Now using a defined PropertyChain
+
+%%Sparql 
+SELECT ?name
+WHERE {
+  si:bart si:grandparent ?name .
+}
+@border: true
+@zebramode: true
+@showQuery: true
+%
+
+! Optional belongings
+
+We also can add optional patterns into the query. Show all humans and their (optional) belongings.
+
+%%Sparql 
+SELECT ?name ?belonging
+WHERE {
+  ?x rdf:type si:Human ;
+     rdfs:label ?name .
+  OPTIONAL { ?x si:owns/si:ownType/rdfs:label ?belonging } .
+}
+@border: true
+@zebramode: true
+@showQuery: true
+%
+
+! UNION: All names of humans and animals
+
+%%Sparql 
+SELECT ?name
+WHERE {
+  { ?x rdf:type si:Human ;
+       rdfs:label ?name .
+  } UNION {
+    ?x rdf:type si:Animal ;
+       rdfs:label ?name .
+  }
+}
+@border: true
+@zebramode: true
+@showQuery: true
+%
+
+! Expected Compentency Questions: Intersecting Properties
+
+The family father: A father that is also a husband
+
+%%Sparql 
+SELECT ?name ?husband
+WHERE {
+  ?husband si:father ?kid ;
+     rdfs:label ?name .
+  ?wife si:husband ?husband .
+}
+@border: true
+@zebramode: true
+@showQuery: true
+%
+
+! Hierarchical Table
+
+%%Sparql
+SELECT (SAMPLE(?sub) as ?sub) (SAMPLE(?par) as ?par) (SAMPLE(?name) as ?name) ?concept
+WHERE {
+  {
+    # bind si:abraham as root node
+    BIND (si:abraham as ?sub) .  
+  }
+  UNION
+  {
+    # collect all parent child relations (will be conntected automagically to si:abraham)
+    ?sub si:parent ?par ;
+  }
+  # display name and concept as table columns
+  ?sub  rdfs:label ?name .
+  BIND (?sub as ?concept) .
+} GROUP BY ?concept
+@tree: true
+@showQuery: true
+%
+
+!!! Administrative Definitions of the Simpsons Ontology
+
+This wiki article belongs to the {{simpsons}} package.
+
+%%package simpsons
+
+We define the ontology using all articles of the {{simpsons}} package.
+
+%%ontology
+  @uses: simpsons
+  @ruleset: OWL_HORST_OPTIMIZED_WITH_PROPERTY_CHAINS
+%
+
+Let's use the namespace {{si}} for the resources.
+
+%%namespace 
+  si http://www.example.org/ontology#
+%

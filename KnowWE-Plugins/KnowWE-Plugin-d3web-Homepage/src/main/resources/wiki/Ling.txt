@@ -1,0 +1,114 @@
+!!d3web Demo
+
+Here we define our objects/questions
+
+%%Question
+Who does John hate? [oc]
+- 玛丽
+- Mary
+- Someone else
+- Himself
+- No one
+What is John doing? <abstract> [oc]
+- He isn't doing anything
+- He buys a present for Mary
+%
+
+The rule:
+
+%%Rule
+IF "Who does John hate?" = 玛丽
+THEN "What is John doing?" = He buys a present for Mary
+ELSE "What is John doing?" = "He isn't doing anything"
+%
+
+Dialog to test the knowledge. Answer the first question, the rule will answer the second automatically (red square to reset)
+
+%%QuickInterview 
+  
+%
+
+Shows the currently derived fact:
+
+%%ShowSolutions 
+  @show_abstractions: true
+%
+
+Here we have the markup to define and compile the knowledge. You can download/export it here (tools in the top right corner):
+
+%%KnowledgeBase
+Ling Demo Knowledge Base
+%
+
+
+!!Ontology demo
+
+We define our ontology:
+
+%%Turtle
+demo:Person a rdfs:Class.
+demo:Student rdfs:subClassOf demo:Person.
+demo:John a demo:Student.
+demo:玛丽 a demo:Student.
+
+demo:loves a rdf:Property.
+demo:buysPresent a rdf:Property.
+
+demo:loves owl:sameAs demo:buysPresent.
+
+demo:John demo:loves demo:玛丽.
+%
+
+Now we query that ontology...
+
+A query do see who loves whom:
+
+%%Sparql
+SELECT * WHERE {
+	?Person1 demo:loves demo:玛丽 
+}
+@showQuery: true
+%
+
+A query do see who buys a present for whom:
+
+%%Sparql
+SELECT * WHERE {
+	?Person1 demo:buysPresent ?Person2
+}
+@showQuery: true
+%
+
+A visualization of the ontology:
+
+%%SparqlVisualization
+SELECT ?x ?y ?z WHERE {
+	?x ?y ?z.
+	FILTER (STRSTARTS(STR(?x), "http://example.org")) .
+	FILTER (STRSTARTS(STR(?y), "http://example.org") || ?y = rdf:type) .
+}
+%
+
+%%Sparql
+SELECT * WHERE {
+	?x ?y ?z .
+	FILTER (STRSTARTS(STR(?x), "http://www.movieontology.org")) .
+}
+@showQuery: true
+%
+
+Here we have again a markup to compile the ontology. You can download/export it here (tools in the top right corner):
+
+%%Ontology
+Demo ontology
+@ruleset: OWL_HORST_OPTIMIZED
+@import: movieontology.owl
+%
+
+%%Namespace 
+  demo http://example.org#
+%
+
+Some technical stuff: We define a separate package for all the knowledge on this page, so it is separate from all the other knowledge on d3web.de
+
+%%Package ling

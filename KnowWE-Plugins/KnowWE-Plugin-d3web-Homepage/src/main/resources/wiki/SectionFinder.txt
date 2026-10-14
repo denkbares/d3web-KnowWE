@@ -1,0 +1,4 @@
+The SectionFinder interface is used to implement the parser components which in the end create the [Sections|Section].
+You can look up the [javadoc|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/sectionFinder/SectionFinder.html] for details.
+However, in most cases it is not necessary to make a new implementation of this interface. There is already a zoo of different (partially generic) SectionFinders available. For the parsing of most simple markup the use of regular expressions is sufficient. Then an instance of the class [RegexSectionFinder|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/sectionFinder/RegexSectionFinder.html] can be attached to the respective [Type].
+

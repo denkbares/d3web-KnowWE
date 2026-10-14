@@ -1,0 +1,37 @@
+[{Image src='attach/Success%20Stories/SmartCare-Logo.gif' width='200' align='right' style='margin-right:30px' }]
+
+
+!! SmartCare - Automated clinical guidelines
+In critical care environments important medical and economical challanges are presented by the enhancement of therapeutic quality and the reduction of costs. It even is expected that these economical challanges will increase within the the next years. For this purpose, several clinical studies have demonstrated a positive impact of the adoption of clinical guidelines (CG). 
+
+SmartCare is a technology framework and at the same time an engineering methodology by [Dräger|http://www.draeger.com] for designing knowledge based systems. The framework’s technology basically comprises a rules engine plus one or more knowledge bases reflecting the corresponding health care process to support. The framework is highly fexible for the execution of CGs in a wide range of medical devices. The CG itself is formalized using [KnowWE] (including the results of the [CliWE|Success Story - CliWE] project) and executed by d3web-core as runtime engine within the context of the medical device. 
+
+A large variety of guidelines exist in the community of medical experts for almost all areas of health care. They are developed, documented and revised by national and international organizations as there are [Deutschen Gesellschaft für Kardiologie – Herz- und Kreislaufforschung e.V. | http://leitlinien.dgk.org/], [Ärztliches Zentrum für Qualität in der Medizin | http://www.leitlinien.de/], [National Guideline Clearinghous | http://guideline.gov/], et cetera.
+A systematic methodology has been developed to either augment and utilize existing CGs or to develop a guideline with a medical domain expert. 
+
+d3web supports the whole development process. Starting with the operationalization and augmentation of the knowldege to implement the CG using [KnowWE], using the continous integration (CI) tools, to check the implementation during knowledge operationalization, debugging of the implemented CG using [KnowWE] and the integrated TestCasePlayer as well as the execution of the implemented CG on the designated medical device using d3web-core as runtime.  
+
+\\
+Freely adopted from:
+
+''S Mersmann, M Dojat'', 
+SmartCare™ - Automated Clinical Guidelines in Critical Care, 
+16th European Conference on Artificial Intelligence, Valencia (Spain), pp 745-749, IOS-Press, 2004
+
+Further references:
+
+''F Lellouche, J Mancebo, P Jolliet, et al.'', 
+A Multicenter Randomized Trial of Computer-Driven Protocolized Weaning from Mechanical Ventilation, Am J Respir Crit Care Med, Vol 174, pp 894–900, 2006
+
+''SM Burns, S Earven, C Fisher, et al.'', 
+Implementation of an institutional program to improve clinical and financial outcomes of mechanically ventilated patients: One-year outcomes and lessons learned, Crit Care Med; Vol. 31, No. 12, 2003
+
+''RL Chatburn, S Deem'',
+Should Weaning Protocols be used with all Patients who receive Mechanical Ventilation, Respiratory Care; Vol 52 No 5, pp 609 – 621, 2007
+
+''D Schaedler, C Engel, G Elke, et al.'',
+Automatic Control of Pressure Support for Ventilator Weaning in Surgical Intensive Care Patients, Am J Respir Crit Care Med Vol 185, Iss. 6, pp 637–644, Mar 15, 2012
+
+''L Rose, JJ Presneill, L Johnston, JF Cade JF'',
+A randomised, controlled trial of conventional versus automated weaning from mechanical ventilation using SmartCare/PS, Intensive Care Med 2008;34:1788–
+1795

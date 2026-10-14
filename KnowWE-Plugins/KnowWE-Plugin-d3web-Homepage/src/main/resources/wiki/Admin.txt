@@ -1,0 +1,9 @@
+[{ALLOW edit Admin}]
+
+%%ObjectInfoLookUp %
+
+[{KnowWEPlugin version}]
+
+%%Administration %
+
+

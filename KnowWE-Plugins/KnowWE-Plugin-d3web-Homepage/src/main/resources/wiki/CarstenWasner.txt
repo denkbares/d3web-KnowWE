@@ -1,0 +1,44 @@
+[{ALLOW view Authenticated}]
+[{ALLOW edit CarstenWasner}]
+
+! Contact
+
+
+
+|| Name | Carsten Wasner
+|| Position | d3Web-KnowWE user
+|| Company | Dräger Medical GmbH
+|| Address | Moislinger Allee 53-55, 23542 Lübeck
+|| Email | [carsten.wasner@draeger.com | mailto:carsten.wasner@draeger.com]
+|| Web | [http://www.draeger.com]
+
+! About Me
+
+My main focus is using KnowWE to develop medical knowledge-based solutions for Dräger Medical products.
+
+
+
+! d3web Activities
+
+* Knowledge Engineering
+* Adaptation of d3web-Core for software solutions 
+
+
+
+! Open tasks
+
+%%TodoList 
+  @user: Carsten Wasner
+%
+
+%%Tags Users
+
+
+My community work:
+
+[d3web-KnowWE - Getting started]\\
+[d3web-KnowWE -  change wikicontent location]\\
+[d3web-KnowWE -  change user rights for KnowWE]\\
+[d3web-KnowWE - host multiple wikis]\\
+[KnowWE-Headless-App]\\
+[DiaFlux|Doc Diaflux]\\

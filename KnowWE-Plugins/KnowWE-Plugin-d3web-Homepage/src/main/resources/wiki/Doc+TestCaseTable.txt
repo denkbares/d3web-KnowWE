@@ -1,0 +1,125 @@
+Alternatively to sequential test cases ([Doc TestCase]) there is another way to define a test case using the TestCaseTable markup.
+
+[{TableOfContents }]
+
+
+!!Normal usage
+
+The TestCaseTable markup allows to specify a test case in a tabular fashion. Each row specifies a set of values to be applied with a specified timestamp to the current problem solving session. Optionally we can define some checks to be performed after the current set of values was applied.\\
+The first two columns of the TestCaseTable are ''Name'' and ''Time''. Both are optional. If both are present, ''Name'' must occure before ''Time''. In the column ''Name'' you can give a name or description for the different test rows. In the column ''Time'', you can specify the timestamp at which the values of the row will be applied and the checks will be tested. If there is no column ''Time'', the rows will just be executed sequentially.\\
+Following,  each column can specify one question or solution. The cells of these columns will define the value to be set to that question or solution in this row. If such a cell is empty, the value of the variable will not change in that row.\\
+Again optionally, you can add the column ''Checks''. This column specifies checks to be executed in that row. All [conditions|Doc Conditions] from the rule markup can be used as checks.
+
+{{{
+%%TestCaseTable 
+|| Time	|| Engine noises|| "Check: Ignition timing."||"Average mileage /100km"|| Checks	
+|  0s	|  ringing	|   	                     |                         | Bad ignition timing = Suggested
+|  1s	|  ringing	|              ok            |              10.0       | Bad ignition timing = Excluded
+@name: TableTestCase
+%
+}}}
+
+Renders as:
+
+[{Image src='TestCaseTable-screenshot.png' caption='Screenshot of a TestCaseTable markup' width='..' height='..' style='margin-left: 20px' class='..' }]
+
+The annotation name optionally specifies a name of the table, if no name is specified, the tables gets numbered.
+
+
+!!Defining a Test Case with a another Test Case as its Prefix
+
+The TestCaseTable markup allows to define any other named TestCaseTable as its prefix. When viewed in the [TestCasePlayer|Doc TestCasePlayer], both cases are stitched together and are viewed and run as one. This is useful, if you have many test cases for the same knowledge base, that for example share a common initialization or start sequence. This common initialization can then be defined as a prefix test case to be prepended to all the actual test cases.
+
+The last row of the prefix test case and the first row of actual test case are merged into one, so it is advisable to define the last row in the prefix test case (or the first of the actual test case) empty with just a time stamp. This way, it is possible to define the time gap between the prefix and the actual test case. All time stamps in the actual test case are shifted to the future by the time it takes to run the prefix test case (defined by the timestamps of the prefix).
+
+The prefix mechanism works recursively, so it is possible to set a test case that has a prefix as the prefix of yet another test case (and so forth).
+
+
+!Example for Usage of Prefixes
+
+First, we define our prefix test case where we initialize some variables like weight, height, and age. They will not change during the test case, so they can easily be extracted to the prefix. We add a second line, where we set the time stamp to 5 min. In the screenshot below, you will see, that all the time stamps of the test case the prefix is prepended to will be shifted by 5 minutes because of this. (Since this is a simple example, the 5 minutes are not really necessary for this test case. They are for demonstration purposes only.)
+
+Note the annotation ''@name'', it will be referenced below.
+
+{{{
+%%TestCaseTable
+|| Name			|| Time	|| Checks || Weight || Height	|| Age	
+|  Normal adult values	|  0s	|   	  |  75	    |  1.8	|  21	
+|   			|  5min	|   	  |   	    |   	|   	
+@name: Initial Questions
+%
+}}}
+
+Now we define the actual test case. It gets its own name and the prefix from above (using annotations @name and @prefix). We set the type of physical activity and a heart rate and then check in each row, if the knowledge base derives the correct value in the heart rate monitor.
+
+{{{
+%%TestCaseTable
+|| Name				|| Time	|| Checks			 || Heart rate	|| Physical activity of last 5 minutes	
+|  Being at rest for 5 minutes	|  0s	|  Heart rate monitor = Normal	 |  65		|  Non	
+|   				|  1s	|  Heart rate monitor = Too high |  110	 	|   	
+|   				|  2s	|  Heart rate monitor = Too low	 |  45	 	|   	
+@name: At Rest
+@prefix: Initial Questions
+%
+}}}
+
+We define another test case, where we again use the same prefix. In the test case, we again check the correctness of the output of the Heart rate monitor for different heart rates, considering hard physical activity.
+
+{{{
+%%TestCaseTable
+|| Name			 || Time || Checks			  || Heart rate	|| Physical activity of last 5 minutes	
+|  Hard physical activity|  0s	 |  Heart rate monitor = Normal	  |  160	|  Hard	
+|   			 |  1s	 |  Heart rate monitor = Too high |  210	|   	
+|		    	 |  2s	 |  Heart rate monitor = Too low  |  90		|   	
+@name: Hard physical activity
+@prefix: Initial Questions
+%
+}}}
+
+Together with a [TestCasePlayer|Doc TestCase] it renders like this:
+
+[{Image src='PrefixedTestCases.png' caption='Screenshot of test cases using prefixes' width='900' height='..' style='margin-left: 10px' class='..' }]
+
+
+!!TimeDB TestCases
+
+%%information
+The functionalities described on this sections are only available using a commercial extension. Please contact info@denkbares.com for more information.
+/%
+
+Using the d3web and KnowWE plugin ''TimeDB'', the TestCaseTable markup gets some additional functionality. With the TimeDB plugin, it is possible reason within a temporal context in a d3web knowledge base. You can for example check, whether a certain value has increased or decreased over the last 5 minutes (also see [Doc Expressions] for more information about this).
+Due to the importance of the temporal progression of values in a TimeDB knowledge bases, the TestCaseTable markup was extended in the plugin.
+
+
+!Specifying Insertion Timestamps
+
+Using the TimeDB plugin on an api level, it is possible to set values to the session with a timestamp in the past (to represent a value being measured at a certain time being added to the session later). To represent this in the TestCaseTable markup, the column ''Time'' was extended to be able to represent a second ''insertion'' time stamp using brackets. 
+
+It looks like this:
+
+{{{
+%%TestCaseTable
+|| Time	  		||  Temperature	
+|  0s	  		| 36.8	
+|  33min  		| 36.7	
+|  1h	  		| 
+|  1h 5min (56min)	| 37.8	
+%
+}}}
+
+In the last row, you see two time stamps. One is ''1h 5min'', the other on in brackets is ''56 min''. The semantic is, that at the session time ''1h 5 min'' the values of this row (Temperature = 37.8) will be added to the session's TimeDB with the time stamp 56 minutes. In the other rows, the timestamps at which the values are written and the timestamps with which the values are added to the TimeDB are the same.
+
+The test case rendered in the TestCasePlayer markup would look like this (note that the columns ''Name'' and ''Checks'' are omitted in the source code example above to keep it readable):
+
+[{Image src='TimeDBTestCase.png' width='900' height='..' style='margin-left: 20px' class='..' }]
+
+
+!! Related Doc Pages
+
+* [Doc TestCasePlayer]
+* [Doc TestCase]
+* [Doc TestCaseSessionRecord]
+
+%%tags
+Documentation testcase tables
+%

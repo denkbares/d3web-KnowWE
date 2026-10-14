@@ -1,0 +1,13 @@
+!!! Quick Interview
+
+A simple test dialog interface for the knowledge vase can be created by the markup QuickInterview:
+
+{{{
+%%QuickInterview %
+}}}
+
+Please note that this markup needs to be defined at the same article as the {{KnowledgeBase}} markup. 
+
+For the [printer problems|Tutorial Printer Problems] example the following screen will appear:
+
+[{Image src='quickInterviewExample.png' }]

@@ -1,0 +1,28 @@
+%%Package test12345
+
+%%QuickInterview 
+  
+%
+
+%%Knowledgebase
+
+%
+
+%%Question
+Übersichtsfragebogen #1
+- Krankheit [oc]
+-- Schnupfen
+-- Mononukleose
+Überprüfung Schnupfen
+- Schnupfenfrage1 [yn]
+Überprüfung Mononukleose
+- Mononukleosefrage 1 [yn]
+%
+
+%%Rule
+IF Krankheit = Schnupfen
+THEN Überprüfung Schnupfen
+
+IF Krankheit = Mononukleose
+THEN Überprüfung Mononukleose
+%

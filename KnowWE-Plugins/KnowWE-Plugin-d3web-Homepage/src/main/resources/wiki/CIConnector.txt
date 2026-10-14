@@ -1,0 +1,89 @@
+%%(color:red)
+!!! Do never delete this or this page...
+%%
+
+%%CIInfo
+... as this is Jenkin's door to this website!
+%
+
+!!! What are the last x changes to any project of a module
+
+Specify modules...
+
+%%SPARQL
+SELECT DISTINCT (?pluginID AS ?Plugin) (?author AS ?Editor) (?commitText AS ?Change)
+WHERE
+{
+?plugin rdf:type lns:Plugin .
+?plugin lns:hasID ?pluginID .
+?plugin lns:hasChange ?change . 
+?change lns:hasAuthor ?author .
+?change lns:hasCommitText ?commitText .
+}
+ORDER BY ?Plugin
+%
+
+!!! What are the test stats for the module
+
+%%SPARQL
+SELECT DISTINCT (?pluginID AS ?Plugin) (?value AS ?Tests)
+WHERE
+{
+?plugin rdf:type lns:Plugin .
+?plugin lns:hasID ?pluginID .
+?plugin lns:hasStat ?stat .
+?stat lns:hasKey ?key .
+?stat lns:hasValue ?value .
+}
+%
+
+!!! Authors (people who created modules, changed them)
+
+%%SPARQL
+SELECT DISTINCT (?pluginID AS ?Plugin) (?author AS ?Editor)
+WHERE
+{
+?plugin rdf:type lns:Plugin .
+?plugin lns:hasID ?pluginID .
+?plugin lns:hasChange ?change . 
+?change lns:hasAuthor ?author .
+?change lns:hasCommitText ?commitText .
+}
+ORDER BY ?Plugin
+%
+
+!!! What projects are not in any complex/aggregated module
+
+%%SPARQL
+SELECT DISTINCT (?pluginID AS ?Plugin)
+WHERE
+{
+?plugin rdf:type lns:Plugin .
+?plugin lns:hasID ?pluginID .
+FILTER NOT EXISTS { ?plugin lns:partOf ?module . } 
+}
+ORDER BY ?Plugin
+%
+
+!!! What projects are part of this module (Foo-Module)
+
+%%SPARQL
+SELECT DISTINCT (?pluginID AS ?Plugin)
+WHERE
+{
+?plugin rdf:type lns:Plugin .
+?plugin lns:hasID ?pluginID .
+?plugin lns:partOf lns:Foo-Module .
+}
+ORDER BY ?Plugin
+%
+
+!!! What is the heat of the module (changes/day in the last month?)
+
+!!! General stats, if possible? LoC, Classes, BuildNumber
+
+!!! More interesting stuff?
+
+!!! Add something like this to each module page...
+def Foo-Module type:: Module
+def KnowWE-Plugin-Foo partOf:: Foo-Module

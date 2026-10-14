@@ -1,0 +1,9 @@
+%%Package BMIDemo
+
+%%Resource
+@src: bmi-screenshot.png
+%
+
+%%Resource
+@src: test-resource.txt
+%

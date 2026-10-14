@@ -1,0 +1,397 @@
+[{TableOfContents title='Table of contents' }]
+
+
+!!! Introduction
+
+On this page the ''SparqlVisualization'' markup is demonstrated via examples based on the Simpsons ontology from the [Simpsons Demo | Demo - Simpsons]
+
+
+!!! SparqlVisualization Syntax
+
+
+!! Basic Syntax
+
+For using the ''SparqlVisualization'' markup a sparql query with exactly three variables has to be defined. Each triple variable binding of the result set of the query defines one edge of the drawn visualization graph. The first variable value will create the source node, while the third variable value creates the target node. The source and target node will be connected by an edge having the value of variable two.
+This can be represented by the following pattern:
+
+{{{
+%%SparqlVisualization
+SELECT ?source ?edge ?target WHERE { <selection-pattern>}
+%
+}}}
+
+
+!! Annotations
+
+There's a number of different annotations, which allow to configure different aspects of your SparqlVisualization.
+Annotations can be placed under any SparqlVisualization markup as following:
+
+{{{
+%%SparqlVisualization
+SELECT ?source ?edge ?target WHERE { <selection-pattern>}
+%
+@Annotation <option>
+}}}
+
+
+|| Annotation	|| Function	|| Allowed Options	|| Default	
+|  @colors	|  The annotation ''@colors'' allows to specify a color schema by defining a property. With this property colors can be assigned to Classes and Properties. The color schema for this example can be found on [Visualization Util]\\	|  In accordance with [Visualization Util]	|  none	
+|  @config	|  Allows outsourcing annotations into a self defined config, which can be reused in different sparql requests as shown in [Visualization Util].	|  config name	|  none	
+|  @design	|  Allows using an attached css file to be applied to generated svg file.	|  css file name?	|  null	
+|  @dotAddLine	|  Allows adding a line in dot language to the dot file.	|  any string in dot language	|  null	
+|  @excludeNodes	|  Given nodes are excluded from the visualization and therefore will not be shown.	|  node identifier	|  none	
+|  @excludeRelations	|  Given relations are excluded from the visualization and therefore will not be shown.	|  relation identifier	|  null	
+|  @filterRelations	|  Given relation will be included in the visualization exclusively. Other relations will not be shown!	|  relation identifier	|  null	
+|  @format	|  Sets the file format of the visualization file.	|  png, svg	|  svg	
+|  @height	|  Limits the visualization's height to given height in pixels.	|  Integer	|  not limited	
+|  @isVisTemplateForClass	|  Defines this SparqlVisualization as an Template for a given class.	|  class identifier	|  none	
+|  @language	|  Sets language of visualization.	|  languages codes in accordance with  [ISO 639-1|https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes#Partial_ISO_639_table].	|  null	
+|  @layout	|  Allows using different [Graphviz layouts| http://www.graphviz.org/Documentation.php].	|  DOT, NEATO, FDP, CIRCO, TWOPI	|  null	
+|  @linkMode	|  Deprecated	|  Deprecated	|  Deprecated	
+|  @literals	|  Don't show literals, show literals as tables or show literals as nodes.	|  OFF, TABLE, NODES	|  TABLE	
+|  @overlap	|  Allows using different [Graphviz overlap options| http://www.graphviz.org/Documentation.php]	|  TRUE, FALSE, SCALEXY, SCALE, COMPRESS, VPSC, VORONOI, ORTHO, ORTHOXY, ORTHOYX, PORTHO, PORTHOXY, PORTHOYX	|  null	
+|  @predecessors	|  Limits the the number of predecessor nodes to be shown in the visualization.	|  Integer	|  1	
+|  @rankDir	|  Sets direction of graph layout. For example, if rankdir="LR", and barring cycles, an edge T -> H; will go from left to right. By default, graphs are laid out from top to bottom.	|  LR, RL, TB, BT	|  LR	
+|  @rankSame	|  Will rank given nodes on the same level dependent on selected layout.	|  node identifiers	|  null	
+|  @showInverse	|  Shows inverse relations in the visualization if set to true.	|  TRUE, FALSE	|  FALSE	
+|  @showLabels	|   	|  ???	|  TRUE	
+|  @showOutgoingEdges	|  Shows edges of nodes which are outside the visualizations boundaries if set to true.	|  TRUE, FALSE	|  FALSE	
+|  @showProperties	|  Shows properties as property nodes if set to true or hides them if set to false.	|  TRUE, FALSE	|  TRUE	
+|  @showRedundant	|  Shows edges which are not necessarily needed if set to true.	|  TRUE, FALSE	|  FALSE	
+|  @size	|  Limits the visualization's size to given size in pixels.	|  Integer	|  not limited	
+|  @successors	|  Limits the the number of successor nodes to be shown in the visualization.	|  Integer	|  1	
+|  @templateDefaultConcept	|  Sets the default concept for this visualization template to given node identifier.	|  node identifier	|  none	
+|  @timeout	|  Sets the timeout for rendering the visualization. Use with caution!	|  Integer	|  300000	
+|  @title	|  Adds specified title to the visualization and the date and time of generation, aswell.	|  Any value	|  no title shown	
+|  @width	|  Limits the visualization's width to given width in pixels.	|  Integer	|  not limited	
+
+---- 
+
+
+!!! Demos
+
+
+!! Display the Class Hierarchy as a Tree
+
+
+%%SparqlVisualization
+      SELECT ?x ?y ?z WHERE {
+	    ?x ?y ?z . 
+	    ?x rdfs:subClassOf si:SimpsonsConcept. 
+	    ?z rdfs:subClassOf si:SimpsonsConcept. 
+	    FILTER NOT EXISTS { 
+	    	?middleObject rdfs:subClassOf si:SimpsonsConcept. 
+	    	?x rdfs:subClassOf ?middleObject. 
+	    	?middleObject rdfs:subClassOf ?z.
+	    	FILTER (?middleObject != ?x ).
+	    	FILTER (?middleObject != ?z ).
+ 	    }
+ 	    FILTER (?x != owl:Nothing).
+ 	    FILTER (?x != ?z).
+	    BIND (" " AS ?edge).
+
+}
+@rankDir: BT
+@size: 700
+@dotAddLine: «value»
+%
+
+
+{{{
+%%SparqlVisualization
+     SELECT ?x ?edge ?z WHERE {
+	    ?x ?y ?z . 
+	    ?x rdfs:subClassOf si:SimpsonsConcept. 
+	    ?z rdfs:subClassOf si:SimpsonsConcept. 
+	    ?x rdfs:subClassOf ?z.
+	    FILTER NOT EXISTS { 
+	    	?middleObject rdfs:subClassOf si:SimpsonsConcept. 
+	    	?x rdfs:subClassOf ?middleObject. 
+	    	?middleObject rdfs:subClassOf ?z.
+	    	FILTER (?middleObject != ?x ).
+	    	FILTER (?middleObject != ?z ).
+ 	    }
+ 	    FILTER (?x != owl:Nothing).
+ 	     FILTER (?x != ?z).
+	    BIND (" " AS ?edge).
+
+}
+@rankDir: BT
+@size: 700
+%
+}}}
+
+---- 
+
+
+!! Display the family relations as a graph using labels
+
+One can use the available features of SPARQL to create customized labels for the nodes and edges to generate a more nicely readable visualization.
+
+
+%%SparqlVisualization
+   SELECT ?xLabel ?yLabel ?zLabel WHERE {
+	     ?x ?y ?z . 
+	    ?x rdf:type si:Human. 
+	    ?z rdf:type si:Human.
+	    ?x rdfs:label ?xLabel.
+	    ?z rdfs:label ?zLabel.
+	    FILTER (?y != si:relatedWith).
+	    FILTER (?y != si:child).
+  	    FILTER (?y != si:parent).
+	    FILTER (?y != si:grandparent).
+	    FILTER (?z != ?x).
+	    BIND (SUBSTR(STR(?y), 33) AS ?yLabel)  
+}
+@rankDir: BT
+@size: 600
+%
+
+
+{{{
+   SELECT ?xLabel ?yLabel ?zLabel WHERE {
+	    ?x ?y ?z . 
+	    ?x rdf:type si:Human. 
+	    ?z rdf:type si:Human.
+	    ?x rdfs:label ?xLabel.
+	    ?z rdfs:label ?zLabel.
+	    FILTER (?y != si:relatedWith).
+	    FILTER (?y != si:parent).
+	    FILTER (?y != si:child).
+	    FILTER (?y != si:grandparent).
+	    FILTER (?z != ?x).
+	    BIND (SUBSTR(STR(?y), 33) AS ?yLabel)  
+}
+@rankDir: BT
+@size: 600
+}}}
+
+---- 
+
+
+!! Visualize lost of stuff (be careful for large ontologies!)
+
+__Note:__ You can use the option "display svg" from the tool menu on the top right of the visualization to open the diagram in a distinct window. Then you can use browser functions to zoom an navigate the graph.
+
+__Colors__: The annotation ''@colors'' allows to specify a color schema by defining a property. With this property colors can be assigned to Classes and Properties. The color schema for this example can be found on [Visualization Util].
+
+
+%%SparqlVisualization
+    
+    
+    SELECT ?x ?y ?z WHERE {
+	    ?x ?y ?z . 
+	    FILTER (STRSTARTS(STR(?x), "http://www.example.org/ontology#")).
+	    FILTER (STRSTARTS(STR(?z), "http://www.example.org/ontology#")).
+	    FILTER NOT EXISTS {?x rdf:type rdfs:Class}.
+	    FILTER NOT EXISTS {?z rdf:type rdfs:Class}.
+	    FILTER NOT EXISTS {?x rdf:type rdf:Property}.
+	    FILTER NOT EXISTS {?z rdf:type rdf:Property}.
+	    FILTER (?y != si:relatedWith).
+	    FILTER (?y != si:parent).
+	    FILTER (?y != si:child).
+	    FILTER (?y != si:grandparent).
+	    FILTER (?z != ?x).
+
+}
+@rankDir: BT
+@size: 1200
+@colors: si:color
+%
+
+
+{{{
+%%SparqlVisualization
+
+    SELECT ?x ?y ?z WHERE {
+	    ?x ?y ?z . 
+	    FILTER (STRSTARTS(STR(?x), "http://www.example.org/ontology#")).
+	    FILTER (STRSTARTS(STR(?z), "http://www.example.org/ontology#")).
+	    FILTER NOT EXISTS {?x rdf:type rdfs:Class}.
+	    FILTER NOT EXISTS {?z rdf:type rdfs:Class}.
+	    FILTER NOT EXISTS {?x rdf:type rdf:Property}.
+	    FILTER NOT EXISTS {?z rdf:type rdf:Property}.
+	    FILTER (?y != si:relatedWith).
+	    FILTER (?y != si:parent).
+	    FILTER (?y != si:child).
+	    FILTER (?y != si:grandparent).
+	    FILTER (?z != ?x).
+
+}
+@rankDir: BT
+@size: 1200
+%
+}}}
+
+---- 
+
+
+!! Show all Properties of the Simpsons Ontology 
+
+
+%%SparqlVisualization
+   
+    SELECT ?x ?y ?z WHERE {
+	    ?x ?y ?z . 
+	    ?x rdf:type rdf:Property.
+	    FILTER (?x != <http://www.w3.org/2000/01/rdf-schema#Resource>).
+	    FILTER (STRSTARTS(STR(?x), "http://www.example.org/ontology#")).
+	    FILTER (STRSTARTS(STR(?z), "http://www.example.org/ontology#")).
+	    
+	    FILTER (?z != ?x).
+
+}
+@rankDir: BT
+@size: 1200
+%
+
+
+{{{
+%%SparqlVisualization
+
+    SELECT ?x ?y ?z WHERE {
+	    ?x ?y ?z . 
+	    ?x rdf:type rdf:Property.
+	    FILTER (?z != <http://www.w3.org/2000/01/rdf-schema#Resource>). 
+	    FILTER (STRSTARTS(STR(?x), "http://www.example.org/ontology#")).
+	    FILTER (STRSTARTS(STR(?z), "http://www.example.org/ontology#")).
+	    FILTER (?z != ?x).
+
+}
+@rankDir: BT
+@size: 1200
+%
+}}}
+
+---- 
+
+
+!! Filtering Functions
+
+To make your SparqlVisualization sleeker, simpler and easier to grasp you can make use of different filtering functions, which are turned on by default (ShowRedundant: false).
+
+
+! ShowRedundant
+
+This filter is turned on by default and will work on following edges:
+* Recursive edges: Edges which have the same subject and object (e.g. Homer is related to himself) will be filtered out.
+* Double edges: If there are two edges having same predicate and swapped subject and object, the filtering function will replace them with one double headed edge.
+* SuperProperties: The filtering function will focus on the edges having the highest level of detail. Therefore it will find all edges in your visualization having SubProperties in this visualization and filter them out.
+Let's visualize all the relations between the characters in the Simpsons ontology to see the difference by turning the redundant filter off first and visualize it afterwards with turned on filter.
+
+
+! ShowRedundant true (Filtering function turned off)
+
+%%SparqlVisualization
+   SELECT ?xLabel ?y ?zLabel WHERE {
+	     ?x ?y ?z .
+	    ?x rdf:type si:Human.
+	    ?z rdf:type si:Human.
+	    ?x rdfs:label ?xLabel.
+	    ?z rdfs:label ?zLabel.
+}
+@rankDir: BT
+@showRedundant: true
+%
+
+@size: 1200
+
+
+! ShowRedundant false (Filtering function turned on)
+
+%%SparqlVisualization
+   SELECT ?xLabel ?y ?zLabel WHERE {
+	     ?x ?y ?z .
+	    ?x rdf:type si:Human.
+	    ?z rdf:type si:Human.
+	    ?x rdfs:label ?xLabel.
+	    ?z rdfs:label ?zLabel.
+}
+@rankDir: BT
+@size: 900
+@showRedundant: false
+%
+
+
+! ShowInverse
+
+Inverse edges are edges which are the "opposite" of each other (e.g. Husband and Wife).\\
+The filtering function, which is turned on by default (ShowInverse: false), will find these and replace them by one double headed edge having both predicates combined.
+
+
+! ShowInverse true (Filtering function turned off)
+
+%%SparqlVisualization
+   SELECT ?xLabel ?y ?zLabel WHERE {
+	     ?x ?y ?z .
+	    ?x rdf:type si:Human.
+	    ?z rdf:type si:Human.
+	    ?x rdfs:label ?xLabel.
+	    ?z rdfs:label ?zLabel.
+}
+@rankDir: BT
+@size: 800
+@showInverse: true
+%
+
+
+! ShowInverse false (Filtering function turned on)
+
+%%SparqlVisualization
+   SELECT ?xLabel ?y ?zLabel WHERE {
+	     ?x ?y ?z .
+	    ?x rdf:type si:Human.
+	    ?z rdf:type si:Human.
+	    ?x rdfs:label ?xLabel.
+	    ?z rdfs:label ?zLabel.
+}
+@rankDir: BT
+@size: 800
+@showInverse: false
+%
+
+
+!!! Visualization Templates
+
+Visualization Templates can be used to create visualization patterns for certain classes.
+If a template is defined for a certain class, users will have the option to visualize it on usage, by clicking on the instance in the visualization and chosing "Visualize with template ..."
+
+
+!! Defining templates
+
+
+Templates are easily defined by using the annotation @isVisTemplateForClass: <class>.\\
+You can also define a default concept which will be visualized when no concept was chosen by using the annotation @templateDefaultConcept: <class>.\\
+\\
+__Please be aware that only one template should be defined per page!__
+
+The example below demonstrates the definition of a SparqlVisualization template for the class si:Human, having si:homer as default concept and will visualize relations between a given si:human instance and other si:human instances.
+
+
+{{{
+%%sparqlVisualization
+     SELECT ?x ?y ?z WHERE {
+	    BIND ( %1$ AS ?x) .
+	    ?x ?y ?z . 
+	    ?z rdf:type si:Human.
+	    FILTER (?z != ?x).
+	   }
+@templateDefaultConcept: si:homer
+@isVisTemplateForClass: si:Human
+%
+}}}
+
+
+!! Examples
+
+
+! Template for class si:Human
+
+[VisualizationTemplateHuman] is a template for all instances of class si:Human.
+
+
+! Template for class si:Location
+
+[VisualizationTemplateLocation] is a template for all instances of class si:Location.
+
+%%package simpsons

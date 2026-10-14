@@ -1,0 +1,39 @@
+[{TableOfContents title='Contents' numbered='true'}]
+
+!!! Definition
+Indication rules basically initiate the presentation of certain, subsequent questions or questionnaires to the user depending on previously provided answers. Indications also can be defined dependent on an already derived solution. In general, indicated questionnaires/questions are added at the end of the current dialog-agenda (the current, still-to-pose questionnaires/questions). However, there also exist ''instant indication rules'' in KnowWE, which present the indicated questionnaires/questions instantly after the current question.
+
+!!! Syntax - Basic indication rules
+!! Indication of one questionnaire/question
+{{{IF someQuestion = answerValue
+THEN specialQuestions}}}In this example, the questionnaire ''specialQuestions'' is added at the end of the dialog-agenda if the question ''someQuestion'' has been answered with ''answerValue''.
+
+
+!! Indication of multiple questionnaires/questions
+{{{IF diag = diagState
+THEN questionnaire1; questionnaire2}}}The above example shows that multiple questionnaires/questions for a gradual indication are simply separated by semicolons. It also presents the solution-dependent indication: if the diagnosis ''diag'' has the diagnosis state ''diagState'' (see [Doc DiagnosisRule] for a listing of scoring and diagnosis states) the questionnaires ''questionnaire1'' and ''questionnaire2'' are gradually indicated.\\
+Indicating multiple questionnaires or questions in one rule at once also works with all the other indication types.
+!! Checking for answers
+{{{IF KNOWN[quest]
+THEN specialQuestion}}}
+If a question/questionnaire should be indicated independet of the concrete answer value but depending just on that any answer value was provided, the ''KNOWN'' keyword is to be used. The example shows how to check, whether question ''quest'' has already been answered. The question that has to be checked must be placed within square brackets. 
+
+
+!!! Syntax - Other indication types
+
+!! Instant indication
+If an indicated question/questionnaire is to be presented instantly after the current question, so-called ''instant indication rules'' have to be used. 
+{{{IF question = yes
+THEN INSTANT [questionInstant]}}}In the following example ''questionInstant'' is presented instantly after the current question, if the question ''question'' is answered with ''yes''.
+Regarding start questionnaires, however, instant indications don't intervene the order there. Start questionnaires are always presented first. 
+
+
+!! Repeated indication
+
+{{{IF question = yes
+THEN ALWAYS[question]}}}
+Adding the ''ALWAYS~[...]''  will result in the the indication of ''question'' no matter whether it has been already answered or not. That way, questions can be repeatedly presented in the interview (as long as the respective condition, in this case ''question = yes'', holds true).
+!! Contra indication
+{{{IF question = yes
+THEN NOT[question]}}}Adding the ''NOT~[...]'' will prevent the ''questions'' from being indicated until the condition ''question = yes'' no longer holds true.
+

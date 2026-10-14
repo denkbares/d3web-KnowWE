@@ -1,0 +1,36 @@
+DiaFlux is a Plugin for d3web and is also supported with Markups for KnowWE.
+DiaFlux is used to define reasoning flows.
+
+The following projects are relevant for this module.
+
+%%sparql
+  SELECT ?Plugin WHERE {
+      ?Plugin lns:partOf lns:DiaFlux .
+  }
+  ORDER BY ?Plugin
+  
+%
+
+
+!!!Live Ticker
+
+
+%%collapsebox-closed
+!Ontology
+def DiaFlux
+> DiaFlux type:: Module
+def d3web-Plugin-DiaFlux
+def KnowWE-Plugin-DiaFlux
+def KnowWE-Plugin-DiaFlux-Anomalies
+def KnowWE-Plugin-DiaFlux-Coverage
+def KnowWE-Plugin-DiaFlux-CoverageCity
+def KnowWE-Plugin-DiaFlux-Refactoring
+def KnowWE-Plugin-DiaFlux-Review
+> d3web-Plugin-DiaFlux partOf:: DiaFlux
+> KnowWE-Plugin-DiaFlux partOf:: DiaFlux
+> KnowWE-Plugin-DiaFlux-Anomalies partOf:: DiaFlux
+> KnowWE-Plugin-DiaFlux-Coverage partOf:: DiaFlux
+> KnowWE-Plugin-DiaFlux-CoverageCity partOf:: DiaFlux
+> KnowWE-Plugin-DiaFlux-Refactoring partOf:: DiaFlux
+> KnowWE-Plugin-DiaFlux-Review partOf:: DiaFlux
+/%

@@ -1,0 +1,48 @@
+[{TableOfContents}]
+
+!!! Definition
+
+
+The triples of an ontology can be organized in different namespaces. 
+For a namespace a corresponding abbreviation is usually defined.
+
+{{{
+%%namespace
+<<ABBR>> <<URL>>
+@file: <<FILENAME>>
+%
+}}}
+
+Also ontologies can be linked to this namespace, that are included as an attachment to the wiki.
+
+!!! Example
+
+The following expression defines an abbreviation {{demo}} for the namespace {{http://www.d3web.de/demo#}}.
+
+{{{
+%%namespace 
+demo http://www.d3web.de/demo#
+%
+}}}
+
+By the use of that namespace the following class definition will obtain the URI ''http://www.d3web.de/demo#Car''.
+
+
+
+
+
+By attaching an ontology-file to this page (containing the ontology in rdf-xml format) an ontology can be imported into the KnowWE rdf-repository as follows:
+{{{
+%%namespace 
+movie http://www.movieontology.org/2009/10/01/movieontology.owl#
+@file: movie:movie-ontology.owl
+%
+}}}
+
+__Note:__ For this example a file named ''movie-ontology.owl'' needs to be attached to ''this'' page!
+
+!!! See Also
+
+* [Ontology|Doc Ontology]
+
+

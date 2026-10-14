@@ -1,0 +1,70 @@
+!! How to use the CI-Dashboard
+
+
+In KnowWE, continuous integration facilitates the automated testing and building of knowledge bases. 
+Since, we provide a distributed knowledge base development, it is important to install simple mechanisms to automatically control the quality of the knowledge base after every change or on demand.
+
+!!! Installation
+
+The continuous integration plugin is installed by 
+%%prettify 
+{{{
+%%CIDashboard
+  @name: <dashboard name>
+  @trigger: <onSave/onDemand> <article for onSave trigger>
+  @test: <testname> <test object> <parameters (if required)...>
+%
+}}}
+/%
+
+Please use the annotations of the plugin as follows:
+
+|| Annotation	|| Mandatory	|| Description	
+|  name	|  yes	|  Specify the name of the dashboard	
+|  trigger	|  yes	|  Controls the time, when the integration is executed: ''onSave'' executes a new integration after any save action in the wiki (recommended) and ''onDemand'' only executes the integration when the user explicitly starts it in the tool menu of the continuous integration plugin (only recommended for large knowledge bases and slower computers).	
+|  test	|  optional	|  Specify the name of the test and its parameters. To define more than one test, you may use the ''test'' annotation multiple times.
+
+!!! Available Tests
+
+In this installation the following tests are available. However, new tests can be added by new plugins. 
+
+%%TestDocumentation
+
+%
+
+!!! Example
+
+%%prettify 
+{{{
+%%CIDashboard
+  @name: MyArticle CI Test
+  @trigger: onSave MyArticle
+  @test: EmptyQuestionnaireTest MyArticle
+  @test: IsolatedInterfaceNodeInDiaFluxModel MyArticle
+  @test: NoAutostartFlowCITest MyArticle
+  @test: StandardQuestionDerivedByAbstraction MyArticle
+  @test: CombinedDiaFluxRuleAbstraction MyArticle
+  @test: StandardQuestionDerivedByAbstraction MyArticle
+  @test: IncompleteChoiceQuestion MyArticle
+%
+}}}
+/%
+
+
+
+
+
+
+
+Looks like:\\
+[{Image src='CIDashboard-screenshot.png' caption='Screenshot of a CIDashboard'}]
+
+
+!! Related Doc Pages
+
+* [Doc CIDaemon]
+
+
+%%tags
+Documentation continuousIntegration  
+%

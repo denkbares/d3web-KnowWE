@@ -1,0 +1,45 @@
+!!! KnowledgeBase
+The KnowledgeBase markup defines the core point for each ontology. Defining a knowledg base without this markup is not possible.
+
+!!Syntax
+The syntax of the KnowledgeBase markup is defined as follows 
+{{{ 
+%%KnowledgeBase 
+  doc knowledge base	    	    	    //name of the knowledgebase
+  @id:doc_knowledge_base 	    	    //machine readable name of the knowledgebase
+  @author: Max Mustermann	    	    //author of the knowledgebase
+  @affiliation: Mustermann GmbH	    	    //affiliation of the author
+  @filename: docKnowledgeBase.d3web 	    //filename for the downloadable knowledge base file
+  @version: 1.0	    	    	    	    //version of the knowledebase
+  @status: beta	    	    	    	    //status of the knowledgebase
+  @uses: doc_package	    	    	    //packages used by the knowledgebase 
+%
+}}}
+
+As one can see above, several annotations can be added to the Knowledgebase markup:
+
+* __name__: name of the knowledge base is the only annotation which is not optional.
+* __@id__: id of the knowledge base, normally the name in machine readable code
+* __@author__: author of the knowledgebase  
+* __@affiliation__: affiliation of the author
+* __@filename__: filename for the downloadable knowledge base file
+* __@version__: version of the knowledebase
+* __@status__: status of the knowledgebase
+* __@uses__: packages used by the knowledgebase 
+
+\\
+
+The markup, as defined above, will look like this:
+
+[{Image src='knowledgebase_markup.jpg' width='100%' style='margin-right:10px; margin-top:5px'}]
+
+On the left side the visualization of the markup is shown. On the right hand side the automtically generated menu is expanded. It gives the ability to 
+* run an interview
+* edit the knowledge base markup
+* refresh (rebuild) the knowledge base, 
+* download the binary file of the knowledge base
+* download a QR code for the knowledge base, encoding the URL of the download link
+* download a PDF of the knowledge base
+* link to the help page for the KnowledgeBase markup, i.e. link to this page.
+
+

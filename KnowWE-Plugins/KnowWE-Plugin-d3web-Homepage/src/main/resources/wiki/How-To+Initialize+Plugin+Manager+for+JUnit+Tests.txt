@@ -1,0 +1,48 @@
+!!!Testing of/with Plugins
+
+The {{PluginManager}} has to be initialized with the plugins, so that the plugins can be tested or that can be used for testing (e.g. JUnit tests using the loading of a knowledge base).
+
+Since it is not necessary for this task to build the entire application and the plugins, we propose a different procedure: 
+You need to include the following code block into the {{pom}} file of the project having the JUnit test; the code is inserted into the plugin section of the build section.
+
+%%prettify 
+{{{
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-dependency-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>copy-dependencies</id>
+            <phase>test-compile</phase>
+            <goals>
+                <goal>build-classpath</goal>
+            </goals>
+            <configuration>
+                <outputDirectory>target/dependencies</outputDirectory>
+                <overWriteReleases>false</overWriteReleases>
+                <overWriteSnapshots>false</overWriteSnapshots>
+                <overWriteIfNewer>true</overWriteIfNewer>
+                <outputFile>target/dependencies/output.txt</outputFile>
+                <pathSeparator>;</pathSeparator>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+}}}
+/%
+
+With the help of the ''Maven Dependency Plugin'' a file is written into the target directory, that contains the classpath and thus all required plugins. 
+For this, all plugins need to be specified as dependency, as it is done for building the application; however, the scope "test" is sufficient. 
+The scope "compile" should be only applied to the main application and plugins, that are extending other plugins.
+
+It is sufficient to execute {{InitPluginManager.init()}} in order to initialize the {{PluginManger}} with the JUnit test using the created file. 
+Possibly, a test-dependency on {{d3web-PluginManger}} is required, if not already defined before. 
+In Eclipse, we then execute the tests using the command 
+{{{ Run As -> Maven Test}}}
+which is also the command of Hudson when starting the tests on the integration server. Alternatively, the JUnit tests can be also started by 
+{{{Runs As -> JUnit Test}}}
+if a fresh file with the classpath is provided. 
+
+%%tags 
+howto JUnit
+%

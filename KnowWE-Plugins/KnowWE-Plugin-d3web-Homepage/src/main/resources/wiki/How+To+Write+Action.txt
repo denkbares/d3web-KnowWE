@@ -1,0 +1,55 @@
+!! How to write an action for KnowWE
+
+! What is a (KnowWE) Action?
+
+An action can perform any operation within the KnowWE-system like generate aggregated views for specific information, do any content modification or even upload and process files. 
+
+! How do i implement an Action?
+
+A ''Action'' is specified by the following interface:
+
+%%prettify
+{{{
+public interface Action {
+
+        public boolean isAdminAction();
+	   
+	public void execute(ActionContext context) throws IOException;
+	
+}
+}}}
+
+Please note that it is highly recommended to __extend the ''AbstractAction'' class__ because it offers standard implementations for most methods. In most cases an action generates some HTML which is embedded in a wiki page by AJAX. This can be done with the following code:
+
+%%prettify
+{{{
+        context.getWriter().write("<b>Some HTML code</b>");
+}}}
+
+The writer writes the code to the KnowWE.jsp where it is applicable for furhter processing (AJAX, JavaScript etc.) [HowToAjaxUpdate].
+
+All relevant information are stored in the ''ActionContext'' e. g. Parameters, Request, Response, WikiContext etc.
+Additionally the ''ActionContext'' encapsulates the old ''KnowWEParameterMap'' for compatibility reasons.The ''ActionContext'' interface can be used to access various features of the http response, e. g. the response writer. Please note that the content length (''setContentLength(int length)'') must be specified in bytes, otherwise the response may be incomplete. The correct content length of ''Strings'' can be retrieved by calling ''String.toBytes().length''.
+
+In order to get your action recognized by KnowWE you have to specify it in the plugin.xml of your Plugin:
+%%prettify
+{{{
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="YourServletID">
+		<parameter id="class"
+			value="de.d3web.we.action.YourServletClass" />
+		<parameter id="name" value="YourServletName" />
+		<parameter id="description" value="Action YourServletDescription" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+}}}
+
+! What happened to the old KnowWEAction Interface?
+
+The existing KnowWEActions are compatible with the new Interface via the abstract class ''DeprecatedAbstractKnowWEAction'' which automatically calls the ''perform(KnowWEParameterMap map)'' method of existing KnowWEActions and writes the returned String to KnowWE.jsp.
+
+
+%%tags
+howto Action
+%

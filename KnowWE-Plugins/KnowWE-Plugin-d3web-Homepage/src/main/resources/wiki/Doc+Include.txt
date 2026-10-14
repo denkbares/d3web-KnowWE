@@ -1,0 +1,136 @@
+!!! Markup for Wiki Includes
+
+The include markup allows to include a wiki page or a fragment of a wiki page into another page. This can be useful if some content should be presented in different contexts on different pages and should not be duplicated.
+
+Within the markup, each non-empty line specifies an included section or article. There are two types of includes, a "simple include" and a "normalized header include". To include an article or header, use the normal wiki-like syntax, such as e.g. "~[article~]", "~[article#header~]" or "~[displayed name ~| article~]".
+
+A simple example looks like:
+
+%%prettify
+{{{
+%%include
+  // the minus before the link suppresses the header of the included section, 
+  // you may remove it to show the header as well
+  - [Main#d3web - The Open-Source Diagnostic Platform]
+%
+}}}
+/%
+
+__Renders as:__ (without the lines above and below)
+----
+
+%%include
+  // the minus before the link suppresses the header of the included section, 
+  // you may remove it to show the header as well
+  - [Main#d3web - The Open-Source Diagnostic Platform]
+%
+
+----
+
+
+!!! Simple Include
+
+The simple include is very hand if you want to integrate some page content into another wiki page without duplicate the content, e.g. to create some overview page or a kind of summary page with the most relevant information about some topics.
+
+To include a article, use the article name as article name. The whole content of the article will be displayed. To include a header section use article name#header title. There will be the header section included, as well as all the sections naturally belongs to the header (all sections until a header with the same level or a higher level will follow).
+
+Using simple includes (and only there), you can also skip the brackets "~[...~]" (for backward compatibility), because we know that each line contains a link.
+
+%%prettify
+{{{
+%%Include
+  [my full article]               // Includes the content of the full article (with no additional header)
+  my other article                // Includes the content of the full article (with no additional header)
+  [my partial article#my header]  // Includes header "my header" plus the sections belonging to the header 
+%
+}}}
+/%
+
+
+!!! Normalized Header Include
+
+This extended version of the include is intended to create some complex article out of a binch of other articles, e.g. when creating a complete document and define a set of articles as chapters or sections within your document. The major advantages are that you can add headers to included articles and 
+
+You can also include a section using header normalization. Here you precede every include by one or more enumeration characters ("#", "*", or "-"). Include declaration will be used as a synthetic header. The level of the header will be the highest with one enumeration character (like page headings); for two enumeration characters there will be a heading of similar to "!!!", for tree characters "!!" and so on.
+
+The enumeration icons have different meanings. "#" is the usual one. It creates headings and allows the headings style to be enumerated (if defined in the corresponding style). Using "*" suppresses the enumeration of the headings, for the specified heading and all headings included. Using the "-" will suppress the heading that is included (but not the headings with deeper level that are also included by the statement.
+
+If you are defining an include line with an empty link, only the heading is created without including anything.
+
+%%prettify
+{{{
+%%Include
+  * [Status]                     // includes article Status suppressing header numbering
+  # [Preface | my full article]  // includes article with header "Preface"
+  # [About |]                    // creates top-level header without including anything
+  # About                        // identical to the line above
+  ## [About the Project]         // includes article as sub-heading section 
+  ## [About this Document]       // includes an other article as sub-heading section
+%
+}}}
+/%
+
+
+!!! Additional Annotations
+
+
+!! The Frame Annotation
+
+By default, the content is seamlessly integrated in the local wiki page content. But the included content can be surrounded by a frame that also highlighted by mouse over. On the upper right corner a tool menu provides a link to the original page. That frame can also be activated using the ''frame'' annotation. 
+
+%%prettify
+{{{
+%%include
+  - [Main#d3web - The Open-Source Diagnostic Platform]
+  @frame: show
+%
+}}}
+/%
+
+__Renders as:__ (without the lines above and below)
+----
+%%include
+  - [Main#d3web - The Open-Source Diagnostic Platform]
+  @frame: show
+%
+----
+
+
+!! The Zoom Annotation
+
+It is also possible to modify the presentation size of the included content by specifying a zoom level be the zoom annotation:
+
+%%prettify
+{{{
+%%include
+  [Main#Quick Start]
+  @zoom: 50%
+%
+}}}
+/%
+
+__Renders as:__ (without the lines above and below)
+----
+%%include
+  [Main#Quick Start]
+  @zoom: 50%
+%
+----
+
+__Note:__ The zoom attribute is currently not displayed correctly on all browsers for all zoom levels (Chrome works best for this feature at the moment).
+
+
+!! The Definition Annotation
+
+By default the definition of the include itself is only visible when it is erroneous or you edit it. You can force that the include definition is shown by adding the "{{@definition:show}}" annotation to the include markup. This is required if you rely on the tool menu of the include markup, e.g. to use the "Microsoft Word" download tool.
+
+
+!!! Known Limitations
+
+Unfortunately there are currently a bunch of known drawbacks using the include markup. They might be fixed in the future (or not), but they require a more deeper intervention into the JSP-Wiki behavior. These drawbacks are:
+
+;Images: Images that are included with some section or article are not displayed if they are referenced inside the original page with only the file name and no article name. As a workaround, specify the article name together with the image name in the {{src}}-attribute of the image declaration.
+
+;Header Normalization: The feature of header normalization only works well when you export the page using the "word export" menu item on the include markup (to be able to do that, "@definition: show" must be set). Unfortunately JSP-Wiki does not allow us to normalize the headers at the moment for rendering content inside wiki pages.
+
+;TableOfContents: Using the table-of-contents plugin "{{~[{TableOfContents}~]}}" works well for the word download, but unfortunately not for for the included contents when using "header normalization". This is a side effect of the limitation [Header Normalization|Doc Include#Header Normalization] and may be fixed with that in some future.

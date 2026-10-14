@@ -1,0 +1,55 @@
+!!! Tutorial: Getting started
+
+This tutorial describes how to set up d3Web-KnowWE on your computer:
+*  __Installation__:\\ This tutorial describes how to install d3web-KnowWE on your system: [d3web-KnowWE Quickstart] (see also: [Screencast: Install d3web-KnowWE|Tutorial#Install d3web-KnowWE])
+* __Change wikicontent location__:\\ This tutorial describes how to change the location of your wikicontent: [d3web-KnowWE -  change wikicontent location]
+* __Change user access rights__:\\ This tutorial describes how to change the user rights for your KnowWE-Wiki: [d3web-KnowWE -  change user rights for KnowWE]
+* __Hosting multiple wikis:__\\ This tutorial describes how to host multiple KnowWE-Wikis: [d3web-KnowWE - host multiple wikis]
+
+
+!!! Tutorial: Printer Problems
+
+This tutorial describes the development of a knowledge base for solving printer problems: 
+* [Set-up and general overview|Tutorial Printer Problems]
+* [Defining terms (questions & solutions)|Tutorial Printer Problem - Terminology]
+* [Defining DiaFlux knowledge|Tutorial Printer Problem - DiaFlux]
+* [Automated testing with test cases and continuous integration|Tutorial Printer Testcases]
+The knowledge base itself is defined within the tutorial, so it is ready to use.
+
+
+!!! Developer Screencasts
+
+
+! Prepare Project
+
+This screen cast shows how to prepare an IntelliJ IDEA project für d3web-KnowWE on your system:\\
+[https://www.youtube.com/watch?v=Ng8NiZwkl10]
+
+
+! Check out d3web-KnowWE source code
+
+This screen cast shows how to check out the sources of d3web-KnowWE from the version control system in IntelliJ IDEA:\\
+[https://www.youtube.com/watch?v=cdLSfEilku0]
+
+
+! Import d3web-KnowWE modules
+
+This screen cast shows how to import checked out d3web-KnowWE sources as modules in an IntelliJ IDEA project:\\
+[https://www.youtube.com/watch?v=RXxsFZK32r0]
+
+\\
+\\
+
+%%Todo 
+TODO: Screencasts
+# Get Flash-Plugin working again
+# Create YouTube-Channel d3web 
+# Install and run KnowWE
+# Use printer fault diagnosis example 2 (use dialog and show reasoning trace)
+# Change small knowledge piece in knowledge base (e.g. add one question, change DiaFlux path)
+
+%
+
+%%tags
+printerProblems tutorial GettingStarted screencasts
+%

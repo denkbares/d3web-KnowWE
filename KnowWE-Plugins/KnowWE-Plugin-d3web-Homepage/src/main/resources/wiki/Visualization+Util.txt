@@ -1,0 +1,32 @@
+%%package simpsons
+
+
+!! Color Definitions for Properties and Classes
+
+%%turtle
+
+si:color a rdf:Property.
+si:Human si:color "#9AE697".
+si:gender si:color "#919681".
+si:GenderType si:color "#919681".
+si:Location si:color "#DE79F7".
+si:livesIn si:color "#DE79F7".
+%
+
+
+!! Config
+
+%%VisualizationConfig 
+  
+@name: DefaultVisConfig
+@showOutgoingEdges: false
+@excludeNodes: owl:Thing, rdfs:Class, rdf:Resource, owl:Nothing
+@excludeRelations: rdf:type, ssc:instance, owl:sameAs, owl:equivalentClass, owl:equivalentProperty, rdfs:subPropertyOf, si:grandfather, si:grandparent
+@format: svg
+@predecessors: 1
+@size: 1200
+@rankDir: RL
+@showLabels: false
+@showInverse: false
+@colors: si:color
+%

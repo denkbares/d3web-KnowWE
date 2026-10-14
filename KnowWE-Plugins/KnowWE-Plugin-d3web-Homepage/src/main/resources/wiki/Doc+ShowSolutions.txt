@@ -1,0 +1,18 @@
+!!! Show Derived Solutions
+
+The solutions currently derived by the problem-solving sessions can be dynamically placed into an article by using the {{ShowSolutions}} markup:
+
+{{{
+%%ShowSolutions 
+  @except_derivations: {names of solutions to exclude from the display}
+  @only_derivations: {names of solutions that should be displayed only}
+  @show_abstractions: {true/false: show also the value of abstractions}
+  @show_digits: {number: number of digits to show for values of numerical abstractions}
+  @show_established: {true/false: show established solutions?}
+  @show_excluded: {true/false: show excluded solutions?}
+  @show_suggested: {true/false: show suggested solutions?} 
+  @master: {name of the wiki page that defines the knowledge base}
+%
+}}}
+
+Please note, that only the annotation {{master}} is mandatory. 

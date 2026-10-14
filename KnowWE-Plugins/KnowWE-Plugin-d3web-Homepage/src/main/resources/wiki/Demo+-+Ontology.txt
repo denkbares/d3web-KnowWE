@@ -1,0 +1,124 @@
+%%information
+This demo is in an early stage and uses deprecated markups. Please revise!
+/%
+
+In this demo, we create a simple ontology about movies and its characters and add the movies "KickAss" and "KickAss2" as an example.
+
+
+!Classes
+
+%%Class 
+Character
+SuperHero
+
+Movie
+SuperHeroMovie
+%
+
+
+!Relations
+
+%%Turtle 
+SuperHero rdfs:subClassOf Character .
+SuperHeroMovie rdfs:subClassOf Movie .
+%
+
+
+!Individuals/Instances
+
+%%Individual
+KickAss_The_Movie
+KickAss2_The_Movie
+@type SuperHeroMovie
+%
+
+%%Individual
+KickAss
+Hit-Girl
+Night Bitch
+Motherfucker
+Mother Russia
+Black Death
+Bad Ass Warrior
+Red Mist
+@type SuperHero
+%
+
+
+!Properties
+
+%%ObjectProperty
+characterIn
+@domain: Character
+@range: Movie
+%
+
+%%ObjectProperty
+superHeroCharacterIn
+@domain: SuperHero
+@range: Movie
+%
+
+%%ObjectProperty
+hasSuperHeroCharacter
+@range: SuperHero
+@domain: Movie
+%
+
+
+!Relations between properties
+
+%%Turtle hasSuperHeroCharacter owl:inverseOf superHeroCharacterIn
+
+%%Turtle superHeroCharacterIn rdfs:subPropertyOf characterIn
+
+
+!Defining Individual relations
+
+%%turtle
+KickAss2_The_Movie hasSuperHeroCharacter KickAss, 
+	Hit-Girl, 
+	Night Bitch, 
+	Mother Russia,
+	Motherfucker, 
+	Black Death, 
+	Bad Ass Warrior 
+%
+
+%%turtle
+KickAss_The_Movie hasSuperHeroCharacter KickAss, 
+	Hit-Girl, 
+	Red Mist
+%
+
+
+!Querys to our ontology
+
+Show all known characters and the movies they play in.
+
+%%sparql
+SELECT ?Character ?Movie 
+WHERE {
+  ?Character rdf:type lns:Character .
+  ?Character lns:characterIn ?Movie
+}
+ORDER BY ?Movie ?Character
+@zebramode: true
+%
+
+Show the characters that play in both movies
+
+%%sparql
+SELECT ?Character WHERE {
+	?Character lns:characterIn lns:KickAss_The_Movie . 
+	?Character lns:characterIn lns:KickAss2_The_Movie}
+%
+
+
+!Ontology definition
+
+%%Ontology 
+  @uses: kickAssOntology
+%
+
+%%Package kickAssOntology

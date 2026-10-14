@@ -1,0 +1,86 @@
+%%information
+The functionalities described on this page are only available using a commercial extension.
+/%
+
+
+Using the image map markup you can define clickable image regions to answer choice questions (questions of type ~[yn~], ~[oc~] and ~[mc~]). The markup looks as following:
+
+{{{
+%%ImageMap
+  @question: My Question                       // "My Question" gets the image map
+  @path: folder/subfolder/image-file.png       // where the image is located in the knowledge base
+  @src: article/attachment.png                 // gets the image from a wiki attachment
+  @polygon: choice1 = 10 10 20 30 20 50        // defines a polygon as clickable image
+  @polygon: choice2 = (10 10) (20 30) (20 50)  // identical polygon as line above
+  @box: choice3 = 1 5 5 2                      // or a box is also possible
+/%
+}}}
+
+As you can see there are a number of annotations that might be specified to define the image and the clickable regions:
+* __@question__: the name of the question to be augmented by this clickable image.
+* __@path__: the resource path of the image inside the knowledge base (see also %%Resource for more details). If no path is specified, the attachment name is used for the filename and the article name as the parent folder.
+* __@src__: Defines a wiki page attachments to be included into the knowledge base as the clickable image. The src may be either @src = <article>/<filename> for any attachment or @src = <filename> for an attachment of the current article.
+* __@polygon__: defines a polygon as the clickable region for a specific choice. The choice name is followed by a ':' or '=' character, followed by a space-separated set of alternating x-y-coordinates. Instead of spaces only, you can also use brackets or comma to group the coordinates as you find it most readable.
+* __@box__: defines a rectangular box as the clickable region for a specific choice. The choice name is followed by a ':' or '=' character, followed by a space-separated set of coordinates for "top", "right", "bottom" and "left" side (in that specific order).
+* __@package__: defines the package (and with it the knowledge base) to which this image map belongs to. If your wiki only contains one knowledge base you can usually ignore it.
+
+Please note even if @path and @src are optional, at least one of them must be specified. If only @path is specified you have to make sure that the knowledge base contains an image unter that resource location. If both @path and @src are specified, the wiki image from @src is taken and automatically put into the knowledge base under the @path resource location.
+
+
+!!! Example Knowledge Base
+
+This is an example knowledge base showing how to answer a question by an image map. The example image and coordinates are taken from [wikipedia | http://de.wikipedia.org/wiki/Vorlage:Imagemap_Deutschland] and is published under [„Creative Commons Attribution/Share Alike“ | http://de.wikipedia.org/wiki/Wikipedia:Lizenzbestimmungen_Commons_Attribution-ShareAlike_3.0_Unported] license.
+
+%%KnowledgeBase 
+  Image Map Example
+  @uses: DocImageMap
+%
+
+%%Question 
+General #1
+- Bundesland [oc]
+-- Baden-Württemberg
+-- Bayern
+-- Berlin
+-- Brandenburg
+-- Bremen
+-- Hamburg
+-- Hessen
+-- Mecklenburg-Vorpommern
+-- Niedersachsen
+-- Nordrhein-Westfalen
+-- Rheinland-Pfalz
+-- Saarland
+-- Sachsen-Anhalt
+-- Sachsen
+-- Schleswig-Holstein
+-- Thüringen
+@package: DocImageMap
+%
+
+%%ImageMap 
+  @question: Bundesland
+  @src: Karte.png
+  @polygon: Baden-Württemberg = 77,248,31,249,28,243,36,209,49,200,53,182,57,180,66,183,75,174,81,175,86,183,96,208,85,220,88,242
+  @polygon: Bayern = 67,182,64,164,86,148,99,158,116,152,126,153,141,167,169,203,169,214,148,228,156,244,151,248,108,253,93,254,78,246,89,243,86,221,97,208,91,196,88,183,81,175,74,175
+  @polygon: Brandenburg = 116,67,130,72,131,95,150,104,151,118,168,119,170,114,184,112,181,81,170,70,174,55,161,49,154,59,142,60,126,55,113,63
+  @polygon: Hessen = 47,142,39,167,50,167,52,181,57,179,66,182,64,164,85,148,82,142,88,133,85,123,80,125,75,122,78,115,75,112,61,119
+  @polygon: Mecklenburg-Vorpommern = 148,8,159,13,170,31,174,54,161,49,154,59,142,61,128,55,113,63,106,55,99,54,104,47,104,37,113,21
+  @polygon: Niedersachsen = 58,39,19,44,19,49,28,55,26,78,19,79,20,84,25,92,39,86,44,89,44,99,54,96,51,85,59,83,60,88,66,84,68,88,65,91,73,110,80,115,76,121,81,124,99,115,99,100,108,98,103,74,116,68,106,56,93,55,81,55,81,49,72,39
+  @polygon: Nordrhein-Westfalen = 2,105,1,130,8,152,19,153,40,136,45,142,60,117,71,115,73,111,64,91,66,89,66,86,60,90,58,85,52,85,55,96,43,99,44,88,39,86,22,93
+  @polygon: Rheinland-Pfalz = 8,152,2,162,9,172,7,179,22,176,27,177,30,195,47,200,53,182,50,167,38,167,45,143,40,137,19,154
+  @polygon: Sachsen = 185,112,189,119,189,131,185,137,166,141,148,152,135,159,126,152,126,148,142,135,133,130,129,118,141,112,149,112,150,118,168,121,171,115
+  @polygon: Sachsen-Anhalt = 104,74,108,98,99,100,100,113,116,121,115,126,132,135,133,131,129,118,141,110,150,111,150,104,132,96,129,72,116,68
+  @polygon: Schleswig-Holstein = 40,27,41,30,43,30,43,28,44,26
+  @polygon: Schleswig-Holstein = 64,38,48,8,50,1,62,0,77,6,110,17,112,21,103,36,103,46,98,55,92,55,90,43,79,48,73,38
+  @polygon: Thüringen = 85,124,90,132,82,143,99,157,117,152,126,152,125,145,141,134,134,131,132,136,115,127,115,121,102,115
+  @box: Berlin = 74,163,92,145
+  @box: Bremen = 55,70,73,52
+  @box: Hamburg = 41,96,59,78
+  @box: Saarland = 174,31,198,7
+  @package: DocImageMap
+%
+
+%%tags
+ Documentation imageMap
+%

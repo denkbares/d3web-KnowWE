@@ -1,0 +1,16 @@
+Section Store can be used to store and retrieve arbitrary objects from a Section. This can be obtained by calling:
+
+{{{storeObject(String key, Object object)}}}
+The key identifys the object and is unique. You can use the key to regain the object by calling
+{{{getObject(String key)}}} Note that if the key doesn't exist, the return value is __null__.
+
+{{{storeObject(Article article, String key, Object object)}}}If you need multiple instances of an object, you can also store them with a reference to the article. To do that call:   The other way round you can get the object back by calling {{{getObject(Article article, String key)}}}
+
+
+%%tags
+howto SectionStore  
+%
+
+%%Todo 
+  Review this page
+%

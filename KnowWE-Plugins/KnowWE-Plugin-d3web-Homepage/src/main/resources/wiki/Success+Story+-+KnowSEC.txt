@@ -1,0 +1,18 @@
+! Managing Chemical Safety with KnowSEC
+
+KnowSEC (Managing Knowledge of Substances of Ecological Concern) is a group-wide wiki to manage substance-related work(flows) within a group of the German Federal Environmental Agency (Umweltbundesamt). 
+Here, every substance is represented by a distinct wiki article storing important information such as chemical end-points, relevant literature, or comments of group members. 
+The information is entered in (user-friendly) editors in the wiki and translated into special markups in the background; thus, the information is also stored in an RDF ontology. 
+That way, the information currently available in the wiki but also the latest knowledge changes can be aggregated and visualized by integrated SPARQL queries.
+[{Image src='KnowSEC.png' width='300' align='right' style='margin-right:30px' caption='Example sceenshot of KnowSEC.' link='attach/Success%20Story%20-%20KnowSEC/KnowSEC.png'}]
+
+Besides the storage of weakly formalized knowledge, KnowSEC also offers knowledge-based modules that support the classification of more than 11,000 substances for a number of critical chemical characteristics. 
+At the moment, modules are available for supporting the assessment of the relevance, the persistence, the bioaccumulation, and the toxicity of a given substance. 
+These aspects (e.g., relevance, persistence, etc.) are developed in the wiki using different namespaces, so they can be maintained and tested independently from the other aspects. 
+For the users of KnowSEC, a joint knowledge base with all aspects is virtually defined including all above namespaces.
+
+
+Currently, the knowledge base is still under development. The joint version of the knowledge base consists of 214 questions (user inputs to characterize the investigated substance) grouped by 46 questionnaires, 146 solutions (assessments of the investigated substance), and more than 1.000 rules to derive the assessments. 
+The rules are automatically generated from entered decision tables that allow for an intuitive and maintainable knowledge development process.
+
+Two knowledge engineers are supporting a team of domain specialists, that partly define the knowledge base themselves, partly giving domain knowledge to the knowledge engineers.

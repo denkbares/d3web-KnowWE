@@ -1,0 +1,28 @@
+[{ALLOW view Authenticated}]
+
+[{ALLOW edit AlbrechtStriffler}]
+
+
+! Contact
+
+[{Image src='Foto am 20-04-2011 um 19.16.jpg' height='130' align='right'}]
+
+|| Name	|  Albrecht Striffler	
+|| Position	|  Senior Software Engineer, Consultant	
+|| Company	|  denkbares GmbH	
+|| Address	|  Friedrich-Bergius-Ring 15, 97076 Würzburg	
+|| Email	|  [albrecht.striffler@denkbares.com | mailto:albrecht.striffler@denkbares.com]	
+|| Web	|  [http://www.denkbares.com]	
+
+
+! Open tasks
+
+%%TodoList 
+  @user: Albrecht Striffler
+%
+
+%%Todo 
+Module description
+* Module overview: Matrix of which module influence which product?
+@user: Albrecht Striffler
+%

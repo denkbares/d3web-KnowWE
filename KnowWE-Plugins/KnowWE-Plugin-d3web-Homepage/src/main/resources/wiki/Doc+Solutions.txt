@@ -1,0 +1,25 @@
+!!! Definition 
+The solutions (diagnoses), the knowledge base has to recognize, are defined by the {{{%%Solution ...}}} tag. For a larger number of solutions, it is advisable to describe a hierarchic structure. The number of hyphens at the beginning of each line corresponds with the hierarchic depth of the following solution. 
+
+!!! Syntax 
+{{{%%Solution
+Mechanical Problem 
+- Damaged idle speed system 
+- Leaking air intake system 
+- Clogged air filter
+- Bad ignition timing 
+Electronics Problem 
+- Flat battery 
+- Defect ABS 
+Other Problem
+%}}} 
+
+The example above shows three upper solutions (''Mechanical Problem'', ''Electronics Problem'' and ''Other Problem''). 
+The first two are further specialized hierarchically into more refined solutions ''(Damaged idle speed system'', ''Leaking air intake system'', ...). These are indented by one hyphen. 
+Upper solutions, as for instance ''Mechanical Problem'', are often also called ''problem area''. 
+
+
+%%tags
+ Documentation solution 
+%
+ 

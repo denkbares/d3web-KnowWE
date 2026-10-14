@@ -1,0 +1,78 @@
+!Miniapp sending a file or a string via a HTTP POST
+
+%%prettify 
+{{{
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+public class Uploader {
+
+	public static void main(String[] args) throws IOException {
+
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpPost post = new HttpPost(
+				"http://localhost:8080/KnowWE/action/ReceiveJenkinsFileAction");
+		MultipartEntity entity = new MultipartEntity();
+		entity.addPart("file", new FileBody(new File("newfile.xml")));
+		// entity.addPart("test", new StringBody("huhu"));
+		post.setEntity(entity);
+
+		HttpResponse response = httpclient.execute(post);
+	}
+
+}
+}}}
+/%
+
+
+!The action in KnowWE parsing the HTTP POST
+
+%%prettify 
+{{{
+...
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+...
+
+public class ReceiveJenkinsFileAction extends AbstractAction {
+
+
+	@Override
+	public void execute(UserActionContext context) throws IOException {
+		try {
+			List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(context.getRequest());
+			for (FileItem item : items) {
+				System.out.println(item.getFieldName());
+				System.out.println(item.getName());
+				InputStream filecontent = item.getInputStream();
+				InputStreamReader is = new InputStreamReader(filecontent);
+				StringBuilder sb = new StringBuilder();
+				BufferedReader br = new BufferedReader(is);
+				String read = br.readLine();
+				while (read != null) {
+					sb.append(read);
+					read = br.readLine();
+				}
+				System.out.println(sb.toString());
+			}
+		}
+		catch (FileUploadException e) {
+			e.printStackTrace();
+		}
+	}
+}
+}}}
+/%
+
+!Still todo
+* We need to authenticate somehow, which may not be easy...
+* [http://hc.apache.org/httpcomponents-client-ga/tutorial/html/authentication.html]

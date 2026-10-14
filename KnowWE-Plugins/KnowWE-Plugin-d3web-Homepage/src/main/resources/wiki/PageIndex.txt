@@ -1,0 +1,3 @@
+Eine Auflistung des formalen Wissens findet sich hier: [KBIndex]
+
+[{IndexPlugin}]

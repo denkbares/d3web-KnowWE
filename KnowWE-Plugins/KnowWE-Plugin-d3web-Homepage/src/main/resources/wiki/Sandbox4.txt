@@ -1,0 +1,107 @@
+!!! Beispiel für Property-Chains: Herleitung Grandfather
+
+
+! Schema Wissen (T-Box)
+
+%%turtle
+si:father
+   rdf:type rdf:Property ;
+   rdfs:subPropertyOf si:parent .
+
+si:parent
+   rdf:type rdf:Property .
+
+
+%
+
+
+!  grandfather relation is derived via property chain
+
+%%turtle
+
+ 
+ si:grandfather a rdf:Property ;
+   owl:propertyChainAxiom
+  ( si:parent  si:father ) .
+
+%  
+
+
+!  family name (Literal) is derived via property chain
+
+%%turtle
+si:familyName a owl:ObjectProperty .
+
+si:referencedFamilyName rdfs:subPropertyOf si:familyName ;
+   owl:propertyChainAxiom
+  ( si:parent  si:familyName ) .
+
+%
+
+
+! Instanzen (A-Box)
+
+%%turtle
+si:Abe a owl:Thing ; 
+	si:familyName "Simpson descripiton blababkldbd" .
+si:Homer a owl:Thing ; 
+	si:father si:Abe .
+si:Bart a owl:Thing ; 
+	si:parent si:Homer.
+si:Lisa a owl:Thing ; 
+	si:parent si:Homer.
+%
+
+
+!! Queries
+
+
+! Bart 
+
+%%Sparql
+SELECT * WHERE {
+si:Bart ?p ?o .
+}
+
+%
+
+
+! All Grandparent relations
+
+%%Sparql
+SELECT * WHERE {
+?grandchild si:grandfather ?gp .
+}
+
+%
+
+
+! All Family Names
+
+%%Sparql
+SELECT * WHERE {
+?s si:familyName ?name .
+}
+
+%
+
+
+! All referenced family names 
+
+%%Sparql
+SELECT * WHERE {
+?s si:referencedFamilyName ?name .
+}
+
+%
+
+%%package propChainTest
+
+%%ontology
+  @uses: propChainTest
+  @ruleset: OWL2_RL_REDUCED_OPTIMIZED
+%
+
+%%namespace 
+  si http://www.example.org/ontology#
+%

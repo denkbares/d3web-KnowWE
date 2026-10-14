@@ -1,0 +1,78 @@
+!!! Conditions
+At this page you can find the documentation for conditions. Conditions are an essential part of several markups, e.g. [rules | Doc Rules], [covering lists | Doc CoveringList], and checks in [test cases | Doc TestCaseTable]. Conditions are used to define a logical expression on some findings and/or outcomes of a d3web diagnostic session, to tell d3web how to action under specific circumstances.
+
+!! Simple Conditions
+
+There is a set of simple conditions to directly test values of specific questions and solutions. The most common is the "=" operator to check for a specific value.
+
+%%prettify
+{{{
+// check for a certain choice
+choice-question = choice
+
+// note: for multiple-choice questions the operator evaluates to "true"
+// if the compared choice is selected, regardless is any other choice is 
+// additionally selected.
+mc-question = choice1 AND mc-question = choice2
+
+// check if the question is answered with a value of its normal range,
+// or if the value is "unknown" (which means that the "unknown" choice 
+// of the question is selected explicitly)
+any-question = known
+any-question = unknown
+
+// check the state of a solution
+solution = established
+solution = suggested
+solution = excluded
+
+// check a question value to match a regular expression.
+// the operator evaluates to "true" if the regular expression matches 
+// the whole answer given to the question. This is usually used for
+// text questions. Please note that the regular expression is quoted in "/"
+text-question = /.*regex.*/
+}}}
+/%
+
+For more details to regular expression, see e.g. [java documentation of regular expressions | http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html].
+
+
+!! Numeric Conditions
+
+Especially for numerical questions, there is a set of additional test operators.
+
+%%prettify
+{{{
+// first we might use the original compare to equal, 
+// both operators are the same
+num-question = 10
+num-question == 10
+
+// there are also checks against limits of various types
+num-question <= 10
+num-question >= 10
+num-question < 10
+num-question > 10
+
+// finally there is a special operator to check for intervals
+// note that open and closed intervals borders are allowed for this
+num-question [10 20]
+num-question ]10 20]
+num-question [10 20[
+num-question ]10 20[
+}}}
+/%
+
+
+!! Compound Conditions
+
+The following operators can be used to build more complex expressions from simple rule conditions:
+
+* __NOT__(condition): true, if the condition does not apply
+* (condition1) __AND__ (condition2): true, only if both conditions apply at the same time
+* (condition1) __OR__ (condition2): true, if at least one of the conditions do apply
+
+
+!! Complex Formulas as Conditions
+For more complex formulas on any values there is an additional plugin available. Be aware, that this extension is non-LGPL-licensed for commercial use: [Extended Expressions: Conditions and actions | Doc Expressions]
+

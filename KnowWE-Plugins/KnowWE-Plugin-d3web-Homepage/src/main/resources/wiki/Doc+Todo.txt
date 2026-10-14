@@ -1,0 +1,31 @@
+!!! How to create Todo markers
+
+The Todo-Plugin implements a small issue tracking system for wiki knowledge bases. Users can create Todo-markers for tasks that have to be taken care of.
+(Then the [Todo-List mechanism |Doc TodoList] allows to generate an overview of all the issues of the entire wiki.)
+
+{{{
+%%Todo
+Fix error in test  "Leaking air intake system (Demo)". 
+  @progress: WAITING
+  @prio: NORMAL
+%
+}}}
+
+! Annotations and their possible values
+
+|| Annotations         || Range
+|    type (deprecated)  | FIX, URGENT, NORMAL
+|    user               | <name>
+|    deadline           | <date>
+|    progress           | NOT STARTED, IN PROGRESS, COMPLETED, WAITING, DEFERRED, CLOSED, <number>
+|   prio                | HIGH, LOW, NORMAL
+
+
+!! Related Docs 
+
+* [Doc TodoList]
+
+ 
+%%tags
+Documentation todo
+%

@@ -1,0 +1,39 @@
+!Product Ontology
+* [Product Ontology]
+* [CIConnector] (includes some Demo-SPARQLs)
+
+!Quality assessment of the modules:
+%%Table 
+| no | Not officially included, experimental demo
+| alpha | Basic functions included, API to be considered as unstable documentation partly available/not available mostly untested
+| beta | All functions are included documentation available functionality tested on unit level
+| release | All functions are included documentation available functionality tested on system level (integration tests) internal processes fully applied (issue management, development process)
+%
+
+
+
+%%Todo
+Module-Plugin implementation
+* Jenkins-Plugin to upload Plugin/Module information
+** [https://wiki.jenkins-ci.org/display/JENKINS/Extend+Jenkins]
+** SVN: https://svn.jenkins-ci.org/
+** Download jenkins war and add to tomcat
+** Get hello world plugin and import into new workspace
+** Plugin execution not covered by lifecycle configuration does not matter, it is just ugly
+** Maven install hello world plugin
+** Copy hello-world.jar to WEB-INF\lib
+** Copy hello-world.hpi to WEB-INF\plugins
+** Start tomcat/jenkins
+** Hello world plugin will be available as post step option
+** Start implementing new plugin to upload build data to d3web.de page as a attachment
+** [Some additional code snipplets on how to upload files to a KnowWE Action|Upload a file to KnowWE]
+** Provide information needed for module pages
+
+@user: Alex Legler
+%
+
+!Used Ontology
+
+[{Image src='module ontology.jpg' }]
+
+

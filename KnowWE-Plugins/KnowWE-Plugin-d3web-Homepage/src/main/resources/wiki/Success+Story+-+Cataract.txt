@@ -1,0 +1,28 @@
+!!! Continuous Medical Cataract Knowledge
+
+[{Image src='Success Story - Cataract/logo_KIT.png' align='right' style='margin-right:30px; margin-left:20px'}]
+
+       
+!! Medical Background 
+In the ophthalmology, the so called cataract surgery is the most important surgical intervention with about 700.000 operations/year only in Germany. 
+The old and cloudy human lens can be removed and must be replaced by a new clear intraocular lens (IOL). 
+Because of no prevention or medical treatment, the operation itself should be performed in patient related best manner. 
+Concerning optimisation of surgical interventions at human eyes, a knowledge based assistant system is developed, to support the ophthalmic surgeons before real intervention at human eyes.  
+
+!! Methods 
+
+The clinical expert knowledge is available in frame and rule-based structures. 
+The main advantage of the computer-based support is the intelligent correlation of the whole cataract environment and the possibility of giving decision support for the surgeons by logical explanation. 
+The passive knowledge is done by wikipedia-like presentation. 
+The visualisation is given by semantic net structures and supports knowledge acquisition and explanation by a natural language access. 
+
+!! Aims
+
+The clinical experts can simulate the operation process by logical decisions and analyse the results of the simulated operation. 
+So, for complex processes the decisions and parameters can be changed. 
+Another feature is the function as tutorial system for young surgeons.
+The project WISSASS (Wissensbasiertes Assistenzsystem in der Kataraktchirurgie) is sponsored by the german Federal Ministry of Economics and Technology (Bundesministeriums für Wirtschaft und Technologie - BMWi) in Berlin.
+In health care, advanced patient contentment and reduced postoperative costs are the main goals to develop such a computer-based decision support system for opthalmic surgeons.
+The project is performed by the [national research center in Karlsruhe|http://www.kit.edu] (KIT) and the specialized company [denkbares GmbH|http://www.denkbares.com] in Würzburg, together with clinical partners in Karlsruhe.
+
+The project is funded by the german Federal Ministry of Economics and Technology (Bundesministeriums für Wirtschaft und Technologie - BMWi) under KF2960301BZ1 (WISSUS - KIT) and BF2959901BZ1 (WISSKONT - denkbares).

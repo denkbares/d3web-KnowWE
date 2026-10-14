@@ -1,0 +1,25 @@
+!!! Joachim Baumeister
+[{Image src='joba.jpg' align='right'  }]
+
+
+! Contact
+
+|| Name | PD Dr. Joachim Baumeister
+|| Position | GF, Senior Consultant
+|| Company | denkbares GmbH
+|| Address | Friedrich-Bergius-Ring 15, 97076 Würzburg
+|| Email | [joachim.baumeister@denkbares.com | mailto:joachim.baumeister@denkbares.com]
+|| Web | [http://www.denkbares.com]
+|| VCard | [Joachim Baumeister.vcf]
+
+! About Me
+
+Account management for customers introducing knowledge-based solutions.
+Conception and evolution of the semantic wiki KnowWE and consultation during the development of knowledge-based solutions.  
+
+
+! All Todos in this wiki
+
+%%TodoList 
+  
+%

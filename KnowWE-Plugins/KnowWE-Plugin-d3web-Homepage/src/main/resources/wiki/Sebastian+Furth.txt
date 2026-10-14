@@ -1,0 +1,20 @@
+[{Image src='CIMG1882.JPG' align='left'}]
+
+!!! Contact
+
+denkbares GmbH \\
+Friedrich-Bergius-Ring 15 \\
+97076 Würzburg
+
+mailto:sebastian.furth@denkbares.com \\
+[http://www.denkbares.com]
+
+!!! About
+
+...
+
+
+
+%%TodoList 
+  @user: Sebastian Furth
+%

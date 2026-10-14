@@ -1,0 +1,30 @@
+!!!Droid3web
+
+Droid3web is an application that allows running problem-solving sessions on Android smart phones.
+
+! Features
+The __main features__ of the app are:
+* Choose from various knowledge bases stored on the phone
+* Download additional knowledge bases
+** using traditional URLs
+** using QR-Codes (provided by KnowWE)
+* Run problem-solving sessions
+* Pause sessions and restart them
+* Support for various media files, including videos and images
+
+! Requirements
+* Android (min. 4.0.4 Ice Cream Sandwich)
+* Some free RAM (depending on the knowledge base)
+
+! Download
+
+A new version of this application is currently in development.
+
+! Screenshots
+
+[{Image src='droid3web.png' height='400px' caption='Teaser image of Droid3web 2' align='left' border='1' link='attach/Droid3web-App/droid3web.png' style='margin:10px' }]
+   
+[{Image src='export_02.jpg' height='400px' align='left' caption='Answering questions in a knowledge session - Old Droid3web' border='2' link='attach/Droid3web-App/export_02.jpg' style='margin:10px' }]
+
+
+\\ \\

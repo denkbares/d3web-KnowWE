@@ -1,0 +1,23 @@
+This is a basic demo about how to use and compile multiple packages into the same knowledge base. The basic scenario is described [here|Doc Package#Using multiple Packages for the same knowledge base or ontology].
+
+This page will define some common terminology in the package {{lifeExpectancy}} that will then be used in the two different packages {{japan}} ([see here|Multi-Package Demo Japan]) and {{germany}} ([see here|Multi-Package Demo Germany]). Visit those pages to see the results with the different knowledge bases.
+\\
+\\
+To see the source code of this page, go to the drop down "''More...''" and select "''View Page Source''".
+
+
+!Defining the Package
+
+As mentioned, we add this page to the package {{lifeExpectancy}}
+
+%%Package lifeExpectancy
+
+
+!Adding the terminology
+
+We add some basic terminology
+
+%%Question
+Age [num] (0 120)
+Years to life according to life expectancy [num] <abstract>
+%

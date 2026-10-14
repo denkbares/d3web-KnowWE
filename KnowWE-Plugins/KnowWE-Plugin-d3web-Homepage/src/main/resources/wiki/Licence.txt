@@ -1,0 +1,1 @@
+All core components are distributed under the terms of the Lesser General Public Licence (LGPL).

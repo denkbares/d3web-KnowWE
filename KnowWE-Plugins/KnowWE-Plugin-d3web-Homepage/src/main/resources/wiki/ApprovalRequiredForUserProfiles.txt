@@ -1,0 +1,3 @@
+!Hello new user!
+
+To avoid abuse, we decided to change the registration procedure to requiring authorization of the registration by an admin. New registrations will be checked about once a week, in urgent cases you can write a quick email to ''albrecht.striffler<at>denkbares.com''.

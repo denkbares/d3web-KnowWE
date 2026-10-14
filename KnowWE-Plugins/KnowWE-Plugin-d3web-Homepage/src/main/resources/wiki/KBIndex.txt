@@ -1,0 +1,5 @@
+!!! Übersicht über die Wissensbasen
+
+[{KnowWEPlugin showAllKBs}]
+
+[{KnowWEPlugin parseAllButton}]

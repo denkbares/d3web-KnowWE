@@ -1,0 +1,85 @@
+!!! What's the time line?
+
+The time line offers the possibility to search for specific values in test cases. These values are displayed on a time bar. They can either be displayed as an event (if start and end time are identical) or period (if start and end time are different). 
+It's possible to run the correspondent test case until such an event/period starts. Therefore it's possible to search for relevant data and gather chronological information.
+
+!!! How to use the time line?
+
+{{{
+%%Timeline
+@uses demo
+%
+}}}
+
+An almost empty time line is displayed.
+
+!!! Query Language
+
+You need a simple query language to display single events/periods on the time bar.
+
+Every line of code between
+
+{{{
+%%Timeline
+}}}
+
+and
+
+{{{
+@uses demo
+%
+}}}
+
+corresponds to a line on the time bar which shows appropriate events/periods.
+
+!Example
+{{{
+%%Timeline
+Temperature < 20
+@uses demo
+%
+}}}
+
+!!!Syntax
+
+For all following examples it can be assumed that the test case contains data about the temperature inside (INTEMP) and outside (OUTTEMP) of a car.  
+
+
+!!Less/Greater than
+{{{    <
+    >
+XXX = VALUE FOR X min/sec/h
+   >=
+   <=}}}
+   
+!Example
+||Code||Explanation
+| INTEMP >= 5   | Displays all values of INTEMP on the time bar, which are greater than five. Sequel events where INTEMP wasn't < 5, are combined to one episode.
+| INTEMP < 5 FOR 10 min | Displays all values of INTEMP on the time bar when INTEMP was less than five over a period of 10 minutes. 
+
+
+!!Value changes
+{{{
+    'change   <
+XXX 'increase    VALUE
+    'decrease >
+}}}
+
+!Example
+||Code || Explanation
+|INTEMP 'increase| Displays all values of INTEMP on the time bar, where the INTEMP value is higher than the previous one.
+| INTEMP 'change| In analogy to the previous example, but with the difference that every change is displayed.
+|INTEMP 'decrease > 10 |  Displays all values of INTEMP on the time bar, where the INTEMP value is at least 10 units higher than the previous one.
+
+
+!!Unions/Intersections
+{{{
+(XXX AND/OR YYY) FOR X sec/min/h
+(XXX FOR X sec/min/h) AND/OR (YYY FOR X sec/min/h)
+}}}
+
+!Example
+||Code||Explanation
+| (INTEMP > 10) AND (OUTEMP < 5)  | Displays all episodes, where (INTEMP > 10) as well as (OUTTEMP < 5) are true.
+
+The suffix "FOR X sec/min/h" is here always optional.

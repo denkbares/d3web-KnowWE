@@ -1,0 +1,31 @@
+%%sparqlVisualization
+     SELECT ?x ?y ?z WHERE {
+	    BIND ( %1$ AS ?x) .
+	    ?x ?y ?z . 
+	    ?z rdf:type si:Human.
+	    FILTER (?z != ?x).
+	   }
+@config: TemplateVisConfig
+@rankDir: LR
+@showLabels: true
+@rankSame: si:homer, si:marge
+@templateDefaultConcept: si:homer
+@isVisTemplateForClass: si:Human
+@timeout: 90
+%
+
+%%ConceptVisualization 
+  @concept: si:homer
+  @language: en
+  @width: 1500
+  @rankDir: LR
+  @literals: OFF
+  @showRedundant: false
+  @timeout: 90
+  @isVisTemplateForClass: si:Human
+  @config: TemplateVisConfig
+  @excludeRelations: si:gender, si:worksAt, rdfs:subClassOf, si:livesIn
+  @predecessors: 0
+%
+
+%%package simpsons

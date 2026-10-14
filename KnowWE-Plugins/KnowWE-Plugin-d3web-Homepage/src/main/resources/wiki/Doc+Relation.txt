@@ -1,0 +1,29 @@
+[{TableOfContents}]
+
+!!! Definition
+
+The markup to define relations/triples/assertions goes as follows:
+
+{{{
+%%Relation...
+}}}
+
+!!! Example
+
+To define a Relation saying that ''Ms. Moneypenny'' lives in ''London'' on writes:
+
+{{{
+%%Relation "Ms. Moneypenny" livesIn London
+}}}
+
+__Note:__ When using this markup, identifier with spaces requires quoting!
+
+
+The markup also allows to define multiple relations:
+
+{{{
+%%Relation 
+"Ms. Moneypenny" livesIn London
+"Ms. Moneypenny" rdf:type Person
+%
+}}}

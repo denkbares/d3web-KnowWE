@@ -1,0 +1,74 @@
+%%package simpsons
+
+%%sparqlVisualization
+SELECT ?x ?y ?z WHERE {
+ 	?x ?y ?z. 
+ 	FILTER (strstarts(str(?x), "http://www.example.org/ontology#")) .
+ 	FILTER (strstarts(str(?y), "http://www.example.org/ontology#")) .
+}
+@colors: si:color
+%
+
+%%sparqlVisualization
+SELECT ?x ?y ?z WHERE {
+ 	?x ?y ?z. 
+ 	FILTER (?x != owl:Thing) .
+ 	FILTER (?x != owl:Nothing) .
+ 	FILTER (?x != rdfs:Resource) .
+ 	FILTER (?x != rdfs:Class) .
+ 	FILTER (?x != owl:Class) .
+ 	FILTER NOT EXISTS {?x rdf:type rdf:Property}.
+ 	FILTER (?z != owl:Thing) .
+ 	FILTER (?z != owl:Nothing) .
+ 	FILTER (?z != rdfs:Resource) .
+ 	FILTER (?z != rdfs:Class) .
+ 	FILTER (?z != owl:Class) .
+ 	FILTER NOT EXISTS {?z rdf:type rdf:Property}.
+ 	FILTER (?y != owl:sameAs) .
+ 	FILTER (?y != rdfs:subClassOf) .
+ 	FILTER (?y != rdfs:subPropertyOf) .
+ 	FILTER (?y != owl:equivalentClass) .
+}
+%
+
+%%off:ConceptVisualization 
+  @concept: si:bart, si:burns
+  @showLabels: false
+  @predecessors: 10
+  @successors: 10
+  @excludeNodes: owl:Thing, rdfs:Class, rdf:Resource, owl:Nothing
+  @excludeRelations: owl:sameAs, owl:equivalentClass, owl:equivalentProperty, rdfs:subClassOf, rdfs:subPropertyOf, rdfs:label, si:age
+  @colors: si:color
+%
+
+%%off:SparqlVisualization
+      SELECT ?x ?y ?z WHERE {
+	    ?x ?y ?z . 
+	    ?x rdfs:subClassOf si:SimpsonsConcept. 
+	    ?z rdfs:subClassOf si:SimpsonsConcept. 
+	    ?x rdfs:subClassOf ?z.
+	    FILTER NOT EXISTS { 
+	    	?middleObject rdfs:subClassOf si:SimpsonsConcept. 
+	    	?x rdfs:subClassOf ?middleObject. 
+	    	?middleObject rdfs:subClassOf ?z.
+	    	FILTER (?middleObject != ?x ).
+	    	FILTER (?middleObject != ?z ).
+ 	    }
+ 	    FILTER (?x != owl:Nothing).
+ 	    FILTER (?x != ?z).
+	    BIND ("boo " AS ?edge).
+
+}
+@rankDir: BT
+@linkMode: browse
+@size: 700
+%
+
+%%VisualizationConfig 
+@name: defaultVisConfig
+@excludeNodes: owl:Thing, rdfs:Class, rdf:Resource, owl:Nothing
+@excludeRelations: rdf:type, owl:sameAs, owl:equivalentClass, owl:equivalentProperty, rdfs:subClassOf, rdfs:subPropertyOf, 
+@format: svg
+@linkMode: browse
+@size: 1200
+%

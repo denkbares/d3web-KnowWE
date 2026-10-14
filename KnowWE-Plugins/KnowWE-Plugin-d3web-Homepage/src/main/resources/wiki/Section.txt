@@ -1,0 +1,17 @@
+! General
+The class [Section|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/parsing/Section.html] is used to represent the source text of all articles at level of granularity necessary to fullfil all tasks required in knowledge engineering.
+It plays an important role in any kind of programming on or for KnowWE. For a description of the public interface refer to the [javadoc|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/parsing/Section.html].
+
+__Important:__ Section objects have to be used as read-only objects. Do not try to modify these objects. If you need to change source content, please refer to the [corresponding howto|How-To Work with Sections]. To maintain consistency, Section object may only be created or modified by the internal source processing mechanism of KnowWE.
+
+
+! Section basics
+
+The most important structural characteristics of the tree-based content representation as sections can be summarized as follows:
+* Every article has a root section. This section contains the entire source text of the article.
+* For every section, which is not a leaf, the following holds: A ordered string concatenation of all child sections exactly matches the text content of the node
+* Each section is provided with a [Type] which describes and represents the role of this piece content.
+
+
+! Further readings 
+* [Sections]

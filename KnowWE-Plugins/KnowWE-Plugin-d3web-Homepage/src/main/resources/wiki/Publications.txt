@@ -1,0 +1,10 @@
+[{Image src='Sandbox/under_construction.png' align='center' caption='This page is still under construction. Please revisit this page in a few weeks.'}]
+
+%%Todo
+  List publications about d3web (and tools)
+  
+@user: Frank Puppe
+%
+%%(color:gray;text-align:right;position:relative;top:25px;)
+Images are adapted from wikipedia.
+%%

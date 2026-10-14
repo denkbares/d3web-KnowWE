@@ -1,0 +1,28 @@
+[{Image src='vo_logo.jpg' align='left'}]
+\\
+
+!ESAT - Selecting Assisting Technologies for Handicaped People
+
+%%(text-align:justify; display:block;)
+ESAT ("Expertensystem für Assistierende Technologien" in German) is an expert system designed to determine an appropriate set of human-computer interaction devices for handicapped people. In the application scenario a detailed profile of the physical capabilities (e.g., visual or motorical abilities) for a person is entered into the system. The knowledge base derives a set of input and output devices, that together provide optimal computer interaction for that specific person. In advance, the underlying domain knowledge has been elaborated by a comprehensive study in 2008. The actual implementation of a corresponding executable knowledge base using KnowWE has started in spring 2011. 
+
+Currently, the ESAT knowledge base has been completed and the system will be launched for a testing phase at the project’s initiator ([http://www.vo-fab.at/]). The knowledge base has been implemented by mainly one knowledge engineer using KnowWE. For knowledge representation production rules are used. In total the ESAT knowledge base currently contains 702 rules and 80 wiki articles. There are 64 input parameters to gather the knowledge for each case. Also in this single-user context the possibility of free structuring allows for reasonable and clear distribution of the knowledge. The terminology is defined on different wiki articles dealing with vision, hearing, motoric and haptic abilities and general skills (e.g., braille) respectively. The about 95 different input and output devices, technologies and support software (e.g., various kinds of keyboards, sensors, displays) are grouped together and described in distinct wiki articles also containing the rules relevant for the derivation of the particular device.
+The derivation of the results is based on heuristics and requirements, which are defined for assisting device. Therefore, the rules for the specific requirements in most cases are defined directly on the page that defines the assisting device.
+Additionally, five comprehensive heuristics are defined on distinct wiki pages, as their derivations rules establish groups of multiple assisting devices that are employed together as combined solution.
+Hence, attaching this knowledge to the device definition pages would be render inconvenient.
+
+More details about the project are given by [Siegfried Kreutzer].
+
+The work reached the final for the best student paper award at the [eHealth2012-Conference|http://www.ehealth20xx.at/eHealth2012/program/science.html#students].
+%%
+
+!Screenshots of ESAT
+
+* [Description of the assisted technology 'Kopf- & Mundjoystick'|ESAT_Screenshot_01]
+* [Rule definition of the assisted technology 'Kopf- & Mundjoystick'|ESAT_Screenshot_02]
+* [User interaction form|ESAT_Screenshot_03]
+* [Derivation and results|ESAT_Screenshot_04]
+* [Code sample of heuristic 05|ESAT_Screenshot_05]
+* [Code sample of the testing sequence for heuristic 05|ESAT_Screenshot_06] 
+
+

@@ -1,0 +1,34 @@
+!!! Main products
+
+* __d3web-Core__: Reasoning engine and persistence components for problem-solving knowledge including decision trees, (heuristic) rules, set-covering models and diagnostic flowcharts.
+* __KnowWE__ (Knowledge Wiki Environment): A semantic wiki building on JSPWiki. Problem-solving knowledge can be authored and executed through the wiki interface. Developed knowledge bases can be exported to be used in OEM or embedded reasoners. Additionally, knowledge exchange via OWL ontologies is provided.
+
+!!! Applications
+
+* __[KnowledgeBaseBook]__: Generates a DocBook XML file of an executable d3web knowledge base, i.e., the knowledge base book. The DocBook XML can be used for further transformations. The application produces a PDF printout.
+* __[Testing-App]__: Allows to continuously run specified tests on a d3web knowledge base in development.
+* __[KnowWE-Headless-App]__: An version of KnowWE without the normally underlying web server. It can be used to produced d3web knowledge bases from wiki pages in a batch process.
+* __[Mobile-App]__: Application allowing to use d3web problem solving knowledge in a stand alone application.
+* __[Droid3web-App]__: Application allowing to use d3web problem solving knowledge on your mobile device.
+
+!!! Modules
+
+Modules are the different parts of the main products and applications 
+
+!Complex modules (more than one plugin)
+
+* [Module TimeDB]
+* [Module CostBenefit]
+* [Module Rdf2Go]
+* [Module DiaFlux]
+* [Module Testing]
+* [Module TestCase Player]
+
+!Simple modules (rest)
+
+
+
+
+!Product Ontology
+
+[Product Ontology]

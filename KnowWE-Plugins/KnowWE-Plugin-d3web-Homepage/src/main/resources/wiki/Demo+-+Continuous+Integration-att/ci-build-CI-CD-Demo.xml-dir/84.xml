@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<build date="2021-01-18 17:16:23.870 +0100" duration="164">
+    <test configuration=".*" name="ArticleHasErrors" numberOfSuccessfullyTestedObjects="302">
+        <message testObject="Demo - Simpsons Visualization" text=" errors found in article '[Demo - Simpsons Visualization]'&#10;* The annotation @linkMode is not known to system. It will be ignored." type="FAILURE"/>
+        <message summary="true" text="Failure:  test 'ArticleHasErrors', object 'Demo - Simpsons Visualization'" type="FAILURE"/>
+    </test>
+    <test configuration="((?!ST-BMI).)* &quot;[0-9a-zA-ZäöüÄÖÜß#_():/.,\- ]*&quot;" name="TermnameConvention" numberOfSuccessfullyTestedObjects="302">
+        <message testObject="Ling" text="The following terms do not comply to the specified naming convention pattern (~[0-9a-zA-ZäöüÄÖÜß#_():/.,~\- ~]*):&#10;* He isn't doing anything&#10;* What is John doing?&#10;* Who does John hate?&#10;* 玛丽" type="FAILURE"/>
+        <message summary="true" text="Failure:  test 'TermnameConvention', object 'Ling'" type="FAILURE"/>
+    </test>
+    <test configuration=".* FixMe:" name="ArticleContains" numberOfSuccessfullyTestedObjects="303">
+        <message summary="true" text="" type="SUCCESS"/>
+    </test>
+    <test configuration="&quot;Demo - Master&quot;" name="EmptyQuestionnaire" numberOfSuccessfullyTestedObjects="1">
+        <message summary="true" text="" type="SUCCESS"/>
+    </test>
+    <test configuration="&quot;^Demo - Test Cases.*&quot; &quot;Demo - Master&quot;" name="TestCase" numberOfSuccessfullyTestedObjects="4">
+        <message summary="true" text="" type="SUCCESS"/>
+    </test>
+</build>

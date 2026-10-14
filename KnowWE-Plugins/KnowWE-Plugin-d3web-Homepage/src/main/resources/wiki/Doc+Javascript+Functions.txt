@@ -1,0 +1,149 @@
+%%information
+The functionalities described on this page are only available using a commercial extension. Please contact info@denkbares.com for more information.
+/%
+
+The TimeDB plugin for d3web-KnowWE by default provides a wide range range of function to be used on the current temporal state of a d3web problem solving session. See [Function Reference|Doc Expressions#Function Reference] for more details. Still, there will always be certain functionalities that are not covered by the default functions. To overcome this, the plugin also provides the possibility to define and use your own functions with Javascript.
+
+
+!!! The Function Markup
+
+The ''%%Function'' markup consists of two main parts. In the content part of the markup, you simply write ordinary Javascript code defining one or more functions. In the annotations part, you write exports defining how the TimeDB plugin can interact with those functions.
+
+
+!Basic Example
+
+Consider the following markup text:
+
+%%prettify 
+{{{
+%%Function
+function sumOf(a, b) { 
+	return a + b; 
+}
+@export: sumOf(NUMBER, NUMBER) -> NUMBER
+%
+}}}
+/%
+
+It renders the following way:
+
+%%Function
+function sumOf(a, b) { 
+	return a + b; 
+}
+@export: sumOf(NUMBER, NUMBER) -> NUMBER
+%
+
+As we can see, we just add two numbers in the function ''sumOf''. Below it, we define the signature to be exported for TimeDB usage. The function accepts two numbers and returns also a number. The following parameter types are available: NUMBER, STRING, DATE, DURATION, BOOLEAN, HISTORY_NUMBER, HISTORY_STRING, HISTORY_DATE, HISTORY_DURATION, HISTORY_BOOLEAN, HISTORY_ANY, ANY. The history types are basically arrays of the other non-history types. Also see [Doc Expressions] for more info about parameter types.
+
+
+!Example with Histories
+
+In this example, we see multiple functions and exports in one markup. Also you see how to iterate over histories. The entries of the history provide, besides the function getValue(), also the functions getStartTime(), getEndTime(), and getDuration().
+
+%%Function
+// the value at index i of the history
+function nthValue(history, i) { 
+	if (i >= history.length) return null;
+	return Number(history[i].getValue());
+}
+
+// duration of the value at index i of the history
+function nthDuration(history, i) { 
+	if (i >= history.length) return null;
+	return Number(history[i].getDuration());
+}
+
+function sumOfAll(history) { 
+	var sum = 0; 
+	for (var i = 0; i < history.length; i++) {
+		sum += Number(history[i].getValue());
+	}
+	return sum; 
+}
+
+function sumOfHalf(history) { 
+	var sum = 0; 
+	for (var i = 0; i < history.length / 2; i++) {
+		sum += Number(history[i].getValue()); 
+	}
+	return sum; 
+}
+
+@export: nthValue(HISTORY_NUMBER, NUMBER) -> NUMBER
+@export: nthDuration(HISTORY_NUMBER, NUMBER) -> NUMBER
+@export: sumOfAll(HISTORY_NUMBER) -> NUMBER
+@export: sumOfHalf(HISTORY_NUMBER) -> NUMBER
+%
+
+
+!Using functions in TimeDB
+
+Let's try to use the newly created functions. We define an input variable and assign the output of our functions to some abstraction questions:
+
+%%Question
+Input [num]
+OutputNthValue [num] <abstract>
+OutputNthDuration [num] <abstract>
+OutputSumOfAll [num] <abstract>
+OutputSumOfHalf [num] <abstract>
+%
+
+%%Variable
+OutputNthValue = nthValue(Input[], 2)
+%
+
+%%Variable
+OutputNthDuration = nthDuration(Input[], 2)
+%
+
+%%Variable
+OutputSumOfAll = sumOfAll(Input[])
+%
+
+%%Variable
+OutputSumOfHalf = sumOfHalf(Input[])
+%
+
+Use the quick interview below and try out for yourself. Enter some values to Input.
+
+%%QuickInterview
+
+%
+
+
+!Debugging the defined functions
+
+There is the possibility to debug the functions you have defined. Just us the tool "Debugger" on the top right of the Function markup. It will open a new window that contains the defined function again and instructions on how to debug them. You can also try this with the examples given on this page.
+
+\\
+\\
+
+
+%%collapsebox-closed
+!Helper markups
+
+%%Question
+
+%
+
+%%KnowledgeBase
+Javascript-Function Demo-KB
+%
+
+%%Package 
+javascript-functions
+%
+
+%
+
+
+
+
+
+
+
+
+%%tags
+Documentation formulas Expressions timedb variables expressions
+%

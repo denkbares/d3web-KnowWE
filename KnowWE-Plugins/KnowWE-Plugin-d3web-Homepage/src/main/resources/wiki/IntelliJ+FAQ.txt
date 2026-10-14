@@ -1,0 +1,221 @@
+This is a blog like article with a FAQ for d3web developers transitioning from Eclipse to IntelliJ IDEA:
+
+[{TableOfContents }]
+
+
+!!IntelliJ does not start with OSX Yosemite (no Java 1.6 installed)
+
+With version Yosemite, OSX no longer bundles Java 1.6. Because of that, we have to tell IntelliJ to use the Java 1.8 (or newer) runtime instead. The best way to do this is to put a file "idea.properties" into the directory {{~/Library/Preferences/IntelliJXX/}}, specifying the correct runtime. You can also specify other properties like console buffer size and so forth. Your properties file could look like this: [idea.properties]. It's also ok to just use this file.
+
+
+!!Create a new Plugin-Module
+
+* right click on the respective parent module
+* "new" -> "Module"
+* select "Maven"
+* select no archetype when asked
+* Enter the name of your plugin for "Module Name"
+* Change the entry of "Content root" using the "..." button, create new subfolder within the parent module named according to your plugin name, select this folder for "Content root" and "Module file location"
+* hit next/finish
+* (if your intelliJ is not configured to auto-import maven modules:) Import the project as maven module  
+
+
+!!Import current code styles
+
+Download the attached [code_styles.jar] and import them with File -> Import settings.\\
+\\
+Also, under Settings, go to "File and Code Templates" (use search bar in Settings) and in the tab "Includes" adapt your File Header. Instead of the "Created by ... on... " use the following:
+
+
+%%prettify
+{{{/**
+ * @author Your Name (optionally your company) 
+ * @created ${DATE}
+ */}}}
+
+
+!! IntelliJ Inspections
+
+Check out the following How-To page: [How-To IntelliJ Inspections]
+
+
+!!Adding new files and classes to version control automatically:
+
+Go to File -> Settings -> Version control -> Confirmation -> When files are created. You're probably looking for "Add silently".
+
+
+!!Save actions like in eclipse
+
+Edit -> Macros -> Start macro recording\\
+\\
+Now we record the actual macro simulating our Save actions:
+
+# Code -> Reformat Code  (formats the code according to the code style/template, also allows to optimize inputs)
+# File -> Save all
+# Build -> Compile (compiles the changes which also causes them to be hot swapped when in debug)
+
+Edit -> Marcros -> Stop macro recording\\
+\\
+After that, I bound the macro to "Cmd + Alt + S". This way I still have the normal save, but also the macro which does more...
+
+
+!!Show Javadoc
+
+Use View -> Quick Documentation or the corresponding keyboard shortcut (depends on OS and Keymap).\\
+On Mac OSX with Eclipse keymap, F2 Works.\\
+\\
+It's also possible to enable automatic JavaDoc popup on code completion in Preferences -> Editor -> Code completion (Autopopup documentation).\\
+At the beginning this worked for me (somewhat clitching), but now it no longer works :(  
+
+
+!!Use Identical Path for JUnit and Maven Testing
+
+Unfortunately JUnit in IntelliJ IDEA has a different path for executing JUnit tests in modules as it will have when testing in maven builds. You can change this unwanted default behaving by setting the default JUnit path in the Run Configuration default settings for JUnit:
+
+Open Menu {{Run->Edit configuration}} and there go to {{Defaults->JUnit->Working directory}} and set the value to {{$MODULE_DIR$}}.
+
+[{Image src='JUnit Default Path Setting.png' height=400px}]
+
+After that IntelliJ IDEA will set the relative path in all JUnits just like Maven.
+
+
+!!Running Headless-App-Tests in JUnit
+
+To run the Headless-App-Tests in JUnit (e.g. for debugging), create/add a new JUnit Configuration. In the configuration, make sure to use the settings displayed below. Make sure you select the Working directory of the "KnowWE-Headless-App", and select the classpath of the module "KnowWE-Headless-App". "Test kind" has to be "Class" and "Fork mode" has to be "none", otherwise debugging is not possible.
+
+[{Image src='H-App JUnit.png' height=400px}]
+
+
+!!Sorting of import statements
+
+By default IntelliJ has different order of import statements as Eclipse. To avoid having these change every time a class is edited in the different IDEs, we should adjust the order in IntelliJ. This can be done under Code Style -> Java - > Imports. The order should be:
+
+# import java.*
+# <blank line>
+# import javax.*
+# <blank line>
+# import all other imports
+# <blank line>
+# import cc.denkbar.*
+# import com.denkbares.*
+# import de.*
+# <blank line>
+# import static all other imports
+
+The above order will not quite avoid all changes, since Eclipse seems to additionally add blank lines between all imports with different first path elements, but this seems close enough for now.
+I think since it is a code style, this should also be part of the code style settings, which are also attached to this site. 
+
+
+!!Get Javascript code completion for jquery or other JavaScript Libraries
+
+# Open “Project Structure” dialog and choose “Global Libraries”.
+# Click [+] button and choose “JavaScript” library type from the drop-down list.
+# Specify your library name in the “Name” field.
+After specifying the global jQuery library you need to make sure that it is defined in your file completion scope: 
+# Open Settings|JavaScript| Libraries 
+# Enable jquery and choose all (parent) projects you want code-completion for
+# Afterwards click "Manage Scopes" and check that jquery is defined at Project level
+
+__Attention:__ After adding files to your library, they become read-only in IntelliJ. You should only add files as global libraries that you will not change often. Otherwise you need to removed them from the library as long as you edit them or only use an external copy of the files.
+
+
+!!NotSerializableException on Tomcat startup
+
+During startup KnowWE/Tomcat often produces exceptions of the following kind:
+
+%%prettify 
+{{{
+java.io.WriteAbortedException: writing aborted; java.io.NotSerializableException: com.ecyrd.jspwiki.auth.UserManager
+    at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1351)
+    at java.io.ObjectInputStream.defaultReadFields(ObjectInputStream.java:1970)
+    at java.io.ObjectInputStream.readSerialData(ObjectInputStream.java:1894)
+....
+}}}
+/%
+
+
+
+
+
+
+
+KnowWE still works, but the exceptions are annoying/irritating...\\
+In eclipse it was possible to delete the work-folder in KnowWE-App, but in IntelliJ that does no longer work.\\
+\\
+The solution is actually pretty simple, just deactivate session persistence in your Tomcat:
+
+# Open file "%Tomcat_Home%/conf/context.xml"
+# To disable the session persistence, uncomment the line <Manager pathname="" />
+
+
+!!Debugging one thread of many
+
+For developers migrating from Eclipse to IntelliJ, the default behavior of breakpoints in IntelliJ might be unexpected. While Eclipse only suspends the thread that reached the breakpoint, IntelliJ also suspends all other threads when a breakpoint is reached.\\
+This behavior can simply be changed in the settings of the breakpoint: Open the breakpoints panel in the debugger an navigate to your breakpoint. Right to the checkbox "Suspend" select the radio-button "Thread" instead of "All". On the right side of the panel you can also make this setting the default.
+
+[{Image src='suspend thread.png'  width='600px' }]
+
+
+!!View all compile errors of the project/workspace
+
+IntelliJ does not have a view showing all current compile errors like Eclipse did, because it does not compile automatically on each change of the code.\\
+For me, the best replacement so far has been the following:
+
+# In the settings, search for "Java Compiler" and select "Eclipse" as compiler.
+# Make sure that "Proceed on errors" is checked
+
+If you now want to see all compile errors, e.g. after a "dirty refactoring":
+
+# Go to "Build" and "Make Project". It may take a few seconds, but not many (< 10s for me). If you made changes with big impact in Eclipse, it would also compile for some time...
+# You now see the errors and warnings in the Messages view and can go through them. You can hide warnings with a button in the tool bar of the view.
+# Alternatively, select scope "Problems" in the Project view. Unfortunately this does not show all existing compile errors, but only the ones of the files you have already viewed.
+
+%%warning There currently seems to be a problem with the eclipse compiler option using Java 8. If you are getting an error like "Error:java: source level should be comprised in between '1.3' and '1.7' (or '5', '5.0', ..., '7' or '7.0'): 8", switch back to Javac again.
+
+
+!!Java dock entries on OSX
+
+To remove the dock entries that IntelliJ spawns when compiling or running Tomcat, append {{-Dapple.awt.UIElement=true}} to your Java VM options.
+
+
+!!Migrating to Java 8 and JSPWiki 2.10 
+
+Since the end of July, we migrated KnowWE to now use JSPWiki 2.10, Java 8 and Tomcat 8. Follow this section to migrate your own workspace/project in IntelliJ:
+
+# Install JDK 8 and add and set it as the default in your JDK. In IntelliJ, go to File -> Project Structure... -> SDKs and add the JDK 8. Under Project also in Project Structure..., set it as the default.
+# Download the current Tomcat 8 as the zip version. Unzip it analogous to your Tomcat 6 and set it your Tomcat configurations in IntelliJ.
+#jspwiki.properties is now jspwiki-custom.properties. Instead of in local/WEB-INF/ it is now in local/WEB-INF/classes/. It has basically the same content as before, but you should nevertheless start again from the .default file and just migrate your individual settings like var.basedir to the new file.
+
+
+!!Java 8 and JSPWiki 2.10 issues
+
+
+!Java source level error
+
+If you get an error like: 
+
+{{{
+"Error:java: source level should be comprised in between '1.3' and '1.7' (or '5', '5.0', ..., '7' or '7.0'): 8"
+}}}
+
+you have to switch back to Javac as the compiler again. More info at [IntelliJ FAQ#View all compile errors of the project/workspace]
+
+
+!SecurityManager/jspwiki.policy issues
+
+If you have an error with content like 
+
+{{{
+"Failed to start managers: File /IntelliJ%20Workspaces/denkbares/KnowWE-App/target/KnowWE-App-0.2-SNAPSHOT/WEB-INF/jspwiki.policy does not exist, or the SecurityManager prohibited access to it."
+}}}
+
+your problem is very likely a whitespace in the path to the jspwiki.policy file. The SecurityManager of JSPWiki 2.10 does not like that.
+If the whitespace is in your workspace folder name, you can close IntelliJ, rename the folder, open IntelliJ again and then choose the new folder in the welcome splash screen after clicking "Open Project".
+
+
+!Error with com.ecyrd.jspwiki....
+
+If you get (class loading) exceptions involving the old pre 2.9. JSPWiki package naming while starting ab KnowWE, you most likely are dealing with one of the following issues:
+
+# You are trying to start KnowWE with an old pre 2.9 JSPWiki plugin like the TablePlugin. Update or remove these plugins in your dependencies.
+# There are leftover files in your workspace containing the old JSPWiki code with the wrong package names. Do a "Find in path" with "ecyrd" to quickly find them. Most likely you can delete or update them. In case the files are in one of the "Overlay" folders in KnowWE-Resources or KnowWE-App, you can delete them. Do a maven build afterwards.

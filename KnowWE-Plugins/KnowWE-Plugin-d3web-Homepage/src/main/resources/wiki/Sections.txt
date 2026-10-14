@@ -1,0 +1,2 @@
+The class [Sections|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/parsing/Sections.html] provides numerous auxiliary methods for the handling of sections that you are encouraged to use. For a description of all these methods, please refer to the [javadoc|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/parsing/Sections.html]. Additionally, 
+typical tasks are outlined in this [howto|How-To Work with Sections].

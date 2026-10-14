@@ -1,0 +1,22 @@
+%%Package simpsons
+
+!!! Graphviz Visualization
+
+{{{
+digraph claasfunctions {
+#	size="6,6";
+	rankdir = LR;
+	node [color=darkolivegreen2, style="rounded, filled, solid", shape="box"];
+
+...
+
+}
+}}}
+
+%%Sparql 
+  SELECT ?triple
+  WHERE {
+     ?s ?p ?o .
+     BIND ( CONCAT ("\"", str(?s), "\" -> \"", str(?o), "\" [ label=\"", str(?p), "\" ]" ) AS ?triple ) .
+  }
+%

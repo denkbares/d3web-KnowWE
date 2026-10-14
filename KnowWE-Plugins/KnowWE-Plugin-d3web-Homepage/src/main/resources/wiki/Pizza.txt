@@ -1,0 +1,26 @@
+!!! This is my pizza ontology.
+
+%%ConceptVisualization 
+  @concept: pizza:American
+  @excludeNodes: owl:Thing, rdfs:Class, rdf:Resource, owl:Nothing, pizza:DomainConcept
+  @excludeRelations: rdf:type, owl:sameAs, owl:equivalentClass, owl:equivalentProperty, rdfs:subPropertyOf, owl:disjointWith
+  @width: 2000
+%
+
+
+!SPARQL query displaying all pizzas in pizza.owl
+
+
+%%Sparql
+SELECT ?Pizza WHERE {
+?Pizza rdfs:subClassOf pizza:Pizza .
+FILTER (!STRSTARTS(STR(?Pizza), "_")) .
+}
+ORDER BY ?Pizza
+%
+
+%%Ontology 
+@import: pizza.owl
+%
+
+%%Package pizza

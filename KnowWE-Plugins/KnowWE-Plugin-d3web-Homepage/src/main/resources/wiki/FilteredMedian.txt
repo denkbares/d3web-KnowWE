@@ -1,0 +1,18 @@
+%%QuickInterview 
+  
+%
+
+%%Question
+Input [num]
+FilteredMedian [num]
+%
+
+%%Variable 
+  FilteredMedian = median(filter(Input[], '>=', max(Input[]) - (delta(Input[]) * 0.25)))
+%
+
+%%KnowledgeBase 
+DemoKB
+%
+
+%%Package filteredMedian

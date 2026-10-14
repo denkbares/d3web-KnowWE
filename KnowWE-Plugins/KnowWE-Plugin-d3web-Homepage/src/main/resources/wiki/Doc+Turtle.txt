@@ -1,0 +1,34 @@
+[{TableOfContents}]
+
+!!! Definition
+
+Besides XML the W3C has standardized the Turtle syntax to define ontologies.
+In KnowWE the syntax can be used within the markup {{Turtle}}:
+
+{{{
+%%Turtle...
+}}}
+The markup allows for the definition of multiple turtle statements within one markup block.
+Also, the namespaces {{rdf}}, {{rdfs}}, and {{owl}} are already defined and ready to use.
+
+!!! Example
+
+The following example defines an owl:Class with the name {{System}} and a corresponding instance with the name {{KnowWE}}.
+
+{{{
+%%turtle
+:System rdf:type owl:Class .
+
+:KnowWE rdf:type :System ; 
+    rdfs:label "KnowWE Wiki" .
+%
+}}}
+This expression defines five triples.
+By the use of colons multiple assertions can be defined for one subject. Furthermore, for one property, multiple assertions can be stated by listing the respective relation objects as a comma-separated list as shown above with the different labels.
+
+!!! See Also
+
+* [W3C Turtle Recommendation|http://www.w3.org/TR/turtle/]
+* [Ontology|Doc Ontology]
+
+

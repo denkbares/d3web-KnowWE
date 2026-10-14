@@ -1,0 +1,110 @@
+This page provides some introductory material for using KnowWE.
+The Semantic Wiki KnowWE builds on the open-source wiki engine [JSPWiki|http://www.jspwiki.org], extended by the core libraries of d3web and semantic extensions of the KnowWE project.
+Therefore, many [JSPWiki|http://www.jspwiki.org/wiki/JSPWikiDocumentation] markups can be directly used in KnowWE.
+
+
+!!! First steps
+
+* [First Steps| Doc FirstSteps]:  The first and most basic activities in KnowWE
+* [Basic Markup | Doc BasicMarkup]: Describes how for format article with headlines, bold letters, bullet lists, etc.
+* [Tables|Doc Tables]: Explains how to use tables 
+* [Hot keys and shortcuts|Doc Hot Keys]: List of shortcuts and hot keys usable in KnowWE
+
+%%tags
+FirstSteps  
+%
+
+
+!! Knowledge Engineering with KnowWE
+
+A knowledge base is defined by a collection of knowledge elements. 
+These elements can be distributed across the wiki by placing them on different articles.
+For each knowledge element, we need to define its corresponding ''package'', i.e., a tag that describes its affiliation.
+
+
+! Defining your Knowledge
+
+You may declare a new knowledge base by specifying the used packages, that should be included into this knowledge base.
+For the creation of the knowledge base all knowledge elements of the specified packages are picked and included. Detailed descriptions on the definition of knowledge base elements are provided as following:
+
+* [Creating a knowledge base|Doc KnowledgeFormalization] and [KnowledgeBase|Doc KnowledgeBase]: The mandatory markups to define a knowledge base
+* [Package|Doc Package]: Defining packages to group knowledge 
+* [Covering Models|Doc CoveringList]: Using set-covering models to derive solutions
+* [Solution|Doc Solutions]: Defining solutions and groups of solutions
+* [Question|Doc Questions]: Defining questions and questionnaires (groups of questions)
+* [DiaFlux|Doc Diaflux]: Using diagnostic flowcharts to ask questions, derive abstractions, and establish solutions
+* [Rule|Doc Rules]: Using rules to derive abstractions and score solutions
+* [Abstraction Tables|Doc AbstractionTable]: Use tables to define a set of rules about the same objects
+* [Property|Doc Properties]: Adding special behavior to objects and translate them into multiple languages
+* [Resource|Doc Resources]: Adding multimedia resources to your knowledge base. To add clickable images with sensitive areas to questions, also have a look at the [Image Maps | Doc ImageMap].
+
+
+! Execute your Knowledge
+
+The created knowledge base can be tested directly in the wiki. For this you can use the inline quick interview or a user-driven simple click-dialog. Alternatively you may download the knowledge base as a separate file to run on Android or in a stand-alone application.
+
+* [Using the knowledge|Doc KnowledgeUsage]: Run an interview session in the wiki and check the derived solutions
+* [QuickInterview|Doc QuickInterview]: Embed an inline dialog to use the knowledge in a wiki page
+* [ShowSolutions|Doc ShowSolutions]: Show the derived solutions and/or values in a wiki page
+
+
+! Test your Knowledge
+
+There exists a bunch of functionalities to test your knowledge during the development. 
+Some tests may be executed manually as required, but you can also define them to be running automatically in the background every time a change is applied to the wiki. 
+In this case, you can specify a signal in the left menu of the wiki to indicate the current quality status.
+* [CIDashboard|Doc CIDashboard] and [CIDaemon|Doc CIDaemon]: Continuous integration of knowledge bases; a dashboard always informs you about the healthiness of your knowledge project
+* [TestCasePlayer|Doc TestCasePlayer]: Execute the test cases to verify the behavior of the knowledge base
+* [Timeline | Doc Timeline]: Execute and filter test cases
+* [TestCase|Doc TestCase]: Define test cases to verify the behavior of the knowledge base. It explains, how knowledge can be evaluated in KnowWE using a suite of test cases
+* [TestCaseTable|Doc TestCaseTable]: Table-based definition of test cases
+* [TestCaseSessionRecord|Doc TestCaseSessionRecord]: An alternative way to define test cases 
+* [KnowledgeBaseBook|Doc KnowledgeBaseBook]: Create a PDF file from of a knowledge base to review the contents that have been compiled into it
+* [Analysing KPIs (Key Performance Indicators)|Doc KPI]: Define KPIs and analyse how your knowledge base performs for these KPIs in different [TestCases|Doc TestCaseTable]
+
+
+! Development of Ontologies
+
+KnowWE allows to define ontologies in RDF(S) directly within the Wiki using the following markups:
+* [Creating an Ontology | Doc Ontology]: How to create a new ontology
+* [Namespace| Doc Namespace]: Define dinstinct namespaces or import 3rd party ontologies
+* [Turtle| Doc Turtle]: Establish multiple relations for a resource using the Turtle syntax
+* [SPARQL|Doc SPARQL]: Include SPARQL queries and embed the results into a wiki page
+* [InlineSparql|Doc InlineSparql]: Show the information or number of lines of a SPARQL query inline in any non-markup text
+
+Markups for Visualization of Ontologies:
+* [SparqlVisualization | Doc SparqlVisualization]: A visualization where the visualized parts are defined using the SPARQL language (c.f. [SPARQL|Doc SPARQL]). 
+* [ConceptVisualization | Doc ConceptVisualization]: A simple visualization method where one or multiple ontology concepts are selected for visualization.
+
+Also, a number of proprietary markups have been introduced in the past:
+* [Class| Doc Class]: Define classes (rdfs:Class)
+* [Individual| Doc Individual]: Define indiviuals
+* [ObjectProperty| Doc ObjectProperty]: Define object properties with domain and range
+* [Relation| Doc Relation]: Establish relations (triples) between resources
+
+
+! Other helpful markups
+
+* [Status|Doc Status]: Set a workflow status for a specific wiki page
+* [Table|Doc Tables]: Define a table in a wiki page
+* [Todo|Doc Todo]: Defines a todo entry for the wiki content
+* [TodoList|Doc TodoList]: Displays a list of todo entries
+* [UML|Doc UML]: Define UML diagrams based on PlantUML syntax
+* [Include|Doc Include]: Includes a wiki page or a particular chapter of a wiki page into an other page
+* [Tags|Doc Tags]: Define tag names for wiki pages and navigate them through a tag cloud
+
+Depending on your use case you may find the following commercial extension helpful:
+
+* [Extended Expressions|Doc Expressions]: Conditions and actions in rules and DiaFlux
+* [Time Database|Doc Time Database]: Record and reason over value changes over the time
+* [Timechart|Doc Timechart]: Displays the trend of some values over the time
+* [Variable|Doc Variable]: Assign results of expressions to questions
+* [Constant|Doc Constant]: Define a constant to be used in expressions
+* [Image Map|Doc ImageMap]: Define clickable images to answer questions
+
+
+!! Further Links
+
+* KnowWE project website: [http://knowwe.sourceforge.net]
+* d3web project website: [http://d3web.sourceforge.net]
+* Dynamic list of all articles tagged with "documentation: [TagSearch Documentation|http://www.d3web.de/Wiki.jsp?page=TagSearch&tag=Documentation] 

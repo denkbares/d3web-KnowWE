@@ -1,0 +1,34 @@
+Rdf2Go is a Plugin for KnowWE.
+
+The following projects are relevant for this module.
+
+%%sparql 
+  SELECT ?Plugin WHERE {
+      ?Plugin lns:partOf lns:Rdf2Go
+  }
+  ORDER BY ?Plugin
+  
+%
+
+
+!!!Live Ticker
+
+
+%%collapsebox-closed
+!Ontology
+def Rdf2Go
+> TimeDB type:: Module
+def KnowWE-Plugin-RDF2GoSemanticCore
+def KnowWE-Plugin-RDFS-Basic
+def KnowWE-Plugin-RDFS-SubclassingTree
+def KnowWE-Plugin-RDFS-TestCase
+def KnowWE-Plugin-RDFS-TurtleN3
+def KnowWE-Plugin-RDFS-WikiObjectModel
+
+> KnowWE-Plugin-RDF2GoSemanticCore partOf:: Rdf2Go
+> KnowWE-Plugin-RDFS-Basic partOf:: Rdf2Go
+> KnowWE-Plugin-RDFS-SubclassingTree partOf:: Rdf2Go
+> KnowWE-Plugin-RDFS-TestCase partOf:: Rdf2Go
+> KnowWE-Plugin-RDFS-TurtleN3 partOf:: Rdf2Go
+> KnowWE-Plugin-RDFS-WikiObjectModel partOf:: Rdf2Go
+/%

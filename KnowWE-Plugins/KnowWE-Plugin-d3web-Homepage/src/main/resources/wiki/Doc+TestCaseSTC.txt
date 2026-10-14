@@ -1,0 +1,2 @@
+This is a deprecated wiki article. 
+Please see [Doc TestCase].

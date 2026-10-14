@@ -1,0 +1,5 @@
+!Description of the assisted technology 'Kopf- & Mundjoystick'
+
+Dieser Screenshot zeigt die Beschreibung des Hilfsmittels "Kopf- & Mundjoystick".
+
+[{Image src='ESAT_Screenshot_01.jpg' align='left'}]

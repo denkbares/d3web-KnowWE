@@ -1,0 +1,62 @@
+Introduction Text, description, todo...
+
+!! Live-Ticker
+
+Current status of this module:
+
+!Tickets
+
+Currently known tickets tagged for the DiaFlux module:
+
+[-> Bugzilla|https://tickets.denkbares.com/buglist.cgi?query_format=advanced&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&component=DiaFlux]
+
+!Commits/SVN
+
+Latest Commit:
+
+%%prettify 
+{{{
+Author: hatko
+Date: Mon Oct 29 21:07:22 2012
+New Revision: 3953
+URL: https://isci.informatik.uni-wuerzburg.de/viewvc/viewvc.py/d3web-KnowWE?view=revision&revision=3953
+
+Log:
+* scrolling in changed flows is synced
+* addes css class to flowchart container div
+
+Modified:
+   trunk/KnowWE/KnowWE-Plugin-DiaFlux/src/main/java/com/ecyrd/jspwiki/diff/FlowchartDiffProvider.java
+   trunk/KnowWE/KnowWE-Plugin-DiaFlux/src/main/java/de/knowwe/diaflux/FlowchartUtils.java
+   trunk/KnowWE/KnowWE-Plugin-DiaFlux/src/main/resources/webapp/cc/diff/diafluxdiff.css
+   trunk/KnowWE/KnowWE-Plugin-DiaFlux/src/main/resources/webapp/cc/diff/diafluxdiff.js
+}}}
+/%
+
+
+
+!Jenkins/Hudson status
+
+* [d3web-Plugin-DiaFlux|http://win6154.informatik.uni-wuerzburg.de:8080/hudson/job/d3web-core/2886/de.uniwue.d3web$d3web-Plugin-DiaFlux/]
+* [KnowWE-Plugin-DiaFlux|http://win6154.informatik.uni-wuerzburg.de:8080/hudson/job/KnowWE/de.uniwue.d3web$KnowWE-Plugin-DiaFlux/]
+
+!! Quality Level
+
+Core components have release status and have quality assessment.
+
+!!Licence
+
+LGPL
+
+!! Maven Projects:
+
+* d3web-core:
+** d3web-Plugin-DiaFlux: Problem solver and persistence for DiaFlux models
+* KnowWE-core:
+** KnowWE-Plugin-DiaFlux: Core component including the DiaFlux editor and basic support for DiaFlux models
+* Research:
+** KnowWE-Plugin-DiaFlux-Anomalies: ...
+** KnowWE-Plugin-DiaFlux-Coverage: ...
+** KnowWE-Plugin-DiaFlux-CoverageCity: ...
+** KnowWE-Plugin-DiaFlux-Refactoring: ...
+** KnowWE-Plugin-DiaFlux-Review: ...

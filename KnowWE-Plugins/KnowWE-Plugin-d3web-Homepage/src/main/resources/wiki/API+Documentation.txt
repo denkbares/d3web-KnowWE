@@ -1,0 +1,87 @@
+!!! Javadoc
+
+Javadocs are available in the [downloadable distributions|Downloads] since version Watney, also in the nightly builds. Download and extract the distribution zip file and navigate to {{d3web}} or {{KnowWE}} folder and there, extract the file {{doc.zip}}. Open {{doc/index.html}} in the web browser of your choice.
+
+
+!!!Package Structure
+
+d3web defines the general package structure as follows:
+
+{{de.d3web/knowwe.<core/pluginname>.<component>.<module>?.<subpackage>*.<Classname>}}
+
+The core consists of non-optional classes, whereas plugins includes optional classes. A plugin usually spans over multiple components. 
+
+For example, the package structure of the XCL problem-solver:
+* de.d3web.xcl: for the basic representation 
+* de.d3web.xcl.inference: problem-solver functionality
+* de.d3web.xcl.io: problem-solver specific persistence 
+
+
+!! de.d3web.core
+
+
+! Knowledge Representation: de.d3web.core.knowledge
+
+All classes of the knowledge representation are included in this package. 
+For instance, the definition of solutions and questions.
+
+* de.d3web.core.knowledge: \\
+  IDObject, KnowledgeBase, Value, InfoStore
+
+* de.d3web.core.knowledge.__terminology__: \\
+ Question (with sub-classes), QContainer, Choice, Solution
+  
+* de.d3web.core.knowledge.__terminology.info__: \\
+  Property, BasicProperties, MMInfo
+
+* de.d3web.core.knowledge.__manage__: \\
+  KnowledgeBaseUtils, RuleFactory
+
+
+! Knowledge Base Persistence: de.d3web.core.io
+
+* de.d3web.core.io: \\
+  XML/Jar persistence to read/write knowledge bases.
+  Basic definitions of KnowledgeReaders, KnowledgeWriters, PersistenceManager
+  
+* de.d3web.core.io.__fragments__: \\
+  FragmentHandler and for all plugins the corresponding fragment handlers
+
+
+! Inference: de.d3web.core.inference
+
+* de.d3web.core.inference: \\  
+  PSMethod, PropagationManager, MethodKind, KnowledgeSlice, Action, Rule, Interface Condition
+
+* de.d3web.core.inference.__condition__: \\  
+  all AbstractCondition's implementing the interface Condition
+
+
+! Session: de.d3web.core.session
+
+All classes that manage the interactive problem-solving sessions by running cases.
+Administration of flyweight terminology objects and case management.
+
+* de.d3web.core.session: \\
+  Session, DefaultSession, Value (with sub-classes), Protocol, SessionManager, InterviewManager 
+    
+* de.d3web.core.session.__blackboard__: \\  
+   Blackboard, Fact, FactStorage, FactAggregation
+
+
+! Persistent Session Representation: de.d3web.core.records
+
+All classes for the case representation.
+
+* de.d3web.core.records: \\
+  SessionConversionFactory, SessionRepository, SessionRecord 
+
+
+! Session Persistence: de.d3web.core.records.io
+
+* de.d3web.core.records.io: \\
+  XML persistence for reading/writing records
+
+%%tags
+Documentation API
+%

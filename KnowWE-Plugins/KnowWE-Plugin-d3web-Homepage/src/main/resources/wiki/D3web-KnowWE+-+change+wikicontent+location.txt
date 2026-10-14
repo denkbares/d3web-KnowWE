@@ -1,0 +1,10 @@
+!!! d3web-KnowWE -  change wikicontent location.
+
+When using the KnowWE-OS-<Release>.zip your wikicontent will be located here:\\
+__${KnowWE-Home}\wikicontent__.
+
+For different reasons (i.e. configuration management) you want to change the wikicontent loaction.\\
+This can be done copying the existing wikicontent or creating an entirely new folder in your prefered location.\\
+Now you need to configure the new location in the ${KnowWE-Home}\webapps\KnowWE\WEB-INF\jspwiki.properties.\\
+Do this by changing\\
+__var.basedir = <C:\myNewLocation>\wikicontent__

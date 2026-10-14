@@ -1,0 +1,11 @@
+!! Welcome
+Welcome to the d3web developer community! The following provides you with the most important information to start right away.
+
+! Contributing & Coding
+# The first step to start as a d3web Developer, is to set up an eclipse workspace and download the sources: [How-To Create Your Own Workspace].
+# In the next step, you probably want to create your own plugin: [How-To CreatePlugin].
+# Further developer how-tos can be found here: [How-Tos]
+
+! Contacts
+
+If you have any questions, feel free to contact us via [Forum|http://sourceforge.net/projects/knowwe/forums] or E-Mail [info@d3web.de|mailto:info@d3web.de].

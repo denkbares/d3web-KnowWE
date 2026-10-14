@@ -1,0 +1,12 @@
+The [Type|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/Type.html] interface is the root of the KnowWE type system. Each content [Section] is provided with exactly one type instance, which describes the role if this content element, therefore playing an important role in the process of associating (computer-interpretable) meaning to the content.
+
+
+! Components of Type:
+
+* Parser/[SectionFinder]: A type needs to be provided with a parser component (a [SectionFinder] in most cases). Otherwise, no content sections of this Type can ever appear.
+* [Renderer]: Optionally, a type can provide a specific renderer that determines how this content element is shown within the view of the wiki page. If no renderer is provided the rendering process is delegated to the child sections (and their respective types). For leaf sections the bare source text content is rendered if no renderer is defined.
+* [SubtreeHandler|How To SubtreeHandler]/CompileScript: Optionally, scripts can be attached to types, which are executed after the parsing process is finished. This usually is used for compilation, i.e., creating elements in the knowledge base repository. 
+
+
+Further readings:
+* [How-To Markup]

@@ -1,0 +1,83 @@
+!! Summary of important changes
+
+
+!Release 11, Watney, July 2016 - Current release, out now!
+
+
+* __TimeDB TestCases__: Using the TimeDB plugin, it is now possible to test the behavior of the knowledge base when setting values in the past (relative to the current time of the session).
+* __Code improvements__: Major refactorings, cleanup and modernizations
+** Reimplementation and modernization of test case interfaces and xml persistence. Much improved functionality, allows extensions, and is backwards compatible.
+** Cleaned source code of old verbose Java pre-1.8. statements and modernized it with up to date 1.8 syntax and utils.
+* __New checks for TestCases:__
+** Check any property of terminology objects used in the test
+** Check the amount of solutions with a given state.
+* __KnowWE SemanticCore__: Major overhaul, now uses denkbares-SemanticCore
+** Removed outdated Rdf2Go dependencies
+** Instead, direct integration of Sesame/RDF4J
+** New Jena plugin 
+** New GraphDB-Free plugin (optional download)
+** New SPARQL auto format/prettify (soon to come to other markups as well)
+* __Improvements to DiaFlux Editor__
+** Adaptive toolbar
+** Editor and menu styling
+* __Tool Menus__: Markup tool menues can no longer be hidden below lower end of the browser window
+* __Attachment markup__ 
+** Allows to keep attachments up to date with a remote source url and update interval. 
+** Allows to download articles and parts of articles of other KnowWE installations as attachments. These attachments can also be compiled and rendered via Include markup.
+* __AttributeTable__: Now supports negated answers (!= Answer-X) and Unknown in condition columns.
+* __Debugger__: Added simple debugger for TimeDB Javascript functions
+* __Table Editor__: When activating the table editor with edit mode, the scroll position of the clicked cell is restored in the table editor. The editable cell is also selected.
+
+
+!Feature Release 10, Alice, April 2015
+
+* __Watch Variables__: For developing d3web knowledge, you can now add variables and expressions as watches (similar to eclipse or IntelliJ) in a specialized view on the right side, visible independently of your current page.
+* __Retractable LeftMenu__: To make more space for the page contents on small displays (like projectors) or in case of large page contents, the LeftMenu can be retracted.
+* __DiaFlux Improvements__
+** __Zoom__: Flowcharts now come with easy to use zoom tools, allowing to zoom out to get a better overview of large flowcharts and also zoom to fit the current window size.
+** __Improved Routing__: Edges come with improved routing and a more intelligent placement of labels. Edges are highlighted on mouse-over.
+** __New Tools__: The flowchart editor comes with many new tools to intelligently select, align, clean up and pack the nodes and edges of a flowchart.
+** __Performance__: Improved rendering performance.
+* __CI Improvements__:
+** __New CI Tests__: CyclicFlowchart, InformationGain, InterviewLength, AmbiguousEdge and DuplicatePath
+** __CI Test groups__: Using the annotation @group allows to group a set of CI tests together in the CI dashboard
+* __Rule Improvements__: 
+** __Highlighting__: Highlighting of condition states and fired actions, also added proper highlighting support for Rules with multiple actions.
+** __TimeDB action Compatibility__: Improved support for assigning eval expressions to choice questions.
+* __TimeDB-Scripts__: The commercial plugin TimeDB now supports the definition of new functions directly inside KnowWE. Using JavaScript to write the functions and having low level (read) access to given variable and history arguments, allows virtually unlimited functionality. The functions are stored as knowledge elements inside the d3web knowledge base and can be used equally to other functions in all rules and variables.
+* __Ignore Out-Of-Range Values__: The TestCasePlayer, Continuous Integration dashboard and Testing App now allow to skip values that are outside the defined ranges of the questions, using a simple annotation or parameter.
+* __Regex-Conditions in STCs__: Sequetial Test Cases (STCs) now support conditions with regular expressions, which for example also allows to check date questions in the TestingApp.
+* __TimeZone-Support for Date Questions__: It is now possible to assign dates to date questions with respect to specified time zones. Also, time zones can be set as the unit for date questions, resulting in these questions date values to be displayed in that time zone.
+* __Explanation-Module__: Show and recursively trace how solutions and values were derived over the different knowledge elements like rules and flowcharts.
+* __Icon Cleanup__: KnowWE now uses the [Font-Awesome|http://fortawesome.github.io/Font-Awesome/] icon set to get a more consistent visual look.
+* __Visualizations for Ontologies__: Ontologies developed in KnowWE can be visualized in different visualization variants.
+* __Significantly reduced Memory Footprint__: For many large wikis, the memory footprint should be reduced by around 20% because of internal optimizations.
+* __Migration to JSPWiki 2.10__: Since the end of 2012, JSPWiki is a Apache Project and got several new releases. Since there are a lot of internal changes in JSPWiki, the migration was non-trivial. Instead of JSPWiki 2.8.4, KnowWE now uses 2.10.
+* __Migration to Java 8__: To be able to use all the nice new features for developers, KnowWE is now running on Java 8. For compatibility reasons, the d3web-core will stay Java 6 for a while.
+* __Compatibility for Tomcat 7 and 8__: The last versions of KnowWE only supported Tomcat up to version 6. With the next version, we also support version 7 and 8 (until 8.0.9).
+
+
+!Service Release 9, Inspector Gadget, June 2014
+
+
+* __Compiler Refactoring__: Deep refactoring, modernization and acceleration of the compiler architecture of KnowWE.
+* __Extension of the Rules-Markup__: Currently rules in KnowWE can only be defined in the following way: IF condition THEN action [[EXCEPT condition]. We want to extend the functionality and also allow the usage of ELSE and UNKNOWN.
+* __Extension of TestCase XML__: Currently TestCases exported to the STC-XML-format only allow simple checks/assertions. We want to extend it to allow the same checks as the TestCaseTable in KnowWE.
+* __Overhaul of Object Info__: KnowWE gets a replacement for its current Object Info Page. A fast and clean dialog that no longer requires to leave the page!
+
+
+!!Long term plans
+
+The following features are in a planning phase, but are not yet allocated to specific releases.
+
+* __Tooltip improvements__: Hovering over questions and solutions during usage or debugging of knowledge bases shows the value of the object in the current problem solving session. We want to improve these tooltips and also make them available in flowchart edges and formulas.
+* __Change-Management__: Conveniently show differences between different version of a d3web knowledge bases.
+* __Review-Plugin__: Unified tool allowing to comment and review in all markups of KnowWE.
+* __Overhaul of Search__: There currently are multiple locations to search content of KnowWE (QuickNavigation, ObjectInfoPage, TermBrowser). We plan to unify and improve all of them into an all new search replacing the rather unhelpful default Quick Navigation of JSPWiki.
+* __KnowWE-TimeMachine__: Browse and restore previous states of the wiki (the whole wiki, not just single articles).
+* __Timeline-Plugin__: Visualize the timeline of a variable of the knowledge base during a problem solving session or while debugging.
+* __Flowchart-Diffs__: New DiffProvider allowing to visualize changes in DiaFlux flowcharts.
+* __KnowWE-Updater__: GUI-App to start and update KnowWE installations.
+* __TimeDB function for gradient error of estimation__: Calculating a gradient over a history of values always comes with an estimation error. It can tell how suited the calculated gradient is for approximating the given history of values. In a new function we want to produce this estimation error for further consideration in the knowledge base.
+
+More to come...

@@ -1,0 +1,71 @@
+[{TableOfContents}]
+
+!! Introduction
+
+The DefaultMarkup is a markup template allowing to create new markups at low implementation workload. Further, the use of this template asserts a consistent structure of all markups leading to a unified look and feel of the system, considering syntax, rendering, and editing support. 
+
+This page describes the DefaultMarkup in general. An instructional page describing how to actually create a new markup based on the DefaultMarkup can be found here: [How-To Markup]
+
+
+The exemplary use of different kinds of DefaultMarkups can be found in the Demos, for example here: [Demo - Master] 
+
+!! Syntactical Structure
+
+A DefaultMarkup section always is introduced by two percent-signs (~%%)followed by the specific keyword of the markup.
+
+! Multi-line markup
+
+A DefaultMarkup section as multiple lines is terminated by another percent-sign (~%). 
+{{{
+%%<keyword> 
+<content>
+%
+}}}
+
+! Single line markup
+DefaultMarkup blocks can also be defined in a single line. Then no trailing sign is required and the block is terminated by the line-break.
+{{{
+%%<keyword> <content>
+}}}
+
+
+
+!! Annotations
+Additionally to the content, also markup specific parameters can be specified.
+An annotation parameter is always state at the end of the markup block and is introduced by '@'.
+Each markup implementation defines which annotations can be specified. More details about how to specify this can be found here: [How-To Markup] 
+
+A DefaultMarkup section as multiple lines is terminated by another percent-sign (~%).
+
+! Multi-line markup 
+{{{
+%%<keyword> 
+<content>
+@<annotation-name>: <value>
+%
+}}}
+
+! Single line markup
+DefaultMarkup blocks can also be defined in a single line. Then no trailing sign is required and the block is terminated by the line-break.
+{{{
+%%<keyword> <content> @<annotation-name>: <value>
+}}}
+
+
+!! Autocompletion
+
+For an implementation of each DefaultMarkup basic autocompletion functionality is provided automatically.
+After typing ''%%'' the completion menu is shown by pressing ''Cmd+space'' as shown in the following screenshot. For each markup also an overview about the available annotations with the respective value range is shown. 
+
+[{Image src='autocompletion.jpg' width='..' height='..' align='left|center|right' style='..' class='..' }]
+
+
+
+
+
+
+
+
+
+
+
