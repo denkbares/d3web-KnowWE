@@ -208,6 +208,21 @@ des Builds durch eine Hülle ersetzen, die jedes Event mit `performance.now()` i
 Anfragen an `*.jsp` laufen durch den JSPWiki-`WikiJSPFilter`, der die komplette Antwort puffert und erst nach
 Ende der Action ausliefert. Der Servlet-Pfad (`JSPActionServlet`, Mapping `/action/*`) streamt sofort.
 
+### d3web.de-Homepage lokal
+
+Das Plugin `KnowWE-Plugin-d3web-Homepage` enthält das Skin-Overlay von d3web.de (Logo-Action, `localheader.jsp`,
+`skins/d3web/d3web.css`) und unter `src/main/resources/wiki/` einen Abzug der Wiki-Seiten. Das WAR mit dem Profil
+`d3web-homepage` packen -- die Default-Profile dabei explizit mitnennen:
+
+```bash
+mvn -o -pl KnowWE-App -Pcore-plugins,denkbares,d3web-homepage -DskipTests -Dmdep.skip=true package
+```
+
+Als Seitenordner eine Kopie von `src/main/resources/wiki/` verwenden (nicht den Checkout selbst, das Wiki schreibt
+`OLD/`-Versionen und Properties hinein), `jspwiki.applicationName = d3web` und `jspwiki.templateDir = default`
+setzen. Die Matomo-Statistik in `localheader.jsp` wird für `localhost` nicht eingebunden. Für den Vergleich mit
+der Live-Seite reicht es, beide im selben Browserfenster bei gleicher Breite nebeneinander zu öffnen.
+
 ## 5. Typische Startprobleme
 
 | Symptom in `catalina.out` | Ursache | Abhilfe |
