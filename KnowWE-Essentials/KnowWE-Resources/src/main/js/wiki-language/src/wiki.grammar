@@ -1,0 +1,159 @@
+// JSPWiki markup with KnowWE markup blocks, following JSPWikiMarkupParser and the KnowWE sectionizer.
+//
+// All tokens come from the external tokenizer in tokens.js, which tracks the open elements like JSPWikiMarkupParser.
+// Every input is valid wiki markup, so the grammar accepts all token sequences without error nodes. An element that
+// is not closed by its mark ends with a zero width end token where JSPWiki closes it, at the end of its paragraph,
+// list item, table cell or heading, or when an enclosing element closes. Like in JSPWiki, bold and italic stay on
+// after such an end, the next mark only switches them off, and a paragraph break continues them in the next paragraph.
+
+@context lineContext from "./tokens.js"
+
+@external tokens wikiTokens from "./tokens.js" {
+  newline, softBreak, itemBreak, rowBreak, text, boldEnd, italicEnd, monospaceEnd, styleEnd, divEnd,
+  boldRestart, italicRestart, BoldToggle[@name=BoldMark], ItalicToggle[@name=ItalicMark],
+  MarkupOpen, LineMarkupOpen[@name=MarkupOpen], InlineMarkupOpen[@name=MarkupOpen],
+  blockContent[@name=MarkupContent], lineContent[@name=MarkupContent], inlineContent[@name=MarkupContent],
+  MarkupClose, InlineMarkupClose[@name=MarkupClose],
+  HeadingMark, ListMark, DefinitionMark, DescriptionMark, HorizontalRule, CellMark, HeaderMark,
+  BoldOpen[@name=BoldMark], BoldClose[@name=BoldMark],
+  ItalicOpen[@name=ItalicMark], ItalicClose[@name=ItalicMark],
+  MonospaceOpen[@name=MonospaceMark], MonospaceClose[@name=MonospaceMark],
+  PreOpen[@name=CodeMark], CodeOpen[@name=CodeMark], CodeText, CodeClose[@name=CodeMark],
+  LinkOpen[@name=LinkMark], FootnoteOpen[@name=LinkMark], FootnoteReferenceOpen[@name=LinkMark],
+  LinkSeparator[@name=LinkMark], LinkClose[@name=LinkMark], LinkText, LinkTarget, URL,
+  AttributeName, attributeEquals, AttributeValue, attributeText,
+  PluginOpen[@name=PluginMark], VariableOpen[@name=PluginMark], AccessRuleOpen[@name=PluginMark],
+  MetadataOpen[@name=PluginMark], PluginClose[@name=PluginMark],
+  InsertKeyword[@name=PluginKeyword], WhereKeyword[@name=PluginKeyword], AccessKeyword[@name=PluginKeyword],
+  SetKeyword[@name=PluginKeyword],
+  PluginName, ParameterName, MetadataName[@name=ParameterName], parameterEquals, ParameterValue,
+  MetadataValue[@name=ParameterValue],
+  VariableName, Permission, Principal, pluginText, pluginSpace, bodyStart, bodyText,
+  StyleOpen[@name=StyleMark], DivOpen[@name=StyleMark], StyleClose[@name=StyleMark],
+  StrayStyleClose[@name=StyleMark], StyleClass, StyleDeclaration, styleBlank,
+  Escape, LineBreak, Entity, Unclosed
+}
+
+// marks the shift that continues a paragraph like unit over the reduction that ends it
+@precedence { inner }
+
+@skip { pluginSpace }
+
+@top Document { blocks }
+
+blocks { block? (newline block?)* }
+
+block {
+  Paragraph |
+  Heading |
+  List |
+  Definition |
+  Table |
+  HorizontalRule Paragraph? |
+  Preformatted Paragraph? |
+  Markup |
+  StyleBlock
+}
+
+Paragraph { inline (!inner content)* }
+
+Heading { HeadingMark (!inner content)* }
+
+List { ListItem (itemBreak ListItem)* }
+
+ListItem { ListMark (!inner content)* }
+
+Definition { DefinitionMark DefinitionTerm? (DescriptionMark DefinitionDescription?)? }
+
+DefinitionTerm { inline (!inner content)* }
+
+DefinitionDescription { inline (!inner content)* }
+
+Table { TableRow (rowBreak TableRow)* }
+
+TableRow { (TableCell | TableHeader)+ }
+
+TableCell { CellMark (!inner content)* }
+
+TableHeader { HeaderMark (!inner content)* }
+
+Preformatted { PreOpen CodeText? CodeClose }
+
+// KnowWE markups, a block until its closing line, a single line, or inline until "%%" or "/%"
+Markup { MarkupOpen blockContent? MarkupClose? | LineMarkupOpen lineContent? }
+
+InlineMarkup { InlineMarkupOpen inlineContent? InlineMarkupClose }
+
+// JSPWiki styles, a block if nothing follows the class and style on its line, inline otherwise. Text after a block
+// that closes mid line stays in the block node.
+StyleBlock { DivOpen styleSpec styleBlank? (!inner newline block?)* (StyleClose (inline (!inner content)*)? | divEnd) }
+
+Style { StyleOpen styleSpec content* (StyleClose | styleEnd) }
+
+styleSpec { StyleClass? StyleDeclaration? }
+
+// line breaks only continue elements, the tokenizer emits them in paragraphs and list items
+content { inline | softBreak }
+
+inline {
+  text |
+  Bold |
+  Italic |
+  Monospace |
+  InlineCode |
+  Style |
+  InlineMarkup |
+  Link |
+  Footnote |
+  FootnoteReference |
+  pluginLike |
+  Escape |
+  LineBreak |
+  Entity |
+  Unclosed |
+  StrayStyleClose |
+  BoldToggle |
+  ItalicToggle
+}
+
+Bold { (BoldOpen | boldRestart) content* (BoldClose | boldEnd) }
+
+Italic { (ItalicOpen | italicRestart) content* (ItalicClose | italicEnd) }
+
+Monospace { MonospaceOpen content* (MonospaceClose | monospaceEnd) }
+
+InlineCode { CodeOpen CodeText? CodeClose }
+
+// links, footnote anchors "[#1]" and footnote references "[1]" share the syntax "[text|target|attributes]"
+Link { LinkOpen linkBody LinkClose }
+
+Footnote { FootnoteOpen linkBody LinkClose }
+
+FootnoteReference { FootnoteReferenceOpen linkBody LinkClose }
+
+linkBody { linkTarget? | LinkText? LinkSeparator linkTarget? (LinkSeparator LinkAttributes?)? }
+
+linkTarget { LinkTarget | URL }
+
+LinkAttributes { (Attribute | attributeText)+ }
+
+Attribute { AttributeName attributeEquals AttributeValue? }
+
+// plugins, variables "[{$name}]", access rules "[{ALLOW ...}]" and metadata "[{SET ...}]" share the brackets "[{...}]"
+pluginLike { Plugin | Variable | AccessRule | Metadata }
+
+Plugin { PluginOpen (InsertKeyword? PluginName)? pluginArgument* (bodyStart PluginBody?)? PluginClose }
+
+pluginArgument { Parameter | WhereKeyword | pluginText | pluginLike }
+
+Parameter { ParameterName parameterEquals ParameterValue? }
+
+PluginBody { (bodyText | pluginLike)+ }
+
+Variable { VariableOpen VariableName? (pluginText | pluginLike)* PluginClose }
+
+AccessRule { AccessRuleOpen AccessKeyword Permission? (Principal | pluginText | pluginLike)* PluginClose }
+
+Metadata {
+  MetadataOpen SetKeyword (MetadataName parameterEquals MetadataValue?)? (pluginText | pluginLike)* PluginClose
+}

@@ -1,0 +1,192 @@
+# Markup block
+%%Rule
+IF a THEN b
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Markup names ignore case
+%%rule
+x
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Declaration with separator and comment
+%%Rule: // comment
+IF a THEN b
+%
+==>
+Document(Markup(MarkupOpen,MarkupBody(DeclarationComment),MarkupClose))
+
+# Indented declaration and closing line
+  %%Rule
+x
+  /%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Closing line with blanks
+%%Rule
+x
+ /%  
+text
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose),Paragraph)
+
+# Percent signs alone do not close a markup
+%%Rule
+%%
+x
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Closing marks in a line do not close a markup
+%%Rule
+x /% y
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Unterminated markup runs to the end
+%%Rule
+a
+
+b
+==>
+Document(Markup(MarkupOpen,MarkupBody))
+
+# Single line markup
+%%tags: a, b
+next
+==>
+Document(Markup(MarkupOpen,MarkupBody),Paragraph)
+
+# Single line markup keeps closing marks as content
+%%Rule x /%
+==>
+Document(Markup(MarkupOpen,MarkupBody))
+
+# Name with namespace
+%%COOM:DSL
+product x
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Regular expression name
+%%Off:Rule
+x
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# A longer name is not a markup
+%%RuleX
+x
+/%
+==>
+Document(StyleBlock(StyleMark,StyleClass,Paragraph,StyleMark))
+
+# A markup declaration ends a paragraph and a list
+text
+%%Rule
+x
+/%
+* item
+%%Rule
+y
+/%
+==>
+Document(Paragraph,Markup(MarkupOpen,MarkupBody,MarkupClose),List(ListItem(ListMark)),Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Indented declaration ends a list item
+* item
+  %%Rule
+x
+/%
+==>
+Document(List(ListItem(ListMark)),Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Markup inside a style block
+%%information
+%%Rule
+x
+/%
+/%
+==>
+Document(StyleBlock(StyleMark,StyleClass,Markup(MarkupOpen,MarkupBody,MarkupClose),StyleMark))
+
+# Preformatted text hides markups
+{{{
+%%Rule
+x
+/%
+}}}
+==>
+Document(Preformatted(CodeMark,CodeText,CodeMark))
+
+# Inline markup
+Version: %%Version short /% and %%InlineSparql: SELECT ?x %%
+==>
+Document(Paragraph(InlineMarkup(MarkupOpen,MarkupBody,MarkupClose),InlineMarkup(MarkupOpen,MarkupBody,MarkupClose)))
+
+# Inline markup without close is a style
+%%Version x
+==>
+Document(Paragraph(Style(StyleMark,StyleClass)))
+
+# Annotations end the content
+%%Rule
+IF a THEN b
+@package: p
+@name n1
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody(Annotation(AnnotationName,AnnotationValue),Annotation(AnnotationName,AnnotationValue)),MarkupClose))
+
+# Annotation values span lines
+%%Rule
+x
+@package: p
+  line2
+@flag
+@other = 1
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody(Annotation(AnnotationName,AnnotationValue),Annotation(AnnotationName),Annotation(AnnotationName,AnnotationValue)),MarkupClose))
+
+# Indented annotation
+%%Rule
+x
+   @package p
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody(Annotation(AnnotationName,AnnotationValue)),MarkupClose))
+
+# At signs inside a line are content
+%%Rule
+mail@example.com
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Declaration comment
+%%Rule // comment
+x
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody(DeclarationComment),MarkupClose))
+
+# Registered language for the body {"language": "Rule"}
+%%Rule
+IF a THEN b
+/%
+==>
+Document(Markup(MarkupOpen,Words(Word,Word,Word,Word),MarkupClose))
+
+# Registered language for an inline markup {"language": "Version"}
+%%Version short /%
+==>
+Document(Paragraph(InlineMarkup(MarkupOpen,Words(Word),MarkupClose)))

@@ -1,0 +1,14 @@
+// Default body of a KnowWE markup with its content followed by annotations "@name value", like the ContentType and
+// AnnotationType of DefaultMarkupType. Content ends at the first line starting with an annotation, and the value of an
+// annotation runs over the following lines up to the next annotation. Plugins may replace this parser for their
+// markups through the language registry.
+
+@external tokens bodyTokens from "./content-tokens.js" {
+  DeclarationComment, bodyText, AnnotationName, AnnotationValue, space
+}
+
+@skip { space }
+
+@top MarkupBody { DeclarationComment? bodyText? Annotation* }
+
+Annotation { AnnotationName AnnotationValue? }

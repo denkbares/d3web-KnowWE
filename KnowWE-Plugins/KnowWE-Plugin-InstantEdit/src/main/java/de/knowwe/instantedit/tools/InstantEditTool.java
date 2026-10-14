@@ -9,6 +9,11 @@ public class InstantEditTool extends DefaultTool {
 
 	public static final String DEFAULTJSNAMESPACE = "KNOWWE.plugin.defaultEditTool";
 
+	/**
+	 * Edits the section text in the CodeMirror editor with highlighting and completion of the registered markups.
+	 */
+	public static final String CODEMIRROR_JSNAMESPACE = "KNOWWE.plugin.codeMirrorEditTool";
+
 	private final String jsNameSpace;
 
 	public InstantEditTool(Icon icon, String title, String description, Section<?> section) {

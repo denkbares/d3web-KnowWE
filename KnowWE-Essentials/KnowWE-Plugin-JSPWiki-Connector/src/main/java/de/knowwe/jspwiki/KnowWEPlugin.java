@@ -40,6 +40,7 @@ import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Context;
+import org.apache.wiki.api.core.ContextEnum;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.exceptions.FilterException;
 import org.apache.wiki.api.exceptions.PluginException;
@@ -256,6 +257,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		}
 		if (context.getHttpRequest() != null
 			&& !isWorkflow(wikiContext)
+			&& !isEditPage(wikiContext)
 			&& context.getHttpRequest().getParameter("action") != null) {
 			// we don't want to trigger our KnowWE compilation and render pipeline,
 			// if we are just executing some action (ajax from client)
@@ -367,6 +369,16 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 	private boolean isWorkflow(WikiContext wikiContext) {
 		return wikiContext.getJSP() != null && wikiContext.getJSP().contains("Workflow");
+	}
+
+	/**
+	 * Edit and comment pages are full pages even when they are posted with an action parameter, e.g. by "Keep editing"
+	 * on the preview page, so their sidebar still needs the KnowWE rendering.
+	 */
+	private boolean isEditPage(WikiContext wikiContext) {
+		String requestContext = wikiContext.getRequestContext();
+		return ContextEnum.PAGE_EDIT.getRequestContext().equals(requestContext)
+			   || ContextEnum.PAGE_COMMENT.getRequestContext().equals(requestContext);
 	}
 
 	public boolean isSupportArticle(String title) {

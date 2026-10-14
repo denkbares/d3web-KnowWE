@@ -1,0 +1,89 @@
+# Plugin
+[{TableOfContents}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginName,PluginMark)))
+
+# Plugin with parameters
+[{Image src='a b.png' width=100 align="left"}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginName,Parameter(ParameterName,ParameterValue),Parameter(ParameterName,ParameterValue),Parameter(ParameterName,ParameterValue),PluginMark)))
+
+# Plugin with INSERT and WHERE
+[{INSERT SamplePlugin WHERE text='test \'me too\' now'}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginKeyword,PluginName,PluginKeyword,Parameter(ParameterName,ParameterValue),PluginMark)))
+
+# Plugin parameters on several lines
+Test [{INSERT SamplePlugin WHERE
+ text=PageContent}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginKeyword,PluginName,PluginKeyword,Parameter(ParameterName,ParameterValue),PluginMark)))
+
+# Plugin body after an empty line
+[{SamplePlugin a='1'
+b='2'
+
+body text
+more [{$foo}]
+}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginName,Parameter(ParameterName,ParameterValue),Parameter(ParameterName,ParameterValue),PluginBody(Variable(PluginMark,VariableName,PluginMark)),PluginMark)))
+
+# The plugin ends at the balancing end
+[{Foo x]y }] still}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginName,PluginMark)))
+
+# Nested plugins
+[{SamplePlugin
+
+[{SamplePlugin text='[{$foo}]'}]
+Glob.
+}}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginName,PluginBody(Plugin(PluginMark,PluginName,Parameter(ParameterName,ParameterValue),PluginMark)),PluginMark)))
+
+# A quoted value ends at the end of the plugin
+[{Foo text='}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginName,Parameter(ParameterName,ParameterValue),PluginMark)))
+
+# Variable
+[{$pagename}] [{$ pagename }]
+==>
+Document(Paragraph(Variable(PluginMark,VariableName,PluginMark),Variable(PluginMark,VariableName,PluginMark)))
+
+# Access rules
+[{ALLOW edit Admin, John Doe}] [{DENY view,comment All}]
+==>
+Document(Paragraph(AccessRule(PluginMark,PluginKeyword,Permission,Principal,Principal,PluginMark),AccessRule(PluginMark,PluginKeyword,Permission,Principal,PluginMark)))
+
+# Metadata
+[{SET alias='PageAlias'}][{SET name= Janne Jalkanen}]
+==>
+Document(Paragraph(Metadata(PluginMark,PluginKeyword,ParameterName,ParameterValue,PluginMark),Metadata(PluginMark,PluginKeyword,ParameterName,ParameterValue,PluginMark)))
+
+# Unclosed plugin is marked
+Test [{INSERT SamplePlugin
+text
+==>
+Document(Paragraph(Unclosed))
+
+# A markup declaration ends the scan for the end of a plugin
+[{Foo
+%%Rule
+x
+/%
+}]
+==>
+Document(Paragraph(Unclosed),Markup(MarkupOpen,MarkupBody,MarkupClose),Paragraph)
+
+# KnowWE tag handler
+[{KnowWEPlugin quickInterview}]
+==>
+Document(Paragraph(Plugin(PluginMark,PluginName,PluginMark)))
+
+# Variables, access rules and metadata nest plugins too
+[{SET a=[{$x}] b}] [{$x [{y}]}] [{ALLOW edit [{z}]}]
+==>
+Document(Paragraph(Metadata(PluginMark,PluginKeyword,ParameterName,Variable(PluginMark,VariableName,PluginMark),PluginMark),Variable(PluginMark,VariableName,Plugin(PluginMark,PluginName,PluginMark),PluginMark),AccessRule(PluginMark,PluginKeyword,Permission,Plugin(PluginMark,PluginName,PluginMark),PluginMark)))

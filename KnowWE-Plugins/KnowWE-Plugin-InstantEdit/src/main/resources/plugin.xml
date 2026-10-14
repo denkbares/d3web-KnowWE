@@ -25,10 +25,12 @@
 		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
 		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
 		<parameter id="script" value="DefaultEditTool.js" />
+		<parameter id="script" value="CodeMirrorEditTool.js" />
 		<parameter id="script" value="TextArea.js" />
 		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
 		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
 		<parameter id="css" value="DefaultEditTool.css" />
+		<parameter id="css" value="CodeMirrorEditTool.css" />
 		<parameter id="css" value="instant-edit-variables.css" />
 		<parameter id="scope" value="KnowledgeBaseMarkup" />
 		<parameter id="scope" value="PackageMarkupType" />

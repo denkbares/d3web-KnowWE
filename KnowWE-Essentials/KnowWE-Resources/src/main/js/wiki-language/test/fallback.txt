@@ -1,0 +1,17 @@
+# Without definitions every block declaration is a markup {"markups": null}
+%%information
+text
+/%
+==>
+Document(Markup(MarkupOpen,MarkupBody,MarkupClose))
+
+# Without definitions a single line markup needs a separator {"markups": null}
+%%tags: a, b
+%%sup 1)/%
+==>
+Document(Markup(MarkupOpen,MarkupBody),Paragraph(Style(StyleMark,StyleClass,StyleMark)))
+
+# Without definitions there are no inline markups {"markups": null}
+%%Version short /%
+==>
+Document(Paragraph(Style(StyleMark,StyleClass,StyleMark)))

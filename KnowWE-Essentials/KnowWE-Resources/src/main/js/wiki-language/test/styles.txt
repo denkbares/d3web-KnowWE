@@ -1,0 +1,90 @@
+# Style block
+%%information
+Text __bold__
+/%
+after
+==>
+Document(StyleBlock(StyleMark,StyleClass,Paragraph(Bold(BoldMark,BoldMark)),StyleMark),Paragraph)
+
+# Style block closed by percent signs
+%%foo
+test
+%%
+==>
+Document(StyleBlock(StyleMark,StyleClass,Paragraph,StyleMark))
+
+# Style blocks hold blocks
+%%warning
+!Heading
+* item
+| cell
+%%
+==>
+Document(StyleBlock(StyleMark,StyleClass,Heading(HeadingMark),List(ListItem(ListMark)),Table(TableRow(TableCell(CellMark))),StyleMark))
+
+# Style block with classes and style
+%%zoo1.zoo2(foo:bar;)
+test
+/%
+==>
+Document(StyleBlock(StyleMark,StyleClass,StyleDeclaration,Paragraph,StyleMark))
+
+# Style block closed in a line, text after it stays in the block
+%%tip
+text /% after
+next
+==>
+Document(StyleBlock(StyleMark,StyleClass,Paragraph,StyleMark))
+
+# Inline styles
+H2%%sub 2%%~ O and %%(color: rgb(1,2,3);)red/% and %%sup 1)/%
+==>
+Document(Paragraph(Style(StyleMark,StyleClass,StyleMark),Escape,Style(StyleMark,StyleDeclaration,StyleMark),Style(StyleMark,StyleClass,StyleMark)))
+
+# Inline style in a table cell
+|%%(foo:bar;)test%%|no test
+==>
+Document(Table(TableRow(TableCell(CellMark,Style(StyleMark,StyleDeclaration,StyleMark)),TableCell(CellMark))))
+
+# Unclosed inline style ends with the paragraph
+%%small open
+line
+
+next
+==>
+Document(Paragraph(Style(StyleMark,StyleClass)),Paragraph)
+
+# Nested inline styles close from the inside
+%%a x %%b y /% z /%
+==>
+Document(Paragraph(Style(StyleMark,StyleClass,Style(StyleMark,StyleClass,StyleMark),StyleMark)))
+
+# A closing mark followed by a class opens a style
+%%a text/%b more/% end /%
+==>
+Document(Paragraph(Style(StyleMark,StyleClass,Style(StyleMark,StyleClass,StyleMark),StyleMark)))
+
+# Stray percent signs are a closing mark, a stray slash percent is text
+100%% sure /% not
+==>
+Document(Paragraph(StyleMark))
+
+# Escaped style
+~%%foo test~%%
+==>
+Document(Paragraph(Escape,Escape))
+
+# Style declaration across lines
+%%(color:
+red)
+x
+/%
+==>
+Document(StyleBlock(StyleMark,StyleDeclaration,Paragraph,StyleMark))
+
+# A style block closed in a list item ends the list
+%%o
+#%%
+#
+==>
+Document(StyleBlock(StyleMark,StyleClass,List(ListItem(ListMark)),StyleMark),List(ListItem(ListMark)))

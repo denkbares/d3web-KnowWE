@@ -1,0 +1,168 @@
+# Bold and italic
+__bold__ and ''italic''
+==>
+Document(Paragraph(Bold(BoldMark,BoldMark),Italic(ItalicMark,ItalicMark)))
+
+# Nested emphasis
+__a ''b'' c__
+==>
+Document(Paragraph(Bold(BoldMark,Italic(ItalicMark,ItalicMark),BoldMark)))
+
+# Closing bold closes italic inside of it
+__a ''b__ c
+==>
+Document(Paragraph(Bold(BoldMark,Italic(ItalicMark),BoldMark)))
+
+# Marks inside words
+foo__bar__baz don''t''
+==>
+Document(Paragraph(Bold(BoldMark,BoldMark),Italic(ItalicMark,ItalicMark)))
+
+# Empty bold and italic
+____ ''''
+==>
+Document(Paragraph(Bold(BoldMark,BoldMark),Italic(ItalicMark,ItalicMark)))
+
+# Pairs are taken from the left
+___y___
+==>
+Document(Paragraph(Bold(BoldMark,BoldMark)))
+
+# Bold continues on the next line of the paragraph
+__This is a
+test.__
+==>
+Document(Paragraph(Bold(BoldMark,BoldMark)))
+
+# Unclosed bold continues in the next paragraph
+__open
+more
+
+after
+==>
+Document(Paragraph(Bold(BoldMark)),Paragraph(Bold))
+
+# Bold stays on after a heading and the next mark switches it off
+!!!H __x
+after__
+==>
+Document(Heading(HeadingMark,Bold(BoldMark)),Paragraph(BoldMark))
+
+# Bold stays on after its table cell
+| __a | b__ |
+==>
+Document(Table(TableRow(TableCell(CellMark,Bold(BoldMark)),TableCell(CellMark,BoldMark),TableCell(CellMark))))
+
+# Bold continues over several empty lines
+__a
+
+
+b
+==>
+Document(Paragraph(Bold(BoldMark)),Paragraph(Bold))
+
+# Bold does not continue into a list, which switches it off
+__a
+
+* b __c__
+==>
+Document(Paragraph(Bold(BoldMark)),List(ListItem(ListMark,Bold(BoldMark,BoldMark))))
+
+# Italic continues outside of bold
+__''a
+
+b
+==>
+Document(Paragraph(Bold(BoldMark,Italic(ItalicMark))),Paragraph(Italic(Bold)))
+
+# Bold that stays on after a table continues in the next paragraph
+| __a
+
+b
+==>
+Document(Table(TableRow(TableCell(CellMark,Bold(BoldMark)))),Paragraph(Bold))
+
+# A list line switches off bold that stayed on
+| __a
+* b __c__
+==>
+Document(Table(TableRow(TableCell(CellMark,Bold(BoldMark)))),List(ListItem(ListMark,Bold(BoldMark,BoldMark))))
+
+# A definition keeps bold on for the next line
+;__a:b
+c__ d
+==>
+Document(Definition(DefinitionMark,DefinitionTerm(Bold(BoldMark)),DescriptionMark,DefinitionDescription),Paragraph(BoldMark))
+
+# Bold continues in a list item continuation
+* __a
+  b__ c
+==>
+Document(List(ListItem(ListMark,Bold(BoldMark,BoldMark))))
+
+# Monospace may span lines and nest
+1{{2345}}6 {{
+a {{b}} c
+}}
+==>
+Document(Paragraph(Monospace(MonospaceMark,MonospaceMark),Monospace(MonospaceMark,Monospace(MonospaceMark,MonospaceMark),MonospaceMark)))
+
+# A stray closing brace pair is text
+a}}b
+==>
+Document(Paragraph)
+
+# Inline code
+1{{{2345}}}6
+==>
+Document(Paragraph(InlineCode(CodeMark,CodeText,CodeMark)))
+
+# Inline code ends at the first closing braces
+1 {{{ {{{ 2345 }}} }}} 6
+==>
+Document(Paragraph(InlineCode(CodeMark,CodeText,CodeMark)))
+
+# Inline code after leading blanks
+  {{{x}}}
+==>
+Document(Paragraph(InlineCode(CodeMark,CodeText,CodeMark)))
+
+# Line breaks
+1\\2 3\\\4 5\\\\6
+==>
+Document(Paragraph(LineBreak,LineBreak,LineBreak))
+
+# A single backslash is text
+a\b
+==>
+Document(Paragraph)
+
+# Tilde escapes a run of the escaped character
+~__x__ ~~~a ~''x
+==>
+Document(Paragraph(Escape,Bold(BoldMark,Escape,Escape)))
+
+# Tilde before a blank removes both
+a~ b
+==>
+Document(Paragraph(Escape))
+
+# Tilde before other characters is text
+~a ~/ ~:
+==>
+Document(Paragraph)
+
+# Double brackets escape a bracket
+[[link] [[[x] [[{NoPlugin}]
+==>
+Document(Paragraph(Escape,Escape,Escape))
+
+# Entities
+&amp; &#123; &nbsp; & foo &bar
+==>
+Document(Paragraph(Entity,Entity,Entity))
+
+# HTML is text
+<b>Test</b>
+==>
+Document(Paragraph)
