@@ -829,6 +829,8 @@ KNOWWE.core.plugin.switchCompiler = function() {
   return {
     init: function() {
       if (!jq$(".navigation").exists()) return;
+      // the compiler switch actions require a signed in user, anonymous users would only get 401
+      if (!KNOWWE.helper.isUserKnown()) return;
 
       let pullRight = jq$(".navigation").children(".nav.nav-pills.pull-right").first();
       let compilerSwitch = new Element("li", {

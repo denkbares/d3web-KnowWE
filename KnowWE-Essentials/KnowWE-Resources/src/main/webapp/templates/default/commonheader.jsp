@@ -99,6 +99,8 @@ String.I18N.PREFIX = "javascript.";
 <meta name="wikiJsonUrl" content='<%=  WikiContext.findContext(pageContext).getURL( WikiContext.NONE, "ajax" ) %>' /><%--unusual pagename--%>
 <meta name="wikiPageName" content='<wiki:Variable var="pagename" />' /><%--pagename without blanks--%>
 <meta name="wikiUserName" content='<wiki:UserName />' />
+<%--whether the user is signed in or asserted by cookie, i.e. may call actions declaring Access.AUTH--%>
+<meta name="wikiUserKnown" content='<wiki:UserCheck status="known">true</wiki:UserCheck><wiki:UserCheck status="anonymous">false</wiki:UserCheck>' />
 <meta name="wikiTemplateUrl" content='<wiki:Link format="url" templatefile="" />' />
 <meta name="wikiApplicationName" content='<wiki:Variable var="ApplicationName" />' />
 <%--CHECKME

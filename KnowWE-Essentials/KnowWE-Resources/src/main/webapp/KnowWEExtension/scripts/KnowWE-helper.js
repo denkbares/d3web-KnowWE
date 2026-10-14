@@ -35,7 +35,7 @@ KNOWWE.helper = function() {
       let oldValue = localStorage.getItem(sectionID);
       localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
       let newValue = JSON.stringify(sectionStorage);
-      if (oldValue !== newValue) {
+      if (oldValue !== newValue && this.isUserKnown()) {
         jq$.ajax("action/StoreLocalSectionStorageAction", {
           data: {
             SectionID: sectionID,
@@ -59,7 +59,7 @@ KNOWWE.helper = function() {
       let oldValue = localStorage.getItem(sectionID);
       localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
       let newValue = JSON.stringify(sectionStorage);
-      if (oldValue !== newValue) {
+      if (oldValue !== newValue && this.isUserKnown()) {
         jq$.ajax("action/StoreLocalSectionStorageAction", {
           data: {
             SectionID: sectionID,
@@ -415,6 +415,15 @@ KNOWWE.helper = function() {
      */
     getUsername: function() {
       return jq$('head meta[name="wikiUserName"]').attr('content');
+    },
+
+    /**
+     * Returns whether the current user is signed in or asserted, i.e. may call actions that require authentication
+     * (Access.AUTH). Anonymous visitors of a public wiki would only get 401 for them. Without the meta tag (e.g. in a
+     * template without the default common header), the user is assumed to be known, as before.
+     */
+    isUserKnown: function() {
+      return jq$('head meta[name="wikiUserKnown"]').attr('content') !== 'false';
     },
 
     /**

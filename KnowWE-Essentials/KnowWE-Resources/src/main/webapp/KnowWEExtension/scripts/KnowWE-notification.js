@@ -221,6 +221,8 @@ KNOWWE.notification = function () {
 				jq$('#KnowWENotificationDom').hide();
 			}
 
+			// anonymous users have no server notifications to remove
+			if (!KNOWWE.helper.isUserKnown()) return;
 			const params = {
 				action: 'RemoveNotificationAction',
 				notificationid: id
@@ -239,6 +241,8 @@ KNOWWE.notification = function () {
 		 * Loads all notifications from the server and displays them.
 		 */
 		loadNotifications: function () {
+			// the action requires a signed in user, anonymous users would only get 401
+			if (!KNOWWE.helper.isUserKnown()) return;
 			const params = {
 				action: 'GetNotificationsAction'
 			};
