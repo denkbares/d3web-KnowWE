@@ -651,13 +651,23 @@ public class DefaultMarkupRenderer implements Renderer {
 	protected void appendToolbarTools(ToolSet tools, UserContext user, RenderResult result) {
 		for (Tool tool : tools) {
 			result.appendHtmlTag("div", "class", "list-group " + tool.getClass().getSimpleName());
-			if (tool.getId() == null){
-				result.appendHtmlTag("a", false, "class", "list-group-item", "title", tool.getDescription(), ToolUtils.getActionAttributeName(tool), ToolUtils
-						.getActionAttributeValue(tool));
-			} else {
-				result.appendHtmlTag("a", false, "class", "list-group-item", "title", tool.getDescription(), ToolUtils.getActionAttributeName(tool), ToolUtils
-						.getActionAttributeValue(tool), "id", tool.getId());
+			List<String> attributePairs = new ArrayList<>(List.of(
+					"class", "list-group-item",
+					"title", tool.getDescription(),
+					ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool)
+			));
+
+			if (tool.getId() != null) {
+				attributePairs.add("id");
+				attributePairs.add(tool.getId());
 			}
+
+			for (Map.Entry<String, String> entry : tool.getAttributes().entrySet()) {
+				attributePairs.add(entry.getKey());
+				attributePairs.add(entry.getValue());
+			}
+
+			result.appendHtmlTag("a", false, attributePairs.toArray(new String[0]));
 			result.appendHtml(tool.getIcon().fixWidth().toHtml());
 			result.appendHtmlTag("/a");
 			result.appendHtmlTag("/div");
@@ -733,10 +743,24 @@ public class DefaultMarkupRenderer implements Renderer {
 	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
 		result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
 		result.appendHtmlTag("div", "class", "list-group");
-		result.appendHtmlTag("a", false, "class", "markupMenuItem list-group-item",
+		List<String> attributePairs = new ArrayList<>(List.of(
+				"class", "markupMenuItem list-group-item",
 				"title", Strings.encodeHtml(tool.getDescription()),
-				ToolUtils.getActionAttributeName(tool),
-				ToolUtils.getActionAttributeValue(tool));
+				ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool)
+		));
+
+		if (tool.getId() != null) {
+			attributePairs.add("id");
+			attributePairs.add(Strings.encodeHtml(tool.getId()));
+		}
+
+		for (Map.Entry<String, String> entry : tool.getAttributes().entrySet()) {
+			attributePairs.add(entry.getKey());
+			attributePairs.add(entry.getValue());
+		}
+
+		result.appendHtmlTag("a", false, attributePairs.toArray(new String[0]));
+
 		if (tool.getIcon() != null) {
 			result.appendHtml(tool.getIcon().fixWidth().toHtml());
 			result.append(" ");

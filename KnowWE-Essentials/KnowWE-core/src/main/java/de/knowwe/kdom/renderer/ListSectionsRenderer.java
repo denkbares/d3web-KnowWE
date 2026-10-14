@@ -650,13 +650,22 @@ public class ListSectionsRenderer<T extends Type> {
 		String tooltip = Strings.isBlank(description)
 				? tool.getTitle()
 				: tool.getTitle() + ":\n" + description;
-		if (id == null) {
-			page.appendHtmlTag("a", false, "title", Strings.encodeHtml(tooltip),
-					ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool));
-		} else {
-			page.appendHtmlTag("a", false, "title", Strings.encodeHtml(tooltip),
-					ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool), "id", Strings.encodeHtml(id));
+		List<String> attributePairs = new ArrayList<>(List.of(
+				"title", Strings.encodeHtml(tooltip),
+				ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool)
+		));
+
+		if (id != null) {
+			attributePairs.add("id");
+			attributePairs.add(Strings.encodeHtml(id));
 		}
+
+		for (Map.Entry<String, String> entry : tool.getAttributes().entrySet()) {
+			attributePairs.add(entry.getKey());
+			attributePairs.add(entry.getValue());
+		}
+
+		page.appendHtmlTag("a", false, attributePairs.toArray(new String[0]));
 		if (tool.getIcon() != null) {
 			page.appendHtml(tool.getIcon().fixWidth().toHtml());
 		}
