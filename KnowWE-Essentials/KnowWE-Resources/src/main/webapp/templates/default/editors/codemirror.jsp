@@ -26,6 +26,7 @@
 <%@ page import="org.apache.wiki.utils.WikiPageUtils" %>
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="org.json.JSONObject" %>
+<%@ page import="de.knowwe.core.Environment" %>
 <%@ page import="de.knowwe.kdom.defaultMarkup.DefaultMarkup" %>
 <%@ page import="de.knowwe.kdom.defaultMarkup.DefaultMarkupType" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
@@ -50,7 +51,7 @@
 
    // the wiki language tells KnowWE markups from JSPWiki styles by the names of the installed markups
    JSONArray markups = new JSONArray();
-   for( DefaultMarkup markup : DefaultMarkupType.getInstalledMarkups() ) {
+   for( DefaultMarkup markup : DefaultMarkupType.getInstalledMarkups(Environment.of(request)) ) {
       markups.put( new JSONObject().put( "name", markup.getName() ).put( "inline", markup.isInline() ) );
    }
 %>
