@@ -24,6 +24,7 @@ import connector.DummyConnector;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
+import utils.OwnedEnvironment;
 
 import static org.junit.Assert.*;
 
@@ -33,7 +34,8 @@ public class HeaderExporterTest {
 	@Test
 	public void crossReferenceAcceptsFullSectionId() {
 		// temporary articles belong to an environment, a core-only one is enough here
-		try (Environment environment = Environment.create(new DummyConnector(), new RootType())) {
+		try (OwnedEnvironment owned = OwnedEnvironment.create(new DummyConnector(), new RootType())) {
+			Environment environment = owned.get();
 			Article article = Article.createTemporaryArticle(environment, "Heading", "Page", new RootType());
 			assertNotNull(article);
 			String sectionId = article.getRootSection().getID();

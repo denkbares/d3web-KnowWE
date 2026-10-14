@@ -59,11 +59,18 @@ import java.util.logging.LogManager;
  * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to access {@link
  * Article}s and other Managers. Further it is connected to the used Wiki-engine, holding an instance of {@link
  * WikiConnector} and allows page saves.
+ * <p>
+ * Only the owner of an environment closes it: the one that {@link #create(WikiConnector) created} it, i.e. the servlet
+ * lifecycle of the wiki, a headless application or a test. Everybody else obtains the environment from the object at
+ * hand ({@code section.getEnvironment()}, {@code context.getEnvironment()}, ...) to use it, never to close it.
+ * Deliberately not an {@link AutoCloseable} therefore: try-with-resources around an obtained environment would shut
+ * down the wiki, and IDE inspections would demand exactly that for every getter. Tests that want try-with-resources
+ * use {@code utils.OwnedEnvironment} of KnowWE-GlobalTestUtils.
  *
  * @author Jochen
  */
 
-public final class Environment implements AutoCloseable, HasEnvironment {
+public final class Environment implements HasEnvironment {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 
 	/**
@@ -248,8 +255,8 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	/**
 	 * Creates and initializes a new environment for the specified wiki connector: plugins, event listeners,
 	 * sectionizer modules, compilers and the type tree are set up and the {@link InitEvent} is fired. The caller owns
-	 * the environment and {@link #close() closes} it when done, e.g. tests with try-with-resources or in an
-	 * {@code @AfterClass} method. Several environments may run side by side in one JVM (e.g. one per wiki); they do not
+	 * the environment and {@link #close() closes} it when done, e.g. tests in a {@code finally} block or an
+	 * {@code @After}/{@code @AfterClass} method. Several environments may run side by side in one JVM (e.g. one per wiki); they do not
 	 * know of each other.
 	 *
 	 * @param wiki the connector to the wiki engine the environment works on
@@ -346,8 +353,10 @@ public final class Environment implements AutoCloseable, HasEnvironment {
 	 * harmless.
 	 * <p>
 	 * A fresh environment may be started in the same JVM afterwards, e.g. by tests.
+	 * <p>
+	 * Only the owner calls this method (see the class comment): closing an environment obtained from a section, a user
+	 * context or a compiler shuts down the wiki it belongs to.
 	 */
-	@Override
 	public void close() {
 		synchronized (this) {
 			if (closing) return;

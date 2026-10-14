@@ -33,6 +33,7 @@ import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
+import utils.OwnedEnvironment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -42,7 +43,8 @@ public class RecompileActionTest {
 	@Test
 	public void resolvesLatestArticleVersionsInsideRegistrationFrame() {
 		// the temporary articles belong to an environment, a core-only one is enough here
-		try (Environment environment = Environment.create(new DummyConnector(), new RootType())) {
+		try (OwnedEnvironment owned = OwnedEnvironment.create(new DummyConnector(), new RootType())) {
+			Environment environment = owned.get();
 			Article staleArticle = temporaryArticle(environment, "Article", "stale content");
 			Article currentArticle = temporaryArticle(environment, "Article", "current content");
 			Article deletedArticle = temporaryArticle(environment, "Deleted", "deleted content");
