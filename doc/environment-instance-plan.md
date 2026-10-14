@@ -532,6 +532,8 @@ unter `S3`/`S4` waren historisch und sind nachgetragen.
   `close()` fährt das Wiki herunter. `AutoCloseable` signalisierte das Gegenteil, IDE-Inspektionen verlangten
   try-with-resources an jedem Getter. `close()` bleibt; für Tests mit try-with-resources gibt es
   `utils.OwnedEnvironment` (KnowWE-GlobalTestUtils, JUnit-unabhängig). Gleiche Begründung wie bei `EnvironmentService`.
+  Ebenso `EventManager` (Commons, `9118098`): `close()` wirft alle Listener raus, schließen darf nur die besitzende
+  Environment.
 
 - 2026-10-13 (später): **`main-local/master` erneut in alle Repos gemergt** (Versionssprung auf `2026.8-SNAPSHOT`,
   jspwiki `2.12.10-SNAPSHOT`). Konflikte: KnowWE `DefaultArticleManager`/`LongOperationUtilsTest` (`committedTitles`
