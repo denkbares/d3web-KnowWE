@@ -63,6 +63,14 @@ public abstract class AbstractAction implements Action {
 	private static final Set<String> REPORTED_SECTION_ID_ALIASES = ConcurrentHashMap.newKeySet();
 
 	/**
+	 * Name of the html attribute carrying the key of a section's local storage, see {@link
+	 * #getLocalSectionStorageKey(Section)}.
+	 */
+	public static final String LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE = "storage-key";
+
+	private static final String LOCAL_SECTION_STORAGE_KEY = "localSectionStorageKey";
+
+	/**
 	 * Get the local storage from the user context. Check out KNOWWE.helper.setToLocalSectionStorage(sectionId, key,
 	 * value) and KNOWWE.helper.getLocalSectionStorage(sectionId) on the client side (KnowWE-helper.js).
 	 * <p>
@@ -140,7 +148,52 @@ public abstract class AbstractAction implements Action {
 
 	@NotNull
 	private static String getHttpSessionAttributeLocalSectionStorageKey(String sectionId) {
-		return Attributes.LOCAL_SECTION_STORAGE + "_" + sectionId;
+		return Attributes.LOCAL_SECTION_STORAGE + "_" + getLocalSectionStorageKey(sectionId);
+	}
+
+	/**
+	 * Returns the key the local storage of the section with the specified id is kept under, see {@link
+	 * #getLocalSectionStorageKey(Section)}. If there is no such section (any more), the id itself is returned.
+	 *
+	 * @param sectionId the id of the section to get the storage key for
+	 * @return the key of the section's local storage
+	 */
+	@NotNull
+	public static String getLocalSectionStorageKey(String sectionId) {
+		Section<?> section = Sections.get(sectionId);
+		return (section == null) ? sectionId : getLocalSectionStorageKey(section);
+	}
+
+	/**
+	 * Returns the key the local storage of the specified section is kept under, in the browser as well as in the http
+	 * session. The key has to be rendered as attribute {@link #LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE} to the element
+	 * carrying the section id, so that KNOWWE.helper (KnowWE-helper.js) is able to use it.
+	 * <p>
+	 * Other than the section id, which changes with every edit of the article and every restart of the wiki, the key
+	 * remains the same as long as the article is not renamed and no section of the same type is inserted before the
+	 * specified one. Therefore, the user's settings for a section (e.g. pagination or filters) are preserved.
+	 *
+	 * @param section the section to get the storage key for
+	 * @return the key of the section's local storage
+	 */
+	@NotNull
+	public static String getLocalSectionStorageKey(Section<?> section) {
+		String key = section.getObject(LOCAL_SECTION_STORAGE_KEY);
+		if (key != null) return key;
+		// number all sections of the same type at once, so that pages with many of them are not scanned repeatedly
+		Class<? extends Type> typeClass = section.get().getClass();
+		int index = 0;
+		for (Section<? extends Type> other : Sections.successors(section.getArticle().getRootSection(), typeClass)) {
+			if (other.get().getClass() != typeClass) continue;
+			other.storeObject(LOCAL_SECTION_STORAGE_KEY, section.getWeb() + "/" + section.getTitle()
+					+ "/" + typeClass.getName() + "/" + index++);
+		}
+		key = section.getObject(LOCAL_SECTION_STORAGE_KEY);
+		if (key != null) return key;
+		// not part of its article's KDOM, so there is nothing to identify it by
+		key = section.getID();
+		section.storeObject(LOCAL_SECTION_STORAGE_KEY, key);
+		return key;
 	}
 
 	/**

@@ -451,7 +451,7 @@ KNOWWE.plugin.listSection = function() {
   function setFilter(sectionId, value) {
     if (value) {
       KNOWWE.helper.setToLocalSectionStorage(sectionId, STORAGE_KEY_FILTER, value);
-    } else if (STORAGE_KEY_FILTER in KNOWWE.helper.getLocalSectionStorage(sectionId)) {
+    } else {
       KNOWWE.helper.deleteFromLocalSectionStorage(sectionId, STORAGE_KEY_FILTER);
     }
   }
@@ -475,16 +475,9 @@ KNOWWE.plugin.listSection = function() {
       jq$.removeCookie(name, {path: "/"});
       const sectionId = name.substring(LEGACY_COOKIE_PREFIX.length);
       const value = (cookies[name] || "").trim();
-      if (!value || getFilter(sectionId)) continue;
-      // write the local storage directly, to not send one request per old cookie to the server; the filter is
-      // provided with each rerender of the list anyway
-      try {
-        const storage = KNOWWE.helper.getLocalSectionStorage(sectionId);
-        storage[STORAGE_KEY_FILTER] = value;
-        localStorage.setItem(sectionId, JSON.stringify(storage));
-      } catch (e) {
-        console.warn("Unable to migrate list filter of " + sectionId, e);
-      }
+      // only keep the filters of the lists on this page, the ids of all others are outdated anyway
+      const onPage = jq$(".list-section-wrapper").filter((i, e) => jq$(e).attr("sectionid") === sectionId).exists();
+      if (value && onPage && !getFilter(sectionId)) setFilter(sectionId, value);
     }
   }
 
@@ -1087,6 +1080,7 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 });
 
 jq$(function() {
+  KNOWWE.helper.cleanupLocalSectionStorage();
   KNOWWE.core.plugin.switchCompiler.init();
   KNOWWE.core.plugin.stickyTableHeaders.init();
   KNOWWE.plugin.listSection.initListSectionFilter();

@@ -353,9 +353,10 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 			listChildren.add(new Div().clazz("empty-list-sections").content(emptyText));
 		}
 
+		String storageKey = AbstractAction.getLocalSectionStorageKey(id);
 		HtmlProvider content = new Div()
 				.clazz("list-section-wrapper")
-				.attributes("sectionId", id)
+				.attributes("sectionId", id, AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, storageKey)
 				.children(listChildren.toArray(HtmlProvider[]::new));
 		if (renderControls) {
 			PaginationRenderer.setOpenResult(context, id, pagination.getDisplayedCount(), pagination.hasMore());
@@ -381,7 +382,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 					.attributes(
 							"sorting-mode", PaginationRenderer.SortingMode.off.name(),
 							"filtering", Boolean.toString(columnFiltering),
-							"reset-start-row-on-count-change", "true")
+							"reset-start-row-on-count-change", "true",
+							AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, storageKey)
 					.children(paginationChildren.toArray(HtmlProvider[]::new));
 		}
 

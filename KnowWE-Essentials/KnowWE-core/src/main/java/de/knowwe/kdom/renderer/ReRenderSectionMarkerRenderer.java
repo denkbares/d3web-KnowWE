@@ -19,6 +19,8 @@
  */
 package de.knowwe.kdom.renderer;
 
+import com.denkbares.strings.Strings;
+import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -69,7 +71,9 @@ public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 
 	public static void renderOpen(String secId, RenderResult result) {
 		result.appendHtml("<div class='ReRenderSectionMarker' style='display: inline;' sectionId='")
-				.append(secId).appendHtml("' rel='{id:\"").append(secId).appendHtml("\"}'>");
+				.append(secId).appendHtml("' rel='{id:\"").append(secId).appendHtml("\"}' ")
+				.appendHtml(AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE).appendHtml("='")
+				.appendHtml(Strings.encodeHtml(AbstractAction.getLocalSectionStorageKey(secId))).appendHtml("'>");
 	}
 
 	/**
@@ -83,7 +87,8 @@ public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 		return new Div()
 				.clazz("ReRenderSectionMarker")
 				.style("display: inline;")
-				.attributes("sectionId", sectionId, "rel", "{id:\"" + sectionId + "\"}")
+				.attributes("sectionId", sectionId, "rel", "{id:\"" + sectionId + "\"}",
+						AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, AbstractAction.getLocalSectionStorageKey(sectionId))
 				.children(children);
 	}
 

@@ -278,7 +278,8 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		Div wrapper = new Div();
 		wrapper.clazz("knowwe-paginationWrapper")
 				.id(section.getID())
-				.attributes("sorting-mode", sorting.name(), "filtering", Boolean.toString(supportFiltering))
+				.attributes("sorting-mode", sorting.name(), "filtering", Boolean.toString(supportFiltering),
+						AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, AbstractAction.getLocalSectionStorageKey(section))
 				.children(
 						page -> renderPaginationInternal(section, user, page),
 						page -> page.append(table),
