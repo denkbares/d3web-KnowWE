@@ -110,6 +110,25 @@ public abstract class AbstractAction implements Action {
 		return jsonObject;
 	}
 
+	/**
+	 * Get the local storage of the specified section. If the current request is about that very section, the storage
+	 * provided with the request is used, see {@link #getLocalSectionStorage(UserContext)}. Otherwise, e.g. while
+	 * rendering the full page or while rendering another section, the copy last stored in the http session is used.
+	 * That copy is only available for users that are known to the wiki, see
+	 * KNOWWE.helper.setToLocalSectionStorage(sectionId, key, value) on the client side (KnowWE-helper.js).
+	 *
+	 * @param user      the user context of the request
+	 * @param sectionId the id of the section to get the local storage for
+	 * @return a JSONObject with the local section storage
+	 */
+	@NotNull
+	public static JSONObject getLocalSectionStorage(UserContext user, String sectionId) {
+		if (sectionId.equals(user.getParameter(Attributes.SECTION_ID))) return getLocalSectionStorage(user);
+		if (user.getSession() == null) return new JSONObject();
+		Object stored = user.getSession().getAttribute(getHttpSessionAttributeLocalSectionStorageKey(sectionId));
+		return (stored instanceof JSONObject jsonObject) ? jsonObject : new JSONObject();
+	}
+
 	public static void storeLocalSectionStorage(UserActionContext context) {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		String value = context.getParameter("value");

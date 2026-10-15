@@ -30,6 +30,7 @@ import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Predicates;
+import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -54,6 +55,8 @@ import de.knowwe.util.Icon;
  */
 public class GroupedFilterListSectionsRenderer<T extends Type> {
 
+	// key of the free text filter in the local section storage, has to match KNOWWE.plugin.listSection
+	private static final String LIST_FILTER_KEY = "listFilter";
 	private static final int DEFAULT_COUNT = 50;
 	private static final int LOWER_PAGINATION_THRESHOLD = 20;
 	private static final int[] PAGINATION_COUNT_OPTIONS = { 10, 25, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
@@ -297,7 +300,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	public void render(RenderResult page) {
 		boolean renderControls = !context.isRenderingPreview();
 		boolean columnFiltering = renderControls && isColumnFilteringSupported();
-		String searchPhrase = getFilterFromCookie();
+		String searchPhrase = getFilter(context, id);
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
 		ColumnFilterPredicate columnPredicate = columnFiltering
 				? new ColumnFilterPredicate(PaginationRenderer.getFilter(context))
@@ -404,7 +407,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		HtmlElement input = new HtmlElement("input")
 				.clazz("form-control filter-list-section-input")
 				.attributes("type", "text", "placeholder", placeholder);
-		String filter = getFilterFromCookie();
+		String filter = getFilter(context, id);
 		if (Strings.isNotBlank(filter)) input.attributes("value", filter);
 
 		return new Div()
@@ -424,8 +427,23 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		return infoTitleBuilder.toString();
 	}
 
+	/**
+	 * Returns whether the user currently filters the list with the specified id by some free text. The list does not
+	 * need to be the one the current request is about, see {@link AbstractAction#getLocalSectionStorage(UserContext,
+	 * String)}.
+	 */
 	public static boolean isSearching(UserContext context, String id) {
-		return Strings.nonBlank(KnowWEUtils.getCookie("list-section.identifier." + id, context));
+		return getFilter(context, id) != null;
+	}
+
+	/**
+	 * Returns the free text filter of the list with the specified id, or null if the list is not filtered. The filter
+	 * is kept in the local section storage of the list (see KNOWWE.plugin.listSection in KnowWE-Plugin-Core.js).
+	 */
+	@Nullable
+	private static String getFilter(UserContext context, String id) {
+		String filter = AbstractAction.getLocalSectionStorage(context, id).optString(LIST_FILTER_KEY);
+		return Strings.isBlank(filter) ? null : filter.trim();
 	}
 
 	private int getCountFromCookie() {
@@ -437,10 +455,6 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	private int getDefaultCount() {
 		int legacyCount = getCountFromCookie();
 		return legacyCount == -1 ? Integer.MAX_VALUE : legacyCount;
-	}
-
-	private String getFilterFromCookie() {
-		return getCookieContent("list-section.identifier." + id);
 	}
 
 	private String getCookieContent(String key) {
@@ -475,7 +489,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 */
 	@NotNull
 	public List<String> collectFilterValues(String columnName, @Nullable String filterTextQuery, int maxCount) {
-		String searchPhrase = getFilterFromCookie();
+		String searchPhrase = getFilter(context, id);
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
 		Map<String, Set<Pattern>> columnFilters = new HashMap<>(PaginationRenderer.getFilter(context));
 		// ignore the column's own filter, otherwise the current selection could never be widened again

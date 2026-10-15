@@ -426,7 +426,11 @@ KNOWWE.plugin.listFilter = function() {
 
 KNOWWE.plugin.listSection = function() {
 
-  const COOKIE_LIST_SECTION_ID = "list-section.identifier.";
+  // key of the free text filter in the local section storage, has to match GroupedFilterListSectionsRenderer
+  const STORAGE_KEY_FILTER = "listFilter";
+  // the filter was kept in one cookie per list before, which were never removed and piled up until the request
+  // headers got too large for the server (HTTP 431), so these cookies are migrated and removed
+  const LEGACY_COOKIE_PREFIX = "list-section.identifier.";
 
   function getRerenderTarget(element) {
     return element.parent()
@@ -435,14 +439,53 @@ KNOWWE.plugin.listSection = function() {
       .first();
   }
 
-  function setCookieAndRerender(cookie, value, element, resetPage = true) {
+  function getSectionId(element) {
     const listWrapper = getRerenderTarget(element);
-    const sectionId = listWrapper.attr("sectionid") || listWrapper.attr("id");
-    jq$.cookie(cookie + sectionId, value);
-    if (resetPage && listWrapper.is(".knowwe-paginationWrapper")) {
+    return listWrapper.attr("sectionid") || listWrapper.attr("id");
+  }
+
+  function getFilter(sectionId) {
+    return KNOWWE.helper.getLocalSectionStorage(sectionId)[STORAGE_KEY_FILTER] || "";
+  }
+
+  function setFilter(sectionId, value) {
+    if (value) {
+      KNOWWE.helper.setToLocalSectionStorage(sectionId, STORAGE_KEY_FILTER, value);
+    } else if (STORAGE_KEY_FILTER in KNOWWE.helper.getLocalSectionStorage(sectionId)) {
+      KNOWWE.helper.deleteFromLocalSectionStorage(sectionId, STORAGE_KEY_FILTER);
+    }
+  }
+
+  function setFilterAndRerender(value, element) {
+    const listWrapper = getRerenderTarget(element);
+    const sectionId = getSectionId(element);
+    setFilter(sectionId, value);
+    if (listWrapper.is(".knowwe-paginationWrapper")) {
       KNOWWE.core.plugin.pagination.resetStartRow(sectionId);
     }
     listWrapper.rerender({callback: highlight});
+  }
+
+  function migrateLegacyCookies() {
+    const cookies = jq$.cookie();
+    for (const name in cookies) {
+      if (!name.startsWith(LEGACY_COOKIE_PREFIX)) continue;
+      // the cookies were written without explicit path, so they usually live in the wiki's directory
+      jq$.removeCookie(name);
+      jq$.removeCookie(name, {path: "/"});
+      const sectionId = name.substring(LEGACY_COOKIE_PREFIX.length);
+      const value = (cookies[name] || "").trim();
+      if (!value || getFilter(sectionId)) continue;
+      // write the local storage directly, to not send one request per old cookie to the server; the filter is
+      // provided with each rerender of the list anyway
+      try {
+        const storage = KNOWWE.helper.getLocalSectionStorage(sectionId);
+        storage[STORAGE_KEY_FILTER] = value;
+        localStorage.setItem(sectionId, JSON.stringify(storage));
+      } catch (e) {
+        console.warn("Unable to migrate list filter of " + sectionId, e);
+      }
+    }
   }
 
   function highlight($wrapper, previous) {
@@ -464,14 +507,10 @@ KNOWWE.plugin.listSection = function() {
     // });
   }
 
-  function getCookie(cookie, element) {
-    const listWrapper = getRerenderTarget(element);
-    const sectionId = listWrapper.attr("sectionid") || listWrapper.attr("id");
-    return jq$.cookie(cookie + sectionId);
-  }
-
   return {
     initListSectionFilter: function() {
+
+      migrateLegacyCookies();
 
       let $input = jq$("input.filter-list-section-input");
       if (!$input.exists()) return;
@@ -481,10 +520,9 @@ KNOWWE.plugin.listSection = function() {
       // restore last value (browser history sometimes forgets)
       $input.each(function() {
         let $this = jq$(this);
-        let lastValue = getCookie(COOKIE_LIST_SECTION_ID, $this);
-        $this.val(lastValue);
-        // make sure we rerender
-        setCookieAndRerender(COOKIE_LIST_SECTION_ID, lastValue, $this, false);
+        $this.val(getFilter(getSectionId($this)));
+        // make sure we rerender, the page may have been rendered without the filter of the local section storage
+        getRerenderTarget($this).rerender({callback: highlight});
       });
 
       // focus and highlight first input on page
@@ -501,8 +539,8 @@ KNOWWE.plugin.listSection = function() {
         }
         let inputField = jq$(this);
         const inputText = inputField.val();
-        if (inputText === getCookie(COOKIE_LIST_SECTION_ID, jq$(this))) return;
-        setCookieAndRerender(COOKIE_LIST_SECTION_ID, inputText, jq$(this));
+        if (inputText === getFilter(getSectionId(inputField))) return;
+        setFilterAndRerender(inputText, inputField);
       });
 
       // init 'clear' button; scoped to the text filter, the pagination column filters use the same class
