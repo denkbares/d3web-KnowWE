@@ -843,6 +843,11 @@
 				<artifactId>KnowWE-Plugin-Versioning-Git</artifactId>
 				<version>${KnowWE-DES.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-MCP</artifactId>
+				<version>${KnowWE-DES.version}</version>
+			</dependency>
 
 			<!-- ===== denkbares-Commons Module ===== -->
 			<dependency>
