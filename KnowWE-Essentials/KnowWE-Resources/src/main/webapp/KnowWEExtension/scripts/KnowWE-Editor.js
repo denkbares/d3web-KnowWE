@@ -196,6 +196,11 @@ window.KnowWEEditor = (function () {
 			},
 			".cm-completionDetail": {
 				color: "var(--text-color-secondary, #888)"
+			},
+			".cm-tooltip.cm-tooltip-no-completions": {
+				padding: "2px 8px",
+				color: "var(--text-color-secondary, #888)",
+				fontStyle: "italic"
 			}
 		});
 
@@ -284,9 +289,61 @@ window.KnowWEEditor = (function () {
 		});
 		shared = {
 			baseTheme, pageTheme, sectionTheme, highlightStyle, markupTint,
+			explicitCompletion: explicitCompletion(),
 			wrapping: new CodeMirror.state.Compartment()
 		};
 		return shared;
+	}
+
+	/**
+	 * Starts completion on Ctrl-Space. If an explicitly started completion finds nothing, a hint says so until the
+	 * caret or the text changes.
+	 */
+	function explicitCompletion() {
+		const {StateField, StateEffect, Prec} = CodeMirror.state;
+		const {keymap, showTooltip} = CodeMirror.view;
+		const {startCompletion, completionStatus} = CodeMirror.autocomplete;
+
+		const requested = StateEffect.define();
+		// null, or the caret of a pending explicit request with the flag whether nothing was found
+		const hint = StateField.define({
+			create: () => null,
+			update(value, tr) {
+				if (tr.effects.some(effect => effect.is(requested))) {
+					return {pos: tr.state.selection.main.head, empty: false};
+				}
+				if (!value || tr.docChanged || tr.selection) return null;
+				const status = completionStatus(tr.state);
+				if (status === "active") return null;
+				// the sources of the request answered without any completion
+				if (!value.empty && status === null && completionStatus(tr.startState) === "pending") {
+					return {pos: value.pos, empty: true};
+				}
+				return value;
+			},
+			provide: field => showTooltip.compute([field], state => {
+				const value = state.field(field);
+				if (!value || !value.empty) return null;
+				return {
+					pos: value.pos,
+					create() {
+						const dom = document.createElement("div");
+						dom.className = "cm-tooltip-no-completions";
+						dom.textContent = "No completions";
+						return {dom};
+					}
+				};
+			})
+		});
+
+		function start(view) {
+			if (!startCompletion(view)) return false;
+			view.dispatch({effects: requested.of(null)});
+			return true;
+		}
+
+		// above the keymap of the completion extension, which binds Ctrl-Space as well
+		return [hint, Prec.highest(keymap.of([{key: "Ctrl-Space", run: start}]))];
 	}
 
 	/**
@@ -355,6 +412,7 @@ window.KnowWEEditor = (function () {
 				highlightActiveLine(),
 				highlightSelectionMatches(),
 				syntaxHighlighting(parts.highlightStyle),
+				parts.explicitCompletion,
 				language,
 				mode === "page" ? parts.markupTint : [],
 				EditorState.tabSize.of(4),
