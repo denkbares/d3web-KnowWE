@@ -33,13 +33,13 @@ public class D3webLogoAction extends DefaultLogoAction {
 	private static final String LOGO_PATH = "/webapp/templates/default/skins/d3web/d3web-logo.png";
 
 	@Override
-	public String getDefaultLogoPath() {
+	public String getDefaultLogoPath(UserActionContext context) {
 		return LOGO_PATH;
 	}
 
 	@Override
-	public String getDarkModeLogoPath() {
-		return getDefaultLogoPath();
+	public String getDarkModeLogoPath(UserActionContext context) {
+		return getDefaultLogoPath(context);
 	}
 
 	@Override
