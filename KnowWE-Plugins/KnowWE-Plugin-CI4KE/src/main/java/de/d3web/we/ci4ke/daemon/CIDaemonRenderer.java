@@ -25,7 +25,8 @@ public class CIDaemonRenderer implements Renderer {
 
 	public static void renderDaemonContents(UserContext user, Section<?> section, String dashboardName, RenderResult string) {
 
-		ArticleManager articleManager = section.getArticleManager();
+		// sections of the preview have no article manager of their own
+		ArticleManager articleManager = KnowWEUtils.getArticleManager(section);
 		CIDashboard dashboard = CIDashboardManager.getDashboard(articleManager, dashboardName);
 
 		if (dashboard == null) {

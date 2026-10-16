@@ -74,6 +74,8 @@ public class AsynchronousRenderer implements Renderer {
 
 	protected boolean shouldRenderPreview(Section<?> section, UserContext user) {
 		if (isAsynchronousRerenderingRequest(user)) return false;
+		// sections of temporary articles (e.g. the preview) are unknown to the server, so they cannot be loaded later
+		if (section.getArticle().isTemporary()) return false;
 		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
 			AsyncPreviewRenderer asyncRenderer = (AsyncPreviewRenderer) this.decoratedRenderer;
 			if (!asyncRenderer.shouldRenderAsynchronous(section, user)) return false;

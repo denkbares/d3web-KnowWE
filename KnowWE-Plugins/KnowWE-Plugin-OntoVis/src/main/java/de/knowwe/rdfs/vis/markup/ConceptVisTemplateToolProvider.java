@@ -72,11 +72,12 @@ public class ConceptVisTemplateToolProvider implements ToolProvider {
 	}
 
 	private Section<ConceptVisualizationType> findApplicableTemplate(Section<?> section) {
-		Map<String, Section<ConceptVisualizationType>> templates = getClassVisTemplates(section);
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
 		IRI uri = getIRI(section);
+		// sections of the preview are not compiled (and have no article manager to search templates in)
 		if (uri == null || compiler == null) return null;
+		Map<String, Section<ConceptVisualizationType>> templates = getClassVisTemplates(section);
 		PartialHierarchyTree<IRI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
 		for (IRI clazzIRI : classHierarchy.getNodesDFSOrder()) {
 			Section<ConceptVisualizationType> conceptVisualizationTypeSection = templates.get(Rdf2GoUtils.reduceNamespace(compiler

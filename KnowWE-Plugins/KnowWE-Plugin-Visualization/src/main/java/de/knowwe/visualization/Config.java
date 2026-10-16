@@ -275,7 +275,8 @@ public class Config {
 		String[] configNames = DefaultMarkupType.getAnnotations(section, CONFIG);
 		if (configNames.length > 0) {
 
-			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
+			// also works for sections of the preview, which have no article manager of their own
+			PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 			Collection<Section<?>> sectionsOfPackages = packageManager.getSectionsOfPackage(section.getPackageNames()
 					.toArray(new String[0]));
 			List<Section<VisualizationConfigType>> configTypeSections = Sections.successors(sectionsOfPackages,

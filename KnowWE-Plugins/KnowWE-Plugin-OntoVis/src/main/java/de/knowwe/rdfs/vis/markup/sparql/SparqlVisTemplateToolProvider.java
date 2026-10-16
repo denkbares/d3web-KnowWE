@@ -87,11 +87,12 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 	}
 
 	private List<Section<SparqlVisualizationType>> findApplicableTemplate(Section<?> section) {
-		Map<String, Section<SparqlVisualizationType>> templates = getClassVisTemplates(section);
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
 		IRI uri = getIRI(section);
+		// sections of the preview are not compiled (and have no article manager to search templates in)
 		if (uri == null || compiler == null) return null;
+		Map<String, Section<SparqlVisualizationType>> templates = getClassVisTemplates(section);
 		PartialHierarchyTree<IRI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
 		List<Section<SparqlVisualizationType>> possibleVisTemplate = new ArrayList<>();
 		for (IRI clazzIRI : classHierarchy.getNodesDFSOrder()) {

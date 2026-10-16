@@ -41,6 +41,11 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
+		// the menu is loaded by the section id, which the server does not know for sections of the preview
+		if (sec.getArticle().isTemporary()) {
+			decoratedRenderer.render(sec, user, string);
+			return;
+		}
 		ToolSet tools = ToolUtils.getTools(sec, user);
 		if (tools.hasTools()) {
 			// decorate in place, avoiding an intermediate buffer and copy of the rendered subtree

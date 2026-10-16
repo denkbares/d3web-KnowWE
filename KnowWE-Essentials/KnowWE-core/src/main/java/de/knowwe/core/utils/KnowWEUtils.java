@@ -1215,7 +1215,7 @@ public class KnowWEUtils {
 	 */
 	public static String getWikiLink(Article article) {
 		String title = article.getTitle();
-		title = fixAttachmentArticleLinks(article.getArticleManager(), title);
+		title = fixAttachmentArticleLinks(getArticleManager(article), title);
 		return "[" + title + "]";
 	}
 
@@ -1274,7 +1274,7 @@ public class KnowWEUtils {
 	public static String getWikiLinkPart(final Section<?> section) {
 		String link = section.getTitle();
 		if (link != null) { // for links to compiled attachments, we link to the parent article
-			link = fixAttachmentArticleLinks(section.getArticleManager(), link);
+			link = fixAttachmentArticleLinks(getArticleManager(section), link);
 		}
 		// append section id if the section is not the root section
 		if (section.getParent() != null) {
