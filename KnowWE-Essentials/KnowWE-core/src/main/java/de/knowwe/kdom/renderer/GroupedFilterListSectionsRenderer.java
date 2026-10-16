@@ -353,7 +353,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 			listChildren.add(new Div().clazz("empty-list-sections").content(emptyText));
 		}
 
-		String storageKey = AbstractAction.getLocalSectionStorageKey(id);
+		String storageKey = AbstractAction.getLocalSectionStorageKey(context.getEnvironment(), id);
 		HtmlProvider content = new Div()
 				.clazz("list-section-wrapper")
 				.attributes("sectionId", id, AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, storageKey)
@@ -388,7 +388,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		}
 
 		if (ReRenderSectionMarkerRenderer.requiresWrapper(context)) {
-			content = ReRenderSectionMarkerRenderer.createMarker(id, content);
+			content = ReRenderSectionMarkerRenderer.createMarker(context.getEnvironment(), id, content);
 		}
 
 		if (!context.isReRendering() && renderControls) {

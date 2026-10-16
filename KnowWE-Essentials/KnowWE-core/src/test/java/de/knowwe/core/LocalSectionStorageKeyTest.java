@@ -60,8 +60,8 @@ public class LocalSectionStorageKeyTest {
 	public void keyOfSectionIdIsLookedUp() throws Exception {
 		Article page = wiki.register("Page", "first\nsecond\n");
 		assertEquals(AbstractAction.getLocalSectionStorageKey(line(page, 1)),
-				AbstractAction.getLocalSectionStorageKey(line(page, 1).getID()));
-		assertEquals("unknownId", AbstractAction.getLocalSectionStorageKey("unknownId"));
+				AbstractAction.getLocalSectionStorageKey(wiki.environment, line(page, 1).getID()));
+		assertEquals("unknownId", AbstractAction.getLocalSectionStorageKey(wiki.environment, "unknownId"));
 	}
 
 	private Article queue(String title, String text) throws InterruptedException {

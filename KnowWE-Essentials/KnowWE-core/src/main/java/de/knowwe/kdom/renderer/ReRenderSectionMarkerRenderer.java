@@ -19,7 +19,10 @@
  */
 package de.knowwe.kdom.renderer;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -66,29 +69,30 @@ public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 	}
 
 	public static void renderOpen(Section<?> sec, RenderResult result) {
-		renderOpen(sec.getID(), result);
+		renderOpen(sec.getID(), AbstractAction.getLocalSectionStorageKey(sec), result);
 	}
 
-	public static void renderOpen(String secId, RenderResult result) {
+	private static void renderOpen(String secId, String storageKey, RenderResult result) {
 		result.appendHtml("<div class='ReRenderSectionMarker' style='display: inline;' sectionId='")
 				.append(secId).appendHtml("' rel='{id:\"").append(secId).appendHtml("\"}' ")
 				.appendHtml(AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE).appendHtml("='")
-				.appendHtml(Strings.encodeHtml(AbstractAction.getLocalSectionStorageKey(secId))).appendHtml("'>");
+				.appendHtml(Strings.encodeHtml(storageKey)).appendHtml("'>");
 	}
 
 	/**
 	 * Creates a rerender marker containing the supplied elements.
 	 *
-	 * @param sectionId stable ID of the section to rerender
-	 * @param children  marker content
+	 * @param environment the environment the section belongs to
+	 * @param sectionId   stable ID of the section to rerender
+	 * @param children    marker content
 	 * @return element representing the complete rerender marker
 	 */
-	public static HtmlElement createMarker(String sectionId, HtmlProvider... children) {
+	public static HtmlElement createMarker(@NotNull Environment environment, String sectionId, HtmlProvider... children) {
 		return new Div()
 				.clazz("ReRenderSectionMarker")
 				.style("display: inline;")
 				.attributes("sectionId", sectionId, "rel", "{id:\"" + sectionId + "\"}",
-						AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, AbstractAction.getLocalSectionStorageKey(sectionId))
+						AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, AbstractAction.getLocalSectionStorageKey(environment, sectionId))
 				.children(children);
 	}
 
