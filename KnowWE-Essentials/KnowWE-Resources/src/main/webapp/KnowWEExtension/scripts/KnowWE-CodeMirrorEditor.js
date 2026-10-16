@@ -68,6 +68,10 @@
 				position.textContent = "Ln " + line.number + ", Col " + (head - line.from + 1)
 					+ "  ·  " + update.state.doc.lines + " lines";
 			}
+			const help = KnowWEEditor.isHelpOpen(update.state);
+			if (help !== KnowWEEditor.isHelpOpen(update.startState)) {
+				root.querySelector("[data-editor-cmd=help]").classList.toggle("active", help);
+			}
 			if (update.docChanged) {
 				const dirty = !update.state.doc.eq(initialDoc);
 				dirtyLabel.hidden = !dirty;
@@ -151,6 +155,9 @@
 					return;
 				case "wrap":
 					setWrapping(!isWrapping());
+					break;
+				case "help":
+					KnowWEEditor.toggleHelp(view);
 					break;
 			}
 			view.focus();

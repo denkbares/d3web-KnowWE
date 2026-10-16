@@ -201,6 +201,92 @@ window.KnowWEEditor = (function () {
 				padding: "2px 8px",
 				color: "var(--text-color-secondary, #888)",
 				fontStyle: "italic"
+			},
+			".cm-knowwe-help": {
+				padding: "6px 12px 10px",
+				fontSize: "13px",
+				lineHeight: "1.4",
+				outline: "none"
+			},
+			".cm-knowwe-help-header": {
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "space-between",
+				marginBottom: "6px",
+				fontWeight: "600"
+			},
+			".cm-knowwe-help-header button": {
+				padding: "0 4px",
+				border: "none",
+				background: "none",
+				fontSize: "16px",
+				lineHeight: "1",
+				color: "var(--text-color-secondary, #888)",
+				cursor: "pointer"
+			},
+			".cm-knowwe-help-body": {
+				display: "grid",
+				gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))",
+				gap: "10px 28px",
+				maxHeight: "40vh",
+				overflowY: "auto"
+			},
+			".cm-knowwe-help-group-title": {
+				margin: "0 0 3px",
+				fontSize: "11px",
+				fontWeight: "600",
+				letterSpacing: "0.04em",
+				textTransform: "uppercase",
+				color: "var(--text-color-secondary, #888)"
+			},
+			".cm-knowwe-help-row": {
+				display: "flex",
+				alignItems: "baseline",
+				justifyContent: "space-between",
+				gap: "12px",
+				padding: "1px 0"
+			},
+			".cm-knowwe-help-keys": {
+				flexShrink: "0",
+				textAlign: "right",
+				color: "var(--text-color-secondary, #888)"
+			},
+			".cm-knowwe-help kbd": {
+				display: "inline-block",
+				minWidth: "1.5em",
+				padding: "0 4px",
+				fontFamily: "inherit",
+				fontSize: "11px",
+				fontWeight: "normal",
+				lineHeight: "17px",
+				textAlign: "center",
+				color: "var(--text-color-primary, #000)",
+				backgroundColor: "var(--bg-color-primary, #fff)",
+				border: "1px solid var(--border-color-table, #ccc)",
+				borderRadius: "3px",
+				boxShadow: "none"
+			},
+			".cm-knowwe-help kbd + kbd": {
+				marginLeft: "2px"
+			},
+			".cm-knowwe-help-plus": {
+				padding: "0 2px"
+			},
+			".cm-knowwe-help-or": {
+				padding: "0 6px"
+			},
+			".cm-knowwe-help code": {
+				padding: "0 3px",
+				color: "inherit",
+				backgroundColor: "var(--syntax-code-bg, #f1f3f5)",
+				borderRadius: "3px"
+			},
+			".cm-knowwe-help-tips": {
+				gridColumn: "1 / -1"
+			},
+			".cm-knowwe-help-tips ul": {
+				margin: "0",
+				paddingLeft: "18px"
 			}
 		});
 
@@ -290,9 +376,232 @@ window.KnowWEEditor = (function () {
 		shared = {
 			baseTheme, pageTheme, sectionTheme, highlightStyle, markupTint,
 			explicitCompletion: explicitCompletion(),
+			help: helpPanel(),
+			textareaEditing: textareaEditing(),
 			wrapping: new CodeMirror.state.Compartment()
 		};
 		return shared;
+	}
+
+	// the platform the way CodeMirror keymaps tell it, which also decides whether Mod is Cmd or Ctrl
+	const platform = typeof navigator === "undefined" ? "key"
+		: /Mac/.test(navigator.platform) ? "mac"
+			: /Win/.test(navigator.platform) ? "win"
+				: /Linux|X11/.test(navigator.platform) ? "linux" : "key";
+
+	/**
+	 * The shortcuts shown in the help panel, which must follow the keymaps of create(). A binding uses the notation of
+	 * CodeMirror keymaps, `key` holds it for all platforms, `mac`, `win` or `linux` replace it on that platform, and an
+	 * array lists alternatives. Mouse gestures are written like keys. An entry with `modes` only shows in those modes.
+	 */
+	const HELP_SHORTCUTS = [
+		{
+			title: "General", entries: [
+				{text: "Save", key: "Mod-s"},
+				{text: "Cancel", key: "Alt-q", mac: "Ctrl-q", modes: ["section"]},
+				{text: "Undo", key: "Mod-z"},
+				{text: "Redo", key: "Mod-y", mac: "Mod-Shift-z", win: ["Mod-y", "Ctrl-Shift-z"], linux: ["Mod-y", "Ctrl-Shift-z"]},
+				{text: "Show completions", key: "Ctrl-Space", mac: ["Ctrl-Space", "Alt-`"]},
+				{text: "Close completion, search or help", key: "Escape"},
+				{text: "Let Tab move the focus (toggle)", key: "Ctrl-m", mac: "Shift-Alt-m"}
+			]
+		},
+		{
+			title: "Search", entries: [
+				{text: "Find and replace", key: "Mod-f"},
+				{text: "Next match", key: ["F3", "Mod-g"]},
+				{text: "Previous match", key: ["Shift-F3", "Shift-Mod-g"]},
+				{text: "Go to line", key: "Mod-Alt-g"},
+				{text: "Select next occurrence", key: "Mod-d"},
+				{text: "Select all occurrences", key: "Mod-Shift-l"}
+			]
+		},
+		{
+			title: "Lines", entries: [
+				{text: "Move up / down", key: ["Alt-ArrowUp", "Alt-ArrowDown"]},
+				{text: "Duplicate up / down", key: ["Shift-Alt-ArrowUp", "Shift-Alt-ArrowDown"]},
+				{text: "Delete", key: ["Alt-d", "Shift-Mod-k"]},
+				{text: "Toggle // comment", key: "Mod-/"},
+				{text: "Insert blank line below", key: "Mod-Enter"},
+				{text: "Indent / unindent", key: ["Tab", "Shift-Tab"]}
+			]
+		},
+		{
+			title: "Selection", entries: [
+				{text: "Add a cursor", key: "Mod-Click"},
+				{text: "Rectangular selection", key: "Alt-Drag"},
+				{text: "Back to a single cursor", key: "Escape"},
+				{text: "Select line", key: "Alt-l", mac: "Ctrl-l"},
+				{text: "Select enclosing syntax", key: "Mod-i"},
+				{text: "Go to matching bracket", key: "Shift-Mod-\\"},
+				{text: "Select all", key: "Mod-a"}
+			]
+		},
+		{
+			title: "Folding", entries: [
+				{text: "Fold", key: "Ctrl-Shift-[", mac: "Cmd-Alt-["},
+				{text: "Unfold", key: "Ctrl-Shift-]", mac: "Cmd-Alt-]"},
+				{text: "Fold all", key: "Ctrl-Alt-["},
+				{text: "Unfold all", key: "Ctrl-Alt-]"}
+			]
+		}
+	];
+
+	/**
+	 * Hints below the shortcuts, `{binding}` shows a key like the shortcuts do and backquotes mark code. A hint with
+	 * `modes` only shows in those modes.
+	 */
+	const HELP_TIPS = [
+		{text: "Completion suggests markups after `%%` and annotations after `@` while you type, {Ctrl-Space} opens it anywhere."},
+		{text: "With several lines selected, typing `-`, `#`, `*` or a space puts it in front of each line, {Shift-Space} removes the first such character."},
+		{text: "The arrows in the gutter fold markups, style and preformatted blocks and the section below a heading."},
+		{text: "The wrap button of the toolbar switches line wrapping, this browser remembers it for all editors.", modes: ["page"]},
+		{text: "Preview shows the rendered page with the current text, without saving it.", modes: ["page"]},
+		{text: "Line wrapping follows the setting of the wrap button in the page editor.", modes: ["section"]}
+	];
+
+	const MODIFIERS = ["Ctrl", "Alt", "Shift", "Cmd"];
+	const KEY_LABELS = {
+		Ctrl: {pc: "Ctrl", mac: "⌃", title: "Control"},
+		Alt: {pc: "Alt", mac: "⌥", title: "Option"},
+		Shift: {pc: "Shift", mac: "⇧", title: "Shift"},
+		Cmd: {pc: "Cmd", mac: "⌘", title: "Command"},
+		ArrowUp: {pc: "↑", mac: "↑"},
+		ArrowDown: {pc: "↓", mac: "↓"},
+		Escape: {pc: "Esc", mac: "Esc"},
+		Enter: {pc: "Enter", mac: "↩", title: "Return"}
+	};
+
+	function element(tag, className, ...children) {
+		const node = document.createElement(tag);
+		if (className) node.className = className;
+		node.append(...children);
+		return node;
+	}
+
+	/** Renders a binding in CodeMirror notation as keys of the current platform, e.g. Mod-s as Ctrl + S or ⌘S. */
+	function renderBinding(binding) {
+		const mac = platform === "mac";
+		const parts = binding.split(/-(?!$)/);
+		let key = parts.pop();
+		const modifiers = parts
+			.map(part => part === "Mod" ? (mac ? "Cmd" : "Ctrl") : part === "Meta" ? "Cmd" : part)
+			.sort((a, b) => MODIFIERS.indexOf(a) - MODIFIERS.indexOf(b));
+		if (key.length === 1) key = key.toUpperCase();
+		const span = element("span", "cm-knowwe-help-binding");
+		[...modifiers, key].forEach((name, index) => {
+			if (index > 0 && !mac) span.append(element("span", "cm-knowwe-help-plus", "+"));
+			const label = KEY_LABELS[name];
+			const kbd = element("kbd", null, label ? label[mac ? "mac" : "pc"] : name);
+			if (label && label.title && mac) kbd.title = label.title;
+			span.append(kbd);
+		});
+		return span;
+	}
+
+	function renderBindings(entry) {
+		let bindings = entry[platform] ?? entry.key;
+		if (!Array.isArray(bindings)) bindings = [bindings];
+		const keys = element("span", "cm-knowwe-help-keys");
+		bindings.forEach((binding, index) => {
+			if (index > 0) keys.append(element("span", "cm-knowwe-help-or", "/"));
+			keys.append(renderBinding(binding));
+		});
+		return keys;
+	}
+
+	/** Renders a hint text, `{binding}` becomes keys and `code` becomes code. */
+	function renderTip(text) {
+		const item = element("li");
+		for (const part of text.split(/(\{[^}]+\}|`[^`]+`)/)) {
+			if (part.startsWith("{")) {
+				item.append(renderBinding(part.slice(1, -1)));
+			} else if (part.startsWith("`")) {
+				item.append(element("code", null, part.slice(1, -1)));
+			} else if (part) {
+				item.append(part);
+			}
+		}
+		return item;
+	}
+
+	/**
+	 * The help panel above the text with the shortcuts and hints for the mode of the editor, toggled by the effect.
+	 * It closes on Escape, in the editor and in the panel.
+	 */
+	function helpPanel() {
+		const {StateField, StateEffect, Facet} = CodeMirror.state;
+		const {showPanel} = CodeMirror.view;
+
+		const mode = Facet.define({combine: values => values.length ? values[0] : "page"});
+		const toggle = StateEffect.define();
+		const field = StateField.define({
+			create: () => false,
+			update(open, tr) {
+				for (const effect of tr.effects) {
+					if (effect.is(toggle)) open = effect.value;
+				}
+				return open;
+			},
+			provide: field => showPanel.from(field, open => open ? create : null)
+		});
+
+		function close(view) {
+			view.dispatch({effects: toggle.of(false)});
+			view.focus();
+		}
+
+		function visible(item, editorMode) {
+			return !item.modes || item.modes.includes(editorMode);
+		}
+
+		function create(view) {
+			const editorMode = view.state.facet(mode);
+			const closeButton = element("button", null, "×");
+			closeButton.type = "button";
+			closeButton.title = "Close";
+			closeButton.setAttribute("aria-label", "Close");
+			closeButton.addEventListener("click", () => close(view));
+
+			const body = element("div", "cm-knowwe-help-body");
+			for (const group of HELP_SHORTCUTS) {
+				const section = element("div", "cm-knowwe-help-group",
+					element("div", "cm-knowwe-help-group-title", group.title));
+				for (const entry of group.entries.filter(entry => visible(entry, editorMode))) {
+					section.append(element("div", "cm-knowwe-help-row",
+						element("span", null, entry.text), renderBindings(entry)));
+				}
+				body.append(section);
+			}
+			body.append(element("div", "cm-knowwe-help-group cm-knowwe-help-tips",
+				element("div", "cm-knowwe-help-group-title", "Tips"),
+				element("ul", null, ...HELP_TIPS.filter(tip => visible(tip, editorMode)).map(tip => renderTip(tip.text)))));
+
+			const dom = element("div", "cm-knowwe-help",
+				element("div", "cm-knowwe-help-header", element("span", null, "Editor shortcuts"), closeButton), body);
+			// focusable, so a click into the panel keeps the keys within the editor
+			dom.tabIndex = -1;
+			dom.setAttribute("role", "dialog");
+			dom.setAttribute("aria-label", "Editor shortcuts");
+			dom.addEventListener("keydown", event => {
+				if (event.key !== "Escape") return;
+				event.preventDefault();
+				close(view);
+			});
+			return {dom, top: true};
+		}
+
+		return {
+			mode, toggle, field,
+			// closes an open help on Escape, otherwise Escape keeps its other meanings
+			closeKey: {
+				key: "Escape", run(view) {
+					if (!view.state.field(field, false)) return false;
+					view.dispatch({effects: toggle.of(false)});
+					return true;
+				}
+			}
+		};
 	}
 
 	/**
@@ -347,6 +656,63 @@ window.KnowWEEditor = (function () {
 	}
 
 	/**
+	 * Editing behavior known from the textarea of the instant edit: Alt-D deletes lines, Ctrl-Shift-Z redoes on Windows
+	 * as well, typing "-", "#", "*" or a space while several lines are selected puts it in front of each of these lines,
+	 * and Shift-Space removes such a first character again. Line comments start with "//", which other languages of the
+	 * text, e.g. embedded in markups, may override.
+	 */
+	function textareaEditing() {
+		const {EditorState, EditorSelection, Prec} = CodeMirror.state;
+		const {EditorView, keymap} = CodeMirror.view;
+		const {deleteLine, redo} = CodeMirror.commands;
+		const PREFIXES = ["-", "#", "*", " "];
+
+		// the lines of a single selection over several lines, a selection ending at the start of a line excludes it
+		function selectedLines(state) {
+			if (state.selection.ranges.length !== 1) return null;
+			const {from, to} = state.selection.main;
+			const first = state.doc.lineAt(from);
+			let last = state.doc.lineAt(to);
+			if (to === last.from && to > from) last = state.doc.line(last.number - 1);
+			return last.number > first.number ? {first, last} : null;
+		}
+
+		// applies the change of each selected line and selects the lines, false without a selection over several lines
+		function changeLines(view, change) {
+			const lines = selectedLines(view.state);
+			if (!lines) return false;
+			const changes = [];
+			for (let n = lines.first.number; n <= lines.last.number; n++) {
+				const lineChange = change(view.state.doc.line(n));
+				if (lineChange) changes.push(lineChange);
+			}
+			const changeSet = view.state.changes(changes);
+			view.dispatch({
+				changes: changeSet,
+				selection: EditorSelection.single(changeSet.mapPos(lines.first.from, -1), changeSet.mapPos(lines.last.to, 1)),
+				scrollIntoView: true,
+				userEvent: "input"
+			});
+			return true;
+		}
+
+		const prefixLines = EditorView.inputHandler.of((view, from, to, text) =>
+			PREFIXES.includes(text) && changeLines(view, line => ({from: line.from, insert: text})));
+		const unprefixLines = view => changeLines(view, line =>
+			/^[-#* \t]/.test(line.text) ? {from: line.from, to: line.from + 1} : null);
+
+		return [
+			keymap.of([
+				{key: "Alt-d", run: deleteLine},
+				{win: "Ctrl-Shift-z", run: redo, preventDefault: true},
+				{key: "Shift-Space", run: unprefixLines}
+			]),
+			prefixLines,
+			Prec.low(EditorState.languageData.of(() => [{commentTokens: {line: "//"}}]))
+		];
+	}
+
+	/**
 	 * Creates an editor on wiki text in the given parent element and returns its view. The editor brings highlighting
 	 * of the wiki language and the registered markups, folding, search, history, completion and the KnowWE theme.
 	 *
@@ -385,6 +751,7 @@ window.KnowWEEditor = (function () {
 		if (options.onSave) keys.push({key: "Mod-s", run: view => { options.onSave(view); return true; }});
 		keys.push(
 			...closeBracketsKeymap,
+			parts.help.closeKey,
 			...defaultKeymap,
 			...searchKeymap,
 			...historyKeymap,
@@ -413,6 +780,9 @@ window.KnowWEEditor = (function () {
 				highlightSelectionMatches(),
 				syntaxHighlighting(parts.highlightStyle),
 				parts.explicitCompletion,
+				parts.textareaEditing,
+				parts.help.field,
+				parts.help.mode.of(mode),
 				language,
 				mode === "page" ? parts.markupTint : [],
 				EditorState.tabSize.of(4),
@@ -433,10 +803,21 @@ window.KnowWEEditor = (function () {
 		view.dispatch({effects: sharedParts().wrapping.reconfigure(enabled ? CodeMirror.view.EditorView.lineWrapping : [])});
 	}
 
+	/** Opens or closes the help panel with the shortcuts of an editor created by this factory, toggles without `open`. */
+	function toggleHelp(view, open) {
+		const help = sharedParts().help;
+		view.dispatch({effects: help.toggle.of(open ?? !isHelpOpen(view.state))});
+	}
+
+	/** Returns whether the help panel of the editor state is open. */
+	function isHelpOpen(state) {
+		return state.field(sharedParts().help.field, false) === true;
+	}
+
 	/** Returns whether CodeMirror is available, so callers can fall back to a textarea otherwise. */
 	function isAvailable() {
 		return typeof CodeMirror !== "undefined";
 	}
 
-	return {create, setWrapping, isAvailable, detectIndentUnit};
+	return {create, setWrapping, toggleHelp, isHelpOpen, isAvailable, detectIndentUnit};
 })();

@@ -59,7 +59,10 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 		},
 
 		generateButtons: function (id) {
-			return _EC.elements.getSaveCancelDeleteButtons(id);
+			if (!available()) return fallback().generateButtons(id);
+			const help = "<a class='action help' title='Keyboard shortcuts and tips'"
+				+ " onclick=\"KNOWWE.plugin.codeMirrorEditTool.toggleHelp('" + id + "')\">Help</a>";
+			return _EC.elements.getSaveCancelDeleteButtons(id, [help]);
 		},
 
 		postProcessHTML: function (id) {
@@ -78,6 +81,7 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 				// any failure ends in the textarea of the default tool, which the other functions use without an editor
 				console.error("CodeMirror editor could not be started, falling back to the plain textarea", error);
 				delete editors[id];
+				jq$('#' + id + ' a.action.help').parent().remove();
 				container.outerHTML = fallback().generateHTML(id);
 				fallback().postProcessHTML(id);
 			}
@@ -87,6 +91,13 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 			const editor = editors[id];
 			if (!editor) return fallback().unloadCondition(id);
 			return editor.view.state.doc.eq(editor.initialDoc);
+		},
+
+		toggleHelp: function (id) {
+			const editor = editors[id];
+			if (!editor) return;
+			KnowWEEditor.toggleHelp(editor.view);
+			editor.view.focus();
 		},
 
 		generateWikiText: function (id) {

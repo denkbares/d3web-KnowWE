@@ -132,6 +132,7 @@
         <button class="btn btn-default" type="button" data-editor-cmd="redo" title="${msg}"><i class="fa fa-rotate-right"></i></button>
         <button class="btn btn-default" type="button" data-editor-cmd="find" title="<fmt:message key='editor.plain.find'/> &amp; <fmt:message key='editor.plain.replace'/>"><i class="fa fa-magnifying-glass"></i></button>
         <button class="btn btn-default" type="button" data-editor-cmd="wrap" title="Toggle line wrapping"><i class="fa fa-arrow-turn-down"></i></button>
+        <button class="btn btn-default" type="button" data-editor-cmd="help" title="Keyboard shortcuts and tips" aria-label="Keyboard shortcuts and tips"><i class="fa fa-circle-question"></i></button>
 
         <c:set var="editors" value="<%= engine.getManager( EditorManager.class ).getEditorList() %>" />
         <c:if test='${fn:length(editors) > 1}'>
