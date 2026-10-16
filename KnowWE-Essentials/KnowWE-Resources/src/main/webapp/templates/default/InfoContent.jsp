@@ -32,6 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
+<%@ page import="de.knowwe.core.Environment" %>
 <%@ page import="de.knowwe.core.utils.KnowWEUtils" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
@@ -79,7 +80,7 @@
   /* startitem drives the pagination logic */
   /* startitem=-1:show all; startitem=0:show block 1-20; startitem=20:block 21-40 ... */
 
-  boolean allowPageDeletionForNonAdmin = KnowWEUtils.allowPageDeletionForNonAdmin(c.getName());
+  boolean allowPageDeletionForNonAdmin = KnowWEUtils.allowPageDeletionForNonAdmin(Environment.of(request), c.getName());
 %>
 <div class="page-content">
 
