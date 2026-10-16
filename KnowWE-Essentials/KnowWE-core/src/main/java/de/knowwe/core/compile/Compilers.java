@@ -579,10 +579,10 @@ public class Compilers {
 	@NotNull
 	public static Collection<Article> getCompilingArticleObjects(Section<?> section) {
 		Collection<Article> articles = new ArrayList<>();
-		PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
-		Set<String> referringArticleTitles = packageManager.getCompilingArticles(section);
 		ArticleManager articleManager = section.getArticleManager();
 		if (articleManager == null) return Collections.emptyList();
+		PackageManager packageManager = KnowWEUtils.getPackageManager(articleManager);
+		Set<String> referringArticleTitles = packageManager.getCompilingArticles(section);
 		for (String title : referringArticleTitles) {
 			Article article = articleManager.getArticle(title);
 			if (article == null) continue;

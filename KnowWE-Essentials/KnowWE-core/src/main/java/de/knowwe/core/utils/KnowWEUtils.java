@@ -1453,8 +1453,7 @@ public class KnowWEUtils {
 	 * @created 07.01.2014
 	 */
 	public static PackageManager getPackageManager(final Section<?> section) {
-		final ArticleManager manager = section.getArticleManager();
-		return getPackageManager(manager);
+		return getPackageManager(getArticleManager(section));
 	}
 
 	/**
