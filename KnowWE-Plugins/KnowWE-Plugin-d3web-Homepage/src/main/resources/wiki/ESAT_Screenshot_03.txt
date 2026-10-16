@@ -1,0 +1,5 @@
+!User interaction form
+
+Dieser Screenshot zeigt nur einen Teil des Formulars zur Erfassung der individuellen Falldaten.
+
+[{Image src='ESAT_Screenshot_03.jpg' align='left'}]

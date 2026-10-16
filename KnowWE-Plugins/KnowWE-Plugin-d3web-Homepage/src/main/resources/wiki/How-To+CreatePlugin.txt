@@ -1,0 +1,110 @@
+!!1. Allocation
+Every project has to be allocated to one of the three main repositories:
+* __d3web-core__
+* __d3web-KnowWE__
+* __Research__
+
+!!2. Creating the project in Eclipse
+[{Image src='New Maven Module.jpg' width='295' height='..' align='right' link='/attach/How-To%20CreatePlugin/New%20Maven%20Module.jpg' caption='Creating a new Maven Module'}]
+* Do a right click on the main project (one of the three projects mentioned above) → New → Other… (or press Ctrl + N). In the window, select Maven → Maven Module and hit Next
+* Check the checkbox called "Create a simple project (skip Archetype selection)", give the project a "Module Name" and hit Next (see the example on the screenshot on the right). For Plugins the module name must start with d3web-Plugin or KnowWE-Plugin.
+* Enter a human-readable name into the field "Name", fill in "Description" as needed. 
+* Click "Finish". 
+You will see the new project in the Eclipse Project Explorer. Now you can start creating or copying source files. Using the __UTF-8 encoding__ is __mandatory__
+!!3. License Header
+Every {{.java}} file must contain the license header, starting in the first line. Be sure to have an empty line between the license and the {{package}} declaration.
+
+The license has to look like this:
+{{{
+/*
+ * Copyright (C) 2012 Chair of Artificial Intelligence and Applied Informatics
+ * Computer Science VI, University of Wuerzburg
+ * 
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+}}} 
+
+!!4. First Check-In
+You have to perform the first check-in using the chosen main repository (d3web-core/d3web-KnowWE/Research).
+* Right click the main project (= the one you chose from the three above) → Team → Commit
+* Now __exclude__ the folders {{target/}} __and__ {{.settings/}}! (Uncheck the check boxes)
+* Enter your commit message (comment) → Commit 
+
+Now you can enable SVN access directly for your newly created project: 
+* Perform a right click on the new project → Team → Share 
+* Select SVN, you will find the repository location already set up 
+* Hit Finish.
+
+To complete the process, you have to ignore {{target/}} and {{.settings}} permanently. There are two ways to do this:
+
+Either:
+* Select both folders in the Project Explorer with Ctrl/Command, right click → Team → Add to svn:ignore. Click OK in the window that opens.
+[{Image src='Ignores.jpg' width='300' link='/attach/How-To%20CreatePlugin/Ignores.jpg' align='right' caption='Manually adding .settings and target to svn:ignore'}]
+Or (compare with the screenshot on the right):
+* Right click on your project → Properties
+* In the window, select SVN Info on the left
+* In the table at the bottom, double click on the line with name "svn:ignore"
+* In the new window, enter {{.settings}} and {{target}} __separated by a newline__ in the "Enter a property value:" field
+* Hit Ok twice 
+Finally, commit the ignore settings: right click → Team → Commit. Enter a commit message like "ignores" and press Ok.
+
+!!5. Creating plugin.xml
+All plugins need a plugin.xml in src/main/ressources
+For creating such a file, see [Meaning of plugin.xml]
+
+!!6. Write some code
+Develop your code in src/main/java. You have to add dependencies to plugin.xml to get access to classes contained in other projects.
+
+!!7. Testing (optional)
+* Add JUnit as test dependency to your project
+* Add plugin to create file for plugin manager: [How-To Initialize Plugin Manager for JUnit Tests]
+* Write JUnit tests (using InitPluginManager.init())
+* Run project as "maven test"
+
+
+!!8. Add your project to the Application
+Include the plugin as a new dependency in the pom file of KnowWE (in an existing or newly created profile). If you are another application than KnowWE, add your Plugin to the pom of your project (directly or as profile).
+
+!!9. Selecting plugins to build
+[{Image src='Run Configuration.jpg' width='300' align='right' link='/attach/How-To%20CreatePlugin/Run%20Configuration.jpg' caption='Enabling the plugins that are to be built in the Run Configuration'}]
+You need to enable the plugins you want to build into KnowWE when using Eclipse. Here's how:
+Open your Run Configuration for the KnowWE build by Hitting "Run As..." → "Run Configurations..." and add parameters for the plug-ins you want to have.
+
+For instance: You want to enable the Comment plug-in. Here, you have to add a comment-plugin parameter. You can set it to an arbitrary value ('true' for instance).
+
+See the screenshot on the right for another example. 
+
+!!Troubleshooting
+!Eclipse does not catch breakpoints
+Update your JDK to at least Version 6, Update 17.
+
+!java.util.MissingResourceException: Can't find bundle for base name...
+Happens after cleaning the workspace.
+Solution: For each of the two maven super projects (d3web, d3web-KnowWE), select the project, right click on it, "Run as..." → "Maven package". 
+
+!Offline Build (if Artifactory is not available or you have no Internet connection)
+
+Create a second runtime configuration for building KnowWE, just like shown here: [http://d3webwiki.informatik.uni-wuerzburg.de/Wiki.jsp?page=Workspace#section-Workspace-CreateARunConfigurationForBuildingTheWiki], just check the "Offline" checkbox. 
+
+__Note:__ Do not enable this option for your regular build, only use it if Artifactory is down or you are not connected to the internet! 
+
+!Problems with Umlauts
+
+Tomcat can be configured in UTF-8 to handle Umlauts correctlty. Look at [http://www.jspwiki.org/wiki/BugProblemsWithGermanUmlaute]
+
+%%tags
+howto create Plugin
+%

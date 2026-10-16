@@ -1,0 +1,30 @@
+!!! How to write a PageAppendHandler
+
+What is a [PageAppendHandler|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/append/PageAppendHandler.html]?
+
+To write a PageAppendHandler you have to implement this interface:
+%%prettify{{{
+public interface PageAppendHandler {
+	
+	public String getDataToAppend(String topic, String web, KnowWEUserContext user);
+	
+	public boolean isPre();
+
+}
+
+}}}/%
+
+The isPre() method should return whether the content should be rendered before the main page content. Otherwise it's appended.
+
+
+!! Register new PageAppendHandler in a Module
+
+To use a new PageAppendHandler within a module you have to pass an instance by overriding the getPageAppendHandlers()-method in your module:
+
+%%prettify{{{
+List<PageAppendHandler> getPageAppendHandlers();
+}}}/%
+
+%%tags
+howto PageAppendHandler
+%

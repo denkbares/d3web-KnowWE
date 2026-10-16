@@ -19,6 +19,8 @@
 
 package de.knowwe.tools;
 
+import java.util.Map;
+
 import de.knowwe.util.Icon;
 
 /**
@@ -164,4 +166,12 @@ public interface Tool {
 	 * @created 13.08.2026
 	 */
 	String getId();
+
+	/**
+	* Returns the html attributes which are added to the element
+	*
+	* @return The html attributes of the tool
+	* @created 18.09.2026
+	*/
+	Map<String, String> getAttributes();
 }

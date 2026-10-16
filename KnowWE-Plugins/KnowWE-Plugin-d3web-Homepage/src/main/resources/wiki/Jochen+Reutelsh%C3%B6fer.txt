@@ -1,0 +1,23 @@
+%%TodoList 
+ @user: Jochen Reutelshöfer 
+%
+
+
+%%Todo 
+Modify Example Plugin:
+* Use DefaultMarkup
+* Add comments to show up possible changes to adapt the plugin
+* Addapt [Getting Started]
+@user: Jochen Reutelshöfer
+%
+
+%%Todo
+Cleanup Sourceforge
+* Licence: LGPL v3
+* All links, e.g. on support
+* Mailinglists usable?
+* Make Albrecht Striffler Admin :)
+* Merge
+
+@user: Jochen Reutelshöfer
+%

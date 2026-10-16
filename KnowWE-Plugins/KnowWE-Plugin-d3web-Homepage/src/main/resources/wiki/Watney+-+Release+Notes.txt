@@ -1,0 +1,219 @@
+!!! Version: Watney (Release July 2016)
+
+d3web is an extensible Java API for running knowledge-based systems. The Semantic Wiki KnowWE builds on the engine d3web and offers the web-based and distributed development of knowledge bases.
+
+This distribution comes with the following files:
+
+|  Release Notes.pdf	|  This document.	
+|  Licenses	|  License information of the d3web and KnowWE systems and all external libraries.	
+|  ''d3web''	|  Folder containing the binaries (libraries), the sources, the JavaDoc and a quick start guide for d3web	
+|  ''KnowWE''	|  Folder containing an installation archive (zip) as binary, the sources, the JavaDoc and a quick start guide for KnowWE	
+
+
+!!! System Requirements
+
+Installation of d3web requires the Java Platform, Standard Edition JRE 8 or newer. KnowWE requires __JDK__ version 8 or newer. A JRE will not be sufficient. For operating systems, the distribution runs with Windows, Mac OS, and Linux.
+We officially support Firefox 24 ESR or newer and current Google Chrome. Please note, that we do not officially support Internet Explorer or Safari at the moment, although Internet Explorer 11+ and Safari should both work fine.
+
+
+!!! What's New
+
+The release includes the following notable new features and fixes:
+
+
+!d3web
+
+* TimeDB test cases. Using the TimeDB plugin, it is now possible to test the behavior of the knowledge base when setting values in the past (relative to the current time of the session).
+* Major code improvements, cleanup and modernizations
+** Reimplementation and modernization of test case interfaces and xml persistence. Much improved functionality, allows extensions, and is backwards compatible.
+** Cleaned source code of old verbose Java pre-1.8. statements and modernized it with up to date 1.8 syntax and utils.
+* New checks for test cases:
+** Check any property of terminology objects used in the test
+** Check the amount of solutions with a given state.
+
+
+!KnowWE 
+
+
+* Major overhaul of KnowWE SemanticCore (now uses denkbares-SemanticCore)
+** Removed outdated Rdf2Go dependencies
+** Instead, direct integration of Sesame/RDF4J
+** New Jena plugin 
+** New GraphDB-Free plugin
+** New SPARQL auto format/prettify (soon to come to other markups as well)
+* Improvements to DiaFlux Editor:
+** Adaptive toolbar
+** Editor and menu styling
+* Markup tool menus can no longer be hidden below lower end of the browser window
+* Attachment markup 
+** Allows to keep attachments up to date with a remote source url and update interval. 
+** Allows to download articles and parts of articles of other KnowWE installations as attachments. These attachments can also be compiled and rendered via Include markup.
+* AttributeTable now supports negated answers (!= Answer-X) and Unknown in condition columns.
+* Debugger for TimeDB Javascript functions
+
+
+!!! Fixed Issues
+
+This is a list of all issues that were tracked and resolved using the tracking system available at [https://dev.denkbares.com/]\\
+Only a small percentage of issues is handled using this (or any other) tracker, so the list is not representative of the work done on d3web and KnowWE. For more infos about the current development, check [https://github.com/denkbares]
+
+|| ID	|| Status	|| Priority	|| Title	|| Tags	
+|  T358	|  Resolved	|  High	|  Multiple (small) ontology markups crash KnowWE at startup	|  Ontology Engineering, KnowWE	
+|  T202	|  Resolved	|  High	|  Turtle Markup: Only first statement is parsed	|  Ontology Engineering, KnowWE	
+|  T495	|  Resolved	|  Normal	|  KnowWE's terminology manager is not aware of the complete OWL vocabulary	|  Ontology Engineering, KnowWE	
+|  T493	|  Wontfix	|  Normal	|  AttachmentType: references to ZIP entries require article name	|  KnowWE	
+|  T490	|  Resolved	|  Normal	|  use of prefix definitions in turtle markup leads to NPE	|  KnowWE	
+|  T262	|  Resolved	|  Normal	|  In DiaFlux editor the tool menu layout is corrupted	|  KnowWE	
+|  T405	|  Resolved	|  Normal	|  Some fixes for %%AttachmentUpdater markup	|  KnowWE	
+|  T404	|  Resolved	|  Normal	|  Exception in %%Ontology when caching URL import	|  KnowWE	
+|  T402	|  Resolved	|  Normal	|  Improve tooltip of %%ShowSolutions markup	|  KnowWE	
+|  T401	|  Resolved	|  Normal	|  Add Explanation Tooltip to Solutions	|  KnowWE	
+|  T362	|  Resolved	|  Normal	|  Allow Unknown and Not(Value) in AbstractioTable	|  KnowWE	
+|  T361	|  Resolved	|  Normal	|  Create docu page for TimeDB-Script on d3web.de	|  TimeDB, d3web, KnowWE	
+|  T354	|  Resolved	|  Normal	|  Rendering of tables is broken	|  KnowWE	
+|  T352	|  Resolved	|  Normal	|  Refresh button is missing in Ontology markup	|  KnowWE	
+|  T351	|  Resolved	|  Normal	|  Add warning to knowledge base, if flowcharts are given, but non has autostart active	|  KnowWE	
+|  T309	|  Resolved	|  Normal	|  Edit Mode buttons overlap content when left menu is collapsed	|  KnowWE, Ontology Engineering	
+|  T266	|  Duplicate	|  Normal	|  owl:oneOf does not create term definitions	|  Ontology Engineering, KnowWE	
+|  T260	|  Resolved	|  Normal	|  Weird behavior of OWL inference in KnowWE	|  KnowWE	
+|  T254	|  Resolved	|  Normal	|  Automated tests for d3web should allow testing with old values	|  KnowWE, d3web	
+|  T241	|  Resolved	|  Normal	|  CondRegularExpression is not parsed correctly when Question contains '-' character	|  KnowWE	
+|  T465	|  Resolved	|  Low	|  KBB Diaflux export fails on nodes with special characters	|  KnowWE	
+|  T431	|  Resolved	|  Low	|  Fix rendering of SPARQL queries that contain square bracket	|  KnowWE	
+|  T253	|  Resolved	|  Low	|  Attachment preview ("»" button next to an attachment) looks weird	|  Frontend, KnowWE	
+|  T119	|  Invalid	|  Low	|  KnowWE is not compatible with OpenJDK	|  KnowWE	
+|  T491	|  Resolved	|  Wishlist	|  Limit number of stored CI builds	|  KnowWE	
+|  T252	|  Resolved	|  Wishlist	|  Javascript debugging for %%Function markup	|  KnowWE	
+|  T250	|  Resolved	|  Wishlist	|  Implement tool to open/expand section in KDOMRenderer	|  KnowWE	
+
+
+!!! Open-Source Modules
+
+|| Project Name	|| Contents	|| QA	|| State	
+|  denkbares-PluginManager	|  PluginManager used in d3web and KnowWE.	|  x	|  release	
+|  denkbares-Progress	|  Tools for handling progress  bares and state changes.	|  x	|  release	
+|  denkbares-Utils	|  General utils used all over d3web and KnowWE.	|  x	|  release	
+|  denkbares-SemanticCore	|  Core module for all ontology related code. Provides sesame repositories (triple stores) in various configurations.	|   	|  release	
+|  denkbares-SemanticCore-Plugin-ExtensionPoints	|  Defines possible extensions for denkbares-SemanticCore.	|   	|  release	
+|  denkbares-SemanticCore-Plugin-GraphDB	|  Provides various RDF, RDFS, OWL and OWL2 repository configurations for denkbares-SemanticCore using OntoTexts GraphDB.	|   	|  release	
+|  denkbares-SemanticCore-Plugin-Jena	|  Provides various RDF and RDFS repository configurations for denkbares-SemanticCore using apache Jena.	|   	|  release	
+|  d3web-GlobalTests	|  A summarizing project for integration tests combining different projects and components, respectively.	|   	|  release	
+|  d3web-Kernel	|  Knowledge representation, basic problem-solvers, session management, default dialog control	|  X	|  release	
+|  d3web-Persistence	|  IO component for saving and loading knowledge bases	|  X	|  release	
+|  d3web-Plugin-BasicProperties	|  Definition of properties for terminology objects using the plugin.xml file	|  X	|  release	
+|  d3web-Plugin-Interview	|  Interviews interfaces and form strategies	|  X	|  release	
+|  d3web-Plugin-Kernel-ExtensionPoints	|  Defines possible extension for d3web.	|  X	|  release	
+|  d3web-Plugin-Persistence-Basic	|  see ''d3web-Persistence''	|  X	|  release	
+|  d3web-Plugin-Persistence-ExtensionPoints	|  see ''d3web-Persistence''	|  X	|  release	
+|  d3web-Plugin-SessionPersistence-Basic	|  see ''d3web-SessionPersistence''	|  X	|  release	
+|  d3web-Plugin-SessionPersistence-ExtensionPoints	|  see ''d3web-SessionPersistence''	|  X	|  release	
+|  d3web-Plugin-TestCase	|  Components for executing test cases on a d3web knowledge base	|  X	|  release	
+|  d3web-Plugin-Tests	|  Contains tests to be run with the TestingFramework	|  X	|  release	
+|  d3web-SessionPersistence	|  IO components for loading and saving standard cases (i.e. sessions)	|  X	|  release	
+|  d3web-Plugin-DiaFlux	|  Reasoning problem-solver for the DiaFlux language	|  X	|  release	
+|  d3web-Plugin-CostBenefit	|  Implementation of a dialog strategy (indication of questions) based on a cost-benefit principle.	|   	|  release	
+|  d3web-Plugin-TestingFramework	|  Framework allowing the continuous execution of tests on knowledge bases and other objects.	|  X	|  release	
+|  d3web-Plugin-XCL	|  The set-covering model reasoning engine implemented as problem-solver plugin for the d3web Kernel.	|   	|  release	
+|  KnowWE-App	|  Framework app of KnowWE	|  X	|  release	
+|  KnowWE-core	|  Basic engines for parsing and the management of wiki content	|  X	|  release	
+|  KnowWE-GlobalTestUtils	|  Small set of classes for testing the KnowWE implementation	|   	|  release	
+|  KnowWE-KDOMParseUtils	|  Utils for internal data structure of KnowWE	|   	|  release	
+|  KnowWE-Plugin-Core	|  Core plugins and handlers of KnowWE	|  X	|  release	
+|  KnowWE-Plugin-ExtensionPoints	|  Defines possible extension for KnowWE.	|  X	|  release	
+|  KnowWE-Plugin-JSPWiki-Connector	|  The connector between the parent wiki engine JSPWiki and the extension KnowWE	|  X	|  release	
+|  KnowWE-Resources	|  Template files for the KnowWE server engine	|  X	|  release	
+|  KnowWE-Plugin-CI4KE	|  Plugin for implementing the continuous integration dashboard and engine of KnowWE	|  X	|  release	
+|  KnowWE-Plugin-CI4KE-d3web	|  Continuous integration tests for d3web knowledge bases in KnowWE	|  X	|  release	
+|  KnowWE-Plugin-d3web-basic	|  The fundamental components to integrate the d3web engine into KnowWE	|  X	|  release	
+|  KnowWE-Plugin-d3web-MarkupSet	|  Standard markup components used by some KnowWE/d3web plugins	|  X	|  release	
+|  KnowWE-Plugin-DiaFlux	|  Authoring plugin for KnowWE of the DiaFlux language	|  X	|  release	
+|  KnowWE-Plugin-Include	|  Allows to render contents of other wiki pages with a simple markup	|   	|  release	
+|  KnowWE-Plugin-InstantEdit	|  Plugin to allow fast and easy editing of KnowWE articles	|   	|  release	
+|  KnowWE-Plugin-JSPWiki-MarkupSet	|  Allows the interaction of KnowWE plugins with the default JSPWiki-Markup	|   	|  beta	
+|  KnowWE-Plugin-KBRenderer	|  Plugin for easy rendering of the knowledge base content inside KnowWE articles	|   	|  beta	
+|  KnowWE-Plugin-Ontology-MarkupSet	|  Provides several markups (e.g. turtle) for the creation of ontological knowledge in KnowWE	|   	|  release	
+|  KnowWE-Plugin-OntoVis	|  Various visualization markups for ontologies	|   	|  release	
+|  KnowWE-Plugin-QuickInterview	|  A plugin to quickly enter a problem-solving session	|  X	|  release	
+|  KnowWE-Plugin-Rdf2GoSemanticCore	|  Provides Rdf2Go triple store to KnowWE enabling creation of ontological knowledge	|   	|  release	
+|  KnowWE-Plugin-RightPanel	|  Adds a panel on the right sight of KnowWE UI, which can be filled with additional app (e.g. Watches)	|   	|  release	
+|  KnowWE-Plugin-Table	|  Default markups for tables, also usable by other plugins.	|   	|  release	
+|  KnowWE-Plugin-Tagging	|  Tagging plugin of KnowWE	|  X	|  release	
+|  KnowWE-Plugin-TestCase	|  Markups for entering test cases in KnowWE	|  X	|  release	
+|  KnowWE-Plugin-TestCases	|  Executing test cases in KnowWE	|  X	|  release	
+|  KnowWE-Plugin-Visualizations	|  Utility for graphical visualizations of ontologies and knowledge bases	|   	|  alpha	
+|  KnowWE-Plugin-Wikicontent-Download	|  Admin-Tool allowing to download the wiki content as a zip file	|   	|  release	
+
+
+!!! Closed-Source and Commercial Projects
+
+|| Project Name	|| Contents	|| QA	|| Free2Use	|| State	
+|  d3web-Plugin-TimeDB	|  Knowledge representation, persistence, and fact storage of temporal values	|  X	|   	|  release	
+|  d3web-Plugin-ImageMap	|  Allows the annotation of images to be connected with answers of questions	|   	|  X	|  beta	
+|  d3web-Plugin-Tests-ClosedSource	|  Closed source tests for the TestingFramework and the TestingApp	|  X	|   	|  release	
+|  KnowWE-Admin-Utils	|  Various tools for Admins of KnowWE	|   	|  X	|  release	
+|  KnowWE-Plugin-Admin-Utils	|  Collection of utility markups to be used by KnowWE Admins	|   	|  X	|  release	
+|  KnowWE-Plugin-AutoComplete	|  A code completion feature for KnowWE markups	|   	|  X	|  release	
+|  KnowWE-Plugin-d3web-ClosedSource	|  Closed source d3web functionality	|   	|   	|  beta	
+|  KnowWE-Plugin-DenkbaresDialog	|  Interactive, web-based interview for running a problem-solving session	|   	|  X	|  release	
+|  KnowWE-Plugin-EditMode	|  Special editing mode for KnowWE to allow faster and direct editing an rearranging of the wiki page	|   	|  X	|  release	
+|  KnowWE-Plugin-ImageMap	|  ''see d3web-Plugin-ImageMap''	|   	|  X	|  beta	
+|  KnowWE-Plugin-KBB	|  Allows to download the "Knowledge Base Book" directly from the knowledge base section in KnowWE	|   	|   	|  release	
+|  KnowWE-Plugin-KPI	|  Allows to analyse KPIs of a knowledge base	|  X	|   	|  release	
+|  KnowWE-Plugin-PlantUML	|  Allows to create UML diagrams directly in KnowWE	|   	|  X	|  release	
+|  KnowWE-Plugin-RightPanel	|  Provides panel on the right side of a KnowWE page, can contain content like d3web variable watches.	|   	|  X	|  release	
+|  KnowWE-Plugin-SparqlEndpoint	|  Accepts and answers SPARQL queries via Http-Requests	|   	|  X	|  beta	
+|  KnowWE-Plugin-TimeDB	|  Wiki-based authoring markups for temporal values	|  X	|   	|  release	
+|  KnowWE-Plugin-TimeDBScript	|  Allows to define additional TimeDB functions in KnowWE using JavaScript	|   	|   	|  beta	
+|  KnowWE-Plugin-Todos	|  A simple plugin to manage todos within the wiki	|  X	|  X	|  release	
+|  KnowWE-Plugin-XSL	|  Provides the xsl libraries for KnowWE to be used for example by the KBB plugin	|   	|   	|  release	
+
+|| Project Name	|| Contents	|| QA	|| Free2Use	|| State	
+|  d3web-Plugin-KBB-Basic	|  Exporter components for ''Knowledge Base Book''	|  X	|   	|  release	
+|  d3web-Plugin-KBB-ExtensionPoints	|  Extension possibilities for ''Knowledge Base Book''	|  X	|   	|  release	
+|  KnowledgeBaseBook-Core	|  Core classes and interfaces for ''Knowledge Base Book''	|  X	|   	|  release	
+|  KnowledgeBaseBook	|  Default and helper classes for "Knowledge Base Book"	|  X	|   	|  release	
+|  KnowledgeBaseBook-App	|  Application to create a ''Knowledge Base Book''	|  X	|   	|  release	
+|  KnowWE-Headless-App	|  Application to create knowledge bases from a wikicontent folder without having to use the wiki environment	|   	|   	|  release	
+|  TestingApp	|  Application to continuously run tests on knowledge bases and other test objects	|  X	|   	|  release	
+
+__Legend:__
+
+|| Project Name	|  Corresponds to the name of the Maven project, i.e., the name of the source code project. For simplicity, plugin postfixes are omitted (e.g. version).	
+|| Contents	|  A further description of the contents of this module	
+|| QA	|  Under regulation of the project contract. All contracted projects are certainly subject of the quality management system. Non-contracted modules may be subject to changes in the proposed release plan.	
+|| State	|  Quality assessment of the project:\\__no__: Not officially included, experimental demo\\__alpha__: Basic functions included, API to be considered as "unstable" documentation partly available/not available mostly untested\\__beta__: All functions are included documentation available functionality tested on unit level\\__release__: All functions are included documentation available functionality tested on system level (integration tests) internal processes fully applied (issue management, development process)	
+
+
+!!! Changes concerning compatibility
+
+The following sections describe changes of this release, that are of importance to users migrating from previous releases:
+
+
+!!d3web API
+
+
+* d3web now requires Java 8!
+
+* Removed deprecated, unused methods:
+** RatedTestCase#getDerivedSolutionsAreUpToDate()
+** RatedTestCase#setDerivedSolutionsAreUpToDate(boolean)
+
+
+* Various changes in d3web artifact names, so dependencies have to be revised! 
+** Some functionality was moved from d3web artifacts to denkbares artifacts.
+** Be aware, that the following artifacts are for testing purposes only and are therefore not needed and should not be included in d3web runtime projects: d3web-Plugin-TestCase, d3web-Plugin-TestingFramework, d3web-Plugin-Tests, d3web-Plugin-Tests-ClosedSource, jgrapht.
+
+* The packages of the classes in d3web-Utils were renamed from {{de.d3web.*}} to {{com.denkbares.*}}
+* In particular, the former {{de.d3web.plugin.JPFPluginManager}} is now {{com.denkbares.plugin.JPFPluginManager}}, also {{de.d3web.utils.EqualUtils}} is now {{com.denkbares.utils.EqualUtils}}
+
+
+!! KnowWE
+
+The new denkbares-SemanticCore-Plugin-GraphDB, which is included in this release of KnowWE, needs Javas __JDK__ instead of the __JRE__ to work, so make sure the JDK is installed and the JAVA_HOME environment variable to be set correctly. If you can't or don't want to install the JDK, you can optionally remove the {{denkbares-SemanticCore-Plugin-GraphDB-11.0.jar}} from the KnowWE webapp (path: {{KnowWE-Tomcat/webapps/KnowWE/WEB-INF/lib/denkbares-SemanticCore-Plugin-GraphDB-11.0.jar}}). If you remove the plugin, you will have less and slightly slower rule-sets available in the Ontology markup. d3web knowledge bases will not be affected. 
+\\
+
+
+!!! Resources and Links
+
+* A wiki for users and developers: \\ [http://www.d3web.de]
+* The official SourceForge website of d3web: \\[http://sourceforge.net/projects/d3web/]

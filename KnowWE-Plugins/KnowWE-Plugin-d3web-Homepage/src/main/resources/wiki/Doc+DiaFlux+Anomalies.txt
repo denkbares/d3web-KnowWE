@@ -1,0 +1,11 @@
+The continuous integration plugin DiaFlux Anomalies is a [commercial plugin | Info Commercial Support] of KnowWE.
+
+It provides some basic checks that help during the development of DiaFlux models with KnowWE. In particular:
+
+|| Check || Description
+| No autostart | Fails, when a knowledge base defines DiaFlux models, but no DiaFlux model is defined as the autostart flow
+| Combined derivation of solution | Checks, whether there exists a solution for which states are assigned by a DiaFlux node AND a scoring rule. \\ This model may yield truth-maintenance problems.
+| Combined derivation of abstraction | Checks, whether there exists an abstraction question for which values are assigned by a DiaFlux node AND an abstraction rule. \\ This model may yield truth-maintenance problems.
+| Incomplete choice question | Checks for every choice question in the knowledge base, whether some choice  values are defined.
+| Standard question that is derived by an abstraction | This test checks whether there exists a standard question (not an abstraction!), that is derived by an abstraction node of a DiaFlux model or rule. \\ This anomaly is tricky, because a user-entered value always overwrites the value assigned by the action; thus, a rule/DiaFlux model never can revise an already given user value.
+

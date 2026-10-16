@@ -1,0 +1,246 @@
+%%(color:red)
+__DEPRECATED__
+%%
+
+[{TableOfContents }]
+
+
+
+!!! How to write a SubtreeHandler
+
+
+Create a class extending the abstract class [SubtreeHandler|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/subtreeHandler/SubtreeHandler.html].\\
+
+SubtreeHandler has only one abstract method. The non-abstract methods are described further down.
+
+%%prettify 
+{{{
+public abstract Collection<Message> create(KnowWEArticle article, Section s);
+}}}
+/%
+
+
+The Section is a section of the type the handler is registered for, the KnowWEArticle is the article that called this method with this specific Section.
+The returned Collection of Messages needs to contain the Messages produced by the SubTreeHandler (read more about it in the chapter about Messages further below). 
+
+!!How to register a SubtreeHandler using Priorities
+If you have created your own SubtreeHandler and want to register the handler to a type, call the addSubtreeHandler-method (inherited from AbstractType) of the type object you want to attach the handler to:
+
+%%prettify 
+{{{
+public void addSubtreeHandler([Priority p,] SubtreeHandler handler);
+}}}
+/%
+
+The attribute Priority in this method is optional. If you don't specify a priority, the handler will be added with default priority.
+
+!Order of execution of SubtreeHandlers:
+After the KDOM of an article is completed, for all Sections whos Type has SubtreeHandlers registered to it, the method create(...) will be executed for all these SubtreeHandlers. The order of execution of the handlers is very specific and it works like this: At first, a list of all Sections of the KDOM is retrieved from the article in post-order. So the children of a Section are ordered prior to the Section itself. Children of the same Section appear in this list in the same order as they appear in the text of the article.\\
+After having this list of Sections, another map is created. The map contains lists with Sections whos Type have SubtreeHandlers with a certain priority registered to them. These lists are hashed after this priority and the map is sorted in a descending order (of priorities). Inside the single lists with all Sections with handlers of a certain priority, the Sections appear in the same order as they appear in the original list with all Sections in post-order. Sections can appear multiple times or not at all in this map: If their Type has multiple SubtreeHandlers with different priorities, the same Section will appear in every list of each different priority of its handlers. If the Type has no SubtreeHandler, it simply will no appear in any list in the map.\\
+\\
+__Example:__\\
+Given is the following simplified KDOM. Each node represents a Section with a certain Type denoted underlined in the top. The SubtreeHandlers registered to the Types are denoted below, together with the Priority they were registered with.
+[{Image src='handlerpriority.png' align='left'}]\\
+Let's take a look at the list of all Sections retrieved in post-order:
+{{{
+QuestionsSection, XCList, XCList, Include, RulesSection, SolutionsSection, Article
+}}}
+With this list, the map of lists sorted after priorites is created:
+{{{
+Priority.HIGHEST: SolutionsSection
+Priority.HIGHER: QuestionsSection
+Priority.DEFAULT: QuestionsSection, XCList, XCList, RulesSection
+}}}This map now pretty much represents the order the SubtreeHandlers are executed in. KnowWE will simply iterate in descending priority-order over the lists of the map and executes all SubtreeHandlers of the priority of the list that is currently iterated. If the Type of the Section also contains handlers with a different priority, these handlers will not be executed until the list with the corresponding priority is iterated.
+
+
+!!How to use Messages in a SubtreeHandler
+\\
+Basically, returning a Collection of messages in the handler equals the storage of a Collection of messages using the storeMessages() methods provided by KnowWEUtils. Using Messages and returning them instead of storing other types makes it just easier, because you have to care less about correct usage and the correct attributes required by the methods from KnowWEUtils. It's also shorter code ;-) .
+Of course all of this only applies if you actually use messages in your handler. If you don't, you can just return null everywhere. Simple rule: As soon as you return or store messages at one of the possible outcomes (returns) of the create method, you have to do it on every. 
+\\
+\\
+__Hint:__ Use Arrays.asList((KDOMReportMessage) yourMessage) to create a Collection if you just have a single message.
+\\
+
+
+!Messages in SubtreeHandlers
+To understand how Messages should and should not be used in SubtreeHandlers, take a look at the following examples. Note, that KDOMNotice, KDOMWarning and KDOMError are abstract classes. In the examples they are used only to show the idea of which subclass of the Message should be used in which situation. If you actually implement your handler, you again need subclasses of these three subclasses. A variety of them can by found in de.d3web.we.kdom.report.message in the KnowWE-core project.
+\\
+\\
+__Examples:__\\
+Right:
+%%prettify 
+{{{
+public Collection<Message> create(Article article, Section s) {
+    doThis();
+    doThat();
+    if (a) {
+        return Arrays.asList((Message) new KDOMNotice("Object created");
+    } else {
+        return Arrays.asList((Message) new KDOMError("Object NOT created");
+    }
+}
+}}}
+/%
+Also right:
+%%prettify 
+{{{
+public Collection<Message> create(Article article, Section s) {
+    doThis();
+    List<Message> msgs = new ArrayList<Message>();
+    if (a && b) {
+        msgs.add(new KDOMNotice("Object created");
+        msgs.add(new KDOMWarning("Minor syntax error");
+    } else {
+        msgs.add(new KDOMError("Object NOT created");
+    }
+    doThat();
+    return msgs;
+}
+}}}
+/%
+Wrong:
+%%prettify 
+{{{
+public Collection<Message> create(Article article, Section s) {
+    doThis();
+    if (b) {
+        return Arrays.asList((Message) new KDOMError("Object NOT created");
+    }
+    doThat();
+    // everything is ok, so there is no need for a Message?!
+    return null;
+}
+}}}
+/%
+\\
+In the last (wrong) example the programmer thinks, that he can return null, because he decided to only use messages if something bad happens. But that is exactly wrong. Of course he can decide to just use messages if something bad happens, but then he needs to return an empty list instead of null. Otherwise, if the Section was reused and had an error in the last version (e.g. Question not found) but no error in the current version (Question was added by another Section), then this no longer valid error message would not be overwritten.
+\\
+\\
+Corrected the wrong example:
+
+%%prettify 
+{{{
+public Collection<Message> create(Article article, Section s) {
+    doThis();
+    if (b) {
+        return Arrays.asList((Message) new KDOMError("Object NOT created");
+    }
+    doThat();
+    // everything is ok, so there is no need for a Message?!
+    return new ArrayList<Message>(0);
+}
+}}}
+/%
+\\
+Valid example for usage in incremental handlers:
+
+%%prettify 
+{{{
+public Collection<Message> create(Article article, Section s) {
+
+    if (getKBM() == null)
+        return null;
+        
+    doThis();
+    doThat();
+    if (a) {
+        return Arrays.asList((Message) new KDOMNotice("Object created");
+    } else {
+        return Arrays.asList((Message) new KDOMError("Object NOT created");
+    }
+}
+}}}
+/%
+\\
+Note, that we return null in the case that getKBM equals null. We do that, because we actually want to preserve the last collection of messages. The method getKBM (read more about it in the chapter about KnowledgeBaseManagement further below) only returns null, if this reused Sections doesn't need to be revised again, because there are no changes in the article, that could alter the outcome or the messages produced by this SubtreeHandler with this Section in relation to the last version of the article. So there is no need to do more and the messages from the last version are still correct.
+
+
+!!How to use d3web in a SubtreeHandler
+
+If you want to use d3web, respectively a KnowledgeBase in a SubtreeHandler, you have to extend the abstract D3webSubtreeHandler in the KnowWE-Plugin-d3web. It provides the method D3webSubtreeHandler#getKBM(KnowWEArticle).
+\\
+\\
+__Example__ (implementing a D3webSubtreeHandler for the KnowWEObjectType QuestionDef)__:__
+%%prettify 
+{{{
+public class CreateQuestionHandler extends QuestionTreeElementDefSubtreeHandler<QuestionDef> {
+        
+    @Override
+    public Collection<Message> create(Article article, Section<QuestionDef> sec) {
+    
+        ...
+        
+        KnowledgeBaseManagement mgn = getKBM(article);
+        
+        mgn.createQuestionYN(sec.getOriginalText(), D3webUtils.findParent(sec, mgn));
+        
+        ...
+    }
+}   
+}}}
+/%
+\\
+\\
+In earlier versions of KnowWE, getKBM(KnowWEArticle) could return null under certain circumstances (connected with incremental updating). This doesn't happen anymore, so you don't have to worry about that :-) .
+
+__Attention:__
+The use of
+%%prettify 
+{{{
+D3webModule.getKnowledgeRepresentationHandler(article.getWeb()).getKBM(article.getTitle());
+}}}
+/%
+to retrieve the KnowledgeBaseManagement in a SubtreeHandler is now deprecated! Using this you can avoid extending the D3webSubtreeHandler which is not recommented, since extending the D3webSubtreeHandler also assure the correct handling of the KnowledgeBase in an incremental context.
+
+!! How to implement incremental SubtreeHandlers
+
+Currently (summer 2010), incremental updating is under constant development, so things might change frequently. I will however try to point out some of the basics for implementing an incrementally working SubtreeHandler for KnowWE.
+
+The abstract class SubtreeHandler provides two important methods:
+
+* create(...)
+
+* destroy(...)
+
+If KnowWE builds an article for the first time or a full parse is performed, the method create(...) will create for every Section everything there is to create, for example a Question that is added to the KnowledgeBase.
+If the article then is edited and the text of this Section, respectively this Question changes, the method destroy(...) is called for the last version of this Section or Question to destroy exactly this outdated version of the Question in the KnowledgeBase. The new, changed version of the Section or Question then will again call create(...) to replace the previousely removed Question with the new version.
+Sections that haven't changed and are both in the last and the current version of the KDOM can now be skipped from creating and destroying, which saves a lot of time and is the reason for incremental updating in the first place.
+\\
+\\
+
+
+
+To determine whether the currently revised Section needs to be created, respectively destroyed or if it just can be skipped, ConstraintModules are registered to the SubtreeHandler. They decide whether create(...), respectively destroy(...) needs to be called for the current Section.\\
+The abstract class SubtreeHandler already has some ConstraintModules that provide the basic logic, so that create(...) and destroy(...) will be executed for all Sections that have changed themselves, changed their position in the KDOM or if currently simply an full parse is performed. For more advanced SubtreeHandlers it might however be necessary to register additional ConstraintModules to further specifiy, when to create and destroy and when not to. The ConstraintModules registered to the abstract SubtreeHandler are well commentated and might serve as an example, if you need to implement ConstraintModules yourself.
+\\
+
+\\
+!SubtreeHandlers preventing incremental update
+
+If you get the following message while running KnowWE and editing articles, it means, that the currently edited article uses a KnowWEObjectTypes that, on the one hand, doesn't implement the necessary destroy method to work incrementally, but on the other hand uses an component like d3web in the create method. 
+
+__Example:__
+{{{
+INFO: The following SubtreeHandlers prevent inrememental updating:
+[SolutionsSubTreeHandler, QuestionsSectionSubTreeHandler]
+}}}
+
+If there are handlers using certain components like d3web, but are not made for incremental updating, the incremental update needs to be aborted and replaced by a full parse of the article.\\
+This full parse is achieved by calling setFullParse(true) on the article currently revising the Section in the destroy method of the SubtreeHandler. For d3web this is the default, as long as nobody overrides the destroy method of the D3webSubtreeHandler.
+\\
+\\
+
+Don't hesitate to contact me directly if you have additional questions, problems or ideas regarding SubtreeHandlers: albrecht.striffler<at>gmx.de
+
+%%TODO
+Review the SubtreeHandler HowTo in detail!
+%
+
+%%Todo 
+update method signatures (class and method names have changed!?)
+%
+
+%%tags
+howto SubtreeHandler
+%

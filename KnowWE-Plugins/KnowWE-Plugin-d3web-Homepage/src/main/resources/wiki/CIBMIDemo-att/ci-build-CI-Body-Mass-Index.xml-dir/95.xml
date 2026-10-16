@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build date="2021-09-18 19:28:26.926 +0200" duration="103">
+   <test configuration="Body-Mass-Index"
+         name="EmptyQuestionnaire"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="Body-Mass-Index"
+         name="DiaFlux:UnusedNode"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="Body-Mass-Index"
+         name="DiaFlux:NoAutostart"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="Body-Mass-Index"
+         name="DiaFlux:StandardQuestionDerivedByAbstraction"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="Body-Mass-Index"
+         name="DiaFlux:CombinedFlowRuleAbstraction"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="Body-Mass-Index"
+         name="IncompleteChoiceQuestion"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+</build>

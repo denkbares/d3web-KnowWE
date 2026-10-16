@@ -1,0 +1,351 @@
+[{TableOfContents title='Contents - DiaFlux' numbered='true'}]
+
+!!! Overview
+DiaFlux models are an intuitive implementation of flowchart knowledge. 
+That way, the dialog behavior as well as the derivation behavior is modeled as a flowchart, where nodes correspond to questions to be asked and solutions to be derived. 
+Edges between two nodes describe a dependency, e.g., the subsequent questioning in a dialog or the subsequent derivation of a solution.
+DiaFlux models are usually partitioned in small models that can call each other in order to describe a complex model.
+
+!!! Handling Connection Problems
+
+A new DiaFlux model is created by inserting the following (empty) markup into the wiki article.
+
+{{{
+%%DiaFlux   
+%
+}}}
+After saving the article, KnowWE provides a link to visually edit the empty model.
+When clicking the link, a new window with a visual editor is opened.
+In the editor, you can drag an drop questions from the left menu pane into the editor panel. 
+Please insert a start node (from the toolbar) into the flowchart first.
+Then we open the hierarchy ''Connection Questions'' from the entry ''Tutorial Printer Problems'' in the left menu.
+We drag the questions from the left hierarchy into the editor pane and connect the nodes.
+Please insert ''Connection Flow'' into the text field as the name of the flowchart. 
+After saving the editor the flowchart looks as depicted in the image below.
+
+[{Image src='DiaFlux Printer Connection.png' width='800' align='left' caption='The DiaFlux flow implementing possible connection problems of a printer.' }]
+\\
+\\
+
+Below, the original DiaFlux knowledge is shown.
+
+%%DiaFlux
+<flowchart fcid="flow_2ef698e4" name="Connection Flow" icon="sanduhr.gif" width="614" height="540" autostart="false" idCounter="26">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="90" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="20" top="102"></position>
+		<action markup="KnOffice"><![CDATA[Please check the power supply of the printer]]></action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="20" top="188"></position>
+		<action markup="KnOffice"><![CDATA[How is the printer connected to your computer]]></action>
+	</node>
+
+	<node fcid="#node_6">
+		<position left="457" top="114"></position>
+		<action markup="KnOffice"><![CDATA["No power supply" = P7]]></action>
+	</node>
+
+	<node fcid="#node_10">
+		<position left="20" top="276"></position>
+		<action markup="KnOffice"><![CDATA[Is the cable plugged into the printer and the computer]]></action>
+	</node>
+
+	<node fcid="#node_12">
+		<position left="20" top="364"></position>
+		<action markup="KnOffice"><![CDATA[Please exchange the cable and try to print again]]></action>
+	</node>
+
+	<node fcid="#node_14">
+		<position left="468" top="375"></position>
+		<action markup="KnOffice"><![CDATA["Broken cable" = P7]]></action>
+	</node>
+
+	<node fcid="#node_17">
+		<position left="445" top="280"></position>
+		<action markup="KnOffice"><![CDATA["Cable not connected" = P7]]></action>
+	</node>
+
+	<node fcid="#node_20">
+		<position left="454.5" top="195"></position>
+		<action markup="KnOffice"><![CDATA["No solution found" = P7]]></action>
+	</node>
+
+	<node fcid="#XX_25">
+		<position left="59" top="489"></position>
+		<action markup="KnOffice"><![CDATA["No solution found" = P7]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_7">
+		<origin>#node_4</origin>
+		<target>#node_6</target>
+		<guard markup="KnOffice"><![CDATA["Please check the power supply of the printer" = "Printer is not connected or power is off"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_9">
+		<origin>#node_4</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice"><![CDATA["Please check the power supply of the printer" = "Printer is connected and power is on"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_11">
+		<origin>#node_5</origin>
+		<target>#node_10</target>
+		<guard markup="KnOffice"><![CDATA["How is the printer connected to your computer" = "Connected by cable"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_13">
+		<origin>#node_10</origin>
+		<target>#node_12</target>
+		<guard markup="KnOffice"><![CDATA["Is the cable plugged into the printer and the computer" = "Yes"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_12</origin>
+		<target>#node_14</target>
+		<guard markup="KnOffice"><![CDATA["Please exchange the cable and try to print again" = "Now it works"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_18">
+		<origin>#node_10</origin>
+		<target>#node_17</target>
+		<guard markup="KnOffice"><![CDATA["Is the cable plugged into the printer and the computer" = "No"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_21">
+		<origin>#node_5</origin>
+		<target>#node_20</target>
+		<guard markup="KnOffice"><![CDATA["How is the printer connected to your computer" = "Connected by Wifi"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_24">
+		<origin>#node_2</origin>
+		<target>#node_4</target>
+	</edge>
+
+	<edge fcid="#rule_26">
+		<origin>#node_12</origin>
+		<target>#XX_25</target>
+		<guard markup="KnOffice"><![CDATA["Please exchange the cable and try to print again" = "Still not printing"]]></guard>
+	</edge>
+
+</flowchart>
+
+ 
+  
+%
+
+
+!!! Handling Quality Problems
+
+As with the "Connection" segment of the knowledge base you also create a DiaFlux flowchart for printing quality problems by using an empty {{DiaFlux}} markup.
+
+{{{
+%%DiaFlux   
+%
+}}}
+
+Drag and drop the questions of the questionnaire ''Quality Questions'' into the pane and connect the nodes as shown in the image depicted below.
+
+[{Image src='DiaFlux Printer Quality.png' width='800' align='left' caption='The flowchart model for handling quality problems with the printer.' }]
+\\
+\\
+
+After saving the editor pane, the flowchart is saved as a new DiaFlux model as shown originally below.
+
+
+%%DiaFlux
+<flowchart fcid="flow_a87b5012" name="Printing Quality Flow" icon="sanduhr.gif" width="750" height="500" autostart="false" idCounter="20">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="207" top="7"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="187" top="73"></position>
+		<action markup="KnOffice">Dirty housing</action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="187" top="150"></position>
+		<action markup="KnOffice">Toner capacity</action>
+	</node>
+
+	<node fcid="#node_6">
+		<position left="195" top="229"></position>
+		<action markup="KnOffice">Paper count</action>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="482" top="76"></position>
+		<action markup="KnOffice">"Dirty toner" = P7</action>
+	</node>
+
+	<node fcid="#node_13">
+		<position left="160" top="296"></position>
+		<decision>Toner usage evaluation</decision>
+	</node>
+
+	<node fcid="#node_15">
+		<position left="405" top="303"></position>
+		<action markup="KnOffice">"Empty toner" = P7</action>
+	</node>
+
+	<node fcid="#node_17">
+		<position left="180" top="380"></position>
+		<action markup="KnOffice">"No solution found" = P7</action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_7">
+		<origin>#node_2</origin>
+		<target>#node_4</target>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_4</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice">"Dirty housing" = "No"</guard>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_4</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice">"Dirty housing" = "Yes"</guard>
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#node_5</origin>
+		<target>#node_6</target>
+		<guard markup="KnOffice">KNOWN["Toner capacity"]</guard>
+	</edge>
+
+	<edge fcid="#rule_14">
+		<origin>#node_6</origin>
+		<target>#node_13</target>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_13</origin>
+		<target>#node_15</target>
+		<guard markup="KnOffice">"Toner usage evaluation" = "low"</guard>
+	</edge>
+
+	<edge fcid="#rule_18">
+		<origin>#node_13</origin>
+		<target>#node_17</target>
+		<guard markup="KnOffice">"Toner usage evaluation" = "normal"</guard>
+	</edge>
+
+</flowchart>
+
+
+
+   
+%
+
+
+!!! Defining the Initial Questionnaire
+
+After the definition of all subsequent problem areas, we define the entry of the knowledge base.
+Here, the user is asked about the general problem with the printer and delegated to the already defined problem areas.
+A new DiaFlux model is created by inserting the following (empty) markup into the wiki article.
+
+{{{
+%%DiaFlux 
+  
+%
+}}}
+
+As depicted in the image below, we also marked this DiaFlux model as the ''Autostart'' mode, i.e., the model started at the beginning of a user dialog.
+
+
+[{Image src='DiaFlux Printer Entry.png' width='800' align='left' caption='Definition of the entry flowchart of the Printer Problems knowledge base.' }]
+\\
+\\
+
+We see, that the question ''Please specify your problem'' is asked at the beginning. 
+Then, the DiaFlux flowcharts ''Connection Flow'' and ''Printing Quality Flow'' are called depending of the given answer.
+
+
+%%DiaFlux
+<flowchart fcid="flow_b77240b2" name="Printer Problem Entry" icon="sanduhr.gif" width="750" height="306" autostart="true" idCounter="20">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="326" top="64"></position>
+		<action markup="KnOffice">Please specify your problem</action>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="393" top="11"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="540" top="214"></position>
+		<action markup="KnOffice">"No solution found" = P7</action>
+	</node>
+
+	<node fcid="#node_15">
+		<position left="92" top="210"></position>
+		<action markup="KnOffice">CALL[Printing Quality Flow(Start)]</action>
+	</node>
+
+	<node fcid="#node_16">
+		<position left="332" top="214"></position>
+		<action markup="KnOffice">CALL[Connection Flow(Start)]</action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_4">
+		<origin>#node_3</origin>
+		<target>#node_2</target>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_2</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice">"Please specify your problem" = "No else"</guard>
+		<routingPoint x="62" y="0" />
+	</edge>
+
+	<edge fcid="#rule_17">
+		<origin>#node_2</origin>
+		<target>#node_15</target>
+		<guard markup="KnOffice">"Please specify your problem" = "Printing with bad quality"</guard>
+		<routingPoint x="0.8626760563380281" y="0" />
+	</edge>
+
+	<edge fcid="#rule_18">
+		<origin>#node_2</origin>
+		<target>#node_16</target>
+		<guard markup="KnOffice">"Please specify your problem" = "Printer does not print"</guard>
+	</edge>
+
+</flowchart>
+
+
+%
+
+Now, the knowledge base is ready to use, since all terms are defined and connected by the DiaFlux models.
+
+  
+
+%%Package Printer_Demo
+%%tags
+printerProblems tutorial
+%

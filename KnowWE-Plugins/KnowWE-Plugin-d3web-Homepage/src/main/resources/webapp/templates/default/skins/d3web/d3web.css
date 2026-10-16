@@ -17,87 +17,38 @@
  * site: http://www.fsf.org.
  */
 
-/* General */
-a, .pagename a, .icon-search, .icon-user {
-	color: #173a64;
-}
-
-a:hover, .pagename a:hover, .icon-search:hover, .icon-user:hover {
-	color: #444444;
-}
-
 /*
-.pagename a:hover, .icon-search:hover, .icon-user:hover {
-	text-decoration: none;
-}
+ * Additions to the denkbares skin for d3web.de. Colors come from the skin variables, so the light and the dark
+ * display mode both work; the skin already uses the d3web blue as link color in light mode.
  */
 
-.pagename-sub {
-	font-size: 0.75em;
-	color: dimgrey;
-}
-
 .btn-primary, .userbox .btn-primary {
-	background-color: #173a64;
+	background-color: var(--text-color-primary-link);
 }
 
 .topline .userbox, .topline .searchbox {
 	margin-top: 6px;
 }
 
-.content:after {
-	background-color: #f8f9fb;
-}
-
-/* Header, Footer */
-.header, .footer {
-	background-color: white;
-	color: black
-}
-
 .header, .breadcrumb {
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.075);
-}
-
-.footer {
-	background-color: rgba(195, 195, 195, 0.2);
-	color: black;
-	box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.075);
-}
-
-.header > .navigation .nav > li > a > .badge {
-	background: rgba(0, 0, 0, 0.4);
-}
-
-.hidden {
-	display: none;
 }
 
 .topline {
 	min-height: 54px;
 }
 
-a.logo.pull-left {
-	/* Hides the text. */
-	text-indent: 150%;
-	white-space: nowrap;
-	overflow: hidden;
-	/* Shows image */
-	background: url("d3web-logo.png") no-repeat;
-	background-size: contain;
-}
-
 .breadcrumb {
 	margin-top: 5px;
-	color: black;
 }
 
 @media only screen and (max-width: 768px) {
-	a.logo {
-		height: 30px;
-		width: 30px;
+	a.logo.pull-left {
+		height: 36px;
+		width: 36px;
+		margin-left: 0;
 	}
-	
+
 	.topline {
 		min-height: 42px;
 	}

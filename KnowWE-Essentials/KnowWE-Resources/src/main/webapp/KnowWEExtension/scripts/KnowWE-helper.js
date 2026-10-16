@@ -19,6 +19,120 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
  * This was separated from the main KNOWWE due clarity.
  */
 KNOWWE.helper = function() {
+
+  // all local section storages are kept below this prefix, so they can be told apart from other local storage entries
+  const SECTION_STORAGE_PREFIX = "KnowWE.sectionStorage:";
+  // remembers the day each local section storage was used last, to remove the ones no longer used
+  const SECTION_STORAGE_USAGE = "KnowWE.sectionStorageUsage";
+  const SECTION_STORAGE_LAST_CLEANUP = "KnowWE.sectionStorageLastCleanup";
+  const SECTION_STORAGE_MAX_UNUSED_DAYS = 90;
+  // name of the attribute with the stable storage key, see AbstractAction#getLocalSectionStorageKey
+  const SECTION_STORAGE_KEY_ATTRIBUTE = "storage-key";
+  // the section ids used as keys before: hex hashes, and (since 2026-09) 32 hex digits
+  const LEGACY_SECTION_STORAGE_KEY = /^[0-9a-f]{1,8}$|^[0-9a-f]{32}$/;
+
+  function today() {
+    return Math.floor(Date.now() / 864e5);
+  }
+
+  function readJSON(localStorageKey) {
+    const storageString = localStorage.getItem(localStorageKey);
+    if (!storageString) return null;
+    try {
+      const json = JSON.parse(storageString);
+      return (json && typeof json === "object" && !Array.isArray(json)) ? json : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getUsage() {
+    return readJSON(SECTION_STORAGE_USAGE) || {};
+  }
+
+  function markUsed(localStorageKey) {
+    const usage = getUsage();
+    if (usage[localStorageKey] === today()) return;
+    usage[localStorageKey] = today();
+    localStorage.setItem(SECTION_STORAGE_USAGE, JSON.stringify(usage));
+  }
+
+  /**
+   * Returns the key of the local storage of the section with the specified id. The section id changes with every
+   * edit of the article and every restart of the wiki, so the server renders a stable key to the element carrying
+   * the section id. Without such an element, the section id is used.
+   */
+  function getStorageKey(sectionID) {
+    const id = CSS.escape(sectionID);
+    const attribute = SECTION_STORAGE_KEY_ATTRIBUTE;
+    const element = document.querySelector("[id='" + id + "'][" + attribute + "], [sectionid='" + id + "'][" + attribute + "]");
+    return SECTION_STORAGE_PREFIX + ((element && element.getAttribute(attribute)) || sectionID);
+  }
+
+  function writeSectionStorage(sectionID, sectionStorage) {
+    const localStorageKey = getStorageKey(sectionID);
+    const oldValue = localStorage.getItem(localStorageKey) || "{}";
+    const newValue = JSON.stringify(sectionStorage);
+    if (newValue === "{}") {
+      localStorage.removeItem(localStorageKey);
+    } else {
+      localStorage.setItem(localStorageKey, newValue);
+      markUsed(localStorageKey);
+    }
+    if (oldValue !== newValue && KNOWWE.helper.isUserKnown()) {
+      jq$.ajax("action/StoreLocalSectionStorageAction", {
+        data: {
+          SectionID: sectionID,
+          value: newValue
+        },
+        type: 'post',
+        cache: false
+      });
+    }
+  }
+
+  /**
+   * Moves the local section storages of the sections on the current page from their section ids to their stable
+   * keys, removes all other storages still stored by section id, and removes the storages not used for a long time.
+   */
+  function cleanupSectionStorage() {
+    const legacyKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (LEGACY_SECTION_STORAGE_KEY.test(key) && readJSON(key)) legacyKeys.push(key);
+    }
+    legacyKeys.forEach(sectionID => {
+      const legacyStorage = readJSON(sectionID);
+      localStorage.removeItem(sectionID);
+      const localStorageKey = getStorageKey(sectionID);
+      if (localStorageKey !== SECTION_STORAGE_PREFIX + sectionID && !localStorage.getItem(localStorageKey)
+        && Object.keys(legacyStorage).length > 0) {
+        localStorage.setItem(localStorageKey, JSON.stringify(legacyStorage));
+        markUsed(localStorageKey);
+      }
+    });
+
+    if (Number(localStorage.getItem(SECTION_STORAGE_LAST_CLEANUP)) === today()) return;
+    localStorage.setItem(SECTION_STORAGE_LAST_CLEANUP, String(today()));
+    const usage = getUsage();
+    const prefixedKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith(SECTION_STORAGE_PREFIX)) prefixedKeys.push(key);
+    }
+    prefixedKeys.forEach(key => {
+      if (!(key in usage)) usage[key] = today(); // unknown age, start counting now
+      if (today() - usage[key] > SECTION_STORAGE_MAX_UNUSED_DAYS) {
+        localStorage.removeItem(key);
+        delete usage[key];
+      }
+    });
+    Object.keys(usage).forEach(key => {
+      if (localStorage.getItem(key) === null) delete usage[key];
+    });
+    localStorage.setItem(SECTION_STORAGE_USAGE, JSON.stringify(usage));
+  }
+
   return {
 
     /**
@@ -32,19 +146,7 @@ KNOWWE.helper = function() {
     setToLocalSectionStorage: function(sectionID, key, value) {
       let sectionStorage = this.getLocalSectionStorage(sectionID);
       sectionStorage[key] = value;
-      let oldValue = localStorage.getItem(sectionID);
-      localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
-      let newValue = JSON.stringify(sectionStorage);
-      if (oldValue !== newValue) {
-        jq$.ajax("action/StoreLocalSectionStorageAction", {
-          data: {
-            SectionID: sectionID,
-            value: newValue
-          },
-          type: 'post',
-          cache: false
-        });
-      }
+      writeSectionStorage(sectionID, sectionStorage);
     },
 
     /**
@@ -55,20 +157,9 @@ KNOWWE.helper = function() {
      */
     deleteFromLocalSectionStorage: function(sectionID, key) {
       let sectionStorage = this.getLocalSectionStorage(sectionID);
+      if (!(key in sectionStorage)) return;
       delete sectionStorage[key];
-      let oldValue = localStorage.getItem(sectionID);
-      localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
-      let newValue = JSON.stringify(sectionStorage);
-      if (oldValue !== newValue) {
-        jq$.ajax("action/StoreLocalSectionStorageAction", {
-          data: {
-            SectionID: sectionID,
-            value: newValue
-          },
-          type: 'post',
-          cache: false
-        });
-      }
+      writeSectionStorage(sectionID, sectionStorage);
     },
 
     /**
@@ -80,14 +171,26 @@ KNOWWE.helper = function() {
      * @returns the local section storage as a JSON object (or string if desired)
      */
     getLocalSectionStorage: function(sectionID, asString) {
-      let storageString = (sectionID && localStorage.getItem(sectionID)) || "{}";
+      const localStorageKey = sectionID ? getStorageKey(sectionID) : null;
+      const storageString = (localStorageKey && localStorage.getItem(localStorageKey)) || "{}";
+      if (storageString !== "{}") markUsed(localStorageKey);
       if (asString) return storageString;
       try {
         return JSON.parse(storageString);
       } catch (e) {
-        // key collision with foreign (non-JSON) local storage entries
         console.warn("Ignoring invalid local section storage for " + sectionID, e);
         return {};
+      }
+    },
+
+    /**
+     * Cleans up the local section storages, see cleanupSectionStorage. Called once the page is loaded.
+     */
+    cleanupLocalSectionStorage: function() {
+      try {
+        cleanupSectionStorage();
+      } catch (e) {
+        console.warn("Unable to clean up local section storage", e);
       }
     },
 
@@ -415,6 +518,15 @@ KNOWWE.helper = function() {
      */
     getUsername: function() {
       return jq$('head meta[name="wikiUserName"]').attr('content');
+    },
+
+    /**
+     * Returns whether the current user is signed in or asserted, i.e. may call actions that require authentication
+     * (Access.AUTH). Anonymous visitors of a public wiki would only get 401 for them. Without the meta tag (e.g. in a
+     * template without the default common header), the user is assumed to be known, as before.
+     */
+    isUserKnown: function() {
+      return jq$('head meta[name="wikiUserKnown"]').attr('content') !== 'false';
     },
 
     /**

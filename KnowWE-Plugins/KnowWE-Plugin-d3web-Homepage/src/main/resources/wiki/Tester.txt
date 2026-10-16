@@ -1,0 +1,26 @@
+!!! Demo for Bug in Literal Parser
+
+The rdfs:label value "42F" is wrongly interpreted as a number. It should be a String!
+
+* "42F" must not be interpreted as number, but string
+* "123" and "456" are correctly parsed as string and number, respectively
+* age is correctly parsed as integer
+
+
+%%package litbug
+
+%%Ontology 
+  @uses: litbug
+%
+
+%%Turtle 
+:age rdf:type owl:DatatypeProperty .
+
+:joba rdf:type owl:Class ;
+      rdfs:label "42F" ;
+      :age 41 ;
+      rdfs:label "123"^^xsd:string ;
+      rdfs:label "456"^^xsd:number .
+%
+
+

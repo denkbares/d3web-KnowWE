@@ -1,0 +1,76 @@
+!! Definition
+
+Abstraction tables are tables that allow for a efficient definition of rules, if they follow a certain pattern.
+Each line in the table represents one rule and the first cells define the conditions (connected by and), the last cell defines the action.\\
+All rules in the table have to use a sub set of the terminology objects provided in the header of the table.
+
+
+!! Syntax and Semantic
+
+An abstraction table is defined inside the default markup AbstractionTable. The table itself uses the common wiki table markup.
+
+Example:
+
+%%prettify 
+{{{
+%%AbstractionTable
+
+|| Question1 || Question2 || Question3
+|            |    <= 5    |   Answer1
+|   Answer1  |   ]5 15]   |   Answer2
+|   Answer2  |  ]15 25]   |   Answer3
+
+%
+}}}
+/%
+
+If all questions and answers are well defined (Question2 is a numerical question...), then the following rules are created internally:
+%%prettify 
+{{{
+IF Question2 <= 5
+THEN Question3 = Answer1
+
+IF Question1 = Answer1 AND Question2 > 5 AND Question2 <= 15
+THEN Question3 = Answer2
+
+IF Question1 = Answer2 AND Question2 > 15 AND Question2 <= 25
+THEN Question3 = Answer3 
+}}}
+/%
+
+It is also possible to use solutions:
+
+Example:
+
+%%prettify 
+{{{
+%%AbstractionTable
+
+|| Solution1  || Question1 || Solution2
+| established |     0      |   P3
+|  excluded   |   > 0      |   N7
+
+%
+}}}
+/%
+
+If again everything is well defined, we internally get rules equal to the following:
+
+%%prettify 
+{{{
+IF Solution1 = established AND Question1 = 0
+THEN Solution2 = P3 // adds score P3 to Solution2
+
+IF Solution1 = excluded AND Question1 > 0
+THEN Solution2 = N7 // adds score N7 to Solution2
+}}}
+/%
+
+
+%%tags
+ Documentation abstraction table abstractiontable  
+%
+ 
+%%tags
+RuleDefinition
+%

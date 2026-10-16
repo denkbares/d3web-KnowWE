@@ -1,0 +1,202 @@
+[{TableOfContents title='Contents'}]
+
+
+!! Definition\\
+
+Diaflux is a graphical workflow authoring plugin for KnowWE.\\
+It is used to model complex problems in an easy to read and understandable fashion.\\
+
+
+!! Syntax and Semantic\\
+
+An Diaflux workflow is defined inside the markup __DiaFlux__\\
+
+
+! Example
+
+
+%%DiaFlux
+<flowchart fcid="flow_7184e213" name="ExampleWorkFlow" icon="sanduhr.gif" width="699" height="380" autostart="true" idCounter="23">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="31"></position>
+		<start>start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="554" top="340"></position>
+		<exit>exit</exit>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="194" top="20"></position>
+		<action markup="KnOffice"><![CDATA[ambient_temperature]]></action>
+	</node>
+
+	<node fcid="#node_6">
+		<position left="280" top="118"></position>
+		<action markup="KnOffice"><![CDATA["warm" = P7]]></action>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="159" top="118"></position>
+		<action markup="KnOffice"><![CDATA["cold" = P7]]></action>
+	</node>
+
+	<node fcid="#node_11">
+		<position left="544" top="118"></position>
+		<action markup="KnOffice"><![CDATA["just_fine" = P7]]></action>
+	</node>
+
+	<node fcid="#node_16">
+		<position left="358" top="329"></position>
+		<action markup="KnOffice"><![CDATA["just_fine" = N7]]></action>
+	</node>
+
+	<node fcid="#node_18">
+		<position left="478" top="228"></position>
+		<action markup="KnOffice"><![CDATA["warm" = N7]]></action>
+	</node>
+
+	<node fcid="#node_19">
+		<position left="591" top="229"></position>
+		<action markup="KnOffice"><![CDATA["cold" = N7]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_7">
+		<origin>#node_2</origin>
+		<target>#node_5</target>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_5</origin>
+		<target>#node_6</target>
+		<guard markup="KnOffice"><![CDATA["ambient_temperature" > 25]]></guard>
+		<routingPoint x="8" y="0.5" />
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_5</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice"><![CDATA["ambient_temperature" < 25]]></guard>
+		<routingPoint x="1" y="0.5" />
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#node_5</origin>
+		<target>#node_11</target>
+		<guard markup="KnOffice"><![CDATA["ambient_temperature" = 25]]></guard>
+		<routingPoint x="0.9747292418772563" y="0" />
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_6</origin>
+		<target>#node_16</target>
+		<routingPoint x="0" y="0.86" />
+	</edge>
+
+	<edge fcid="#rule_14">
+		<origin>#node_9</origin>
+		<target>#node_16</target>
+		<routingPoint x="0" y="1" />
+	</edge>
+
+	<edge fcid="#rule_17">
+		<origin>#node_16</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_20">
+		<origin>#node_11</origin>
+		<target>#node_18</target>
+	</edge>
+
+	<edge fcid="#rule_21">
+		<origin>#node_11</origin>
+		<target>#node_19</target>
+	</edge>
+
+	<edge fcid="#rule_22">
+		<origin>#node_19</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_23">
+		<origin>#node_18</origin>
+		<target>#node_3</target>
+	</edge>
+
+</flowchart>
+
+  
+%
+
+
+!! Diaflux Editor
+
+The Diaflux workflow may be edited using the __Visual Editor__.
+
+[{Image src='visual_editor.jpg' width='222' height='99' align='left' }]
+
+\\
+
+[{Image src='visual_editor_edit_nodes.jpg' width='540' height='303' align='left' }]
+
+\\
+
+
+! Diaflux elements
+
+* __Start node__: entry point for a DiaFlux\\
+* __Exit node__: exit point of a DiaFlux\\
+* __Action node__: select a question, solution, or other flowchart and model an interaction with this it.\\
+* __Comment node__: use this node to provide annotations to transitions or nodes.\\
+* __SnapShot node__: used to inhibit the truth maintainance to reverse decisions before this snapshot. (Behaves like a diode.)\\
+
+
+!Editor tools\\
+
+* __Save flowchart and close editor__\\
+* __Revert changes__\\
+* __Close editor__ (without saving)\\
+* __Delete flowchart__\\
+
+
+!! Best Practices\\
+
+* A DiaFlux flowchart shall have a unique name.\\
+* One flowchart needs to be checked for Autostart. (That is where a session workflow will start.)\\
+* Do not overload a single flowchart. Model rather small parts and reference them in a parent flowchart.\\
+  Rule of thumb: Not more than a monitors field of view.
+* Use commend nodes (light blue) to structure flows/arrows. 
+
+
+!Terminology of DiafluxExample 
+
+%%knowledgebase 
+DiafluxExample2
+@comment: a simple example
+@filename: knowledgebase.d3web
+@version: 0.01
+/%
+
+%%Question
+input
+- user_inputs
+-- ambient_temperature [num] {°C}
+%
+
+%%Solution
+output
+- system_output
+-- warm
+-- cold
+-- just_fine
+%
+
+%%Package 
+  diaflux_example
+%

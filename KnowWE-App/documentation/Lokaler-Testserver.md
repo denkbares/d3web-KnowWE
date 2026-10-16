@@ -28,6 +28,16 @@
   müssen die Checkouts der beteiligten Repos im Workspace liegen: denkbares-Maven-Plugins, denkbares-Commons,
   d3web, d3web-DES, denkbares-Internals, d3web-Player-Platform, jspwiki, KnowWE, KnowWE-DES. Die Reihenfolge
   ermittelt das Workspace-Skript (Abschnitt 1) selbst.
+- **Passendes Maven >= 3.9.** Der distro-eigene `/usr/share/maven` (3.8.7) kann den `maven-workspace-split` nicht
+  und sieht ein leeres flaches Repo -> „cannot access … in offline mode“ für alles. Der PATH-Wrapper
+  `~/.local/bin/maven-workspace-split/mvn` erwartet Maven unter `~/.local/share/maven` (ggf. Symlink auf einen
+  entpackten `apache-maven-3.9.x`, Bezug z. B. von Maven Central). Prüfen: `MVN_SPLIT_DEBUG=1 mvn -version` zeigt
+  Binary und Workspace-Prefix; `command -v mvn` muss den Wrapper zeigen (sonst
+  `export PATH=~/.local/bin/maven-workspace-split:$PATH`). `~/.mavenrc` muss auf die `mavenrc` im Wrapper-Ordner
+  zeigen, sonst greift der Split nicht.
+- **`JAVA_HOME` in jeder Shell setzen** (z. B. `/usr/lib/jvm/zulu-25-amd64`); sonst bricht schon `mvn -version`
+  mit „JAVA_HOME … not defined correctly“ ab. `MAVEN_OPTS="-Xmx4g -XX:MaxMetaspaceSize=1g"`, da das Lesen der
+  großen POMs sonst OOMt.
 
 ## 1. Bauen
 
@@ -59,6 +69,30 @@ ls -la KnowWE-App/target/KnowWE.war
 - Schlägt ein Schritt fehl, nennt das Skript Modul, Log und einen Resume-Befehl (`--resume-reactor-step`).
 - Nach Cross-Repo-API-Änderungen vorher `touch` auf die betroffenen `*.java`, sonst kompiliert Maven
   unveränderte Module nicht neu.
+
+### Profile für ein CBX-SSC-Wiki
+
+**Wird irgendein Profil per `-P` explizit genannt, sind die `activeByDefault`-Profile (`core-plugins`,
+`denkbares`) aus.** Für ein CBX/SSC-Wiki (SSM/XPS, `%%TSM`, `%%Malfunction`, `%%ServiceMate`) deshalb **alle
+drei** nennen:
+
+```bash
+cd KnowWE
+mvn -o -pl KnowWE-App -Pcore-plugins,denkbares,cbx \
+  -DskipTests -Dmaven.javadoc.skip=true package
+```
+
+Ohne `cbx` fehlen `KnowWE-Plugin-CBX`, `KnowWE-Plugin-ILME`, `KnowWE-Plugin-Search` und
+`KnowWE-Plugin-d3web-OntologyBridge` (bzw. mit `activeByDefault`-Fallback gar nichts davon), und CBX-Markups
+werden nicht compiliert/gerendert. Sind alle Module schon im Workspace-Repo, genügt der schnelle Modulbuild
+`-pl KnowWE-App` (Sekunden); sonst die volle Kette über das Workspace-Skript mit `--target KnowWE-App`. Ein
+solches WAR ist groß (>300 MB, alle Profile-Plugins + Ressourcen) -- das ist normal, kein Fehler.
+
+Prüfen, dass das Profil wirklich gegriffen hat:
+
+```bash
+unzip -l KnowWE-App/target/KnowWE.war | grep -E 'KnowWE-Plugin-(CBX|ILME|Search|d3web-OntologyBridge)'
+```
 
 ### Nur KnowWE neu bauen
 
@@ -106,10 +140,29 @@ jspwiki.baseURL = http://localhost:8080/KnowWE/
 jspwiki.applicationName = KnowWE
 ```
 
+**Styling (Template/Skin).** Eine Konfiguration mit nur dem Minimum oben rendert ungestylt. Die App-Config-Vorlagen
+(`src/resources/local/WEB-INF/classes/jspwiki-custom.properties`, `.default` im WAR) setzen zusätzlich:
+
+```properties
+jspwiki.templateDir = default
+jspwiki.defaultprefs.template.skinname = denkbares
+jspwiki.defaultprefs.template.orientation = fav-left
+jspwiki.defaultprefs.template.editor = plain
+jspwiki.defaultprefs.template.language = de
+```
+
+Achtung: Die ausgelieferte `jspwiki-custom.properties` der App nennt `jspwiki.templateDir = haddock`; ein
+`templates/haddock/` gibt es im WAR aber **nicht** (vorhanden sind `default`, `210`, `KnowWE`, `raw`, `reader`).
+`templateDir = haddock` fällt effektiv auf `default` zurück, ist also verwirrend -- `default` explizit setzen. Die
+Skins liegen unter `templates/default/skins/` (`denkbares`, `ilme`); `haddock.css`/`haddock.js` gehören zum
+`default`-Template selbst und werden von `commonheader.jsp` geladen, sind also kein Zeichen für einen falschen Skin.
+Fehlende Styles äußern sich als reines Text-Layout ohne `skins/denkbares/skin.css`.
+
 Grundsatz: **jede Einstellung, die eine Klasse nennt, muss zu den deployten Plugins passen** -- etwa
-`jspwiki.searchProvider` (Master: `de.knowwe.jspwiki.ExtensibleLuceneSearchProvider`) oder Tool-Provider in
-`settings.toolmenu.json`. Eine Konfiguration, die für einen Feature-Branch oder ein anderes Profil entstanden
-ist, deshalb vor dem Start gegen den gebauten Stand durchsehen.
+`jspwiki.searchProvider` (Master: `de.knowwe.jspwiki.ExtensibleLuceneSearchProvider`, App-Vorlage:
+`com.denkbares.knowwe.jspwiki.NGramLuceneSearchProvider`) oder Tool-Provider in `settings.toolmenu.json`. Eine
+Konfiguration, die für einen Feature-Branch oder ein anderes Profil entstanden ist, deshalb vor dem Start gegen den
+gebauten Stand durchsehen.
 
 Die Vanilla-Policy (`WEB-INF/jspwiki.policy`) erlaubt anonymen Nutzern das Editieren, `GET`-Actions laufen
 ohne CSRF-Token. Das macht Tests per `curl` einfach, ist aber nur für lokale Instanzen vertretbar.
@@ -208,6 +261,21 @@ des Builds durch eine Hülle ersetzen, die jedes Event mit `performance.now()` i
 Anfragen an `*.jsp` laufen durch den JSPWiki-`WikiJSPFilter`, der die komplette Antwort puffert und erst nach
 Ende der Action ausliefert. Der Servlet-Pfad (`JSPActionServlet`, Mapping `/action/*`) streamt sofort.
 
+### d3web.de-Homepage lokal
+
+Das Plugin `KnowWE-Plugin-d3web-Homepage` enthält das Skin-Overlay von d3web.de (Logo-Action, `localheader.jsp`,
+`skins/d3web/d3web.css`) und unter `src/main/resources/wiki/` einen Abzug der Wiki-Seiten. Das WAR mit dem Profil
+`d3web-homepage` packen -- die Default-Profile dabei explizit mitnennen:
+
+```bash
+mvn -o -pl KnowWE-App -Pcore-plugins,denkbares,d3web-homepage -DskipTests -Dmdep.skip=true package
+```
+
+Als Seitenordner eine Kopie von `src/main/resources/wiki/` verwenden (nicht den Checkout selbst, das Wiki schreibt
+`OLD/`-Versionen und Properties hinein), `jspwiki.applicationName = d3web` und `jspwiki.templateDir = default`
+setzen. Die Matomo-Statistik in `localheader.jsp` wird für `localhost` nicht eingebunden. Für den Vergleich mit
+der Live-Seite reicht es, beide im selben Browserfenster bei gleicher Breite nebeneinander zu öffnen.
+
 ## 5. Typische Startprobleme
 
 | Symptom in `catalina.out` | Ursache | Abhilfe |
@@ -218,6 +286,12 @@ Ende der Action ausliefert. Der Servlet-Pfad (`JSPActionServlet`, Mapping `/acti
 | `The POM for com.denkbares:...:jar:<version> is missing` oder `Symbol nicht gefunden` für Cross-Repo-Klassen | Artefakt eines anderen Repos fehlt im Task-Repo oder ist veraltet | Workspace-Skript mit `--target` laufen lassen (Abschnitt 1); es baut die fehlenden Module in der richtigen Reihenfolge |
 | `Unexpected response 404 while polling http://localhost:8080/KnowWE/_action/GetWikiChangesSinceAction` (`%%InterWikiImport`, z. B. Import aus dem eigenen Wiki) | Der Poller nutzt per Default den Action-Pfad `_action/`; lokal ist nur `action/*` gemappt | `-Dknowwe.attachments.update.actionFragment=action` in `CATALINA_OPTS` |
 | Bootstrap scheitert mit `denkbares-Maven-EnforcerRules ... is missing` | älterer Stand des Workspace-Skripts ohne die Phase *Bootstrap prerequisites* | Skript aktualisieren oder einmalig `denkbares-Maven-Plugins` ins Task-Repo installieren |
+| `JAVA_HOME ... is not defined correctly` (schon bei `mvn -version`) | `JAVA_HOME` in dieser Shell nicht gesetzt | `export JAVA_HOME=/usr/lib/jvm/zulu-25-amd64` |
+| `mvn` findet `~/.local/share/maven` nicht / „no real Maven found“ | kein Maven >= 3.9 installiert bzw. `~/.mavenrc` fehlt | Maven 3.9.x nach `~/.local/share/maven` entpacken, `~/.mavenrc` auf die Wrapper-`mavenrc` symlinken (Abschnitt „Voraussetzungen“) |
+| `Could not find plugin KnowWEPlugin` (nur für JSPWiki-`{KnowWEPlugin …}`-Tags im Vanilla-`LeftMenu`) | harmlos: das `KnowWEPlugin`-JSPWiki-Plugin ist nicht in jedem Profil; betrifft nur die alten `{KnowWEPlugin}`-Tags, nicht CBX-Markups | ignorieren (oder LeftMenu auf KnowWE-Markup umstellen) |
+| Wiki rendert, aber Seiten erscheinen als reiner Text ohne Styles/Header | `jspwiki.templateDir`/Skin fehlt in der Config (nur Minimalkonfiguration gesetzt) | `jspwiki.templateDir = default` und `jspwiki.defaultprefs.template.skinname = denkbares` setzen (Abschnitt 2) |
+| CBX-Markups (`%%TSM`, `%%Malfunction`, `%%ServiceMate`) erscheinen als Text statt gerendert; im Log fehlen die Compiler | WAR ohne `cbx`-Profil gebaut | WAR mit `-Pcore-plugins,denkbares,cbx` neu bauen (Abschnitt „Profile für ein CBX-SSC-Wiki“) |
+| `QName 'ssc:subClassOf' uses an undefined prefix` im Ontology-Compiler | SSC-Ontologie/-Prefix (`ssc:`) nicht eingebunden; im Datafolder fehlen `ssc-schema.ttl`/Imports bzw. `%%Namespace`/`@import` | SSC-Ontologie per `%%Ontology … @import` bzw. Namespace einbinden (projekt-/datenfolderspezifisch) |
 
 ## 6. Aufräumen
 

@@ -1,0 +1,47 @@
+!!!What do I need to do after I change a .java file?
+Usually you only have to refresh your browser page. Hot Code Replacement makes your changes effective at runtime. 
+
+
+!I'm done editing. How to make my changes permanent?
+You don't have to worry that you changes will be lost after you shut down KnowWE. To make the changes effective for the next restart, you have to perform Maven Install on KnowWE-App.
+
+!Hot Code Replacement failed. What to do?
+Sometimes, especially when doing major changes to a .java file, Hot Code Replacement fails. In this case you have to 
+*Quit Tomcat
+*Perform a Maven Install on KnowWE-App and
+*Start Tomcat again.
+
+
+!!!What do I need to do after I change a Non-Java file?
+Unfortunately, there is no Hot Code Replacement for Non-Java files. However, there is a [How-To for developing Javascript at runtime|How-To Develop JavaScript in KnowWE], which may be useful for you.
+
+How to make changes to Non-Java files effective:
+*Quit Tomcat
+*Perform Maven Install on your plugin aswell as KnowWE-App
+*Restart Tomcat
+
+!!!Tomcat successfully starts, but the wiki pages are not loaded. What to do?
+This can happen when you perform a Maven Install while Tomcat is still running. To fix this, you have to follow these steps:
+*Right click on KnowWE-App in Eclipse and select
+{{{Tomcat > Update Tomcat Context}}}
+*Start Tomcat
+
+!!!What is a Plugin?
+A Plugin is a module extending KnowWE's functionality. A plugin needs a plugin.xml file defining the Extensions for this plugin.
+
+!!!What is an Extension?
+An Extension implements the plugin's functionality using an Extension Point. For further definition and usage instructions see [this page|How-To Extension Points]..
+
+!!!What is an Extension Point?
+An Extension Point has a specific type, for example ''Action, TagHandler, TypeHandler'' or ''EventListener''. The defined extension point specifies that each extension has to give values for class, name, description, version, and priority. This has to be defined by each extension point; an extension point further can require additional value, for example the specification of a file name. 
+For further definition and usage instructions see [this page|How-To Extension Points].
+
+!!!What is the Scope of an extension?
+ A scope is an selector of a specific subset of KDOM nodes. Its selection is based on the type of the KDOM nodes itself as well as on the type of the KDOM node's anchestors. It can be compared a little bit to the css selectors.
+
+The scope is a path of those KDOM node types that should be matched/selected. The path can be relative (anywhere in the KDOM tree) or root based. Specific path wildcards as "*" and "**" are allowed. The different kinds of Scopes and their usage are explained [here|How-To Extension Points].
+
+
+* Tomcat starts, but wikipages are not loaded -> update Tomcat-Context... this happens when mvn installing while tomcat is running...
+* What is an plugin, what is an extension, what is an extension point ([check here|http://d3webwiki.informatik.uni-wuerzburg.de/Wiki.jsp?page=Plugins%20and%20Extensions])
+* What is the Scope of an extension

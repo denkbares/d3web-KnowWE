@@ -1,0 +1,21 @@
+d3web is currently used by a wide range of customers, as companies, gouvernemental and non-commercial organisations. It is applied in different scenarios, e.g. medicine, bio-chemistry, process optimization, technical service, machine diagnostics and much more. Here some example use cases of real world applications. 
+
+|  [{Image src='vo_logo_sm.jpeg' width='80' link='Wiki.jsp?page=Success Story - ESAT'}]	|  __ESAT__ ("Expertensystem für Assistierende Technologien" in German) is an expert system designed to determine an appropriate set of human-computer interaction devices for handicapped people. In the application scenario a detailed profile of the physical capabilities (e.g., visual or motorical abilities) for a person is entered into the system.\\''[read more...|Success Story - ESAT]''	
+|  [{Image src='SmartCare-Logo.gif' width='80' link='Wiki.jsp?page=Success Story - SmartCare'}]	|  __SmartCare__ - Automated clinical guidelines \\ SmartCare is a technology framework for developing and implementing clinical guidelines and executing them with a wide range of medical devices.\\''[read more...|Success Story - SmartCare]''	
+|  [{Image src='wimvent.png' width='80' link='Wiki.jsp?page=Success Story - WiM-Vent'}]	|  __WiM-Vent__ - Knowledge- and model-based therapy control in medicine\\The goal of the WiM-Vent project is to combine clinical expert knowledge and algorithmic models of the patients' physiology.\\''[read more...|Success Story - WiM-Vent]''	
+|  [{Image src='Success Story - Cataract/logo_KIT.png' width='80' link='Wiki.jsp?page=Success Story - Cataract'}]	|  __Continuous Medical Cataract Knowledge__\\The WISSKONT project considers the creation of an intelligent information system in the medical domain of cataract surgery. The system is currently under development and it will support the ophtalmologist during the treatment process before, in-between, and after the cataract surgery.\\''[read more...|Success Story - Cataract]''	
+|  [{Image src='CliWE.jpg' width='80' link='Wiki.jsp?page=Success Story - CliWE'}]  	|  __Clinical Wiki Environments - Collaborate Guideline Development__\\Within the project CliWE (Clinical Wiki Environments), KnowWE is extended by plugins to allow for the collaborative development of Computer-Interpretable Guidelines (CIGs).\\''[read more...|Success Story - CliWE]''	
+|  [{Image src='Success Story - KnowSEC/KnowSEC.png' width='80' link='Wiki.jsp?page=Success Story - KnowSEC'}]	|  __Managing Chemical Safety with KnowSEC__\\KnowSEC (Managing Knowledge of Substances of Ecological Concern) is a group-wide wiki to manage substance-related work(flows) within a group of the German Federal Environmental Agency (Umweltbundesamt). Here, every substance is represented by a distinct wiki article storing important information.\\''[read more...|Success Story - KnowSEC]''	
+
+
+
+
+__Please Note:__ \\
+If you are establishing a d3web-based solution and willing to share your experiences with others, please contact us to promote your success story here!
+
+
+
+
+%%tags
+SuccessStories  
+%

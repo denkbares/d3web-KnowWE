@@ -1,0 +1,47 @@
+On this page all articles of the wiki are included, that are relevant for the car diagnosis knowledge base. 
+The "compiled" knowledge base can be used and downloaded as a single artifact.
+
+
+!!! Test Interview
+
+%%QuickInterview 
+  
+%
+
+!!! Derived Solutions
+
+%%ShowSolutions
+@show_suggested: true
+@show_excluded: true
+@show_abstractions: true
+%
+
+
+!!! Definition of the Knowledge Base
+
+%%knowledgebase 
+Car faults diagnosis
+@Comment: Example car fault diagnosis knowledge base.
+@author: d3web.de
+@version: 1.0
+@filename: car_faults_diagnosis.d3web
+/%
+
+%%resource 
+@src: Demo - Master/favIcon.png
+@path: favicon.png
+%
+
+%%Package demo
+
+
+!!! Test Cases
+
+A demo with some cases testing the car faults knowledge base. 
+
+%%TestCasePlayer 
+/%
+
+%%tags
+ Demo  
+%

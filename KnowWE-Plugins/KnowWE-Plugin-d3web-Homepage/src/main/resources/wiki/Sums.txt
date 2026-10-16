@@ -1,0 +1,27 @@
+%%Package 
+sums
+%
+
+%%KnowledgeBase 
+Kleine KB zum Aufsummieren
+%
+
+
+!Test Interview
+
+%%QuickInterview 
+  
+%
+
+
+!Fragen
+
+%%Question
+Parameter [num]
+SumOverTime [num] <abstract>
+%
+
+
+%%Variable 
+SumOverTime = average(valids(Parameter![now-24h, now])) * count(valids(Parameter![now-24h, now]))
+%

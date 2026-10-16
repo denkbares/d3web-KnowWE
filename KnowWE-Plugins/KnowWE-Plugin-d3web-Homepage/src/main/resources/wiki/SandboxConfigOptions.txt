@@ -1,0 +1,379 @@
+%%ontology
+@uses: configOptions
+%
+
+%%namespace
+dco http://denkbares.com/ConfigOptions/
+%
+
+%%namespace
+c http://denkbares.com/ConfigOptionsDemo/
+%
+
+
+!! Definitions Configuration Options
+
+%%turtle
+dco:ConfigOption a owl:Class .
+dco:ChoiceConfigOption rdfs:subClassOf ConfigOption .
+dco:NumConfigOption rdfs:subClassOf ConfigOption .
+dco:ConfigOptionAssignment a owl:Class .
+dco:option a owl:ObjectProperty .
+dco:is a owl:ObjectProperty .
+dco:isNot a owl:ObjectProperty .
+dco:ChoiceValue a owl:Class .
+dco:availableChoice a owl:ObjectProperty .
+
+%
+
+
+!! Definitions Constraints
+
+%%turtle
+dco:Constraint a owl:Class .
+dco:ContradictingConstraint rdfs:subClassOf Constraint .
+dco:hasDisjointSet a owl:ObjectProperty .
+dco:assignmentA a owl:ObjectProperty .
+dco:assignmentB a owl:ObjectProperty .
+dco:min a owl:DatatypeProperty .
+dco:max a owl:DatatypeProperty .
+
+% 
+
+
+!! Definitions Car configuration set
+
+%%turtle
+dco:CarConfigSet a owl:Class.
+dco:hasConfiguration a owl:ObjectProperty .
+
+%
+
+
+! Option Engine
+
+%%turtle
+dco:Engine a dco:ChoiceConfigOption ; 
+	dco:availableChoice dco:SmallEngine, dco:MediumEngine, dco:Turbo .
+	
+dco:SmallEngine a ChoiceValue .
+dco:MediumEngine a ChoiceValue .  
+dco:Turbo a ChoiceValue .
+
+%
+
+
+! Option Hitch
+
+%%turtle
+dco:Hitch a dco:ChoiceConfigOption ; 
+	dco:availableChoice WithHitch, WithoutHitch .
+	
+dco:WithHitch a ChoiceValue .
+dco:WithoutHitch a ChoiceValue .  
+
+%
+
+
+! Option Edition
+
+%%turtle
+dco:Edition a dco:ChoiceConfigOption ; 
+	dco:availableChoice FamilyEdition, SportsEdition, OffroadEdition .
+	
+dco:FamilyEdition a ChoiceValue .
+dco:SportsEdition a ChoiceValue . 
+dco:OffroadEdition a ChoiceValue .   
+
+%
+
+
+! Option Number of Doors
+
+%%turtle
+dco:NumberOfDoors a dco:NumConfigOption ;
+	dco:min "3" ;
+	dco:max "5" .
+	
+%
+
+
+! Constraint 1 : Hitch contradicts Small Engine
+
+%%
+
+%%turtle
+dco:HitchConstradictsSmallEngine a ContradictingConstraint ;
+	rdfs:label "Anhängerkupplung nicht mit kleinem Motor" ; 
+	assignmentA [ option Hitch; is WithHitch] ;
+	assignmentB [ option Engine; is SmallEngine ] .
+
+%
+
+
+! Constraint 2 : Family Edition contradict 3 doors
+
+%%turtle
+dco:FamilyConstradicts3Doors a ContradictingConstraint ; 
+	assignmentA [ option Edition; is FamilyEdition] ;
+	assignmentB [ option NumberOfDoors; is "3" ] .
+
+%
+
+
+! Constraint 3 : Offroad Edition requires TurboEngine
+
+%%turtle
+dco:OffroadRequiresTurboEngine a ContradictingConstraint ; 
+	assignmentA [ option Edition; is OffroadEdition] ;
+	assignmentB [ option Engine; isNot Turbo ] .
+
+%
+
+
+!! Car 1
+
+%%turtle
+dco:Car1 a CarConfigSet ;
+	hasConfiguration 
+	[ option Engine; is MediumEngine ] ,
+	[ option Hitch; is WithHitch] .
+%
+
+%%sparql
+SELECT ?option ?value WHERE {
+dco:Car1 dco:hasConfiguration ?assignment.
+?assignment dco:option ?option .
+?assignment dco:is ?value .
+}
+
+%
+
+
+!! Car 2
+
+%%turtle
+dco:Car2 a CarConfigSet ;
+	hasConfiguration 
+	[ option Engine; is SmallEngine ] ,
+	[ option Edition; is OffroadEdition ] ,
+	[ option Hitch; is WithHitch] .
+%
+
+%%sparql
+SELECT ?option ?value WHERE {
+dco:Car2 dco:hasConfiguration ?assignment.
+?assignment dco:option ?option .
+?assignment dco:is ?value .
+}
+
+%
+
+
+! Car 3
+
+%%turtle
+dco:Car3 a CarConfigSet ;
+	hasConfiguration 
+	[ option Edition; is FamilyEdition ] ,
+	[ option NumberOfDoors; is "3"] .
+%
+
+%%sparql
+SELECT ?option ?value WHERE {
+dco:Car3 dco:hasConfiguration ?assignment.
+?assignment dco:option ?option .
+?assignment dco:is ?value .
+}
+
+%
+
+
+! Car 4
+
+%%turtle
+dco:Car4 a CarConfigSet ;
+	hasConfiguration 
+	[ option Edition; is FamilyEdition ] ,
+	[ option NumberOfDoors; is "5"] .
+%
+
+%%sparql
+SELECT ?option ?value WHERE {
+dco:Car4 dco:hasConfiguration ?assignment.
+?assignment dco:option ?option .
+?assignment dco:is ?value .
+}
+
+%
+
+
+! Ill-defined Car
+
+%%turtle
+dco:CarX a CarConfigSet ;
+	hasConfiguration 
+	[ option Engine; is WithHitch ] ,
+	[ option NumberOfDoors; is "99" ] ,
+	[ option Hitch; is SportsEdition] .
+%
+
+%%sparql
+SELECT ?option ?value WHERE {
+dco:CarX dco:hasConfiguration ?assignment.
+?assignment dco:option ?option .
+?assignment dco:is ?value .
+}
+
+%
+
+
+!! Assignment Consistency Query 
+
+%%Sparql
+SELECT ?car ?option ?value {
+
+{
+	?car rdf:type dco:CarConfigSet .
+	?car dco:hasConfiguration ?assignment .
+	?assignment dco:option ?option .
+	?assignment dco:is ?value .
+	?option rdf:type dco:ChoiceConfigOption .
+	FILTER NOT EXISTS {
+		?option dco:availableChoice ?value .
+	}
+}
+
+UNION {
+	?car rdf:type dco:CarConfigSet .
+	?car dco:hasConfiguration ?assignment .
+	?assignment dco:option ?option .
+	?assignment dco:is ?value .
+	?option rdf:type dco:NumConfigOption .
+	?option dco:min ?minValue .
+	?option dco:max ?maxValue .
+	FILTER (xsd:integer(?value) < xsd:integer(?minValue) 
+		|| xsd:integer(?value) > xsd:integer(?maxValue) )
+
+}
+
+
+}
+%
+
+
+!! Constraint Validation Query
+
+__Violated Constraints:__
+
+
+%%sparql
+SELECT ?car ?constraint ?constraintOptionA ?carOptionA ?valueA ?constraintOptionB ?carOptionB ?valueB ?compliesA ?compliesB WHERE {
+
+# for each car config and constraint do...
+?car rdf:type dco:CarConfigSet .
+?constraint rdf:type dco:Constraint .
+
+# First constraint/configuration match
+?car dco:hasConfiguration ?carConfigAssignment1 .
+?carConfigAssignment1 dco:is ?valueA .
+?carConfigAssignment1 dco:option ?carOptionA .
+?constraint dco:assignmentA ?constraintAssignmentA .
+?constraintAssignmentA dco:option ?constraintOptionA .
+FILTER (?constraintOptionA = ?carOptionA) .
+
+OPTIONAL {
+	?constraintAssignmentA dco:is ?constraintValueA .
+}
+OPTIONAL {
+	?constraintAssignmentA dco:isNot ?constraintValueA .
+}
+BIND( IF ( 
+	(EXISTS{?constraintAssignmentA dco:is ?constraintValueA} && ?constraintValueA = ?valueA) 
+	|| (EXISTS{?constraintAssignmentA dco:isNot ?constraintValueA} && ?constraintValueA != ?valueA)
+	, "true", "false") as ?compliesA) .
+
+# Second constraint/configuration match
+?car dco:hasConfiguration ?carConfigAssignment2 .
+?carConfigAssignment2 dco:is ?valueB .
+?carConfigAssignment2 dco:option ?carOptionB .
+?constraint dco:assignmentB ?constraintAssignmentB .
+?constraintAssignmentB dco:option ?constraintOptionB .
+FILTER (?constraintOptionB = ?carOptionB) .
+
+OPTIONAL {
+	?constraintAssignmentB dco:is ?constraintValueB .
+}
+OPTIONAL {
+	?constraintAssignmentB dco:isNot ?constraintValueB .
+}
+BIND( IF ( 
+	(EXISTS{?constraintAssignmentB dco:is ?constraintValueB} && ?constraintValueB = ?valueB) 
+	|| (EXISTS{?constraintAssignmentB dco:isNot ?constraintValueB} && ?constraintValueB != ?valueB)
+	, "true", "false") as ?compliesB) .
+
+# filter identities and aggregate result
+FILTER (?constraintAssignmentA != ?constraintAssignmentB) .
+FILTER (?carConfigAssignment1 != ?carConfigAssignment2) .
+FILTER (?compliesA = "true" && ?compliesB = "true" ). 
+
+}
+
+
+%
+
+%%sparql
+SELECT ?car ?constraint ?valueA ?valueB WHERE {
+
+?car rdf:type dco:CarConfigSet .
+?constraint rdf:type dco:Constraint .
+
+?car dco:hasConfiguration ?carConfigAssignment1 .
+?constraint dco:assignmentA ?constraintAssignmentA .
+
+?constraintAssignmentA dco:is ?valueA .
+?carConfigAssignment1 dco:is ?valueA .
+
+
+?car dco:hasConfiguration ?carConfigAssignment2 .
+?constraint dco:assignmentB ?constraintAssignmentB .
+?constraintAssignmentB dco:is ?valueB .
+?carConfigAssignment2 dco:is ?valueB .
+
+}
+
+
+%
+
+%%sparql
+SELECT ?constraint ?edge ?option WHERE {
+	?constraint dco:assignmentA|dco:assignmentB ?assignment .
+	?assignment dco:option ?option .
+	BIND ( "usesOption" AS ?edge ) .
+}
+
+%
+
+%%sparqlVisualization
+SELECT ?constraint ?edge ?option WHERE {
+	?constraint dco:assignmentA|dco:assignmentB ?assignment .
+	?assignment dco:option ?option .
+	BIND ( "usesOption" AS ?edge ) .
+}
+@config: configVis
+%
+
+%%VisualizationConfig 
+@name: configVis
+@colors: c:color
+%
+
+%%turtle 
+c:color a owl:DatatypeProperty .
+
+dco:Constraint c:color "orange" .
+dco:ConfigOption c:color "#80ccff" .
+
+%
+
+%%package configOptions

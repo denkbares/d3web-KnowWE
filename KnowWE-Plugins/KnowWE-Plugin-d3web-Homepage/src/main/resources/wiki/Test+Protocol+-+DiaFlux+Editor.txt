@@ -1,0 +1,38 @@
+!!! Create a new Flow 
+
+!! Actions
+
+1. Create a new article ''DiaFluxEdTP''.
+
+2. Insert the following markup into the article
+%%prettify 
+{{{
+%%KnowledgeBase 
+  DiaFlux Tester
+  @uses: dftp
+%
+%%DiaFlux 
+    @package: dftp
+%
+}}}
+/%
+
+3. Save the article
+
+!! Expected
+
+1. A link should appear in the view mode of the article, that offers the creation of a new flow.
+
+!!! Administrative Changes 
+
+All actions are taken in the editor:
+
+!! Actions
+
+1. Give the flow the name ''ExampleFlow''
+
+2. Make the flow an ''Autostart'' flow
+
+3. Change the dimensions to 400x400
+
+4. Save/Close the flow by clicking the corresponding icon in the toolbar

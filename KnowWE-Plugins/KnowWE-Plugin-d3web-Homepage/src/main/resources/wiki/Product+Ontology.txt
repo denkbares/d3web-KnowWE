@@ -1,0 +1,40 @@
+This page defines the ontology for Products, Apps and Modules
+
+
+!!Product
+
+def Product type:: Class
+
+
+!!Application
+
+def Application type:: Class
+
+!!Modules
+
+def Module type:: Class
+
+
+!!Plugin / Common
+
+!Plugin
+def Plugin type:: Class
+ObjectProperty partOf
+
+!Licence
+def Licence type:: Class
+ObjectProperty hasLicence
+
+!Stat
+def Stat type:: Class
+ObjectProperty hasStat
+
+!Description
+def Description type:: Class
+ObjectProperty hasDescription
+
+!Change
+def Change type:: Class
+ObjectProperty hasChange
+
+

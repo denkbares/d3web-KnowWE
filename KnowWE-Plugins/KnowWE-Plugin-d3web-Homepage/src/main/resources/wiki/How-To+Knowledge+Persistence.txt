@@ -1,0 +1,82 @@
+!!!How-To Knowledge Persistence
+In general, a knowledge base is physically stored as a Jar file (java archive), that contains a collection of (mostly XML) files. 
+Typically, different types of knowledge are represented by different files in the Jar.
+
+The knowledge persistence provides three {{ExtensionPoint}}s:
+
+* KnowledgeReader
+* KnowledgeWriter
+* FragmentHandler 
+
+!! KnowledgeReader 
+
+The {{PersistenceManager}} coordinates the loading of a knowledge base by calling appropriate {{KnowledgeReader}} implementations for each file. 
+The extension of the particular {{KnowledgeReader}} defines, which file(s) in the Jar can be handled: 
+Here, it is possible to specify a file name (incl. file path) and/or the specification of a regular expression. 
+The collection of matching files (i.e., files that can be handled by the reader) is the determined by evaluating the regular expression on the Jar file structure. 
+If the file path and the regular expression is specified, then the given file as well as the matching files are handled by the {{FileReader}}. 
+%%prettify 
+{{{
+<extension plugin-id="KnowledgePersistenceExtensionPoints" point-id="KnowledgeReader"
+        id="BasicPersistenceHandler">
+    <parameter id="class"
+        value="de.d3web.core.kpers.BasicPersistenceHandler" />
+    <parameter id="name" value="BasicPersistenceHandler" />
+    <parameter id="description" value="KnowledgeReader for basic knowledge" />
+    <parameter id="version" value="1.0" />
+    <parameter id="priority" value="1" />
+    <parameter id="filename" value="kb/basic.xml" />
+</extension> 
+}}}
+/%
+
+The example from above shows the extension for the basic persistence handler, that expects the file name {{kb/basic.xml}} for the handling class {{de.d3web.core.kpers.BasicPersistenceHandler}}.
+
+In case that two {{KnowledgeReaders}} are able to handle the same file, the {{KnowledgeReader}} with the higher priority is selected for handling the file (no duplicate file handling!).
+
+The interface {{KnowledgeReader}} specifies the {{read}} method with the parameters
+
+* {{InputStream}} of the file
+* the {{KnowledgeBase}} instance as input 
+
+and writes updates to the {{KnowledgeBase}} instance when importing the handled files. 
+
+!! KnowledgeWriter
+
+The same strategy as for the {{KnowledgeReader}} is used when saving a {{KnowledgeBase}} instance physically to a file. 
+In contrast to readers, the extension for a writer only takes a file name and no regular expression for saving the knowledge base. 
+A stream and a knowledge base instance is passed to the writer. 
+The writer extracts all handled knowledge slices from the knowledge base instance and the stores them physically.
+
+!!FragmentHandler
+
+{{FragmentHandlers}} are special in the way, that they do not handle complete (file-based) knowledge collections, but single knowledge objects. 
+This functionality allows for the application of {{FragmentHandlers}} as helpers within (multiple) {{KnowledgeReaders}} and {{KnowledgeWriters}}. 
+Furthermore, {{FragmentHandlers}} simplify the integration of new {{KnowledgeSlices}}  dramatically.
+
+We describe the application of {{FragmentHandlers}} by the following example: 
+For saving a rule, we first store their basic properties such as the ID. 
+For the persistence handling of more complex objects of a rule, e.g., the rule condition and the rule action, we call the appropriate {{FragmentHandlers}} for conditions and actions. 
+These calls are realized by following procedure: 
+All {{KnowledgeReaders}} give permission to the {{PersistenceManager}} to select the appropriate handlers for the knowledge objects. 
+With this permission, the {{PersistenceManager}} selects the appropriate {{FragmentHandler}} according to their priority. 
+For each {{FragmentHandler}} (extensions that implement the {{ExtensionPoint}} {{FragmentHandler}}) it is tested, if the handler can store/load the currently considered knowledge object. 
+The handler with the highest priority is the activated to store/load the considered object. 
+For instance, rule conditions are also used as conditioned findings in XCL models, and thus the same {{FragmentHandler}} for conditions can be used by the {{KnowledgeReaders/KnowledgeWriters}} of the rule persistence and the XCL persistence. 
+
+When extending the domain model of the d3web core, often a new type for a rule condition needs to be defined. 
+For a new rule condition type, we simply need to implement an appropriate {{FragmentHandler}}; this {{FragmentHandler}} can be used by the rule persistence as well as by the XCL persistence. 
+
+!! Helper Classes
+
+We defined a collection of useful abstract classes to avoid unnecessary code duplication for the implementation of (new) {{KnowledgeWriters}}, {{KnowledgeReaders}} and {{FragementHandlers}}:
+
+* {{AbstractRulePersistenceHandler}} \\
+      It implements {{KnowledgeReader}} as well as {{KnowledgeWriter}} and can be used as super class, when implementing a new {{RulePersistenceHandler}}. 
+      Then, you need to set the {{RuleType}} in the constructor and you will need to implement the method {{getProblemsolverContent()}}, which returns a list of problem solvers corresponding to the rules to be handled.
+* {{AbstractExpressionHandler}}
+* {{QuestionComparatorHandler}}
+* {{QuestionComparatorGroupedHandler}} 
+%%tags 
+howto create
+%

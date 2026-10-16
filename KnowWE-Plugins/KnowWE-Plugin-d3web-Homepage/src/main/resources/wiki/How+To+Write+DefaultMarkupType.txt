@@ -1,0 +1,45 @@
+%%(color: red)
+__Deprecated! Needs review.__
+%%
+!!! How to write new types for KnowWE
+
+If you dont know what a KnowWE type is, first have a look: [KnowWEType]
+
+
+!! The class AbstractKnowWEObjectType
+This class implements KnowWEObjectType and also contains some helpfull features implemented. 
+Some more default-implementations for optional methods are given in its subclass DefaultAbstractKnowWEObjectType,
+which is recommened for use (see below).
+
+
+!! Extend the class DefaultAbstractKnowWEObjectType
+This class should be extended when introducing new types to KnowWE (e.g., in a module).
+To enable real use of the type in the KDOMs of the pages at least a parsing-component, a [SectionFinder], needs to be specified.
+This SectionFinder gets parts of the text and marks/allocates sections within this text that should be created as a section-node of the type.
+Further, if the types needs to have some specific look in the page view a [KnowWEDomRenderer] can be specified.
+
+Here the example for a TableLineType is given, using the init() method to specify SectionFinder, Renderer and children-types:
+%%prettify
+{{{
+public class TableLine extends DefaultAbstractKnowWEObjectType {
+	
+	@Override
+	protected void init() 
+	{
+		childrenTypes.add(new TableCell());
+		sectionFinder = new TableLineSectionFinder( this );
+		setCustomRenderer(new TableLineRenderer());
+	}
+}
+
+}}}
+
+__Explanation:__\\
+On system initialization time the init method is called. ''childrenTypes'', ''sectionFinder ''and ''setCustomRenderer''are inherited from (''Default)AbstractKnowWEObjectType''. TableCell is a KnowWEType again and adding this to the children list denotes, that every TableLine will be split into TableCells. The ''sectionFinder'' sets the parsing-component for the local type. Thus, the ''TableLineSectionFinder ''should recognize Table-lines. The text-sections recognized by the SectionFinder are the text-content of the nodes of the corresponding type.
+Further, a custom renderer is set, that specifies how a table-line should be renderered.
+Being copied from the KnowWE source, this Type is full functional (given correct implementations of ''TableCell'', ''TableLineSectionFinder ''and ''TableLineRenderer'').
+
+
+!! About SectionFinders
+Writing the SectionFinders for the new types typically is most of the overall work. If it is not absolutely necessary to have a custom syntax it is much less work to either use TagHandlers [HowToWriteATagHandler] or to use XML-syntax, for which parser components are already contained in KnowWE [HowToWriteXMLTypes].
+<tags>HowTo</tags>

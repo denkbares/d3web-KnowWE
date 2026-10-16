@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<moduleinfo>
+	<plugin id="KnowWE-Plugin-Foo">
+		<description>Foo-Plugin f&#xFC;r KnowWE</description>
+		<stats>
+			<stat id="test" value="passed"/>
+		</stats>
+		<changes>
+			<change revision="1234" timestamp="2012-12-12 12:00:00 +1000" author="striffler">
+            	Fixed evil bug with something and foooooo
+			</change>
+			<change revision="1235" timestamp="2012-12-12 12:00:00 +1000" author="friedrich">
+				Fixed another evil bug 42 42
+			</change>
+		</changes>
+	</plugin>
+	<plugin id="KnowWE-Plugin-Bar">
+		<description>Bar-Plugin f&#xFC;r KnowWE</description>
+		<stats>
+			<stat id="test" value="passed"/>
+		</stats>
+		<changes>
+			<change revision="1235" timestamp="2012-12-12 12:00:00 +1000" author="foo">
+            	foo foo foo
+			</change>
+			<change revision="1235" timestamp="2012-12-12 12:00:00 +1000" author="bar">
+				bar bar bar
+			</change>
+		</changes>
+	</plugin>
+</moduleinfo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<build date="2012-06-12 12:26:01.001" duration="9" number="1">
+<test configuration="" name="ArticleHasErrorsTest">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="FixMe:\" name="TestArticlesContain">
+<message testObject=".*" text="Invalid argument: FixMe: (Error: Not enough arguments for test execution. Expected number of arguments: 2 - found: 1)" type="ERROR"/>
+</test>
+<test configuration="" name="NoAutostartFlowCITest">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="StandardQuestionDerivedByAbstraction">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="CombinedDiaFluxRuleAbstraction">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="IncompleteChoiceQuestion">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="IsolatedNodeInDiaFluxModel">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="EmptyQuestionnaireTest">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+</build>

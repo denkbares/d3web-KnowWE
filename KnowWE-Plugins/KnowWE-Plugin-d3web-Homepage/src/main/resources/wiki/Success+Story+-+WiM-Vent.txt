@@ -1,0 +1,13 @@
+[{Image src='attach/Success%20Stories/wimvent.png' width='200' align='right' style='margin-right:30px' }]
+
+!!Goal of the project
+The goal of the WiM-Vent[1] project is to combine clinical expert knowledge and algorithmic models of the patients' physiology. The ventilator shall be able to determine patients state and provide diagnosis and therapy options to the physician at the bed side. The medical product shall not take the decision concerning therapy off the physician, but it shall support the decision process by providing more information about patients state. The clinican shall also be able to enable automatic control of the ventilator, based on previously agreed therapy goals.
+
+WiM-Vent is a research project funded by the German Federal Ministry of Education and Research with several research partners. For further information please visit the project [web page | http://wimvent.org].
+
+----
+[#1]WiM-Vent is a German abbreviation for "Knowledge- and model-based ventilator" ("Wissens- und modellbasierter Ventilator"). 
+
+
+
+

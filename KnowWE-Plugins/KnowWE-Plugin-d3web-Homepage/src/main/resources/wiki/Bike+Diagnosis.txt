@@ -1,0 +1,1705 @@
+%%Package denkBike
+
+
+!!! denkBike Diagnosis
+
+
+!! Wissensbasis
+
+%%KnowledgeBase 
+  Bike DES
+  @filename: xps-des-bike.d3web
+  @comment: Additional Bike Test Knowledge Base
+  @affiliation: denkbares GmbH
+  @author: Veronika Sehne
+%
+
+
+!! Diaflux-Diagramm
+
+
+%%DiaFlux
+<flowchart fcid="flow_f00e90c2" name="denkBike Diagnosis" icon="sanduhr.gif" width="613.5" height="321" autostart="true" idCounter="245">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="32.5" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="22.5" top="61"></position>
+		<action markup="KnOffice"><![CDATA[Fehlerbild]]></action>
+	</node>
+
+	<node fcid="#node_230">
+		<position left="20" top="204"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Lichtanlage(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_234">
+		<position left="183.5" top="204"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Reifen(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_235">
+		<position left="479.5" top="204"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Gangschaltung(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_236">
+		<position left="32.5" top="291"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_238">
+		<position left="344.5" top="291"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_240">
+		<position left="193.5" top="291"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_242">
+		<position left="502.5" top="291"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_244">
+		<position left="327.5" top="204"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Bremsanlage(Start)]]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_25">
+		<origin>#node_2</origin>
+		<target>#node_5</target>
+	</edge>
+
+	<edge fcid="#rule_232">
+		<origin>#node_5</origin>
+		<target>#node_230</target>
+		<guard markup="KnOffice"><![CDATA["Fehlerbild" = "Lichtanlage defekt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_229">
+		<origin>#node_5</origin>
+		<target>#node_234</target>
+		<guard markup="KnOffice"><![CDATA["Fehlerbild" = "Reifen defekt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_228">
+		<origin>#node_5</origin>
+		<target>#node_235</target>
+		<guard markup="KnOffice"><![CDATA["Fehlerbild" = "Gangschaltung defekt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_237">
+		<origin>#node_230</origin>
+		<target>#node_236</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Lichtanlage]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_241">
+		<origin>#node_234</origin>
+		<target>#node_240</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Reifen]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_243">
+		<origin>#node_235</origin>
+		<target>#node_242</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Gangschaltung]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_223">
+		<origin>#node_5</origin>
+		<target>#node_244</target>
+		<guard markup="KnOffice"><![CDATA["Fehlerbild" = "Bremsanlage defekt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_245">
+		<origin>#node_244</origin>
+		<target>#node_238</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Bremsanlage]]]></guard>
+	</edge>
+
+</flowchart>
+
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_dee1a866" name="Bremsanlage" icon="sanduhr.gif" width="1440" height="615" autostart="false" idCounter="320">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_3">
+		<position left="707" top="65"></position>
+		<action markup="KnOffice"><![CDATA[Bremsenart]]></action>
+	</node>
+
+	<node fcid="#node_48">
+		<position left="734" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#XX_50">
+		<position left="1063" top="115"></position>
+		<action markup="KnOffice"><![CDATA["Reifen drehen"]]></action>
+	</node>
+
+	<node fcid="#node_127">
+		<position left="491" top="557"></position>
+		<action markup="KnOffice"><![CDATA[Bremse zu stark eingestellt = P7]]></action>
+	</node>
+
+	<node fcid="#XX_189">
+		<position left="465" top="369"></position>
+		<action markup="KnOffice"><![CDATA["Bremsstärke prüfen"]]></action>
+	</node>
+
+	<node fcid="#node_196">
+		<position left="312" top="115"></position>
+		<action markup="KnOffice"><![CDATA[Reifen drehen]]></action>
+	</node>
+
+	<node fcid="#node_197">
+		<position left="471" top="267"></position>
+		<action markup="KnOffice"><![CDATA[Bremse betätigen]]></action>
+	</node>
+
+	<node fcid="#node_198">
+		<position left="298" top="190"></position>
+		<action markup="KnOffice"><![CDATA[Test Reifen drehen]]></action>
+	</node>
+
+	<node fcid="#node_204">
+		<position left="138" top="267"></position>
+		<action markup="KnOffice"><![CDATA[Bremse betätigen]]></action>
+	</node>
+
+	<node fcid="#node_205">
+		<position left="132" top="369"></position>
+		<action markup="KnOffice"><![CDATA[Bremsstärke prüfen]]></action>
+	</node>
+
+	<node fcid="#XX_286">
+		<position left="35" top="462"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Bremsanlage Teilpruefung(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_289">
+		<position left="20" top="550"></position>
+		<action markup="KnOffice"><![CDATA[Bremse zu schwach eingestellt = P7]]></action>
+	</node>
+
+	<node fcid="#XX_291">
+		<position left="494" top="462"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Bremsanlage Teilpruefung(Start)]]]></action>
+	</node>
+
+	<node fcid="#XX_294">
+		<position left="276" top="462"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Bremsanlage Teilpruefung(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_297">
+		<position left="331" top="568"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#XX_299">
+		<position left="1223" top="369"></position>
+		<action markup="KnOffice"><![CDATA["Bremsstärke prüfen"]]></action>
+	</node>
+
+	<node fcid="#XX_301">
+		<position left="1229" top="267"></position>
+		<action markup="KnOffice"><![CDATA[Bremse betätigen]]></action>
+	</node>
+
+	<node fcid="#XX_302">
+		<position left="1049" top="190"></position>
+		<action markup="KnOffice"><![CDATA[Test Reifen drehen]]></action>
+	</node>
+
+	<node fcid="#XX_303">
+		<position left="884" top="267"></position>
+		<action markup="KnOffice"><![CDATA[Bremse betätigen]]></action>
+	</node>
+
+	<node fcid="#XX_304">
+		<position left="867" top="369"></position>
+		<action markup="KnOffice"><![CDATA[Bremsstärke prüfen]]></action>
+	</node>
+
+	<node fcid="#XX_312">
+		<position left="1236" top="557"></position>
+		<action markup="KnOffice"><![CDATA[Bremse zu stark eingestellt = P7]]></action>
+	</node>
+
+	<node fcid="#XX_313">
+		<position left="833" top="550"></position>
+		<action markup="KnOffice"><![CDATA[Bremse zu schwach eingestellt = P7]]></action>
+	</node>
+
+	<node fcid="#XX_314">
+		<position left="1091" top="568"></position>
+		<exit>Exit</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_49">
+		<origin>#node_48</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_51">
+		<origin>#node_3</origin>
+		<target>#XX_50</target>
+		<guard markup="KnOffice"><![CDATA["Bremsenart" = "Scheibenbremse"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_199">
+		<origin>#node_3</origin>
+		<target>#node_196</target>
+		<guard markup="KnOffice"><![CDATA["Bremsenart" = "Felgenbremse"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_200">
+		<origin>#node_196</origin>
+		<target>#node_198</target>
+		<guard markup="KnOffice"><![CDATA["Reifen drehen" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_201">
+		<origin>#node_198</origin>
+		<target>#node_197</target>
+		<guard markup="KnOffice"><![CDATA["Test Reifen drehen" = "Schleift"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_202">
+		<origin>#node_198</origin>
+		<target>#node_197</target>
+		<guard markup="KnOffice"><![CDATA["Test Reifen drehen" = "Blockiert"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_203">
+		<origin>#node_197</origin>
+		<target>#XX_189</target>
+		<guard markup="KnOffice"><![CDATA["Bremse betätigen" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_206">
+		<origin>#node_198</origin>
+		<target>#node_204</target>
+		<guard markup="KnOffice"><![CDATA["Test Reifen drehen" = "Dreht sich"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_207">
+		<origin>#node_204</origin>
+		<target>#node_205</target>
+		<guard markup="KnOffice"><![CDATA["Bremse betätigen" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_287">
+		<origin>#node_205</origin>
+		<target>#XX_286</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Schleift"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_288">
+		<origin>#node_205</origin>
+		<target>#XX_286</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Dreht sich"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_290">
+		<origin>#XX_286</origin>
+		<target>#node_289</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Bremsanlage Teilpruefung]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_292">
+		<origin>#XX_189</origin>
+		<target>#XX_291</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Blockiert"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_293">
+		<origin>#XX_291</origin>
+		<target>#node_127</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Bremsanlage Teilpruefung]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_295">
+		<origin>#XX_189</origin>
+		<target>#XX_294</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Schleift"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_296">
+		<origin>#XX_189</origin>
+		<target>#XX_294</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Dreht sich"]]></guard>
+		<routingPoint x="0.8" y="0.10752688172043011" />
+	</edge>
+
+	<edge fcid="#rule_298">
+		<origin>#XX_294</origin>
+		<target>#node_297</target>
+		<guard markup="KnOffice"><![CDATA[PROCESSED[Bremsanlage Teilpruefung]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_282">
+		<origin>#node_205</origin>
+		<target>#XX_294</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Blockiert"]]></guard>
+		<routingPoint x="0.6818181818181818" y="0" />
+		<routingPoint x="0.6818181818181818" y="0" />
+	</edge>
+
+	<edge fcid="#XX_306">
+		<origin>#XX_302</origin>
+		<target>#XX_301</target>
+		<guard markup="KnOffice"><![CDATA["Test Reifen drehen" = "Schleift"]]></guard>
+	</edge>
+
+	<edge fcid="#XX_307">
+		<origin>#XX_302</origin>
+		<target>#XX_301</target>
+		<guard markup="KnOffice"><![CDATA["Test Reifen drehen" = "Blockiert"]]></guard>
+	</edge>
+
+	<edge fcid="#XX_308">
+		<origin>#XX_301</origin>
+		<target>#XX_299</target>
+		<guard markup="KnOffice"><![CDATA["Bremse betätigen" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#XX_309">
+		<origin>#XX_302</origin>
+		<target>#XX_303</target>
+		<guard markup="KnOffice"><![CDATA["Test Reifen drehen" = "Dreht sich"]]></guard>
+	</edge>
+
+	<edge fcid="#XX_310">
+		<origin>#XX_303</origin>
+		<target>#XX_304</target>
+		<guard markup="KnOffice"><![CDATA["Bremse betätigen" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_311">
+		<origin>#XX_50</origin>
+		<target>#XX_302</target>
+		<guard markup="KnOffice"><![CDATA["Reifen drehen" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_315">
+		<origin>#XX_299</origin>
+		<target>#XX_312</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Blockiert"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_316">
+		<origin>#XX_299</origin>
+		<target>#XX_314</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Schleift"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_317">
+		<origin>#XX_299</origin>
+		<target>#XX_314</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Dreht sich"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_318">
+		<origin>#XX_304</origin>
+		<target>#XX_314</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Blockiert"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_319">
+		<origin>#XX_304</origin>
+		<target>#XX_313</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Schleift"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_320">
+		<origin>#XX_304</origin>
+		<target>#XX_313</target>
+		<guard markup="KnOffice"><![CDATA["Bremsstärke prüfen" = "Dreht sich"]]></guard>
+	</edge>
+
+</flowchart>
+
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_612190ab" name="Bremsanlage Teilpruefung" icon="sanduhr.gif" width="535" height="896" autostart="false" idCounter="42">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="79" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="49" top="81"></position>
+		<action markup="KnOffice"><![CDATA[Platzierung Felge]]></action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="266" top="81"></position>
+		<action markup="KnOffice"><![CDATA[Felge nicht zentriert = P7]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="50" top="157"></position>
+		<action markup="KnOffice"><![CDATA[Test Felge defekt]]></action>
+	</node>
+
+	<node fcid="#node_8">
+		<position left="39" top="232"></position>
+		<action markup="KnOffice"><![CDATA[Test Felge abgenutzt]]></action>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="51" top="321"></position>
+		<action markup="KnOffice"><![CDATA[Test Bowdenzug]]></action>
+	</node>
+
+	<node fcid="#node_10">
+		<position left="44" top="390"></position>
+		<action markup="KnOffice"><![CDATA[Betätigung Bremse]]></action>
+	</node>
+
+	<node fcid="#node_11">
+		<position left="33" top="474"></position>
+		<action markup="KnOffice"><![CDATA[Bewegung Bremsarme]]></action>
+	</node>
+
+	<node fcid="#node_13">
+		<position left="40" top="558"></position>
+		<action markup="KnOffice"><![CDATA[Bremse ausspannen]]></action>
+	</node>
+
+	<node fcid="#node_14">
+		<position left="20" top="644"></position>
+		<action markup="KnOffice"><![CDATA[Test Bremsbelag abgenutzt]]></action>
+	</node>
+
+	<node fcid="#node_15">
+		<position left="24" top="784"></position>
+		<action markup="KnOffice"><![CDATA[Ausrichtung Bremsbeläge]]></action>
+	</node>
+
+	<node fcid="#node_25">
+		<position left="311" top="232"></position>
+		<action markup="KnOffice"><![CDATA[Felge defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_26">
+		<position left="307" top="321"></position>
+		<action markup="KnOffice"><![CDATA["Bremsseil defekt" = P7]]></action>
+	</node>
+
+	<node fcid="#node_27">
+		<position left="307" top="467"></position>
+		<action markup="KnOffice"><![CDATA["Federdruck der Bremsarme unterschiedlich" = P7]]></action>
+	</node>
+
+	<node fcid="#node_29">
+		<position left="296" top="644"></position>
+		<action markup="KnOffice"><![CDATA[Bremsbelag abgenutzt = P7]]></action>
+	</node>
+
+	<node fcid="#node_30">
+		<position left="292" top="777"></position>
+		<action markup="KnOffice"><![CDATA["Bremsbelag nicht korrekt platziert" = P7]]></action>
+	</node>
+
+	<node fcid="#node_31">
+		<position left="43" top="714"></position>
+		<action markup="KnOffice"><![CDATA[Bremsbeläge Felge]]></action>
+	</node>
+
+	<node fcid="#node_41">
+		<position left="79" top="866"></position>
+		<exit>Exit</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_4">
+		<origin>#node_2</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_6">
+		<origin>#node_3</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice"><![CDATA["Platzierung Felge" = "Nicht mittig"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_3</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA["Platzierung Felge" = "Mittig"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_17">
+		<origin>#node_7</origin>
+		<target>#node_8</target>
+		<guard markup="KnOffice"><![CDATA["Test Felge defekt" = "Nicht verbogen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_18">
+		<origin>#node_8</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice"><![CDATA["Test Felge abgenutzt" = "Sichtbar"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_19">
+		<origin>#node_9</origin>
+		<target>#node_10</target>
+		<guard markup="KnOffice"><![CDATA["Test Bowdenzug" = "Nicht beschädigt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_20">
+		<origin>#node_10</origin>
+		<target>#node_11</target>
+		<guard markup="KnOffice"><![CDATA["Betätigung Bremse" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_23">
+		<origin>#node_13</origin>
+		<target>#node_14</target>
+		<guard markup="KnOffice"><![CDATA["Bremse ausspannen" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_24">
+		<origin>#node_14</origin>
+		<target>#node_31</target>
+		<guard markup="KnOffice"><![CDATA["Test Bremsbelag abgenutzt" = "Sichtbar"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_32">
+		<origin>#node_31</origin>
+		<target>#node_15</target>
+		<guard markup="KnOffice"><![CDATA["Bremsbeläge Felge" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_33">
+		<origin>#node_7</origin>
+		<target>#node_25</target>
+		<guard markup="KnOffice"><![CDATA["Test Felge defekt" = "Verbogen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_34">
+		<origin>#node_8</origin>
+		<target>#node_25</target>
+		<guard markup="KnOffice"><![CDATA["Test Felge abgenutzt" = "Nicht sichtbar"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_35">
+		<origin>#node_9</origin>
+		<target>#node_26</target>
+		<guard markup="KnOffice"><![CDATA["Test Bowdenzug" = "Beschädigt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_37">
+		<origin>#node_11</origin>
+		<target>#node_27</target>
+		<guard markup="KnOffice"><![CDATA["Bewegung Bremsarme" = "Bewegen sich nicht"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_39">
+		<origin>#node_14</origin>
+		<target>#node_29</target>
+		<guard markup="KnOffice"><![CDATA["Test Bremsbelag abgenutzt" = "Nicht sichtbar"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_40">
+		<origin>#node_15</origin>
+		<target>#node_30</target>
+		<guard markup="KnOffice"><![CDATA["Ausrichtung Bremsbeläge" = "Berühren Reifen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_42">
+		<origin>#node_15</origin>
+		<target>#node_41</target>
+		<guard markup="KnOffice"><![CDATA["Ausrichtung Bremsbeläge" = "An Felge ausgerichtet"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_21">
+		<origin>#node_11</origin>
+		<target>#node_13</target>
+		<guard markup="KnOffice"><![CDATA["Bewegung Bremsarme" = "Bewegen sich"]]></guard>
+	</edge>
+
+</flowchart>
+
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_ceb85a84" name="Lichtanlage" icon="sanduhr.gif" width="768" height="632" autostart="false" idCounter="40">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_3">
+		<position left="49" top="80"></position>
+		<action markup="KnOffice"><![CDATA[Lampenenergie]]></action>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="272" top="80"></position>
+		<action markup="KnOffice"><![CDATA[Reihenfolge Batterien]]></action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="244" top="218"></position>
+		<action markup="KnOffice"><![CDATA[Test Batteriewechsel bei Lampe]]></action>
+	</node>
+
+	<node fcid="#node_6">
+		<position left="24.5" top="359"></position>
+		<action markup="KnOffice"><![CDATA[Test Lampe mit Batterie]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="20" top="499"></position>
+		<action markup="KnOffice"><![CDATA[Test Dynamo mit Batterie]]></action>
+	</node>
+
+	<node fcid="#node_8">
+		<position left="280" top="359"></position>
+		<action markup="KnOffice"><![CDATA["Glühbirne durchgebrannt" = P7]]></action>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="49.5" top="581"></position>
+		<action markup="KnOffice"><![CDATA[Dynamo defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_11">
+		<position left="541" top="225"></position>
+		<action markup="KnOffice"><![CDATA[Batterie leer = P7]]></action>
+	</node>
+
+	<node fcid="#node_12">
+		<position left="540" top="73"></position>
+		<action markup="KnOffice"><![CDATA["Batterie in verkehrter Reihenfolge eingesetzt" = P7]]></action>
+	</node>
+
+	<node fcid="#node_24">
+		<position left="73" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_33">
+		<position left="288.5" top="149"></position>
+		<action markup="KnOffice"><![CDATA[Batteriewechsel]]></action>
+	</node>
+
+	<node fcid="#node_35">
+		<position left="38.5" top="294"></position>
+		<action markup="KnOffice"><![CDATA[Lampe mit Batterie]]></action>
+	</node>
+
+	<node fcid="#node_37">
+		<position left="34" top="429"></position>
+		<action markup="KnOffice"><![CDATA[Dynamo mit Batterie]]></action>
+	</node>
+
+	<node fcid="#node_39">
+		<position left="298.5" top="499"></position>
+		<action markup="KnOffice"><![CDATA[Kabel defekt = P7]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_14">
+		<origin>#node_3</origin>
+		<target>#node_4</target>
+		<guard markup="KnOffice"><![CDATA["Lampenenergie" = "Batterie"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_4</origin>
+		<target>#node_12</target>
+		<guard markup="KnOffice"><![CDATA["Reihenfolge Batterien" = "falsche Reihenfolge"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_17">
+		<origin>#node_5</origin>
+		<target>#node_11</target>
+		<guard markup="KnOffice"><![CDATA["Test Batteriewechsel bei Lampe" = "Leuchtet"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_18">
+		<origin>#node_5</origin>
+		<target>#node_8</target>
+		<guard markup="KnOffice"><![CDATA["Test Batteriewechsel bei Lampe" = "Leuchtet nicht"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_20">
+		<origin>#node_6</origin>
+		<target>#node_8</target>
+		<guard markup="KnOffice"><![CDATA["Test Lampe mit Batterie" = "Leuchtet nicht"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_23">
+		<origin>#node_7</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice"><![CDATA["Test Dynamo mit Batterie" = "Leuchtet"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_25">
+		<origin>#node_24</origin>
+		<target>#node_3</target>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_4</origin>
+		<target>#node_33</target>
+		<guard markup="KnOffice"><![CDATA["Reihenfolge Batterien" = "richtige Reihenfolge"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_34">
+		<origin>#node_33</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice"><![CDATA["Batteriewechsel" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_19">
+		<origin>#node_3</origin>
+		<target>#node_35</target>
+		<guard markup="KnOffice"><![CDATA["Lampenenergie" = "Dynamo"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_36">
+		<origin>#node_35</origin>
+		<target>#node_6</target>
+		<guard markup="KnOffice"><![CDATA["Lampe mit Batterie" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_21">
+		<origin>#node_6</origin>
+		<target>#node_37</target>
+		<guard markup="KnOffice"><![CDATA["Test Lampe mit Batterie" = "Leuchtet"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_38">
+		<origin>#node_37</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA["Dynamo mit Batterie" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_22">
+		<origin>#node_7</origin>
+		<target>#node_39</target>
+		<guard markup="KnOffice"><![CDATA["Test Dynamo mit Batterie" = "Leuchtet nicht"]]></guard>
+	</edge>
+
+</flowchart> 
+
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_cc74aa97" name="Gangschaltung" icon="sanduhr.gif" width="930" height="1214" autostart="false" idCounter="220">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_46">
+		<position left="361" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_49">
+		<position left="842" top="422"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_51">
+		<position left="336" top="63"></position>
+		<action markup="KnOffice"><![CDATA[Test Kettenlehre]]></action>
+	</node>
+
+	<node fcid="#node_55">
+		<position left="319" top="130"></position>
+		<action markup="KnOffice"><![CDATA[Test Kettenlehre Stahl]]></action>
+	</node>
+
+	<node fcid="#XX_62">
+		<position left="312" top="198"></position>
+		<action markup="KnOffice"><![CDATA[Kettenritzel verschlissen]]></action>
+	</node>
+
+	<node fcid="#node_73">
+		<position left="314" top="270"></position>
+		<action markup="KnOffice"><![CDATA[Kettenblatt verschlissen]]></action>
+	</node>
+
+	<node fcid="#node_99">
+		<position left="345" top="342"></position>
+		<action markup="KnOffice"><![CDATA[Art Schaltung]]></action>
+	</node>
+
+	<node fcid="#node_101">
+		<position left="568" top="342"></position>
+		<action markup="KnOffice"><![CDATA["4. Gang Nabenschaltung"]]></action>
+	</node>
+
+	<node fcid="#node_103">
+		<position left="550" top="405"></position>
+		<action markup="KnOffice"><![CDATA[Einstellungslinien Nabenschaltung]]></action>
+	</node>
+
+	<node fcid="#node_118">
+		<position left="579" top="130"></position>
+		<action markup="KnOffice"><![CDATA[Kette gelängt = P7]]></action>
+	</node>
+
+	<node fcid="#node_120">
+		<position left="577" top="198"></position>
+		<action markup="KnOffice"><![CDATA[Kettenritzel abgenutzt = P7]]></action>
+	</node>
+
+	<node fcid="#node_121">
+		<position left="578" top="270"></position>
+		<action markup="KnOffice"><![CDATA[Kettenblatt abgenutzt = P7]]></action>
+	</node>
+
+	<node fcid="#node_123">
+		<position left="560" top="493"></position>
+		<action markup="KnOffice"><![CDATA[Zugeinstellung nicht korrekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_131">
+		<position left="325" top="412"></position>
+		<action markup="KnOffice"><![CDATA[Schaltkäfig Position]]></action>
+	</node>
+
+	<node fcid="#node_132">
+		<position left="339" top="539"></position>
+		<action markup="KnOffice"><![CDATA[Vorne Schalten]]></action>
+	</node>
+
+	<node fcid="#node_134">
+		<position left="325" top="601"></position>
+		<action markup="KnOffice"><![CDATA[Test Vorne Schalten]]></action>
+	</node>
+
+	<node fcid="#node_136">
+		<position left="320" top="730"></position>
+		<action markup="KnOffice"><![CDATA[Gänge durchschalten]]></action>
+	</node>
+
+	<node fcid="#node_138">
+		<position left="312" top="808"></position>
+		<action markup="KnOffice"><![CDATA[Verhalten Kette schalten]]></action>
+	</node>
+
+	<node fcid="#node_148">
+		<position left="102" top="412"></position>
+		<action markup="KnOffice"><![CDATA[Schaltauge defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_151">
+		<position left="560" top="948"></position>
+		<action markup="KnOffice"><![CDATA["Schwenkbereich unter größtem Kettenritzel zu gering" = P7]]></action>
+	</node>
+
+	<node fcid="#node_153">
+		<position left="561" top="1082"></position>
+		<action markup="KnOffice"><![CDATA["Schwenkbereich unter kleinstem Kettenritzel zu hoch" = P7]]></action>
+	</node>
+
+	<node fcid="#XX_164">
+		<position left="20" top="948"></position>
+		<action markup="KnOffice"><![CDATA["Schwenkbereich unter größtem Kettenritzel zu hoch" = P7]]></action>
+	</node>
+
+	<node fcid="#XX_166">
+		<position left="21" top="1082"></position>
+		<action markup="KnOffice"><![CDATA["Schwenkbereich unter kleinstem Kettenritzel zu gering" = P7]]></action>
+	</node>
+
+	<node fcid="#XX_182">
+		<position left="320" top="878"></position>
+		<action markup="KnOffice"><![CDATA[Hinten kleinster Gang]]></action>
+	</node>
+
+	<node fcid="#XX_183">
+		<position left="310" top="955"></position>
+		<action markup="KnOffice"><![CDATA[Position obere Leitrolle L]]></action>
+	</node>
+
+	<node fcid="#XX_184">
+		<position left="324" top="1024"></position>
+		<action markup="KnOffice"><![CDATA[Hinten größter Gang]]></action>
+	</node>
+
+	<node fcid="#XX_185">
+		<position left="310" top="1089"></position>
+		<action markup="KnOffice"><![CDATA[Position obere Leitrolle H]]></action>
+	</node>
+
+	<node fcid="#node_206">
+		<position left="48" top="601"></position>
+		<action markup="KnOffice"><![CDATA[Umwerfer defekt = P7]]></action>
+	</node>
+
+	<node fcid="#XX_211">
+		<position left="630" top="818"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#XX_213">
+		<position left="594" top="601"></position>
+		<action markup="KnOffice"><![CDATA[Drehschalter defekt = P7]]></action>
+	</node>
+
+	<node fcid="#XX_214">
+		<position left="31" top="808"></position>
+		<action markup="KnOffice"><![CDATA[Drehschalter defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_215">
+		<position left="305" top="1163"></position>
+		<action markup="KnOffice"><![CDATA[Zugspannung nicht korrekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_217">
+		<position left="320" top="473"></position>
+		<action markup="KnOffice"><![CDATA[Hinten mittlerer Gang]]></action>
+	</node>
+
+	<node fcid="#node_219">
+		<position left="322" top="663"></position>
+		<action markup="KnOffice"><![CDATA[Vorne mittlerer Gang]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_57">
+		<origin>#node_51</origin>
+		<target>#node_55</target>
+		<guard markup="KnOffice"><![CDATA["Test Kettenlehre" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_76">
+		<origin>#XX_62</origin>
+		<target>#node_73</target>
+		<guard markup="KnOffice"><![CDATA["Kettenritzel verschlissen" = "Nicht verschlissen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_96">
+		<origin>#node_55</origin>
+		<target>#XX_62</target>
+		<guard markup="KnOffice"><![CDATA[NOT("Test Kettenlehre Stahl" = "100")]]></guard>
+		<routingPoint x="0.4166666666666667" y="0.0859375" />
+		<routingPoint x="0.4166666666666667" y="0.4140625" />
+	</edge>
+
+	<edge fcid="#rule_100">
+		<origin>#node_73</origin>
+		<target>#node_99</target>
+		<guard markup="KnOffice"><![CDATA["Kettenblatt verschlissen" = "Nicht verschlissen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_102">
+		<origin>#node_99</origin>
+		<target>#node_101</target>
+		<guard markup="KnOffice"><![CDATA["Art Schaltung" = "Nabenschaltung"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_104">
+		<origin>#node_101</origin>
+		<target>#node_103</target>
+		<guard markup="KnOffice"><![CDATA["4. Gang Nabenschaltung" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_94">
+		<origin>#node_55</origin>
+		<target>#node_118</target>
+		<guard markup="KnOffice"><![CDATA["Test Kettenlehre Stahl" = "100"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_91">
+		<origin>#XX_62</origin>
+		<target>#node_120</target>
+		<guard markup="KnOffice"><![CDATA["Kettenritzel verschlissen" = "Verschlissen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_122">
+		<origin>#node_73</origin>
+		<target>#node_121</target>
+		<guard markup="KnOffice"><![CDATA["Kettenblatt verschlissen" = "Verschlissen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_124">
+		<origin>#node_103</origin>
+		<target>#node_123</target>
+		<guard markup="KnOffice"><![CDATA["Einstellungslinien Nabenschaltung" = "Nicht aneinander"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_105">
+		<origin>#node_99</origin>
+		<target>#node_131</target>
+		<guard markup="KnOffice"><![CDATA["Art Schaltung" = "Kettenschaltung"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_135">
+		<origin>#node_132</origin>
+		<target>#node_134</target>
+		<guard markup="KnOffice"><![CDATA["Vorne Schalten" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_139">
+		<origin>#node_136</origin>
+		<target>#node_138</target>
+		<guard markup="KnOffice"><![CDATA["Gänge durchschalten" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_149">
+		<origin>#node_131</origin>
+		<target>#node_148</target>
+		<guard markup="KnOffice"><![CDATA["Schaltkäfig Position" = "Nicht parallel"]]></guard>
+	</edge>
+
+	<edge fcid="#XX_191">
+		<origin>#XX_182</origin>
+		<target>#XX_183</target>
+		<guard markup="KnOffice"><![CDATA["Hinten kleinster Gang" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#XX_192">
+		<origin>#XX_183</origin>
+		<target>#XX_184</target>
+		<guard markup="KnOffice"><![CDATA["Position obere Leitrolle L" = "direkt darunter"]]></guard>
+	</edge>
+
+	<edge fcid="#XX_193">
+		<origin>#XX_184</origin>
+		<target>#XX_185</target>
+		<guard markup="KnOffice"><![CDATA["Hinten größter Gang" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_199">
+		<origin>#node_138</origin>
+		<target>#XX_182</target>
+		<guard markup="KnOffice"><![CDATA["Verhalten Kette schalten" = "Springt nicht auf alle Ritzel"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_202">
+		<origin>#XX_183</origin>
+		<target>#node_151</target>
+		<guard markup="KnOffice"><![CDATA["Position obere Leitrolle L" = "weiter rechts"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_203">
+		<origin>#XX_185</origin>
+		<target>#node_153</target>
+		<guard markup="KnOffice"><![CDATA["Position obere Leitrolle H" = "weiter rechts"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_204">
+		<origin>#XX_183</origin>
+		<target>#XX_164</target>
+		<guard markup="KnOffice"><![CDATA["Position obere Leitrolle L" = "weiter links"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_205">
+		<origin>#XX_185</origin>
+		<target>#XX_166</target>
+		<guard markup="KnOffice"><![CDATA["Position obere Leitrolle H" = "weiter links"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_207">
+		<origin>#node_134</origin>
+		<target>#node_206</target>
+		<guard markup="KnOffice"><![CDATA["Test Vorne Schalten" = "Springt nicht auf alle Blätter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_212">
+		<origin>#node_138</origin>
+		<target>#XX_211</target>
+		<guard markup="KnOffice"><![CDATA["Verhalten Kette schalten" = "Springt auf alle Ritzel"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_210">
+		<origin>#node_134</origin>
+		<target>#XX_213</target>
+		<guard markup="KnOffice"><![CDATA["Test Vorne Schalten" = "Kette bewegt sich nicht"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_180">
+		<origin>#node_138</origin>
+		<target>#XX_214</target>
+		<guard markup="KnOffice"><![CDATA["Verhalten Kette schalten" = "Kette bewegt sich nicht"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_117">
+		<origin>#node_103</origin>
+		<target>#node_49</target>
+		<guard markup="KnOffice"><![CDATA["Einstellungslinien Nabenschaltung" = "Aneinander"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_201">
+		<origin>#XX_185</origin>
+		<target>#node_215</target>
+		<guard markup="KnOffice"><![CDATA["Position obere Leitrolle H" = "direkt darunter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_133">
+		<origin>#node_131</origin>
+		<target>#node_217</target>
+		<guard markup="KnOffice"><![CDATA["Schaltkäfig Position" = "Parallel"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_218">
+		<origin>#node_217</origin>
+		<target>#node_132</target>
+		<guard markup="KnOffice"><![CDATA["Hinten mittlerer Gang" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_137">
+		<origin>#node_134</origin>
+		<target>#node_219</target>
+		<guard markup="KnOffice"><![CDATA["Test Vorne Schalten" = "Springt auf alle Blätter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_220">
+		<origin>#node_219</origin>
+		<target>#node_136</target>
+		<guard markup="KnOffice"><![CDATA["Vorne mittlerer Gang" = "weiter"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_216">
+		<origin>#node_46</origin>
+		<target>#node_51</target>
+	</edge>
+
+</flowchart> 
+
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_32ae23ee" name="Reifen" icon="sanduhr.gif" width="841" height="581" autostart="false" idCounter="103">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_4">
+		<position left="292" top="172"></position>
+		<action markup="KnOffice"><![CDATA["Alterserscheinungen Mantel"]]></action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="338" top="81"></position>
+		<action markup="KnOffice"><![CDATA["Profil Mantel"]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="314" top="264"></position>
+		<action markup="KnOffice"><![CDATA["Fremdkörper Mantel"]]></action>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="323" top="358"></position>
+		<action markup="KnOffice"><![CDATA["Felge beschädigt"]]></action>
+	</node>
+
+	<node fcid="#node_10">
+		<position left="339" top="443"></position>
+		<action markup="KnOffice"><![CDATA[Felgenband]]></action>
+	</node>
+
+	<node fcid="#node_25">
+		<position left="38" top="358"></position>
+		<action markup="KnOffice"><![CDATA[Felge defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_26">
+		<position left="20" top="443"></position>
+		<action markup="KnOffice"><![CDATA[Felgenband defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_27">
+		<position left="620" top="443"></position>
+		<action markup="KnOffice"><![CDATA[Felgenband sitzt nicht korrekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_76">
+		<position left="34" top="81"></position>
+		<action markup="KnOffice"><![CDATA[Mantel defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_77">
+		<position left="34" top="264"></position>
+		<action markup="KnOffice"><![CDATA[Mantel defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_78">
+		<position left="34" top="172"></position>
+		<action markup="KnOffice"><![CDATA[Mantel defekt = P7]]></action>
+	</node>
+
+	<node fcid="#node_96">
+		<position left="353" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_100">
+		<position left="625" top="81"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Reifen Schlauch beschädigt(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_101">
+		<position left="625" top="172"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Reifen Schlauch beschädigt(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_102">
+		<position left="625" top="264"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Reifen Schlauch beschädigt(Start)]]]></action>
+	</node>
+
+	<node fcid="#node_103">
+		<position left="298" top="530"></position>
+		<action markup="KnOffice"><![CDATA[CALL[Reifen Schlauch beschädigt(Start)]]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_14">
+		<origin>#node_5</origin>
+		<target>#node_4</target>
+		<guard markup="KnOffice"><![CDATA["Profil Mantel" = "Profil nicht abgefahren"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_15">
+		<origin>#node_4</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA["Alterserscheinungen Mantel" = "Mantel keine Alterserscheinungen"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_16">
+		<origin>#node_7</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice"><![CDATA["Fremdkörper Mantel" = "keine Fremdkörper im Mantel"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_61">
+		<origin>#node_9</origin>
+		<target>#node_25</target>
+		<guard markup="KnOffice"><![CDATA["Felge beschädigt" = "Felge beschädigt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_62">
+		<origin>#node_10</origin>
+		<target>#node_26</target>
+		<guard markup="KnOffice"><![CDATA["Felgenband" = "Felgenband beschädigt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_63">
+		<origin>#node_10</origin>
+		<target>#node_27</target>
+		<guard markup="KnOffice"><![CDATA["Felgenband" = "Felgenband sitzt nicht richtig"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_74">
+		<origin>#node_9</origin>
+		<target>#node_10</target>
+		<guard markup="KnOffice"><![CDATA["Felge beschädigt" = "Felge nicht beschädigt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_28">
+		<origin>#node_5</origin>
+		<target>#node_76</target>
+		<guard markup="KnOffice"><![CDATA["Profil Mantel" = "Profil abgefahren"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_50">
+		<origin>#node_7</origin>
+		<target>#node_77</target>
+		<guard markup="KnOffice"><![CDATA["Fremdkörper Mantel" = "Fremdkörper im Mantel"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_33">
+		<origin>#node_4</origin>
+		<target>#node_78</target>
+		<guard markup="KnOffice"><![CDATA["Alterserscheinungen Mantel" = "Mantel rissig oder brüchig"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_98">
+		<origin>#node_96</origin>
+		<target>#node_5</target>
+	</edge>
+
+	<edge fcid="#rule_29">
+		<origin>#node_5</origin>
+		<target>#node_100</target>
+		<guard markup="KnOffice"><![CDATA["Profil Mantel" = "Profil abgefahren"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_37">
+		<origin>#node_4</origin>
+		<target>#node_101</target>
+		<guard markup="KnOffice"><![CDATA["Alterserscheinungen Mantel" = "Mantel rissig oder brüchig"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_51">
+		<origin>#node_7</origin>
+		<target>#node_102</target>
+		<guard markup="KnOffice"><![CDATA["Fremdkörper Mantel" = "Fremdkörper im Mantel"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_60">
+		<origin>#node_10</origin>
+		<target>#node_103</target>
+		<guard markup="KnOffice"><![CDATA["Felgenband" = "Felgenband ok"]]></guard>
+	</edge>
+
+</flowchart> 
+
+%
+
+%%DiaFlux
+<flowchart fcid="flow_627a9dd7" name="Reifen Schlauch beschädigt" icon="sanduhr.gif" width="419" height="274" autostart="false" idCounter="11">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="63" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="20" top="159"></position>
+		<action markup="KnOffice"><![CDATA[Test Schlauch geflickt]]></action>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="23" top="74"></position>
+		<action markup="KnOffice"><![CDATA[Schlauch beschädigt]]></action>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="63" top="244"></position>
+		<exit>Exit</exit>
+	</node>
+
+	<node fcid="#node_8">
+		<position left="279" top="159"></position>
+		<action markup="KnOffice"><![CDATA[Schlauch defekt = P7]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_5">
+		<origin>#node_2</origin>
+		<target>#node_4</target>
+	</edge>
+
+	<edge fcid="#rule_6">
+		<origin>#node_4</origin>
+		<target>#node_3</target>
+		<guard markup="KnOffice"><![CDATA["Schlauch beschädigt" = "Schlauch nicht beschädigt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_9">
+		<origin>#node_3</origin>
+		<target>#node_8</target>
+		<guard markup="KnOffice"><![CDATA["Test Schlauch geflickt" = "Schlauch geflickt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_4</origin>
+		<target>#node_8</target>
+		<guard markup="KnOffice"><![CDATA["Schlauch beschädigt" = "Schlauch beschädigt"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_11">
+		<origin>#node_3</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA["Test Schlauch geflickt" = "Schlauch nicht geflickt"]]></guard>
+	</edge>
+
+</flowchart> 
+
+%
+
+
+!! Fragen
+
+%%Question 
+  Einstieg #1
+    - Fehlerbild [oc]
+    -- Lichtanlage defekt
+    -- Bremsanlage defekt
+    -- Reifen defekt
+    -- Gangschaltung defekt
+%
+
+
+! Licht
+
+%%Question 
+  "Lichtanlage prüfen"
+    - Lampenenergie ~ "Wie wird die Lampe betrieben?" [oc]
+    -- Batterie
+    -- Dynamo 
+    - "Reihenfolge Batterien" ~ "Sind die Batterien in der richtigen Reihenfolge eingesetzt?" [oc]
+    -- "richtige Reihenfolge"
+    -- "falsche Reihenfolge"
+    - "Batteriewechsel" ~ "Wechsele die Batterien." [oc]
+    -- weiter
+    - "Test Batteriewechsel bei Lampe" ~ "Leuchtet die Lampe nach dem Wechsel?" [oc]
+    -- Leuchtet
+    -- Leuchtet nicht
+    - "Lampe mit Batterie" ~ "Schließe an die Lampe direkt eine Batterie an" [oc]
+    -- weiter 
+    - "Test Lampe mit Batterie" ~ "Leuchtet die Lampe nun?" [oc]   
+    -- Leuchtet
+    -- Leuchtet nicht
+    - "Dynamo mit Batterie" ~ "Schließe an den Dynamo direkt eine Batterie an" [oc]
+    -- weiter
+    - "Test Dynamo mit Batterie" ~ "Leuchtet die Lampe nun?" [oc]
+    -- Leuchtet
+    -- Leuchtet nicht
+
+%
+
+
+
+! Bremse
+
+%%Question 
+  
+  Bremsanlage prüfen
+   - Bremsenart ~ "Welche Art von Bremse hat das Fahrrad?" [oc]
+   -- Felgenbremse
+   -- Scheibenbremse
+   - Platzierung Felge ~ "Ist die Felge mittig im Rahmen platziert?" [oc]
+   -- Mittig
+   -- Nicht mittig
+   - "Test Felge defekt" ~ "Ist die Felge verbogen?" [oc]
+   -- Nicht verbogen
+   -- Verbogen 
+   - "Test Felge abgenutzt" ~ "Ist die Verschleißmarkierung der Felge auf beiden Seiten sichtbar?" [oc]
+   -- "Sichtbar"
+   -- "Nicht sichtbar"
+   - Test Bowdenzug ~ "Ist das Bremsseil beschädigt?" [oc]
+   -- Nicht beschädigt
+   -- Beschädigt
+   - Position Bremsbeläge ~ "Sind beide Bremsbeläge gleich weit von der Felge entfernt?" [oc]
+   -- Gleich
+   -- Unterschiedlich
+   - Bremse ausspannen ~ "Spanne die Bremse aus." [oc]
+   -- weiter
+   - "Test Bremsbelag abgenutzt" ~ "Sind die Verschleißmarkierungen beider Bremsklötze sichtbar?" [oc]
+   -- "Sichtbar"
+   -- "Nicht sichtbar"
+   - Bremsbeläge Felge ~ "Halte die Bremsarme an die Felge, sodass die Bremsklötze die Felge berühren." [oc]
+   -- weiter 
+   - Ausrichtung Bremsbeläge ~ "Sind die Bremsklötze an der Felge ausgerichtet?" [oc]
+   -- An Felge ausgerichtet
+   -- Berühren Reifen
+   - Betätigung Bremse ~ "Betätige die Bremse. Beobachte dabei die Bremsarme." [oc]
+   -- weiter
+   - Bewegung Bremsarme ~ "Bewegen sich beide Bremsarme?" [oc]
+   -- "Bewegen sich"
+   -- Bewegen sich nicht
+   - "Reifen drehen" ~ "Hebe das Vorderrad an und drehe den Reifen. Beobachte dabei, ob sich der Reifen schleiffrei dreht." [oc]
+   -- weiter
+   - "Bremse betätigen" ~ "Hebe das Vorderrad an und drehe den Reifen. Betätige anschließend die Bremse." [oc]
+   -- weiter
+   - "Bremsstärke prüfen" ~ "Blockiert die Bremse den Reifen?" [oc]
+   -- "Blockiert"
+   -- "Schleift"
+   -- "Dreht sich"
+   - "Test Reifen drehen" ~ "Hat sich der Reifen schleiffrei drehen lassen?" [oc]
+   -- "Dreht sich"
+   -- "Schleift"
+   -- "Blockiert"
+%
+
+%%Property 
+"Bremse ausspannen".description = "Drücke beide Bremsarme zusammen und hebe das Bremsseil aus der Kassette."
+%
+
+
+! Reifen
+
+%%Question 
+
+  Reifen prüfen
+   - "Alterserscheinungen Mantel" ~"Zeigt der Mantel Alterserscheinungen?" [oc]
+   -- "Mantel keine Alterserscheinungen" 
+   -- "Mantel rissig oder brüchig"
+   - "Profil Mantel" ~"Ist das Profil vom Mantel abgefahren?" [oc]
+   -- "Profil nicht abgefahren"
+   -- "Profil abgefahren"
+   - "Test Schlauch geflickt" ~"Wurde der Schlauch schon einmal geflickt?" [oc]
+   -- "Schlauch nicht geflickt"
+   -- "Schlauch geflickt"
+   - "Fremdkörper Mantel" ~"Sind Fremdkörper im Mantel?" [oc]
+   -- "keine Fremdkörper im Mantel"
+   -- "Fremdkörper im Mantel"
+   - "Schlauch beschädigt" ~"Ist der Schlauch beschädigt?" [oc]
+   -- "Schlauch nicht beschädigt"
+   -- "Schlauch beschädigt"
+   - "Felge beschädigt" ~"Ist die Felge beschädigt?" [oc]
+   -- "Felge nicht beschädigt" 
+   -- "Felge beschädigt"
+   - Felgenband ~"Bitte überprüfe das Felgendband." [oc]
+   -- Felgenband ok
+   -- "Felgenband sitzt nicht richtig"
+   -- Felgenband beschädigt
+   
+%
+
+
+
+! Gangschaltung
+
+%%Question 
+ 
+  Gangschaltung prüfen
+   - "Material Ritzel" ~ "Aus welchem Material bestehen die Kettenkränze?" [oc]
+   -- "Stahl"
+   -- "Aluminium"
+   - "Test Kettenlehre" ~ "Überprüfe an mehreren Stellen die Längung der Kette mithilfe einer Kettenlehre." [oc]
+   -- "weiter"
+   - "Test Kettenlehre Stahl" ~ "Bis zu welcher Markierung taucht die Kettenlehre ein?" [oc]
+   -- unter 50
+   -- 50
+   -- 75
+   -- 100
+   - "Test Kettenlehre Aluminum" ~ "Bis zu welcher Markierung taucht die Kettenlehre ein?" [oc]
+   -- unter 50
+   -- 50
+   -- 75
+   -- 100
+   - "Kettenritzel verschlissen" ~ "Sind die Kettenritzel verschlissen?" [oc]
+   -- "Nicht verschlissen"
+   -- "Verschlissen"
+   - "Kettenblatt verschlissen" ~" Sind die Kettenblätter verschlissen?" [oc]
+   -- "Nicht verschlissen"
+   -- "Verschlissen"
+   
+   - "Art Schaltung" ~ "Welche Art von Schaltung hat das Fahrrad?" [oc]
+   -- Kettenschaltung
+   -- Nabenschaltung
+ 
+   - "4. Gang Nabenschaltung" ~ "Lege den 4. Gang am Fahrrad ein." [oc]
+   -- weiter
+   - "Einstellungslinien Nabenschaltung" ~ "Wie liegen die Einstellungslinien der Schalteinheithalterung und der Rolle zueinander?" [oc]
+   -- "Aneinander"
+   -- "Nicht aneinander"
+   
+   - "Schaltkäfig Position" ~ "Ist der Schaltkäfig parallel zu den Ritzeln?" [oc]
+   -- "Parallel"
+   -- "Nicht parallel"
+   - "Hinten mittlerer Gang" ~ "Schalte hinten in einen mittleren Gang." [oc]
+   -- weiter
+   - "Vorne Schalten" ~ "Schalte die vorderen Gänge langsam rauf und runter. Beobachte dabei die Kette." [oc]
+   -- weiter
+   - "Test Vorne Schalten" ~ "Springt die Kette auf alle Kettenblätter?" [oc]
+   -- Springt auf alle Blätter
+   -- Springt nicht auf alle Blätter
+   -- Kette bewegt sich nicht
+   - "Vorne mittlerer Gang" ~ "Schalte vorne in einen mittleren Gang." [oc]
+   -- weiter
+   - "Gänge durchschalten" ~ "Schalte die hinteren Gänge langsam rauf und runter. Beobachte dabei wieder die Kette." [oc]
+   -- weiter  
+   - "Verhalten Kette schalten" ~ "Springt die Kette hinten auf alle Ritzel?" [oc]
+   -- Springt auf alle Ritzel
+   -- Springt nicht auf alle Ritzel
+   -- Kette bewegt sich nicht
+   - "Hinten kleinster Gang" ~ "Schalte hinten in den niedrigsten Gang." [oc]
+   -- weiter
+   - "Position obere Leitrolle L" ~ "Wie liegt die obere Leitrolle zu dem größten Ritzel von hinten betrachtet?" [oc]
+   -- "direkt darunter"
+   -- "weiter links"
+   -- "weiter rechts"
+   - "Hinten größter Gang" ~ "Schalte hinten in den höchsten Gang." [oc]
+   -- weiter
+   - "Position obere Leitrolle H" ~ " Wie liegt die obere Leitrolle zu dem kleinsten Ritzel von hinten betrachtet?" [oc]
+   -- "direkt darunter"
+   -- "weiter links"
+   -- "weiter rechts"
+   
+   
+   - "Kette auf Ritzel legen" ~ "Lege die Kette hinten auf das größte Ritzel und vorne auf das kleinste Ritzel." [oc]
+   -- weiter  
+   - "Schaltwerk Position" ~ "Wie steht die Kette beim Schaltwerk?" [oc]
+   -- "90 Grad nach unten"
+   -- "Nach vorne"
+   -- "Nach hinten"
+
+   - "Art Schalter" ~ "Welche Art von Schalter hat das Fahrrad?" [oc]
+   -- "Drehschalter"
+   -- "Schalthebel"
+%
+
+%%Property 
+"Test Kettenlehre".description = "Lege dabei die Kettenlehre mit der Einbuchtung am Gelenk eines Kettenglieds an und drehe sie um diesen Auflagepunkt. Beobachte, wie weit die Nase in die Kette eintaucht."
+%
+
+
+!! Lösungen
+
+%%Solution 
+  Licht defekt
+  - "Glühbirne durchgebrannt" ~ "Bitte ersetze die Glühbirne durch eine neue."
+  - Dynamo defekt ~ "Bitte Dynamo ersetzen."
+  - "Kabel defekt" ~ "Bitte Kabel ersetzen."
+  - Batterie leer ~ "Bitte Batterien laden oder ersetzen."
+  - "Batterie in verkehrter Reihenfolge eingesetzt" ~"Bitte Batterie in korrekter Richtung einsetzen."
+  
+  Reifen defekt
+  - "Mantel defekt" ~"Bitte Mantel ersetzen."
+  - Schlauch defekt ~ "Bitte Schlauch ersetzen."
+  - Felgenband defekt ~ "Bitte Felgenband ersetzen."
+  - Felgenband sitzt nicht korrekt ~"Bitte Felgenband korrekt auf Felge legen."
+  
+  Bremsanlage defekt
+  - "Bremsseil defekt" ~"Bitte Bremsseil ersetzen."
+  - Bremse zu stark eingestellt ~ "Bitte Zugspannung vom Bremshebel verringern."
+  - Bremse zu schwach eingestellt ~ "Bitte Zugspannung vom Bremshebel erhöhen."
+  - "Bremsbeläge asymmetrisch platziert" ~ "Bitte Bremsbeläge symmetrisch von der Felge weg platzieren."
+  - Felge nicht zentriert ~ "Bitte Felge mittig zwischen Reifenhalterung platzieren."
+  - "Felge defekt"~ "Bitte Felge ersetzen."
+  - "Federdruck der Bremsarme unterschiedlich" ~ "Bitte Federdruck der Bremsarme gleichmäßig einstellen."
+  - Bremsbelag abgenutzt ~ "Bitte Bremsbelag ersetzen."
+  - "Bremsbelag nicht korrekt platziert" ~ "Bitte Bremsbelag an Felge ausrichten."
+  - falsches Material der Bremse ~ "Bitte Bremsbelag mit korrektem Material einsetzen."
+  
+  Gangschaltung defekt
+  - Kette gelängt ~ "Bitte Kette ersetzen."
+  - Kettenspannung zu gering ~ "Bitte Kettenspannung erhöhen."
+  - Kettenspannung zu groß ~ "Bitte Kettenspannung verringern."
+  - Kettenritzel abgenutzt ~ "Bitte Kettenritzel ersetzen."
+  - Kettenblatt abgenutzt ~ "Bitte Kettenblatt ersetzen."
+  - Schaltauge defekt ~ "Bitte Schaltauge ersetzen."
+  - Schalthebel defekt ~ "Bitte Schalthebel ersetzen."
+  - Zugeinstellung nicht korrekt ~ "Bitte Zugeinstellung der Nabenschaltung korrigieren."
+  - Drehschalter defekt ~ "Bitte Drehschalter ersetzen."
+  - Zugspannung zu gering ~ "Bitte Zugspannung des Schalters erhöhen."
+  - Zugspannung zu groß ~ "Bitte Zugspannung des Schalters verringern."
+  - Zugspannung nicht korrekt ~ "Bitte Zugspannung des Schalters korrigieren."
+  - Freilauf defekt ~ "Bitte Freilauf ersetzen."
+  - Umwerfer defekt ~ "Bitte Umwerfer ersetzen."
+  - "Schwenkbereich unter kleinstem Kettenritzel zu gering" ~ "Bitte Schwenkbereich unter kleinstem Kettenritzel erhöhen."
+  - "Schwenkbereich unter kleinstem Kettenritzel zu hoch" ~ "Bitte Schwenkbereich unter kleinstem Kettenritzel verringern."
+  - "Schwenkbereich unter größtem Kettenritzel zu gering" ~ "Bitte Schwenkbereich unter größtem Kettenritzel erhöhen."
+  - "Schwenkbereich unter größtem Kettenritzel zu hoch" ~ "Bitte Schwenkbereich unter größtem Kettenritzel verringern."
+
+%

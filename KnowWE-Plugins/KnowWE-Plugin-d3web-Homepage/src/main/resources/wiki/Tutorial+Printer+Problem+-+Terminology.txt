@@ -1,0 +1,178 @@
+[{TableOfContents title='Contents - Terminology' numbered='true'}]
+
+
+!!! Solutions
+
+We define the competence of the knowledge base by enumerating all possible solutions, i.e., faults, for the printer problem. 
+The derivable solutions are as follows:
+
+# Connection problems
+## Broken cable
+## Cable not connected
+## No Wifi connection
+## No power supply
+# Printing quality problems
+## Empty toner
+## Dirty toner
+
+We see, that we have structured the solutions into meaningful groups, i.e. ''connection problems'' and ''printing quality problems''. 
+More groups can be added easily.
+The structuring of solutions is especially useful when the knowledge base and the number of solutions, respectively, increases.
+
+The d3web markup of the solution hierarchy is as follows:
+
+{{{
+%%Solution 
+Connection problems
+- Broken cable
+- Cable not connected
+- No Wifi connection
+- No power supply
+Printing quality problems
+- Empty toner
+- Dirty toner
+No solution found  
+%
+}}}
+
+Please note, that we added the solution ''No solution found'' for the case, that the system cannot derive an appropriate solution. 
+When inserting the markup into the wiki article, the following section is shown.
+
+%%Solution 
+Connection problems
+- Broken cable
+- Cable not connected
+- No Wifi connection
+- No power supply
+Printing quality problems
+- Empty toner
+- Dirty toner
+No solution found   
+%
+
+!!! Questions
+
+To derive the solutions we need to pose appropriate questions to the user. 
+Since, we expect many questions to be included in the knowledge base, we group the questions into meaningful questionnaires.
+
+First, we define an initial questionnaire that tries to identify the problem area of the user and use the following markup:
+{{{
+%%Question 
+Problem specification #1
+- Please specify your problem [oc]
+-- Printer does not print
+-- Printing with bad quality
+-- No else
+%
+}}}
+
+The annotation ''#1'' specifies, that the questionnaire ''Problem specification'' is posed as the initial questionnaire in a dialog session with the user.
+When inserting the markup into the article, the questions are created.
+
+%%Question 
+Problem specification #1
+- Please specify your problem [oc]
+-- Printer does not print
+-- Printing with bad quality
+-- No else
+%
+
+The annotation ''~[oc]'' specifies a corresponding one-choice question. 
+The possible values/answers of this question are printed in separate lines below the question.
+Each value/answer should be indented by an increased dash.
+We see, that the three answers ''Printer does not print'', ''Printing with bad quality'', and ''No else'' has been defined for the one-choice question ''Please specify your problem''.
+
+Each problem area corresponds to a group of solutions.
+That way, we define a questionnaire for each problem area in order to differentiate the solutions within the problem area.
+
+!! Problem Area: Connection Problems 
+
+The questions of the problem area ''connection problems'' are as follows:
+
+%%Question 
+Connection Questions 
+- Please check the power supply of the printer [oc]
+-- Printer is connected and power is on
+-- Printer is not connected or power is off
+- How is the printer connected to your computer [oc]
+-- Connected by cable
+-- Connected by Wifi
+Printer with cable connection
+- Is the cable plugged into the printer and the computer [yn]
+-- Yes
+-- No
+- Please exchange the cable and try to print again [oc]
+-- "Still not printing"
+-- Now it works
+%
+
+We see, that a number of one-choice questions (~[oc]) are defined. 
+Additionally, a yes/no question is defined (~[yn]), which is similar to one-choice questions, but has the predefined answers ''yes'' and ''no''.
+
+!! Problem Area: Quality Problems
+
+The questions of the problem area ''quality problems'' are as follows:
+
+%%Question 
+Quality Questions
+- Dirty housing [yn]
+- Toner capacity  [num] {pages} (0 10000000)
+- Paper count  [num] {pages} (0 10000000)
+-- Current capacity ratio [num] <abstract>
+-- Toner usage evaluation [oc] <abstract>
+--- normal
+--- low 
+%
+
+In addition to yes/no questions and one-choice questions we defined some numerical questions (~[num]), that allow the input of numerical values. The annotation ''(0 10000000)'' defines the value range of the particular question, i.e., numbers from 0 to 10000000 can be entered, whereas ''{pages}'' defines the unit as an arbitrary string, i.e., the number of ''pages'' is queried to the user.
+The annotation ''<abstract>'' specifies a abstraction question.
+For such a question the values are not entered externally, e.g., by a user in a dialog, but the values are computed internally by the knowledge base.
+
+For the internal computation of the abstraction questions we define the following rules, by the {{Rule}} markup.
+In the following, we define a rule computing the ratio between the expected toner life (''Toner capacity'') and the current use (''Paper count''). 
+Two further rules derive a ''normal'' or a ''low'' toner usage by using the derived value of the abstraction question ''Current capacity ratio'':
+
+{{{
+%%Rule
+IF   Toner capacity = KNOWN AND Paper count > 0
+THEN Current capacity ratio = (Toner capacity / Paper count)
+
+IF   Current capacity ratio >= 1.1
+THEN Toner usage evaluation = normal
+
+IF   Current capacity ratio < 1.1
+THEN Toner usage evaluation = low
+%
+}}}
+
+When inserted into the wiki article, the rules markup looks as follows:
+
+%%Rule
+IF   Toner capacity = KNOWN AND Paper count > 0
+THEN Current capacity ratio = (Toner capacity / Paper count)
+
+IF   Current capacity ratio >= 1.1
+THEN Toner usage evaluation = normal
+
+IF   Current capacity ratio < 1.1
+THEN Toner usage evaluation = low
+%
+
+!! Human-friendly Prompts of Questions/Solutions
+
+It is reasonable to define short names for questions and solutions because they are often used in the markups.
+When used in the dialog, however, longer verbalizations may be useful.
+You can define a longer prompt for questions/solutions by using the {{Property}} markup.
+Moreover, the prompts can be internationalized.
+
+%%Property 
+  Dirty housing.prompt = When opening the housing of the printer: Is there some dirt at the toner and the surrounding?
+  Toner capacity.prompt = Number of pages usually printed with one toner
+  Paper count.prompt = Number of pages printed with the current toner
+  Paper count.prompt.de = Anzahl der mit den aktuellen Toner gedruckten Seiten
+%
+
+%%Package Printer_Demo
+%%tags
+printerProblems tutorial
+%

@@ -1,0 +1,11 @@
+!! Getting Admin rights in a (local) KnowWE installation
+
+Take the two files attached to this page and copy them into your wiki-sources folder (right with all the txt-files). Then (re-)start the wiki.
+The admin account is:
+
+__User__: knowweadmin \\
+__password__: knowwed3web
+
+%%tags
+howto
+%

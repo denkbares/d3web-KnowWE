@@ -1,0 +1,278 @@
+[{Image src='Dean-portrait.jpg' width='150' align='right' caption='James Dean: License CreativeCommons by-sa-2.0'}]
+
+
+!!! James Dean Movies
+
+The following introduction into RDF/SPARQL was inspired by an example taken from the book:
+
+* Dean Allemang and James Hendler: [Semantic Web for the Working Ontologist: Effective Modeling in RDFS and OWL|http://workingontologist.org/], Morgan Kaufmann, 2 edition, 2011, Chapter 5: Querying the Semantic Web - SPARQL
+
+We slightly modified some notations to be conform with the notations of KnowWE.
+
+The used markups for the definition of the ontology can be only seen in the EDIT mode of this wiki page.
+Thus, when you want to understand how the definitions work, please move to the EDIT mode or choose "More/View Page Source".
+
+Photo of James Dean: License [CreativeCommons by-sa-2.0|http://commons.wikimedia.org/wiki/Commons:Licensing] / find the original file [here|http://commons.wikimedia.org/wiki/File:Dean-portrait.jpg?uselang=en].
+
+
+!!! Defining the knowledge base and package
+
+We first need to define the namespace, where all elements of the James Dean knowledge base should be located, i.e., {{jamesDeanMovies}}.
+
+%%Package jamesDeanMovies
+
+Then, we define the knowledge base itself, giving it the namespace/package it should use.
+
+
+!Knowledge base / Ontology
+
+%%Ontology 
+  @uses: jamesDeanMovies
+%
+
+
+!!! Defining a schema
+
+To connect some RDF instances properly in KnowWE, we first need to define some classes and their properties.
+The classes can be also defined separately and on different wiki articles.
+
+Classes of the James Dean demo:
+
+%%Class 
+ Actor
+ Director
+ Movie
+ Woman
+ Man
+%
+
+Some properties to represent who played in which movie and who directed the movies:
+
+%%ObjectProperty 
+playedIn 
+  @domain: Actor
+  @range: Movie
+%
+
+%%ObjectProperty 
+directedBy 
+  @domain: Movie
+  @range: Director
+%
+
+
+!!! Defining some characters
+
+We first define some ontology instances in RDF.
+
+
+! People and Movies
+
+Mr. Dean himself:
+
+%%Individual 
+  JamesDean
+%
+
+The directors of the Dean movies:
+
+%%Individual
+  GeorgeStevens
+  FredGuiol
+  EliaKazan
+  NicholasRay
+%
+
+And some actresses of Dean movies:
+
+%%Individual
+  AnnDoran 
+  ElizabethTaylor 
+  CarrollBaker 
+  JoVanFleet
+  JulieHarris 
+  MercedesMcCambridge 
+  NatalieWood  
+%
+
+And now the three movies of James Dean:
+
+%%Individual 
+  Giant
+  EastOfEden
+  RebelWithoutaCause
+%
+
+
+! Relations to connect the instances
+
+We now connect the instances defined above by using the turtle markup.
+When the subject and the predicate of two triples is equal, the you can simply separate the differing objects by commas. See, the {{playedIn}} relation for instance.
+
+%%Turtle 
+  JamesDean 
+     playedIn Giant, EastOfEden, RebelWithoutaCause;
+     rdf:type Man;
+%
+
+%%Turtle 
+  AnnDoran 
+     playedIn RebelWithoutaCause;
+     rdf:type Woman;
+%
+
+%%Turtle 
+  ElizabethTaylor 
+     playedIn Giant;
+     rdf:type Woman;
+%
+
+%%Turtle 
+  CarrollBaker 
+     playedIn Giant;
+     rdf:type Woman;
+%
+
+%%Turtle 
+  JoVanFleet 
+     playedIn EastOfEden;
+     rdf:type Woman;
+%
+
+%%Turtle 
+  JulieHarris 
+     playedIn EastOfEden;
+     rdf:type Woman;
+%
+
+%%Turtle 
+  MercedesMcCambridge 
+     playedIn Giant;
+     rdf:type Woman;
+%
+
+%%Turtle 
+  NatalieWood  
+     playedIn RebelWithoutaCause;
+     rdf:type Woman;  
+%
+
+%%Turtle 
+  Giant 
+     directedBy GeorgeStevens, FredGuiol;
+%
+
+%%Turtle 
+  EastOfEden 
+     directedBy EliaKazan;
+%
+
+%%Turtle 
+  RebelWithoutaCause 
+     directedBy NicholasRay;
+%
+
+
+!!! Some first queries
+
+We now try to retrieve some information, that we before represented as triples.
+Lets see the actresses that played together with James Dean in a movie.
+We use the {{NOT IN}} filter to omitt the appearance of James Dean himself in the result set.
+When the result set consists of more than one element, the result is displayed as a table.
+
+%%Sparql 
+  SELECT ?actress ?movie
+  WHERE {
+    lns:JamesDean lns:playedIn ?movie.
+    ?actress lns:playedIn ?movie.
+    FILTER (?actress NOT IN (lns:JamesDean)).
+  }
+%
+
+Lets see, what directors worked in movies where James Dean played in.
+When the result set consists of one element, the result is displayed as a list of the element values.
+
+%%Sparql 
+  SELECT ?who
+  WHERE {
+     lns:JamesDean lns:playedIn   ?what .
+     ?what         lns:directedBy ?who .
+  }
+%
+
+
+!!! Using labels for a user-friendly appearance
+
+By now we only have seen the names of the actual instances.
+In RDF it is also possible to define (language dependent) labels for instances by the property {{rdfs:label}}.
+Please note, that we use general labels for actors and directors, but language dependent labels for the names of movies.
+
+%%Turtle 
+  JamesDean
+   rdfs:label 'James Dean';
+%
+
+%%Turtle 
+  AnnDoran
+   rdfs:label 'Ann Doran';
+%
+
+%%Turtle 
+  ElizabethTaylor
+   rdfs:label 'Elizabeth Taylor';
+%
+
+%%Turtle 
+  CarrollBaker
+   rdfs:label 'Carroll Baker';
+%
+
+%%Turtle 
+  JoVanFleet
+   rdfs:label 'JoVan Fleet';
+%
+
+%%Turtle 
+  JulieHarris
+   rdfs:label 'Julie Harris';
+%
+
+%%Turtle 
+  MercedesMcCambridge
+   rdfs:label 'Mercedes McCambridge';
+%
+
+%%Turtle 
+  NatalieWood 
+   rdfs:label 'Natalie Wood ';
+%
+
+%%Turtle 
+  Giant
+   rdfs:label 'Giant'@en;
+   rdfs:label 'Giganten'@de;
+%
+
+%%Turtle 
+  EastOfEden
+   rdfs:label 'East Of Eden'@en;
+   rdfs:label 'Jenseits von Eden'@de;
+%
+
+%%Turtle 
+  RebelWithoutaCause
+   rdfs:label 'Rebel Without a Cause'@en;
+   rdfs:label 'Denn sie wissen nicht, was sie tun'@de;
+%
+
+We are now able to query the RDF store with the labels, for instance, query all actors and the movies (in english language) they played in.
+
+%%Sparql 
+  SELECT ?actorLabel ?movieLabel
+  WHERE {
+    ?actor lns:playedIn ?movie.
+    ?actor rdfs:label   ?actorLabel.
+    ?movie rdfs:label   ?movieLabel.
+    FILTER langMatches( lang(?movieLabel), "en").
+  } ORDER BY ?actorLabel
+%

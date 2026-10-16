@@ -1,0 +1,113 @@
+%%(padding: 0 1em; width: 45%; margin-right: 1em; float:left;border:1px solid #ddd; text-align:justify;)
+
+
+!!! Abstract (English)
+
+This article reports some practical experiences with a __migration__-project, exporting a semafora/ontoprise __SemanticGuide__ knowledge base __into d3web KnowWE__ format, thus creating a diagnostic wiki. The migration process runs fully automized and the resulting knowledge base contains all original information. The knowledge can be viewed and edited in KnowWE or executed on any d3web runtime application, e.g. on enterprise servers or mobile devices.
+
+The migration process has been evaluated using a "real-world" diagnostic system. The knowledge base has been created by a customer for on-site usage, __diagnosing technical faults__ in "Special-Purpose-Vehicles". The knowledge base contains more than 80 workflow components, using about __1900 question nodes__ to determine the one technical fault from about __1000 solutions nodes__.
+/% 
+
+%%(padding: 0 1em; width: 45%; float:left; border:1px solid #ddd; text-align:justify;)
+
+
+!!! Abstract (Deutsch)
+
+Dieser Artikel ist ein Praxisbericht einer erfolgreichen __Konvertierung__ einer semafora/ontoprise __SemanticGuide__ Wissensbasis __nach d3web KnowWE__. Der eigentliche Migrationsprozess wurde in einem Batch-Betrieb automatisiert. Die resultierende Wissensbasis enthält alle ursprünglichen Informationen. Sie kann in KnowWE bearbeitet werden und auf jeder auf d3web basierenden Anwendung ausgeführt werden, z.B. auf Unternehmensservern oder mobilen Endgeräten.
+
+Die Evaluation erfolgte auf Basis einer "industriellen Wissensbasis", sie wurde von einem unserer Kunden für den Realeinsatz entwickelt. Es handelt sich dabei um eine Wissensbasis zur __technischen Diagnose__ von Spezialfahrzeugen. Sie umfasst über 80 Flussdiagramme, in denen knapp __1900 Frageknoten__ zu __1000 Lösungsknoten__ führen. 
+/%
+
+%%(clear:both; display:block; text-align:right; color:#888; padding-top: 1em;) ''&copy; 2014 Volker Belli'' /%
+
+
+!!! Introduction
+
+The SemanticGuide was originally introduced by ''ontoprise GmbH'' and is based on the OntoBroker architecture. In mid of 2012 the company closed their services. The ''semafora systems GmbH'' took over OntoBroker and SemanticGuide the same year, providing services and support for the system, but did not take over the OntoBroker and/or SemanticGuide development team.
+
+Developing diagnostic knowledge bases is usually a big investment. As a consequence former customers may worry about their past investments in knowledge engineering. Therefore, some (former) customers discuss the possible migration to another diagnostic platform, e.g. d3web KnowWE as an alternative to SemanticGuide. While in contact with several companies, we also experienced, that SemanticGuide does not offer advanced knowledge engineering tooling capabilities, e.g. continuous integration testing during the development or the automated analysis for knowledge base anomalies.
+
+In consequence, we very motivated to find out whether a migration to KnowWE would be feasible.
+
+
+!!! Set-Up of the Trial
+
+At the beginning we were equipped with the original SemanticGuide knowledge base. We used both, the exported runtime version and the MS SQL Server database of the development system. No further information was available or used in that trial.
+
+The main goals of the trial were:
+# Convert / migrate the knowledge base into a diagnostic wiki version, that can be used to continue the development of the knowledge base
+# Show that the resulting d3web knowledge base behaves exactly as the original one
+# Make sure that all contained languages, all textual descriptions and all media (images and movies) are available
+# The wiki version should not be created manually but generated automatically in a batch process
+
+
+!!! The Migration Process
+
+%%(float:right;display:block;border:1px solid #ddd;margin: 0 10px 10px 10px; padding: 10px)
+%%(padding-left:5px;)__Fact Sheet__ /%
+
+|| Runtime Size 	| %%(display:block;text-align:right) 184 KB /%
+|| Additional Media	| %%(display:block;text-align:right) 28 MB /%
+|| KB Loading Time 	| %%(display:block;text-align:right) 0.34 sec /%
+|| User-App Startup	| %%(display:block;text-align:right) ~3 sec /%
+|| Dev-Server Startup	| %%(display:block;text-align:right) 27 sec /%
+%%(font-size:80%;width:200px;display:block;padding-left:5px;) Table 1: Some facts about the resulting wiki and knowledge base. All times were measured on a 13'~' MacBook Pro (early-2013).  /%
+/%
+
+We created a batch processing pipeline that reads the folder (ZIP file) containing the executable version of the knowledge base (namely the file "domainlayer-sgversion.obl"). 
+The folder also contains media attachments that are linked to objects of the knowledge base. These attachments are also considered during the process.
+From that, we added a number of wiki exporters to the pipeline that together create the following wiki articles at a glance:
+
+* One article for each question and each solution, containing all information such as text labels and media files.
+* One article for each flowchart, containing the graphical flowchart to process the diagnoses.
+* An article containing the malfunctions (symptoms / cases) as well as an optimized "LeftMenu" for the wiki.
+* A set of static articles for the comfortable of use and navigation of the wiki, e.g. documentation and configuration pages.
+
+From that point the knowledge base showed to be fully functional in runtime environments deriving suitable diagnoses for entered symptoms. See table 1 on the right side for some details about the resulting knowledge base.
+
+The next task was the visual handling of the diagnostic flowcharts in order to improve the readability for the knowledge engineers. 
+That way, we decided to export the original layout as well (instead of automatically layout the graph in KnowWE, which would be possible as well). 
+The export of the original layout minimizes the need of familiarization for the original creators of the knowledge base. 
+
+Since the runtime version of a SemanticGuide knowledge base includes no layout information, we extracted the node positions from the original MS SQL Server by using three plain SQL statements. These node positions were added to the created pipeline described above. As a result the exported flowcharts looks pretty similar to the original flows.
+
+To make the presented results reproducible, I attached the source code of the migration pipeline to this article. Despite of the fact that the source code is commented, I know that not all of the steps are easily to reproduce, but feel free to contact me if you have questions. I also attached the used SQL statements to extract the node positions from the SQL database. You can [download the full package here|How to Migrate From SemanticGuide to KnowWE/converter_full.zip].
+
+
+!!! The Outcome
+
+The wiki was up and running and the knowledge base can be browsed, edited, tested, and downloaded in d3web KnowWE. The d3web runtime applications were capable to __run the knowledge__ in all existing standalone applications __on PC servers and mobile devices such as a smartphone__. The diagnostic steps and the resulting solutions are identical to the derivation behavior of the original SemanticGuide application. The images and other media are attached to the questions and solutions. All available languages can be selected and switched during runtime.
+
+
+!!! The Way Beyond
+
+%%(padding: 0 1em; width: 45%; margin-right: 1em; float:right;)
+
+[{Image  src='durations.png' width='100%' caption='Figure 1: Overall diagnosis durations'}]
+[{Image  src='durations_fb.png' width='100%' caption='Figure 2: Diagnosis durations for individual fault symptoms'}]
+/%
+
+Frankly, the initial motivation was not running the knowledge base in d3web. This was a by-product. Instead our customer asked us to evaluate the diagnostic quality of the knowledge base, to give some hints how they should proceed in the future. We decided to migrate the knowledge to d3web KnowWE in order to be able to use the build-in evaluation capabilities, plus a bunch of additional evaluations we developed over the years.
+
+A sample-set-based live test has been undertaken to show the overall diagnostic capability of the knowledge base. Additionally, we were interested in the answers to the following questions:
+* How long does the diagnosis take for the different types of technical faults or symptoms?
+* How good are the questions placed? Are there any questions with poor impact on the diagnosis?
+* Are the diagnostic flowcharts drawn efficiently? Is there much duplication or other redundancy?
+
+For this purpose we proceed and add more information to the pipeline. First we detect patterns of types of questions and actions, e.g. for executing measurements, mount/unmount equipment, making quick observations on the defect vehicle behavior, and so on. In total, we defined about ten of these patterns and associate the estimated time required to carry out the particular type of activity. Running the migration pipeline again results in a wiki and that helped us to answer these questions appropriately (see figure 1 and 2 on the right side).
+
+
+!!! Future Work
+
+However, there are a few aspects that were covered so far with this trial. The routing of the edges ("answers") between the nodes of the diagnostic flowcharts is not preserved by the migration. Instead KnowWE's auto-routing is used. For the most flowcharts the results are pretty good. We applied KnowWE's auto-rearrange tools to easily clean up flowcharts that are too messy.
+
+If you plan to do a migration of a knowledge base and switch to KnowWE as the main authoring tool for productive use, you should make up your mind about how the content shall be structured in particular articles. Does every question should have its own article? Should some questions / solution be grouped? Are there "local question" that should be better placed with some flowcharts onto the same article? After answering these questions the migration should be adapted to produce the desired outcome. This will increase readability and understandability of the knowledge base and finally the overall productivity of your knowledge engineering team.
+
+
+!!! Result and Conclusions
+
+We have been capable to implement a batch-processing pipeline that automatically converts an ontoprise/semafora SemanticGuide knowledge base into a running KnowWE version. Only a few manual preparations are required, namely extracting the node positions by executing the prepared SQL statements. Even if the pipeline requires a bunch of days to be fully implemented, we are now capable to convert a knowledge base within less than an hour. Additionally we can add customer-specific information or a customer-specific assembly of the contents, if the exported system shall go productive.
+
+As a result, __diagnostic systems are no longer being walled gardens__. Having an open-source basis, you can think about converting the knowledge into any other diagnostic system that is available and preferably used by the customer. The method will work for other diagnostic systems as well, especially because, in the past, d3web has shown that it likely has all required features to implement diagnostic knowledge bases. To break these walls I published the full sources as described in chapter [The Migration Process|How to Migrate From SemanticGuide to KnowWE#The Migration Process]. 
+
+If you are interested in further information about this or similar activities, feel free to [contact me | Volker Belli] by [email | mailto:info@denkbares.com] or consult our [homepage | http://www.denkbares.com].

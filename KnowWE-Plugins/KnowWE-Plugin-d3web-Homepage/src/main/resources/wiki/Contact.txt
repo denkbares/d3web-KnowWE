@@ -1,0 +1,18 @@
+[{ALLOW view All}]
+[{ALLOW edit Admin}]
+
+Institut für Informatik\\
+Lehrstuhl für Informatik 6\\
+Universität Würzburg\\
+Am Hubland\\
+D-97074 Würzburg\\
+
+Email: info <at> d3web.de
+
+
+%%information 
+If you are a developer and want help working with d3web and/or KnowWE, please use the discussion boards on github.com \\
+
+* [d3web-Runtime Discussions|https://github.com/denkbares/d3web-Runtime/discussions]
+* [d3web-KnowWE Discussions|https://github.com/denkbares/d3web-KnowWE/discussions]
+%%

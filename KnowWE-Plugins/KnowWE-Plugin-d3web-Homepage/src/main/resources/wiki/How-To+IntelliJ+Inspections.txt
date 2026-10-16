@@ -1,0 +1,29 @@
+!!What are IntelliJ Inspections
+
+JetBrains IntelliJ IDEA provides the ability to continuously inspect all code using predefined or adapted inspection profiles. In the settings, got to ''Editor -> Inspections''.
+
+While using the editor, you will see violations of the inspections through the small colored (red, yellow, green, grey) bars on the editor's right scroll bar. The little square on top of the scroll bar has the color of the worst violation in the current file.
+
+
+!!Profile and settings
+
+For our d3web and KnowWE code, we use the inspection profile "denkbares", downloadable [here|How-To IntelliJ Inspections/denkbares.xml]. \\
+In the settings, navigate to ''Editor -> Inspections'' and then click ''Manage -> Import...'' on the top. \\
+
+There are three different main types of inspection violations: %%(color:red)Error%%, %%(color:rgb(255, 204, 0))Warning%%, and %%(color:grey)Weak Warning%%. Since weak warnings are optional most of the time, it is ok to hide their indicators on the scroll bar to reduce clutter. To do this, in the settings go ''Editor -> Colors & Fonts -> General''. On the right side expand ''Errors and Warnings'' and select ''Weak Warning''. Then on the right, deselect ''Error stripe mark''. The Weak Warnings will still show up with a light curly line below it.
+
+
+!! Usage
+
+Generally, every time you commit/push code, there should be:
+
+* Errors: None
+* Warnings: None
+* Weak Warnings and Typos: As little as possible, but they are allowed, since they are only suggestions and might be wrong.
+
+Most of the inspections have a ''Quick-Fix'' available e.g. with hotkeys "CRTL + 1" or "Alt + Enter", so use this if possible. If they don't have a quick fix, most are at least easy to fix manually. If you are sure that in this special case, the inspection is wrong, don't just ignore and leave it for the next reader/editor to wonder. All inspections can be suppressed at the current statement. Use "CMD + 1" again, expand the options appearing for the inspection by using "RIGHT_ARROW" and navigate to "Suppress for statement". If you have two options, "Suppress for statement" and "Suppress for statement with comment", the  first one is preferable. 
+
+
+!! Inspection-Tool
+
+Under ''Analyze -> Inspect Code...'' IntelliJ provides a powerful tool to find and fix inspection violations in your code in bulk. Select the folder or scope and hit ok. After some time, IntelliJ will show all violations for the specified folder or scope. In the inspections view, select "Group by severity" and browse. Many inspections will allow to "Quick-Fix" all in the context menu on right click.

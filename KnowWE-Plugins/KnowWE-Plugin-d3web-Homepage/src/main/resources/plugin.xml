@@ -18,4 +18,12 @@
 		</library>
 	</runtime>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="LogoAction">
+		<parameter id="class" value="de.knowwe.d3web.homepage.D3webLogoAction" />
+		<parameter id="name" value="D3webLogoAction" />
+		<parameter id="description" value="Serves the d3web logo instead of the KnowWE logo" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+	</extension>
+
 </plugin>

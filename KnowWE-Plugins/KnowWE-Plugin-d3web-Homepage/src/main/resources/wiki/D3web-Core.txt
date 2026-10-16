@@ -1,0 +1,30 @@
+[{Image src='d3web logo.png' align='right' style='margin-right:30px' }]
+
+!!! d3web-Core
+
+d3web-Core is main platform API (application programing interface) for the development of knowledge-based applications. 
+The platform is available as a collection of Java libraries providing a sophisticated plugin architecture.
+
+A number of components is already included in d3web-Core:
+* General representation and persistence of terminological knowledge to represent question (inputs) and solutions (outputs).
+* Reasoning engines and persistence for strong problem-solving methods including
+** Decision trees
+** Scoring rules
+** Temporal rules
+** DiaFlux models (flowchart knowledge)
+** Set-covering models (abductive knowledge)
+** Scoring tables
+* Libraries for testing knowledge bases
+
+Among others, the following applications are using the d3web-Core:
+* [KnowWE], a semantic wiki for building knowledge-based applications
+* Knowledge Base Book, a generator to create printable documents from knowledge bases
+
+
+!!! System Requirements
+Installation of KnowWE requires the Java Platform, Standard Edition JDK 6 or higher.\\
+For operating systems, the distribution runs with MS-Windows XP, Windows 7 and Mac OS 10.6 or
+higher.\\
+Linux is not officially supported. We officially support Firefox 3.6 or higher, but most
+parts should also work with Google Chrome. Currently, the Internet Explorer is not officially
+supported.\\

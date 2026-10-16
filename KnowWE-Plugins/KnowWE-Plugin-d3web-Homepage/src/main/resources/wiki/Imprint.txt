@@ -1,0 +1,34 @@
+[{ALLOW view All}]
+[{ALLOW edit Admin}]
+
+!!!Impressum
+(verantwortlich nach §5 TMG und §55 RStV)\\
+\\
+__Lehrstuhl für  Informatik VI der\\
+Universität Würzburg__\\
+\\
+Am Hubland\\
+97074 Würzburg\\
+\\
+Telefon (09 31) 888-6731\\
+Telefax (09 31) 888-6732\\
+\\
+__Zuständige Aufsichtsbehörde:__\\
+Bayerisches Staatsministerium für Wissenschaft, Forschung und Kunst\\
+\\
+__Umsatzsteuer-Identifikationsnummer:__\\
+Die Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz lautet DE 134187690
+
+
+!!!Rechtliches
+
+!Haftung für Links
+Der Lehrstuhl für Informatik VI der Universität Würzburg distanziert sich hiermit ausdrücklich von allen Inhalten sämtlicher gelinkter Seiten auf {{www.d3web.de}} und verweist darauf, dass es weder Einfluss auf Gestaltung und Inhalte der gelinkten Seiten hat, noch sich diese Inhalte zu eigen macht. Gemäß dem Urteil vom 12. Mai 1998 "Haftung für Links" (312 O 85/98) des Landesgerichts Hamburg ist somit eine Haftung des Lehrstuhls für  Informatik VI der Universität Würzburg für die Inhalte der gelinkten Seiten nicht gegeben.
+
+!Nutzungsbedingungen
+Inhalt und Struktur der Website {{www.d3web.de}} unterliegen weltweitem Urheberrecht. Reproduktion von Bildern und/oder Texten (auch auszugsweise) sind nur mit vorheriger schriftlicher Genehmigung möglich (Kontakt siehe oben). Der Lehrstuhl für Informatik VI der Universität Würzburg übernimmt keinerlei Gewähr für Vollständigkeit und Richtigkeit der auf diesen Internetseiten enthaltenen Informationen. Der Lehrstuhl für Informatik VI der Universität Würzburg behält es sich ausdrücklich vor, Teile der Seiten oder das gesamte Angebot ohne Ankündigung zu verändern, zu ergänzen, zu löschen oder die Veröffentlichung zeitweise oder endgültig einzustellen. Soweit die vorliegende Homepage auf Informationsangebote außerhalb von www.d3web.de verweist, macht sich der Anbieter diese Inhalte ausdrücklich nicht zu eigen.
+
+!Gewerbliche Schutzrechte
+Alle innerhalb dieser Website genannten und ggf. durch Dritte geschützten Marken- und Warenzeichen unterliegen uneingeschränkt den Bestimmungen des jeweils gültigen Kennzeichenrechts und den Besitzrechten der jeweiligen eingetragenen Eigentümer. Allein aufgrund der bloßen Nennung ist nicht der Schluss zu ziehen, dass Markenzeichen nicht durch Rechte Dritter geschützt sind.
+
+ 

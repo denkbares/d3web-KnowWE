@@ -1,0 +1,25 @@
+CostBenefit is a Plugin for d3web.
+It provides preconditions and post transitions for QContainers. Therefore it provides a problemsolver,that is able to calculate a sequence of QContainers to prepare the preconditions for the QContainer, with the best cost/benefit ratio.
+
+
+The following projects are relevant for this module.
+
+%%sparql 
+  SELECT ?Plugin WHERE {
+      ?Plugin lns:partOf lns:CostBenefit
+  }
+  ORDER BY ?Plugin
+  
+%
+
+
+!!!Live Ticker
+
+
+%%collapsebox-closed
+!Ontology
+def CostBenefit
+> CostBenefit type:: Module
+def d3web-Plugin-CostBenefit
+> d3web-Plugin-CostBenefit partOf:: CostBenefit
+/%

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build xmlns="http://www.denkbares.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" date="2017-08-02 10:40:21.252 +0200" duration="35" xsi:schemaLocation="http://www.denkbares.com build_result.xsd">
+<test configuration=".*" name="ArticleHasErrors" numberOfSuccessfullyTestedObjects="285">
+<message testObject="CIConnector" text=" errors found in article 'CIConnector'&#10;* Resource 'hasStat' not found&#10;* Resource 'hasValue' not found&#10;* Resource 'hasKey' not found&#10;* Resource 'partOf' not found (2&amp;times;)&#10;* Resource 'Plugin' not found (5&amp;times;)&#10;* Resource 'hasID' not found (5&amp;times;)&#10;* Resource 'hasAuthor' not found (2&amp;times;)&#10;* Resource 'Foo-Module' not found&#10;* Resource 'hasChange' not found (2&amp;times;)&#10;* Resource 'hasCommitText' not found (2&amp;times;)" type="FAILURE"/>
+<message testObject="Module CostBenefit" text=" errors found in article 'Module CostBenefit'&#10;* Resource 'CostBenefit' not found&#10;* Resource 'partOf' not found" type="FAILURE"/>
+<message testObject="Module DiaFlux" text=" errors found in article 'Module DiaFlux'&#10;* Resource 'DiaFlux' not found&#10;* Resource 'partOf' not found" type="FAILURE"/>
+<message testObject="Module Rdf2Go" text=" errors found in article 'Module Rdf2Go'&#10;* Resource 'partOf' not found&#10;* Resource 'Rdf2Go' not found" type="FAILURE"/>
+<message testObject="Module TimeDB" text=" errors found in article 'Module TimeDB'&#10;* Resource 'partOf' not found&#10;* Resource 'TimeDB' not found" type="FAILURE"/>
+<message summary="true" text="" type="FAILURE"/>
+</test>
+<test configuration=".* FixMe:" name="ArticleContains" numberOfSuccessfullyTestedObjects="290">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Demo - Master&quot;" name="EmptyQuestionnaire" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;^Demo - Test Cases.*&quot; &quot;Demo - Master&quot;" name="TestCase" numberOfSuccessfullyTestedObjects="4">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+</build>

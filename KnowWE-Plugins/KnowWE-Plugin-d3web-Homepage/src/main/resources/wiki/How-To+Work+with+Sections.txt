@@ -1,0 +1,74 @@
+[{TableOfContents}]
+
+
+!! Introduction
+
+In KnowWE the content of an article is managed as a hierarchical structure of the content elements. Every node of that tree contains a particular fragment of the source text of the page. We call such a node a [Section]. No matter what kind of extension for KnowWE should be implemented, sections will play a fundamental role in any case. Therefore handling, searching, navigation, and modification of sections are hot topics in KnowWE programming. 
+
+
+!! Finding other sections from a given section
+The class [Sections] provides numerous static utility methods for working with sections.
+Often it is necessary to find a section of a particular type, which is an ancestor or successor of a given section.
+For this purpose, multiple methods in the class Sections are provided starting with ''findAncestor'' or ''findSuccessor'' respectively. If a single section object is returned, it is the first matching section found. If multiple sections are returned, they are ordered as detected by the traversing algorithm. The search for ancestors ascends straight from the given section towards the root section.
+The search for successors runs in depth first search manner starting at the given section.
+If only a search for direct successors is desired, methods starting with ''findChild'' are provided.
+
+!! Finding a section from a given section id
+
+Each section has an id that is unique wiki-wide. When having such an id, the corresponding section object can be retrieved using the following method of the class Sections:
+
+%%prettify
+{{{
+public static Section<?> getSection(String id) {
+}}}
+/%
+
+!! Editing page contents
+Often it is required to modify the source content of a page, in particular if an editor component is implemented.
+The section model of the article provides a convenient way to replace parts with new contents. However, to keep the KnowWE data-structure and the interaction of all plugins in an consistent state, it is important to do this the right way.
+
+__Please regard the following notes:__
+* Never create new section objects directly
+* Never modify section text contents directly
+* Never change the interlinking (parent-child-relations) of section objects directly
+* In sum: section objects should be considered to be read only objects
+
+__Instead do:__
+Use the method ''replaceSections'' provided by the Sections class.
+
+%%prettify
+{{{
+public static Map<String, String> replaceSections(UserActionContext context, Map<String, String> sectionsMap) throws IOException {
+}}}
+/%
+Beside the context of the user, that is responsible for triggering these changes, a map is passed. This map contains all the change operations that are supposed to be applied on the wiki pages source(s). The keys of this map are section ids of existing sections.
+The value for each id is the new content string, the old section should be replaced with. After modifying the content as specified by this map of replacements, this method will take care of all additional organizational issues (e.g., persistence, parsing, compilation, message handling, event handling). Then, the updated version of the section tree can be accessed in the common way, e.g., by starting at the root section of an article.
+
+The method returns a map containing a mapping from the old section ids to the corresponding new sections id, if structural equivalence is given. Not in every case this information is required by the caller.
+
+
+!! Using the section store to store information
+Often information for a particular section needs to be preserved for later use, e.g., by an extension of an other kind.
+Using the store is quite simple. Any Object can be stored for a specific section id and a (unique) store key, representing the purpose of this information. 
+
+The method you should use to store something is:
+%%prettify
+{{{
+KnowWEUtils.storeObject(KnowWEArticle article, Section<?> s, String key, Object o)
+}}}
+/%
+
+The method to look up stored information is:
+%%prettify
+{{{
+KnowWEUtils.getStoredObject(KnowWEArticle article, Section<?> s, String key)
+}}}
+/%
+
+* Be sure that you use the identical section for lookup as for storing (e.g., not a father or child section)!
+* The store will survive page-edits if this particular section does not change
+* The store for a section will be reseted when the section has changed via page edit
+ 
+%%tags
+howto
+%

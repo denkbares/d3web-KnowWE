@@ -1,0 +1,5 @@
+!Code sample of heuristic 05
+
+Dieser Screenshot zeigt einen Teil der Regeln aus Heuristik 05.
+
+[{Image src='ESAT_Screenshot_05.jpg' align='left'}]

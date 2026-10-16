@@ -1,0 +1,145 @@
+[{TableOfContents title='Table of contents' }]
+
+
+! Introduction
+
+On this page the ''ConceptVisualization'' markup is demonstrated via examples based on the Simpsons ontology from the [Simpsons Demo | Demo - Simpsons]
+
+The ''ConceptVisualization'' markup provides a simple method to visualize fragments of the ontology. Therefore, one or multiple ontology concepts, forming the subject of interest, are defined. Further, multiple constraints, including black- and white-listing, can be defined optionally to tweak the resulting graph.
+
+
+! Example 1: Single Concept - Show everything about Homer Simpson
+
+%%ConceptVisualization 
+@concept: si:homer
+@config: DefaultVisConfig
+%
+
+The @concept annotation defines which concept is the center of the visualization (highlighted by underline). Every ingoing and outgoing relation of this concept will be drawn (the default depth for the ingoing and outgoing relations is one). 
+
+The @config annotation allows to reference a bunch of other settings, that are specified using the %%VisualizationConfig. This way, you can use the same base configuration for a larger number of visualizations, without having to specifying them every time. The DefaultVisConfig used in this Docu page is defined on the page [Visualization Util].
+
+{{{
+%%ConceptVisualization
+@concept: si:homer
+@config: DefaultVisConfig
+%
+}}}
+
+
+! Example 2: Restrict Properties - Homer's family relations (considering father and mother relations) and his work place
+
+%%ConceptVisualization
+@concept: si:homer
+@config: DefaultVisConfig
+@successors: 2
+@filterRelations: si:mother, si:father, si:worksAt
+%
+
+The annotation ''@filterRelations'' allows to restrict the relations to be shown. Only the specified relations will appear on the visualization. Multiple properties can be specified seperated by comma. 
+
+To expand the focus of the visualization, the annotation ''@successors'' allows to augment the depth that is shown, always beginning from the main concept. Here, all reachable nodes until to depth 2 are retrieved and displayed. Therefore, Yuma Simpson is displayed, being two steps away from Homer.
+
+Analogous, the predecessors can be defined using the ''@predecessors'' annotation. 
+
+{{{
+%%ConceptVisualization
+@concept: si:homer
+@config: DefaultVisConfig
+@successors: 2
+@filterRelations: si:mother, si:father, si:worksAt
+%
+}}}
+
+
+! Example 3: Multiple Concepts - Show everything about Mr. Burns and Abraham Simpson
+
+Often it is interesting to see what are the interrelations between two or multiple concepts. The following example shows how Mr. Burns and Abraham Simpson are (indirectly) related to each other, that is that Abrahams son Homer works at Mr. Burns power plant.
+
+The @concept annotation allow to specify multiple concepts separated by comma. All ingoing and outgoing edges of all these concepts will be drawn.
+
+%%ConceptVisualization
+@concept: si:abraham, si:burns
+@config: DefaultVisConfig
+%
+
+{{{
+%%ConceptVisualization
+@concept: si:abraham, si:burns
+@config: DefaultVisConfig
+%
+}}}
+
+
+! Example 4: Exclude Nodes - Same as above without the gender concept "male"
+
+The ''@excludeNode'' annotation allows to black list concepts that should be excluded from the visualization. The following example is equal to the example above, except that the Gender node 'male' is excluded.
+
+%%ConceptVisualization
+@concept: si:abraham, si:burns
+@config: DefaultVisConfig
+@excludeNodes: si:male
+%
+
+{{{
+%%ConceptVisualization
+@concept: si:abraham, si:burns
+@config: DefaultVisConfig
+@excludeNodes: si:male
+%
+}}}
+
+
+! Example 5: Exclude Properties - Same as above but excluding the property ''livesIn''
+
+The ''@excludeRelations'' annotation allows to black list properties that should not be visible within the visualization. The following example is equal to the example above, except that the relation ''livesIn'' is excluded. That is, no edge of this property will be included within the visualization.
+
+Furthermore, the ''@size'' annotation can be used to control the overall size of the visualization within the wiki page. 
+
+%%ConceptVisualization
+@concept: si:abraham, si:burns
+@config: DefaultVisConfig
+@excludeNodes: si:male
+@excludeRelations: si:livesIn
+%
+
+{{{
+%%ConceptVisualization
+@concept: si:abraham, si:burns
+@config: DefaultVisConfig
+@excludeNodes: si:male
+@excludeRelations: si:livesIn
+%
+}}}
+
+!!! Visualization Templates
+
+Visualization Templates can be used to create visualization patterns for certain classes.
+If a template is defined for a certain class, users will have the option to visualize it on usage, by clicking on the instance in the visualization and chosing "Visualize with template ..."
+
+
+!! Defining templates
+
+
+Templates are easily defined by using the annotation @isVisTemplateForClass: <class>.\\
+The default concept for ConceptVisualization templates is defined by the @concept annotation.\\
+\\
+__Please be aware that only one template should be defined per page!__
+
+The example below demonstrates the definition of a ConceptVisualization template for the class si:Human, having si:homer as default concept and will visualize relations between a given si:human instance and other si:human instances.
+
+
+{{{
+%%ConceptVisualization 
+  @concept: si:homer
+  @rankDir: BT
+  @showRedundant: false
+  @isVisTemplateForClass: si:Human
+%
+}}}
+
+! Template for class si:Human
+
+[VisualizationTemplateHuman] is a template for all instances of class si:Human.
+
+%%package simpsons

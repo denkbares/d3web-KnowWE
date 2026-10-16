@@ -1,0 +1,290 @@
+
+%%Todo 
+add project and/or company logo
+
+@progress: CLOSED
+%
+
+%%Todo 
+add logo from KIT
+
+@progress: CLOSED
+%
+
+%%Todo
+Fix error in test  "Leaking air intake system (Demo)". 
+  @progress:CLOSED
+@prio: NORMAL
+%
+
+%%todo 
+Review this page. 
+* Describe: What is a product, application and module?
+* Describe actual products / applications
+
+@user: Albrecht Striffler
+@progress: CLOSED
+%
+
+%%Todo 
+Developer How-Tos
+* How to develop javascript in KnowWE without restarting after every change
+
+@user: Daniel Zügner
+@progress: CLOSED
+%
+
+%%Todo 
+Developer How-Tos
+* How to create your own workspace (transfer and update from uni page)
+[http://d3webwiki.informatik.uni-wuerzburg.de/Wiki.jsp?page=Workspace]
+
+@user: Daniel Zügner
+@progress: CLOSED
+%
+
+%%Todo
+Developer How-Tos
+* How to add js and css files to your project
+
+@user: Lukas Brehl
+@progress: CLOSED
+%
+
+%%Todo
+Developer How-Tos
+* How do extensions and extensionpoints work
+* How do I use the scope of an extension?
+
+@user: Lukas Brehl
+@progress: CLOSED
+%
+
+%%Todo
+Start this page by adding some headlines, table of contents, some introductory words.
+Every How-To gets its own little section with a short description who the How-To shows and then a link to the page with the actual how to
+@user: Lukas Brehl
+@progress: CLOSED
+%
+
+%%Todo 
+  Review the FAQ.
+  
+  @user: Volker Belli
+@progress: CLOSED
+%
+
+%%TODO 
+SmartCare success story
+
+@user: Tim Baier-Loewenstein
+@progress: CLOSED
+%
+
+%%Todo 
+Set this page up, add table of contents and some introductory words. Every question is its own small headline with the answer directly below.
+
+@user: Christian Henniger
+@progress: DEFERRED
+%
+
+%%Todo
+Check [http://d3webwiki.informatik.uni-wuerzburg.de/] for usefull stuff to add to How-Tos and/or FAQ. Go through page index.
+
+@user: Daniel Zügner
+@progress: CLOSED
+%
+
+%%todo
+Write Testing-App description.
+
+@user: Jochen Reutelshöfer
+@progress: CLOSED
+%
+
+%%Todo 
+  Improve this page... more examples, more complete (eval(...) an such)
+  
+  @user Tim Baier-Loewenstein
+@progress: CLOSED
+%
+
+%%Todo 
+  List example knowledge bases from tutorials here and add a short description for each.
+  
+  @user: Tim Baier-Loewenstein
+@progress: CLOSED
+%
+
+%%Todo 
+Developer FAQ
+* Some examples:
+** What do I need do mvn install, after I change a java file or non-java file?
+** Tomcat starts, but wikipages are not loaded -> update Tomcat-Context... this happens when mvn installing while tomcat is running...
+** What is an plugin, what is an extension, what is an extension point ([http://d3webwiki.informatik.uni-wuerzburg.de/Wiki.jsp?page=Plugins%20and%20Extensions])
+** What is the Scope of an extension
+
+@user: Daniel Zügner
+@progress: CLOSED
+%
+
+%%Todo 
+Developer Wiki
+* d3web Code snipplets: Example for (use Uni and release notes)
+** Load knowledge base (and save)
+** Create a new Session
+** Run a session and read derived solutions
+** Save session / load session
+
+@user: Markus Friedrich
+@progress: CLOSED
+%
+
+%%Todo 
+Developer Wiki
+* Description: d3web package and module structure
+
+@user: Markus Friedrich
+@progress: CLOSED
+%
+
+%%Todo 
+Developer How-Tos
+* How to create your own plugin project (transfer and update from uni page, add some pictures and stuff)
+[http://d3webwiki.informatik.uni-wuerzburg.de/Wiki.jsp?page=FAQ]
+@user: Johanna Latt
+@progress: CLOSED
+%
+
+%%Todo 
+Developer FAQ
+* Define questions
+* Answer questions, get the information if unkown
+* Get and update/improve stuff from old pages: [http://d3webwiki.informatik.uni-wuerzburg.de/Wiki.jsp?page=FAQ]
+
+@user: Christian Henniger
+@progress: CLOSED
+%
+
+%%todo 
+Rework the page and re-link the downloads to sourceforge.
+
+@user: Lukas Brehl
+@progress: CLOSED
+%
+
+%%Todo 
+CareMate: Check, whether movie can be put on the web page and write a small success story.
+Volker unterstützt
+
+  @user: Constantin Rieder
+@progress: CLOSED
+%
+
+%%Todo 
+  Create new home screen of the d3web wiki.
+  
+  @user: Volker Belli
+@progress: CLOSED
+%
+
+%%Todo
+Revise/update this page and linked pages. Is it complete and up to date?
+At first glance:
+* Packages
+* AbstractionTable
+* Todos
+* See [tags page|http://denkbares.dyndns.org/d3web/Wiki.jsp?page=TagSearch&tag=Documentation]
+* ...
+
+Check (e.g. with autocomplete) if all markups have a docu page. Write (or find somebody to write) docu if missing.
+@user: Carsten Wasner
+@progress: CLOSED
+%
+
+%%Todo
+Describe the actual modules
+* Create new articles for complex modules with multiple plugins
+* Use ontology descriptions for "included plugins", "quality level", "license"
+* Describe/define quality level
+* Simple modules are not defined manually... all plugins that are not part of a complex module are simple modules aggregated on one page, probably using a sparql query or an own KnowWE-Plugin
+
+  @user: Markus Friedrich
+@progress: CLOSED
+%
+
+%%Todo 
+Developer Wiki
+* KnowWE code snipplets
+** How to define your own markup (derived from DefaultMarkup)
+** How to define your own CI test
+** TerminologyManager
+** Sections & Types
+
+@user: Jochen Reutelshöfer
+@progress: CLOSED
+%
+
+%%Todo 
+  Write description of Droid3web-App, some screenshots.
+  @user: Sebastian Furth
+@progress: CLOSED
+%
+
+%%Todo
+Module-Plugin implementation
+* Design ontologie about module information. We want for example the following information per module:
+** What maven modules / svn projects are part of this module (will be defined on the module page with turtle markup)
+** What projects are not in any complex/aggregated module
+** What are the last x changes to any project of a module
+** What is the heat of the module (changes/day in the last month?)
+** What are the test stats for the module
+** General stats, if possible? LoC, Classes, BuildNumber
+** Authors (people who created modules, changed them)
+** More interesting stuff?
+* Write KnowWE-Plugin to add data provided by Jenkins-Plugin to the rdf2go model.
+* If there is time: Write KnowWE-Plugin to render module information from rdf2go model in a nicer way. If there is no time: Use default SparqlRenderer
+@user: Sebastian Furth
+@progress: CLOSED
+%
+
+%%Todo 
+  KnowME auf der sourceforge-d3web Seite entfernen, durch KnowWE ersetzen.
+  Generell sourceforge durchschauen, Links auf d3web.de usw...
+  
+  @user: Jochen Reutelshöfer
+@progress: CLOSED
+%
+
+%%Todo 
+Screencasts
+# Find Screencast tool: Camtasia (Uni?), Screenflow
+# Evaluate Screencast-Tool
+# Use printer fault diagnosis example (show pages, browse knowledge)
+@user: Stefan Plehn
+@progress: CLOSED
+%
+
+%%Todo
+Licenses 
+* add articles for the different licenses and link them
+* d3web-KnowWE-Releases contain all used licenses...
+@user: Albrecht Striffler
+@progress: DEFERRED
+%
+
+%%Todo 
+  WimVent success story
+  @user: Reinhard Hatko
+@progress: CLOSED
+%
+
+%%Todo
+Fix external link. The link gets corrupted by a Plugin-In or JSPWiki... 
+@progress: CLOSED
+%
+
+%%Todo
+Fix list. Probably a JSPWiki-Markup Bug... 
+@progress: CLOSED
+%

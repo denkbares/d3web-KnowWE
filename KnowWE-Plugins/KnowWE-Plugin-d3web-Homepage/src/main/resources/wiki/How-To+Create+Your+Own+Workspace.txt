@@ -1,0 +1,67 @@
+[{TableOfContents}]
+
+
+
+
+
+!!!IntelliJ IDEA
+
+Please do also take a look at the [screencasts|Tutorial] that show the set up of an IntelliJ workspace.
+
+!!Prerequisites
+* [Java Development Kit (JDK)|https://adoptopenjdk.net/], we recommend the latest version of JDK 14, newer JDKs should work though.
+* [Apache Tomcat 9|https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.44/bin/apache-tomcat-9.0.44.zip]\\ Other version might work, but are not officially supported. We recommend to use the linked version 9.0.44. We are dependent on the compatibility with JSPWiki here.
+* [IntelliJ IDEA|http://www.jetbrains.com/idea/download/index.html] \\ You might get a community key for the Ultimate Edition. Please ask via dev list.
+
+!!First time starting IDEA
+
+When you first start IDEA you can choose which plugins to enable/disable. Just leave everything enabled to be on the safe side.\\
+After that choose "New Project" and then "Empty Project". Give it a name and hit "Ok".
+
+
+!!Import Repositories
+
+Clone the following git repositories into your project folder
+
+
+* {{https://github.com/denkbares/Commons.git}} \\
+* {{https://github.com/denkbares/d3web-Runtime.git}} \\
+* {{https://github.com/denkbares/d3web-KnowWE.git}} \\
+
+In your IntelliJ project, for each repository, select "File -> New/Module from Existing Sources..." and select the path folder of the repository. When you get asked which module to import, choose "Import Module from external Model/Maven" and hit "Next". Other screens can also be confirmed with the default/next.
+
+!! Create copy of jspwiki-custom.properties
+
+KnowWE is based on JSPWiki and therefore needs an jspwiki-custom.properties to configure some basics. Copy the file {{KnowWE-App/src/resources/local/WEB-INF/classes/jspwiki-custom.properties.default}} into the same folder with the same name, but remove the suffix '.default'. For starters, you only need to set a the {{var.basedir}} to point to a wikicontent (folder with the wiki pages). If you don't have a wikicontent yet, you can start out with the one provided in the distribution from [Downloads#Latest Releases and Builds]. In the zip, extract {{/KnowWE/KnowWE-Tomcat.zip/wikicontent}} to the path you specified as the var.basedir in your jspwiki-custom.properties.
+
+!!Building and starting KnowWE
+
+Select Run -> 'Edit Configurations' and add 'Tomcat Server' -> local. Hit configure and choose your tomcat path. In den bottom pane click + and choose 'Build Artifacts'. Select 'KnowWE-App:war exploded'. Click on the 'Deployment' tab and add 'KnowWE-App:war exploded'. Select as Application Context /KnowWE and click on Ok. Build KnowWE by clicking on the green arrow right next to our new tomcat configuration.
+
+
+!!!Eclipse
+
+At denkbares, we currently don't use eclipse for the development of d3web-KnowWE, but it should work anyway and some users are successfully using it. Here a short guide from Alberto (aarmijo on github):
+
+!! Set-up
+
+* [Adoptium Temurin 17 JDK|https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.2%2B8/OpenJDK17U-jdk_x64_windows_hotspot_17.0.2_8.msi]
+* [Tomcat 9.0.26|https://tomcat.apache.org/download-90.cgi]
+* [Eclipse 2022-03|https://www.eclipse.org/downloads/packages/release/2022-03/m2}
+* [Maven 3.6.1. |https://archive.apache.org/dist/maven/maven-3/] (The embedded maven in eclipse seems to have some issues when constraining the compilation to JDK14)
+
+!! Instructions
+
+* Import d3web-KnowWE project as a Maven project. File -> Import -> Existing Maven Projects
+* Window -> Preferences -> Java -> Installed JREs. Add Adoptium JDK and select it
+* Make sure that the ‘JRE System Library’ of each maven project is set to ‘JavaSE-14’ compliance level. Also make sure that in maven project properties, the JDK compliance is limited to 14 in the ‘Java Compiler’ section
+* In KnowWE-App project, under Maven Dependencies properties -> Use Maven Project settings -> Active Maven Profiles, set ‘core-plugins’ as active profile. This will copy the core dependencies to the KnowWE-App application when deploying it into Tomcat
+* Under KnowWE-App project properties -> Java Build Path -> Source, add the next Folder: src/resources/local/WEB-INF/classes. This will copy the jspwiki.properties to the KnowWE-App application when deploying it into Tomcat. Also follow the ste [Create copy of jspwiki-custom.properties|How-To Create Your Own Workspace#Create copy of jspwiki-custom.properties] of the IntelliJ-part of the guide.
+* Add the run configuration to build the project: Run -> Run Configurations -> Double click on Maven Build to create a new configuration. Set the Base directory: ${workspace_loc:/KnowWE}; Goals: install; Profiles: core-plugins; Skip Tests. Under JRE -> Execution environment, select JavaSE-14. Select Maven Runtime -> External (It seems that EMBEDDED flavour is not well managed by Eclipse and the compilation is not constrained to version 14)
+* Click Run to build the project
+* Under the tab Servers, add a Tomcat9 web application server and select the location where you downloaded it. Add KnowWE-App as resource to the right ‘Configured’ section. Under Edit Server Runtime select as JRE the installed JDK 1.7.
+* Click Start to launch the server. Open the application in http://localhost:8080/KnowWE-App
+
+%%tags
+howto create Workspace
+%

@@ -1,0 +1,7 @@
+%%Todo
+"KnowWEPlugin listplugins" currently isn't working, added a ticket to bugzilla: [https://tickets.denkbares.com/show_bug.cgi?id=543]
+%
+
+%%tags
+Plugins Taghandler
+%

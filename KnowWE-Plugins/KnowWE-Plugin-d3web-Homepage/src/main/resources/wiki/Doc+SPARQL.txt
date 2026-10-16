@@ -1,0 +1,70 @@
+[{TableOfContents }]
+
+
+!!! Definition
+
+The sparql markup allows to execute a query on the ontology repository. The result of the query will be rendered into the wiki page (instead of the query).
+
+{{{
+%%sparql...
+}}}
+
+After the SPARQL statement the following annotations can be inserted:
+
+|| Annotation	|| Description	
+|  @name	|  Gives the SPARQL the specified name. The name can be used as reference in other markups (like [InlineSparql|Doc InlineSparql])	
+|  @zebramode	|  Renders the result table in zebra-style (gray/white).	
+|  @border	|  A visual border is painted around the result table cells.	
+|  @rawOutput	|  No abbreviations are used in the result table, but the full content (of literals for example) is printed.	
+|  @showQuery	|  Besides the results of the query, also the query is shown in the view mode of the wiki.	
+|  @sorting	|  The result table is sorted.	
+|  @timeout 	|  The SPARQL gets more time to calculate the results; parameter in milliseconds.
+
+
+
+!!! Example
+
+The sparql markup allows full support of the SPARQL 1.1. query language specification, which can be found here: [http://www.w3.org/TR/sparql11-query/]
+
+The following simple example shows a query selecting all instances of the class Person:
+
+{{{
+%%sparql
+SELECT ?x  
+WHERE {
+  ?x rdf:type lns:Person .
+}
+@name: exampleQuery
+@zebramode: true
+@border: true 
+%
+}}}
+
+In the view mode the results of the query are shown.
+
+
+!!! Hierarchy Table Example
+
+[Demo - Simpsons]
+
+{{{
+SELECT (SAMPLE(?sub) as ?sub) (SAMPLE(?par) as ?par) (SAMPLE(?name) as ?name) ?concept
+WHERE {
+  {
+    # bind si:abraham as root node
+    BIND (si:abraham as ?sub) .  
+  }
+  UNION
+  {
+    # collect all parent child relations (will be conntected automagically to si:abraham)
+    ?sub si:parent ?par ;
+  }
+  # display name and concept as table columns
+  ?sub  rdfs:label ?name .
+  BIND (?sub as ?concept) .
+} GROUP BY ?concept
+}}}
+
+!!! See also
+
+* [InlineSparql|Doc InlineSparql]

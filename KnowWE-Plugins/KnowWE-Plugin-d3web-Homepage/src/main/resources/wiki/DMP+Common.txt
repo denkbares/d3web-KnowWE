@@ -1,0 +1,55 @@
+%%Package dmp_common
+
+%%Question
+Choose Domain [mc]
+- Domain1
+- Domain2
+%
+
+
+%%DiaFlux
+<flowchart fcid="flow_2093a0a2" name="Domain Selector" icon="sanduhr.gif" width="257" height="297" autostart="false" idCounter="8">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="90" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="67" top="108"></position>
+		<action markup="KnOffice"><![CDATA["Choose Domain"]]></action>
+	</node>
+
+	<node fcid="#node_4">
+		<position left="20" top="267"></position>
+		<exit>Domain1</exit>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="169" top="267"></position>
+		<exit>Domain2</exit>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_6">
+		<origin>#node_3</origin>
+		<target>#node_4</target>
+		<guard markup="KnOffice"><![CDATA["Choose Domain" = "Domain1"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_7">
+		<origin>#node_3</origin>
+		<target>#node_5</target>
+		<guard markup="KnOffice"><![CDATA["Choose Domain" = "Domain2"]]></guard>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_2</origin>
+		<target>#node_3</target>
+	</edge>
+
+</flowchart> 
+  
+%

@@ -1,0 +1,118 @@
+!!! Extension Points
+
+A plugin consists of an XML file and a collection of class files (compiled source code).
+The XML file specifies, which points in the source code are extended by the classes. 
+Also, new points in code can be defined that are extensible. 
+We call these points within the code {{ExtensionPoints}}, and we call the classes extending these points {{Extensions}}. 
+The structure of the XML file is described in more detail in [plugin.xml|Meaning of plugin.xml].
+
+For each {{ExtensionPoint}} there exists an interface, that have to be implemented by the class extending the {{ExtensionPoint}}. 
+Then, the {{PluginManager}} provides an array of instances, that define this {{ExtensionPoint}}. 
+The array is sorted according to the priority of the extensions. 
+The priority is defined in the XML file as well as the name and the description of the extension.
+
+In addition, it is possible to define further attributes for an {{ExtensionPoint}}. 
+These attributes have to be included in the XML file of the implementing extensions.
+
+!! Basic Parameters
+
+Every extension defines a set of standard parameters that enabled d3web to use the extension well. Depending on the extension point, there might be additional parameters. The most frequently parameters are as following:
+
+|| Parameter || Description
+| class	| Defines the class that is used to instantiate the extension's implementation. The class denoted here must implement the java interface that belongs to this extension point. Please note that most extensions will be instantiated by their default constructor.
+| name	| A unique name of the extension in this plugin.xml. Usually the name shall be unique at all, but this is not necessarily required.
+| description	| A brief description of the plugin. The description is in some cases also used to be displayed to the user, so use them carefully. Simple html markups are allowed to be used in the description (such as <b>,<br>,<code>,<ol>,<ul>, ...)
+| version	| Version of this extension implementation.
+| priority	| The priority of the extension within the same extension point. The lower the number, the more the extension is prioritized. 
+| scope		| The scope of this extension. The scope is only used for KnowWE-extensions. Defines a set of sections, where this extension should be applied to.
+
+!! Working with Priorities
+
+The priority of the extension is a number compared to all the other priorities within the same extension point. The lower the number, the more the extension is prioritized. Most extensions use 5, but always use a number between 1 and 9. Fractional numbers are allowed. 
+
+The priority defines the order the extensions are considered by the specific extension points. Depending on the extension point different priorities may lead to completely different results. See the table below to get some idea how priorities will effect the behavior:
+
+|| Extension Point	|| Effect of Priority	
+|  ToolProvider	|  Defines the order tool menu items in the tool menu of a specific section. The tool menu items from prioritized ToolProviders are displayed before other ones.	
+|  Renderer	|  For a specific section type (based on a matching scope, see below), only the renderer with the highest priority is selected to render the section. With more prioritized implementations you can redefine the rendering of a wiki page.	
+
+!! Working with Scope
+
+A scope is an selector of a specific subset of KDOM nodes. Its selection is based on the type of the KDOM nodes itself as well as on the type of the KDOM node's anchestors. It can be compared a little bit to the css selectors.
+
+The scope is a path of those KDOM node types that should be matched/selected. The path can be relative (anywhere in the KDOM tree) or root based. Specific path wildcards as "*" and "**" are allowed.
+
+Synopsis:
+
+*The elements within the path are separated by "/".
+*If the scope starts with "/" it must match its path from the KDOM root.
+*Each of the path entries name a KDOM node, either by naming the "name" of the Type (see Type.getName() or its simple class name or the simple class name of any of it's super-classes or interfaces.
+*For default markups the name of the markup section can be used. For it's annotations the annotation name can be used. For a default markup content section "content" can be used. (e.g. "solution/package" matches the package declaration of the solution markup).
+*The matching is done case insensitive.
+*If you specify a "*" wildcard as a path entry (".../ * /...") any section is matched to it.
+*If you specify a "**" wildcard as a path entry (".../ ** /...") , any sub-path is matched to it. Especially also the empty sub-path is matched. (If you want to *have at least one section in between, use ".../ ** / * /...".) 
+
+!! Kinds of Scopes
+There are only a few scopes. Here are some descriptions for the most important scopes.
+
+! Scope for Types
+
+For the interface [Type|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/Type.html] scope defines the enclosing type. For example root is the enclosing type of HeaderType. This means that the sections of type HeaderType are located in the root-level of the wiki page, instead of being a sub-section of sections of any other specific type.
+
+For the interface [Type|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/Type.html] scope defines the father type. For example root is the father of HeaderType.
+
+%%prettify 
+{{{
+<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+	id="HeaderType">
+	<parameter id="class" value="de.knowwe.jspwiki.types.HeaderType" />
+	<parameter id="name" value="HeaderType" />
+	<parameter id="description" value="Represents a HeaderType in KDOM" />
+	<parameter id="version" value="0.2" />
+	<parameter id="priority" value="2.1" />
+	<parameter id="scope" value="root" />
+</extension>
+}}}
+/%
+
+! Scope for ToolProvider
+
+For the interface [ToolProvider|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/tools/ToolProvider.html] scope defines for which markup(s) the tools should appear in the tool menu. In the example below, the tools of WikiBookDownloadProvider are shown for the WikiBook-markup.
+
+
+%%prettify 
+{{{
+<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+	id="WikiBookDownloadProvider">
+	<parameter id="class"
+		value="com.denkbares.wikibook.WikiBookDownloadProvider" />
+	<parameter id="name" value="WikiBookDownloadProvider" />
+	<parameter id="description"
+		value="Offer a download button to download the Wikibook." />
+	<parameter id="version" value="1.0" />
+	<parameter id="priority" value="5" />
+	<parameter id="scope" value="WikiBook" />
+</extension>
+}}}
+/%
+
+! Scope for Renderer
+
+For the interface [Renderer|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/rendering/Renderer.html] scope defines which type should be rendered by the Renderer. The example below defines, that the root section (the whole wiki-page content) is rendered by an instance of the class RootTypeIdRenderer.
+
+%%prettify 
+{{{
+<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="RootTypeIdRenderer">
+	<parameter id="class" value="com.denkbares.editmode.RootTypeIdRenderer" />
+	<parameter id="name" value="RootTypeIdRenderer" />
+	<parameter id="description" value="Adds ids to rendered sections to allow editing in EditMode" />
+	<parameter id="version" value="1.0" />
+	<parameter id="priority" value="5" />
+	<parameter id="scope" value="root" /> 
+</extension>
+}}}
+/%
+
+%%tags
+howto create ExtensionPoints
+%

@@ -1,0 +1,74 @@
+[{TableOfContents }]
+
+
+!!!General
+
+Note for Mac-Users: Instead of the CTRL key, you can normally also use the CMD key.
+
+
+!!Start editing
+
+If you are viewing a page in KnowWE and have the right to edit the page:
+
+* __CTRL + D:__ Start the EditMode. After starting it, click any section of the page to edit it.
+* __CTRL + E:__ Start the default JSP-Wiki editing. The whole text of the page is shown in a plain text editor.
+
+
+!!Common to all editors
+
+The hot keys described here are available in all situation where text of the wiki page is edited in KnowWE
+
+* __CTRL + S:__ Saves the changes and closes the edit view.
+* __CTRL + ESC/Q:__ Cancels and closes the edit view without saving.
+
+* __CTRL + Z:__ Undo the latest changes one by one.
+* __CTRL + Y or CTRL + SHIFT + Z:__ Redo undone changes.
+
+* __ALT + UP/DOWN:__ Swap the current line with the line above/below.
+
+* __CTRL/ALT + D:__ Delete the current line.
+
+* __CTRL/ALT + SPACEBAR:__ Show completion suggestions (e.g. completing a question in a rule or a link to another page)
+
+Additionally to the common hot keys, the following keys are available where text of the wiki page is edited in KnowWE and while more than one line is selected.
+
+* __-/#/*__: Adds "-/#/*" at the beginning of the selected lines.
+* __TAB__: Adds two white spaces at the beginning of the selected lines.
+* __TAB + SHIFT__: Removes "  /-/#/*" at the beginning of the selected lines.
+* __SPACE__: Adds one white space at the beginning of the selected lines.
+* __SPACE + SHIFT__: Removes " /-/#/*" at the beginning of the selected lines.
+
+
+!!!Table Editor
+
+Additionally to the common hot keys, the following keys are available while editing tables in the table editor.
+
+* __TAB:__ Move to the next cell. Creates new rows if you are on the last cell of the table.
+* __UP/DOWN/LEFT/RIGHT:__ Navigate between cells.
+* __ENTER:__ Switch between editing and not editing the selected cell.
+* __SHIFT + ENTER:__ Inserts a line break in the currently edited cell.
+
+* __ALT + UP/DOWN__: Swap the current line with the line above/below.
+* __ALT + LEFT/RIGHT__: Swap the current column with the column on the left.
+* __ALT + RIGHT__: Swap the current column with the column on the right.
+
+* __SHIFT + UP/DOWN/LEFT/RIGHT__: Select multiple cells 
+* __CTRL + SHIFT + UP/DOWN/LEFT/RIGHT__: Select whole column/row
+
+* __CTRL + C__: Copy the selected cells.
+* __CTRL + V__: Insert the copied cells.
+
+
+!!!DiaFlux Editor
+
+Additionally to the common hot keys, the following keys are available while editing flow charts in the table editor.
+
+* __CTRL + A:__ Select all nodes (You can also lasso select multiple nodes with CLICK + DRAG).
+* __UP/DOWN/LEFT/RIGHT:__ Move the currently selected nodes. (You can also move the selected nodes by CLICK + DRAG on one of them).
+
+%%tags 
+  hot keys
+  hotkeys
+  hot_keys
+  shortcuts
+%

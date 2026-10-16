@@ -1,0 +1,165 @@
+!!! Version: 3.0 Q (Release 2011-05-06)
+
+d3web is an extensible Java API for running knowledge-based systems. The Semantic Wiki KnowWE builds on the engine d3web and offers the web-based and distributed development of knowledge bases.
+
+This distribution comes with the following files:
+
+| Release Notes.pdf | This document.
+| Licenses.pdf      | License information of the d3web and KnowWE systems and all external libraries.\\Please find the license texts in the directory {{license_texts}}.
+| Quickstart_d3web | A first steps installation readme for using the d3web libraries
+| Quickstart_KnowWE.pdf | A first steps manual for installing and starting KnowWE
+| ''d3web''             | Folder containing the binaries (libraries), the sources, and the JavaDoc information of d3web 
+| ''KnowWE''      | Folder containing an installation archive (zip) as binary, the sources, and the JavaDoc information of KnowWE
+| ''quality_report''    | Folder containing all files of the quality assessment report for this release. It contains the test protocols of the system tests (based on Fitnesse and the manual system tests), a summary of the integration tests, and a detailed analysis of the unit tests and the static code analysis. 
+
+!!! System Requirements
+Installation of d3web/KnowWE requires the Java Platform, Standard Edition
+JDK 6 Update 21 or better. For operating systems, the distribution runs with MS-Windows XP, Windows 7 and Mac OS 10.6. Linux is not officially supported.
+We officially support Firefox 3.6 or better but most parts are also working with Google Chrome. Please note, that we do not officially support Internet Explorer at the moment.
+
+
+!!! What's New
+The release includes the following notable features: 
+
+!! d3web
+* Faster reasoning due to refactoring of the blackboard architecture.
+* DiaFlux: Improved version of the DiaFlux problem-solver.
+* Improvement of test coverage and code analysis results.
+* Small API changes for a better access to the terminology and the problem-solving knowledge.
+* New API for test case analysis of problem-solving sessions (see EmpiricalTesting).
+
+!! KnowWE
+
+* KnowledgeBase tag: Names of downloaded knowledge base can be specified in advance.
+* ShowSolutions tag: Restrict presented abstractions and define the number of digits for displayed numerical questions. 
+* ObjectInfo: You can click on the definition of terminology objects in order to open an object info page: Here references, definitions, and further information of this object is shown.
+* DiaFlux: Much improved editor for creating and editing DiaFlux models, better editing possibilities and new icons.  A renderer highlights the current flow in the view mode of the article, when a problem-solving session is executed. 
+* Continuous integration (still beta): New CI damon designed for placement in left menu. Some extensions of tests.
+
+!!! Fixed Issues
+
+The IDs of the listed issues correspond to the ticket tracking system available at [https://tickets.denkbares.com].
+
+||ID ||Product|| Short description || Resolution
+| 18 | d3web | Internationalization of terminological knowledge base objects | FIXED
+| 32 | d3web | TerminologyObject.getKnowledgeStore() | FIXED
+| 33 | d3web | Remove deprecated knowledge component Num2Choice from d3web core | FIXED
+| 52 | d3web | Replace PSMethodShared with Properties | FIXED
+| 120 | d3web | Revise list of PSMethods in DefaultSession | FIXED
+| 135 | d3web | Rename "TestSuite" to "TestCase" in d3web-EmpiricalTesting | FIXED
+| 159 | d3web | Init-PSMethod does not use correct session time when setting the initial values | FIXED
+| 176 | d3web | Assertion Exception caused by propagation refactoring | FIXED
+| 194 | d3web | Empirical tester does not properly handle MC questions | FIXED
+| 68 | KnowWE | Match IDObjects in all markups case insensitive: warn if case differs | FIXED
+| 82 | KnowWE | %%Rule markup does not support exception conditions | FIXED
+| 91 | KnowWE | [[QuickI] Cannot answer multiple num. questions | FIXED
+| 94 | KnowWE | [[DiaFlux] Sometimes Flowchart DialogRendering has to be manually reloaded | FIXED
+| 116 | KnowWE | Delete convenience methods in KnowWEParameter-Map | INVALID
+| 128 | KnowWE | [[QuickI] Layout is broken when using DefaultMarkup to embedd it | INVALID
+| 140 | KnowWE | Inconsistent Coloring for d3web-Objects | FIXED
+| 147 | KnowWE | [[DiaFlux] Editor does not show questionnaire if master article name contains "&" | FIXED
+| 148 | KnowWE | [[DiaFlux] Apple's "command"-key is not recognized in DiaFlux editor | WORKSFORME
+| 149 | KnowWE | [[DiaFlux] Preview does not reflect changes in knowledge base | FIXED
+| 150 | KnowWE | [[DiaFlux] Reloading page required after flowchart editing | FIXED
+| 153 | KnowWE | Incremental parsing issue on Question markup | FIXED
+| 155 | KnowWE | Link value is chopped in property definition due to unintended recognition of a comment | FIXED
+| 156 | KnowWE | [[Rule] Rule actions to set negative numbers are not working | FIXED
+| 158 | KnowWE | [[Variable] Quotes are (incorrectly) truncated when a formula begins and ends with an " quote. | FIXED
+| 160 | KnowWE | Code completion inserts wrong quotes | FIXED
+| 168 | KnowWE | [[DiaFlux] Newly created edges should have no label when the source is not a decision node. | FIXED
+| 171 | KnowWE | [[Rule] Temporal sub-conditions are rendered as links in the view mode | FIXED
+| 172 | KnowWE | [[DiaFlux] "%%DiaFlux %" leads to defect wiki markup when creating a flowchart | FIXED
+| 175 | KnowWE | Session differs between KnowWE and Denkbares-Dialog | FIXED
+| 180 | KnowWE | [[Rule] Commenting-out a rule is ignored by KnowWE | FIXED
+| 182 | KnowWE | A question name starting with '#' breaks the ObjectInfoPage | FIXED
+| 183 | KnowWE | ShowSolutions panel can restrict shown abstractions to specified questionnaires | FIXED
+| 187 | KnowWE | [[DiaFlux] Terminology objects with malicious names break editor | FIXED
+| 188 | KnowWE | [[DiaFlux] Tooltip not shown when node is selected | WONTFIX
+| 190 | KnowWE | KnowWE startup produces erroneous knowledge base | FIXED
+| 195 | KnowWE | [[DiaFlux] Flowchart's object tree not working for question containing a "/" character | FIXED
+| 196 | KnowWE | [[Rule] Wrong order of non-terminal conditions during parsing | FIXED
+| 201 | KnowWE | Edit mode unveils ugly plugin errors | FIXED
+| 202 | KnowWE | [[DiaFlux] Abstraction node prevents editing of actions with special chars | FIXED
+| 204 | KnowWE | Property markup: Long description texts | FIXED
+| 205 | KnowWE | [[DiaFlux] Content of some nodes dissapear after saving another Flowchart. | FIXED
+| 208 | KnowWE | [[DiaFlux] Abstraction nodes break when containing special characters | FIXED
+| 209 | KnowWE | [[Question] Questionnaires with special characters cause parsing problems | FIXED
+| 214 | KnowWE | [[DiaFlux] Bottom right resizing triangle in DiaFlux edit panel weirdly collapses/expands panel at click | WONTFIX
+
+
+!!! Known Issues
+
+The IDs of the listed issues correspond to the ticket tracking system available at [https://tickets.denkbares.com].
+
+||ID||Product||Severity||Title||Release Comment
+| 104 | KnowWE | Average problem | Malicious HTML code in wiki pages/requests | For relevant KnowWE applications we recommend to secure the wiki server by htaccess controls and to provide user authentication.
+| 132 | KnowWE | Average problem | KnowWE / d3web session identifies the users by their IP adresses | This issue may be a problem when users behind a proxy use KnowWE.
+| 117 | KnowWE | Lightweight problem | URIDecoding of request parameters is done twice: once by Tomcat and once in KnowWEParameterMap | For the currently deployed plugins this issue is resolved by workarounds. In further releases this problem should be fixed in a fundamental manner.
+| 141 | KnowWE | minor | Wrong resolution of case-sensitive article names | At the moment users should be aware of the case-sensitiveness when opening articles by entering the URL directly in the browser.
+| 142 | KnowWE | minor | Packages and articles cannot share the same name | Workaround: Simply choose a package name that you do not need to use as a name for an article.
+| 146 | KnowWE | minor | [[Chrome] Arrows/guards layout issues in DiaFlux after reload | Chrome is not officially supported in Q. Furthermore, the issue is almost non-existent in many cases.
+| 152 | KnowWE | minor | Deleting attachments of an article can yield broken page view | This is still an open issue with JSPWiki. Workaround: In the rare cases you have to delete the attachment folder in the respective wikicontent directory on your server. Sometimes restarting KnowWE also helps.
+| 215 | KnowWE | minor | [[Chrome] Erroneous rendering of "My prefs" button in Chrome | This problem does not affect the functional part of the knowledge engineering task.
+| 108 | KnowWE | minor | Page rename yields compile errors when the renamed page defines the knowledge base | Workaround: In these rare cases simply restart KnowWE.
+| 81 | KnowWE | minor | ReRenderSectionMarkerRenderer should support "external" wiki pages | For the Q release no primary plugins are affected by this issue.
+| 212 | KnowWE | trivial | [[DiaFlux] Start and Exit nodes do not allow certain special characters | Workaround: Please try to avoid special characters for names of Start/Exit nodes  until the bugfix.
+| 213 | KnowWE | trivial | [[Internet Explorer] DiaFlux edit panel does not work with IE9 | We do not officially support the Internet Explorer for the release Q.
+| 136 | KnowWE | trivial | [[Internet Explorer] DefaultMarkup-ToolMenu is "shifted" | We do not officially support the Internet Explorer for the release Q.
+| 138 | KnowWE | trivial | [[Internet Explorer] Rendering output lacks a lot of line breaks | We do not officially support the Internet Explorer for the release Q.
+| 161 | KnowWE | trivial | KnowWE startup causes 'INVALID SECTIONIZING' exception | This warning does not affect the expected knowledge engineering behavior.
+| 177 | KnowWE | trivial | Semantic Annotation Markup renders error "intermediateOWLObject not found" in any case | In current knowledge base development, the semantic extensions are not used.
+| 197 | KnowWE | trivial | "Same TermDefinition"-warnings at KnowWE startup | This warning does not affect the correct behavior of the knowledge engineering task.
+| 193 | KnowWE | trivial | "New" buttons are not syned in QuickI and denkbares Dialog | Workaround: When using both dialog interfaces and when trying to clear the current session, then please use the "New" button of the denkbares dialog.
+
+
+
+!!! Delivered Open-Source Projects  
+
+||Project Name || Contents || QA || State
+| d3web-EmpiricalTesting | Validation of knowledge bases using test cases |  | release
+| d3web-GlobalTests | A summarizing project for integration tests combining different projects and components, respectively. |   | beta
+| d3web-Kernel | Knowledge representation, basic problem-solvers, session management, default dialog control | X | release
+| d3web-Persistence | XML knowledge base storage (archived as Jar) | X | release
+| d3web-Plugin-BasicProperties | Definition of properties for terminology objects using the plugin.xml file | X | release
+| d3web-Plugin-CostBenefit | Implementation of a dialog strategy (indication of questions) based on a cost-benefit principle. |   | beta
+| d3web-Plugin-DiaFlux | Reasoning problem-solver for the DiaFlux language. | X | release
+| d3web-Plugin-Kernel-ExtensionPoints | The extension possibilities of the d3web kernel defined in the plugin.xml file. | X | release
+| d3web-Plugin-Persistence-Basic | see ''d3web-Persistence'' | X | release
+| d3web-Plugin-Persistence-ExtensionPoints | see ''d3web-Persistence'' | X | release
+| d3web-Plugin-SessionPersistence-Basic | see ''d3web-SessionPersistence'' | X |release
+| d3web-Plugin-SessionPersistence-ExtensionPoints | see ''d3web-SessionPersistence'' | X |release
+| d3web-Plugin-XCL | The set-covering model reasoning engine implemented as problem-solver plugin for the d3web Kernel. |  | beta
+| d3web-PluginManager | Basic management for connecting plugins to the d3web kernel| x| release
+| d3web-SessionPersistence | IO components for loading and saving standard cases (i.e. sessions) |X | release
+| KnowWE-App | Framework app of KnowWE | X | release
+| KnowWE-core | Basic engines for parsing and the management of wiki content | X | release
+| KnowWE-GlobalTestUtils | Small set of classes for testing the KnowWE implementation |  | beta
+| KnowWE-KDOMParseUtils | Utils for internal data structure of KnowWE |  | beta
+| KnowWE-Plugin-CI4KE | Plugin for implementing the continuous integration dashboard and engine of KnowWE |  | beta
+| KnowWE-Plugin-Core | Core plugins and handlers of KnowWE | X | release
+| KnowWE-Plugin-d3web-basic | The fundamental components to integrate the d3web engine into KnowWE | X | release
+| KnowWE-Plugin-d3web-MarkupSet | Standard markup components used by some KnowWE/d3web plugins | X | release
+| KnowWE-Plugin-ExtensionPoints | All extension possibilities for plugging KnowWE | X | release
+| KnowWE-Plugin-Flowchart | Authoring plugin for KnowWE of the DiaFlux language | X | release
+| KnowWE-Plugin-JSPWiki-Connector | The connector between the parent wiki engine JSPWiki and the extension KnowWE | X | release
+| KnowWE-Plugin-KBRenderer | Plugin for a very preliminary presentation of the knowledge base. |  | beta
+| KnowWE-Plugin-QuickInterview | A plugin to quickly enter a problem-solving session | X | release
+| KnowWE-Plugin-SemanticCore | Semantic extensions of KnowWE to represent ontologies | X | beta
+| KnowWE-Plugin-Tagging | Tagging plugin of KnowWE | X | beta
+| KnowWE-Plugin-TestCase | Entering and using test cases in KnowWE |  | release
+| KnowWE-Resources | Template files for the KnowWE server engine | X | release
+
+__Legend:__
+
+||Project Name | Corresponds to the name of the Maven project, i.e., the name of the source code project. For simplicity, plugin postfixes are omitted (e.g., *jpf-plugin)
+||Contents | A further description of the contents of this module
+||QA    | Under regulation of the project contract. All contracted projects are certainly subject of the quality management system. Non-contracted modules may be subject to changes in the proposed release plan.
+||State | Quality assessment of the project:\\__no__: Not officially included, experimental demo\\__alpha__: Basic functions included, API to be considered as "unstable" documentation partly available/not available mostly untested\\__beta__: All functions are included documentation available functionality tested on unit level\\__release__: All functions are included documentation available functionality tested on system level (integration tests) internal processes fully applied (issue management, development process)
+
+
+!!! Resources and Links
+* A wiki for developers: Start using the APIs of d3web and KnowWE:\\ [http://d3webwiki.informatik.uni-wuerzburg.de|http://d3webwiki.informatik.uni-wuerzburg.de]
+* The official SourceForge website of d3web: \\[http://d3web.sourceforge.net|http://d3web.sourceforge.net]
+* The official SourceForge website of KnowWE: \\[http://knowwe.sourceforge.net|http://knowwe.sourceforge.net]
+
+%%Tags release_notes q 

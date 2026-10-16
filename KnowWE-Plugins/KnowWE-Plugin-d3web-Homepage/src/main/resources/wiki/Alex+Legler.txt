@@ -1,0 +1,21 @@
+[{Image src='alex-legler.png' align='left' width='100px'}]
+
+
+Senior Consultant with denkbares
+
+Träger des KnowWE-Verdienstkreuzes erster Klasse. :)
+
+\\
+
+!Contact
+denkbares GmbH \\
+Friedrich-Bergius-Ring 15 \\
+97076 Würzburg \\
+
+alex.legler (at) denkbares (dot) com \\
+http://www.denkbares.com
+
+
+%%TodoList 
+  @user: Alex Legler
+%

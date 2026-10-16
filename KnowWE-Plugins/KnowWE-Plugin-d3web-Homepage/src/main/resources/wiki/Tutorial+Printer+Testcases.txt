@@ -1,0 +1,106 @@
+!!! Defining Automated Test Cases
+
+It is possible to define test cases for a knowledge base within the wiki.
+For each test case the answers of questions together with the expected solutions are described.
+In the examples below, one test case for an "unpowered printer" and one test case for an "unconnected printer" is depicted.
+
+{{{
+%%TestCase
+No power on printer {
+   Please specify your problem = Printer does not print,
+   Please check the power supply of the printer = Printer is not connected or power is off :
+   No power supply (established);
+}
+%
+
+%%TestCase
+Unconnected printer {
+   Please specify your problem = Printer does not print,
+   Please check the power supply of the printer = Printer is connected and power is on,
+   How is the printer connected to your computer = Connected by cable,
+   Is the cable plugged into the printer and the computer = No :
+   Cable not connected (established);
+}
+%
+}}}
+
+When inserting the test cases into an article, they are printed as below:
+
+%%TestCase
+No power on printer {
+   Please specify your problem = Printer does not print,
+   Please check the power supply of the printer = Printer is not connected or power is off :
+   No power supply (established);
+}
+%
+
+%%TestCase
+Unconnected printer {
+   Please specify your problem = Printer does not print,
+   Please check the power supply of the printer = Printer is connected and power is on,
+   How is the printer connected to your computer = Connected by cable,
+   Is the cable plugged into the printer and the computer = No :
+   Cable not connected (established);
+}
+%
+
+
+!!! Running Test Cases
+
+A test case player can be inserted into an article by using the following markup
+
+{{{
+%%TestCasePlayer 
+@uses: Printer_Demo
+%
+}}}
+
+Please note, that in the {{uses}} annotation the package name of your knowledge base project needs for be defined.
+When saving the article, the following interface is shown. 
+Here users can play the test cases automatically and see whether the expected solutions are derived by the current version of the knowledge base.
+
+%%TestCasePlayer 
+%
+
+
+!!! Continuous Integration of Knowledge Bases
+
+The execution of test test cases can be automated by creating a continuous integration dashboard.
+Here, some static verification methods can be applied as well as the test cases.
+The following markup introduces a continuous integration dashboard:
+
+{{{
+%%CIDashboard 
+  @trigger: onSave "Tutorial Printer Problems"
+  @name: Continuous Integration of Printer Problems Knowledge Base
+  
+  @test ArticleHasErrors "Tutorial Printer Problems"
+  @test TestCase "Tutorial Printer Testcases/No power on printer" "Tutorial Printer Problems"
+  @test TestCase "Tutorial Printer Testcases/Unconnected printer" "Tutorial Printer Problems"
+  
+  @test CombinedFlowRuleAbstraction "Tutorial Printer Problems"
+  @test CombinedFlowRuleSolution "Tutorial Printer Problems"
+  @test NoAutostart "Tutorial Printer Problems"
+  @test UnusedNode "Tutorial Printer Problems"
+  @test UnusedFlow "Tutorial Printer Problems"
+%
+}}}
+
+When saving the article, the following dashboard appears:
+
+%%CIDashboard 
+  @trigger: onSave "Tutorial Printer Problems"
+  @name: Continuous Integration of Printer Problems Knowledge Base
+  
+  @test ArticleHasErrors "Tutorial Printer Problems"
+  @test TestCase "Tutorial Printer Testcases/No power on printer" "Tutorial Printer Problems"
+  @test TestCase "Tutorial Printer Testcases/Unconnected printer" "Tutorial Printer Problems"
+  
+  @test CombinedFlowRuleAbstraction "Tutorial Printer Problems"
+  @test CombinedFlowRuleSolution "Tutorial Printer Problems"
+  @test NoAutostart "Tutorial Printer Problems"
+  @test UnusedNode "Tutorial Printer Problems"
+  @test UnusedFlow "Tutorial Printer Problems"
+%
+
+%%Package Printer_Demo

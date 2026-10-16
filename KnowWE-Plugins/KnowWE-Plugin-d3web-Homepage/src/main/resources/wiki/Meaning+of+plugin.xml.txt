@@ -1,0 +1,73 @@
+!!! The plugin.xml
+The d3web software makes heavy use of plugins to extend its functionalities, using the JPF plugin-framework ([JPF|http://jpf.sourceforge.net/]). The plugins need to be configured using plugin.xml files in each binary project (jar-archive). 
+
+
+
+!! Add extensions using an existing extension-point
+
+A plugin can define new extension points, but can also extend existing extension points of other plugins.
+The defined extension point specifies that each extension has to give values for class, name, description, version, and priority.
+This has to be defined by each extension point; an extension point further can require additional value, for example the specification of a file name.
+
+This plugin has the ID {{de.d3web.casepersistence}} and defines the {{ExtensionPoint}} "CasePersistenceHandler". 
+In general, a plugin can define multiple extension points. 
+Within the plugin, the IDs of the extension points have to be unique. 
+However, two different plugins may use the same ID for different extension points, since the ID of an extension point is always evaluated together with the ID of the plugin.
+This is shown by the following extension of the extension point above:
+
+%%prettify 
+{{{
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="de.d3web.casepersistence.basic" version="0.0.1">
+	
+	<requires>
+		<import plugin-id="de.d3web.cpers.xml" />
+	</requires>
+	
+	<runtime>
+		<library id="de.d3web.cpers.xml" path="." type="code">
+			<export prefix="*" />
+		</library>
+	</runtime>
+	
+	<extension plugin-id="de.d3web.casepersistence" point-id="CasePersistenceHandler"
+		id="FactHandler">
+		<parameter id="class"
+			value="de.d3web.cpers.xml.FactHandler" />
+		<parameter id="name" value="FactHandler" />
+		<parameter id="description" value="Handler for facts" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	
+</plugin>
+}}}
+/%
+
+
+
+!! Define new extension-points
+A minimalistic example defining only one {{ExtensionPoint}} is given as follows. See also [How-To Extension Points] for more details on writing your own extensions:
+
+%%prettify 
+{{{
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<!-- This plugin only defines extension points for CasePersistenceHandler and CaseConversionHandler. -->
+<plugin id="de.d3web.casepersistence" version="0.0.1">
+	
+	<extension-point id="CasePersistenceHandler">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
+	
+</plugin>
+}}}
+/%
+%%tags
+plugin.xml
+%

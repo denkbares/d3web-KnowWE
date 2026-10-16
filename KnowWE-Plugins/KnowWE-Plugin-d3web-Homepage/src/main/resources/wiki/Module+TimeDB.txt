@@ -1,0 +1,31 @@
+!Overview
+
+TimeDB is a Plugin for d3web and is also supported with Markups for KnowWE.
+TimeDB allows for time based reasoning by storing a history for each value used in d3web.
+
+The following projects are relevant for this module.
+
+%%sparql 
+  SELECT ?Plugin WHERE {
+      ?Plugin lns:partOf lns:TimeDB
+  }
+  ORDER BY ?Plugin
+  
+%
+
+
+!Further Information
+
+The following article describes which functions and checks can be used with the TimeDB module: [Doc Expressions]
+
+
+
+%%collapsebox-closed
+!Ontology
+def TimeDB
+> TimeDB type:: Module
+def d3web-Plugin-TimeDB
+def KnowWE-Plugin-TimeDB
+> d3web-Plugin-TimeDB partOf:: TimeDB
+> KnowWE-Plugin-TimeDB partOf:: TimeDB
+/%

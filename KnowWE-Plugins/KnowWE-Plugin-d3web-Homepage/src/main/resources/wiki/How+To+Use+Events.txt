@@ -1,0 +1,105 @@
+!! How does the Event Mechanism in KnowWE function?
+
+KnowWE has a very simple Event Mechanism consisting of Events, EventListeners and an EventManager. Events can be fired almost everywhere in the KnowWE code. To fire an Event just call:
+%%prettify{{{
+    EventManager.getInstance().fireEvent(user, section, event);
+}}}/%
+
+where section can be null if no section is available. Please note that many events e.g. InitEvent have Singleton instances.
+
+
+!! How to write a new Event
+
+Create a new class extending the class ''Event''. Due to Event is an empty class you can implement your event as you like. Please consider a Singleton implementation:
+%%prettify{{{
+public class InitEvent extends Event {
+	
+	private static InitEvent instance = new InitEvent(); 
+	
+	private InitEvent() {}
+	
+	public static InitEvent getInstance() {
+		return instance;
+	}
+	
+}
+}}}/%
+
+It is also possible to add some members to your event:
+%%prettify
+{{{
+public class FindingSetEvent extends Event {
+
+	private Question question;
+	private Value value;
+	
+	public FindingSetEvent(Question question, Value value) {
+		
+		// Check parameters for validity
+		if (question == null || value == null) 
+			throw new IllegalArgumentException("Paramters mustn't be null!");
+		if (question instanceof QuestionChoice)
+			if (!(((QuestionChoice) question).getAllAlternatives().contains(value.getValue())))
+				throw new IllegalArgumentException(value + " is not an allowed value for " 
+				+ question.getName());
+		if (question instanceof QuestionNum && !(value instanceof NumValue))
+			throw new IllegalArgumentException("The committed value must be a NumValue!");
+		if (question instanceof QuestionDate && !(value instanceof DateValue))
+			throw new IllegalArgumentException("The committed value must be an DateValue!");
+		if (question instanceof QuestionText && !(value instanceof TextValue))
+			throw new IllegalArgumentException("The committed value must be an TextValue!");
+		
+		// Set parameters
+		this.question = question;
+		this.value = value;
+	}
+
+	public Question getQuestion() {
+		return question;
+	}
+
+	public Value getValue() {
+		return value;
+	}
+	
+}
+}}}
+/%
+
+In most cases events should be imutable.
+
+!! How to write a new EventListener
+
+If you wrote your own event or if you want to listen to an existing event you'll need an EventListener. 
+A new EventListener can be created by implementing the EventListener interface. Please note that this Interface is generic. Your EventListener can listen to exactly one event which is defined by the generic type. 
+
+In most cases the getEvent() method will look like this:
+%%prettify
+{{{
+	public Class<? extends Event> getEvent() {
+		return YourGenericType.class;
+	}
+}}}
+/%
+
+The important method is notify() because this method will be called each time the specified event is fired.
+In other words this is the method where you can specify the behaviour after an event was fired.
+
+Please note that you have to add an entry for your EventListener to the plugin.xml of your project:
+%%prettify{{{
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener"
+		id="FindingSetEventListener">
+		<parameter id="class"
+			value="de.d3web.we.event.FindingSetEventListener" />
+		<parameter id="name" value="FindingSetEventListener" />
+		<parameter id="description" value="EventListener FindingSetEventListener" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+}}}
+/%
+If you don't add this entry to the plugin.xml your EventListener won't be recognized by KnowWE!
+
+%%tags
+howto Events
+%

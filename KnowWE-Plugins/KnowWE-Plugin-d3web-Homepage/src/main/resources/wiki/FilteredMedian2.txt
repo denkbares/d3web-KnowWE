@@ -1,0 +1,68 @@
+%%QuickInterview 
+  
+%
+
+%%Question
+Input [num]
+FilteredMedian [num]
+%
+
+%%Variable 
+  FilteredMedian = topQuartilMedian(Input[])
+%
+
+%%Function 
+
+function topQuartilMedian(history) {
+	var sortedHistory = sort(valueHistory(history));
+	var topQuartil = sortedHistory.slice(history.length * 0.75);
+	var medianIndex = topQuartil.length % 2 == 0 ? (topQuartil.length / 2) - 1 : (topQuartil.length - 1) / 2
+	return topQuartil[medianIndex];
+}
+
+function valueHistory(history) {
+	var valueHistory = [];
+	for (var i = 0; i < history.length; i++) {
+		valueHistory.push(history[i].value);
+	}
+	return valueHistory;
+}
+
+function  sort(history) {
+	return quickSort(history, 0, history.length - 1);
+}
+
+function  quickSort(arr, left, right) {
+	var i = left;
+	var j = right;
+	var tmp;
+	pivotidx = (left + right) / 2; 
+	var pivot = arr[pivotidx.toFixed()];  
+	while (i <= j) {
+		while (parseInt(arr[i]) < pivot)
+		i++;
+		while (parseInt(arr[j]) > pivot)
+			j--;
+		if (i <= j) {
+			tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+			i++;
+			j--;
+		}
+	}
+	if (left < j)
+		quickSort(arr, left, j);
+	if (i < right)
+		quickSort(arr, i, right);
+	return arr;
+}
+
+@export: topQuartilMedian(HISTORY_NUMBER) -> NUMBER
+%
+
+%%KnowledgeBase 
+DemoKB
+%
+
+%%Package filteredMedian2

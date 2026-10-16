@@ -1,0 +1,19 @@
+%%KnowledgeBase 
+  DiaFlux Tester
+  @uses: dftp
+%
+
+%%DiaFlux
+<flowchart fcid="flow_c834cefb" name="ExampleFlow" icon="sanduhr.gif" width="400" height="400" autostart="true" idCounter="1">
+
+	<!-- nodes of the flowchart -->
+
+	<!-- rules of the flowchart -->
+	<preview mimetype="text/html">
+		<![CDATA[
+<DIV class="Flowchart" style=" width: 403px; height: 403px;"></DIV>
+		]]>
+	</preview>
+</flowchart> 
+ @package: dftp
+%

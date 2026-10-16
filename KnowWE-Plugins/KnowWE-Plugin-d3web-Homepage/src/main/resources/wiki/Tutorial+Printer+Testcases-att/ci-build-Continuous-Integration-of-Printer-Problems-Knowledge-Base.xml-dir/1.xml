@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build xmlns="http://www.denkbares.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" date="2018-01-07 08:12:38.957 +0100" duration="170" xsi:schemaLocation="http://www.denkbares.com build_result.xsd">
+<test configuration="&quot;Tutorial Printer Problems&quot;" name="ArticleHasErrors" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Tutorial Printer Testcases/No power on printer&quot; &quot;Tutorial Printer Problems&quot;" name="TestCase" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Tutorial Printer Testcases/Unconnected printer&quot; &quot;Tutorial Printer Problems&quot;" name="TestCase" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Tutorial Printer Problems&quot;" name="DiaFlux:CombinedFlowRuleAbstraction" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Tutorial Printer Problems&quot;" name="DiaFlux:CombinedFlowRuleSolution" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Tutorial Printer Problems&quot;" name="DiaFlux:NoAutostart" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Tutorial Printer Problems&quot;" name="DiaFlux:UnusedNode" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Tutorial Printer Problems&quot;" name="DiaFlux:UnusedFlow" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+</build>

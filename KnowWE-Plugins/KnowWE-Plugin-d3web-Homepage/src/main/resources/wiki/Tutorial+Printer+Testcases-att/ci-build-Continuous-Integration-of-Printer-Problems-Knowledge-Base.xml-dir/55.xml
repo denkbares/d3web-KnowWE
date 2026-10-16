@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build date="2021-08-26 12:50:37.895 +0200" duration="165">
+   <test configuration="&#34;Tutorial Printer Problems&#34;"
+         name="ArticleHasErrors"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="&#34;Tutorial Printer Testcases/No power on printer&#34; &#34;Tutorial Printer Problems&#34;"
+         name="TestCase"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="&#34;Tutorial Printer Testcases/Unconnected printer&#34; &#34;Tutorial Printer Problems&#34;"
+         name="TestCase"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="&#34;Tutorial Printer Problems&#34;"
+         name="DiaFlux:CombinedFlowRuleAbstraction"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="&#34;Tutorial Printer Problems&#34;"
+         name="DiaFlux:CombinedFlowRuleSolution"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="&#34;Tutorial Printer Problems&#34;"
+         name="DiaFlux:NoAutostart"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="&#34;Tutorial Printer Problems&#34;"
+         name="DiaFlux:UnusedNode"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+   <test configuration="&#34;Tutorial Printer Problems&#34;"
+         name="DiaFlux:UnusedFlow"
+         numberOfSuccessfullyTestedObjects="1">
+      <message summary="true" text="" type="SUCCESS"/>
+   </test>
+</build>

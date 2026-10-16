@@ -1,0 +1,91 @@
+[{TableOfContents}]
+
+!! Introduction
+Knowledge engineering with KnowWE is supported by a continuous integration framework, that allows to embed automated tests on the knowledge. These tests are executed on regular bases (triggers can be configured) and in case of failure the users are alerted. An overview about the history and the testing results is provided on a dashboard. This allows for a safe development process. The use of the existing CI features is described [here|Doc CIDashboard]
+
+!! Create new tests
+To create an extension of this kind the class [AbstractTest|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/testing/AbstractTest.html] which is an abstract implementation of the interface [Test|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/testing/Test.html] should be implemented.
+It is a generic class that has to be coined according to the test object class.
+
+! Test object class
+
+One method of the interface Test is getTestObjectClass(). It determines the class of the test object which the test is supposed to be executed on.
+%%prettify
+{{{
+Class<T> getTestObjectClass();
+}}}
+/%
+
+For example, if a test should run on wiki articles, the method should be implemented like this:
+%%prettify
+{{{
+public Class<Article> getTestObjectClass()
+}}}
+/%
+
+
+! Description
+
+Please implement the method getDescription() in a meaningful way, return a concise description about what this test is about. It will be used to generated the documentation table of all available tests of the system, c.f. [Doc CIDashboard].
+%%prettify
+{{{
+String getDescription();
+}}}
+/%
+
+! Define parameters
+The testing framework provides a mechanism for providing additional parameters for the execution of the tests. When a test is implemented, the expected configuration parameters should be defined within the constructor, using the addParameter()-method. In the following example, a parameter called "SearchString" which is a regular expression being mandatory. Additionally, a user description for this parameter is passed (String constant SEARCH_STRING_DESCRIPTION).
+
+%%prettify
+{{{
+this.addParameter("SearchString", TestParameter.Type.Regex, TestParameter.Mode.Mandatory,
+				SEARCH_STRING_DESCRIPTION);
+}}}
+/%The details about parameter definition can be looked up in the class [TestParameter|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/testing/TestParameter.html].
+The testing framework then will assert that the parameter values are specified in a consistent way and otherwise inform the user accordingly. Hence, the implementation of the test does not need to deal with error handling about the parameters.
+
+! Execute
+The actual test processing is executed within the method execute() of the Test-interface. As the first argument the test object is passed. The parameters, already being checked for consistency, are passed by as a String array. (In case of inconsistent parameters, the test is not executed at all, but a corrsponding error message is shown to the user or written to the logs.) Further, ignore parameters are passed, which allows the user to specify exceptional cases that should not cause the test to fail. This, however, makes sense only in very few cases an can be omitted otherwise.
+%%prettify
+{{{
+Message execute(T testObject, String[] args, String[]... ignores) throws InterruptedException;
+}}}
+/%
+
+
+The message returns an object of the class [Message|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/testing/Message.html] where a verbose feedback, especially in case of failure of the test, should be provided. Make sure that the returned Message is of the correct Type which is either SUCCESS, FAILURE, or ERROR. FAILURE should be returned if the test has been executed on the test object, but did not meat the requirements checked by the test. If any kind of problems (e.g., IOExceptions, invalid parameter settings) occur that prevent an orderly execution of the test on the test object, then a message of type ERROR should be returned, including a meaningful description of the problem if possible.
+
+For tests of computational complexity, please make sure that the following method is called within the progress of the execute-method at least any second: %%prettify
+
+/%
+
+%%prettify
+{{{
+Utils.checkInterrupt();
+}}}
+/%
+
+That will help to do a process shutdown in an ordered manner, if a termination of the overall test run is triggered (e.g., by a user).
+
+
+!! Add the implemented test to the testing framework
+Once the test being implemented, it has to be registered on the plugin framework before it can be executed by the testing framework in a productive setting. Therefore, a particular extension point called ''CITEST'' exists. Hence, an entry within [plugin.xml|Meaning of plugin.xml] of the source modul has to be made.
+The following listing contains an example entry for the test ''UnusedFlowTest''.
+%%prettify
+{{{
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="UnusedFlowTest">
+		<parameter id="class"
+			value="de.d3web.tests.diaflux.UnusedFlowTest" />
+		<parameter id="name" value="UnusedFlow" />
+		<parameter id="description" value="CITest UnusedFlow" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>	
+}}}
+/%
+Please be aware that the ''name'' parameter in this extension entry specifies the command name that needs to be used within the test configuration by the user. Therefore, be sure to use a meaningful and concise term there. 
+
+%%tags
+howto create CITest
+%

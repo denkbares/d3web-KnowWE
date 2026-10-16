@@ -1,0 +1,6 @@
+%%Todo
+Describe the Tool mechansims of KnowWE (DefaultTool, ToolProvider etc.)
+%
+%%tags
+howto
+%

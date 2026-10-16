@@ -1,0 +1,82 @@
+%%information
+The functionalities described on this page are only available using a commercial extension.
+/%
+
+The time database (also referred to as TimeDB) allows to trace values as they change of the time. All changes of questions and solutions are recorded in a efficient data storage. The resulting database is one of the fundamentals for making decision based on value patterns, called "temporal reasoning". A description on how temporal reasoning decisions are taken can be found in the [Doc Expressions].
+
+!!! Recording values
+
+By default all question values and all solution values are recorded as they are changed. For each recorded value the time of the change is also recorded. The time is not necessarily the system's clock, instead it is the time of the value propagation. The time database records any change, also if the value is set to unknown or back to undefined (e.g. by withdrawing a rule). In contrast to the d3web values on the blackboard, the time database does not distinguish between unknown and undefined values.
+
+Please note: \\
+For answering questions in an interview the values time is usually the time of the system's clock. If a value is set using the d3web API (blackboard or time database), it is the time specified when setting the value. If the value is updated twice at exactly the same time, the latter value overwrites the existing one for that time, due to ''truth maintenance''.
+
+
+! Latest time of values
+
+Every fact that is added to the d3web core (either by blackboard or by time database API) is recorded with its time in the time database. Accessing e.g. {{latestChange(myQuestion)}} will return the latest time the question has been set, even if the value itself has not changed.
+
+For derived values (abstract questions, solutions), the d3web core is build on truth maintenance. When setting a value the core stabilizes at a certain state where all constraints are fulfilled (rules, abstractions, flowcharts, ...). Thus it cannot be granted that derived values will be updated or not, if their values does not change. Usually they will not be updated, because of performance optimization only real value changes will be propagated through the reasoning core.
+
+In most cases you don't care whether a value's time is updated or not. It is defined that the value remains valid until an other value is set. So there is usually is no difference if you have consecutive entries with the same value or not. But there are some special functions returning different values when being applied to such histories, e.g. "count" (counting the number of entries in the history) or "latestChange" (getting the time of the latest update). Please note that those functions may only work as expected in direct input values, set by interview or d3web API. For that keep the following "golden rules" in mind:
+* __Values set from external sources__: updated every time they are set
+* __Values derived internally__: updated only if they are changing
+
+
+!!! Optimizing the time database
+
+The time database is implemented to be highly efficient in memory when storing a lot of changing values. As a first estimation you can say that it uses about 5-8 bytes of memory for each "non-string" value. Nevertheless, if you have a huge amount of changing values at a high frequency and a lon-term session running, you might run out of memory. To adress this, there are a set of optimisations that can be taken to avoid this.
+
+! Selective recording
+
+By default, all object's values are recorded, for both questions and solutions. You can specify the number of recorded objects by explicitly selecting objects to not being recorded. If an object is recorded or not is signaled by a flag (property) on that object, called "history". It can have the values "true" or "false", where "true" is default. Use the following example to turn off recording myQuestion and mySolution:
+
+{{{
+// turn of recording of objects
+%%Property 
+  myQuestion.history = false
+  mySolution.history = false
+/%
+}}}
+
+
+! Purge recorded entries
+
+By default, all value changes are recorded an they will be never forgotten. In most cases it is enough to store the changes for a certain time or limit the number of changes to be stored as maximum (and forget all older values changes). This can be done by defining the purge property for either the whole knowledge base or individual objects.
+
+The "purge" property can have one of the following the values:
+* __no__: The object will not be purged. All values are stored as long the d3web session lasts. This is the default behavior for all objects.
+* __count: <number>__: The time database is allowed to forget all value changes except the last <number> ones.
+* __age: <duration>__: The time database is allowed to forget all value changes that are older than <duration>. The <duration> is a combination of a number and a time unit, such as "15s", "2.5h" or "20d".
+
+The purge property can be specified for the knowledge base, defining the default behavior if purge is not specified for a certain object. In addition (or alternatively) the purge property can be specified for individual objects (questions and solutions), overwriting the defined default behavior. Here some examples:
+
+{{{
+// define default behavior
+%%Property KNOWLEDGEBASE.purge = age: 1d
+
+// define special objects
+%%Property myQuestion.purge = age: 2h        // overwrite one day to two hours
+%%Property mySolution.purge = count: 100     // remember last 100 changes. The one day will be ignored
+%%Property myEverLastingQuestion.purge = no  // this object is the only one never be purged
+}}}
+
+If this purge behavior is not sufficient to fulfill your needs, you can use the d3web API to set your own PurgeStrategy implementation after a d3web session has been started.
+
+
+! Session protocol
+
+Independent from the time database the d3web session has a so-called protocol that (by default) records all source values externally set. This is to be able to replay a case later on. The drawback is that this protocol causes a continuously increasing memory consumption while the session is running. When using the time database this functionality is usually not required. So you can turn off this functionality by using the d3web API in your own application:
+
+{{{
+// creating a session 
+Session session = SessionFactor.createSession(knowledgeBase);
+// and disable automatic source recording
+session.getBlackboard().setSourceRecording(false);
+}}}
+
+
+%%tags
+ Documentation timedb
+%
+

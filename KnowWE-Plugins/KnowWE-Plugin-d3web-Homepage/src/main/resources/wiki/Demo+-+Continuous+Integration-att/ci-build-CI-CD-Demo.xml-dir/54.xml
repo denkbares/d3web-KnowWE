@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build xmlns="http://www.denkbares.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" date="2018-12-10 10:23:35.810 +0100" duration="202" xsi:schemaLocation="http://www.denkbares.com build_result.xsd">
+<test configuration=".*" name="ArticleHasErrors" numberOfSuccessfullyTestedObjects="297">
+<message testObject="VisualizationTemplateHuman" text=" errors found in article 'VisualizationTemplateHuman'&#10;* The annotation @timeout is not known to system. It will be ignored. (2&amp;times;)&#10;* The annotation @showRedundant is not known to system. It will be ignored.&#10;* The annotation @rankSame is not known to system. It will be ignored.&#10;* The annotation @isVisTemplateForClass is not known to system. It will be ignored. (2&amp;times;)&#10;* The annotation @templateDefaultConcept is not known to system. It will be ignored.&#10;* The annotation @literals is not known to system. It will be ignored." type="FAILURE"/>
+<message testObject="VisualizationTemplateLocation" text=" errors found in article 'VisualizationTemplateLocation'&#10;* The annotation @isVisTemplateForClass is not known to system. It will be ignored.&#10;* The annotation @templateDefaultConcept is not known to system. It will be ignored." type="FAILURE"/>
+<message summary="true" text="" type="FAILURE"/>
+</test>
+<test configuration="((?!ST-BMI).)* &quot;[0-9a-zA-ZäöüÄÖÜß#_():/.,\- ]*&quot;" name="TermnameConvention" numberOfSuccessfullyTestedObjects="298">
+<message testObject="Ling" text="The following terms do not comply to the specified naming convention pattern (~[0-9a-zA-ZäöüÄÖÜß#_():/.,~\- ~]*):&#10;* Who does John hate?&#10;* What is John doing?&#10;* 玛丽&#10;* He isn't doing anything" type="FAILURE"/>
+<message summary="true" text="" type="FAILURE"/>
+</test>
+<test configuration=".* FixMe:" name="ArticleContains" numberOfSuccessfullyTestedObjects="299">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Demo - Master&quot;" name="EmptyQuestionnaire" numberOfSuccessfullyTestedObjects="0">
+<message testObject="Demo - Master" text="Knowledge base has empty questionnaires:&#10;* leerer Fragebogen" type="FAILURE"/>
+<message summary="true" text="" type="FAILURE"/>
+</test>
+<test configuration="&quot;^Demo - Test Cases.*&quot; &quot;Demo - Master&quot;" name="TestCase" numberOfSuccessfullyTestedObjects="4">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+</build>

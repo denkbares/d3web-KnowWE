@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<builds actualBuildStatus="SUCCESSFUL">
+  <build executed="26.05.2011 20:52:30" nr="1" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="26.05.2011 20:52:47" nr="2" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="IsolatedInterfaceNodeInDiaFluxModel" result="SUCCESSFUL" message=": SUCCESS." />
+    </tests>
+  </build>
+</builds>
+

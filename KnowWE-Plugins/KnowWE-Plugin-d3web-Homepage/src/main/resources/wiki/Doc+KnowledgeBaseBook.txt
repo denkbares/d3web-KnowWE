@@ -1,0 +1,15 @@
+! KnowledgeBaseBook
+
+! Definition
+The KnowledgeBaseBook markup can be used to specify the order\\
+in which the DiaFlux diagrams shall be printend into the KnowledgeBaseBook.\\
+
+
+Use as follows:
+{{{
+%%KnowledgeBaseBook 
+  @DiaFluxOrder: DiaFluxA
+  @DiaFluxOrder: DiaFluxC
+  @DiaFluxOrder: DiaFluxD
+%
+}}}

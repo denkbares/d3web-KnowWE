@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build date="2012-07-30 11:50:07.007" duration="14" number="2">
+<test configuration="" name="EmptyQuestionnaireTest">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="CombinedDiaFluxRuleAbstraction">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="FixMe:\" name="TestArticlesContain">
+<message testObject="Demo - Terminology" text="" type="SUCCESS"/>
+<message testObject="InstalledModules" text="" type="SUCCESS"/>
+<message testObject="Doc Questionnaires" text="" type="SUCCESS"/>
+<message testObject="Demo - Master" text="" type="SUCCESS"/>
+<message testObject="NurInterview" text="" type="SUCCESS"/>
+<message testObject="Doc CIDashboard" text="" type="SUCCESS"/>
+<message testObject="Doc DiagnosisRule" text="" type="SUCCESS"/>
+<message testObject="Doc TestCasePlayer" text="" type="SUCCESS"/>
+<message testObject="Doc GeneralUsage" text="" type="SUCCESS"/>
+<message testObject="Doc Properties" text="" type="SUCCESS"/>
+<message testObject="Doc Resources" text="" type="SUCCESS"/>
+<message testObject="Doc SuppressionRule" text="" type="SUCCESS"/>
+<message testObject="Doc ObjectTypes" text="" type="SUCCESS"/>
+<message testObject="Doc Todo" text="" type="SUCCESS"/>
+<message testObject="Info Commercial Support" text="" type="SUCCESS"/>
+<message testObject="InstalledTagHandlers" text="" type="SUCCESS"/>
+<message testObject="RecentChanges" text="" type="SUCCESS"/>
+<message testObject="Doc Rules" text="" type="SUCCESS"/>
+<message testObject="Demo - DamagedIdleSpeedSystem" text="" type="SUCCESS"/>
+<message testObject="Doc Solutions" text="" type="SUCCESS"/>
+<message testObject="ModuleInfo" text="" type="SUCCESS"/>
+<message testObject="DiaFluxEdTP" text="" type="SUCCESS"/>
+<message testObject="Doc KnowledgeUsage" text="" type="SUCCESS"/>
+<message testObject="Doc Overview" text="" type="SUCCESS"/>
+<message testObject="Doc BasicMarkupRendering" text="" type="SUCCESS"/>
+<message testObject="Rename" text="" type="SUCCESS"/>
+<message testObject="Doc TodoList" text="" type="SUCCESS"/>
+<message testObject="Demo - Temperature" text="" type="SUCCESS"/>
+<message testObject="Doc BasicMarkup" text="" type="SUCCESS"/>
+<message testObject="Continuous Integration" text="" type="SUCCESS"/>
+<message testObject="Test Protocol - DiaFlux Editor" text="" type="SUCCESS"/>
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+<message testObject="Demo - CloggedAirFilter" text="" type="SUCCESS"/>
+<message testObject="Tester" text="" type="SUCCESS"/>
+<message testObject="Demo - Test Cases" text="" type="SUCCESS"/>
+<message testObject="Doc CIDaemon" text="" type="SUCCESS"/>
+<message testObject="LeftMenuFooter" text="" type="SUCCESS"/>
+<message testObject="Doc TestCase" text="" type="SUCCESS"/>
+<message testObject="Tester2" text="" type="SUCCESS"/>
+<message testObject="Doc SetCoveringKnowledge" text="" type="SUCCESS"/>
+<message testObject="Doc - Overview" text="" type="SUCCESS"/>
+<message testObject="Demo - FlatBattery" text="" type="SUCCESS"/>
+<message testObject="Demo - Main - Car Diagnosis" text="" type="SUCCESS"/>
+<message testObject="Main" text="" type="SUCCESS"/>
+<message testObject="Doc KnowledgeFormalization" text="" type="SUCCESS"/>
+<message testObject="Albrecht Striffler" text="" type="SUCCESS"/>
+<message testObject="Doc Expressions" text="" type="SUCCESS"/>
+<message testObject="Joachim Baumeister" text="" type="SUCCESS"/>
+<message testObject="Doc Questions" text="" type="SUCCESS"/>
+<message testObject="PageIndex" text="" type="SUCCESS"/>
+<message testObject="Doc CSS Styles" text="" type="SUCCESS"/>
+<message testObject="CarDiagnosisLeftMenu" text="" type="SUCCESS"/>
+<message testObject="Doc AbstractionRule" text="" type="SUCCESS"/>
+<message testObject="Doc PackageCompile" text="" type="SUCCESS"/>
+<message testObject="KBIndex" text="" type="SUCCESS"/>
+<message testObject="Erkennung von Bäumen" text="" type="SUCCESS"/>
+<message testObject="Doc TestSuiteDemo" text="" type="SUCCESS"/>
+<message testObject="Demo - LeakingAirIntakeSystem" text="" type="SUCCESS"/>
+<message testObject="Doc FirstSteps" text="" type="SUCCESS"/>
+<message testObject="LeftMenu" text="" type="SUCCESS"/>
+<message testObject="Doc IndicationRule" text="" type="SUCCESS"/>
+<message testObject="Demo - Continuous Integration" text="" type="SUCCESS"/>
+<message testObject="Doc TestCaseTable" text="" type="SUCCESS"/>
+<message testObject="Doc DiaFlux Anomalies" text="" type="SUCCESS"/>
+<message testObject="Doc TestCaseSessionRecord" text="" type="SUCCESS"/>
+<message testObject="Doc Time Database" text="" type="SUCCESS"/>
+<message testObject="ObjectInfoPage" text="" type="SUCCESS"/>
+<message testObject="LeftMenuOld" text="" type="SUCCESS"/>
+<message testObject="Doc ImageMap" text="" type="SUCCESS"/>
+<message testObject="Doc AdditionalKnowledge" text="" type="SUCCESS"/>
+<message testObject="Doc IncludeMechanisms" text="" type="SUCCESS"/>
+<message testObject="TagSearch" text="" type="SUCCESS"/>
+<message testObject="CIBMIDemo" text="" type="SUCCESS"/>
+<message testObject="Doc Tables" text="" type="SUCCESS"/>
+<message testObject="Doc FAQ" text="" type="SUCCESS"/>
+<message testObject="Demo - BadIgnitionTiming" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="ArticleHasErrorsTest">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="StandardQuestionDerivedByAbstraction">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="IsolatedNodeInDiaFluxModel">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="IncompleteChoiceQuestion">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+<test configuration="" name="NoAutostartFlowCITest">
+<message testObject="Body-Mass-Index" text="" type="SUCCESS"/>
+</test>
+</build>

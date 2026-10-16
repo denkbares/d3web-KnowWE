@@ -1,0 +1,85 @@
+[{TableOfContents }]
+
+
+!!!Definition
+
+Packages can be used to define knowledge in KnowWE on different articles. Knowledge markups like [Questions|Doc Questions] and [Rules|Doc Rules] can be added to certain packages and the packages can later be added/compiled to a knowledge base. 
+By default, all markups are in the package "default" which is also the package compiled by default by a [KnowledgeBase|Doc KnowledgeBase].
+
+Also, ontologies are defined within the package mechanism.
+
+There are different ways to use packages other than the default package. 
+
+
+!! All markups of one article in the same package
+
+By adding the following markup (in an arbitrary position on the article) the entire page including all markups are added to the package with the specified name {{myPackageName}}. The {{@package}} annotations shown below are then no longer necessary, but can be used to add the specific markup section to another package (as the one given with {{~%%Package}}). KnowledgeBases and Ontologies defined on articles with such a package markup will also be compiling that specified package, as long as nothing else is specified using the {{@uses}} annotation.
+
+{{{
+%%Package myPackageName
+}}}
+
+
+!! Single markups of one article in different packages
+
+When you want to put the markups on one article into different packages, you need to specifiy the package name within each markup.
+Almost all knowledge markups support the annotation "@package: myPackageName".
+\\
+\\
+__Example:__ The following questions are put into the package name {{myPackageName}}.
+
+{{{
+%%Question
+Quest A
+- question1 [oc]
+-- answer1
+-- answer2 
+
+@package: myPackageName
+%
+}}}
+
+
+!! Compiling knowledge within a package
+
+After adding knowledge to a certain package, the package can be compiled to a certain knowledge base using the following markup.
+
+{{{
+%%Knowledgebase
+
+@uses: myPackageName
+%
+}}}
+
+The knowledge base downloadable in this markup will then only contain the knowledge defined for the used package.
+It is also possible to compile multiple markups and to add knowledge markups to multiple packages.
+
+Alternatively, ontology definitions can be comiled by using the markup
+
+{{{
+%%Ontology
+
+@uses: myPackageName
+%
+}}}
+
+
+!!Using multiple packages for the same knowledge base or ontology
+
+It is also possible to add/compile multiple packages in the same {{~%~%KnowledgeBase}} or {{~%~%Ontology}} markup. This way, it is for example possible to have a package {{common}} defining some common terminology. Then there can be different packages for different domains, let call them {{domain1}} and {{domain2}}. Together with the package {{common}}, they will each come together in knowledge base or ontology, e.g. by using the following:
+
+{{{
+%%Knowledgebase
+
+@uses: common
+@uses: domain1
+%
+}}}
+
+Check out the following demo pages to see such a configuration in action: [Multi-Package Demo]
+
+
+!!! See Also
+
+* [KnowledgeBase|Doc KnowledgeBase]
+* [Ontology|Doc Ontology]

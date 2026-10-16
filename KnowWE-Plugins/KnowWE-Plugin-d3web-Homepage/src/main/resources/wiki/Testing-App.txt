@@ -1,0 +1,66 @@
+[{TableOfContents}]
+
+
+!! Introduction
+
+The testing application provides a simple command line based application to run automated tests on d3web knowledge bases. It can be integrated easily into the overall knowledge base development workflow. For example, by using a corresponding script (e.g. using the ANT-toolkit) it can be triggered automatically to run on a regular schedule.
+
+The provided application should be operated and configured by experienced users having basic skills in command line execution. The application is designed to be integrated into a continuous process, thus called by a script when a new version of a knowledge base is created or on regular schedule by a cron-job (e.g. every night). There is no graphical user-interface is included as its primary use is the non-manual execution.
+
+
+!! Installation
+
+
+! Download
+
+The tool is contained in the distribution of d3web.KnowWE. Therefore, the most recent version can be downloaded with the open source release from sourceforge.
+Alternatively, the nightly build of the pure Testing-App can be downloaded directly from the build server [here|https://isci.informatik.uni-wuerzburg.de/hudson/job/d3web-core/de.uniwue.d3web$d3web-Plugin-TestingFramework/].  
+
+
+! System Requirements
+
+The installation requires the following components to be installed:
+* Oracle Java 8 or newer (http://www.java.com)
+
+
+! Command line parameters
+
+The application comes in two installation variants: An executable java version and a MS-Windows executable. For both variants the required libraries (lib) are included. 
+The application is started by double-clicking the executable (jar or exe). Alternatively, you can use the command line version for more options:
+
+{{{> java –jar TestingApp.jar [OPTIONS]}}}
+
+The available options are as follows (the default values are given in parentheses):\\
+__-k__ name of the knowledge base file to be tested (knowledgebase.d3web)\\
+__-t__ name of the test configuration file (TestConfig.txt)\\
+__-o__ name of the test report output file (build_<timestamp>.xml)\\
+__-help__ showing a help description of these parameters\\
+__-?__ showing a help description of these parameters\\
+
+
+!! Configuration
+
+The testing tasks that are executed by the application are defined in the test configuration file. The name of the file name can be passed to the application with the command line call using the parameter ‘t’. If the parameter is omitted a file with the name TestConfig.txt will be used by default. 
+The textual format of the file is described as follows:
+* Each line in the file defines one testing task. Comments can be inserted (or tasks deactivated) using the comment signs ‘//’ at the beginning of the line.
+* In a line a task is defined by a space separated item list. Expressions containing spaces need to be enclosed in double quotes (e.g., “my knowledge base”). 
+** The first item is the name of the test to be executed. This item is non-optional.
+** The second item is an identifier for the test objects (one or multiple), which the test will be applied on (e.g., name of a knowledge base). To identify multiple test objects regular expressions can be used (e.g., “.*”). This item is non-optional.
+** Additionally, configuration parameters for the test can be specified. Any items defined after the test object identifier will be passed to the test as configuration parameters.  The amount and nature of possible configuration parameters depends on the respective test at hand. A description of the required and optional parameters of all tests can be found within the description of the respective test in Chapter 4 of this manual.
+
+The format of this configuration file is to some extent similar to the way tests are specified in the continuous integration dashboard in KnowWE. A line in the dashboard markup beginning with @test: specifies a testing task in a similar way as employed in the testing application. That is, a test line of a KnowWE dashboard markup can be transferred to a task definition in the testing application configuration file by using copy&paste.
+\\ 
+\\ 
+Example:
+
+[{Image src='test-syntax.png' width='400' height='..' align='left|center|right' style='..' class='..' }]
+
+
+!! Tests
+
+The Testing-App comes with a number of tests for d3web knowledge bases. An enumeration and descriptions of the tests and their option parameters can be found [here|Doc CIDashboard]. (Note: The tests working on 'Article' as test object class are not available in the stand alone version of the Testing-App.)
+
+
+!!Licence
+
+This application 

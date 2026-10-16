@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<builds actualBuildStatus="SUCCESSFUL">
+  <build executed="26.11.2010 15:37:35" nr="1" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="26.11.2010 16:13:53" nr="2" result="FAILED">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="FAILED" message="Article Demo - Master has empty questionnaires!" />
+    </tests>
+  </build>
+  <build executed="26.11.2010 16:15:31" nr="3" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="26.11.2010 16:39:16" nr="4" result="FAILED">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="FAILED" message="&lt;b&gt;The following articles contain the keyword 'FixMe:': Demo - Continuous Integration&lt;/b&gt;" />
+    </tests>
+  </build>
+  <build executed="26.11.2010 16:40:31" nr="5" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="26.11.2010 16:53:59" nr="6" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="26.11.2010 16:54:01" nr="7" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+    </tests>
+  </build>
+  <build executed="30.11.2010 08:48:32" nr="8" result="FAILED">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="FAILED" message="Testsuite failed! (Total Precision: 0.8333333333333333, Total Recall: 0.75)" />
+    </tests>
+  </build>
+  <build executed="08.12.2010 15:59:45" nr="9" result="FAILED">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="FAILED" message="Testsuite failed! (Total Precision: 0.8333333333333333, Total Recall: 0.75)" />
+    </tests>
+  </build>
+  <build executed="08.12.2010 15:59:46" nr="10" result="FAILED">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="FAILED" message="Testsuite failed! (Total Precision: 0.8333333333333333, Total Recall: 0.75)" />
+    </tests>
+  </build>
+  <build executed="26.01.2011 15:05:13" nr="11" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" message="Testsuite passed!" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" message="No error on monitored Article!" />
+    </tests>
+  </build>
+  <build executed="23.02.2011 14:41:51" nr="12" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" message="Testsuite passed!" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" message="No error on monitored Article!" />
+    </tests>
+  </build>
+  <build executed="23.02.2011 14:42:18" nr="13" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" message="Testsuite passed!" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" message="No error on monitored Article!" />
+    </tests>
+  </build>
+  <build executed="23.02.2011 14:42:20" nr="14" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" message="Testsuite passed!" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" message="No error on monitored Article!" />
+    </tests>
+  </build>
+  <build executed="23.02.2011 14:42:21" nr="15" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" message="Testsuite passed!" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" message="No error on monitored Article!" />
+    </tests>
+  </build>
+  <build executed="23.02.2011 14:42:22" nr="16" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" message="Testsuite passed!" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" message="No error on monitored Article!" />
+    </tests>
+  </build>
+  <build executed="06.06.2011 07:39:42" nr="17" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" message="Testsuite passed!" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" message=": None found." />
+    </tests>
+  </build>
+  <build executed="10.07.2011 20:24:46" nr="18" result="SUCCESSFUL">
+    <tests>
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" configuration="article: .*; forbidden text: FixMe:" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" configuration="article: Demo - Test Cases" />
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" configuration="article: Body-Mass-Index" />
+      <test name="NoAutostartFlowCITest" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="StandardQuestionDerivedByAbstraction" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="CombinedDiaFluxRuleAbstraction" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="IncompleteChoiceQuestion" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+    </tests>
+  </build>
+  <build executed="10.07.2011 20:25:22" nr="19" result="SUCCESSFUL">
+    <tests>
+      <test name="ArticleHasErrorsTest" result="SUCCESSFUL" configuration="article: Body-Mass-Index" />
+      <test name="TestArticlesContain" result="SUCCESSFUL" configuration="article: .*; forbidden text: FixMe:" />
+      <test name="TestsuiteRunner" result="SUCCESSFUL" configuration="article: Demo - Test Cases" />
+      <test name="NoAutostartFlowCITest" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="StandardQuestionDerivedByAbstraction" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="CombinedDiaFluxRuleAbstraction" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="IncompleteChoiceQuestion" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="IsolatedNodeInDiaFluxModel" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+      <test name="EmptyQuestionnaireTest" result="SUCCESSFUL" configuration="knowledge base article: Body-Mass-Index" />
+    </tests>
+  </build>
+</builds>
+

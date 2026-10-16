@@ -1,0 +1,15 @@
+[{ALLOW view Authenticated}]
+[{ALLOW edit Aibon}]
+
+[{Image src='Aibon1.jpg' width='200' align='left'}]
+
+
+!Contact
+
+Siegfried Kreutzer\\
+Lierzbergerweg 47\\
+4040 Lichtenberg\\
+Austria
+
+email: [aibon@kreutzer.at|mailto:aibon@kreutzer.at]\\
+phone: +43 650 2000205

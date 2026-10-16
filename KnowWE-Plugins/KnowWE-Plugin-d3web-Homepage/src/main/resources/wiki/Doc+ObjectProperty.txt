@@ -1,0 +1,29 @@
+[{TableOfContents}]
+
+!!! Definiton
+
+The markup to define object properties goes as follows:
+
+{{{
+%%ObjectProperty...
+}}}
+
+!!! Example
+To define a ObjectProperty representing a Person:
+
+{{{
+%%ObjectProperty livesIn
+}}}
+
+The object property markup also allows for the definition of domain and range restrictions using annotations:
+
+{{{
+%%ObjectProperty 
+livesIn 
+@domain: Person
+@range: City
+%
+}}}
+
+In that example for the object property ''livesIn'' also a domain (rdfs:domain) as ''Person'' and a range (rdfs:range) as ''City'' is defined. 
+

@@ -1,0 +1,80 @@
+%%(color: red)
+__Deprecated!__
+%%
+
+!!!How to use the KnowWE update observer?
+
+!!Indroduction    
+
+In KnowWE it often occurs that not only one element should be updated after a certain action. An example for this is the solutionstate panel and the questionsheet of the d3web-plugin. Both need to be updated in case the user selects an answer in the HTMLDialog.
+
+In order to archive this the KnowWE-helper.js supplies an update function. This function - KNOWWE.helper.observer - takes advantage of the observer pattern (http://en.wikipedia.org/wiki/Observer_pattern). 
+
+The KNOWWE.helper.observer has the following functions:
+
+* subscribe(name, func) : Used to add a function to the <name> observer. This function will be executed, when the <name> observer calls its notify function.
+* unsubscribe(name, func): Used to delete a function from the <name> observer.
+* notify(name) : Calls all functions registered to <name>.
+* notifyAll(): Calls all registered functions.
+   
+!!Example
+
+Lets assume you have the following function:
+
+%%prettify 
+{{{
+    updateSolutionstate : function(){
+        if(!_KS('#sstate-result')) return;
+            
+        var params = {
+            action : 'DPSSolutionsAction',
+            KWikiWeb : 'default_web'
+        }
+
+        var id = 'sstate-result';
+        var options = {
+            url : KNOWWE.core.util.getURL( params ),
+            response : {
+                action : 'insert',
+                ids : [ id ]
+            }
+        }
+        new _KA( options ).send(); 
+    }
+}}}
+/%
+
+In order to register the above function to the observer you simply add the following line into the javascript...
+%%prettify 
+{{{
+    KNOWWE.helper.observer.subscribe( 'update', updateSolutionstate );
+}}}
+/%
+
+... and the following if you want to execute all the stored functions:
+
+%%prettify 
+{{{
+    KNOWWE.helper.observer.notify( 'update' );
+}}}
+/%
+
+
+__Note:__ The old observer was extended due to the need of multiple observer objects. In order to register a function to the observer you have to supply an additional <name> which indicates the "observer object" the observable belongs to. In order to notify this "observer object" you need to call the notify function with the given <name>.
+
+
+!!Currently used "observer objects"
+
+At the moment the following observer namespaces are used:
+
+* quick-edit: When clicking a second time on the quick edit pencil the quick edit mode is closed. If a function should then be executed you can register it here.
+* onload: Allows execution of functions, when the page (DOM) is completly loaded.
+* update: Updates the solutionstate, questionsheet and coveringlists when one is changed.
+
+%%Todo 
+  Review this page
+%
+
+%%tags
+howto
+%

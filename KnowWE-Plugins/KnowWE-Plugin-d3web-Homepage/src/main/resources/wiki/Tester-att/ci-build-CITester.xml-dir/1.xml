@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<build date="2012-06-12 12:26:01.001" duration="1" number="1">
+<test configuration="" name="IsolatedNodeInDiaFluxModel">
+<message testObject="Tester" text="" type="SUCCESS"/>
+</test>
+</build>

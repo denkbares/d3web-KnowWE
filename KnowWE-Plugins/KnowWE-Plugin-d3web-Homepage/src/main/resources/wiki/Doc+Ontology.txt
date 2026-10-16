@@ -1,0 +1,73 @@
+[{TableOfContents }]
+
+
+!!! Definition
+
+An ontology is created in a similar way as a d3web knowledge base using the ''ontology'' markup.
+
+{{{
+%%Ontology 
+  @uses: myPackageName
+%
+}}}
+
+For the name {{myPackageName}} please use the name of the [package|Doc Package] that you used for the ontology definitions.
+
+
+!! Creating Ontology Entities within the Local Namespace
+
+Ontologies in KnowWE are based on the RDF standard ([http://www.w3.org/TR/REC-rdf-syntax/]). In RDF every resource is identified by a full qualified URI name.
+For brevity, KnowWE uses shortened identifier such as ''rdf'' for ''http://www.w3.org/1999/02/22-rdf-syntax-ns#''.
+The resource ''http://www.w3.org/1999/02/22-rdf-syntax-ns#type'' therefore is called ''rdf:type'' in KnowWE.
+Ontology entities newly created within the wiki are created in the ontology repository under the so-called local namespace, that is the URL referring to the wiki installation URL.
+On the wiki pages, the local namespace (''lns'') is ommitted.
+
+
+!!! Example
+
+The following example defines the package name {{myPackageName}} and creates a new ontology using this package.
+
+{{{
+%%Ontology
+@uses: myPackageName
+%
+
+%%Package myPackageName
+
+%%Turtle 
+:System rdf:type owl:Class .
+
+:KnowWE rdf:type :System ; 
+    rdfs:label "KnowWE Wiki" .
+%
+}}}
+
+On the same page, the [Turtle|Doc Turtle] markup is used to define an owl:Class {{System}} (in the local namespace) and an instance of {{System}} with the name {{KnowWE}}. Additionally, the label "KnowWE Wiki" is defined.
+
+
+!!!Importing existing ontologies into a KnowWE ontology
+
+By attaching an ontology-file to this page (containing the ontology in any standard ontology format) an ontology can be imported into the KnowWE ontology repository as follows:
+
+{{{
+%%Ontology 
+@import: movie-ontology.owl
+%
+}}}
+
+
+__Note:__ For this example a file named ''movie-ontology.owl'' needs to be attached to ''this'' page!
+
+
+!!! See Also 
+
+The following markups can be used to create ontology entities (under local namespace if the namespace prefix is omitted):
+
+* [Turtle| Doc Turtle]
+* [Class| Doc Class]
+* [Individual| Doc Individual]
+* [ObjectProperty| Doc ObjectProperty]
+* [Relation| Doc Relation]
+
+Beside the local namespace, also other namespaces may freely be defined using the [Namespace| Doc Namespace] markup.
+For sparql queries in the [SPARQL|Doc SPARQL] markup, always a namespace needs to be defined (including ''lns:'' for the local namespace) for triple patterns of a query. 

@@ -1,0 +1,20 @@
+[{Image src='joba_masked.jpg' align='left'}]
+
+
+!!! Contact
+
+denkbares GmbH \\
+Friedrich-Bergius-Ring 15 \\
+97076 Würzburg
+
+mailto:joachim.baumeister@denkbares.com \\
+[http://www.denkbares.com]
+
+!!! About
+
+Conception and evolution of the semantic wiki KnowWE and consultation during the development of knowledge-based solutions.
+
+
+%%TodoList 
+  @user: Joachim Baumeister
+%

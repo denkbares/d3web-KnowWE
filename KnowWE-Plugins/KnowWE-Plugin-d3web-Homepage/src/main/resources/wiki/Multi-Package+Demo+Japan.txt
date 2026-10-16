@@ -1,0 +1,47 @@
+This is a basic demo about how to use and compile multiple packages into the same knowledge base. The basic scenario is described [here|Doc Package#Using multiple Packages for the same knowledge base or ontology]. The common package {{lifeExpectancy}} and more specifics for this demo are described [here|Multi-Package Demo].
+\\
+\\
+To see the source code of this page, go to the drop down "''More...''" and select "''View Page Source''".
+
+
+!Defining the package
+
+As mentioned, we add this page to the package {{japan}}
+
+%%Package japan
+
+
+!Adding knowledge
+
+First we define the current life expectancy in japan using the {{~%~%Constant}} markup.
+
+%%Constant 
+"Life expectancy in Japan" = 87
+%
+
+Let's calculate our remaining life expectancy based on our age using the {{~%~%Variable}} markup.
+
+%%Variable
+"Years to life according to life expectancy" = "Life expectancy in Japan" - Age
+%
+
+
+!Compiling and testing the resulting knowledge base
+
+Here we define the knowledge base using/compiling two of our three packages:
+
+%%KnowledgeBase 
+Life expectancy calculator (Japan)
+
+@uses: lifeExpectancy
+@uses: japan
+%
+
+
+!Quick Interview
+
+If not specified otherwise (by using the @package annotation), the {{ ~%~%QuickInterview }} markup will show the content of the first knowledge base, which uses/compiles the package of this page, in this case package {{japan}}.
+
+%%QuickInterview 
+  
+%

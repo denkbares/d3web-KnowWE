@@ -1,0 +1,3 @@
+[{RecentChangesPlugin since=400}]
+
+[{KnowWEPlugin version}]

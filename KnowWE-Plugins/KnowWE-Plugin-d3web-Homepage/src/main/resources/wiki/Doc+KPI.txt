@@ -1,0 +1,159 @@
+%%information
+The functionalities described on this page are only available using a commercial extension.
+/%
+
+[{TableOfContents }]
+
+!!! Background
+The development of large [knowledge bases|Doc KnowledgeFormalization] is a long-term process that requires careful quality management. A very important method of quality management is the analysis of key performance indicators. For a knowledge base a number of indicators (variables) is identified and their outcomes and values are checked over a number of real life or at least realistic cases. The performance of the knowledge base can then be analyzed over a big data sample, for example by comparing the averages of the indicators with expected or desired values.
+
+!!!Definition
+
+%%prettify 
+{{{
+%%KPIAnalysis
+  @column: <Symptom>                    // column using a smptom and its value
+  @column: <Column-Name> = <expression> // column using a temporal expression
+  @case: <Regex>                        // evaluates all matching cases
+  @purge: <enabled|disabled>            // enables usage of the purge strategy
+}}}
+
+/%
+
+!!! Configuration
+To conduct a new KPI-Analysis for a d3web knowledge base, we recommend to create a new wiki page “KPI”. This wiki page can be used to define KPIs in the KPI markup and to extend the knowledge base to calculate special KPIs if needed.\\
+In the following section a common way to define a KPI analysis is described. For most use cases a more plain configuration may be sufficient, as described in section ["Plain KPI Configuration"|Doc KPI#Plain KPI Configuration]
+
+!! General KPI Configuration
+
+! Extending the knowledge base for a KPI analysis
+
+Not all KPIs will be available in the knowledge base as variables right away. Also, often the KPIs cannot simply be added to the regular knowledge base, because the knowledge base should stay unchanged for its integrity. Also the speed of the reasoning could be influenced negatively.\\
+To work around this, the KPI analysis should be done in its own extended knowledge base, which will be compiled on a newly created page, for example with the name “KPI”.\\
+As a first step, a new package will be set and used on this page. Again, for example “KPI“ can be used as the package name.
+Next, the new knowledge base used for analyzing the KPIs has to be defined. It has to compile (@uses) the package used for the original knowledge base (in most cases “default”) and also the package used to extend the knowledge base with the KPI variables and calculations (“KPI”). This new knowledge base will then automatically be used in the generation of the KPI results. The original knowledge base will not be effected through this new knowledge base.\\
+Using the new knowledgebase, as the next step the actual variables used in the KPI analysis can be collected and defined using the {{%%Question-markup}}.
+After defining the variables, the calculation of the variables can be specified using the %%Variables-markup.
+
+! Calculating useful KPIs
+In this section, useful ways to define and calculate KPIs variables for later analysis are introduced.
+__First derivation of a Solution__\\
+In many use cases, a KPI will be the date of the first derivation of a solution. How long did it take for the knowledge base to recognize and derive that a problem, e.g. in a machine or patient, has occurred. To calculate this, the following arrangement of formulas can be used as a template:
+{{{
+%%Variable KPI_Date = firstChange(filter(Solution[], established))
+}}}
+After execution, the history of a solution is filtered for the entries where the Solution was established. In combination with the function firstChange, the date of entry will be selected, where the solution was first set to established.
+\\
+\\
+__Last derivation of a solution__\\
+The last derivation of a solution can be calculated analogous to the calculation of the first derivation:
+{{{
+%%Variable KPI_Date = latestChange(filter(Solution[], established))
+}}}
+
+__Minimum or maximum of a variable__\\
+A frequently needed KPI is the minimum or maximum of a variable during the execution of a case. The calculation can here be done simply with the following formula:\\
+{{{
+%%Variable KPI_Num = min(QuestionNum[]) %%Variable KPI_Num = max(QuestionNum[])
+}}}
+\\
+\\
+__Counting occurrences__\\
+A use case for a KPI could be the number of times, a solution was established or a variable was, for example, over a certain threshold. To calculate this, the following arrangement of formulas can be used as a template:
+{{{
+%%Variable KPI_Num = count(filter(QuestionNum[], '>', 25))
+}}}
+The KPI variable KPI_Num will contain the amount of history entries of the variable QuestionNum, that are greater than 25.
+\\
+\\
+! Limitations
+In some cases or for certain KPIs, changing the original knowledge base cannot be avoided to effectively perform an analysis.
+For example, it may not be possible to count how many times a certain edge or loop in a flowchart was cycled, if the loop does not contain a note performing an action in each pass. To count the cycles, such a note has to be added. This can only be done in the original knowledge base and not in the one extended using the KPI page.\\
+￼If the integrity of the knowledge base is important, we suggest to clone the wiki content of the knowledge base and to perform the KPI analysis in the clone.
+
+!Specifying the KPI Markup
+After all KPIs are defined and calculated, the actual %%KPIAnalysis markup needs to be added to KPI page. In the markup, the different KPIs to be analyzed and also the cases to be executed have to be specified. The KPIs will be evaluated for every knowledge base that compiles the package the KPI markup is part of.\\
+To add a particular KPI, the annotation @column can be used, defining a column in the excel analysis result file. Any question or solution in the knowledge base can be set as a KPI. The added KPIs will be displayed as the columns in the resulting excel table (see section [KPI Result|Doc KPI#Generating the KPI results]).\\
+To add cases, the annotation @case can be used. All cases or test cases defined in the knowledge base can be set. Auto completion will help to use the right name/identifier for the case. Additionally, a regular expression can be used to define all cases that should be included in the result.\\
+By default, all purging is disabled for KPI analysis. This may lead to high memory consumption if analyzing huge cases with very frequent value changes. To avoid this, purging can be enabled by using the annotation @purge, which can be set to enabled or disabled.\\
+! Example for a KPI wiki page
+The following example displays the source code of a complete KPI wiki page.
+
+%%prettify 
+{{{
+%%Package KPI
+
+%%KnowledgeBase KPI-KB
+@uses: default
+@uses: KPI %
+
+!! KPI Definition
+%%Question
+  KPI_Date [date]
+  KPI_YN [yn]
+  KPI_Choice [oc]
+  KPI_Num [num]
+  KPI_Text [text]
+%
+
+!! KPI Calculation
+
+%%Variable KPI_Date = firstChange(filter(Solution[], established))
+%%Variable KPI_YN = QuestionNum[KPI_Date] > 15
+￼%%Variable KPI_Num = count(filter(QuestionNum[], '>', 25))
+%%Variable KPI_Text = QuestionText[KPI_Date]
+
+!! KPI Markup
+
+%%KPIAnalysis
+  @column: KPI_Date
+  @column: KPI_YN
+  @column: KPI_Choice
+  @column: KPI_Num
+  @column: KPI_Text
+  @case: Cases/2012031332
+  @case: Cases/2012070952
+  @case: Cases/2012035580
+  @case: Cases/2012066245
+  @case: Cases/2012119943
+%
+}}}
+
+/%
+
+
+!! Plain KPI Configuration
+
+Instead of defining a new knowledge base for the KPI, the %%KPIAnalysis markup could also allow to define and calculate the KPIs in a similar way as they are otherwise defined in the %%Question-markup and calculated in the %%Variables-markup.
+\\
+Example:\\
+%%prettify 
+{{{
+%%KPIAnalysis
+  @column: KPI_Date = firstChange(filter(Solution[], established)) @column: KPI_YN = QuestionNum[KPI_Date] > 15
+  @column: KPI_Num = count(filter(QuestionNum[], '>', 25)) @column: KPI_Text = QuestionText[KPI_Date]
+  @case: Cases/.*
+%
+}}}
+/%
+
+This way, the separate usage of the %%Question-markup and %%Variables- markup would mostly be obsolete. The current knowledge base will not be changed in any way by definition and calculation of the columns directly inside the %%KPIAnalysis markup.
+
+!! Generating the KPI results
+
+After the KPI page is set up correctly, the actual results for the analysis can be generated. To generate the results, to possibilities are given.
+
+! Run Analysis in KnowWE
+The tool menu of the KPI markup will contain a button to run all the cases and simultaneously generate the KPI results. After the results are generated, they will be ￼added as an attachment to the KPI page and the KPI markup will provide a link to directly download the latest result.
+
+! KPIs using KnowWE-Headless-App
+The existing command line application KnowWE-Headless-App will be extended to also allow the automatic generation of the KPI results, if they are specified in the used wiki content.
+To generate a specific KPI result, the argument –kpi followed by the name of the KPI article can be added. The argument –sd will allow to specify a directory where\\
+the KPI result file will be saved into. If this parameter is not given, the directory “results” in the current working directory is used. The result files are in excel format and named “kpi_analysis_<article-name>.xls”.
+The user manual of the KnowWE-Headless-App also contains detailed instructions on how to generate KPI result files.
+
+
+
+
+
+

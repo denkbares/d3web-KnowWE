@@ -1,0 +1,19 @@
+Here we specify some TimeDBTestCases for [Demo - Temperature].
+
+In the last row of the test case table in the column 'Time' we set the normal time stamp and on additional time stamp in braces. The normal time stamp is the one we set internally when executing the row, the braced one is the time stamp with which we input the values into the TimeDB. For the test, it will look like the values are back dated (see column 'Name').
+
+%%TestCasePlayer
+
+%
+
+%%TestCaseTable
+|| Name	|| Time	|| Checks	|| Temperature	
+|  We start with a constant and normal temparture	|  0s	|  Progression = constant	|  36.8	
+|  Still constant	|  33min	|  Progression = decrease AND eval(latestChange(Temperature[]) = now) AND eval(latestChange(Gradient[]) = now)	|  36.7	
+|  At 1h, the progression still shows decrease, latest changes to gradient and temperature are for 33 min after start of case.	|  1h	|  Progression = decrease AND eval(latestChange(Temperature[]) = start + 33min) AND eval(latestChange(Gradient[]) = start + 33min)	|   	
+|  A nurse measured the temperature manually at timestamp 56 min, but entered it at timestamp 1h 5min. We see that the change in temperature is recorded for 56 min after start, the update to the progression however is now (because it was reevaluated now).	|  1h 5min (56min)	|  Progression = increase AND eval(latestChange(Temperature[]) = start + 56min) AND eval(latestChange(Gradient[]) = now)	|  37.8	
+%
+
+%%Package 
+DemoTemperature
+%

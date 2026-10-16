@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build xmlns="http://www.denkbares.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" date="2012-10-31 10:23:28.028" duration="2" xsi:schemaLocation="http://www.denkbares.com build_result.xsd">
+<test configuration="" name="UnusedNode">
+<message testObject="Tester" text="" type="SUCCESS"/>
+</test>
+</build>

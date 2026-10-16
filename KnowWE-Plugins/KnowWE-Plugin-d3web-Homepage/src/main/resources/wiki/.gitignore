@@ -1,0 +1,3 @@
+# user and group databases of the live wiki must not be committed
+userdatabase.xml*
+groupdatabase.xml*

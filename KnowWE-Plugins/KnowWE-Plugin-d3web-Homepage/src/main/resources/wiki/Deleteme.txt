@@ -1,0 +1,57 @@
+!!! Namensraum und Wissensbasis definieren
+
+Die Definition von {{package}} ohne Markup sorgt dafür, dass die komplette Wiki-Seite in diesem Paket-Namensraum definiert ist.
+
+%%package deleteme
+
+Eine Wissensbasis muss definiert werden, welche diesen Namensraum benutzt.
+
+%%KnowledgeBase 
+  Demo für Frank
+  @uses: deleteme
+%
+
+!!! Verwendete Fragen definieren
+
+Die Fragen werden in einem {{Question}} Markup definiert. Fragebogen-Hierarchie könnte separat definiert werden, ist aber nur nötig, wenn die Reihenfolge der Fragebögen anders sein soll, als im {{Question}} Markup definiert.
+
+%%Question 
+Fragen #1
+- S [num] 
+- R [num] 
+Berechnungen #2
+- HSA [num] <abstract>
+%
+
+!!! Regel zur Berechnung definieren
+Nun könnnen wir eine Regel definieren:
+
+%%Rule 
+IF S = known AND R = known
+THEN HSA =eval(((ASIN((S/2)/R)*2)*PI*R/180)*R/2 * 180 / PI)
+%
+Sollten die Parameter S, p und R tatsächlich nur "known" sein müssen und es muss keine speziellere Einschränkung gelten, dann ist die alternative Verwendung von {{Variable}} eleganter:
+{{{
+%%Variable 
+  HSA = ((ASIN((S/2)/R)*2)*PI*R/180)*R/2 * 180 / PI
+%
+}}}
+
+!!! Testen mit einem kleinen Dialog
+
+Nun integrieren wir ein kleines QuickInterview, um das Ganze zu testen.
+
+[{KnowWEPlugin quickInterview}]
+
+
+
+
+
+
+
+
+
+
+
+
+

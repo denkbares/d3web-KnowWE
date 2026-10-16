@@ -1,0 +1,82 @@
+!!! Version: 1.0 Hancock (Preview Release 2010-09-09)
+
+d3web is an extensible Java API for running knowledge-based systems. The Semantic Wiki KnowWE builds on the engine d3web and offers the web-based and distributed development of knowledge bases.
+
+This distribution comes with the following files:
+
+| Release Notes.pdf | This document.
+| Licenses.pdf      | License information of the d3web and KnowWE systems and all external libraries.
+| d3web             | Folder containing the binaries (libraries), the sources, and the JavaDoc information of d3web 
+| d3web-KnowWE      | Folder containing an installation archive (zip) as binary, the sources, and the JavaDoc information of KnowWE
+| Release Status    | All files of the quality assessment report for this release. It contains the test protocols of the manual tests (system tests), a summary of the integration tests, and a detailed analysis of the unit tests (Clover report of the JUnit tests)
+
+The following projects of d3web and KnowWE are included in the distribution:
+
+||Project Name || Contents || QA || State
+| d3web-Kernel | Knowledge representation, basic problem-solvers, session management, default dialog control | x | alpha
+| d3web-PluginManager | Basic management for connecting plugins to the d3web kernel| x| beta
+| d3web-SharedKnowledge (incl. d3web-SharedKnowledgePersistence) | Common extensions to the basic knowledge representation, e.g., question weights, abnormalities, similarities| x| alpha
+| d3web-Persistence (incl. d3web-Persistence-Basic, d3web-Persistence-ExtensionPoints) | XML knowledge base storage (archived as Jar)| x| beta
+| d3web-CostBenefit | Dynamic strategic problem-solver | | alpha
+| d3web-XCL |Problem-solving with set-covering knowledge | | alpha
+| d3web-CaseRepository |XML case session storage | | alpha
+| d3web-EmpiricalTesting |Validation of knowledge base with test cases | | alpha
+| d3web-Plugin-TimeDB |Knowledge representation, persistence, and fact storage of temporal values| x| alpha
+| KnowWE-Plugin-TimeDB | Wiki-based authoring markups for temporal values| x| alpha
+| d3web-DiaFlux | Reasoning engine for flowchart problem-solver| x| no
+| KnowWE-Plugin-Flowchart |Authoring plugin for KnowWE of the flowchart problem-solver| x| no
+| KnowWE / KnowWE-Core / KnowWE-Core-Plugins | Basic engines for parsing and the management of wiki content.| x| alpha
+| KnowWE-JSPWiki-Connector |Connection to parent wiki engine JSPWiki| x| alpha
+| KnowWE-Plugin-d3web | Knowledge extensions of the wiki: Knowledge markups (terminology, rules) interview, automated testing deployment| x| alpha
+| KnowWE-Plugin-CI4KE | Continuous integration plugin for the automated testing of knowledge bases; Groovy extensions for tailored tests | | alpha
+| denkbares Dialog |Web-based interview for problem-solving | | alpha
+
+__Legend:__
+
+||Project Name | Corresponds to the name of the Maven project, i.e., the name of the source code project. For simplicity, plugin postfixes are omitted (e.g., *jpf-plugin)
+||Contents | A further description of the contents of this module
+||QA    | Under regulation of the project contract. All contracted projects are certainly subject of the quality management system. Non-contracted modules may be subject to changes in the proposed release plan.
+||State | Quality assessment of the project:\\__no__: Not officially included, experimental demo\\__alpha__: Basic functions included, API to be considered as "unstable" documentation partly available/not available mostly untested\\__beta__: All functions are included documentation available functionality tested on unit level\\__release__: All functions are included documentation available functionality tested on system level (integration tests) internal processes fully applied (issue management, development process)
+
+!!! What's New
+The release includes the following notable features: 
+
+! d3web
+* New problem-solving engines can be added using the new plug-in architecture.
+* Offers problem-solving methods for heuristic scoring rules, extensible covering models, abstraction rules, and indication rules.
+* Loading and storing performed problem-solving sessions.
+* Empirical testing testing feature that runs test cases to evaluate a knowledge base.
+* (Experimental) version of a temporal database storing and reasoning with sequential system inputs.
+* (Experimental) DiaFlux engine for representing and running guideline knowledge 
+
+! KnowWE
+* Extensions for defining knowledge bases using rule-based and set-covering knowledge.
+* Plugin for running test cases within the wiki.
+* (Experimental) version of markups to define time-values events and abstractions.
+* denkbares Dialog for running test cases interactively (as preview).
+
+
+!!! Known Issues
+
+* BugZilla #36: [[KnowWE] "Vorschau"+"Speichern" (Preview) removes content\\If you use the "Vorschau" Button after entering a text, no content is shown.\\Assuming that the preview has problems in showing dynamic content I pressed save-button to view the text. After that the article was completely empty, all content was deleted.
+* BugZilla #38 -  [[TimeDB] Gradient calculation shows strong deviation for outlier values.\\TimeDB does not store constant values (i.e., values that remain the same over a time duration), but only the first occurrence of the value. If the value changes dramatically, then the gradient function computes a stronger deviation as expected.
+* BugZilla #39 - [[DenkbaresDialog] Creating a new Case doesn't work\\When clicking the "New" button, the dialog scrolls down and all answers remain set. Instead of this behaviour a new case should be created and the dialog should start with the first question.
+* TRAC #192: [[QuickInterview] Questionnaires are unintentionally collapsed after answering a question: 
+* TRAC #193: [[QuickInterview] QuickI does not show the "unit" information for numerical question, when available. Should be shown in the dialog directly after the input field.
+* TRAC #194: [[QuickInterview] Missing value range handling for num questions. For num questions, the "value range" information is not taken into account, e.g. for a value range (1 10) it is possible to enter a value = 11.
+* TRAC #195: [[QuickInterview] No keyboard handler for num input fields. For num questions, hitting "Return" in the numerical input field does not send the entered value.
+* TRAC #196: [[QuickInterview] Input field for num questions expect "." als float separator. In an input field of a numerical question, you need to separate a float number by "." - the character "," is not accepted.
+* KnowWE - Documentation, as contained in the core pages of the wiki, is slightly deprecated, since it introduces the old markup syntax (however, it is still working and compatible) 
+* KnowWE - [[QuickInterview] The entry of multiple-choice values do not work properly under all circumstances.
+
+
+!!! System Requirements
+Installation of d3web/KnowWE requires the Java Platform, Standard Edition
+JDK 6 Update 21 or better. For operating systems, the distribution runs with MS-Windows XP, Windows 7 and Mac OS 10.6. Linux is not officially supported.
+We officially support Firefox 3.6 or better but most parts are also working with the latest versions of the Internet Explorer and Google Chrome.
+
+
+!!! Resources and Links
+* A wiki for developers: Start using the APIs of d3web and KnowWE:\\ [http://d3webwiki.informatik.uni-wuerzburg.de|http://d3webwiki.informatik.uni-wuerzburg.de]
+* The official SourceForge website of d3web: \\[http://d3web.sourceforge.net|http://d3web.sourceforge.net]
+* The official SourceForge website of KnowWE: \\[http://knowwe.sourceforge.net|http://knowwe.sourceforge.net]

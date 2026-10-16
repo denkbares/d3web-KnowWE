@@ -1,0 +1,44 @@
+!!! How to select DOM elements?
+If you search a certain DOM elements you can use the javascript build-in functions like 'getElementById' or 'getElementByTagNames'. KnowWE offers for this task its own DOM element selector. The selector is use like the build-in function but offers more complex selection to the user.
+
+__ For example__:
+
+%%prettify
+{{{
+_KS('#KnowWEObjectTypeBrowser input[type=button]')
+Returns a list containing all input buttons within the ‘KnowWEObjectTypeBrowser’ DOM element.
+_KS('div .panel')
+Returns a list with elements of type DIV and that have the class attribute ‘panel’.
+}}}
+%%
+
+!!Syntax of the selector function
+The following list shows the Syntax of the selector. (_KS = KNOWWE.helper.selector)
+
+%%prettify{{{
+_KS( #id )                returns all elements with id=id
+_KS( tag )                returns all elements with tag=tag
+_KS( #id tag )            returns all elements with tag=tag within the element with id=id
+_KS( tag .class )         returns an array with all elements that agree in tag and class properties
+_KS( input[type=submit] ) returns all submit input elements
+_KS( input[type] )        returns all input elements with the specified type attribute
+_KS( [type] )             returns all elements with the specified type attribute
+_KS( [type=submit] )      returns all elements with the given attribute  
+}}}%%
+
+
+The selector allows not only the search for a given ID or TAG. It also supports the search for attributes with given class name or attribute. 
+
+!! How to construct the selector string?
+How the selector string looks like depends on what are you searching. The following list gives you an overview how each kind of element has to be declared.
+* __ID__s: For a simple ID search enter the ID with ‘#’ as prefix e.g. ‘#rename-panel’;
+* __TAG__s: Tags are searched with their names, so just enter the name of the tag e.g. ‘table’;
+* __CLASS__: Just enter the name of the class prefixed with a dot e.g. ‘.panel’. In order to speed up this search should be combined with a TAG or an ID. If so, only elements within the TAG or ID element in the DOM are taken for the class attribute search.
+
+%%Todo 
+  Review this page
+%
+
+%%tags
+howto DOMSelection
+%

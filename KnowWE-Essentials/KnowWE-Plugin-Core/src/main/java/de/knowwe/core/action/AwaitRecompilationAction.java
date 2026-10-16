@@ -35,18 +35,19 @@ import org.slf4j.LoggerFactory;
 public class AwaitRecompilationAction extends AbstractAction {
 
 	/**
-	 * Only waits for the server's compilation to finish, so any authenticated user may call it.
+	 * Only waits for the server's compilation to finish. It is called by the compile warning of a page, so everybody
+	 * who may view that page may wait, including anonymous visitors of a public wiki.
 	 */
 	@Override
 	public Action.Access requiredAccess() {
-		return Action.Access.AUTH;
+		return Action.Access.READ;
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AwaitRecompilationAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		KnowWEUtils.assertUserAuth(context);
+		KnowWEUtils.assertCanView(context.getTitle(), context);
 		try {
 			context.getArticleManager().getCompilerManager().awaitTermination();
 		}

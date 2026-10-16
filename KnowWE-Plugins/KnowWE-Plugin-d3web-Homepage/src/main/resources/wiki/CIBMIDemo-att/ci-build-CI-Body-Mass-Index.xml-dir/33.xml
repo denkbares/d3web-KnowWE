@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build xmlns="http://www.denkbares.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" date="2018-04-18 02:13:41.237 +0200" duration="16" xsi:schemaLocation="http://www.denkbares.com build_result.xsd">
+<test configuration="Body-Mass-Index" name="EmptyQuestionnaire" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="Body-Mass-Index" name="DiaFlux:UnusedNode" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="Body-Mass-Index" name="DiaFlux:NoAutostart" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="Body-Mass-Index" name="DiaFlux:StandardQuestionDerivedByAbstraction" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="Body-Mass-Index" name="DiaFlux:CombinedFlowRuleAbstraction" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="Body-Mass-Index" name="IncompleteChoiceQuestion" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+</build>

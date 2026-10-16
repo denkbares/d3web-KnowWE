@@ -1,0 +1,46 @@
+[{TableOfContents }]
+
+
+!!!Definition
+
+The {{%%InlineSparql }} can be used to show the information or the number of lines of a [SPARQL|Doc SPARQL] inline in any non-markup text in KnowWE (e.g. enumerations, lists, paragraphs) without producing its own render block. 
+
+
+!!! Example
+
+Add the following markup in your text: 
+
+{{{
+%%InlineSparql myInlineSparql %%
+}}}
+
+By doing so, the [SPARQL|Doc SPARQL] with the name "myInlineSparql" is shown in the text.
+
+
+!!Add row and line seperators
+
+If the [SPARQL|Doc SPARQL] is a table, the rows and lines are seperated by a ";". You can also add different seperators for rows and lines.
+
+{{{
+%%InlineSparql myInlineSparql  @separator: "- " @rowSeparator: ", " %%
+}}}
+
+
+Now the lines are seperated by "- " and the rows by ", ".
+
+
+!!Count the lines
+
+You can also count the lines of a [SPARQL|Doc SPARQL] instead of illustrating the information of it. 
+It works like this:
+
+{{{
+%%InlineSparql myInlineSparql @count: true %%
+}}}
+
+If you set count to false, then it's the same as not adding the annotation.
+
+
+!!! See also
+
+* [SPARQL|Doc SPARQL]

@@ -1,0 +1,28 @@
+!!! d3web-Mobile
+
+The Mobile-App is stand alone application allowing to run a d3web problem solving session.
+The application is available as an Windows executable file, a Mac OS X application bundle and as an executable jar file for e.g. Linux. 
+
+After starting the application, a d3web knowledge base can be loaded and problem solving session started. Alternatively you can directly double-click a knowledge base file (with file extension ".d3web") if the extension is associated with those files. The questions of the knowledge base will be asked subsequently and the solutions will be shown after the interview has been finished.
+
+
+! Requirements
+
+Currently, the following operating systems are supported:
+* Windows Vista or 7 64 Bit
+* Mac OSX 64 Bit
+
+! Download
+
+The Mobile-App can be downloaded at the [Download|Downloads] page.
+
+!Screenshot
+
+Loaded the car diagnosis knowledge base in the Mobile-App.
+
+[{Image src='Mobile-App.png' height='500'}]
+
+
+
+
+

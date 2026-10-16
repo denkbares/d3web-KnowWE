@@ -1,0 +1,105 @@
+[{TableOfContents}]
+
+!!! How to create a new markup 
+KnowWE is designed for the easy introduction of new (e.g., project specific) markups. Therefore, an extra plugin extension point is provided. Further, a markup template is defined that allows to make benefit of existing implementations of parser and autocompletion functionality. We call this template ''[DefaultMarkup]''. The implementation of a new markup based on the DefaultMarkup can be achieved at very low implementation workload. It is recommended to always make use of this template when creating a new markup (except for the very rare cases where it is not suitable). 
+
+!! Create a new markup derived from default markup
+The DefaultMarkup has a particular [predefined syntactical structure|DefaultMarkup] that can be coined by a custom keyword and custom annotation.
+
+! Extend Class DefaultMarkupType
+To create a new markup based on DefaultMarkup, the class ''[DefaultMarkupType|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/kdom/defaultMarkup/DefaultMarkupType.html]''
+ needs to be extended. The following code snipplet shows a Hello-World extension of DefaultMarkup.
+
+%%prettify
+{{{
+ 1| public class HelloWorldMarkup extends DefaultMarkupType {
+ 2|
+ 3|	private static final DefaultMarkup MARKUP;
+ 4|
+ 5|	static {
+ 6|		MARKUP = new DefaultMarkup("HelloWorld");
+ 7|	}
+ 8|
+ 9|	public HelloWorldMarkup() {
+10|		super(MARKUP);
+11|	}
+12| }
+}}}
+/%
+
+A private instance of a [DefaultMarkup|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/kdom/defaultMarkup/DefaultMarkup.html] is required (line 3).
+The initialization of the DefaultMarkup object in the static block (line 6) is required in that way to allow the plugin-framework to create a markup instance on start-up.
+In line 6 also the name (and markup keyword) is specified as parameter for the DefaultMarkup object, "HelloWorld" in this example.
+The DefaultMarkup object has to be passed to the super class constructor call, as shown in line 10.
+! Add Annotations
+
+In the following the above listing is extended in line 4 and line 8 to introduce an annotation. The markup example allows to specify an image file name by the ''image'' annotation.
+
+%%prettify
+{{{
+ 1| public class HelloWorldMarkup extends DefaultMarkupType {
+ 2|
+ 3|	private static final DefaultMarkup MARKUP;
+ 4|	public static final String IMAGE_KEY = "image";
+ 5|
+ 6|	static {
+ 7|		MARKUP = new DefaultMarkup("HelloWorld");
+ 8|		MARKUP.addAnnotation(Image_KEY, false);
+ 9|	}
+10|
+11|	public HelloWorldMarkup() {
+12|		super(MARKUP);
+13|	}
+14| }
+}}}
+/%
+
+
+
+! Create a renderer
+In principle any kind of renderer can be added to render the markup. However, it is recommended to use a renderer based on the [DefaultMarkupRenderer|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/kdom/defaultMarkup/DefaultMarkupRenderer.html] to provide a coherent look of all content element. Further, this renderer automatically gives access to additional tool extensions that are registered for this markup ([HowTo Create Tools]).
+The renderer can be set in the constructor as shown in line 3 of the following listing:
+
+
+%%prettify
+{{{
+1|	public HelloWorldMarkup() {
+2|		super(MARKUP);
+3|	    	this.setRenderer(new HelloWorldRenderer());
+4|	}
+}}}
+/%
+
+! Create entry into the plugin.xml
+To make the markup active in KnowWE it has to be registered to the plugin-framework. This is done by an entry into the [plugin.xml|Meaning of plugin.xml] file. 
+
+The extension point for markups is called ''Type''. The code to register the markup defined above on the root level, i.e., making it available as root level content element on any page, would look like this:
+
+%%prettify
+{{{
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="HelloKnowWEType">
+		<parameter id="class"
+			value="de.knowwe.example.HelloKnowWEType" />
+		<parameter id="name" value="HelloKnowWEType" />
+		<parameter id="description" value="KnowWEObjectType HelloKnowWEType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+}}}
+/%
+
+!! Create an new general markup
+In rare cases it is necessary to create markups that are not based on the DefaultMarkup template. One case is for example, when the new markup is not meant to be a self-contained section on root level, but an extension of an existing markup.
+
+To create a general markup you should be familiar with implementing [Types|Type] and parsing (using [Sectionfinders|SectionFinder]. 
+The class [AbstractType|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/knowwe/core/kdom/AbstractType.html] has to be extended. 
+More details about parsing in KnowWE can be found here: 
+%%todo link to page about parsing
+If the markup is an extension to an existing one and not on root level, the class name of the parent type needs to be specified within the scope parameter of the plugin.xml. __Note:__ Be aware that additional/multiple sub-types injected to the same parent type are 'competing' for the content in a priority-based manner and therefore might interfere with each other on the parsing process.
+
+%%tags
+howto create Markup plugin.xml
+%
+

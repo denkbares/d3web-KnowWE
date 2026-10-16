@@ -1,0 +1,97 @@
+!! Tagesablauf
+
+Das Event wird am 17.12.2012 ab 8:00 Uhr stattfinden. 
+Den Ablauf stellen wir uns wie folgt vor:
+
+
+|  8:00 - 9:00 Uhr	|  Vorstellung der einzelnen Webseiten-Bereiche und Arbeitspakete.\\Jeder Teilnehmer schnappt sich 1-2 Arbeitspaket(e)	
+|  9:00 - 12:30 Uhr	|  Schaffe, schaffe, Webseit' baue\\Kontinuierliche Integration, bilaterale Abstimmungen	
+|  12:30 - 13:30 Uhr	|  Review der bisherigen Ergebnisse\\Neu/Umverteilung der restlichen Aufgaben\\Parallel: Mittagessen!!!	
+|  ab 13:30 Uhr	|  Schaffe, schaffe, Webseit' baue. Kontinuierliche Integration\\bilaterale Abstimmungen	
+|  Danach	|  Wir feiern uns selbst (Ausklang bei Glühwein, Sekt, Gebäck, ...)	
+
+!! Arbeitspakete
+%%TodoList  
+%
+
+%%Todo 
+  d3web-Community Liste einrichten. Eventuell an der Uni?
+  
+  @user: Jochen Reutelshöfer
+%
+
+
+%%Todo 
+  Add tags to all interesting pages, revise tags of existing pages.\\
+  There should not be more tags than needed, but they still need to be precise.
+  
+  @user: Constantin Rieder
+%
+
+%%Todo 
+  Update facebook and twitter with some news, pictures..
+  
+  @user: Joachim Baumeister
+%
+
+[{If group='Admin'
+
+!! Teilnehmer
+# [Volker Belli]
+# [Joachim Baumeister]
+# [Markus Friedrich]
+# [Jochen Reutelshöfer]
+# [Albrecht Striffler]
+# [Sebastian Furth]
+# [Alex Legler] (bis 17 Uhr)
+# [Stefan Plehn]
+# [Daniel Zügner] (bis 16:30 Uhr)
+# [Johanna Latt] (12-18 Uhr nicht da)
+# [Lukas Brehl]
+# [Frank Puppe] (nicht bis Ende)
+# [Reinhard Hatko] (ab 9:20)
+# [Martina Freiberg] (krank)
+# [Carsten Wasner] (Dräger)
+# [Tim Baier-Loewenstein] (Dräger)
+# [Christian Henniger] (KIT)
+# [Constantin Rieder] (KIT)
+* [Benedikt Kaemmerer] (10-18 Uhr Uni)
+* [Klaus-Peter Scherer] (KIT) (ab 14 Uhr) 
+* [Bianca Furth] (ab spät)
+
+
+!! Logistik
+* Getränke:
+** Softdrinks (40 x Halbliterflaschen)					   **(wird geliefert)**
+** Wasser (40 Liter)							   **(wird geliefert)**
+** Glühwein (5 Liter + 2 alkoholfrei)					   **(vorhanden)**
+** Warmhalteplatte (Joba)
+** Bier (2 Kasten alkoholfrei, 1 mit, halb-halb Radler jeweils) **(wird geliefert)**
+** Kaffee / Pads (80 Pads, 4 Liter Milch, wenn möglich in 500ml Behältern) **(vorhanden)**
+** Pappbecher (bis 50 Stück)           					   **(vorhanden)**
+* Essen
+** Knabbersachen (5 x Chips, 2 x Flips, 2 x Knabberbox, 2 x Salzstangen)   **(vorhanden)**		
+** Schoki (10 x 100 g)							   **(vorhanden)**
+** Plätzchen (Volkers Mama, Martina, Reinhard, x?)
+** Pizza (wird bestellt)
+** Belegte Brötchen (Mittags, vorbestellen) (30 Brötchen, Mettigel/Obazter 10/10 Personen, 30 Brezeln) **(bestellt bei REWE)**
+** Geschirr (Papier/Plastik) (> 50, 100? Sets)				   **(vorhanden)**
+* Tische (Joba: 2 Garnituren)						   **(vorhanden)**
+** Tischdecken (kaufen als Papier mit Weihnachtsmuster?)		   **(vorhanden)**
+** Stühle (Albi: 5-6)
+* Hardware (1 x 5m Kabel, 2 x 3er Leiste, 2 x 5+er Leiste)	           **(vorhanden)**
+* Möglichkeit für Namensschilder? Zur Not Kreppklebeband...		   **(vorhanden)**
+* Weihnachtsdekoration (Bianca wird kreativ ;-))
+* Preise? (Bianca bitte was ausdenken bzw. organisieren)
+** Weiteste Anreise
+** Gastgeschenke 
+** Merchandising (Blöcke, Tassen, Stifte?)
+* Musik, Spiele, Unterhaltungsprogramm? (brauchen wir eher nicht)
+* Sektchen (3 Alkohol, 1 alkoholfrei)					  **(vorhanden)**
+* Social Engineering (Twitter, Facebook) (Albi: Emails an Mailinglisten: Liked uns!)
+
+!! Entwurf
+
+[{Image src='IMG_20121015_103218.jpg' width='800px' align='left'}]
+
+}]

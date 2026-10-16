@@ -1,0 +1,69 @@
+[{Image src='headlessapp.png' align='right' }]
+
+
+!!! Headless-App
+
+This application generates knowledge bases from a given wiki content
+folder (or zip file of the folder) extracted from a conventional running KnowWE. The
+application can be configured via command line arguments and does not itself need a
+running conventional KnowWE or web service.
+
+
+!!! Intended Use
+
+The provided application should be operated by experienced users having basic skills
+in command line execution. The application was designed to be embedded into a
+continuous process, for instance called by a script when a new knowledge base has to
+be deployed. Since, the generated knowledge base heavily depends on the used wiki
+content, the resulting knowledge base should be bundled, when filed into a version
+control system. The proposed bundle is as follows:
+* The knowledge base as a d3web binary file.
+* The wiki content as a zip file.
+
+
+!!!Installation and Use
+
+
+!!System Requirements
+
+The installation requires the following components to be installed:
+Java 8 or newer (http://www.java.com)
+
+
+!!Installation
+
+The application comes in two installation variants: An executable java version and a
+MS-Windows executable. For both variants the required libraries (lib) are included.
+The application is started by double-clicking the executable file (jar or exe).
+Alternatively, you can use the command line version for more options:
+* java –jar KnowWE-Headless-App.jar ~[OPTIONS]
+
+The available options are as follows (the default values are given in parentheses):
+* __-w__ path to the wikicontent, zip or folder (wikicontent.zip)
+* __-k__ articles containing a knowledge base to be saved (if the parameter is not set, then all knowledge bases will be
+saved to the save directory)
+* __-sf__ file paths to where the knowledge bases will be saved the first knowledge base will be saved to the first file, the second knowledge base to the second file and so forth... (if the parameter is not set, then all knowledge bases will be saved to the save directory using the name of the knowledge base article as the file name)
+* __-sd__ directory to where knowledge bases will be saved if no file paths are given (knowledgebases)
+* __-h__ help
+
+
+!! Notes:
+
+* If you double-click the executable file, the application expects a zip file of the wiki content folder with the name wikicontent.zip in the same folder as the executable file.
+* If you double-click the executable, the application will save all knowledge bases compiled in the articles of the wiki content to the folder knowledgebases in the same folder as the executable file. The knowledge bases will have the name of the article they are compiled on as the file name.
+
+
+!!Example:
+
+Ant-task to extract knowledgebase from wikicontent.zip\\
+
+
+{{{
+<target name="extract.knowledgebase.d3web" >
+	    <exec executable="${kbb.dir}\KnowWE-Headless-App\KnowWE-Headless-App.exe" failonerror="true" dir="${input.dir}">
+		    <arg line="-w ${input.dir}\wikicontent.zip -sd ${dest.dir}\input"/>
+	    </exec>
+	    <!-- Due to headlessApp exporting kb as Dashboard.d3web -->		
+	    <copy overwrite= "true" file="${dest.dir}\input\Dashboard.d3web" tofile="${dest.dir}\input\knowledgebase.d3web" />	
+</target>
+}}}

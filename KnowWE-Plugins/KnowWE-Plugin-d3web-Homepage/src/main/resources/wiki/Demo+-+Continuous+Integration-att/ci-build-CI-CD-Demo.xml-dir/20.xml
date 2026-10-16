@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build xmlns="http://www.denkbares.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" date="2017-08-02 10:40:55.012 +0200" duration="19" xsi:schemaLocation="http://www.denkbares.com build_result.xsd">
+<test configuration=".* FixMe:" name="ArticleContains" numberOfSuccessfullyTestedObjects="290">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Demo - Master&quot;" name="EmptyQuestionnaire" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;^Demo - Test Cases.*&quot; &quot;Demo - Master&quot;" name="TestCase" numberOfSuccessfullyTestedObjects="4">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+</build>

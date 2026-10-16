@@ -1,0 +1,130 @@
+[{TableOfContents title='Frequently Asked Questions' }]
+
+
+!! General Questions
+
+
+! Q: What kinds of problems can be solved by using d3web?
+
+A: In general, d3web provides problem-solving knowledge to solve diagnosis tasks, where observations are entered (or batched) into the system and appropriate diagnoses are returned as a result. This kind of methods can also be used to implement recommender and classification systems. You may have a look at some of our [examples|Demos] to get a first impression. A good source for inspiration are also the [Success Stories].
+
+
+! Q: I have heard about the systems d3web, KnowWE, and KnowME. What's their actual relation?
+
+A: __d3web__ is a platform for diagnostic tasks. As a part of d3web, there id d3web-Core and d3web-KnowWE, among others.\\ __d3web-Core__ is a Java implementation of problem-solving methods for diagnosis tasks. It provides an API, so that applications can use d3web as an embedded application. Besides the problem-solving methods, d3web-Core also includes many additional APIs, e.g., for the persistence of knowledge bases (loading/saving).\\ __KnowWE__ (Knowledge Wiki Environment) is a development environment for building knowledge bases. It includes d3web-Core and offers editors to develop d3web knowledge. KnowWE runs as a JSP-server application on all systems with Java 8 or greater installed.\\ __KnowME__ is the predecessor of KnowWE, not being under active development any longer.
+
+
+! Q: I am already working with KnowME. How is this related to d3web?
+
+KnowME is a rich-client application where d3web knowledge bases can be developed using a stand-alone application. KnowME is the predecessor of KnowWE. Please note that KnowME is no longer under development. Being replaced by KnowWE since 2008, KnowME reached its EOL and you should consider to migrate to KnowWE, which is pretty much compatible. If you want to migrate, please contact us directly by [emailing info@d3web.de|mailto:info@d3web.de?subject=Migrate KnowME to wiki environment].
+
+
+! Q: What is the current state of the systems?
+
+A: d3web (with both d3web-Core3 and d3web-KnowWE, among others) are under active development. The University of Würzburg, Germany (Group Artificial Intelligence, Prof. Puppe) and denkbares GmbH are improving and extending the software continuously. denkbares GmbH also provides stable versions of d3web on a regular basis. The KnowME system was finally declared as "deprecated" in 2008 and is not under development any longer.
+
+
+!! Knowledge Engineering
+
+
+! Q: I started to build a knowledge base with KnowME. Is it possible to switch to KnowWE?
+
+A: Yes. In principle, KnowME and KnowWE use the identical knowledge representations as both build on d3web. So, already developed knowledge bases can be easily transfered to KnowWE. However, the more advanced system KnowWE provides additional knowledge representations, that also allow advanced applications, graphical knowledge modeling for instance. Being replaced by KnowWE since 2008, KnowME reached its EOL and you should consider to migrate to KnowWE, which is pretty much compatible. If you want to migrate, please contact us directly by [emailing info@d3web.de|mailto:info@d3web.de?subject=Migrate KnowME to wiki environment].
+
+
+! Q: I started to build a knowledge base with ontoprise/semafora SemanticGuide. Is it possible to switch to KnowWE?
+
+A: Yes, you can. Basically the SemanticGuide diagnostic flowcharts implements a subset of the functionality KnowWE provides. A successful migration of a real-world knowledge was already performed and reported. The result was an automated batch-converter that creates a KnowWE folder out of a SemanticGuide database, including all its contents. A description - including the source code of the converter - can be found at '[How to Migrate From SemanticGuide to KnowWE]'.
+
+
+! Q: What types of problem-solving knowledge do you support in the current implementation of d3web?
+
+A: Currently, d3web offers inference methods for (scoring) rules, indication rules, decision trees, set-covering models, cost-benefit indication, and workflow-based knowledge.
+
+
+! Q: Am I able to model temporal relations between values in d3web? 
+
+A: The open-source version does not include inference methods for temporal reasoning tasks. The commercial extension "TimeDB" of d3web and KnowWE, however, adds support to represent, edit and infer temporal knowledge. 
+
+
+! Q: What kind of knowledge is supported by d3web? 
+
+A: d3web supports a wide range of different types of knowledge. The main advantage is that all problem solving mechanisms can be combined and used within one knowledge base. The commonly used types of knowledge are:
+* [Diagnostic Flowcharts | Doc Diaflux]
+* [Set Covering Models | Doc CoveringList]
+* [Decision Trees | Doc Questions]
+* [Rules | Doc Rules]  (for scoring and abstractions)
+* [Decision Tables | Doc AbstractionTable] (for scoring and abstractions)
+* [Media Ressources | Doc Resources] with [Image Maps | Doc ImageMap]
+
+
+! Q: Does KnowWE also support semantic wiki functionality?
+
+A: Yes. Despite its diagnostic knowledge support, KnowWE also allows to specify semantic information which is denoted in a built-in triple-store and can be accessed using SPARQL from any wiki page. This functionality is also used on this website to add additional information to products and modules.
+
+
+!  Q: How can i get Admin rights in a (local) KnowWE installation?
+
+A: Take the two files attached to this page and copy them into your wiki-sources folder (right with all the txt-files). Then (re-)start the wiki.
+The admin account is:
+
+__User__: knowweadmin \\
+__password__: knowwed3web
+
+
+''Note:'' Be sure to deactivate this account before you go online! 
+
+
+! Q: Where can I learn more about the development of knowledge bases?
+
+A: There exists a variety of books on knowledge engineering in general. For a more d3web-specific overview we would kindly suggest one of the following publications for a first look:
+* Baumeister, J.: Agile Development of Diagnostic Knowledge Systems. IOS Press, AKA, DISKI 284, 2004 (the middle part of the book explains the knowledge representation of d3web in detail)
+* Baumeister, J.; Reutelshoefer, J. & Puppe, F.: KnowWE: A Semantic Wiki for Knowledge Engineering. In: Applied Intelligence, 2011 (describes the general ideas of the wiki KnowWE)
+* Puppe, F.; Ziegler, S.; Martin, U. & Hupp, Jü.: Wissensbasierte Diagnosesysteme im Service Support - mit Erfahrungsberichten. Springer Verlag, 2001 (a german book explaining knowledge formalizations patterns and experiences in projects)
+
+
+!! Developing d3web
+
+
+! Q: I want to extend d3web or KnowWE with own implementations. Is this possible? 
+
+
+A: Yes! For a first look we suggest to take a look at the [developer's FAQ section|Developer FAQ].
+
+
+!! Licensing
+
+
+! Q: Is d3web free to use?
+
+
+A: Yes. Definitely! All core components to develop knowledge base systems are open source and free to use. Due to LGPL, you are also allowed to embed it into your own software products, even if they are commercial.
+
+
+! Q: What do I need to develop and/or publish my own knowledge based system?
+
+A: You can download the free, open-source distribution of d3web. The package contains KnowWE to be installed on your laptop, desktop computer or server. It can be used to develop your own knowledge base. To publish the knowledge base you can publish your wiki on a web server. 
+
+
+! Q: Is there a stand-alone runtime environment to execute my developed knowledge bases?
+
+After developing your knowledge base, you can compile the knowledge base into a single file and publish. The knowledge base can be executed together with your own application, where you have embedded the d3web-Core runtime environment. Alternatively you can also use one of the existing stand-alone runtime, available for Windows, Mac OS, Linux or Android. Please note that for the latter case not all existing runtime environments are open-source, but all are free for non-comercial use.
+
+
+! Q: Can I use d3web in my own (commercial) applications?
+
+A: All open-source parts of d3web-Core and d3web-KnowWE are distributed under LGPL v3. So, in summary, you can write your own extensions and distribute it together with d3web. Changes on the existing code need to be pushed back to us.
+
+
+! Q: Some of the modules are not under an open-source license. What does this mean?
+
+A: This website is the hub of the d3web community and all d3web activities. For this reason we also allow to add information about commercial extensions from third-party vendors. But don't worry about this, when downloading d3web you will only get free components with no license required to buy.
+
+
+! Q: What is the difference between the open-source variant and the commercial version of d3web and KnowWE?
+
+A: The commercial versions of d3web and KnowWE add some sophisticated features to the open-source versions. For instance, d3web is extended by temporal reasoning and an improved cost-benefit indication. The commercial version of KnowWE, among other features, includes an improved code-completion for knowledge editing, todo notes in KnowWE, and editors for temporal knowledge.
+
+%%tags
+User FAQ
+%

@@ -1,0 +1,5 @@
+!Code sample of the testing sequence for heuristic 05
+
+Dieser Screenshot zeigt einen Teil der Testsequenz um die Regeln der Heuristik 05 zu testen.
+
+[{Image src='ESAT_Screenshot_06.jpg' align='left'}]

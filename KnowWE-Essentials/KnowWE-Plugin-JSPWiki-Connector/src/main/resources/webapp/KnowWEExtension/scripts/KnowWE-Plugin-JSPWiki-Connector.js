@@ -67,7 +67,11 @@ KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {
   const timeDisplay = document.getElementById("compile-warning");
   if (!timeDisplay) return;
 
-  jq$.ajax("action/AwaitRecompilationAction", { cache: false }).done(function() {
+  // the page is needed for the view check, so anonymous visitors of a public wiki may wait as well
+  jq$.ajax("action/AwaitRecompilationAction", {
+    cache: false,
+    data: { page: KNOWWE.helper.getPagename() }
+  }).done(function() {
     window.location.reload();
   });
 

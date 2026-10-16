@@ -1,0 +1,18 @@
+%%package simpsons
+
+%%SparqlVisualization
+
+    SELECT ?x ?y ?z WHERE {
+	    ?x ?y ?z . 
+	    FILTER (STRSTARTS(STR(?x), "http://www.example.org/ontology#")).
+	    FILTER (STRSTARTS(STR(?z), "http://www.example.org/ontology#")).
+	    FILTER NOT EXISTS {?x rdf:type rdfs:Class}.
+	    FILTER NOT EXISTS {?z rdf:type rdfs:Class}.
+	    FILTER NOT EXISTS {?x rdf:type rdf:Property}.
+	    FILTER NOT EXISTS {?z rdf:type rdf:Property}.
+	    FILTER (?z != ?x).
+
+}
+@rankDir: BT
+@size: 1200
+%

@@ -1,0 +1,99 @@
+[{TableOfContents }]
+
+[{Image src='KBB.png' height='1500' align='right' style='margin-left: 20px; border-left: solid black 1px; border-right: solid black 1px' caption='Overview of a KnowledgeBase Book' link='/attach/KnowledgeBaseBook/KBB%20User%20Manual.pdf'}]
+
+
+!!  Overview
+
+This application generates a  DocBook XML file  of an 
+executable  d3web  knowledge base, i.e., the knowledge base book. The DocBook 
+XML can be used for further transformations. The application produces a 
+PDF printout.
+
+
+!!  Background
+
+A knowledge base book contains the full version of  a  developed knowledge base 
+generated automatically from the binary knowledge base file. It specifies all parts of 
+the knowledge relevant for the reasoning process.
+The indented use of a knowledge base book is primarily targeted to the review process 
+of the knowledge base, i.e., manually reading, discussing, and verifying the developed 
+knowledge. Additionally, the knowledge base book can be used as a reference for 
+deployed knowledge bases and for presentation and demonstration purposes.
+
+
+!!  Intended Use
+
+The application should be operated by experienced users having  basic skills 
+in command line execution.  The application was designed to be embedded into a 
+continuous process, thus called by a script when  a new knowledge base is deployed. 
+Since, the generated knowledge base book heavily  depends on the binary knowledge 
+base, the resulting document should be bundled, when filed into a version control 
+system. The proposed bundle is as follows:
+#  The knowledge base book as PDF document.
+#  The knowledge base as a d3web binary file.
+#  The (archived) content of the wiki installation (to have a baseline, when review comments are fed back into the development system).
+
+
+!! Example
+
+In this example we provide a KnowledgeBaseBook for the knowledge base also provided on this page.
+
+* [Link to Body-Mass-Index knowledge base|Body-Mass-Index]
+* [Download KnowledgeBaseBook|Body-Mass-Index.pdf]
+
+
+!! Installation
+
+
+! System Requirements
+
+The installation requires the following components to be installed:
+* Oracle Java 8 or newer (http://www.java.com)
+* Graphviz 2.28.0 or better (http://www.graphviz.org) Note: Graphviz is used to generate graphs from DiaFlux models.
+The application uses the technologies DocBook 5 (www.docbook.org) and XSL-FO, that are already included in the distribution of the application.
+
+
+! Installation
+
+The application comes in two installation variants: An executable java version and a MS-Windows executable. For both variants the folders for the DocBook template (template) and required libraries (lib) are included.
+The application is started by double-clicking the executable (jar or exe). Alternatively, you can use the command line version for more options:
+* java –jar KnowledgeBaseBook.jar ~[OPTIONS]
+The available options are as follows (the default values are given in parentheses):
+* -k path to the knowledge base (knowledgebase.d3web) -t path to template file (template/main.xml) -l path to the logo image (template/logo.png) -c path to the custom layer (template/customLayer.xml) -o path of the output file (KBB.pdf)
+* -r revision of the document (${docrev}) -i id of the document (${docid}) -h help
+
+
+!Notes:
+
+# If you double-click the executable, the application expects a binary knowledge base with the name knowledgebase.d3web in the same folder as the executable file.
+# The main template file, the custom layer and the docbook-xsl folder are expected to be in the same parent folder (default: template).
+
+
+!! Configuration
+
+
+!Structure of the Document
+
+Templates can flexibly configure the presentation of the knowledge base book. That way, the delivered template provides a skeleton of the generated DocBook source. At distinct locations, markers (KbbFragments) in the templates reference to positions, where content of the knowledge base should be printed.
+The entire template is partitioned into different files and can be found in the folder template.
+
+The structure of the template is as follows:
+* __main.xml:__ The master document referencing to the chapters of the knowledge base book.
+* __titlepage.xml:__ The title page of the resulting document.
+* __instructions.xml:__ Provides a predefined text for the chapter ''About this Document''.
+* __terminology.xml:__ Provides the chapter printing the terminology of the knowledge base (e.g., questions and solutions)
+* __derivationKnowledge.xml:__ Provides the chapter, where all derivation knowledge of the knowledge base is printed, for instance, abstractions rules, DiaFlux models, etc.
+* __pluginConfig.xml:__ Displays all d3web plugins, that were used to develop the printed knowledge base.
+* __withoutExporter.xml:__ All knowledge elements are shown here, that have not been handled in previous chapters. This chapter functions as a “fallback”, when there exist elements in the knowledge base that are not covered by printers of the Knowledge Base Book application.
+* __index.xml:__ This part handles the print of the index of this document.
+
+You are free to modify the files by inserting text and structure into the documents. All available tags in the documents are valid DocBook elements, except the element <KbbFragment/>, which is used by the application to insert corresponding knowledge elements (as a DocBook sub-tree) at these positions.
+
+
+!! Style of the Document
+
+Using standard XSL-FO scripts generates the PDF file. These are located in the directory docbook-xsl-1.76.1. It is recommended to not change these files directly, but to overwrite specific styles using the file customLayer.xml, which is located in the folder template.
+denkbares GmbH	Seite 7 von 9
+Knowledge Base Book – User Manual
+The style sheet document customLayer.xml already provides a number of adaptations with respect to the layout and the style of the generated PDF document, e.g., the color of headlines, the formatting of numbers, etc.

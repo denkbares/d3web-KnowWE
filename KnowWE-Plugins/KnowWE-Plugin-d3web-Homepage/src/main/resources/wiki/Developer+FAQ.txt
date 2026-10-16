@@ -1,0 +1,190 @@
+This page is supposed to help you getting started with the development of KnowWE. Feel free to add your solutions to this page. If you don't find the information you need here, you can post it in the [Forum|http://sourceforge.net/projects/knowwe/forums].
+
+[{TableOfContents title='Frequently Asked Questions'}]
+
+
+!!General
+
+
+!What is a Plugin?
+
+A plugin is a module extending KnowWE's functionality. A plugin needs a [plugin.xml|Meaning of plugin.xml] file defining the extensions for this plugin.
+
+
+!What is an Extension?
+
+An extension implements the plugin's functionality using an extension point. For further definition and usage instructions see [this page|How-To Extension Points]..
+
+
+!What is the Scope of an Extension?
+
+ A scope is an selector of a specific subset of KDOM nodes. Its selection is based on the type of the KDOM nodes itself as well as on the type of the KDOM node's anchestors. It can be compared a little bit to the css selectors.
+
+The scope is a path of those KDOM node types that should be matched/selected. The path can be relative (anywhere in the KDOM tree) or root based. Specific path wildcards as "*" and "**" are allowed. The different kinds of scopes and their usage are explained [here|How-To Extension Points].
+
+
+!What is an Extension Point?
+
+An extension point has a specific type, for example ''Action, TagHandler, TypeHandler'' or ''EventListener''. The defined extension point specifies that each extension has to give values for class, name, description, version, and priority. This has to be defined by each extension point; an extension point further can require additional value, for example the specification of a file name. 
+For further definition and usage instructions see [this page|How-To Extension Points].
+
+
+!!Getting Started
+
+
+!Why isn't Plugin X included in my build?
+
+[{Image src='attach/Developer%20FAQ/m2eclipse-plugins.png' width='232' height='202' align='right' link='attach/Developer%20FAQ/m2eclipse-plugins.png'}]
+
+You need to enable the plug-ins you want to build into KnowWE when using Eclipse. Here's how:
+
+Open your Run Configuration for the KnowWE build and add parameters for the plug-ins you want to have in the goals section.
+
+For instance: You want to enable the Comment plug-in. Here, you have to add a {{comment-plugin}} parameter. List all the profile names for the Plug-ins you want to add in the Profiles Section and build KnowWE.
+
+See the screenshot on the right for another example.
+
+
+! What do I have to mind about the license?
+
+Every {{.java}} file __must__ contain the license header, starting in the first line. Be sure to have an empty line between the license and the {{package}} declaration.
+
+The license is to look like this:
+
+{{{
+/*
+ * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
+ *                    Computer Science VI, University of Wuerzburg
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+ 
+}}}
+
+You can do this automatically by adding [codetemplates.xml] in Eclipse: ''Window'' -> ''Preferences'' -> ''Java'' -> ''Code Style'' -> ''Code Templates'' 
+
+
+! What is important about the first check-in?
+
+
+You have to perform the first check-in using the chosen main repository (c.f. above).
+* Right click the main project → Team → Commit.
+* Now __exclude the folders {{target/}} and {{.settings/}}__! (Uncheck the check boxes)
+* Enter your commit message → Commit.
+
+Now you can enable SVN access directly for your newly created project: Perform a right click on the new project → Team → Share.
+Select SVN, you will find the repository location already set up. Hit Finish.
+
+To complete the process, you have to ignore {{target/}} and {{.settings}} permanently. Select both folders in the Project Explorer with Ctrl/Command, right click → Team → Add to svn:ignore. Click OK in the window that opens.
+
+Finally, commit the ignore settings: right click → Team → Commit. Done.
+
+
+!! Plugin-Development
+
+
+!What do I need to do after I change a .java file?
+
+Usually you only have to refresh your browser page. Hot Code Replacement makes your changes effective at runtime. 
+
+
+!I'm done editing. How to make my changes permanent?
+
+You don't have to worry that you changes will be lost after you shut down KnowWE. To make the changes effective for the next restart, you have to perform Maven install on KnowWE-App.
+
+
+!Hot Code Replacement failed. What to do?
+
+Sometimes, especially when doing major changes to a .java file, Hot Code Replacement fails. In this case you have to 
+*Quit Tomcat
+*Perform a Maven install on KnowWE-App and
+*Start Tomcat again.
+
+
+!What do I need to do after I change a Non-Java file?
+
+Unfortunately, there is no Hot Code Replacement for Non-Java files. However, there is a [How-To for developing Javascript at runtime|How-To Develop JavaScript in KnowWE], which may be useful for you.
+
+How to make changes to Non-Java files effective:
+*Quit Tomcat
+*Perform Maven Install on your plugin aswell as KnowWE-App
+*Restart Tomcat
+
+
+!Tomcat successfully starts, but the wiki pages are not loaded. What to do?
+
+This can happen when you perform a Maven install while Tomcat is still running. To fix this, you have to follow these steps:
+*Right click on KnowWE-App in Eclipse and select
+
+{{{Tomcat > Update Tomcat Context}}}
+
+*Start Tomcat
+
+
+! Why cannot my JUnit tests be executed?
+
+If the message appears 'dependencies/output.txt not found' read further in this [howto|How-To Initialize Plugin Manager for JUnit Tests].
+
+
+!Can I make a build without a Internet connection?
+
+
+Create a second runtime configuration for building KnowWE, just like shown here: [http://d3webwiki.informatik.uni-wuerzburg.de/Wiki.jsp?page=Workspace#section-Workspace-CreateARunConfigurationForBuildingTheWiki], just check the "Offline" checkbox. __Note__: Do not enable this option for your regular build, only use it if artifactory is down or you are not connected to the internet!
+
+
+!!Common Problems
+
+
+! Why are Umlauts viewed uncorrectly?
+
+Tomcat can be configured in UTF-8 to handle Umlauts correctly. Look at [http://www.jspwiki.org/wiki/BugProblemsWithGermanUmlaute]
+
+
+!Why does Eclipse not catch breakpoints?
+
+This issue is caused by an outdated JDK. Please update your JDK to the [latest version  | http://www.oracle.com/technetwork/java/javaee/downloads/index.html].
+
+
+!Why do i get a java.util.MissingResourceException: Can't find bundle for base name Exception?
+
+This happens after cleaning the workspace.
+
+For each of the two maven super projects (d3web, d3web-KnowWE), select the project, right click on it, "Run as...", "Maven package".
+
+
+! INFO: ERROR: Failed to create a Wiki engine: JSPWiki: Unable to load and setup properties from jspwiki.properties.
+
+This is a missleading message display caused by unprecise error handling within jspwiki initialization code. The try-catch does not only include reading of the jspwiki.properties file, but also initialization of plugins/filters, i.e. also entire initialisiation of KnowWE. If you have recently changed code of KnowWE or a KnowWE-Plugin this error __most likely__ has __nothing__ to do with the jspwiki.properties file. It can be any kind of exception happening during KnowWE initialization. After the ''Unable to load and setup properties from jspwiki.properties'' the ''e.getMessage()'' of the actual exception is shown (without stack-trace unfortunately). __Tipp:__ Check the message string to guess what kind of exception it might have been; Consider your latest code changes; if nothing helps start debugging, e.g. in ''Environment.initInstance()''   
+
+
+! Are d3web's Session objects thread-safe for multi-threaded environments?
+
+In general a single d3web session is not thread-safe for write access. Reading contents from the same session with multiple threads is ok. But having an applications where multiple threads simultaneously read/write to a session, they need to be synchronized. Even if there is only one thread that writes to the session, it need to be synchronized with all reading threads. By convention, in d3web this should be done using the "Session"-Object as the semaphore for synchronization. This makes sure that your code will be interoperable with all other applications code (also considering this convention), without being in danger to create deadlocks.
+
+%%prettify
+{{{
+// put your non d3web-code here
+// ...
+synchronized (session) {
+  // your read/write access to the session or blackboard or ... here
+  // ...
+}
+}}}
+/%
+
+%%tags
+FAQ Developer
+%

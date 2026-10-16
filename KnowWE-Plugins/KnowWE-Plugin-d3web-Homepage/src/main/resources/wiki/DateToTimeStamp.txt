@@ -1,0 +1,34 @@
+%%Package
+DateToTimeStamp
+%
+
+%%KnowledgeBase 
+  
+%
+
+%%QuickInterview 
+  @inputSize: 20
+%
+
+%%Question
+QuestionDate [date]
+UnixStart [date]
+QuestionNum [num]
+MyNow [date]
+%
+
+%%Variable
+MyNow = now
+%
+
+%%Property
+QuestionNum.unit = ms
+%
+
+%%Variable 
+  UnixStart = date(1970, 1, 1)
+%
+
+%%Variable 
+QuestionNum = (now - UnixStart) / 1ms
+%

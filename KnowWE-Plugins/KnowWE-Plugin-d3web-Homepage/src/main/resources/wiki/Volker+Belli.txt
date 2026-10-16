@@ -1,0 +1,36 @@
+[{ALLOW view Authenticated}]
+[{ALLOW edit volker.belli}]
+
+! Contact
+
+[{Image src='Portrait2.jpg' align='right' style="padding:20px;"}]
+
+|| Name	|  Volker Belli	
+|| Position	|  Geschäftsführer	
+|| Company	|  denkbares GmbH	
+|| Address	|  Friedrich-Bergius-Ring 15, 97076 Würzburg	
+|| Email	|  [vb@denkbares.com | mailto:vb@denkbares.com]	
+|| Web	|  [http://www.denkbares.com]	
+
+! About Me
+
+My main focus is on conception and project management of knowledge-based solutions.
+
+I'm the founder and CEO of the denkbares GmbH, working in the field of diagnostic systems since 1996. From 1999 till now I consulted companies in diagnostic projects, analyzing the requirements and the project goals, elaborating cost-benfit-analysis, assessing technical feasibility and deriving a diagnostic concept for the project. In my over 15 year within that area, I attended more than 50 projects, mostly as project manager and analyst. For special challenges, I like to rely on my grown network of product suppliers, researchers and diagnostic experts.
+
+
+! d3web Activities
+
+* Conception of knowledge-based solutions
+* Knowledge Engineering
+* d3web-Core: problem solving algorithms
+* d3web-KnowWE: markup design & development
+
+
+! Open tasks
+
+%%TodoList 
+  @user: Volker Belli
+%
+
+%%Tags Users

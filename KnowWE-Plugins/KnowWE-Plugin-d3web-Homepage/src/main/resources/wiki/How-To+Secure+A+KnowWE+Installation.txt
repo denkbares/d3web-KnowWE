@@ -1,0 +1,37 @@
+To secure a KnowWE(JSPWiki) installation, you have to edit two files:
+
+* {{jspwiki.properties}}: 
+** at the very bottom uncomment the line {{jspwiki.approver.workflow.saveWikiPage=Admin}} to enable the forced approval of new user accounts by an admin. (Make sure there is an 'Admin' group)
+** make sure the option {{allowHTML}} is set to {{false}}
+
+* {{jspwiki.policiy}}:  comment the permissions of 'Anonymous' to disable anonymous editing
+   before:
+%%prettify %% after:
+%%prettify {{{
+grant principal com.ecyrd.jspwiki.auth.authorize.Role "Anonymous" {
+    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "modify";
+    permission com.ecyrd.jspwiki.auth.permissions.WikiPermission "*", "createPages";
+};
+}}}%%
+
+{{{
+grant principal com.ecyrd.jspwiki.auth.authorize.Role "Anonymous" {
+//    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "modify";
+//    permission com.ecyrd.jspwiki.auth.permissions.WikiPermission "*", "createPages";
+};
+}}}
+
+* {{Install.jsp}}: Make sure that the file Install.jsp is deleted from the root folder of the web application.
+
+* Default Admin Account: Be sure to change or deactivate the default admin account, before you go online. The password is published on this website! [User FAQ]
+
+After that, restart the container and the wiki is secure.
+
+%%Todo
+This How-To could be extended
+%
+
+
+%%tags
+howto security
+%

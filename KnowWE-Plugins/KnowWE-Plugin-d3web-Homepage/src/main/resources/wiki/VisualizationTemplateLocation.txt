@@ -1,0 +1,41 @@
+%%sparqlVisualization
+  select ?x ?y ?z
+  where{
+  	  bind ( %1$ as ?z).
+	  ?x ?y ?z.
+  }
+@config: TemplateVisConfig
+@showLabels: true
+@templateDefaultConcept: si:springfield
+@isVisTemplateForClass: si:Location
+%
+
+%%package simpsons
+
+
+!! Color Definitions for Properties and Classes
+
+%%turtle
+
+si:colorTemplate a rdf:Property.
+si:Human si:colorTemplate "#ffbb22".
+si:Location si:colorTemplate "#11bb66".
+si:livesIn si:colorTemplate "#8899ff".
+%
+
+
+!! Config
+
+%%VisualizationConfig 
+  
+@name: TemplateVisConfig
+@showOutgoingEdges: false
+@excludeNodes: owl:Thing, rdfs:Class, rdf:Resource, owl:Nothing
+@format: svg
+@predecessors: 1
+@size: 1200
+@rankDir: BT
+@showLabels: false
+@showInverse: false
+@colors: si:colorTemplate
+%

@@ -1,0 +1,26 @@
+[{TableOfContents}]
+
+!!! Definition
+
+The markup to define (RDFS) individuales goes as follows:
+
+{{{
+%%Individual...
+}}}
+
+!!! Example
+
+To define an individual representing a Person:
+
+{{{
+%%Individual Ms. Moneypenny
+}}}
+
+
+The Individual markup also allows for a class membership using the type annotation:
+
+{{{
+%%Individual Ms. Moneypenny @type: Person
+}}}
+
+In that example the individual ''Ms. Moneypenny'' is defined to be a member of the class ''Person''. 

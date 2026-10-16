@@ -1,0 +1,17 @@
+!!! Using the Continuous-Integration Daemon
+
+This daemon allows you to show the current state of CI-testing at one glancing (e.g., for inserting into the LeftMenu for everyone to see).
+
+{{{
+%%CIDaemon
+@dashboardArticle: Demo - Continuous Integration
+@name: CI CD Demo
+%
+}}}
+
+''@dashboardArticle:'' Article of the monitored CI-Dashboard \\
+''@name:'' name of the monitored CI-Dashboard (their might be multiple on one page). \\
+
+!! Related Doc Pages
+
+* [Doc CIDashboard]

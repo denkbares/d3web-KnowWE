@@ -668,6 +668,11 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Homepage</artifactId>
 				</dependency>
+				<!-- lets MCP clients maintain the pages of d3web.de, see the README of KnowWE-Plugin-MCP -->
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-MCP</artifactId>
+				</dependency>
 			</dependencies>
 		</profile>
 

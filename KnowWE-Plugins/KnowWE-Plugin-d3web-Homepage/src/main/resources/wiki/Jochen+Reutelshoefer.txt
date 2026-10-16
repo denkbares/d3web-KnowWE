@@ -1,0 +1,23 @@
+
+
+[{Image src='Foto am 03.04.12 um 10.59.jpg' width='200' height='..' align='left' style='..' class='..' }]
+
+
+||Name: |Jochen Reutelshöfer
+||Tel.: |093120597985
+||Mail: |jochen.reutelshoefer@denkbares.com
+||Affiliation:|[http://www.denkbares.com]
+||Competencies: | KnowWE-core, KnowWE-Extensions, Markups, Semantic-Extensions
+
+
+! Open tasks
+
+%%TodoList 
+  @user: Jochen Reutelshöfer
+%
+
+%%Tags Users
+
+[{ALLOW view Authenticated}]
+[{ALLOW edit JochenReutelshoefer}]
+

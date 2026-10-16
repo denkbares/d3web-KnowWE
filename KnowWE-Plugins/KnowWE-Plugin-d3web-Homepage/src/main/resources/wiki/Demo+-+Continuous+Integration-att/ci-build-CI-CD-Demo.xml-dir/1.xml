@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<build date="2017-02-10 10:05:18.810 +0100" duration="62">
+<test configuration=".*" name="ArticleHasErrors" numberOfSuccessfullyTestedObjects="276">
+<message testObject="CIBMIDemo" text=" errors found in article 'CIBMIDemo'&#10;* Test 'StandardQuestionDerivedByAbstraction' does not exist&#10;* Test 'IncompleteChoiceQuestion' does not exist&#10;* Test 'CombinedFlowRuleAbstraction' does not exist&#10;* Test 'NoAutostart' does not exist&#10;* Test 'UnusedNode' does not exist" type="FAILURE"/>
+<message testObject="Deleteme" text=" errors found in article 'Deleteme'&#10;* The value eval(((ASIN((S/2)/R)*2)*PI*R/180)*R/2 * 180 / PI) is not a numeric answer" type="FAILURE"/>
+<message testObject="Demo - Simpsons" text=" errors found in article 'Demo - Simpsons'&#10;* The value of annotation @ruleset is invalid: OWL2_RL_REDUCED_OPTIMIZED" type="FAILURE"/>
+<message testObject="Demo - Simpsons Visualization" text=" errors found in article 'Demo - Simpsons Visualization'&#10;* The annotation @linkMode is not known to system. It will be ignored." type="FAILURE"/>
+<message testObject="Demo - Temperature" text=" errors found in article 'Demo - Temperature'&#10;* The value eval(gradient(Temperature[0s, -20s])) is not a numeric answer&#10;* Could not create node for: &quot;Gradient&quot; = eval(gradient(Temperature[0s, -20s]))" type="FAILURE"/>
+<message testObject="Ling" text=" errors found in article 'Ling'&#10;* The value of annotation @ruleset is invalid: OWL_HORST_OPTIMIZED" type="FAILURE"/>
+<message testObject="Test123" text=" errors found in article 'Test123'&#10;* Could not parse condition: eval(Trigger != Previous_Trigger)&#10;* Could not create node for: Date2 = eval(now)&#10;* Could not find 'Previous_Trigger= eval(Trigger)' - expected was Question or Questionnaire&#10;* Could not create node for: Date3 = eval(now)&#10;* Question 'eval(Trigger' not found&#10;* Choice 'Previous_Trigger)' not found&#10;* The value 'eval(now)' does not apply to any supported date format (3&amp;times;)&#10;* Could not create node for: Date1 = eval(now)" type="FAILURE"/>
+<message testObject="Tutorial Printer Testcases" text=" errors found in article 'Tutorial Printer Testcases'&#10;* Test 'CombinedFlowRuleSolution' does not exist&#10;* Test 'UnusedFlow' does not exist&#10;* Test 'CombinedFlowRuleAbstraction' does not exist&#10;* Test 'NoAutostart' does not exist&#10;* Test 'UnusedNode' does not exist" type="FAILURE"/>
+<message testObject="Visualization Util" text=" errors found in article 'Visualization Util'&#10;* The annotation @outgoingEdges is not known to system. It will be ignored.&#10;* The annotation @linkMode is not known to system. It will be ignored.&#10;* The annotation @labels is not known to system. It will be ignored." type="FAILURE"/>
+<message summary="true" text="Failures:  test 'ArticleHasErrors', objects [Ling, Visualization Util, Demo - Simpsons Visualization, Tutorial Printer Testcases, Deleteme, Demo - Temperature, Demo - Simpsons, Test123, CIBMIDemo]" type="FAILURE"/>
+</test>
+<test configuration=".* FixMe:" name="ArticleContains" numberOfSuccessfullyTestedObjects="285">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;Demo - Master&quot;" name="EmptyQuestionnaire" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="&quot;^Demo - Test Cases.*&quot; &quot;Demo - Master&quot;" name="TestCase" numberOfSuccessfullyTestedObjects="4">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+<test configuration="((?!ST-BMI).)* &quot;[0-9a-zA-ZäöüÄÖÜß#_():/.,\- ]*&quot;" name="TermnameConvention" numberOfSuccessfullyTestedObjects="284">
+<message testObject="Ling" text="The following terms do not comply to the specified naming convention pattern (~[0-9a-zA-ZäöüÄÖÜß#_():/.,~\- ~]*):&#10;* Who does John hate?&#10;* What is John doing?&#10;* 玛丽&#10;* He isn't doing anything" type="FAILURE"/>
+<message summary="true" text="Failure:  test 'TermnameConvention', object 'Ling'" type="FAILURE"/>
+</test>
+</build>

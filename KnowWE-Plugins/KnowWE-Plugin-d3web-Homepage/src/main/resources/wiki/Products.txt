@@ -1,0 +1,42 @@
+!!! Applications
+
+! [d3web-Core|d3web-Core]
+The reasoning engine and persistence components for problem-solving knowledge including decision trees, (heuristic) rules, set-covering models and diagnostic flowcharts ([LGPL|http://www.gnu.de/documents/lgpl.de.html], optional commercial extensions).\\
+[more...|d3web-Core]
+
+
+! [KnowWE] (Knowledge Wiki Environment)
+As the successor of KnowME the system KnowWE (Knowledge Wiki Environment) offeres a web-based wiki front-end for the knowledge acquisition and supports the collaborative engineering of knowledge at different formalization levels ([LGPL|http://www.gnu.de/documents/lgpl.de.html], optional commercial extensions). \\
+[more...|KnowWE]
+
+! Dialog Applications
+* __ProKEt__: Prototyping of knowledge-based dialog systems ([LGPL|http://www.gnu.de/documents/lgpl.de.html]).
+* __[Mobile-App]__: Application allowing to use d3web problem solving knowledge in a stand alone application (free-to-use).
+* __[Droid3web-App]__: Application allowing to use d3web problem solving knowledge on your mobile device (free-to-use).
+
+! Knowledge Engineering Tools
+* __[KnowledgeBaseBook]__: Generates a DocBook XML file of an executable d3web knowledge base, i.e., the knowledge base book. The DocBook XML can be used for further transformations. The application produces a PDF printout (commercial application).
+* __WUMPS__: Knowledge acquisition based on Office documents ([LGPL|http://www.gnu.de/documents/lgpl.de.html]).
+* __[KnowWE-Headless-App]__: An version of KnowWE without the normally underlying web server. It can be used to produce d3web knowledge bases from wiki pages in a batch process ([LGPL|http://www.gnu.de/documents/lgpl.de.html]).
+* __[Testing-App]__: Allows to continuously run specified tests on a d3web knowledge base in development (commercial application).
+
+\\
+\\
+%%collapsebox-closed
+! Modules (under construction)
+ 
+Modules are the different parts of the main products and applications 
+
+!Complex modules
+* [Module TimeDB]
+* [Module CostBenefit]
+* [Module Rdf2Go]
+* [Module DiaFlux]
+
+[...additional module information (under construction)|Modules Under Construction]
+
+
+%%tags
+Overview
+%
+%%

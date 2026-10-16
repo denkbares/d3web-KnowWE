@@ -19,6 +19,10 @@
 
 package de.knowwe.tools;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.util.Icon;
@@ -38,12 +42,17 @@ public class DefaultTool implements Tool {
 	private final String jsAction;
 	private final ActionType type;
 	private final String category;
+	private final Map<String, String> attributes;
 
 	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category) {
 		this(icon, title, description, jsAction, type, category, null);
 	}
 
 	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category, String id) {
+		this(icon, title, description, jsAction, type, category, id, Collections.emptyMap());
+	}
+
+	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category, String id, Map<String, String> attributes) {
 		this.icon = icon;
 		this.title = title;
 		this.description = description;
@@ -51,6 +60,7 @@ public class DefaultTool implements Tool {
 		this.type = type;
 		this.category = category;
 		this.id = id;
+		this.attributes = attributes != null ? new LinkedHashMap<>(attributes) : Collections.emptyMap();
 	}
 
 	public DefaultTool(Icon icon, String title, String description, String jsAction, String category) {
@@ -93,6 +103,11 @@ public class DefaultTool implements Tool {
 
 	@Override
 	public String getId() { return id; }
+
+	@Override
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
 
 	/**
 	 * Creates a new tool action that calls a server action by its name for the current user.

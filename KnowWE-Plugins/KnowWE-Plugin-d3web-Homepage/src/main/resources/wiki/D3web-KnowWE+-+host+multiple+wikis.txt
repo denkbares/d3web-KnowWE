@@ -1,0 +1,17 @@
+!!! d3web-KnowWE - host multiple wikis
+
+If you wish to host multiple KnowWE-wiki domains on a single webserver here are the steps you will need to take:
+
+# Stop currently running KnowWE-Server.
+# Copy the KnoweWE directory from ${KnowWE.home}\webapps\ to the same location and rename it to <YourWikiName>
+# Update the wikicontent location reference in the jspwiki.properties see: [d3web-KnowWE - change wikicontent location] \\
+# update access policy see: [d3web-KnowWE - change user rights for KnowWE]
+# Restart KnowWE-Server again. 
+# Access your newly created Wiki like this: {{http://localhost:8080/<YourWikiName>}}
+
+Repeat 1. - 6. this a often as you like, but check the memory consumption of the web server. 
+(You my need to change JAVA_OPTS in your environment settings depending on your hardware capabilities to e.g.:\\
+
+{{{
+-Xms512m -Xmx2048m -XX:MaxPermSize=1024m
+}}}

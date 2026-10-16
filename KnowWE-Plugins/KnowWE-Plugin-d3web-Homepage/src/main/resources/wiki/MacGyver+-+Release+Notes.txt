@@ -1,0 +1,196 @@
+!!! Version: 7.0 MacGyver (Release 2013-04-26)
+
+d3web is an extensible Java API for running knowledge-based systems. The Semantic Wiki KnowWE builds on the engine d3web and offers the web-based and distributed development of knowledge bases.
+
+!!! System Requirements
+Installation of d3web/KnowWE requires the Java Platform, Standard Edition JDK 6 or higher. For operating systems, the distribution runs with MS-Windows XP, Windows 7 and Mac OS 10.6 or higher. Linux is not officially supported.
+We officially support Firefox 7 or better and Google Chrome 14 or better. Please note, that we do not officially support Internet Explorer at the moment.
+
+
+!!! What's New
+The release includes the following notable features: 
+
+
+!! d3web
+* __Adding old values to the TimeDB__: It is now possible to add values to the TimeDB, that are old than the current time of the TimeDB.
+* __Default values__: Since it is now possible to add old values to the TimeDB, there can also be values older than the init values. Init values are therefore now default values that are only valid as long as there are no values set before or exactly at session start.
+* __writeOn property__: Die writeOn-Property erlaubt festzulegen, dass bestimmte Variablen auch dann in die TimeDB geschrieben werden, wenn sie sich selbst nicht geändert haben.
+* __Terminating propagation of a Session__: The propagation of a Session can now be terminated. This is useful for example in 
+* __CondRegex__: New Condition for QuestionText allowing to used regulare expressions.
+
+!! KnowWE
+* __TestCase prefixes__: It is now possible to define TestCases as a prefix of other TestCases. In the player they can be run as one TestCase and also can be downloaded as one TestCase.
+* __TestCasePlayer improvements__:
+** Currently selected TestCases can be downloaded as SequentialTestCases in the TestCasePlayer.
+** Columns of the player can be expanded and collapsed by clicking on the header and by using the respective tools.
+** Collapsed checks no longer use multiple lines in the table, which allows for a much more compact few.
+** Improved scroll behavior while removing and adding variables to the current TestCase in the player.
+** TestCases that were triggered to run a lot of time consuming steps can now be properly aborted (red square).
+* __Reimplementation of EditMode__: The new implementation is much more stable and no longer interferes with JSPWiki markups.
+* __Improvements to ObjectInfoPage__: The ObjectInfoPage now has a new Search field allowing to quickly navigate to other terms. Also the Look&Feel was refined.
+* __Loop-Detection__: Loops in the reasoning of knowledge bases are now properly detected by KnowWE. If a loop occurs during execution, the execution is terminated with an appropriate message.
+* __Markups for new CondRegex__: It is now possible to used CondRegex in markups like %%Rule. Example: IF Question = /valueregex/ THEN...
+* __Table-Plugin__: Added the external JSPWiki TablePlugin to the default configuration of KnowWE (see [http://www.jspwiki.org/wiki/TablePluginBenutzung] for more infos)
+* __Performance__: Improvements for compilation of formulas. Wikis with a high amount of formulas should experience a significant acceleration of saving changes in the knowledge base.
+
+
+!!! Fixed Issues
+
+
+The IDs of the listed issues correspond to the ticket tracking system available at [https://tickets.denkbares.com].
+
+|| ID	|| Product	|| Title	|| Status	
+|  266	|  d3web	|  [[CostBenefit] Not compatible with java 7	|  FIXED	
+|  418	|  d3web	|  [[TimeDB] Refactoring in handling of default (init) values.	|  FIXED	
+|  437	|  d3web	|  Rule not evaluated correctly	|  FIXED	
+|  443	|  d3web	|  TestingAppTestCaseProviderProvider does not allow the usage of backslashes in regex for the name	|  FIXED	
+|  452	|  d3web	|  Java 7 compatibility for d3web, KnowWE and apps.	|  FIXED	
+|  458	|  d3web	|  [[TimeDB] Writing unchanged non-user values to a history	|  FIXED	
+|  472	|  d3web	|  Different versions of Choices Yes and No after loading QuestionYN from .d3web file	|  FIXED	
+|  104	|  KnowWE	|  Malicious HTML code in wiki pages/requests	|  FIXED	
+|  292	|  KnowWE	|  Does not build using Java 7	|  FIXED	
+|  353	|  KnowWE	|  Before renaming, check if the target name already exists	|  FIXED	
+|  377	|  KnowWE	|  JSPWikiMarkupSet does not allow to style headlines	|  FIXED	
+|  378	|  KnowWE	|  [[InstantEdit] Button to activate table edit for default wiki table does not work	|  FIXED	
+|  379	|  KnowWE	|  Tabbed sections are not working when KnowWE-Plugin-JSPWiki-MarkupSet is activated	|  FIXED	
+|  380	|  KnowWE	|  AutoComplete for Taghandlers inserts explanation into markup	|  FIXED	
+|  381	|  KnowWE	|  [[EditMode] Prettified sections disappear after using EditMode	|  FIXED	
+|  383	|  KnowWE	|  Setting yes/no variable to another one of the same type	|  FIXED	
+|  384	|  KnowWE	|  System freeze reached by setting some date variable in diaflux to a number	|  FIXED	
+|  392	|  KnowWE	|  LeftMenu overlaps (hovers over) page content in case of horizontal scroll	|  FIXED	
+|  395	|  KnowWE	|  Clicking on subflow nodes to navigate to them is no longer working	|  FIXED	
+|  397	|  KnowWE	|  Persistence of test results should not explicitly store all success messages	|  FIXED	
+|  398	|  KnowWE	|  EditMode deletes KnowWEPlugin	|  FIXED	
+|  400	|  KnowWE	|  [[EditMode] A flowchart is displayed twice after dragging	|  FIXED	
+|  401	|  KnowWE	|  [[JSPWikiMarkup] TOC links do not work	|  FIXED	
+|  403	|  KnowWE	|  Renaming an article containing knowledge causes warning when downloading knowledgebase	|  FIXED	
+|  408	|  KnowWE	|  [[QuickI] QuickI embedded as TagHandler throws NullPointerException	|  FIXED	
+|  412	|  KnowWE	|  Tagging not consistently cleaned up after page renamings	|  FIXED	
+|  435	|  KnowWE	|  Rendering of DiaFlux-Nodes not package sensitive	|  FIXED	
+|  439	|  KnowWE	|  [[CI] The test CombinedFlowRuleAbstraction does not consider ExpressionActions	|  FIXED	
+|  441	|  KnowWE	|  JSPWiki-Markup interferes with JSPWiki-Plugins	|  FIXED	
+|  442	|  KnowWE	|  Renaming an article does not delete the old version from the ArticleManager	|  FIXED	
+|  444	|  KnowWE	|  Handling of endless reasoning loops of Sessions in KnowWE	|  FIXED	
+|  445	|  KnowWE	|  Render Knowledge throws NPE in case of cyclic QContainers	|  FIXED	
+|  446	|  KnowWE	|  mail notification of Testing-App cannot be switched off	|  FIXED	
+|  447	|  KnowWE	|  [[TimeDB] New function "strictSubHistory", which does not include values set before start of the sub histroy.	|  FIXED	
+|  453	|  KnowWE	|  Multiple definition of a question raises false "Loop detected" error	|  FIXED	
+|  469	|  KnowWE	|  Save expand status of CI-Dashboard	|  FIXED	
+|  470	|  KnowWE	|  [[ObjectInfoPage] Pressing enter to send renaming reloads page instead	|  FIXED	
+
+
+
+!!! Known Issues
+
+The IDs of the listed issues correspond to the ticket tracking system available at [https://tickets.denkbares.com].
+
+|| ID	|| Product	|| Severity	|| Title	|| Release Comment	
+|  117	|  KnowWE	|  Lightweight problem	|  URIDecoding of request parameters is done twice: once by Tomcat and once in KnowWEParameterMap	|  For the currently deployed plugins this issue is resolved by workarounds. In further releases this problem should be fixed in a fundamental manner.	
+|  138	|  KnowWE	|  trivial	|  [[Internet Explorer] Rendering output lacks a lot of line breaks	|  Currently we do not officially support the Internet Explorer in KnowWE.	
+|  212	|  KnowWE	|  trivial	|  [[DiaFlux] Start and Exit nodes do not allow certain special characters	|  Workaround: Please try to avoid special characters for names of Start/Exit nodes  until the bugfix.	
+|  213	|  KnowWE	|  trivial	|  [[Internet Explorer] DiaFlux edit panel does not work with IE9	|  Currently we do not officially support the Internet Explorer in KnowWE.	
+|  223	|  KnowWE	|  Lightweight problem	|  [[MobileApplication] Language Selection doesn't work	|  The mobile application is not part of the current distribution.	
+|  348	|  d3web	|  Average problem	|  A KB can not be loaded, if the infostore of a DiaFlux model contains a property	|  This ticket does not describe a bug concerning the usage of d3web and KnowWE, but an architectural issue restricting developers to not store properties (description, prompt...) directly with Flow objects.	
+|  451	|  KnowWE	|  minor	|  Trying to use triple curly braces in DefaultMarkups destroys these markups	|  Workaround: Please try to avoid triple curly braces inside KnowWE markups.	
+
+
+!!! Delivered Open-Source Projects
+
+
+|| Project Name	|| Contents	|| QA	|| State	
+|  d3web-EmpiricalTesting	|  Validation of knowledge bases using test cases	|   	|  release	
+|  d3web-GlobalTests	|  A summarizing project for integration tests combining different projects and components, respectively.	|   	|  release	
+|  d3web-Kernel	|  Knowledge representation, basic problem-solvers, session management, default dialog control	|  X	|  release	
+|  d3web-Persistence	|  IO component for saving and loading knowledge bases	|  X	|  release	
+|  d3web-Plugin-BasicProperties	|  Definition of properties for terminology objects using the plugin.xml file	|  X	|  release	
+|  d3web-Plugin-CostBenefit	|  Implementation of a dialog strategy (indication of questions) based on a cost-benefit principle.	|   	|  release	
+|  d3web-Plugin-DiaFlux	|  Reasoning problem-solver for the DiaFlux language	|  X	|  release	
+|  d3web-Plugin-Interview	|  Interviews interfaces and form strategies	|  X	|  release	
+|  d3web-Plugin-Kernel-ExtensionPoints	|  The extension possibilities of the d3web kernel defined in the plugin.xml file.	|  X	|  release	
+|  d3web-PluginManager	|  Manages plugins for d3web and KnowWE.	|  X	|  release	
+|  d3web-Plugin-Persistence-Basic	|  see ''d3web-Persistence''	|  X	|  release	
+|  d3web-Plugin-Persistence-ExtensionPoints	|  see ''d3web-Persistence''	|  X	|  release	
+|  d3web-Plugin-SessionPersistence-Basic	|  see ''d3web-SessionPersistence''	|  X	|  release	
+|  d3web-Plugin-SessionPersistence-ExtensionPoints	|  see ''d3web-SessionPersistence''	|  X	|  release	
+|  d3web-Plugin-TestingFramework	|  Framework allowing the continuous execution of tests on knowledge bases and other objects.	|  X	|  release	
+|  d3web-Plugin-Tests	|  Contains tests to be run with the TestingFramework	|  X	|  release	
+|  d3web-Plugin-XCL	|  The set-covering model reasoning engine implemented as problem-solver plugin for the d3web Kernel.	|   	|  release	
+|  d3web-SessionPersistence	|  IO components for loading and saving standard cases (i.e. sessions)	|  X	|  release		
+|  d3web-TestCase	|  Components for executing test cases on a d3web knowledge base	|  X	|  release	
+|  d3web-Utils	|  Contains a variaty of util classes and tools to be used in d3web and KnowWE	|   	|  release	
+|  KnowWE-App	|  Framework app of KnowWE	|  X	|  release	
+|  KnowWE-core	|  Basic engines for parsing and the management of wiki content	|  X	|  release	
+|  KnowWE-GlobalTestUtils	|  Small set of classes for testing the KnowWE implementation	|   	|  beta	
+|  KnowWE-KDOMParseUtils	|  Utils for internal data structure of KnowWE	|   	|  release	
+|  KnowWE-Plugin-CI4KE	|  Plugin for implementing the continuous integration dashboard and engine of KnowWE	|  X	|  release	
+|  KnowWE-Plugin-CITestModules-d3web	|  Continuous integration tests for d3web knowledge bases in KnowWE	|  X	|  release	
+|  KnowWE-Plugin-Core	|  Core plugins and handlers of KnowWE	|  X	|  release	
+|  KnowWE-Plugin-d3web-basic	|  The fundamental components to integrate the d3web engine into KnowWE	|  X	|  release	
+|  KnowWE-Plugin-d3web-MarkupSet	|  Standard markup components used by some KnowWE/d3web plugins	|  X	|  release	
+|  KnowWE-Plugin-DiaFlux	|  Authoring plugin for KnowWE of the DiaFlux language	|  X	|  release	
+|  KnowWE-Plugin-ExtensionPoints	|  All extension possibilities for plugging KnowWE	|  X	|  release	
+|  KnowWE-Plugin-InstantEdit	|  Plugin to allow fast and easy editing of KnowWE articles	|   	|  release	
+|  KnowWE-Plugin-JSPWiki-Connector	|  The connector between the parent wiki engine JSPWiki and the extension KnowWE	|  X	|  release	
+|  KnowWE-Plugin-JSPWiki-MarkupSet	|  Allows the interaction of KnowWE plugins with the default JSPWiki-Markup	|   	|  beta	
+|  KnowWE-Plugin-KBRenderer	|  Plugin for easy rendering of the knowledge base content inside KnowWE articles	|   	|  beta	
+|  KnowWE-Plugin-QuickInterview	|  A plugin to quickly enter a problem-solving session	|  X	|  release	
+|  KnowWE-Plugin-Table	|  Default markups for tables, also usable by other plugins.	|   	|  release	
+|  KnowWE-Plugin-Tagging	|  Tagging plugin of KnowWE	|  X	|  release	
+|  KnowWE-Plugin-TestCase	|  Markups for entering test cases in KnowWE	|  X	|  release	
+|  KnowWE-Plugin-TestCases	|  Executing test cases in KnowWE	|  X	|  release	
+|  KnowWE-Resources	|  Template files for the KnowWE server engine	|  X	|  release	
+		
+
+
+__Legend:__
+
+||Project Name | Corresponds to the name of the Maven project, i.e., the name of the source code project. For simplicity, plugin postfixes are omitted (e.g., *jpf-plugin)
+||Contents | A further description of the contents of this module
+||QA    | Under regulation of the project contract. All contracted projects are certainly subject of the quality management system. Non-contracted modules may be subject to changes in the proposed release plan.
+||State | Quality assessment of the project:\\__no__: Not officially included, experimental demo\\__alpha__: Basic functions included, API to be considered as "unstable" documentation partly available/not available mostly untested\\__beta__: All functions are included documentation available functionality tested on unit level\\__release__: All functions are included documentation available functionality tested on system level (integration tests) internal processes fully applied (issue management, development process)
+
+
+!!! Changes concerning compatibility
+
+The following sections describe changes of this release, that are of importance to users migrating from previous releases:
+
+!! d3web 
+
+If d3web is used as a framework in other software projects, be aware of the following changes:
+
+! Important changes to interfaces
+
+* Session#getInterview() is now deprecated, use use Session#getSessionObject(PSMethodInterview) instead
+* Session#createSession(String,	KnowledgeBase, FormStrategy, Date) is now deprecated, use Interview#setFormStrategy() to configure the FormStrategy in an Interview or use the PSConfig of the PSMethodInterview to configure the FormStrategy 
+
+! Changes of d3web packages
+
+The following .lib file was added since the last release:
+
+* d3web-Plugin-Interview
+
+!! KnowWE
+
+! Changes to configuration
+
+If the {{jspwiki.properties}} file from previous installations is reused, please adapt line ~436:
+
+!Before:
+{{{jspwiki.plugin.searchPath = de.jave.jspwiki.plugins,de.knowwe.jspwiki, de.d3web.we.jspwiki.comment,cc.wiki.plugin}}}
+
+!After:
+{{{jspwiki.plugin.searchPath = de.jave.jspwiki.plugins,de.knowwe.jspwiki,de.d3web.we.jspwiki.comment,cc.wiki.plugin,brushed.jspwiki.tableplugin}}}
+
+
+! Changes to markups
+
+No relevant changes.
+
+\\
+!!! Resources and Links
+* A wiki for developers: Start using the APIs of d3web and KnowWE:\\ [http://d3webwiki.informatik.uni-wuerzburg.de|http://d3webwiki.informatik.uni-wuerzburg.de]
+* The official SourceForge website of d3web: \\[http://d3web.sourceforge.net|http://d3web.sourceforge.net]
+* The official SourceForge website of KnowWE: \\[http://knowwe.sourceforge.net|http://knowwe.sourceforge.net]
+
+%%Tags release_notes macgyver
+

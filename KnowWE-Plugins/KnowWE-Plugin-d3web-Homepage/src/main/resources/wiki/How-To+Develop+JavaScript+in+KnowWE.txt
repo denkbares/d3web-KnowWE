@@ -1,0 +1,28 @@
+!!!How to develop Javascript in KnowWE at runtime
+Having to restart and rebuild KnowWE after every minor change when developing Javascript (or CSS) can be very time-consuming. There is a simple way to be able to develop without restarting.
+
+!!Step by step:
+*In your IDE, navigate to: 
+{{{KnowWE-App/target/KnowWE-APP-0.X-SNAPSHOT/KnowWEExtension/scripts}}}
+
+*In this folder you find the relevant .js files (if they were integrated into the plugin properly before)
+*Right click the file you wish to edit and select 
+{{{Open with System Editor}}}
+*To edit the file with your system's default editor
+{{{Open with Text Editor}}}
+*To edit the file with Eclipse's built-in plain text editor.
+
+__Note__: CSS files are located in \\
+
+{{{KnowWE-App/target/KnowWE-APP-0.X-SNAPSHOT/KnowWEExtension/css}}}
+
+%%(color: red)
+__Important:__
+%%
+When finished editing or before you restart KnowWE, you __have to copy and paste the file's content into the respective file in your plugin project!__
+If you don't, the file you edited will be __replaced with the old file from your plugin__.
+
+
+%%tags
+howto Javascript
+%

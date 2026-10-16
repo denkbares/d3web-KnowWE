@@ -1,0 +1,11 @@
+%%CIDashboard
+  @name: CI CD Demo
+  @trigger:  onSave "Demo - Master"
+  @test: ArticleHasErrors .*
+  @test: TermnameConvention "((?!ST-BMI).)*" "[0-9a-zA-ZäöüÄÖÜß#_():/.,\- ]*"  
+  @test: ArticleContains  .* FixMe:
+  @test: EmptyQuestionnaire "Demo - Master" 
+
+
+  @test: TestCase  "^Demo - Test Cases.*" "Demo - Master"
+%

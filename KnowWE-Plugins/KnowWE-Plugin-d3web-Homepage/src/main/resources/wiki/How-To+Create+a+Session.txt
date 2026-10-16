@@ -1,0 +1,185 @@
+[{TableOfContents }]  
+
+!!! Running a d3web [Session|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/core/session/Session.html]
+
+Once, you have created a [KnowledgeBase|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/core/knowledge/KnowledgeBase.html] instance (for example, by [Loading a knowledge base|How-To Load a Knowledge Base]), you can run a problem-solving session.
+During a problem-solving session you enter Question-Value pairs ([Fact|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/core/session/blackboard/Fact.html]) and the system will derive appropriate solutions for the entered facts.
+
+
+!! Creating a new Session
+
+Sessions are represented by instances of {{Session}}.
+Use the {{SessionFactory}} to quickly create a new {{Session}} instance for the {{KnowledgeBase}} instance:
+
+%%prettify 
+{{{
+Session session = SessionFactory.createSession(knowledgeBase);
+}}}
+/%
+
+
+!! Retrieve the next reasonable question
+
+The [Interview|https://isci.informatik.uni-wuerzburg.de/javadoc/d3web/de/d3web/core/session/interviewmanager/Interview.html], which can be accessed from the session by using the interview problem solver (PSMethod), determines the next question to be presented to the user. More precisely, a {{FormStrategy}} computes the next {{From}} that is presented in the dialog. 
+A Form consists of a title and a list of active questions:
+
+%%prettify 
+{{{
+Interview interview = session.getSessionObject(session.getPSMethodInstance(PSMethodInterview.class));
+Form form = interview.nextForm();
+List<Question> activeQuestions = form.getActiveQuestions();
+}}}
+/%
+
+To retrieve a single question contained in the {{Form}} you may use the {{NextUnansweredQuestionFormStrategy}}. This can be explicitly set by
+
+%%prettify 
+{{{
+interview.setFormStrategy(new NextUnansweredQuestionFormStrategy());
+}}}
+/%
+
+
+!! Entering Facts to the Session
+
+Next, we subsequently add facts to the session. When already having the appropriate instances of {{Question}} and {{Value}}, respectively, we are able to simply set the value by 
+
+%%prettify 
+{{{
+Question question = kb.getManager().searchQuestion("QuestionName");
+ChoiceValue value = new ChoiceValue("ChoiceName");
+
+Fact fact = FactFactory.createFact(session, question, value, 
+           PSMethodUserSelected.getInstance(),
+           PSMethodUserSelected.getInstance());
+session.getBlackboard().addValueFact(fact);
+}}}
+/%
+
+Please note, that we create a new {{Fact}} having the question and value. Additionally, the source of the fact is the User (PSMethodUserSelected) and the corresponding problem-solver is also the user.
+In different scenarios, the source may be the instance of a {{Rule}} used in the context of a particular PSMethod instance.
+
+
+!! Check the Derived Solutions
+
+We retrieve the list of derived solutions together with their state by iterating over all solutions in the knowledge base and by asking for a diagnosis {{Rating}} that is different from UNCLEAR.
+This way, we return solution instances with states ESTABLISHED, SUGGESTED, and EXCLUDED. 
+
+
+%%prettify 
+{{{
+for (Solution solution : knowledgeBase.getManager().getSolutions()) {
+    Rating state = session.getBlackboard().getRating(solution);
+    if (!state.hasState(Rating.State.UNCLEAR))
+	out.println("  " + solution + " (" + state + ")");
+}
+}}}
+/%
+
+Sometimes it is easier (and a bit faster) to just get all solutions in a particular state, e.g. all established solutions:
+
+%%prettify 
+{{{
+out.println("All established solutions:");
+for (Solution solution : session.getBlackboard().getSolutions(Rating.State.ESTABLISHED)) {
+    out.println(solution);
+}
+}}}
+/%
+
+
+!! Revisit the entered Facts
+
+You can simply retrieve all entered facts by the following code block:
+
+%%prettify 
+{{{
+for (ProtocolEntry entry : session.getProtocol().getProtocolHistory()) {
+    out.println(entry);
+}
+}}}
+/%
+
+Please note, that the session manages a {{Protocol}}, where entered findings (question/value tuples) are stored in a chronological order.
+
+
+!! The Complete Example
+
+__Note:__ The current version of the full example should be found in d3web-GlobalTests as the class {{de.d3web.demos.RunningACase}}.
+
+
+%%prettify 
+{{{
+public void runDemoCase() throws IOException {
+	KnowledgeBase knowledgeBase = buildKnowledgeBase();
+
+	PrintStream out = System.out;
+	// Create a case (problem-solving session and set
+	// all specified question/answers
+	out.println("+++ Setting values +++");
+	Session session = SessionFactory.createSession(knowledgeBase);
+
+	// set: pregnant = yes
+	Fact fact1 = FactFactory.createUserEnteredFact(
+			pregnant, yes);
+	session.getBlackboard().addValueFact(fact1);
+	out.println(fact1);
+	// set: weight = 80
+	Fact fact2 = FactFactory.createUserEnteredFact(
+			weight, new NumValue(80));
+	session.getBlackboard().addValueFact(fact2);
+	out.println(fact2);
+
+	// Print all solutions with a state != UNCLEAR
+	out.println("+++ Solutions +++");
+	for (Solution solution : knowledgeBase.getManager().getSolutions()) {
+		Rating state = session.getBlackboard().getRating(solution);
+		if (!state.hasState(Rating.State.UNCLEAR)) {
+			out.println("  " + solution + " (" + state + ")");
+		}
+	}
+
+	// Show all entered findings
+	out.println("+++ Entered Questions +++");
+	for (ProtocolEntry entry : session.getProtocol().getProtocolHistory()) {
+		out.println("  " + entry);
+	}
+}
+
+
+private KnowledgeBase buildKnowledgeBase() throws IOException {
+	// root {container}
+	// - demoQuestion {containers}
+	// -- pregnant [oc]
+	// -- weight [num]
+
+	// Solution: dangerousMood
+	InitPluginManager.init();
+	KnowledgeBase kb = KnowledgeBaseUtils.createKnowledgeBase();
+	QASet root = kb.getRootQASet();
+
+	demoQuestions = new QContainer(root, "demoQuestions");
+	pregnant = new QuestionOC(demoQuestions, "pregnant", "yes", "no");
+	yes = new ChoiceValue(KnowledgeBaseUtils.findChoice(pregnant, "yes"));
+	weight = new QuestionNum(demoQuestions, "weight");
+
+	dangerousMood = new Solution(kb.getRootSolution(), "dangerousMood");
+
+	// Define the init questionnaire
+	kb.setInitQuestions(Arrays.asList(demoQuestions));
+
+	// Define the magic rule: preganant=yes AND weight > 70 => dangerousMood
+	// (P7)
+	List<Condition> terms = new ArrayList<Condition>();
+	terms.add(new CondEqual(pregnant, yes));
+	terms.add(new CondNumGreater(weight, (double) 70));
+	RuleFactory.createHeuristicPSRule(dangerousMood, Score.P7, new CondAnd(terms));
+
+	return kb;
+}
+}}}
+/%
+
+%%tags 
+howto create Session
+%

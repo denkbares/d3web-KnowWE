@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<build date="2017-02-10 10:05:18.808 +0100" duration="9">
+<test configuration="Body-Mass-Index" name="EmptyQuestionnaire" numberOfSuccessfullyTestedObjects="1">
+<message summary="true" text="" type="SUCCESS"/>
+</test>
+</build>

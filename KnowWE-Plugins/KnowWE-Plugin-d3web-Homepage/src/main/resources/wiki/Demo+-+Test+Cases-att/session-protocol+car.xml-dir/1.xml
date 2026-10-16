@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<repository>
+<session changed="2012-04-20 15:16:42.497" created="2012-04-20 15:09:59.648" id="9e45bfac-2e49-45bd-a2cb-81eeffcc6edf">
+<name/>
+<facts>
+<valueFacts>
+<fact objectName="Real mileage  /100km" psm="de.d3web.indication.inference.PSMethodUserSelected">
+<numValue>7.0</numValue>
+</fact>
+<fact objectName="Num. Mileage evaluation" psm="de.d3web.abstraction.inference.PSMethodAbstraction">
+<numValue>100.0</numValue>
+</fact>
+<fact objectName="now" psm="cc.d3web.history.ps.PSMethodTimeDB">
+<dateValue>2012-04-20 15:16:42.496</dateValue>
+</fact>
+<fact objectName="start" psm="cc.d3web.history.ps.PSMethodTimeDB">
+<dateValue>2012-04-20 15:09:59.648</dateValue>
+</fact>
+<fact objectName="Average mileage /100km" psm="de.d3web.indication.inference.PSMethodUserSelected">
+<numValue>7.0</numValue>
+</fact>
+<fact objectName="Exhaust fumes" psm="de.d3web.indication.inference.PSMethodUserSelected">
+<choiceValue>invisible</choiceValue>
+</fact>
+<fact objectName="Make of car" psm="de.d3web.indication.inference.PSMethodUserSelected">
+<choiceValue>VW</choiceValue>
+</fact>
+<fact objectName="Mileage evaluation" psm="de.d3web.abstraction.inference.PSMethodAbstraction">
+<choiceValue>normal</choiceValue>
+</fact>
+<fact objectName="Fuel" psm="de.d3web.indication.inference.PSMethodUserSelected">
+<choiceValue>diesel</choiceValue>
+</fact>
+<fact objectName="Year of construction" psm="de.d3web.indication.inference.PSMethodUserSelected">
+<numValue>2006.0</numValue>
+</fact>
+<fact objectName="Clogged air filter" psm="de.d3web.scoring.inference.PSMethodHeuristic">
+<rating score="-60.0" type="heuristic">EXCLUDED</rating>
+</fact>
+</valueFacts>
+<interviewFacts>
+<fact objectName="General" psm="de.d3web.core.inference.PSMethodInit">
+<indication>INDICATED</indication>
+</fact>
+<fact objectName="Observations" psm="de.d3web.core.inference.PSMethodInit">
+<indication>INDICATED</indication>
+</fact>
+</interviewFacts>
+</facts>
+<protocol>
+<entry date="2012-04-20 15:10:04.285" objectName="Make of car" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<choiceValue>VW</choiceValue>
+</entry>
+<entry date="2012-04-20 15:10:07.737" objectName="Year of construction" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<numValue>2006.0</numValue>
+</entry>
+<entry date="2012-04-20 15:10:14.677" objectName="Exhaust fumes" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<choiceValue>invisible</choiceValue>
+</entry>
+<entry date="2012-04-20 15:10:24.602" objectName="Fuel" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<choiceValue>diesel</choiceValue>
+</entry>
+<entry date="2012-04-20 15:16:08.987" objectName="Average mileage /100km" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<numValue>80.0</numValue>
+</entry>
+<entry date="2012-04-20 15:16:13.283" objectName="Average mileage /100km" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<numValue>50.0</numValue>
+</entry>
+<entry date="2012-04-20 15:16:16.330" objectName="Real mileage  /100km" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<numValue>50.0</numValue>
+</entry>
+<entry date="2012-04-20 15:16:41.307" objectName="Average mileage /100km" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<numValue>7.0</numValue>
+</entry>
+<entry date="2012-04-20 15:16:42.496" objectName="Real mileage  /100km" psm="de.d3web.indication.inference.PSMethodUserSelected" type="fact">
+<numValue>7.0</numValue>
+</entry>
+</protocol>
+</session>
+</repository>

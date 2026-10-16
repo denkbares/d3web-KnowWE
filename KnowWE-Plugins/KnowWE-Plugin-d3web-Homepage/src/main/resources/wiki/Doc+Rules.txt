@@ -1,0 +1,184 @@
+!!!Rules
+
+At this page, one can find the documentation concerning rules.
+
+[{TableOfContents title='Contents' numbered='true'}]
+
+!!!Definition 
+Rules can be defined as one means for creating derivation knowledge. 
+Thereby, a basic syntax exists that can be slightly varied to create different types of rules. 
+Those types substantially vary in their distinct rule actions and they are explained in more detail after the presentation of the basic syntax. 
+
+!!!Syntax 
+
+In this section we describe the way rules are defined in d3web KnowWE.
+
+!! Basics 
+
+Rules are defined by the ''Rule'' tag in KnowWE. The basic syntax is as follows:
+
+{{{
+%%Rule
+IF (rule condition) 
+THEN (rule action) 
+%
+}}}
+
+!Conditions
+
+A condition can look like ''"temperature > 38"'' or ''"weather = rain'"'. Such simple conditions can be combined to more complex ones, using the following syntax:
+
+* __NOT__(rule condition)  --- true, if rule condition does not apply 
+* (rule condition 1)  __AND__ (rule condition 2) --- true, only if both condition 1 and condition 2 apply at the same time 
+* (rule condition 1) __OR__ (rule condition 2) --- true, if at least one of condition 1 and condition 2 does apply 
+
+For more information about conditions and other condition types, see [Doc Conditions].\\
+
+!Actions
+
+In a rule action we can set other questions or variables. Examples could be ''"Show warning = Yes"'' or ''"umbrella = Yes"''\\
+
+It is also possible to set more complex values and values depending on other variables. For more information, go to  [Extended Expressions: Conditions and actions | Doc Expressions], but be aware, that this extension is non-LGPL-licensed for commercial use.
+
+
+!!Multiple Actions
+
+It is possible to define more than one action to be executed for a rule. Just add more THEN clauses.
+
+{{{
+IF (rule condition) 
+THEN (rule action 1)
+THEN (rule action 2)
+THEN (rule action 3) 
+}}} 
+
+!!EXCEPT Conditions
+
+Furthermore, it is possible to add an exception condition to the rule, like in the following example: 
+
+{{{
+IF (rule condition 1)  
+THEN (rule action) 
+EXCEPT (rule condition 2) 
+}}} 
+
+Of course it is also possible to define the ''EXCEPT(...)'' statement as ''AND NOT'' within the ''IF'' clause. The difference is, that ''EXCEPT(...)''  doesn't need to be evaluated, i.e. the rule will also fire even if the ''EXCEPT'' clause is unknown.
+
+!!ELSE Actions
+
+Using such rules, we often not only want something to happen if the condition is true (e.g. ''temperature <= 0''), but also when the condition is false. We can of course always do this, by writing a second rule, using the negated condition of the first rule (e.g. ''temperature > 0''). With d3web/KnowWE, we provide the possibility, to just use the keyword ELSE, similar to how it is known and done in software engineering.
+
+{{{
+IF temperature < 0
+THEN icy roads = Yes
+ELSE icy roads = No
+}}}
+
+!!UNKNOWN Actions
+In d3web/KnowWE, every question can, besides their normal values, also have the value ''Unknown''. This means, that the value of the question is currently actually unknown or unknowable (which is different from not answering the question).\\
+If a rule uses a question which currently has the value ''Unknown'' will result in the rule not being evaluated and therefor the action will not fire.
+
+__Example:__ Lets assume, the temperature is currently unknown, because the sensor is broken. In this case, we really do not know whether the roads are icy or not. So to expand on the example above, we can do the following:
+
+{{{
+IF temperature < 0
+THEN icy roads = Yes
+ELSE icy roads = No
+UNKNOWN icy roads = No
+}}}This way, if the ''temperature'' is ''Unknown'', we also set the variable/question ''icy roads'' to ''Unknown'', without having the write rules for each of the actions.
+
+Be aware that, if you just use THEN and ELSE __without__ an action for UNKNOWN, the action of ELSE will also fire if ''temperature'' is ''Unknown''.
+
+!!ELSE and UNKNOWN in combination with EXCEPT
+It is also possible to use an EXCEPT condition together with ELSE and UNKNOWN. If the EXCEPT condition is true, the ELSE action will fire. The UNKNOWN action only fires if the original IF condition is ''Unknown''. For clarification, check out the following truth tables:
+
+\\
+__Rule with THEN and ELSE action only__:
+|| IF Condition	|| EXCEPT Condition	|| THEN Action	|| ELSE Action	
+|  %%(color:green)true%%	|  %%(color:green)true%%	|   	|  %%(color:green)fire%%	
+|  %%(color:red)false%%	|  %%(color:green)true%%	|   	|  %%(color:green)fire%%	
+|  %%(color:grey)unknown%%	|  %%(color:green)true%%	|   	|  %%(color:green)fire%%	
+|  %%(color:green)true%%	|  %%(color:red)false%%	|  %%(color:green)fire%%	|   	
+|  %%(color:red)false%%	|  %%(color:red)false%%	|   	|  %%(color:green)fire%%	
+|  %%(color:grey)unknown%%	|  %%(color:red)false%%	|   	|  %%(color:green)fire%%	
+|  %%(color:green)true%%	|  %%(color:grey)unknown%%	|  %%(color:green)fire%%	|   	
+|  %%(color:red)false%%	|  %%(color:grey)unknown%%	|   	|  %%(color:green)fire%%	
+|  %%(color:grey)unknown%%	|  %%(color:grey)unknown%%	|   	|  %%(color:green)fire%%	
+
+__Rule with THEN and ELSE and UNKNOWN action__:
+|| IF Condition	|| EXCEPT Condition	|| THEN Action	|| ELSE Action	|| UNKNOWN Action	
+|  %%(color:green)true%%	|  %%(color:green)true%%	|   	|  %%(color:green)fire%%	|   	
+|  %%(color:red)false%%	|  %%(color:green)true%%	|   	|  %%(color:green)fire%%	|   	
+|  %%(color:grey)unknown%%	|  %%(color:green)true%%	|   	|  %%(color:green)fire%%	|   	
+|  %%(color:green)true%%	|  %%(color:red)false%%	|  %%(color:green)fire%%	|   	|   	
+|  %%(color:red)false%%	|  %%(color:red)false%%	|   	|  %%(color:green)fire%%	|   	
+|  %%(color:grey)unknown%%	|  %%(color:red)false%%	|   	|   	|  %%(color:green)fire%%	
+|  %%(color:green)true%%	|  %%(color:grey)unknown%%	|  %%(color:green)fire%%	|   	|   	
+|  %%(color:red)false%%	|  %%(color:grey)unknown%%	|   	|  %%(color:green)fire%%	|   	
+|  %%(color:grey)unknown%%	|  %%(color:grey)unknown%%	|   	|   	|  %%(color:green)fire%%	
+
+
+!!Using ''eval()''
+''eval(...)'' expressions can also be used as rule condition if more than one question or complex formulas shall be used. To see all available expressions and functions, see [Doc Expressions] and [Doc Functions|Doc Expressions#Function Reference]
+{{{
+IF eval(question A = question B)
+THEN (rule action)
+}}}
+
+
+{{{
+IF eval(question A = 2 * x + b)
+THEN (rule action)
+}}}
+
+or if a complex action shall be conducted
+
+{{{
+IF questionA < 2
+THEN questionB = eval(max(question C, question D))
+}}}
+
+''eval(...)'' must not be used in combination with ''KNOWN/UNKOWN''
+{{{ 
+IF question A = UNKNOWN
+THEN question B = 2
+}}}
+
+
+!!!Different rule types 
+As previously mentioned, the different rule types vary in their rule actions, that is, the part of the rule following the ''THEN'' keyword. In the following the rule types available in KnowWE are listed and shortly explained. For a more detailed explanation and syntax examples please refer to the separate pages for each rule type. 
+
+!!Scoring Rules 
+Scoring rules (diagnosis rules) are used to assign specific score points to a solution. See the page about __[scoring rules. | Doc DiagnosisRule]__ for the syntax and an overview of the possible score points. 
+
+!!Abstraction Rules 
+It is possible to assign values to a question via abstraction rules. That way, the program sets certain answer values depending on those answer values provided by the user for previous questions. See the page about __[abstraction rules | Doc AbstractionRule]__ for the syntax and further detail. 
+
+!!Indication Rules 
+Indication rules basically initiate the presentation of certain, subsequent questions or questionnaires to the user depending on previously provided answers. For syntax and further detail see the page about __[indication rules | Doc IndicationRule]__. 
+
+
+
+%%tags
+ Documentation rule 
+%
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

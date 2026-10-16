@@ -1,0 +1,98 @@
+!!!d3web KnowWE Releases
+
+Here you can download and get information about the different d3web KnowWE Releases. We recommend using the nightly build with the most recent features and fixes or one of the recent point releases, in case there are (unlikely) issues with the nightly build.\\
+
+\\
+
+! Attention:
+
+* To run d3web KnowWE, you need the environment variable JAVA_HOME pointing to an installation of a JDK (Java Development Kit). Make sure your __JDK version is 17__ or newer for version 12.9 and up, for older versions we recommend JDK 14.
+* By downloading und using any of the packages listed below, __you agree to all licenses listed [here|Licenses d3web KnowWE].__
+* KnowWE contains the free-to-use [runtime|https://mvnrepository.com/artifact/com.ontotext.graphdb/graphdb-free-runtime] of [GraphDB-Free|https://www.ontotext.com/products/graphdb/]. Please check out links and [license|http://graphdb.ontotext.com/LICENSE-GraphDB-Free.txt] for more information.
+
+!! Latest Releases and Builds
+
+|| Release Date	|| Required Java	|| Download	
+|  last night	|  [JDK 17|https://www.azul.com/downloads/?version=java-17-lts&package=jdk#download-openjdk]	|  [d3web KnowWE LATEST|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/nightly/d3web-KnowWE-distribution-LATEST.zip]	
+|  2026-05-29	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2026.4|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2026/d3web-KnowWE-distribution-2026.4.1.zip]
+|  2026-04-20	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2026.3|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2026/d3web-KnowWE-distribution-2026.3.1.zip]
+
+How to install and getting started with KnowWE: [KnowWE Tutorial|Tutorial].
+
+!! Archive
+
+Here you can download legacy releases. We since changed our release cycle and pipeline, so we recommend the more up to date builds releases above.\\
+Click release names to see the release notes for more information about the changes and features. Click the version number for a download of that version.
+\\
+Please be aware of compatibility information provided in the release notes, if you are upgrading with an existing wiki.
+\\
+
+|| Release Date	|| Required Java	|| Download	
+|  2025-09-05	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2025.4|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2025/d3web-KnowWE-distribution-2025.4.zip]
+|  2024-11-26	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2024.3|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2024/d3web-KnowWE-distribution-2024.3.zip]
+|  2024-05-17	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2024.2|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2024/d3web-KnowWE-distribution-2024.2.zip]
+|  2024-01-31	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2024.1|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2024/d3web-KnowWE-distribution-2024.1.zip]	
+|  2023-09-12	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2023.3|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2023/d3web-KnowWE-distribution-2023.3.zip]	
+|  2023-06-18	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2023.2|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2023/d3web-KnowWE-distribution-2023.2.zip]	
+|  2023-01-12	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v2023.1|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/2023/d3web-KnowWE-distribution-2023.1.zip]
+|  2022-11-11	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v12.10|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.10.zip]	
+|  2022-06-28	|  [JDK 17|https://adoptopenjdk.net/archive.html?variant=openjdk17&jvmVariant=hotspot]	|  [d3web KnowWE v12.9|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.9.zip]	
+|  2022-05-09	|  [JDK 14|https://adoptopenjdk.net/archive.html?variant=openjdk14&jvmVariant=hotspot]	|  [d3web KnowWE v12.8|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.8.zip]	
+|  2022-02-11	|  [JDK 14|https://adoptopenjdk.net/archive.html?variant=openjdk14&jvmVariant=hotspot]	|  [d3web KnowWE v12.7|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.7.zip]	
+|  2021-10-05	|  [JDK 14|https://adoptopenjdk.net/archive.html?variant=openjdk14&jvmVariant=hotspot]	|  [d3web KnowWE v12.6|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.6.zip]	
+|  2021-02-18	|  [JDK 14|https://adoptopenjdk.net/archive.html?variant=openjdk14&jvmVariant=hotspot]	|  [d3web KnowWE v12.5|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.5.zip]	
+|  2020-09-02	|  [JDK 14|https://adoptopenjdk.net/archive.html?variant=openjdk14&jvmVariant=hotspot]	|  [d3web KnowWE v12.4|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.4.zip]	
+|  2020-06-15	|  [JDK 14|https://adoptopenjdk.net/archive.html?variant=openjdk14&jvmVariant=hotspot]	|  [d3web KnowWE v12.3|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.3.zip]	
+|  2020-02-27	|  [JDK 14|https://adoptopenjdk.net/archive.html?variant=openjdk14&jvmVariant=hotspot]	|  [d3web KnowWE v12.2|https://repo.denkbares.com/list/downloads/distribution/d3web-KnowWE/12/d3web-KnowWE-distribution-12.2.zip]
+
+! Earlier Releases (different format)
+
+|| Release Date	|| Name	|| Download	
+|  2016-08-09	|  __[Watney|Watney - Release Notes]__	|  [11.0|https://repo.denkbares.com/downloads/distribution/d3web-KnowWE/11/d3web-KnowWE-distribution-11.0-Free2Use.zip]	
+|  2015-04-30	|  __[Alice|Alice - Release Notes]__	|  [10.1|https://repo.denkbares.com/downloads/distribution/d3web-KnowWE/10/d3web-KnowWE%20Alice%20SP1.zip]	
+|  2014-06-25	|  __[Inspector Gadget|Inspector Gadget - Release Notes]__	|  [9.0|https://repo.denkbares.com/downloads/distribution/d3web-KnowWE/9/d3web-KnowWE%20Inspector%20Gadget.zip]	
+|  2013-10-29	|  __[Hit-Girl|Hit-Girl - Release Notes]__	|  [8.1|https://repo.denkbares.com/downloads/distribution/d3web-KnowWE/8/d3web-KnowWE%20Hit-Girl.zip]	
+|  2013-04-26	|  __[MacGyver|MacGyver - Release Notes]__	|  [7.0|https://repo.denkbares.com/downloads/distribution/d3web-KnowWE/7/d3web-KnowWE%20MacGyver.zip]	
+|  2012-10-30	|  __[Mystique|Mystique - Release Notes]__	|  [6.0|https://repo.denkbares.com/downloads/distribution/d3web-KnowWE/6/d3web-KnowWE%20Mystique%20OS.zip]	
+|  2012-04-30	|  __[Sherlock|Sherlock - Release Notes]__	|  5.0	
+|  2011-12-20	|  __[Leeloo|Leeloo - Release Notes]__	|  4.0	
+|  2011-05-06	|  __[Q|Q - Release Notes]__	|  3.0	
+|  2010-12-15	|  __[Moneypenny|Moneypenny - Release Notes]__	|  Beta	
+|  2010-09-09	|  __[Hancock|Hancock - Release Notes]__	|  Preview
+
+!!!Sources
+
+d3web's open source code can now be found (and cloned) on GitHub: 
+* [d3web-Runtime|https://github.com/denkbares/d3web-Runtime]
+* [d3web-KnowWE|https://github.com/denkbares/d3web-KnowWE]
+
+Since version 11, the sources are also contained in the downloadable distribution zips.
+
+!!!d3web Mobile-App (deprecated)
+
+The [Mobile-App] has no release cycle like ''d3web-KnowWE'', but we will provide versions compatible with the current ''d3web KnowWE'' release. While ''d3web KnowWE'' is platform independent, the ''Mobile-App'' is not. So please be sure to use the correct download.\\
+\\
+
+!Windows
+
+* 64Bit: [Download (SourceForge)|https://repo.denkbares.com/downloads/distribution/d3web-Mobile-App/10/d3web%20Mobile-App%20x64%20Alice.zip]
+* 32Bit: [Download (SourceForge)|https://repo.denkbares.com/downloads/distribution/d3web-Mobile-App/10/d3web%20Mobile-App%20x86%20Alice.zip]
+
+!Mac OSX
+
+* 64Bit: [Download (SourceForge)|https://repo.denkbares.com/downloads/distribution/d3web-Mobile-App/10/d3web%20Mobile-App%20OSX%20Alice.zip]
+
+!!!Help
+
+Downloaded software not working as expected? Write us in the [Forum|https://sourceforge.net/p/d3web/discussion/] or to our [mailing list|mailto:info@d3web.de]
+
+!!!License
+
+The releases linked on this page are licensed under [LGPL|http://www.gnu.de/documents/lgpl.de.html]. \\
+The downloadable packages contain various dependencies, that may come with their own licences, listed [here|Licenses d3web KnowWE].\\
+For optional commercial extensions, please contact [denkbares|http://www.denkbares.com/].\\
+Further information regarding licencing: [FAQ: Licensing|User FAQ#Licensing]
+
+%%tags
+Download  
+%

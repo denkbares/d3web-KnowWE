@@ -1,0 +1,5 @@
+!Rule definition of the assisted technology 'Kopf- & Mundjoystick'
+
+Dieser Screenshot zeigt Objektdefinition und Regeln des Hilfsmittels "Kopf- & Mundjoystick".
+
+[{Image src='ESAT_Screenshot_02.jpg' align='left'}]

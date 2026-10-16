@@ -1,0 +1,33 @@
+!!! How to run a Test Case
+
+A test case is run by using the TestCasePlayer markup. This markup is a common viewer and runner for all types of test cases specified in KnowWE.
+
+It is created the following way:
+
+{{{
+%%TestCasePlayer 
+%
+}}}
+
+Renders as:\\
+
+[{Image src='TestCasePlayer-screenshot.png' caption='Screenshot of a TestCasePlayer' width='800' height='..' align='center' style='..' class='..' }]
+
+
+! Usage
+
+In the drop down menu on the top left you can choose any test case that is defined in the same package as the TestCasePlayer markup itself.
+Clicking the arrows in the first column will execute all rows up to that row. The success of the test in each row is shown by color highlighting of the check cell (green: passed; red: failed). With the red button on top the test execution can be reset to restart testing from scratch.
+
+On the right side, you can add additional questions and solutions to be displayed for the current case. For each executed row, it will show the value the question or solution had at this step.
+
+%%tags
+Documentation testcase
+%
+
+
+!! Related Doc Pages
+
+* [Doc TestCase]
+* [Doc TestCaseTable]
+* [Doc TestCaseSessionRecord]

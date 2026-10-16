@@ -1,0 +1,96 @@
+%%(color:red)
+__Deprecated! Needs review.__
+%%
+
+
+[{TableOfContents }]
+
+!!!Documentation and HowTo for the CI4KE-Plugin
+
+The __CI4KE__-Plugin (which stands for (__C__ontinuous __I__ntegration __for__ __K__nowledge __E__ngineering) tries to transfer the continuous integration (ci) methodology from the software- to the knowledge-engineering process. (For more information on ci in software engineering, see [1], [2]). Within the scope of this plugin, we mainly focus on the the regular execution of tests (which in fact can be any kind of knowledge-engineering-test or abstract test) and their easy formalisation and creation within the wiki (at runtime!). 
+
+!!The "CI Dashboard"
+
+[{Image src='HowToContinuousIntegrationPlugin/ci-dashboard-example.png' width='250' height='93' align='right' link='http://d3webwiki.informatik.uni-wuerzburg.de/attach/HowToContinuousIntegrationPlugin/ci-dashboard-example.png' caption='Example of the CI Dashboard (development version)'}]
+The "dashboard" is the graphical user-interface and therefore the main component of the plugin. Here you can find the latest testresults and the changes in the wiki which preceded the execution of these tests. Futhermore, the current "build" status (results of the last test) and a "quality-foreceast" (this is a trend, computed from the last ten builds) are shown. See the attached screenshot for an example.
+
+The headline of the dashboard consists of the name of the article, which contains the knowledge (its the "''monitored article''" of this dashboard), the status of the most current "build" and the forecast. In the left column, the ten newest "builds" are listed. In terms of knowledge based CI, a "build" consists of several actions: Forming the knowledgebase to be tested, execute all registered tests against this kb, gather all the testresults and compute the "overall" result of these tests.\\
+When a build in the left column gets clicked, its details are shown in the middle and right column. The middle column shows the changes in the knowledge-article between the selected build and its predecessor (exactly as the JSPWiki diff between these two pageversions would do). The right column holds the testresults of the selected build. As known from the xUnit-Testing-Frameworks, a test can either be Successful, Failed or Erroneous.
+
+!Dashboard wiki-markup
+
+%%( background-color: #FF7521; border: 1px solid #d0d0ee; padding: .5em; )
+__Attention__: This Plugin heavily relies on versioning of wiki articles! Therefore, you have to set\\ {{jspwiki.pageProvider = VersioningFileProvider}} in your {{jspwiki.properties}} file!
+%%
+
+To add a dashboard to a wiki-article, use the following markup:
+
+{{{
+%%CIDashboard
+@monitoredArticle = BLA
+@tests = TestArticleContainsTODO
+@trigger = onDemand
+%
+}}}
+
+This for example is the markup which renders to the dashboard shown above. It consists of a DefaultMarkup block with "no" content, but (at least) three mandatory annotations. See the following table for a reference on all allowed annotations:
+
+
+||Annotation||Mandatory||Allowed Values||Description||Example
+|{{@monitoredArticle}}|yes|String|The title of the article which contains the knowledge this ci-dashboard is testing|{{Car-Diagnosis}}
+|{{@tests}} | yes | String | A colon-separated list of the names of the tests which have to be executed for every build. For a testcase written in Java, the name of this test is simply its class-name. A testcase written in Groovy gets called by its explicit {{@name}}-annotation (see the howto-section for CITests for further reference on testcases).|{{SimpleTest:RuleRedundancyCheck:\\RuleInconsistencyCheck}}
+|{{@trigger}}|yes|One of the following values:\\"{{onDemand}}"\\"{{onSave}}"\\"{{onNight}}"|Specifies when a new build gets executed.\\{{onDemand}}: No automatic build execution. Instead of that, an "Execute a new build"-button is rendered in the build-list.\\{{onSave}}: A new build gets executed every time the "monitored article" will be saved.\\{{onNight}}: (not yet implemented) Nightly build execution.|{{onDemand}}
+|{{@id}}|no|String|Every dashboard has an ID to ''uniquely'' identify this dashboard in the whole wiki. In the easiest case, this ID is automatically created, taking the monitored article title AND the title of the article on which this dashboard is placed into account. Only if the same article is monitored more than once from the same "dashboard article", the {{@id}} annotation is mandatory. __Example__: Dashboard 1 is placed on the article A monitoring the article B. Its id is automatically created ("A-B"). When placing a second dashboard on the article A monitoring the article B as well, you have to give __both__ dashboards an ID.|{{ID.of.dashboard.Car-Diagnosis}}
+
+!!Continuous Integration tests
+
+CI is all about testing! Therefore, the ci-plugin enables you to write self-executable tests, following the unit-testing metaphore.
+
+!Writing testcases in Java
+
+In the very essence, every testclass has to implement the [CITest|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/d3web/we/ci4ke/handling/CITest.html] interface:
+
+%%prettify 
+{{{
+public interface CITest extends Callable<CITestResult> {
+	public void init(CIConfig config);
+}
+}}}
+/%
+
+The {{init()}} method initialises the test (like the {{setUp()}} method in JUnit). The [CIConfig|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/d3web/we/ci4ke/handling/CIConfig.html] object holds all the parameters from the dashboard which is calling the test.
+Moreover, you habe to implement the following call() method, which have to result a [CITestResult|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/d3web/we/ci4ke/handling/CITestResult.html] instance.
+
+__Note__: Instead of implementing the CITest interface, you can also extend the [AbstractCITest|https://isci.informatik.uni-wuerzburg.de/javadoc/KnowWE/de/d3web/we/ci4ke/handling/AbstractCITest.html] class, which initialises the test by copying the CIConfig parameter instance to a private member variable {{config}} (from where it is accessible for all subclasses of AbstractCITest). See the following trivial example:
+
+%%prettify 
+{{{
+package de.d3web.we.ci4ke.testmodules;
+
+import de.d3web.we.ci4ke.handling.AbstractCITest;
+import de.d3web.we.ci4ke.handling.CITestResult;
+import de.d3web.we.ci4ke.handling.CITestResult.TestResultType;
+
+public class TrivialCITest extends AbstractCITest {
+
+	@Override
+    	public CITestResult call() throws Exception {
+    		if (config.getMonitoredArticleTitle().length() < 20) {
+    			return new CITestResult(TestResultType.SUCCESSFUL);
+    		}
+    		else {
+    			return new CITestResult(TestResultType.FAILED,
+    					"Title longer than 20 Characters!");
+    		}
+    	}
+}
+}}}
+/%
+
+Currently, every CITest-class has to be saved in the {{de.d3web.we.ci4ke.testmodules}} package. Like it was said before, the name of a CITest written in java is its ''classname''.
+
+
+!!External Links
+
+[#1] [http://en.wikipedia.org/wiki/Continuous_integration]\\
+[#2] [http://martinfowler.com/articles/continuousIntegration.html]

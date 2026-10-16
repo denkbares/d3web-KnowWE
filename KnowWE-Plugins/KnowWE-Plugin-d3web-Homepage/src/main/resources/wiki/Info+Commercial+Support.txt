@@ -1,0 +1,12 @@
+[{Image src='attach/Info Commercial Support/denkbar_112009.png' align='left' }]
+
+\\
+For the commercial support of KnowWE, the company [denkbares GmbH | http://www.denkbares.com] provides services for 
+
+* Quality approved releases of KnowWE
+* Extensions of KnowWE by contributed plugins
+* Support for the development and maintenance of knowledge systems
+
+!! Contact
+
+Feel free to contact [info@denkbares.com | mailto:info@denkbares.com] for further information.

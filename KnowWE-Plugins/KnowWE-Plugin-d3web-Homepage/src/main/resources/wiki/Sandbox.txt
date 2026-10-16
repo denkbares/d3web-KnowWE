@@ -1,0 +1,57 @@
+%%Package bug345
+
+This is a test to reproduce bug #345 and to validate its fix:
+ 
+{{{
+When defining a median e.g. like 
+
+    Et_CO2 = median(Raw_etCO2[-1min, 0min])
+
+the median is not computed correctly.
+See attached service Journal (Service-median01.zip) 
+for etCO2 and MAC
+
+When defining a median like
+
+    Et_CO2 = median(Raw_etCO2[now-1min, now])
+
+everything is fine.
+}}}
+
+In this bug, the time database for newly set (but unchanged) input values are updated, so containing multiple entries with the same value. But the rules using this history haven't been updated, because the symptom itself has not changed, only its history.
+
+
+%%KnowledgeBase bug345 KB
+
+%%Question
+Form #1
+- raw [num]
+- med [num] <abstract>
+- old [num] <abstract>
+- count [num] <abstract>
+/%
+
+%%Variable med = median(raw[-1min, 0min])
+%%Variable old = raw[-1min]
+%%Variable count = count(raw[])
+
+
+%%TestcaseTable 
+|| Time	|| raw	|| Checks	
+|  0s	|  1	|  med = 1 AND count = 1	
+|  10s	|  1	|  med = 1 AND count = 2	
+|  55s	|  1	|  med = 1 AND count = 3	
+|  65s	|  2	|  med = 1 AND old = 1	
+|  85s	|  2	|  old = 1	
+|  100s	|  2	|  med = 2 AND old = 1	
+|  120s	|  2	|  med = 2 AND old = 1	
+|  150s	|  2	|  med = 2 AND old = 2	
+|  180s	|  2	|  med = 2 AND old = 2	
+%
+
+%%renderKDOM %
+
+%%TestCasePlayer 
+%
+
+[{KnowWEPlugin quickInterview}]

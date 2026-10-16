@@ -1,0 +1,118 @@
+It is possible to attach properties to a terminology object (e.g., a question or a solution). 
+
+For instance, for the following terminology objects we can define some properties:
+
+{{{%%Question
+Questionnaire 
+- question1 [oc]
+-- answer1
+-- answer2 
+- question2 [num]
+%
+}}}
+
+{{{%%Solution
+Solution1
+Solution2
+%
+}}}
+
+!!! Prompts in different languages
+
+{{{%%Property
+question1.prompt    = Default prompt for question1
+question1.prompt.de = German prompt for question1
+question1.prompt.en = English prompt for question1
+question1#answer1.prompt = Default prompt for answer1 of question1
+question1#answer1.prompt.de = German prompt for answer1 of question1
+question1#answer1.prompt.en = English prompt for answer1 of question1
+
+solution1.prompt.de = German text for solution1
+%
+}}}
+
+!!! Set same property for choices with same name
+
+In case you want to set the same property for choices with the same name, e.g. in a scenario where you add another language to a knowledge base via the prompt property, you can just assign the property to the choice name without a question in front of it. To make clear that it is a choice you still need the # in front. 
+
+{{{%%Property
+#Yes.prompt.de = Ja
+#No.prompt.de = Nein
+%
+}}}
+
+Here we added the translated prompts for all yes/no choices in the whole knowledge base. 
+
+!!! Unknown visible and verbalisation
+
+Each question can be answered with the default value "unknown", when activated. You can active/deactivate the presentation of the "unknown" in the dialog globally for the entire knowledge base by
+
+{{{%%Property 
+  KNOWLEDGEBASE.unknownVisible = true/false
+  KNOWLEDGEBASE.unknown_verbalisation = An unknown text
+%
+}}}
+
+The second setting "unknown_verbalisation" globally defines the answer text, that is displayed in the dialog for the presentation of the unknown value.
+
+You can change these settings locally for single question. The default answer "unknown" of question1 and question2 to be visible and invisible, respectively, is set as following.
+
+{{{%%Property
+question1.unknownVisible = true
+question2.unknownVisible = false
+%
+}}}
+
+The unknown answer can have different prompt for different languages:
+
+{{{%%Property
+question1.unknown_verbalisation.de = unbekannt
+question2.unknown_verbalisation.en = unknown
+%
+}}}
+
+
+!!! Links for questions and solutions
+
+You can attach links to a solution or a question:
+
+{{{%%Property
+question1.link = http://d3web.sourceforge.net/
+solution1.link = http://knowwe.sourceforge.net/
+%
+}}}
+
+!!! Descriptions for questions and solutions
+
+You can attach textual descriptions to a solution or a question:
+
+{{{%%Property
+question1.description = This is a description test for question1
+%
+}}}
+
+
+
+
+!!! Special chars and Quoting
+
+You can set most properties without using quotes. Some letters however are reserved for special purposes (like # . or =), so having names or content containing these letters require you to quote.
+
+{{{%%Property
+"question.1".description = "This is a description containing some special chars: .=# "
+%
+}}}
+
+Of course there are situations where you might have quotes in the content of the property or content that is to long to fit in one line. For these cases there is the possibility to use triple quotes.
+
+{{{%%Property
+"question.1".description = 
+"""This is a description containing
+some "special" and is even spanning 
+over several lines."""
+%
+}}}
+
+%%tags
+Documentation properties
+%

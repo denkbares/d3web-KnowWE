@@ -1,0 +1,40 @@
+__[d3web Home|Main]__
+
+* [Product Overview|Products]
+* [Downloads]
+* [Success Stories]
+* [History]
+
+__Users__
+
+* [Tutorials & Screencasts|Tutorial]
+* [Documentation|Doc Overview]
+* [User FAQ]
+* [Demos]
+
+__Developers__
+
+* [Getting Started]
+* [How-Tos]
+* [Developer FAQ]
+* [API Documentation]
+* [Sources|https://github.com/denkbares]
+* [Repository|https://repo.denkbares.com/webapp/#/artifacts/browse/tree/General/releases-public]
+
+__Get Social__
+
+* [Forum | https://github.com/denkbares/d3web-KnowWE/discussions]
+* [YouTube|http://www.youtube.com/user/d3webCommunity]
+
+__Miscellaneous__
+
+* [All pages | PageIndex]
+* [Recent changes |RecentChanges]
+* [Installed plugins | InstalledTagHandlers]
+* [Contact] / [Impressum|Imprint]
+* [Privacy Statement]
+
+[{If group='Admin'
+
+* [Left menu | LeftMenu]
+}]

@@ -1,0 +1,32 @@
+[{Image src='knowwe_logo.png' align='right' style='margin-right:30px' }]
+
+!!! KnowWE
+
+KnowWE is a semantic wiki that provides the possibility to define and maintain ontologies together with strong problem-solving knowledge.
+Ontologies can be formulated using the RDF(S) or OWL standard: RDF(S) can be included by using the turtle markup, whereas the markup for OWL uses the Manchester syntax.
+Additionally, KnowWE provides markups for the formalization of the strong problem-solving methods of [d3web-Core].
+This includes 
+* Decision trees
+* Scoring and abstraction rules
+* Decision tables
+* Flowchart knowledge with DiaFlux models
+* Set-covering models
+
+KnowWE offers a toolset for the entire knowledge engineering life cycle including 
+* Testing and visually debugging knowledge bases
+* Refactoring of knowledge bases, e.g., rename question, rename solution, etc.
+* Evaluation of knowledge bases including the analysis of knowledge bases for anomalies
+* Continuous integration of knowledge by knowledge builds
+
+Since, KnowWE provides a sophisticated plugin architecture, most of the features are included as plugins. 
+New plugins can be easily introduced; see the developer [How-Tos] for more details.
+
+
+!!! System Requirements
+Technically, KnowWE builds on the development of the wiki [JSPWiki|http://www.jspwiki.org].
+
+The installation of KnowWE requires the Java Platform, Standard Edition JDK 6 of better.\\
+For operating systems, the distribution runs with MS-Windows XP, Windows 7 and Mac OS 10.6 or
+better.\\
+We officially support Firefox 3.6 or higher and Google Chrome. Currently, the Internet Explorer is not officially supported.\\
+ 
