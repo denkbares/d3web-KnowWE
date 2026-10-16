@@ -25,7 +25,6 @@ import java.util.Optional;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.knowwe.core.compile.IncrementalCompiler;
-import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.objects.IncrementalTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -62,9 +61,7 @@ public class DescriptionObjectReference extends PropertyObjectReference {
 
 	@Override
 	protected Locale getLocale(Section<PropertyObjectReference> reference) {
-		return $(reference).ancestor(DescriptionMarkup.class)
-				.successor(LocaleType.class)
-				.map(l -> l.get().getLocale(l)).findFirst().orElse(Locale.ROOT);
+		return DescriptionMarkup.getLocale(reference);
 	}
 
 	@Override

@@ -20,10 +20,10 @@
 package de.knowwe.d3web.property;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.LocaleNameDisplay;
@@ -35,8 +35,6 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
-import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -77,7 +75,11 @@ public class DescriptionMarkup extends DefaultMarkupType {
 		m.addAnnotationContentType(ANNOTATION_OBJECT, () -> new DescriptionObjectReference());
 		PackageManager.addPackageAnnotation(m);
 		m.getAnnotation(ANNOTATION_OBJECT).setDocumentation("Name of the object in \", which gets the description attached to it");
-		m.getAnnotation(ANNOTATION_SEVERITY).setDocumentation("Severity in which the text should be styled in");
+		m.getAnnotation(ANNOTATION_SEVERITY)
+				.setDocumentation("Severity in which the text should be styled in")
+				.setValueDocumentation(severity.note.name(), "Notes or additional information.")
+				.setValueDocumentation(severity.caution.name(), "Caution notices indicating that failure to follow the instructions may result in damage to the device.")
+				.setValueDocumentation(severity.cautionSevere.name(), "Warning notices indicating that failure to follow the instructions will result in accidents causing injury or death.");
 		m.getAnnotation(ANNOTATION_PLACE).setDocumentation("Places text above/below reference, below by default");
 		m.getAnnotation(ANNOTATION_LOCALE).setDocumentation("Attaches description with specified locale, unspecified locale by default");
 		m.setDocumentation("Adds description/descriptionAbove Property to a named object");
@@ -87,10 +89,19 @@ public class DescriptionMarkup extends DefaultMarkupType {
 		super(m);
 		setRenderer(new DescriptionRenderer());
 		addCompileScript(new DescriptionHandler());
-		addCompileScript(Priority.LOWEST, new DescriptionHandler());
+		addCompileScript(new DescriptionNoAvailableTranslation());
+	}
+
+	static Locale getLocale(Section<?> section) {
+		return $(section).closest(DescriptionMarkup.class)
+				.successor(LocaleType.class)
+				.map(l -> l.get().getLocale(l))
+				.findFirst().orElse(Locale.ROOT);
 	}
 
 	static class DescriptionTextType extends AbstractType {
+
+		private static final String BUNDLE = "de.knowwe.d3web.property.DescriptionMessages";
 
 		DescriptionTextType() {
 			setSectionFinder(AllTextFinder.getInstance());
@@ -98,33 +109,44 @@ public class DescriptionMarkup extends DefaultMarkupType {
 		}
 
 		String getDescriptionText(Section<DescriptionTextType> section) {
-			String css = "mate-" + getCss(section);
-			String topLine = "";
+			String severity = getCss(section);
+			String css = "mate-" + severity;
+			String heading = getHeading(section, severity);
+			String topLine = heading.isEmpty() ? "" : "<div>" + Strings.encodeHtml(heading) + "</div>";
 			String bottomLine = "<div>" + Strings.encodeHtml(section.getText()) + "</div>";
 
-			String[] split = section.getText().split(":\\s*", 2);
-			if (split.length == 2) {
-				topLine = "<div>" + Strings.encodeHtml(split[0]) + "</div>";
-				bottomLine = "<div>" + Strings.encodeHtml(split[1]) + "</div>";
-			}
-
-			return "<div class='" + css +"'>" + topLine + bottomLine + "</div>";
+			return "<div class='" + css + "'>" + topLine + bottomLine + "</div>";
 		}
 
 		private String getCss(Section<DescriptionTextType> section) {
-			String css = "";
-			Optional<Section<AnnotationType>> severity = $(section).ancestor(DescriptionMarkup.class).successor(AnnotationType.class)
-					.stream()
-					.filter(s -> s.get().getName().equals(ANNOTATION_SEVERITY))
-					.findFirst();
-			if (severity.isPresent()) {
-				Section<AnnotationContentType> content = $(severity.get()).successor(AnnotationContentType.class)
-						.getFirst();
-				if (content != null && Arrays.stream(DescriptionMarkup.severity.values())
-						.anyMatch(e -> e.name().equalsIgnoreCase(content.getText())))
-					css = content.getText();
-			}
-			return css;
+			Section<DescriptionMarkup> markup = $(section).ancestor(DescriptionMarkup.class).getFirst();
+			String value = DefaultMarkupType.getAnnotation(markup, ANNOTATION_SEVERITY);
+			return Arrays.stream(DescriptionMarkup.severity.values())
+					.filter(s -> value != null && s.name().equalsIgnoreCase(value.trim()))
+					.map(Enum::name)
+					.findFirst().orElse("");
+		}
+
+		private String getHeading(Section<DescriptionTextType> section, String severity) {
+			if (severity.isEmpty()) return "";
+			ResourceBundle messages = ResourceBundle.getBundle(BUNDLE, DescriptionMarkup.getLocale(section),
+					ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES));
+			return messages.getString("description." + severity);
+		}
+
+		/**
+		 * Checks for a matching properties file, including less specific locales such as de for de-DE.
+		 * The base file provides English and the unspecified locale, but is not a translation for other languages.
+		 */
+		public boolean availableLocale(Locale locale) {
+			if (locale == null) return false;
+			ResourceBundle.Control control = ResourceBundle.Control.getNoFallbackControl(
+					ResourceBundle.Control.FORMAT_PROPERTIES);
+			return control.getCandidateLocales(BUNDLE, locale).stream()
+					.filter(candidate -> !Locale.ROOT.equals(candidate)
+							|| Locale.ROOT.equals(locale) || Locale.ENGLISH.getLanguage().equals(locale.getLanguage()))
+					.map(candidate -> control.toResourceName(control.toBundleName(BUNDLE, candidate), "properties"))
+					.anyMatch(resource -> DescriptionMarkup.class.getClassLoader().getResource(resource) != null);
 		}
 
 		private static class DescriptionTextRenderer implements Renderer {
@@ -132,16 +154,15 @@ public class DescriptionMarkup extends DefaultMarkupType {
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult result) {
 				Section<DescriptionTextType> cast = Sections.cast(section, DescriptionTextType.class);
-				String css = "description-" + cast.get().getCss(cast);
+				String severity = cast.get().getCss(cast);
+				String css = "description-" + severity;
+				String heading = cast.get().getHeading(cast, severity);
 
-				HtmlElement topLine = new HtmlElement("div");
 				HtmlElement bottomLine = new HtmlElement("div").content(section.getText());
 				HtmlElement wrapper = new HtmlElement("div").clazz(css).children(bottomLine);
 
-				String[] split = section.getText().split(":\\s*", 2);
-				if (split.length == 2) {
-					topLine.content(split[0]);
-					bottomLine = new HtmlElement("div").content(split[1]);
+				if (!heading.isEmpty()) {
+					HtmlElement topLine = new HtmlElement("div").content(heading);
 					wrapper = new HtmlElement("div").clazz(css).children(topLine, bottomLine);
 				}
 

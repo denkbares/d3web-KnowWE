@@ -205,21 +205,21 @@ to make the distinction between border and underlying color easier */
 
 .description-note > *:first-child:before {
 	content: "\f05a";
-	font-family: 'Font Awesome 6 Free';
+	font-family: var(--fa-style-family-classic, 'Font Awesome 6 Free');
 	font-weight: 900;
 	margin-right: 0.6em;
 }
 
 .description-caution > *:first-child:before {
 	content: "\f071";
-	font-family: 'Font Awesome 6 Free';
+	font-family: var(--fa-style-family-classic, 'Font Awesome 6 Free');
 	font-weight: 900;
 	margin-right: 0.6em;
 }
 
 .description-cautionSevere > *:first-child:before {
 	content: "\f071";
-	font-family: 'Font Awesome 6 Free';
+	font-family: var(--fa-style-family-classic, 'Font Awesome 6 Free');
 	font-weight: 900;
 	margin-right: 0.6em;
 }

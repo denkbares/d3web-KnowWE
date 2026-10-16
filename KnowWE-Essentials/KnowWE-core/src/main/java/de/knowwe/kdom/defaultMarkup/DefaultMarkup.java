@@ -471,6 +471,7 @@ public class DefaultMarkup implements Cloneable {
 		private boolean deprecated;
 
 		private String documentation = null;
+		private final Map<String, String> valueDocumentation = new LinkedHashMap<>();
 
 		private final Collection<Supplier<Type>> nameTypes = new LinkedList<>();
 		private final Collection<Supplier<Type>> types = new LinkedList<>();
@@ -514,6 +515,27 @@ public class DefaultMarkup implements Cloneable {
 		public Annotation setDocumentation(String documentation) {
 			this.documentation = documentation;
 			return this;
+		}
+
+		/**
+		 * Sets the completion documentation for an allowed annotation value.
+		 * Set {@code null} to remove the documentation for that value.
+		 */
+		public Annotation setValueDocumentation(String value, String documentation) {
+			if (documentation == null) {
+				valueDocumentation.remove(value);
+			}
+			else {
+				valueDocumentation.put(value, documentation);
+			}
+			return this;
+		}
+
+		/**
+		 * Returns the completion documentation for an allowed value, or {@code null} if none is defined.
+		 */
+		public String getValueDocumentation(String value) {
+			return valueDocumentation.get(value);
 		}
 
 		/**
