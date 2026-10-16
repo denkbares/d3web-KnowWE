@@ -1501,7 +1501,7 @@ public class KnowWEUtils {
 	 * @created 16.02.2014
 	 */
 	public static Date getLastModified(final Article article) {
-		final WikiConnector connector = article.getArticleManager().getEnvironment().getWikiConnector();
+		final WikiConnector connector = article.getEnvironment().getWikiConnector();
 		final String title = article.getTitle();
 		final int version = connector.getVersion(title);
 		return connector.getLastModifiedDate(title, version);
@@ -1514,7 +1514,7 @@ public class KnowWEUtils {
 	 * @return null if no history exists
 	 */
 	public static WikiPageInfo getLatestArticleHistory(final Article article) {
-		final WikiConnector connector = article.getArticleManager().getEnvironment().getWikiConnector();
+		final WikiConnector connector = article.getEnvironment().getWikiConnector();
 		final String title = article.getTitle();
 
 		try {
@@ -1538,7 +1538,7 @@ public class KnowWEUtils {
 	 * @created 16.02.2014
 	 */
 	public static int getLatestVersion(final Article article) {
-		final WikiConnector connector = article.getArticleManager().getEnvironment().getWikiConnector();
+		final WikiConnector connector = article.getEnvironment().getWikiConnector();
 		final String title = article.getTitle();
 		return connector.getVersion(title);
 	}
