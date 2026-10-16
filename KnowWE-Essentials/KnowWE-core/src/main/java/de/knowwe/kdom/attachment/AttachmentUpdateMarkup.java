@@ -54,7 +54,7 @@ import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
@@ -63,7 +63,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
@@ -72,6 +71,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.util.CredentialProvider;
 import de.knowwe.util.CredentialProviders;
+import de.knowwe.core.EnvironmentService;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -90,10 +90,52 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public static final String REGEX_REPLACEMENT = "regexReplacement";
 	private static final String LOCK_KEY = "lockKey";
 	protected static final String PATH_SEPARATOR = "/";
-	private static final Map<String, Long> LAST_RUNS = new ConcurrentHashMap<>();
-	private static final Map<String, Instant> DOWNLOADING = new ConcurrentHashMap<>();
-	private static Instant LAST_WAITING_LOG = Instant.MIN;
-	private static final Set<QueuedAttachment> QUEUED_ATTACHMENTS = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	/**
+	 * The update state of the attachments of one environment: last runs, running downloads, queued attachments and the
+	 * timer for the scheduled updates. Closed together with the environment, which stops the timer.
+	 */
+	public static final class AttachmentUpdates implements EnvironmentService {
+
+		public static final ServiceKey<AttachmentUpdates> SERVICE = ServiceKey.of(AttachmentUpdates.class, environment -> new AttachmentUpdates());
+
+		private final Map<String, Long> lastRuns = new ConcurrentHashMap<>();
+		private final Map<String, Instant> downloading = new ConcurrentHashMap<>();
+		private final Set<QueuedAttachment> queued = Collections.newSetFromMap(new ConcurrentHashMap<>());
+		private volatile Instant lastWaitingLog = Instant.MIN;
+		private ScheduledExecutorService timer;
+
+		synchronized ScheduledExecutorService timer() {
+			if (timer == null) {
+				timer = Executors.newScheduledThreadPool(10, new ThreadFactory() {
+					private final AtomicLong number = new AtomicLong(1);
+
+					@Override
+					public Thread newThread(@NotNull Runnable runnable) {
+						Thread thread = new Thread(runnable, "AttachmentUpdateTask" + "-" + number.getAndIncrement());
+						thread.setDaemon(true);
+						return thread;
+					}
+				});
+			}
+			return timer;
+		}
+
+		@Override
+		public synchronized void close() {
+			if (timer != null) {
+				LOGGER.info("Shutting down attachment update timer.");
+				timer.shutdownNow();
+				timer = null;
+			}
+			queued.clear();
+			downloading.clear();
+			lastRuns.clear();
+		}
+	}
+
+	private static AttachmentUpdates updates(Section<?> section) {
+		return section.getEnvironment().getService(AttachmentUpdates.SERVICE);
+	}
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
 
@@ -124,7 +166,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		String wikiAttachmentPath = section.get().getWikiAttachmentPath(section);
 		if (wikiAttachmentPath != null) {
 			// we never clean up here, but since it is hard to generate new keys, memory footprint should be negligible
-			LAST_RUNS.put(wikiAttachmentPath, System.currentTimeMillis());
+			updates(section).lastRuns.put(wikiAttachmentPath, System.currentTimeMillis());
 		}
 	}
 
@@ -132,7 +174,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		if (section == null) return Long.MAX_VALUE;
 		String wikiAttachmentPath = section.get().getWikiAttachmentPath(section);
 		if (wikiAttachmentPath == null) return Long.MAX_VALUE;
-		Long lastRun = LAST_RUNS.get(wikiAttachmentPath);
+		Long lastRun = updates(section).lastRuns.get(wikiAttachmentPath);
 		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
 	}
 
@@ -179,9 +221,8 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	public static boolean isAutoUpdatingActive() {
-		String wikiProperty = Environment.getInstance()
-				.getWikiConnector()
+	public static boolean isAutoUpdatingActive(Environment environment) {
+		String wikiProperty = environment.getWikiConnector()
 				.getWikiProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY);
 		if (wikiProperty == null) wikiProperty = "true";
 		return Boolean.parseBoolean(System.getProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY, wikiProperty));
@@ -203,6 +244,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force, boolean allowWaitForOtherDownloads) {
+		AttachmentUpdates state = updates(section);
 		if (section.getArticleManager() == null) return;
 
 		section.get().logLastRun(section);
@@ -227,10 +269,10 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 		try {
 			Stopwatch stopwatch = new Stopwatch();
-			DOWNLOADING.put(path, Instant.now());
+			state.downloading.put(path, Instant.now());
 			try {
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
-				State attachmentState = needsUpdate(attachment, url);
+				State attachmentState = needsUpdate(section.getEnvironment(), attachment, url);
 				if (!force && attachmentState == AttachmentMarkup.State.UP_TO_DATE) {
 					LOGGER.debug("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
 					return;
@@ -270,7 +312,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 					}
 				}
 				// make sure all downloading happens in this block
-				QUEUED_ATTACHMENTS.add(new QueuedAttachment(path, versioning, Instant.now(), new ByteArrayInputStream(Streams.getBytesAndClose(connectionStream))));
+				state.queued.add(new QueuedAttachment(path, versioning, Instant.now(), new ByteArrayInputStream(Streams.getBytesAndClose(connectionStream))));
 				stopwatch.log(LOGGER, "Queued attachment '" + path + "' with resource from URL " + url);
 			}
 			catch (UnknownHostException e) {
@@ -282,15 +324,15 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				LOGGER.error(message, e);
 			}
 			finally {
-				DOWNLOADING.remove(path);
+				state.downloading.remove(path);
 				// if there are other downloads currently ongoing, we have to compile once they finished anyway,
 				// so we just wait for them to trigger the compilation of the queue
-				if (!allowWaitForOtherDownloads || DOWNLOADING.isEmpty() || longWaitingAttachmentInQueue()) {
-					compileQueuedAttachments();
+				if (!allowWaitForOtherDownloads || state.downloading.isEmpty() || longWaitingAttachmentInQueue(state)) {
+					compileQueuedAttachments(section.getEnvironment(), state);
 				}
-				else if (!QUEUED_ATTACHMENTS.isEmpty() && LAST_WAITING_LOG.isBefore(Instant.now().minus(30, ChronoUnit.SECONDS))) {
+				else if (!state.queued.isEmpty() && state.lastWaitingLog.isBefore(Instant.now().minus(30, ChronoUnit.SECONDS))) {
 					LOGGER.info("Waiting with attachment compilation, until other currently running downloads area finished...");
-					LAST_WAITING_LOG = Instant.now();
+					state.lastWaitingLog = Instant.now();
 				}
 			}
 		}
@@ -299,9 +341,9 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	private static boolean longWaitingAttachmentInQueue() {
-		if (QUEUED_ATTACHMENTS.isEmpty()) return false;
-		List<QueuedAttachment> copy = new ArrayList<>(QUEUED_ATTACHMENTS);
+	private static boolean longWaitingAttachmentInQueue(AttachmentUpdates state) {
+		if (state.queued.isEmpty()) return false;
+		List<QueuedAttachment> copy = new ArrayList<>(state.queued);
 		copy.sort(Comparator.comparing(QueuedAttachment::waitingSince));
 		QueuedAttachment longestWaiting = copy.get(0);
 		// as soon as an attachment is waiting for more than 2 minutes, start logging
@@ -311,7 +353,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 							.toMillis()));
 
 			// also log long-running downloads if there are any
-			for (Map.Entry<String, Instant> entry : DOWNLOADING.entrySet()) {
+			for (Map.Entry<String, Instant> entry : state.downloading.entrySet()) {
 				if (entry.getValue().isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
 					LOGGER.info("Attachment {} is downloading since {}...",
 							entry.getKey(), Stopwatch.getDisplay(Duration.between(entry.getValue(), Instant.now()).toMillis()));
@@ -322,27 +364,27 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return longestWaiting.waitingSince().isBefore(Instant.now().minus(20, ChronoUnit.MINUTES));
 	}
 
-	private void compileQueuedAttachments() {
+	private void compileQueuedAttachments(Environment environment, AttachmentUpdates state) {
 
 		// don't lock if the queue is empty
-		if (QUEUED_ATTACHMENTS.isEmpty()) return;
+		if (state.queued.isEmpty()) return;
 
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		ArticleManager articleManager = environment.getArticleManager();
 		// first acquire lock
 		articleManager.open();
 		Set<QueuedAttachment> attachmentsToCompile;
 		try {
 			// then copy, so we get attachments queued while waiting for the lock
-			attachmentsToCompile = new HashSet<>(QUEUED_ATTACHMENTS);
+			attachmentsToCompile = new HashSet<>(state.queued);
 			if (attachmentsToCompile.isEmpty()) {
 				return; // maybe another thread cleared the queue
 			}
-			QUEUED_ATTACHMENTS.removeAll(attachmentsToCompile);
+			state.queued.removeAll(attachmentsToCompile);
 			for (QueuedAttachment update : attachmentsToCompile) {
 				String parentName = update.path.substring(0, update.path.indexOf(PATH_SEPARATOR));
 				String fileName = update.path.substring(update.path.indexOf("/") + 1);
 				try {
-					Environment.getInstance().getWikiConnector()
+					environment.getWikiConnector()
 							.storeAttachment(parentName, fileName, "SYSTEM", update.attachment, update.versioning);
 				}
 				catch (IOException e) {
@@ -386,7 +428,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 						.append(packageAnnotation)
 						.append("\n");
 			}
-			Article tempArticle = Article.createTemporaryArticle(connectionString, section.getTitle() + "_Import", section.getWeb());
+			Article tempArticle = Article.createTemporaryArticle(section.getEnvironment(), connectionString, section.getTitle() + "_Import");
 			Map<String, String> replacementMap = new HashMap<>();
 			for (Section<DefaultMarkupType> markupSection : $(tempArticle).successor(DefaultMarkupType.class)) {
 
@@ -455,7 +497,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return connection.getInputStream();
 	}
 
-	private static State needsUpdate(WikiAttachment attachment, URL url) throws IOException {
+	private static State needsUpdate(Environment environment, WikiAttachment attachment, URL url) throws IOException {
 		if (attachment == null) return AttachmentMarkup.State.OUTDATED;
 
 		URLConnection connection;
@@ -469,8 +511,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 		connection.connect();
 
-		Date attachmentSectionDate = Environment.getInstance()
-				.getWikiConnector()
+		Date attachmentSectionDate = environment.getWikiConnector()
 				.getLastModifiedDate(attachment.getParentName(), -1);
 
 		LocalDateTime attachmentSectionDateTime = LocalDateTime.ofInstant(attachmentSectionDate.toInstant(), ZoneId.systemDefault());
@@ -604,23 +645,6 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		private static final Logger LOGGER = LoggerFactory.getLogger(UpdateTaskRegistrationScript.class);
 
 		private static final String UPDATE_TASK_KEY = "updateTaskKey";
-		private static final ScheduledExecutorService UPDATE_TIMER = Executors.newScheduledThreadPool(10, new ThreadFactory() {
-			private final AtomicLong number = new AtomicLong(1);
-
-			@Override
-			public Thread newThread(@NotNull Runnable runnable) {
-				Thread thread = new Thread(runnable, "AttachmentUpdateTask" + "-" + number.getAndIncrement());
-				thread.setDaemon(true);
-				return thread;
-			}
-		});
-
-		static {
-			ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-				LOGGER.info("Shutting down attachment update timer.");
-				UPDATE_TIMER.shutdownNow();
-			});
-		}
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
@@ -634,7 +658,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			UpdateTask updateTask = new UpdateTask(section);
 			section.storeObject(compiler, UPDATE_TASK_KEY, updateTask);
 
-			UPDATE_TIMER.scheduleAtFixedRate(updateTask, section.get()
+			updates(section).timer().scheduleAtFixedRate(updateTask, section.get()
 					.getInitialDelayMillis(section, interval), interval, TimeUnit.MILLISECONDS);
 		}
 
@@ -664,7 +688,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				return;
 			}
 
-			if (!isAutoUpdatingActive()) return;
+			if (!isAutoUpdatingActive(section.getEnvironment())) return;
 
 			// only perform section update if articles are initialized in case we reference articles from this wiki
 			ArticleManager articleManager = section.getArticleManager();
@@ -679,7 +703,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) throws CompilerMessage {
-			if (!isAutoUpdatingActive()) {
+			if (!isAutoUpdatingActive(compiler.getEnvironment())) {
 				Messages.storeMessage(section, this.getClass(), Messages.info("Auto updating is deactivated using the system property " + KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY + "=true/false"));
 			}
 		}

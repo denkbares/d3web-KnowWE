@@ -44,8 +44,9 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -179,10 +180,10 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	public static void renderTermDefinitions(Identifier identifier, UserContext user, RenderResult result) {
-		Set<Section<?>> definitions = findTermDefinitionSections(user.getWeb(), identifier);
+		Set<Section<?>> definitions = findTermDefinitionSections(user.getArticleManager(), identifier);
 		renderSectionStart("Definition", result);
 		if (definitions.isEmpty()) {
-			Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
+			Set<Section<?>> references = findTermReferenceSections(user.getArticleManager(), identifier);
 			if (references.isEmpty()) {
 				result.appendHtml("<p style=\"color:#888;font-style:italic\">");
 				result.append("Term not defined");
@@ -225,7 +226,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	public static void renderTermReferences(Identifier identifier, UserContext user, RenderResult result) {
-		Set<Section<?>> references = findTermReferenceSections(user.getWeb(), identifier);
+		Set<Section<?>> references = findTermReferenceSections(user.getArticleManager(), identifier);
 		Collection<Class<?>> termObjectClasses = getTermObjectClasses(user, identifier);
 		renderSectionStart("References", result);
 		if (references.isEmpty()) {
@@ -341,8 +342,8 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("</div>\n");
 	}
 
-	protected static Set<Section<?>> findTermDefinitionSections(String web, Identifier termIdentifier) {
-		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier);
+	protected static Set<Section<?>> findTermDefinitionSections(@NotNull ArticleManager articleManager, Identifier termIdentifier) {
+		TermInfo termInfo = TermUtils.getTermInfo(articleManager, termIdentifier);
 		Set<Section<?>> sections = new HashSet<>();
 		if (termInfo == null) {
 			return sections;
@@ -353,8 +354,8 @@ public class ObjectInfoRenderer implements Renderer {
 		return sections;
 	}
 
-	public static Set<Section<?>> findTermReferenceSections(String web, Identifier termIdentifier) {
-		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier);
+	public static Set<Section<?>> findTermReferenceSections(@NotNull ArticleManager articleManager, Identifier termIdentifier) {
+		TermInfo termInfo = TermUtils.getTermInfo(articleManager, termIdentifier);
 		Set<Section<?>> sections = new HashSet<>();
 		if (termInfo == null) {
 			return sections;
@@ -375,7 +376,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private static Collection<Class<?>> getTermObjectClasses(UserContext user, Identifier identifier) {
 		Set<Class<?>> termClasses = new HashSet<>();
-		for (TerminologyManager manager : KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(user.getWeb()))) {
+		for (TerminologyManager manager : KnowWEUtils.getTerminologyManagers(user.getArticleManager())) {
 			termClasses.addAll(manager.getTermClasses(identifier));
 		}
 		return termClasses;
@@ -597,8 +598,8 @@ public class ObjectInfoRenderer implements Renderer {
 		renderSectionStart("Other occurrences", result);
 
 		// Search for plain text occurrences
-		SearchEngine se = new SearchEngine(Environment.getInstance()
-				.getArticleManager(user.getWeb()));
+		SearchEngine se = new SearchEngine(user.getEnvironment()
+				.getArticleManager());
 		se.setOption(SearchOption.FUZZY);
 		se.setOption(SearchOption.CASE_INSENSITIVE);
 		se.setOption(SearchOption.DOTALL);

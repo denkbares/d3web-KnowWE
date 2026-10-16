@@ -142,11 +142,6 @@ public class SectionIdParameterTest {
 		}
 
 		@Override
-		public String getWeb() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
 		public HttpServletRequest getRequest() {
 			throw new UnsupportedOperationException();
 		}

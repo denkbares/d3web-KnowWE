@@ -292,7 +292,7 @@ public class CIRenderer {
 
 		// render title with configuration
 		if (test instanceof ResultRenderer) {
-			((ResultRenderer) test).renderResultTitle(testResult, renderResult);
+			((ResultRenderer) test).renderResultTitle(context, testResult, renderResult);
 		}
 		else {
 			renderResultTitle(testResult, renderResult);
@@ -613,7 +613,7 @@ public class CIRenderer {
 		renderBuildStatus(build, true, Icon.BULB, html);
 		// ensure jspwiki markup is rendered in the same way as on a full page load
 		RenderResult rendered = new RenderResult(html);
-		rendered.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(html.toStringRaw()));
+		rendered.append(context.getEnvironment().getWikiConnector().renderWikiSyntax(html.toStringRaw()));
 		return rendered.toString();
 	}
 

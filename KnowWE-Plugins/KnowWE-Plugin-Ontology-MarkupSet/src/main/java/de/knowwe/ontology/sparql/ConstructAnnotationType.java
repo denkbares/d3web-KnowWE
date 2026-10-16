@@ -42,6 +42,7 @@ import com.denkbares.strings.QuoteSet;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.CompilePriorityLevelFinishedEvent;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
@@ -201,13 +202,13 @@ public class ConstructAnnotationType extends AbstractType {
 
 			ConstructCompileListener listener = new ConstructCompileListener(compiler, section);
 			section.storeObject(compiler, ConstructCompileListener.class.getName(), listener);
-			EventManager.getInstance().registerListener(listener);
+			KnowWEUtils.getEventManager(section).registerListener(listener);
 		}
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<ConstructAnnotationType> section) {
 			ConstructCompileListener listener = section.getObject(compiler, ConstructSetupScript.class.getName());
-			if (listener != null) EventManager.getInstance().unregister(listener);
+			if (listener != null) KnowWEUtils.getEventManager(section).unregister(listener);
 		}
 	}
 

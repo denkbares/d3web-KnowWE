@@ -147,6 +147,14 @@ public class Config {
 		GRAPH_ERROR_MESSAGE = null;
 	}
 
+	/**
+	 * Creates a configuration that is not bound to a section, e.g. for tests or exports, but knows its environment.
+	 */
+	public Config(Environment environment) {
+		this();
+		this.environment = environment;
+	}
+
 	public String getClassNodeStyle() {
 		return classNodeStyle;
 	}
@@ -189,7 +197,21 @@ public class Config {
 
 	public Config(Section<? extends DefaultMarkupType> section, UserContext user) {
 		this();
+		this.environment = section.getEnvironment();
 		init(section, user);
+	}
+
+	/**
+	 * The environment the visualized section belongs to; null for a configuration created without a section.
+	 */
+	private Environment environment;
+
+	@NotNull
+	public Environment getEnvironment() {
+		if (environment == null) {
+			throw new IllegalStateException("visualization config without environment, create it with Config(Environment) or Config(section, user)");
+		}
+		return environment;
 	}
 
 	public String getForceVisualizationStyle() {
@@ -223,7 +245,7 @@ public class Config {
 
 	public String getCacheDirectoryPath() {
 		if (cacheDirectoryPath == null) {
-			return Environment.getInstance().getWikiConnector().getApplicationRootPath();
+			return getEnvironment().getWikiConnector().getApplicationRootPath();
 		}
 		return cacheDirectoryPath;
 	}

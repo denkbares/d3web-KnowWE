@@ -65,9 +65,11 @@ public class ResourceType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_SRC, false);
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_XMLSCHEMA);
-		AttachmentType schemaAttachment = new AttachmentType();
-		schemaAttachment.addCompileScript(new XMLValidationHandler());
-		MARKUP.addAnnotationContentType(ANNOTATION_XMLSCHEMA, schemaAttachment);
+		MARKUP.addAnnotationContentType(ANNOTATION_XMLSCHEMA, () -> {
+			AttachmentType schemaAttachment = new AttachmentType();
+			schemaAttachment.addCompileScript(new XMLValidationHandler());
+			return schemaAttachment;
+		});
 	}
 
 	public ResourceType() {

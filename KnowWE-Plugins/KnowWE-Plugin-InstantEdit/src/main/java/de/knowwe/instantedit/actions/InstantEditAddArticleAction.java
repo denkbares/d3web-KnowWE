@@ -22,7 +22,6 @@ import java.io.IOException;
 
 import com.google.gson.Gson;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -54,7 +53,7 @@ public class InstantEditAddArticleAction extends AbstractAction {
 	}
 
 	protected void addNewArticle(UserActionContext context, String title, String articleText) throws IOException {
-		boolean canWrite = Environment.getInstance().getWikiConnector().userCanCreateArticles(context);
+		boolean canWrite = context.getEnvironment().getWikiConnector().userCanCreateArticles(context);
 		if (!canWrite) {
 			context.sendError(403, "You are not allowed to create this article");
 			return;
@@ -63,14 +62,14 @@ public class InstantEditAddArticleAction extends AbstractAction {
 		// we wait in case this thread (reused via the thread pool) has already a compilation going
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 
-		Article article = Environment.getInstance().getArticle(context.getWeb(), title);
+		Article article = context.getEnvironment().getArticle(title);
 		if (article == null) {
-			Environment.getInstance().getWikiConnector().createArticle(title, context.getUserName(), articleText);
+			context.getEnvironment().getWikiConnector().createArticle(title, context.getUserName(), articleText);
 		}
 		else {
 			// the permission to create articles does not imply the permission to overwrite an existing one
 			KnowWEUtils.assertCanWrite(title, context);
-			Environment.getInstance().getWikiConnector().writeArticleToWikiPersistence(title, articleText, context);
+			context.getEnvironment().getWikiConnector().writeArticleToWikiPersistence(title, articleText, context);
 		}
 	}
 }

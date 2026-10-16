@@ -32,9 +32,8 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class CommentType extends AbstractXMLType {
 
-	private static CommentType instance;
 
-	private CommentType() {
+	public CommentType() {
 		super("comment");
 		XMLContent content = new XMLContent();
 		addChildType(content);
@@ -43,9 +42,5 @@ public class CommentType extends AbstractXMLType {
 		content.setRenderer(StyleRenderer.DEFAULT.withMaskMode(MaskMode.none));
 	}
 
-	public static CommentType getInstance() {
-		if (instance == null) instance = new CommentType();
-		return instance;
-	}
 
 }

@@ -35,24 +35,25 @@ import utils.TestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.junit.After;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH) + Claude for wiki-search
  */
 public class ArticleChunkerTest {
 
-	private static final String WEB = Environment.DEFAULT_WEB;
+	private Environment environment;
+
+	private static final String WEB = "default_web";
 
 	private final ArticleChunker chunker = new ArticleChunker();
 
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 	}
 
 	@Test
@@ -176,8 +177,8 @@ public class ArticleChunkerTest {
 	}
 
 	private List<IndexChunk> chunk(String title, String content) {
-		Environment.getInstance().getArticleManager(WEB).registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(WEB, title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticle(title);
 		return chunker.chunk(article);
 	}
 
@@ -195,4 +196,10 @@ public class ArticleChunkerTest {
 				.map(Section::getText)
 				.collect(Collectors.joining());
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

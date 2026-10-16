@@ -49,7 +49,7 @@ public class ImageMarkup extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("Image");
 		MARKUP.addAnnotation(ANNOTATION_SRC, true);
-		MARKUP.addAnnotationContentType(ANNOTATION_SRC, new AttachmentType());
+		MARKUP.addAnnotationContentType(ANNOTATION_SRC, () -> new AttachmentType());
 		MARKUP.addAnnotation(ANNOTATION_WIDTH, false);
 		MARKUP.addAnnotation(ANNOTATION_HEIGHT, false);
 		MARKUP.addAnnotation(ANNOTATION_ALT, false);

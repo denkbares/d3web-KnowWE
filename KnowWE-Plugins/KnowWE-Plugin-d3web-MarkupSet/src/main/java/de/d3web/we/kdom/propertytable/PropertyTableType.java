@@ -59,9 +59,12 @@ public class PropertyTableType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("PropertyTable");
 		MARKUP.setContentTemplate("|| Name\t\t|| prompt\t\t|| description \n" +
 				"| Your Question\t| The Question Prompt\t| The Description of the Question ");
-		Table content = new Table();
-		MARKUP.addContentType(content);
+		MARKUP.addContentType(PropertyTableType::createContent);
 		PackageManager.addPackageAnnotation(MARKUP);
+	}
+
+	private static Table createContent() {
+		Table content = new Table();
 
 		PropertyType propertyType = new PropertyType();
 		LocaleType localType = new LocaleType(".");
@@ -109,6 +112,7 @@ public class PropertyTableType extends DefaultMarkupType {
 
 		content.injectTableCellContentChildtype(qRef);
 		content.injectTableCellContentChildtype(new PropertyValueType());
+		return content;
 	}
 
 	public PropertyTableType() {

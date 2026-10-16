@@ -55,6 +55,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class WikiSearchServiceTest {
 
+	private static Environment environment;
+
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
@@ -63,12 +65,10 @@ public class WikiSearchServiceTest {
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
-		service = new WikiSearchService(folder.getRoot().toPath().resolve("index"));
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
+		service = new WikiSearchService(environment, folder.getRoot().toPath().resolve("index"));
 		service.openForTest();
 	}
 
@@ -181,13 +181,13 @@ public class WikiSearchServiceTest {
 		service.notify(new InitializedArticlesEvent(manager()));
 		service.awaitIdle();
 
-		PreviewCache.getInstance().put("Zwischengespeichert", "s1", "albrecht", "<p>alter Stand</p>");
+		PreviewCache.of(environment).put("Zwischengespeichert", "s1", "albrecht", "<p>alter Stand</p>");
 		service.notify(new ArticleRegisteredEvent(article("Zwischengespeichert")));
 		service.notify(new ArticleManagerCommitDoneEvent(manager(), Set.of("Zwischengespeichert")));
 		service.awaitIdle();
 
 		assertNull("an edited page must not answer with the preview of its former text",
-				PreviewCache.getInstance().get("Zwischengespeichert", "s1", "albrecht"));
+				PreviewCache.of(environment).get("Zwischengespeichert", "s1", "albrecht"));
 	}
 
 	@Test
@@ -220,7 +220,7 @@ public class WikiSearchServiceTest {
 	}
 
 	private static ArticleManager manager() {
-		return Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		return environment.getArticleManager();
 	}
 
 	private static void write(String title, String content) {
@@ -228,6 +228,12 @@ public class WikiSearchServiceTest {
 	}
 
 	private static de.knowwe.core.kdom.Article article(String title) {
-		return Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+		return environment.getArticle(title);
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

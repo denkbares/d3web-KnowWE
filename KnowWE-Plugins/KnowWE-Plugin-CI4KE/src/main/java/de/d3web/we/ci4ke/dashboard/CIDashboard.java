@@ -40,6 +40,7 @@ import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.event.UserDefaultDashboardUpdateEvent;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -47,6 +48,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import de.d3web.we.ci4ke.test.CITestSpecification;
 
 /**
  * This class represents a dashboard data structure, managing the build results,
@@ -70,7 +72,8 @@ public class CIDashboard {
 	protected CIDashboard(Section<CIDashboardType> dashboardSection, List<TestSpecification<?>> specifications) {
 		this.dashboardSection = dashboardSection;
 		this.dashboardName = CIDashboardType.getDashboardName(dashboardSection);
-		this.testSpecifications = specifications;
+		// bind all specifications to the environment of this dashboard, so tests can resolve the wiki they run in
+		this.testSpecifications = CITestSpecification.bind(dashboardSection.getEnvironment(), specifications);
 		this.buildCache = new CIBuildCache();
 		this.renderer = new CIRenderer(this);
 		this.persistence = new CIPersistence(this, buildCache);
@@ -85,9 +88,6 @@ public class CIDashboard {
 		return this.dashboardSection;
 	}
 
-	public String getWeb() {
-		return dashboardSection.getWeb();
-	}
 
 	public String getDashboardArticle() {
 		return dashboardSection.getTitle();
@@ -274,7 +274,7 @@ public class CIDashboard {
 					defaultDashboards.remove(getDashboardName());
 				}
 				if (!before.equals(defaultDashboards)) {
-					EventManager.getInstance().fireEvent(new UserDefaultDashboardUpdateEvent(Set.copyOf(defaultDashboards), user.getUserName()));
+					KnowWEUtils.getEventManager(user).fireEvent(new UserDefaultDashboardUpdateEvent(Set.copyOf(defaultDashboards), user.getUserName()));
 				}
 			}
 		}

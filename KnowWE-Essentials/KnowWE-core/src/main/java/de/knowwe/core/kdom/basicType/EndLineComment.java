@@ -28,14 +28,8 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class EndLineComment extends AbstractType {
 
-	private static final EndLineComment INSTANCE = new EndLineComment();
-
-	private EndLineComment() {
+	public EndLineComment() {
 		this.setSectionFinder(new RegexSectionFinder("(\\s+|^\\s*)//[^\n\r]*$", Pattern.MULTILINE));
 		setRenderer(StyleRenderer.COMMENT);
-	}
-
-	public static EndLineComment getInstance() {
-		return INSTANCE;
 	}
 }

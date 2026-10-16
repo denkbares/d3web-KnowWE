@@ -78,7 +78,6 @@ public class FlowchartUtils {
 
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, String parentId, String scope, boolean insertResources) {
 
-		if (user.getWeb() == null) return "";
 		parentId = escapeHtmlId(parentId);
 
 		RenderResult result = prepareFlowchartRenderer(section, parentId, user, scope, insertResources);
@@ -194,8 +193,8 @@ public class FlowchartUtils {
 	 * @param flowName The name of the flowchart
 	 * @created 02.03.2011
 	 */
-	public static Section<FlowchartType> findFlowchartSection(String web, String flowName) {
-		ArticleManager manager = Environment.getInstance().getArticleManager(web);
+
+	public static Section<FlowchartType> findFlowchartSection(ArticleManager manager, String flowName) {
 
 		for (Article article : manager.getArticles()) {
 			List<Section<FlowchartType>> matches = new LinkedList<>();

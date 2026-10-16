@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.Iterators;
 import com.denkbares.utils.Streams;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
@@ -223,7 +222,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 	}
 
 	private void downloadThreadDump(UserActionContext context, String threadDump, String fileName) throws IOException {
-		fileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + "-" + fileName + "-" + Environment.getInstance()
+		fileName = new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date()) + "-" + fileName + "-" + context.getEnvironment()
 				.getWikiConnector()
 				.getApplicationName() + ".txt";
 
@@ -263,7 +262,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 			}
 			finally {
 				if (tmpFile != null) {
-					String applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
+					String applicationName = context.getEnvironment().getWikiConnector().getApplicationName();
 					String filename = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-" + applicationName + "-logs.zip";
 					context.setContentType(BINARY);
 					context.setContentDisposition("attachment", filename);

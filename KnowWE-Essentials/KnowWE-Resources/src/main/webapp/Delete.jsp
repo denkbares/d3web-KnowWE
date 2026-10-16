@@ -36,6 +36,7 @@
 <%@ page import="org.joda.time.DateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.time.LocalDateTime" %>
+<%@ page import="de.knowwe.core.Environment" %>
 <%@ page import="de.knowwe.core.utils.KnowWEUtils" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 
@@ -58,7 +59,7 @@
 	String delete = request.getParameter("delete");
 
 
-	if (!(wikiContext.getPage() instanceof Attachment) && deleteAdmin == null && !KnowWEUtils.allowPageDeletionForNonAdmin(wikiContext.getName())) {
+	if (!(wikiContext.getPage() instanceof Attachment) && deleteAdmin == null && !KnowWEUtils.allowPageDeletionForNonAdmin(Environment.of(request), wikiContext.getName())) {
 		String deleteText = "Deleted by " + wikiContext.getCurrentUser()
 				.getName() + " at " + FORMATTER.format(LocalDateTime.now());
 		// the context's page describes the latest version, so saving it as is would credit the previous author

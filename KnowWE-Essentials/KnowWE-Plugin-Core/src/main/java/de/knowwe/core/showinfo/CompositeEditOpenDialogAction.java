@@ -25,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -54,7 +53,7 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 		ObjectInfoRenderer.renderTermReferences(identifier, context, result);
 
 
-		Set<Section<?>> termReferenceSections = ObjectInfoRenderer.findTermReferenceSections(context.getWeb(), identifier);
+		Set<Section<?>> termReferenceSections = ObjectInfoRenderer.findTermReferenceSections(context.getArticleManager(), identifier);
 		boolean canWriteAllSections = KnowWEUtils.canWrite(termReferenceSections, context);
 
 		JSONObject response = new JSONObject();
@@ -74,7 +73,7 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 	}
 
 	private String toHtml(UserActionContext context, RenderResult result) {
-		String html = Environment.getInstance().getWikiConnector().renderWikiSyntax(result.toStringRaw());
+		String html = context.getEnvironment().getWikiConnector().renderWikiSyntax(result.toStringRaw());
 		return RenderResult.unmask(html, context);
 	}
 

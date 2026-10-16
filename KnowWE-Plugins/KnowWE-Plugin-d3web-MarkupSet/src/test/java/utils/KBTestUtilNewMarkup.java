@@ -65,6 +65,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * This Class loads the KnowledgeBase which will be tested.
@@ -96,7 +97,7 @@ public class KBTestUtilNewMarkup {
 	 * @param article
 	 */
 	public KnowledgeBase getKnowledgeBase(Article article) {
-		return D3webUtils.getKnowledgeBase(article.getWeb(), article.getTitle());
+		return D3webUtils.getKnowledgeBase(KnowWEUtils.getArticleManager(article), article.getTitle());
 	}
 
 	/**

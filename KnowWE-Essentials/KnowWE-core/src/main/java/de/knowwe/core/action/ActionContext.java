@@ -30,9 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.AbstractUserContext;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.plugin.Plugins;
@@ -106,6 +108,24 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 		this.response = response;
 		this.request = request;
 		this.servletContext = servletContext;
+	}
+
+	/**
+	 * The environment of the web application this action runs in, found in its servlet context.
+	 */
+	@Override
+	public Environment findEnvironment() {
+		return Environment.findIn(servletContext);
+	}
+
+	@Override
+	@NotNull
+	public Environment getEnvironment() {
+		Environment environment = findEnvironment();
+		if (environment == null) {
+			throw new IllegalStateException("no KnowWE environment in the servlet context of action " + actionName);
+		}
+		return environment;
 	}
 
 	@Override

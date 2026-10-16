@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import de.knowwe.core.Environment;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -132,10 +134,24 @@ public class DefaultMarkupType extends AbstractType {
 	private final static String SECTION_REGEXP_INLINE = "%%" + INLINE_CONTENT + "[%/]%|%%$NAME$\\h+[%/]%" +
 			"|\\[\\{" + INLINE_CONTENT + "\\}\\]";
 
-	// the type tree is built once per environment, so the markups are cached for the root type they were found in
-	private static volatile InstalledMarkups installedMarkups;
+	/**
+	 * The markups of an environment's type tree. The type tree is built once per environment, so they are collected
+	 * once and kept as a service of the environment.
+	 */
+	private static final ServiceKey<InstalledMarkups> INSTALLED_MARKUPS = ServiceKey.of(InstalledMarkups.class,
+			environment -> InstalledMarkups.collect(environment.getRootType()));
 
-	private record InstalledMarkups(RootType root, List<DefaultMarkup> markups) {
+	private record InstalledMarkups(List<DefaultMarkup> markups) {
+		private static InstalledMarkups collect(RootType root) {
+			List<DefaultMarkup> markups = new ArrayList<>();
+			Set<String> names = new HashSet<>();
+			for (Type type : Types.getAllChildrenTypesRecursive(root)) {
+				if (type instanceof DefaultMarkupType markupType && names.add(markupType.getMarkup().getName())) {
+					markups.add(markupType.getMarkup());
+				}
+			}
+			return new InstalledMarkups(Collections.unmodifiableList(markups));
+		}
 	}
 
 	private DefaultMarkup markup;
@@ -159,12 +175,27 @@ public class DefaultMarkupType extends AbstractType {
 		this.addChildType(new ContentType(markup));
 		for (DefaultMarkup.Annotation parameter : markup.getAnnotations()) {
 			// update KDOM structure for the annotations
-			this.addChildType(new AnnotationType(parameter));
+			this.addAnnotationType(parameter);
 		}
 		this.addChildType(10, new UnknownAnnotationType());
 		this.addCompileScript(new DefaultMarkupPackageRegistrationScript());
 		this.addCompileScript(new DefaultMarkupPackageUnregistrationScript());
 		this.addCompileScript(new DefaultMarkupCompileScript(markup));
+	}
+
+	/**
+	 * Adds the type for the given annotation of this markup, unless this markup type already has one for it. Plugged
+	 * annotations are added to the markup when a type tree is decorated, and the markup may be shared by all type
+	 * trees (a static MARKUP field): a markup type built after the first decoration then already gets the annotation
+	 * from {@link #applyMarkup(DefaultMarkup)}, and must not be given a second type for it while decorating.
+	 */
+	public void addAnnotationType(DefaultMarkup.Annotation annotation) {
+		for (Type child : getChildrenTypes()) {
+			if (child instanceof AnnotationType annotationType && annotationType.getAnnotation() == annotation) {
+				return;
+			}
+		}
+		this.addChildType(new AnnotationType(annotation));
 	}
 
 	@Override
@@ -367,23 +398,10 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the markups of all default markup types in the type tree, one per name.
+	 * Returns the markups of all default markup types in the type tree of the specified environment, one per name.
 	 */
 	@SuppressWarnings("unused") // used in codemirror.jsp
-	public static List<DefaultMarkup> getInstalledMarkups() {
-		RootType root = RootType.getInstance();
-		InstalledMarkups installed = installedMarkups;
-		if (installed == null || installed.root() != root) {
-			List<DefaultMarkup> markups = new ArrayList<>();
-			Set<String> names = new HashSet<>();
-			for (Type type : Types.getAllChildrenTypesRecursive(root)) {
-				if (type instanceof DefaultMarkupType markupType && names.add(markupType.getMarkup().getName())) {
-					markups.add(markupType.getMarkup());
-				}
-			}
-			installed = new InstalledMarkups(root, Collections.unmodifiableList(markups));
-			installedMarkups = installed;
-		}
-		return installed.markups();
+	public static List<DefaultMarkup> getInstalledMarkups(@NotNull Environment environment) {
+		return environment.getService(INSTALLED_MARKUPS).markups();
 	}
 }

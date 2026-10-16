@@ -130,7 +130,7 @@ public class CIPersistence {
 				return;
 			}
 			// one change for the whole build, rather than one per result file
-			Environment.getInstance().getWikiConnector().storeAttachments(
+			dashboard.getDashboardSection().getEnvironment().getWikiConnector().storeAttachments(
 					dashboard.getDashboardArticle(), attachments, USER_NAME, changeNote(build));
 		}
 		finally {
@@ -179,11 +179,11 @@ public class CIPersistence {
 		byte[] bytes = result.getWriter().toString().getBytes(StandardCharsets.UTF_8);
 		ByteArrayInputStream currentBuildInputStream = new ByteArrayInputStream(bytes);
 
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = dashboard.getDashboardSection().getEnvironment().getWikiConnector();
 		String userName = USER_NAME;
 		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
 
-		if (!KnowWEUtils.getPropertyFlag(SKIP_CLEANING, false) && build.getBuildNumber() > maxBuilds) {
+		if (!KnowWEUtils.getPropertyFlag(dashboard.getDashboardSection().getEnvironment(), SKIP_CLEANING, false) && build.getBuildNumber() > maxBuilds) {
 			// do big cleanup, where the older half of the builds are deleted
 			LinkedList<ByteArrayInputStream> streams = new LinkedList<>();
 			streams.add(currentBuildInputStream);
@@ -271,7 +271,7 @@ public class CIPersistence {
 	 * @created 04.10.2013
 	 */
 	public WikiAttachment getAttachment() throws IOException {
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = dashboard.getDashboardSection().getEnvironment().getWikiConnector();
 		return wikiConnector.getAttachment(getAttachmentPath());
 	}
 

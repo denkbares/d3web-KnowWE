@@ -65,8 +65,8 @@ public class GetDiffHighlightAction extends AbstractAction {
 		String parentid = context.getParameter(GetTraceHighlightAction.PARENTID);
 		parentid = parentid.substring(0, parentid.length() - 5);
 
-		Section<FlowchartType> leftFlow = Sections.get(leftkdomid, FlowchartType.class);
-		Section<FlowchartType> rightFlow = Sections.get(rightkdomid, FlowchartType.class);
+		Section<FlowchartType> leftFlow = Sections.get(context, leftkdomid, FlowchartType.class);
+		Section<FlowchartType> rightFlow = Sections.get(context, rightkdomid, FlowchartType.class);
 
 		if (leftFlow == null || rightFlow == null
 				|| !KnowWEUtils.canView(leftFlow, context) || !KnowWEUtils.canView(rightFlow, context)) {

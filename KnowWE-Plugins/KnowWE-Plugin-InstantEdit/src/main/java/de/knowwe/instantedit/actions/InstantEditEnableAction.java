@@ -20,8 +20,8 @@ package de.knowwe.instantedit.actions;
 
 import java.io.IOException;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -39,39 +39,38 @@ public class InstantEditEnableAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String title = context.getTitle();
-		String web = context.getWeb();
 		String id = context.getParameter("KdomNodeId");
 
 		String mode = context.getParameter("mode");
 
-		Article art = Environment.getInstance().getArticle(web, title);
+		Article art = context.getArticleManager().getArticle(title);
 		if (art == null) {
 			context.sendError(404, "Page '" + title + "' could not be found.");
 			return;
 		}
 
-		if (Sections.get(id) == null) {
+		if (Sections.get(context, id) == null) {
 			context.sendError(409, "Section '" + id
 					+ "' could not be found, possibly because somebody else"
 					+ " has edited the page.");
 			return;
 		}
 
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title,
+		if (!context.getEnvironment().getWikiConnector().userCanEditArticle(title,
 				context)) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
 		}
 
-		boolean isLocked = Environment.getInstance().getWikiConnector().isArticleLocked(title);
-		boolean isLockedCurrentUser = Environment.getInstance().getWikiConnector().isArticleLockedCurrentUser(
+		boolean isLocked = context.getEnvironment().getWikiConnector().isArticleLocked(title);
+		boolean isLockedCurrentUser = context.getEnvironment().getWikiConnector().isArticleLockedCurrentUser(
 				title, context.getUserName());
 
 		String result = "{\"locked\":true}";
 
 		if (!isLocked || isLockedCurrentUser) {
 			if (!"add".equals(mode)) {
-				Environment.getInstance().getWikiConnector().lockArticle(title, context.getUserName());
+				context.getEnvironment().getWikiConnector().lockArticle(title, context.getUserName());
 			}
 			result = "{\"locked\":false}";
 		}

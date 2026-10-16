@@ -41,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.d3web.core.inference.LoopTerminator;
@@ -69,6 +68,7 @@ import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -168,7 +168,8 @@ public class D3webUtils {
 		return Compilers.getCompiler(master, D3webCompiler.class);
 	}
 
-	public static void storeSessionRecordsAsAttachment(String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
+
+	public static void storeSessionRecordsAsAttachment(@NotNull Environment environment, String user, Collection<Session> sessions, String attachmentArticle, String attachmentName) throws IOException {
 
 		Collection<SessionRecord> sessionRecords = new LinkedList<>();
 		for (Session session : sessions) {
@@ -179,7 +180,7 @@ public class D3webUtils {
 		SessionPersistenceManager.getInstance().saveSessions(outputStream, sessionRecords);
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
-		Environment.getInstance().getWikiConnector()
+		environment.getWikiConnector()
 				.storeAttachment(attachmentArticle, attachmentName, user, inputStream);
 	}
 
@@ -247,24 +248,19 @@ public class D3webUtils {
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(Article article) {
-		return getKnowledgeBase(article.getWeb(), article.getTitle());
+		return getKnowledgeBase(KnowWEUtils.getArticleManager(article), article.getTitle());
 	}
 
 	/**
-	 * Utility method to get a {@link KnowledgeBase} for an article specified by its web and topic. If no such knowledge
-	 * base exists, a new knowledge base is created for the article and returned.
+	 * Utility method to get a {@link KnowledgeBase} for an article specified by its title. If no such knowledge base
+	 * exists, null is returned.
 	 *
-	 * @param web   the web of the article the knowledge base is compiled
-	 * @param title the title of the article the knowledge base is compiled
-	 * @return the knowledge base if such one exists, null otherwise
-	 * @throws NullPointerException if web or topic is null
-	 * @created 15.12.2010
 	 * @deprecated it is possible that there are multiple knowledge bases on one page, this method will always only
-	 * return the first one. You can use
+	 * return the first one
 	 */
 	@Deprecated
-	public static KnowledgeBase getKnowledgeBase(String web, String title) {
-		Article article = Environment.getInstance().getArticle(web, title);
+	public static KnowledgeBase getKnowledgeBase(@NotNull ArticleManager articleManager, String title) {
+		Article article = articleManager.getArticle(title);
 		if (article == null) return null;
 		Section<PackageCompileType> compileSection = Sections.successor(
 				article.getRootSection(),
@@ -391,7 +387,7 @@ public class D3webUtils {
 					"terminated (possibly due to a detected propagation loop).", e);
 		}
 		if (context != null) {
-			EventManager.getInstance().fireEvent(new FindingSetEvent(fact, session, context));
+			KnowWEUtils.getEventManager(context).fireEvent(new FindingSetEvent(fact, session, context));
 		}
 	}
 
@@ -492,20 +488,20 @@ public class D3webUtils {
 		String sessionDir = rb.getString("knowwe.config.path.sessions");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
 		sessionDir = sessionDir.replaceAll("\\$user\\$", user);
-		sessionDir = KnowWEUtils.getRealPath(sessionDir);
+		sessionDir = KnowWEUtils.getRealPath(context.getEnvironment(), sessionDir);
 		return sessionDir;
 	}
 
-	public static String getWebEnvironmentPath(String web) {
+	public static String getWebEnvironmentPath(@NotNull Environment environment, String web) {
 		ResourceBundle rb = KnowWEUtils.getConfigBundle();
 		String sessionDir = rb.getString("knowwe.config.path.currentWeb");
 		sessionDir = sessionDir.replaceAll("\\$web\\$", web);
-		sessionDir = KnowWEUtils.getRealPath(sessionDir);
+		sessionDir = KnowWEUtils.getRealPath(environment, sessionDir);
 		return sessionDir;
 	}
 
-	public static URL getKnowledgeBaseURL(String web, String id) {
-		String varPath = getWebEnvironmentPath(web);
+	public static URL getKnowledgeBaseURL(@NotNull Environment environment, String web, String id) {
+		String varPath = getWebEnvironmentPath(environment, web);
 		varPath = varPath + id + ".jar";
 		URL url = null;
 		try {
@@ -523,13 +519,13 @@ public class D3webUtils {
 
 	public static ResourceBundle getD3webBundle(HttpServletRequest request) {
 		if (request == null) return D3webUtils.getD3webBundle();
-		Locale.setDefault(Environment.getInstance().getWikiConnector().getLocale(request));
+		Locale.setDefault(Environment.of(request).getWikiConnector().getLocale(request));
 		return D3webUtils.getD3webBundle();
 	}
 
 	public static ResourceBundle getD3webBundle(UserContext user) {
 		if (user == null) return getD3webBundle();
-		Locale.setDefault(Environment.getInstance().getWikiConnector().getLocale(user.getRequest()));
+		Locale.setDefault(user.getEnvironment().getWikiConnector().getLocale(user.getRequest()));
 		return getD3webBundle();
 	}
 
@@ -553,12 +549,12 @@ public class D3webUtils {
 		if (kbName == null) kbName = session.getKnowledgeBase().getId();
 
 		String kbUrlLink = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(kbName));
-		kbName = "<a href=\"" + toAbsolutURL(kbUrlLink) + "\">" + kbName + "</a>";
+		kbName = "<a href=\"" + toAbsolutURL(user.getEnvironment(), kbUrlLink) + "\">" + kbName + "</a>";
 		Collection<String> renderedObjects = new ArrayList<>(loopObjects.size());
 		for (TerminologyObject loopObject : loopObjects) {
 
 			String url = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(loopObject.getName()));
-			renderedObjects.add("<a href=\"" + toAbsolutURL(url) + "\">" + loopObject.getName()
+			renderedObjects.add("<a href=\"" + toAbsolutURL(user.getEnvironment(), url) + "\">" + loopObject.getName()
 					+ "</a>");
 		}
 		return "Endless loop detected in knowledge base '"
@@ -569,8 +565,8 @@ public class D3webUtils {
 				Strings.concat(",  ", renderedObjects) + ".";
 	}
 
-	private static String toAbsolutURL(String url) {
-		return Environment.getInstance().getWikiConnector().getBaseUrl() + url;
+	private static String toAbsolutURL(Environment environment, String url) {
+		return environment.getWikiConnector().getBaseUrl() + url;
 	}
 
 	public static void removedLoopDetectionNotification(UserContext context, Session session) {

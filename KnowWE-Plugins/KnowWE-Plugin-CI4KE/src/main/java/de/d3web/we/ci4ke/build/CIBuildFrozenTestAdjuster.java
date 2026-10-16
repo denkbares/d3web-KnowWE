@@ -66,7 +66,7 @@ class CIBuildFrozenTestAdjuster {
 				Map<String, Message> expectedMessages = Collections.synchronizedMap(new TreeMap<>());
 				boolean isFullyFrozen = true;
 
-				Optional<WikiAttachment> attachment = Environment.getInstance()
+				Optional<WikiAttachment> attachment = dashboard.getDashboardSection().getEnvironment()
 						.getWikiConnector()
 						.getAttachments(dashboard.getDashboardArticle())
 						.stream()
@@ -122,7 +122,7 @@ class CIBuildFrozenTestAdjuster {
 
 	private static boolean isFrozenTest(TestResult testResult, CIDashboard dashboard) throws IOException {
 		if (testResult.isSoftTest()) return false;
-		Collection<WikiAttachment> attachments = Environment.getInstance()
+		Collection<WikiAttachment> attachments = dashboard.getDashboardSection().getEnvironment()
 				.getWikiConnector()
 				.getAttachments(dashboard.getDashboardArticle())
 				.stream()

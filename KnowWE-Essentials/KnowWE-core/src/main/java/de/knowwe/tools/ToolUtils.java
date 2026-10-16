@@ -23,7 +23,10 @@ import com.denkbares.collections.CountingSet;
 import com.denkbares.plugin.Extension;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Scope;
 import de.knowwe.core.utils.ScopeExtensions;
@@ -32,9 +35,18 @@ public class ToolUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ToolUtils.class);
 
 	/**
-	 * For each tool provider there might be an (counting) set of scopes, where this provider is blocked.
+	 * The tool providers blocked for certain scopes, one registry per environment.
 	 */
-	private static final Map<ToolProvider, CountingSet<Scope>> BLOCKED_PROVIDERS = new HashMap<>();
+	public static final class BlockedToolProviders {
+
+		public static final ServiceKey<BlockedToolProviders> SERVICE = ServiceKey.of(BlockedToolProviders.class, environment -> new BlockedToolProviders());
+
+		private final Map<ToolProvider, CountingSet<Scope>> byProvider = new HashMap<>();
+	}
+
+	private static Map<ToolProvider, CountingSet<Scope>> blocked(@NotNull Environment environment) {
+		return environment.getService(BlockedToolProviders.SERVICE).byProvider;
+	}
 	public static final String SETTINGS_FILE = "settings.toolmenu.json";
 
 	/**
@@ -174,17 +186,9 @@ public class ToolUtils {
 	}
 
 	/**
-	 * Blocks the specified tool provider for all sections of the specified scope. See {@link
-	 * #findToolProviders(String)} for more information on the matched tools.
-	 * <p>
-	 * If this method is called multiple times for the same tool provider, it also becomes blocked multiple times, and
-	 * therefore must also be unblocked multiple times before it becomes active again.
-	 *
-	 * @param extensionIdOrClassName the extension id to identify the class, or the class name of the tool provider
-	 * @param scope                  the scope where to block the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
+	 * Blocks the specified tool provider(s) in the specified environment, see {@link #blockToolProvider(String, Scope)}.
 	 */
-	public static void blockToolProvider(String extensionIdOrClassName, Scope scope) {
+	public static void blockToolProvider(@NotNull Environment environment, String extensionIdOrClassName, Scope scope) {
 		final List<ToolProvider> toolProviders;
 		try {
 			toolProviders = findToolProviders(extensionIdOrClassName);
@@ -193,70 +197,57 @@ public class ToolUtils {
 			throw new IllegalArgumentException("Unable to find blocked tool provider", e);
 		}
 		for (ToolProvider provider : toolProviders) {
-			blockToolProvider(provider, scope);
+			blockToolProvider(environment, provider, scope);
 		}
 	}
 
 	/**
-	 * Blocks the specified tool provider for all sections of the specified scope.
-	 * <p>
-	 * If this method is called multiple times for the same tool provider, it also becomes blocked multiple times, and
-	 * therefore must also be unblocked multiple times before it becomes active again.
-	 *
-	 * @param provider the tool provider to be blocked
-	 * @param scope    the scope where to block the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
+	 * Blocks the specified tool provider in the specified environment, see {@link #blockToolProvider(ToolProvider, Scope)}.
 	 */
-	public static void blockToolProvider(ToolProvider provider, Scope scope) {
-		BLOCKED_PROVIDERS.computeIfAbsent(provider, p -> new CountingSet<>()).add(scope);
+	public static void blockToolProvider(@NotNull Environment environment, ToolProvider provider, Scope scope) {
+		Map<ToolProvider, CountingSet<Scope>> blocked = blocked(environment);
+		synchronized (blocked) {
+			blocked.computeIfAbsent(provider, p -> new CountingSet<>()).add(scope);
+		}
 	}
 
 	/**
-	 * Unblocks the specified tool provider for all sections of the specified scope. See {@link
-	 * #findToolProviders(String)} for more information on the matched tools.
-	 * <p>
-	 * If {@link #blockToolProvider(String, Scope)} has been called multiple times, this method must be called the same
-	 * number of times to really unblock the tool again. If a tool is unblocked more often than blocked before, an
-	 * {@link IllegalStateException} is thrown.
-	 *
-	 * @param extensionIdOrClassName the extension id to identify the class, or the class name of the tool provider
-	 * @param scope                  the scope where to unblock the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
-	 * @throws IllegalStateException    if the unblocking is not balanced to the blockings before
+	 * Unblocks the specified tool provider(s) in the specified environment, see {@link #unblockToolProvider(String, Scope)}.
 	 */
-	public static void unblockToolProvider(String extensionIdOrClassName, Scope scope) {
+	public static void unblockToolProvider(@NotNull Environment environment, String extensionIdOrClassName, Scope scope) {
 		for (ToolProvider provider : findToolProviders(extensionIdOrClassName)) {
-			unblockToolProvider(provider, scope);
+			unblockToolProvider(environment, provider, scope);
 		}
 	}
 
 	/**
-	 * Unblocks the specified tool provider for all sections of the specified scope.
-	 * <p>
-	 * If {@link #blockToolProvider(ToolProvider, Scope)} has been called multiple times, this method must be called the
-	 * same number of times to really unblock the tool again. If a tool is unblocked more often than blocked before, an
-	 * {@link IllegalStateException} is thrown.
-	 *
-	 * @param provider the tool provider to be unblocked
-	 * @param scope    the scope where to unblock the tool provider
-	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
-	 * @throws IllegalStateException    if the unblocking is not balanced to the blockings before
+	 * Unblocks the specified tool provider in the specified environment, see {@link #unblockToolProvider(ToolProvider, Scope)}.
 	 */
-	public static void unblockToolProvider(ToolProvider provider, Scope scope) {
-		CountingSet<Scope> blockedScopes = BLOCKED_PROVIDERS.get(provider);
-		if (blockedScopes == null || !blockedScopes.contains(scope)) {
-			throw new IllegalStateException("unbalanced tool blocking: " +
-											provider.getClass().getSimpleName() + "@" + scope);
+	public static void unblockToolProvider(@NotNull Environment environment, ToolProvider provider, Scope scope) {
+		Map<ToolProvider, CountingSet<Scope>> blocked = blocked(environment);
+		synchronized (blocked) {
+			CountingSet<Scope> blockedScopes = blocked.get(provider);
+			if (blockedScopes == null || !blockedScopes.contains(scope)) {
+				throw new IllegalStateException("unbalanced tool blocking: " +
+												provider.getClass().getSimpleName() + "@" + scope);
+			}
+			blockedScopes.remove(scope);
+			if (blockedScopes.isEmpty()) blocked.remove(provider);
 		}
-		blockedScopes.remove(scope);
-		if (blockedScopes.isEmpty()) BLOCKED_PROVIDERS.remove(provider);
 	}
 
 	/**
 	 * Returns true if the specified provider is blocked for the specified section.
 	 */
 	private static boolean isBlocked(ToolProvider provider, Section<?> section) {
-		Set<Scope> blockedScopes = BLOCKED_PROVIDERS.get(provider);
+		Environment environment = section.findEnvironment();
+		if (environment == null) return false;
+		Set<Scope> blockedScopes;
+		Map<ToolProvider, CountingSet<Scope>> blocked = blocked(environment);
+		synchronized (blocked) {
+			CountingSet<Scope> scopes = blocked.get(provider);
+			blockedScopes = scopes == null ? null : new HashSet<>(scopes);
+		}
 		if (blockedScopes == null) return false;
 
 		for (Scope scope : blockedScopes) {
@@ -295,10 +286,13 @@ public class ToolUtils {
 		return result;
 	}
 
-	public static void initSettings(File jsonFile) {
+	/**
+	 * Loads the blocked tool providers from the specified settings file into the specified environment.
+	 */
+	public static void initSettings(@NotNull Environment environment, File jsonFile) {
 		if (!jsonFile.exists()) return;
 		try {
-			initSettings(new JSONObject(Files.getText(jsonFile)));
+			initSettings(environment, new JSONObject(Files.getText(jsonFile)));
 		}
 		catch (IOException e) {
 			LOGGER.error("Cannot load (existing) properties file with blocked tool providers", e);
@@ -306,11 +300,9 @@ public class ToolUtils {
 	}
 
 	/**
-	 * Initializes the blocked tool menus from the specified settings object
-	 *
-	 * @param settings the settings
+	 * Initializes the blocked tool menus of the specified environment from the specified settings object.
 	 */
-	public static void initSettings(JSONObject settings) {
+	public static void initSettings(@NotNull Environment environment, JSONObject settings) {
 		for (String key : settings.keySet()) {
 			//noinspection SwitchStatementWithTooFewBranches
 			switch (key) {
@@ -322,7 +314,7 @@ public class ToolUtils {
 						if (scopes.isEmpty()) throw new IllegalArgumentException("no scope defined");
 						for (String provider : providers) {
 							for (String scope : scopes) {
-								blockToolProvider(provider, Scope.getScope(scope));
+								blockToolProvider(environment, provider, Scope.getScope(scope));
 							}
 						}
 					}

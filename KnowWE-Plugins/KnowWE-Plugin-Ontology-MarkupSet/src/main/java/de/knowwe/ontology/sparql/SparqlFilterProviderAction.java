@@ -39,7 +39,6 @@ import com.denkbares.semanticcore.utils.ResultTableModel;
 import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -199,7 +198,7 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		String plain;
 		if (renderOptions.isAllowJSPWikiMarkup()) {
 			String renderedNode = Strings.htmlToPlain(renderResult.toString());
-			String wikiRendered = Environment.getInstance().getWikiConnector()
+			String wikiRendered = context.getEnvironment().getWikiConnector()
 					.renderWikiSyntax(renderedNode);
 			plain = Strings.htmlToPlain(wikiRendered);
 		}

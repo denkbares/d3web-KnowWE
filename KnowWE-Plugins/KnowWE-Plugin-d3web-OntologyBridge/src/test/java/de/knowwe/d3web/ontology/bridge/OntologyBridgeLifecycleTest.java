@@ -7,6 +7,7 @@ package de.knowwe.d3web.ontology.bridge;
 import java.util.UUID;
 
 import connector.DummyConnector;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import utils.TestUtils;
@@ -25,19 +26,24 @@ import static org.junit.Assert.*;
 /** Real package registration and dependency recompilation, with minimal public markup and no private knowledge base. */
 public class OntologyBridgeLifecycleTest {
 
+	private static Environment environment;
+
 	@BeforeClass
 	public static void initialize() throws Exception {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
+	}
+
+	@AfterClass
+	public static void shutdown() {
+		if (environment != null) environment.close();
 	}
 
 	@Test
 	public void bridgeFollowsOneSidedAndCombinedArticleRebuilds() throws Exception {
-		ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		ArticleManager manager = environment.getArticleManager();
 		String suffix = UUID.randomUUID().toString();
 		String ontologyTitle = "Ontology-" + suffix;
 		String kbTitle = "KB-" + suffix;

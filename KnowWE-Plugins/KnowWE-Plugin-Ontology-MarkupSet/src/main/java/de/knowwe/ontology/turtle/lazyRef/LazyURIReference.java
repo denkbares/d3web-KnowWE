@@ -150,7 +150,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 		Section<LazyURIReference> uriReference = Sections.cast(section, LazyURIReference.class);
 		String lazyRefText = uriReference.get().getTermName(uriReference);
 
-		return LazyReferenceManager.getInstance().getPotentialMatches(termCompiler, lazyRefText);
+		return LazyReferenceManager.of(section).getPotentialMatches(termCompiler, lazyRefText);
 	}
 
 	private class LazyURIReferenceHandler extends OntologyCompileScript<LazyURIReference> {

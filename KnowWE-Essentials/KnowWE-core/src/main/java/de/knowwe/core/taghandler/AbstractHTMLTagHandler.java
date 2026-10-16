@@ -23,6 +23,7 @@ package de.knowwe.core.taghandler;
 import java.util.Map;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
@@ -48,7 +49,7 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	public final void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
 
 		RenderResult handlerResult = new RenderResult(result);
-		renderHTML(section.getWeb(), section.getTitle(), userContext, parameters, handlerResult);
+		renderHTML(section.getTitle(), userContext, parameters, handlerResult);
 		if (maskJSPWikiSyntax) {
 			result.appendJSPWikiMarkup(handlerResult);
 		}
@@ -58,16 +59,10 @@ public abstract class AbstractHTMLTagHandler extends AbstractTagHandler {
 	}
 
 	/**
-	 * Renders the tag handler into a html string. The resulting html string is rendered into the
-	 * wiki page as html. This method mus be overwritten by the deriving classes to produce their
-	 * output html.
-	 *
-	 * @param web the web where the tag handler is included.
-	 * @param title the title of the page where the tag handler is included.
-	 * @param user the user context for this request
-	 * @param parameters the parameters of the tag handler invocation
-	 * @param result the result where the rendered contents are appended
+	 * Renders the html of this tag handler. Override this method.
 	 */
-	public abstract void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result);
+	public void renderHTML(String title, UserContext user, Map<String, String> parameters, RenderResult result) {
+		throw new UnsupportedOperationException(getClass().getName() + " does not implement renderHTML");
+	}
 
 }

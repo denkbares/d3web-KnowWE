@@ -8,15 +8,20 @@ import com.denkbares.collections.PriorityList;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.plugin.*;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.*;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TerminologyExtension;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.basicType.PlainText;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.SectionRegistry;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
@@ -34,6 +39,7 @@ import de.knowwe.plugin.Plugins;
 import de.knowwe.tools.ToolUtils;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -43,25 +49,29 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.LogManager;
 
-import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
 /**
  * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to access {@link
  * Article}s and other Managers. Further it is connected to the used Wiki-engine, holding an instance of {@link
  * WikiConnector} and allows page saves.
+ * <p>
+ * Only the owner of an environment closes it: the one that {@link #create(WikiConnector) created} it, i.e. the servlet
+ * lifecycle of the wiki, a headless application or a test. Everybody else obtains the environment from the object at
+ * hand ({@code section.getEnvironment()}, {@code context.getEnvironment()}, ...) to use it, never to close it.
+ * Deliberately not an {@link AutoCloseable} therefore: try-with-resources around an obtained environment would shut
+ * down the wiki, and IDE inspections would demand exactly that for every getter. Tests that want try-with-resources
+ * use {@code utils.OwnedEnvironment} of KnowWE-GlobalTestUtils.
  *
  * @author Jochen
  */
 
-public final class Environment {
+public final class Environment implements HasEnvironment {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
-
-	/**
-	 * Indicates whether this environment is initialized or not.
-	 */
-	private static boolean initialized = false;
 
 	/**
 	 * Stores additional renderer if renderer are plugged via the plugin framework The renderer plugged with the highest
@@ -72,7 +82,13 @@ public final class Environment {
 	/**
 	 * An article manager for each web. In case of JSPWiki there is only on web ('default_web')
 	 */
-	private final Map<String, ArticleManager> articleManagers = new HashMap<>();
+	private ArticleManager articleManager;
+
+	/**
+	 * The root type given to {@link #create(WikiConnector, RootType)}, null for the plugged type tree.
+	 */
+	@Nullable
+	private final RootType providedRootType;
 
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
@@ -92,52 +108,209 @@ public final class Environment {
 	private RootType rootType;
 
 	/**
-	 * Hard coded name of the default web
+	 * The sections of this environment by id.
 	 */
-	public static final String DEFAULT_WEB = "default_web";
+	private final SectionRegistry sectionRegistry = new SectionRegistry();
+
+	/**
+	 * The compile scripts of this environment's type tree, indexed per compiler class.
+	 */
+	private final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new ConcurrentHashMap<>();
+
+	/**
+	 * The plugged sectionizer modules of this environment.
+	 */
+	private final List<SectionizerModule> sectionizerModules = new CopyOnWriteArrayList<>();
+
+	/**
+	 * Terms that are occupied by plugged terminology extensions and must not be defined in the wiki.
+	 */
+	private final Set<Identifier> occupiedTerms = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * Environment-scoped services, see {@link #getService(ServiceKey)}. Insertion ordered, so they can be closed in
+	 * reverse order. The declaring key is kept next to the service, so a second declaration of the same type is
+	 * refused instead of being silently ignored.
+	 */
+	private final Map<Class<?>, Service> services = Collections.synchronizedMap(new LinkedHashMap<>());
+
+	private record Service(ServiceKey<?> key, Object instance) {
+	}
+
+	/**
+	 * Tasks to run when this environment is closed, see {@link #onClose(Runnable)}.
+	 */
+	private final Deque<Runnable> closeTasks = new ConcurrentLinkedDeque<>();
+
+	/**
+	 * Set when {@link #close()} starts; services stay available while closing, so cleanup code can still use them.
+	 */
+	private volatile boolean ready = false;
+	private volatile boolean closing = false;
+
+	/**
+	 * Returns this environment, so that an environment can be passed wherever a {@link HasEnvironment} is expected.
+	 */
+	@NotNull
+	@Override
+	public Environment getEnvironment() {
+		return this;
+	}
+
+	@NotNull
+	@Override
+	public Environment findEnvironment() {
+		return this;
+	}
+
+	public boolean isReady() {
+		return ready;
+	}
+
+	/**
+	 * Set when {@link #close()} has released the services; from then on no service can be provided anymore.
+	 */
+	private volatile boolean closed = false;
+
+	/**
+	 * The plugged (global) compilers of this environment, instantiated for this environment only.
+	 */
+	private final List<Compiler> pluggedCompilers = new ArrayList<>();
+
+	/**
+	 * The event manager of this environment. All wiki events are fired here and all wiki listeners are registered here;
+	 * the JVM-wide {@link EventManager#getInstance()} is not involved. Listeners registered here die with the
+	 * environment.
+	 */
+	private final EventManager eventManager = new EventManager();
+
+	/**
+	 * The plugged event listeners of this environment, created per environment, see {@link #initEventManager()}.
+	 */
+	private final List<EventListener> pluggedListeners = new ArrayList<>();
+
 
 	public enum CompilationMode {
 		INCREMENTAL, DEFAULT
 	}
 
 	/**
-	 * Singleton instance
+	 * Attribute under which a running environment is published in the servlet context of its wiki, see {@link
+	 * #of(ServletContext)}.
 	 */
-	private static Environment instance;
+	private static final String SERVLET_CONTEXT_ATTRIBUTE = Environment.class.getName();
 
 	/**
-	 * Singleton lazy factory
+	 * Returns the environment published in the given servlet context, or null if none is running there (or there is no
+	 * servlet context at all, e.g. for wiki engines in tests).
 	 */
-	public static synchronized Environment getInstance() {
-		if (instance == null) {
-			LOGGER.error("Environment was not instantiated!");
+	@Nullable
+	public static Environment findIn(@Nullable ServletContext context) {
+		if (context == null) return null;
+		return context.getAttribute(SERVLET_CONTEXT_ATTRIBUTE) instanceof Environment environment ? environment : null;
+	}
+
+	/**
+	 * Returns the environment running in the specified servlet context, see {@link #findIn(ServletContext)}.
+	 *
+	 * @throws IllegalStateException if no environment is running in the servlet context
+	 */
+	@NotNull
+	public static Environment of(@NotNull ServletContext context) {
+		Environment environment = findIn(context);
+		if (environment == null) {
+			throw new IllegalStateException("No KnowWE environment is running in servlet context '"
+					+ context.getContextPath() + "'");
 		}
-		return instance;
+		return environment;
 	}
 
-	public static boolean isInitialized() {
-		return initialized;
+	/**
+	 * Returns the environment of the wiki the request is addressed to, see {@link #of(ServletContext)}.
+	 */
+	@NotNull
+	public static Environment of(@NotNull HttpServletRequest request) {
+		return of(request.getServletContext());
 	}
 
-	public static void initInstance(WikiConnector wiki) {
+	/**
+	 * Publishes this environment in the servlet context of its wiki, if the wiki runs in one.
+	 */
+	private void publishToServletContext() {
+		ServletContext context = findServletContext();
+		if (context != null) context.setAttribute(SERVLET_CONTEXT_ATTRIBUTE, this);
+	}
+
+	@Nullable
+	private ServletContext findServletContext() {
+		try {
+			return wikiConnector.getServletContext();
+		}
+		catch (RuntimeException e) {
+			// connectors without a servlet container (tests, headless) have no servlet context
+			return null;
+		}
+	}
+
+	/**
+	 * Creates and initializes a new environment for the specified wiki connector: plugins, event listeners,
+	 * sectionizer modules, compilers and the type tree are set up and the {@link InitEvent} is fired. The caller owns
+	 * the environment and {@link #close() closes} it when done, e.g. tests in a {@code finally} block or an
+	 * {@code @After}/{@code @AfterClass} method. Several environments may run side by side in one JVM (e.g. one per wiki); they do not
+	 * know of each other.
+	 *
+	 * @param wiki the connector to the wiki engine the environment works on
+	 * @return the initialized environment
+	 */
+	@NotNull
+	public static Environment create(@NotNull WikiConnector wiki) {
+		return create(wiki, null);
+	}
+
+	/**
+	 * Creates and initializes a new environment like {@link #create(WikiConnector)}, but with the given root type as
+	 * the type tree instead of the plugged one. Plugged types, compilers, listeners, tag handlers and instantiations
+	 * are only added if a plugin manager is initialized; without one, the environment consists of the core, the given
+	 * type tree and the core compilers. This is the way to run the article lifecycle (parsing, IDs, messages,
+	 * attachments, compilation) below the plugin layer, e.g. in core tests.
+	 *
+	 * @param wiki     the connector to the wiki engine the environment works on
+	 * @param rootType the root of the type tree, null for the plugged type tree
+	 * @return the initialized environment
+	 */
+	@NotNull
+	public static Environment create(@NotNull WikiConnector wiki, @Nullable RootType rootType) {
 		LOGGER.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
-
-		instance = new Environment(wiki);
-		instance.init();
-		initialized = true;
-		EventManager.getInstance().fireEvent(new InitEvent());
+		Environment environment = new Environment(wiki, rootType);
+		environment.init();
+		environment.ready = true;
+		environment.publishToServletContext();
+		environment.eventManager.fireEvent(new InitEvent());
 
 		LOGGER.info("INITIALIZED KNOWWE ENVIRONMENT");
+		return environment;
 	}
 
 	/**
 	 * private constructor
 	 *
 	 * @param wiki Connector to the used core wiki engine
-	 * @see #getInstance()
+	 * @see #create(WikiConnector, RootType)
 	 */
-	private Environment(WikiConnector wiki) {
+	private Environment(WikiConnector wiki, @Nullable RootType rootType) {
 		this.wikiConnector = wiki;
+		this.providedRootType = rootType;
+		wiki.setEnvironment(this);
+	}
+
+	/**
+	 * Whether a plugin manager is initialized, i.e. whether plugged types, compilers, listeners, tag handlers and
+	 * instantiations are available. Without one (e.g. in core tests below the plugin layer) the plugin steps of the
+	 * initialization are skipped and the type tree consists of the {@link #create(WikiConnector, RootType) provided}
+	 * root type only.
+	 */
+	private static boolean pluginsAvailable() {
+		return PluginManager.isInitialized();
 	}
 
 	private void init() {
@@ -152,12 +325,15 @@ public final class Environment {
 
 			// decorate types in breast-first-search
 			decorateTypeTree();
+			initScriptManagers();
 
 			initInstantiations();
 			initBlockedTools();
-			Plugins.initJS();
-			Plugins.initJsModules();
-			Plugins.initCSS();
+			if (pluginsAvailable()) {
+				Plugins.initJS();
+				Plugins.initJsModules();
+				Plugins.initCSS();
+			}
 		}
 		catch (Throwable e) {
 			String msg = "Invalid initialization of the wiki. This is caused by an invalid wiki plugin. "
@@ -167,27 +343,167 @@ public final class Environment {
 		}
 	}
 
-	public void shutdown() {
-		instance = null;
-		initialized = false;
-		EventManager.getInstance().fireEvent(new DeInitEvent());
+	/**
+	 * Closes this environment: waits for running compilations to terminate, notifies all {@link DeInitEvent}
+	 * listeners, removes the compilers and stops the compile threads of all article managers, runs the
+	 * {@link #onClose(Runnable) close tasks} in reverse order of their registration, closes all
+	 * {@link EnvironmentService} (or {@link AutoCloseable}) {@link #getService(ServiceKey) services}; if this environment is
+	 * the current one. Everything this
+	 * environment owns becomes garbage afterwards; nothing has to be reset by hand. Calling the method twice is
+	 * harmless.
+	 * <p>
+	 * A fresh environment may be started in the same JVM afterwards, e.g. by tests.
+	 * <p>
+	 * Only the owner calls this method (see the class comment): closing an environment obtained from a section, a user
+	 * context or a compiler shuts down the wiki it belongs to.
+	 */
+	public void close() {
+		synchronized (this) {
+			if (closing) return;
+			closing = true;
+		}
+		LOGGER.info("SHUTTING DOWN KNOWWE ENVIRONMENT");
+		awaitCompileTerminationForShutdown();
+		eventManager.fireEvent(new DeInitEvent());
+		// stop the compilers first: destroying their content may still use services (e.g. the message index)
+		ArticleManager manager = this.articleManager;
+		if (manager != null) {
+			manager.getCompilerManager().shutdown();
+			if (manager instanceof DefaultArticleManager defaultManager) {
+				defaultManager.getAttachmentManager().shutdown();
+			}
+		}
+		runCloseTasks();
+		closeServices();
+		eventManager.close();
+		ServletContext context = findServletContext();
+		if (context != null && context.getAttribute(SERVLET_CONTEXT_ATTRIBUTE) == this) {
+			context.removeAttribute(SERVLET_CONTEXT_ATTRIBUTE);
+		}
+		closed = true;
+		// release what is owned by this environment anyway, to make leaks through stale references less harmful
+		scriptManagers.clear();
+		sectionizerModules.clear();
+		sectionRegistry.clear();
+		occupiedTerms.clear();
+		additionalRenderer.clear();
+		LOGGER.info("KNOWWE ENVIRONMENT SHUT DOWN");
 	}
 
-	private void initEventManager() {
-		// get all EventListeners
-		List<Extension> extensions = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
-				Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_EventListener)));
-		for (Extension extension : extensions) {
-			Object o = extension.getSingleton();
-			if (o instanceof EventListener) {
-				EventManager.getInstance().registerListener(((EventListener) o));
+	/**
+	 * Returns whether {@link #close()} has been started on this environment. From that moment on it is shutting down
+	 * and must not be used any more, even though its services are still reachable while they are closed themselves.
+	 * This is the question almost everybody means: "may I still work with this environment?".
+	 */
+	public boolean isClosing() {
+		return closing;
+	}
+
+	/**
+	 * Returns whether {@link #close()} has finished, i.e. everything this environment owned is released. Between
+	 * {@link #isClosing()} and this, the close tasks and the services are being closed.
+	 */
+	public boolean isClosed() {
+		return closed;
+	}
+
+	private void awaitCompileTerminationForShutdown() {
+		ArticleManager manager = this.articleManager;
+		if (manager != null) {
+			try {
+				manager.getCompilerManager().awaitTermination();
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				LOGGER.warn("Interrupted while waiting for compilation to terminate during shutdown");
+				return;
 			}
 		}
 	}
 
+	private void runCloseTasks() {
+		Runnable task;
+		while ((task = closeTasks.pollLast()) != null) {
+			try {
+				task.run();
+			}
+			catch (RuntimeException e) {
+				LOGGER.error("Close task of environment failed", e);
+			}
+		}
+	}
+
+	/**
+	 * Closes the services, newest first. Creating a service is still possible while they are closed: a service may
+	 * reach for another one in its own {@link EnvironmentService#close()}, and a thread that still holds this
+	 * environment (a request being rendered while the servlet shuts down) may ask for one. Such a late service would
+	 * be created after the map was emptied and would never be closed, keeping its threads alive beyond the
+	 * environment, so the services are closed in rounds until none is left. A second round means somebody created a
+	 * service while this environment was closing, which is worth a look, hence the warning.
+	 */
+	private void closeServices() {
+		for (int round = 1; ; round++) {
+			List<Object> ordered;
+			synchronized (services) {
+				if (services.isEmpty()) return;
+				ordered = new ArrayList<>();
+				services.values().forEach(service -> ordered.add(service.instance()));
+				services.clear();
+			}
+			if (round > 1) {
+				LOGGER.warn("Services were created while the environment was closing, closing them as well: {}",
+						ordered.stream().map(service -> service.getClass().getName()).toList());
+			}
+			Collections.reverse(ordered);
+			for (Object service : ordered) {
+				try {
+					if (service instanceof EnvironmentService environmentService) {
+						environmentService.close();
+					}
+					else if (service instanceof AutoCloseable closeable) {
+						closeable.close();
+					}
+				}
+				catch (Exception e) {
+					LOGGER.error("Closing service {} of environment failed", service.getClass().getName(), e);
+				}
+			}
+		}
+	}
+
+	private void initEventManager() {
+		// core listeners
+		eventManager.registerListener(CompilationLocal.createCacheListener());
+		// get all EventListeners
+		if (!pluginsAvailable()) return;
+		List<Extension> extensions = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_EventListener)));
+		for (Extension extension : extensions) {
+			// every environment gets its own listener instances, so listeners may hold state of their environment
+			Object o = extension.getNewInstance();
+			if (o instanceof EventListener listener) {
+				if (listener instanceof EnvironmentAware aware) aware.attach(this);
+				pluggedListeners.add(listener);
+				eventManager.registerListener(listener);
+			}
+		}
+	}
+
+	/**
+	 * Returns the plugged event listener of the specified type that was created for this environment, or null if no
+	 * such listener is plugged. Use this instead of static singletons to reach a listener from other code.
+	 */
+	@Nullable
+	public <T extends EventListener> T getListener(@NotNull Class<T> type) {
+		for (EventListener listener : pluggedListeners) {
+			if (type.isInstance(listener)) return type.cast(listener);
+		}
+		return null;
+	}
+
 	private void initCompilers() {
-		CompilerManager compilerManager = Compilers.getCompilerManager(DEFAULT_WEB);
+		CompilerManager compilerManager = getArticleManager().getCompilerManager();
 		PackageManager packageManager = new PackageManager();
 
 		// we want this compiler to run before alle package compilers
@@ -196,9 +512,11 @@ public final class Environment {
 
 		compilerManager.addCompiler(4, new DefaultGlobalCompiler());
 
-		for (PriorityList.Group<Double, Compiler> priorityGroup : Plugins.getCompilers().getPriorityGroups()) {
+		// the plugged compilers are instantiated for this environment; they hold the state of the wiki
+		if (pluginsAvailable()) for (PriorityList.Group<Double, Compiler> priorityGroup : Plugins.getCompilers().getPriorityGroups()) {
 			List<Compiler> compilers = priorityGroup.getElements();
 			for (Compiler compiler : compilers) {
+				pluggedCompilers.add(compiler);
 				compilerManager.addCompiler(priorityGroup.getPriority(), compiler);
 			}
 		}
@@ -213,9 +531,9 @@ public final class Environment {
 	 *
 	 */
 	public void reinitializeForNewWikiContent() throws IOException {
-		EventManager.getInstance().fireEvent(new WikiContentReplacedEvent());
+		eventManager.fireEvent(new WikiContentReplacedEvent());
 
-		articleManager().removeAllArticles();
+		getArticleManager().removeAllArticles();
 
 		awaitCompileTermination();
 
@@ -224,7 +542,7 @@ public final class Environment {
 
 	private void awaitCompileTermination() {
 		try {
-			articleManager().getCompilerManager().awaitTermination();
+			getArticleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
 			String message = "Compilation interrupted: " + e.getMessage();
@@ -233,16 +551,23 @@ public final class Environment {
 		}
 	}
 
-	public ArticleManager getArticleManager() {
-		return articleManager();
+	/**
+	 * Returns the article manager of this environment; it is created on first access.
+	 */
+	@NotNull
+	public synchronized ArticleManager getArticleManager() {
+		if (articleManager == null) articleManager = new DefaultArticleManager(this);
+		return articleManager;
 	}
 
-	private ArticleManager articleManager() {
-		return Environment.getInstance()
-				.getArticleManager(Environment.DEFAULT_WEB);
+	/**
+	 * Returns the event manager of this environment. All wiki events are fired here; listeners registered here are
+	 * dropped when the environment is closed.
+	 */
+	@NotNull
+	public EventManager getEventManager() {
+		return eventManager;
 	}
-
-
 
 	public RootType getRootType() {
 		return rootType;
@@ -257,7 +582,7 @@ public final class Environment {
 	 */
 	public boolean isGlobalCompiler(Compiler compiler) {
 		// check for PackageRegistrationCompiler is redundant as being subclass of DefaultGlobalCompiler
-		return (compiler instanceof DefaultGlobalCompiler) || Plugins.getCompilers().contains(compiler);
+		return (compiler instanceof DefaultGlobalCompiler) || pluggedCompilers.contains(compiler);
 	}
 
 	private void initProperties() {
@@ -270,7 +595,7 @@ public final class Environment {
 	public Article updateArticle(String title, String author, String content, boolean fullParse, UserContext context) throws InterruptedException,
 			UpdateNotAllowedException {
 
-		ArticleManager articleManager = getDefaultArticleManager();
+		ArticleManager articleManager = getArticleManager();
 		String originalText = "";
 		Article article = articleManager.getArticle(title);
 		if (article != null) {
@@ -280,7 +605,7 @@ public final class Environment {
 		String cleanedContent = Article.cleanupText(content);
 		boolean contentChange = !originalText.equals(cleanedContent);
 		if (contentChange || fullParse) {
-			if (contentChange && !Environment.getInstance().getWikiConnector().userCanEditArticle(title, context)) {
+			if (contentChange && !getWikiConnector().userCanEditArticle(title, context)) {
 				throw new UpdateNotAllowedException();
 			}
 
@@ -291,16 +616,16 @@ public final class Environment {
 				compilerManager.awaitTermination();
 			}
 			ArticleUpdateEvent event = new ArticleUpdateEvent(title, author);
-			int latestVersion = retrieveLatestVersionNumber(title);
+			int latestVersion = getLatestVersionNumber(title);
 			event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
-			EventManager.getInstance().fireEvent(event);
+			eventManager.fireEvent(event);
 			articleManager.open();
 			try {
 				articleManager.getCompilerManager()
 						.setCompileMessage("Reason: saving page " + title + ", user: " + author);
 				// create article with the new content
-				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, cleanedContent);
-				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article, author));
+				article = articleManager.registerArticle(title, cleanedContent);
+				if (fullParse) eventManager.fireEvent(new FullParseEvent(article, author));
 			}
 			finally {
 				articleManager.commit();
@@ -310,11 +635,12 @@ public final class Environment {
 		return article;
 	}
 
-	public static int retrieveLatestVersionNumber(String title) {
+	/**
+	 * Returns the latest version number of the specified article in the wiki, or -1 if the wiki has no history for it.
+	 */
+	public int getLatestVersionNumber(String title) {
 		try {
-			List<WikiPageInfo> articleHistory = Environment.getInstance()
-					.getWikiConnector()
-					.getArticleHistory(title);
+			List<WikiPageInfo> articleHistory = getWikiConnector().getArticleHistory(title);
 			if (articleHistory == null || articleHistory.isEmpty()) {
 				LOGGER.warn("Error occurred when retrieving wiki page history from WikiConnector: History is empty");
 				return -1;
@@ -404,8 +730,9 @@ public final class Environment {
 	}
 
 	private void initInstantiations() {
+		if (!pluginsAvailable()) return;
 		for (Instantiation inst : Plugins.getInstantiations()) {
-			inst.init(DEFAULT_WEB);
+			inst.init(this);
 		}
 	}
 
@@ -415,34 +742,45 @@ public final class Environment {
 		if (sourceFolder != null) {
 			File jsonFile = new File(sourceFolder, ToolUtils.SETTINGS_FILE);
 			if (jsonFile.isFile()) {
-				ToolUtils.initSettings(jsonFile);
+				ToolUtils.initSettings(this, jsonFile);
 			}
 		}
 
 		// additionally load all json files in 'KnowWEExtension/toolmenu' folder in webapp
-		File appRoot = new File(KnowWEUtils.getApplicationRootPath(), "KnowWEExtension/toolmenu");
+		File appRoot = new File(KnowWEUtils.getApplicationRootPath(this), "KnowWEExtension/toolmenu");
 		File[] jsonFiles = appRoot.listFiles(f -> f.isFile() && f.getName().endsWith(".json"));
 		if (jsonFiles != null) {
 			for (File jsonFile : jsonFiles) {
-				ToolUtils.initSettings(jsonFile);
+				ToolUtils.initSettings(this, jsonFile);
 			}
 		}
 	}
 
 	private void initTagHandler() {
+		if (!pluginsAvailable()) return;
 		for (TagHandler tagHandler : Plugins.getTagHandlers()) {
 			initTagHandler(tagHandler);
 		}
 	}
 
 	private void initSectionizerModules() {
-		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
-			SectionizerModule.Registry.register(sm);
+		if (!pluginsAvailable()) return;
+		sectionizerModules.addAll(Plugins.getSectionizerModules());
+	}
+
+	/**
+	 * Marks the script managers as initialized, after all types of the type tree are decorated and have registered
+	 * their compile scripts. This is when the parent/child links of the types are complete, which the managers need to
+	 * know which subtrees can have scripts at all.
+	 */
+	private void initScriptManagers() {
+		for (ScriptManager<?> scriptManager : scriptManagers.values()) {
+			scriptManager.initialize();
 		}
 	}
 
 	private void initPlugins() throws InstantiationError {
-		File libDir = new File(KnowWEUtils.getApplicationRootPath() + "/WEB-INF/lib");
+		File libDir = new File(KnowWEUtils.getApplicationRootPath(this) + "/WEB-INF/lib");
 		// when testing, libDir doesn't exist, but the plugin framework is
 		// initialized in junit test, so there is no problem
 		// if libDir is doesn't exist in runtime, nothing will work, so this
@@ -476,7 +814,7 @@ public final class Environment {
 				if (!pathName.endsWith("/") && pathName.startsWith("webapp/")) {
 					pathName = pathName.substring("webapp/".length());
 					try {
-						File file = new File(KnowWEUtils.getApplicationRootPath() + "/" + pathName);
+						File file = new File(KnowWEUtils.getApplicationRootPath(this) + "/" + pathName);
 						File parent = file.getParentFile();
 						if (!parent.isDirectory()) {
 							parent.mkdirs();
@@ -510,12 +848,12 @@ public final class Environment {
 	 */
 	private void decorateTypeTree() {
 
+		boolean plugins = pluginsAvailable();
 		// check whether the priorities between plugged types lead to deterministic structure of the type tree
-		Plugins.checkTypePriorityClarity();
+		if (plugins) Plugins.checkTypePriorityClarity();
 
 		// queue the queue of paths to be initialized
-		PlainText.getInstance();
-		rootType = new RootType();
+		rootType = providedRootType != null ? providedRootType : new RootType();
 		LinkedList<Type[]> queue = new LinkedList<>();
 		queue.add(new Type[] { rootType });
 
@@ -530,13 +868,20 @@ public final class Environment {
 			Type type = path[path.length - 1];
 
 			// initialize plugged items
-			Plugins.addChildrenTypesToType(type, path);
-			Plugins.addAnnotations(type, path);
-			Plugins.addRendererToType(type, path);
-			Plugins.addCompileScriptsToType(type, path);
+			if (plugins) {
+				Plugins.addChildrenTypesToType(type, path);
+				Plugins.addAnnotations(type, path);
+				Plugins.addRendererToType(this, type, path);
+				Plugins.addCompileScriptsToType(type, path);
+			}
 
 			// initialize type itself
 			type.init(path);
+
+			// index the compile scripts of the type for the compilers of this environment
+			if (type instanceof AbstractType abstractType) {
+				abstractType.registerCompileScripts(this);
+			}
 
 			// recurse for child types
 			for (Type childType : type.getChildrenTypes()) {
@@ -578,6 +923,128 @@ public final class Environment {
 
 	public WikiConnector getWikiConnector() {
 		return this.wikiConnector;
+	}
+
+	/**
+	 * Returns the registry of the sections of this environment by their ids.
+	 */
+	@NotNull
+	public SectionRegistry getSectionRegistry() {
+		return sectionRegistry;
+	}
+
+	/**
+	 * Returns the section of this environment with the specified id, or null if there is none.
+	 *
+	 * @see Sections#get(Environment, String)
+	 */
+	@Nullable
+	public Section<?> getSection(String id) {
+		return sectionRegistry.get(id);
+	}
+
+	/**
+	 * Returns the script manager of this environment for the specified compiler class, holding the compile scripts of
+	 * this environment's type tree for that class of compilers.
+	 */
+	@SuppressWarnings("unchecked")
+	@NotNull
+	public <C extends Compiler> ScriptManager<C> getScriptManager(@NotNull Class<C> compilerClass) {
+		return (ScriptManager<C>) scriptManagers.computeIfAbsent(compilerClass, c -> new ScriptManager<>(compilerClass));
+	}
+
+	/**
+	 * Returns all script managers of this environment.
+	 */
+	@NotNull
+	public Collection<ScriptManager<? extends Compiler>> getScriptManagers() {
+		return Collections.unmodifiableCollection(scriptManagers.values());
+	}
+
+	/**
+	 * Returns the plugged sectionizer modules of this environment, in the order they are tried.
+	 */
+	@NotNull
+	public List<SectionizerModule> getSectionizerModules() {
+		return Collections.unmodifiableList(sectionizerModules);
+	}
+
+	/**
+	 * Registers an additional sectionizer module for this environment (the plugged ones are registered on
+	 * initialization).
+	 */
+	public void addSectionizerModule(@NotNull SectionizerModule module) {
+		sectionizerModules.add(module);
+	}
+
+	/**
+	 * Registers the terms of the specified terminology extension as occupied, so they cannot be defined in the wiki.
+	 */
+	public void registerOccupiedTerms(@NotNull TerminologyExtension extension) {
+		for (String termName : extension.getTermNames()) {
+			occupiedTerms.add(Identifier.fromExternalForm(termName));
+		}
+	}
+
+	/**
+	 * Returns whether the specified term is occupied by a plugged terminology extension.
+	 */
+	public boolean isOccupiedTerm(@NotNull Identifier identifier) {
+		return occupiedTerms.contains(identifier);
+	}
+
+	/**
+	 * Returns the service declared by the given key, creating it with the key's factory on first access. This is the
+	 * place for everything that would otherwise be kept in a static field of a plugin or core class: caches,
+	 * registries, thread pools, schedulers. If the service implements {@link EnvironmentService} (or
+	 * {@link AutoCloseable}), it is closed when this environment is {@link #close() closed}, in reverse order of
+	 * creation.
+	 *
+	 * @param key the service's declaration, a constant of the service class, see {@link ServiceKey}
+	 * @return the service instance of this environment
+	 * @throws IllegalStateException if the environment is already closed, or if the service type was already created
+	 *                               from a different declaration
+	 */
+	@NotNull
+	public <T> T getService(@NotNull ServiceKey<T> key) {
+		if (closed) throw new IllegalStateException("Environment is closed, cannot provide " + key);
+		synchronized (services) {
+			Service service = services.get(key.type());
+			if (service == null) {
+				Object instance = Objects.requireNonNull(key.factory().apply(this),
+						() -> "factory for " + key + " returned null");
+				services.put(key.type(), new Service(key, instance));
+				return key.type().cast(instance);
+			}
+			if (service.key() != key) {
+				throw new IllegalStateException(key + " is declared more than once; declare it exactly once, "
+						+ "as a constant of the service class");
+			}
+			return key.type().cast(service.instance());
+		}
+	}
+
+	/**
+	 * Returns the service of the specified type if it has already been created for this environment, or null.
+	 */
+	@Nullable
+	public <T> T getService(@NotNull Class<T> type) {
+		synchronized (services) {
+			Service service = services.get(type);
+			return service == null ? null : type.cast(service.instance());
+		}
+	}
+
+	/**
+	 * Registers a task to be run when this environment is {@link #close() closed}. Tasks run in reverse order of
+	 * registration, before the services are closed. Use it to stop threads, timers and listeners that were started on
+	 * behalf of this environment.
+	 *
+	 * @throws IllegalStateException if the environment is already closed
+	 */
+	public void onClose(@NotNull Runnable task) {
+		if (closing) throw new IllegalStateException("Environment is closed, cannot register close task");
+		closeTasks.addLast(task);
 	}
 
 	/**
@@ -624,26 +1091,18 @@ public final class Environment {
 	}
 
 	/**
-	 * Returns the {@link Article} object for a given web and title
+	 * Returns the {@link Article} object for a given title
 	 *
-	 * @param web   the web of the {@link Article}
 	 * @param title the title of the {@link Article}
 	 */
-	public Article getArticle(String web, String title) {
-		return getArticleManager(web).getArticle(title);
+	public Article getArticle(String title) {
+		return getArticleManager().getArticle(title);
 	}
 
 	/**
-	 * Returns the {@link ArticleManager} for a given web.
-	 *
-	 * @param web the web of the {@link ArticleManager}
+	 * Returns the servlet context of the wiki this environment belongs to, null outside a servlet container.
 	 */
-	@NotNull
-	public ArticleManager getArticleManager(String web) {
-		return this.articleManagers.computeIfAbsent(web, k -> new DefaultArticleManager(web));
-	}
-
-	public ServletContext getContext() {
+	public ServletContext getServletContext() {
 		return wikiConnector.getServletContext();
 	}
 
@@ -668,14 +1127,4 @@ public final class Environment {
 		return currentCompilationMode;
 	}
 
-	/**
-	 * @created 15.11.2013
-	 * @deprecated
-	 */
-	@Deprecated
-	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
-		return KnowWEUtils.getTerminologyManager((master == null)
-				? null
-				: KnowWEUtils.getArticleManager(defaultWeb).getArticle(master));
-	}
 }

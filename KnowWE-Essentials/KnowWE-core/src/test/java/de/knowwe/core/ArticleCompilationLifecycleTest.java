@@ -18,6 +18,7 @@ import org.junit.Ignore;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
@@ -64,9 +65,9 @@ public class ArticleCompilationLifecycleTest {
 		assertEquals(runsBefore + 1, wiki.compiler.compilationCount());
 		assertEquals(List.of(original.getRootSection()), wiki.compiler.lastCompilation().removed());
 		assertEquals(List.of(replacement.getRootSection()), wiki.compiler.lastCompilation().added());
-		assertNull(Sections.get(originalId));
-		assertNull(Sections.get(intermediateId));
-		assertFalse(Messages.getSectionsWithMessages().contains(line(intermediate, 0)));
+		assertNull(Sections.get(wiki.environment, originalId));
+		assertNull(Sections.get(wiki.environment, intermediateId));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment).contains(line(intermediate, 0)));
 		assertEquals(Map.of("version C", 1L), wiki.compiler.contributions());
 	}
 
@@ -97,7 +98,7 @@ public class ArticleCompilationLifecycleTest {
 			Article replacement = wiki.manager.getArticle("Page");
 			String id = line(replacement, 0).getID();
 			assertSame(replacement, reader.submit(() -> wiki.manager.getArticle("Page")).get(5, TimeUnit.SECONDS));
-			assertSame(line(replacement, 0), reader.submit(() -> Sections.get(id)).get(5, TimeUnit.SECONDS));
+			assertSame(line(replacement, 0), reader.submit(() -> Sections.get(wiki.environment, id)).get(5, TimeUnit.SECONDS));
 		}
 		finally {
 			wiki.manager.commit();
@@ -115,8 +116,8 @@ public class ArticleCompilationLifecycleTest {
 		wiki.awaitCompilation();
 
 		assertNull(wiki.manager.getArticle("Page"));
-		assertNull(Sections.get(id));
-		assertFalse(Messages.getSectionsWithMessages().contains(line(original, 0)));
+		assertNull(Sections.get(wiki.environment, id));
+		assertFalse(Messages.getSectionsWithMessages(wiki.environment).contains(line(original, 0)));
 		assertEquals(List.of(original.getRootSection()), wiki.compiler.lastCompilation().removed());
 		assertTrue(wiki.compiler.contributions().isEmpty());
 	}
@@ -155,7 +156,7 @@ public class ArticleCompilationLifecycleTest {
 		}
 		wiki.awaitCompilation();
 		assertNull(wiki.manager.getArticle("New"));
-		assertNull(Sections.get(id));
+		assertNull(Sections.get(wiki.environment, id));
 		assertTrue(wiki.compiler.contributions().isEmpty());
 	}
 
@@ -170,7 +171,7 @@ public class ArticleCompilationLifecycleTest {
 			if (article.getArticleManager() != wiki.manager) return;
 			String id = line(article, 0).getID();
 			observations.add(new RegistrationObservation(article, wiki.manager.getArticle(article.getTitle()),
-					Sections.get(id), wiki.compiler.compilationCount()));
+					Sections.get(wiki.environment, id), wiki.compiler.compilationCount()));
 		});
 
 		Article replacement = wiki.register("Page", "new\n");
@@ -216,7 +217,7 @@ public class ArticleCompilationLifecycleTest {
 			for (Article article : event.getArticles()) {
 				String id = line(article, 0).getID();
 				fullParseObservations.add(new RegistrationObservation(article, wiki.manager.getArticle(article.getTitle()),
-						Sections.get(id), wiki.compiler.compilationCount()));
+						Sections.get(wiki.environment, id), wiki.compiler.compilationCount()));
 			}
 		});
 
@@ -227,10 +228,10 @@ public class ArticleCompilationLifecycleTest {
 		try {
 			wiki.manager.recreateAndQueueArticles(List.of(parent));
 			refreshedParent = wiki.manager.getArticle("Parent");
-			EventManager.getInstance().fireEvent(new FullParseEvent(refreshedParent, "test"));
+			KnowWEUtils.getEventManager(wiki.manager).fireEvent(new FullParseEvent(refreshedParent, "test"));
 			refreshedAttachment = wiki.manager.getArticle(path);
 			assertNotSame(oldAttachment, refreshedAttachment);
-			EventManager.getInstance().fireEvent(new FullParseEvent(refreshedParent, "test"));
+			KnowWEUtils.getEventManager(wiki.manager).fireEvent(new FullParseEvent(refreshedParent, "test"));
 			assertSame("A second full parse must reuse the attachment already queued in this frame",
 					refreshedAttachment, wiki.manager.getArticle(path));
 		}
@@ -250,7 +251,7 @@ public class ArticleCompilationLifecycleTest {
 		assertTrue(wiki.compiler.lastCompilation().removed().containsAll(List.of(parent.getRootSection(), oldAttachment.getRootSection())));
 		assertEquals(2, wiki.compiler.lastCompilation().removed().size());
 		assertEquals("definition: attachment-new\n", refreshedAttachment.getText());
-		assertNull(Sections.get(oldId));
+		assertNull(Sections.get(wiki.environment, oldId));
 		assertEquals(1, wiki.manager.getAttachmentManager().getCompilingAttachmentSections(refreshedAttachment).size());
 		assertSame(line(refreshedParent, 0), wiki.manager.getAttachmentManager()
 				.getCompilingAttachmentSections(refreshedAttachment).iterator().next());
@@ -258,7 +259,7 @@ public class ArticleCompilationLifecycleTest {
 		String refreshedId = line(refreshedAttachment, 0).getID();
 		wiki.register("Parent", "no attachment\n");
 		assertNull(wiki.manager.getArticle(path));
-		assertNull(Sections.get(refreshedId));
+		assertNull(Sections.get(wiki.environment, refreshedId));
 		assertFalse(wiki.manager.getAttachmentManager().isAttachmentArticle(path));
 		assertTrue(wiki.manager.getAttachmentManager().getCompilingAttachmentSections(refreshedAttachment).isEmpty());
 		assertFalse(wiki.compiler.contributions().containsKey("definition: attachment-new"));
@@ -282,7 +283,7 @@ public class ArticleCompilationLifecycleTest {
 		int runsBeforeRemovingFirstReference = wiki.compiler.compilationCount();
 		wiki.register("First", "no attachment\n");
 		assertSame("Removing one reference must retain the shared attachment", attachment, wiki.manager.getArticle(path));
-		assertSame(line(attachment, 0), Sections.get(attachmentId));
+		assertSame(line(attachment, 0), Sections.get(wiki.environment, attachmentId));
 		assertEquals(1, wiki.manager.getAttachmentManager().getCompilingAttachmentSections(attachment).size());
 		assertSame(line(secondParent, 0), wiki.manager.getAttachmentManager()
 				.getCompilingAttachmentSections(attachment).iterator().next());
@@ -293,7 +294,7 @@ public class ArticleCompilationLifecycleTest {
 
 		wiki.register("Second", "no attachment\n");
 		assertNull("Removing the last reference must remove the attachment article", wiki.manager.getArticle(path));
-		assertNull(Sections.get(attachmentId));
+		assertNull(Sections.get(wiki.environment, attachmentId));
 		assertFalse(wiki.manager.getAttachmentManager().isAttachmentArticle(path));
 		assertTrue(wiki.manager.getAttachmentManager().getCompilingAttachmentSections(attachment).isEmpty());
 		assertFalse(wiki.compiler.contributions().containsKey("definition: shared-attachment"));

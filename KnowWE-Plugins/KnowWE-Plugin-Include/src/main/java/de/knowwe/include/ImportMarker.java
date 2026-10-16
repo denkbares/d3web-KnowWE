@@ -41,7 +41,6 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Marks the section as imported into another wiki at a specific time
@@ -164,7 +163,8 @@ public class ImportMarker {
 			source = sourceLabel;
 		}
 		else {
-			source = KnowWEUtils.getWikiLink(sourceLabel, sourceLink);
+			// the link points into the source wiki, so there is no attachment article to resolve here
+			source = "[" + sourceLabel + "|" + sourceLink + "]";
 		}
 
 		return "%%information This " + contentName + " was imported by " + source + " "

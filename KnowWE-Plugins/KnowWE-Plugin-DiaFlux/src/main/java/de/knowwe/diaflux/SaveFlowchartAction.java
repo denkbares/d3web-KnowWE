@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -56,16 +56,15 @@ public class SaveFlowchartAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getWeb();
 		String nodeID = context.getParameter(Attributes.TARGET);
 		String topic = context.getTitle();
 		String newText = context.getParameter(Attributes.TEXT);
 
 		if (nodeID == null) {
-			saveNewFlowchart(context, web, topic, newText);
+			saveNewFlowchart(context, context.getArticleManager(), topic, newText);
 		}
 		else {
-			replaceExistingFlowchart(context, web, nodeID, topic, newText);
+			replaceExistingFlowchart(context, context.getArticleManager(), nodeID, topic, newText);
 		}
 
 	}
@@ -76,8 +75,8 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @created 23.02.2011
 	 */
 	@SuppressWarnings("unchecked")
-	private void replaceExistingFlowchart(UserActionContext context, String web, String nodeID, String topic, String newText) throws IOException {
-		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.get(
+	private void replaceExistingFlowchart(UserActionContext context, @NotNull ArticleManager articleManager, String nodeID, String topic, String newText) throws IOException {
+		Section<DiaFluxType> diaFluxSection = (Section<DiaFluxType>) Sections.get(context, 
 				nodeID);
 
 		Section<FlowchartType> flowchartSection = Sections.successor(diaFluxSection,
@@ -127,9 +126,8 @@ public class SaveFlowchartAction extends AbstractAction {
 	 * @throws IOException
 	 * @created 23.02.2011
 	 */
-	private void saveNewFlowchart(UserActionContext context, String web, String topic, String newText) throws IOException {
-		ArticleManager mgr = Environment.getInstance().getArticleManager(
-				context.getWeb());
+	private void saveNewFlowchart(UserActionContext context, @NotNull ArticleManager articleManager, String topic, String newText) throws IOException {
+		ArticleManager mgr = context.getEnvironment().getArticleManager();
 		Article article = mgr.getArticle(topic);
 		Section<RootType> rootSection = article.getRootSection();
 

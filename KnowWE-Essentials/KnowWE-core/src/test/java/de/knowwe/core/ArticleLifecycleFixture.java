@@ -5,8 +5,6 @@
 package de.knowwe.core;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -16,9 +14,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -27,8 +23,8 @@ import org.junit.rules.ExternalResource;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
@@ -37,7 +33,6 @@ import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.parsing.Parser;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitializedArticlesEvent;
@@ -48,9 +43,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * Runs the real article manager, parser, ID registry, attachment manager and asynchronous compiler manager without
  * booting a wiki or loading plugins. Each nonempty line is a section; {@code attachment: Page/file.txt} additionally
- * exercises the real attachment lifecycle. Reflection is confined to bootstrapping/restoring the Environment singleton
- * and closing private executors: article construction, replacement, rollback and ID operations use production APIs.
- * These tests share the Environment singleton and must not run concurrently in the same JVM.
+ * exercises the real attachment lifecycle. The environment is a real one created below the plugin layer
+ * ({@link Environment#create(WikiConnector, RootType)} with the fixture's own type tree) and closed after each test,
+ * which releases everything it owns; article construction, replacement, rollback and ID operations use production
+ * APIs. Reflection remains only in {@link #closeManager(DefaultArticleManager)} for the older frame tests.
+ * As long as the deprecated singleton accessors exist, these tests must not run concurrently in the same JVM.
  */
 public final class ArticleLifecycleFixture extends ExternalResource {
 
@@ -60,26 +57,14 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	Consumer<Section<?>> afterParse = section -> { };
 	AbstractType alternativeLine;
 
-	private Object previousEnvironment;
-	private boolean previouslyInitialized;
+	/** the environment of this fixture, created below the plugin layer */
+	public Environment environment;
 	private RootType root;
 	private final Set<Section<?>> parsedRoots = Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
 	private final List<EventListener> listeners = new ArrayList<>();
 
 	@Override
 	protected void before() throws Exception {
-		previousEnvironment = field(Environment.class, "instance").get(null);
-		previouslyInitialized = field(Environment.class, "initialized").getBoolean(null);
-		field(Environment.class, "initialized").setBoolean(null, false);
-		Constructor<Environment> constructor = Environment.class.getDeclaredConstructor(WikiConnector.class);
-		constructor.setAccessible(true);
-		WikiConnector connector = (WikiConnector) Proxy.newProxyInstance(WikiConnector.class.getClassLoader(),
-				new Class<?>[] { WikiConnector.class }, (proxy, method, args) -> {
-					if (method.getName().equals("getAttachment")) return attachment((String) args[0]);
-					throw new UnsupportedOperationException("Unexpected wiki access: " + method.getName());
-				});
-		Environment environment = constructor.newInstance(connector);
-		field(Environment.class, "instance").set(null, environment);
 		root = new RootType() {
 			@Override
 			public Parser getParser() {
@@ -96,13 +81,27 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 		root.addChildType(1, new Line());
 		alternativeLine = new AlternativeLine();
 		root.addChildType(2, alternativeLine);
-		field(Environment.class, "rootType").set(environment, root);
-		manager = (DefaultArticleManager) environment.getArticleManager("lifecycle-" + UUID.randomUUID());
+		Environment[] bound = new Environment[1];
+		WikiConnector connector = (WikiConnector) Proxy.newProxyInstance(WikiConnector.class.getClassLoader(),
+				new Class<?>[] { WikiConnector.class }, (proxy, method, args) -> switch (method.getName()) {
+					case "setEnvironment" -> {
+						bound[0] = (Environment) args[0];
+						yield null;
+					}
+					case "getEnvironment" -> bound[0];
+					case "getAttachment" -> attachment((String) args[0]);
+					// what the environment initialization reads from the wiki configuration
+					case "getApplicationName" -> "article-lifecycle-test";
+					case "getWikiProperty" -> null;
+					case "getApplicationRootPath" -> "target/article-lifecycle-test";
+					default -> throw new UnsupportedOperationException("Unexpected wiki access: " + method.getName());
+				});
+		// the real environment, without plugins: the type tree is the one built above
+		environment = Environment.create(connector, root);
+		manager = (DefaultArticleManager) environment.getArticleManager();
 		manager.getCompilerManager().addCompiler(1, compiler);
 		manager.setInitialized(true);
-		// Only initialize this manager's attachments, not unrelated global listeners/script managers.
 		manager.getAttachmentManager().notify(new InitializedArticlesEvent(manager));
-		field(Environment.class, "initialized").setBoolean(null, true);
 	}
 
 	Article register(String title, String text) throws InterruptedException {
@@ -135,7 +134,7 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 			}
 		};
 		listeners.add(listener); // retain strongly until explicitly unregistered in teardown
-		EventManager.getInstance().registerListener(listener);
+		KnowWEUtils.getEventManager(manager).registerListener(listener);
 	}
 
 	static Section<?> line(Article article, int index) {
@@ -156,55 +155,24 @@ public final class ArticleLifecycleFixture extends ExternalResource {
 	@Override
 	protected void after() {
 		try {
-			listeners.forEach(EventManager.getInstance()::unregister);
+			listeners.forEach(KnowWEUtils.getEventManager(manager)::unregister);
 			awaitCompilation();
 			afterParse = section -> { };
-			// Empty the manager while its attachment listener is still available to clear attachment mappings as well.
-			manager.removeAllArticles();
-			awaitCompilation();
-			manager.getCompilerManager().removeCompiler(compiler);
-			closeManager(manager);
-			// Also visit partial parser results and unpublished drafts; the manager does not own all of them.
-			parsedRoots.forEach(ArticleLifecycleFixture::unregisterTree);
-			root.clearCompileScripts();
 		}
 		catch (Exception e) {
 			throw new AssertionError("Failed to clean up the article lifecycle fixture", e);
 		}
 		finally {
-			try {
-				field(Environment.class, "instance").set(null, previousEnvironment);
-				field(Environment.class, "initialized").setBoolean(null, previouslyInitialized);
-			}
-			catch (ReflectiveOperationException e) {
-				throw new AssertionError(e);
-			}
+			// closing the environment releases everything it owns: articles, section ids, messages, compilers, listeners
+			environment.close();
 		}
 	}
 
-	private static void unregisterTree(Section<?> section) {
-		Messages.unregisterMessagesSection(section);
-		Section.unregisterOrUpdateSectionID(section, null);
-		section.getChildren().forEach(ArticleLifecycleFixture::unregisterTree);
-	}
-
 	/** Also used by the older frame tests, whose otherwise retained listeners react to later attachment tests. */
-	public static void closeManager(DefaultArticleManager manager) throws ReflectiveOperationException, InterruptedException {
-		EventManager.getInstance().unregister(manager.getAttachmentManager());
-		EventManager.getInstance().unregister(manager.getCompilerManager());
-		shutdown((ExecutorService) field(CompilerManager.class, "threadPool").get(manager.getCompilerManager()));
-		shutdown((ExecutorService) field(AttachmentManager.class, "executor").get(manager.getAttachmentManager()));
-	}
-
-	private static void shutdown(ExecutorService executor) throws InterruptedException {
-		executor.shutdownNow();
-		assertTrue("Test executor did not terminate", executor.awaitTermination(5, TimeUnit.SECONDS));
-	}
-
-	private static Field field(Class<?> type, String name) throws NoSuchFieldException {
-		Field field = type.getDeclaredField(name);
-		field.setAccessible(true);
-		return field;
+	public static void closeManager(DefaultArticleManager manager) throws InterruptedException {
+		manager.getCompilerManager().shutdown();
+		assertTrue("Test executor did not terminate",
+				manager.getAttachmentManager().shutdownAndAwait(5, TimeUnit.SECONDS));
 	}
 
 	private static class Line extends AbstractType {

@@ -40,7 +40,7 @@ import de.knowwe.diaflux.type.NodeType;
 public class ExitNodeHandler extends AbstractNodeHandler<ExitType> {
 
 	public ExitNodeHandler() {
-		super(ExitType.getInstance(), null);
+		super(new ExitType(), null);
 	}
 
 	@Override

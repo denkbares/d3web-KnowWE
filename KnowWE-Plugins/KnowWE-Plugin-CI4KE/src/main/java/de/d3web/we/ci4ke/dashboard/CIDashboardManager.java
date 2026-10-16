@@ -32,6 +32,7 @@ import com.denkbares.events.EventManager;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -62,7 +63,7 @@ public class CIDashboardManager {
 		MultiMap<Object, CIDashboard> dashboardsMap = getDashboardsMap(section.getArticleManager());
 		dashboardsMap.put(dashboard.getDashboardName(), dashboard);
 		dashboardsMap.put(section, dashboard);
-		EventManager.getInstance().fireEvent(new CIDashboardRegisteredEvent(dashboard));
+		KnowWEUtils.getEventManager(section).fireEvent(new CIDashboardRegisteredEvent(dashboard));
 		return dashboard;
 	}
 
@@ -85,7 +86,7 @@ public class CIDashboardManager {
 		CIDashboard dashboard = getDashboard(section);
 		getDashboardsMap(section.getArticleManager()).removeValue(dashboard);
 		if (dashboard != null) {
-			EventManager.getInstance().fireEvent(new CIDashboardUnregisteredEvent(dashboard));
+			KnowWEUtils.getEventManager(section).fireEvent(new CIDashboardUnregisteredEvent(dashboard));
 		}
 	}
 

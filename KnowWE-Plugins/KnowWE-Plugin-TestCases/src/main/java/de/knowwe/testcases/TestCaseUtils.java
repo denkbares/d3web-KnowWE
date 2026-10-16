@@ -59,6 +59,8 @@ import com.denkbares.utils.Triple;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -109,16 +111,16 @@ public class TestCaseUtils {
 				+ DefaultMarkupType.class.getSimpleName());
 	}
 
-	public static List<TestCaseProvider> getTestCaseProviders(String web, Set<String> packageNames, String nameRegex) throws PatternSyntaxException {
-		return getTestCaseProviders(web, packageNames,
+	public static List<TestCaseProvider> getTestCaseProviders(@NotNull ArticleManager articleManager, Set<String> packageNames, String nameRegex) throws PatternSyntaxException {
+		return getTestCaseProviders(articleManager, packageNames,
 				Pattern.compile(nameRegex, Pattern.CASE_INSENSITIVE));
 	}
 
-	public static List<TestCaseProvider> getTestCaseProviders(String web, Set<String> packageNames, Pattern nameRegex) {
+	public static List<TestCaseProvider> getTestCaseProviders(@NotNull ArticleManager articleManager, Set<String> packageNames, Pattern nameRegex) {
 		if (nameRegex == null) return Collections.emptyList();
 		String[] packages = packageNames.toArray(new String[packageNames.size()]);
 		List<ProviderTriple> testCaseProviders = TestCaseUtils.getTestCaseProviders(
-				web, packages);
+				articleManager, packages);
 		List<TestCaseProvider> found = new LinkedList<>();
 		for (Triple<TestCaseProvider, Section<?>, Section<? extends PackageCompileType>> triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();
@@ -161,15 +163,15 @@ public class TestCaseUtils {
 	 */
 	public static List<ProviderTriple> getTestCaseProviders(Section<TestCasePlayerType> section) {
 		String[] kbPackages = getTestCasePackages(section);
-		return de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(section.getWeb(), kbPackages);
+		return getTestCaseProviders(KnowWEUtils.getArticleManager(section), kbPackages);
 	}
 
 	public static String[] getTestCasePackages(Section<TestCasePlayerType> section) {
 		return section.getPackageNames().toArray(new String[0]);
 	}
 
-	public static List<ProviderTriple> getTestCaseProviders(String web, String... kbPackages) {
-		PackageManager packageManager = KnowWEUtils.getPackageManager(web);
+	public static List<ProviderTriple> getTestCaseProviders(@NotNull ArticleManager articleManager, String... kbPackages) {
+		PackageManager packageManager = KnowWEUtils.getPackageManager(articleManager);
 		List<ProviderTriple> providers = new LinkedList<>();
 		for (String kbPackage : kbPackages) {
 			Collection<Section<?>> sectionsInPackage = packageManager.getSectionsOfPackage(kbPackage);

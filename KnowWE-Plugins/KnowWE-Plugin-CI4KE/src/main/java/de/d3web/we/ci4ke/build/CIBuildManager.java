@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
@@ -59,11 +58,14 @@ import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.d3web.we.ci4ke.hook.CIHookManager;
-import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.CompilationStartEvent;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.event.WikiContentReplacedEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.core.EnvironmentService;
 
 /**
  * Coordinates the lifecycle of CI builds and their test executors.
@@ -74,37 +76,57 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * Before a waiting successor is submitted, the manager atomically verifies that it is still the current queue entry
  * and has not been aborted by another compilation. Obsolete successors are cancelled and removed from the queue.
  */
-public class CIBuildManager implements EventListener {
+public class CIBuildManager implements EventListener, EnvironmentService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIBuildManager.class);
 
-	private static CIBuildManager instance = null;
-
 	private static final AtomicLong executorNumber = new AtomicLong();
-	private static final ExecutorService CI_BUILD_EXECUTOR = Executors.newCachedThreadPool(
-			r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet()));
-	private static final ExecutorService CI_BUILD_TRIGGER = Executors.newCachedThreadPool(
-			r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet()));
 	private static final AtomicLong THREAD_NUMBER = new AtomicLong();
-	private static final ExecutorService TEST_EXECUTOR_SERVICE = createTestExecutorService();
-	private static final ExecutorService SUB_TEST_EXECUTOR_SERVICE = createTestExecutorService();
-	private static final Map<CIDashboard, CIBuildFuture> CI_BUILD_QUEUE =
-			Collections.synchronizedMap(new WeakHashMap<>());
-	private static final CIBuildChanges CI_BUILD_CHANGES = new CIBuildChanges();
 
+	public static final ServiceKey<CIBuildManager> SERVICE = ServiceKey.of(CIBuildManager.class, environment -> {
+		CIBuildManager manager = new CIBuildManager(environment,
+			Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet())),
+			Executors.newCachedThreadPool(r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet())),
+			Collections.synchronizedMap(new WeakHashMap<>()),
+			new CIBuildChanges());
+		environment.getEventManager().registerListener(manager);
+		return manager;
+	});
+
+	/**
+	 * The environment this manager belongs to (null for managers created directly in tests).
+	 */
+	private final @Nullable Environment environment;
 	private final ExecutorService ciBuildExecutor;
 	private final ExecutorService ciBuildTrigger;
+	private final ExecutorService testExecutorService = createTestExecutorService();
+	private final ExecutorService subTestExecutorService = createTestExecutorService();
 	private final Map<CIDashboard, CIBuildFuture> ciBuildQueue;
 	private final CIBuildChanges ciBuildChanges;
 	private final Map<String, Double> priorityOverride = new ConcurrentHashMap<>();
 
-	public static CIBuildManager getInstance() {
-		if (instance == null) instance = new CIBuildManager();
-		return instance;
+	/**
+	 * Returns the build manager of the specified environment, created on first access and closed (executors stopped,
+	 * listener unregistered) together with the environment.
+	 */
+	public static CIBuildManager of(@NotNull Environment environment) {
+		return environment.getService(CIBuildManager.SERVICE);
 	}
 
-	private CIBuildManager() {
-		this(CI_BUILD_EXECUTOR, CI_BUILD_TRIGGER, CI_BUILD_QUEUE, CI_BUILD_CHANGES);
-		EventManager.getInstance().registerListener(this);
+	/**
+	 * Returns the build manager responsible for the specified dashboard, i.e. the one of the dashboard's environment.
+	 */
+	public static CIBuildManager of(@NotNull CIDashboard dashboard) {
+		return of(dashboard.getDashboardSection().getEnvironment());
+	}
+
+	@Override
+	public void close() {
+		LOGGER.info("Shutting down CI build executor.");
+		if (environment != null) environment.getEventManager().unregister(this);
+		ciBuildExecutor.shutdown();
+		ciBuildTrigger.shutdown();
+		testExecutorService.shutdown();
+		subTestExecutorService.shutdown();
 	}
 
 	/**
@@ -115,15 +137,17 @@ public class CIBuildManager implements EventListener {
 	 * @param ciBuildTrigger  executor performing asynchronous ordering and predecessor waits
 	 */
 	CIBuildManager(ExecutorService ciBuildExecutor, ExecutorService ciBuildTrigger) {
-		this(ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()), new CIBuildChanges());
+		this(null, ciBuildExecutor, ciBuildTrigger, Collections.synchronizedMap(new WeakHashMap<>()), new CIBuildChanges());
 	}
 
 	private CIBuildManager(
+			@Nullable Environment environment,
 			ExecutorService ciBuildExecutor,
 			ExecutorService ciBuildTrigger,
 			Map<CIDashboard, CIBuildFuture> ciBuildQueue,
 			CIBuildChanges ciBuildChanges
 	) {
+		this.environment = environment;
 		this.ciBuildExecutor = ciBuildExecutor;
 		this.ciBuildTrigger = ciBuildTrigger;
 		this.ciBuildQueue = ciBuildQueue;
@@ -137,16 +161,6 @@ public class CIBuildManager implements EventListener {
 				0L, TimeUnit.MILLISECONDS,
 				new PriorityBlockingQueue<>(),
 				r -> new Thread(r, "CI-Test-Executor-" + THREAD_NUMBER.incrementAndGet()));
-	}
-
-	static {
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			LOGGER.info("Shutting down CI build executor.");
-			CI_BUILD_EXECUTOR.shutdown();
-			CI_BUILD_TRIGGER.shutdown();
-			TEST_EXECUTOR_SERVICE.shutdown();
-			SUB_TEST_EXECUTOR_SERVICE.shutdown();
-		});
 	}
 
 	private static class CIBuildFuture extends FutureTask<Void> {
@@ -167,21 +181,20 @@ public class CIBuildManager implements EventListener {
 		private final Map<CIDashboard, CIBuildFuture> ciBuildQueue;
 		private final CIBuildProgress progress;
 
-		public CIBuildCallable(
-				CIDashboard dashboard,
-				Map<CIDashboard, CIBuildFuture> ciBuildQueue,
-				CIBuildChanges changes
-		) {
+		public CIBuildCallable(CIBuildManager manager, CIDashboard dashboard, Map<CIDashboard, CIBuildFuture> ciBuildQueue) {
 			this.dashboard = dashboard;
 			this.ciBuildQueue = ciBuildQueue;
+			// the plugged providers are singletons; bind them to the environment this build runs for
+			Environment environment = dashboard.getDashboardSection().getEnvironment();
 			List<TestObjectProvider> providers = new ArrayList<>();
-			providers.add(DefaultWikiTestObjectProvider.getInstance());
-			List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
-			providers.addAll(pluggedProviders);
+			providers.add(WikiTestObjectProvider.bind(new DefaultWikiTestObjectProvider(), environment));
+			for (TestObjectProvider pluggedProvider : TestObjectProviderManager.getTestObjectProviders()) {
+				providers.add(WikiTestObjectProvider.bind(pluggedProvider, environment));
+			}
 
-			progress = new CIBuildProgress(changes);
+			progress = new CIBuildProgress(manager.ciBuildChanges);
 			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), progress.getListener(),
-					TEST_EXECUTOR_SERVICE, SUB_TEST_EXECUTOR_SERVICE, dashboard.getPriority());
+					manager.testExecutorService, manager.subTestExecutorService, dashboard.getPriority());
 		}
 
 		@Override
@@ -196,7 +209,7 @@ public class CIBuildManager implements EventListener {
 
 				// fire event to inform listeners about new result
 				CIBuildResultEvent event = new CIBuildResultEvent(dashboard, build);
-				EventManager.getInstance().fireEvent(event);
+				KnowWEUtils.getEventManager(dashboard.getDashboardSection()).fireEvent(event);
 
 				// add resulting build to dashboard
 				if (build != null && !testExecutor.isAborted()) {
@@ -240,8 +253,7 @@ public class CIBuildManager implements EventListener {
 				for (CIDashboard dashboard : dashboards) {
 					CIBuildFuture precedingBuild = ciBuildQueue.get(dashboard);
 					shutDownNow(dashboard);
-					CIBuildFuture ciBuildFuture = new CIBuildFuture(
-							new CIBuildCallable(dashboard, ciBuildQueue, ciBuildChanges));
+					CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(this, dashboard, ciBuildQueue));
 					ciBuildQueue.put(dashboard, ciBuildFuture);
 					ciBuildChanges.changed();
 					if (precedingBuild != null) {
@@ -281,7 +293,7 @@ public class CIBuildManager implements EventListener {
 		CIBuildFuture precedingBuild = ciBuildQueue.get(dashboard);
 		shutDownNow(dashboard);
 
-		CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard, ciBuildQueue, ciBuildChanges));
+		CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(this, dashboard, ciBuildQueue));
 		ciBuildQueue.put(dashboard, ciBuildFuture);
 		ciBuildChanges.changed();
 		scheduleAfterTermination(ciBuildFuture, precedingBuild);
@@ -451,7 +463,7 @@ public class CIBuildManager implements EventListener {
 	 * @created 16.08.2012
 	 */
 	public static boolean isRunning(CIDashboard dashboard) {
-		return CI_BUILD_QUEUE.get(dashboard) != null;
+		return of(dashboard).ciBuildQueue.get(dashboard) != null;
 	}
 
 	/**
@@ -463,7 +475,7 @@ public class CIBuildManager implements EventListener {
 	 */
 	@Nullable
 	public static CIBuildProgress getBuildProgress(CIDashboard dashboard) {
-		CIBuildFuture ciBuildFuture = CI_BUILD_QUEUE.get(dashboard);
+		CIBuildFuture ciBuildFuture = of(dashboard).ciBuildQueue.get(dashboard);
 		if (ciBuildFuture == null) return null;
 		return ciBuildFuture.ciBuildCallable.progress;
 	}
@@ -473,8 +485,8 @@ public class CIBuildManager implements EventListener {
 	 * build of any dashboard.
 	 */
 	@NotNull
-	public static CIBuildChanges getBuildChanges() {
-		return CI_BUILD_CHANGES;
+	public CIBuildChanges getBuildChanges() {
+		return ciBuildChanges;
 	}
 
 	/**
@@ -485,7 +497,7 @@ public class CIBuildManager implements EventListener {
 	 */
 	@Nullable
 	public static CIBuildStatus getBuildStatus(CIDashboard dashboard) {
-		CIBuildFuture ciBuildFuture = CI_BUILD_QUEUE.get(dashboard);
+		CIBuildFuture ciBuildFuture = of(dashboard).ciBuildQueue.get(dashboard);
 		if (ciBuildFuture == null) return null;
 		return ciBuildFuture.ciBuildCallable.progress.getStatus();
 	}
@@ -509,10 +521,12 @@ public class CIBuildManager implements EventListener {
 	@Override
 	public synchronized void notify(Event event) {
 		// Exclude new build registration while running builds are marked for asynchronous shutdown/restart.
-		if (event instanceof CompilationStartEvent) {
+		if (event instanceof CompilationStartEvent startEvent) {
 			Set<CIDashboard> ciDashboards = shutDownNow();
 			// restart them with next trigger
-			CIHookManager.getInstance().restartWithNextTrigger(ciDashboards);
+			Environment hookEnvironment = environment != null ? environment
+					: startEvent.getCompilerManager().getArticleManager().getEnvironment();
+			CIHookManager.of(hookEnvironment).restartWithNextTrigger(ciDashboards);
 		}
 		else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {
 			priorityOverride.put(prioEvent.getDashboard().getDashboardName(), prioEvent.getPriority());

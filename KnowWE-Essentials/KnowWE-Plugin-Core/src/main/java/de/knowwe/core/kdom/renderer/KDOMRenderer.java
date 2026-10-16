@@ -22,8 +22,8 @@ package de.knowwe.core.kdom.renderer;
 
 import java.util.Map;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
@@ -45,8 +45,8 @@ public class KDOMRenderer extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String title, UserContext user, Map<String, String> parameters, RenderResult result) {
-		Article article = Environment.getInstance().getArticle(web, title);
+	public void renderHTML(String title, UserContext user, Map<String, String> parameters, RenderResult result) {
+		Article article = user.getArticleManager().getArticle(title);
 		renderHTML(article, user, result);
 	}
 

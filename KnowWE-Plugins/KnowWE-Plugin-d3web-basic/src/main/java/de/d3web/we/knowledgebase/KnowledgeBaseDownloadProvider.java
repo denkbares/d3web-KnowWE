@@ -31,7 +31,6 @@ import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -84,7 +83,6 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		}
 		String jsAction = "window.location='action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
-				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
 				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName.trim() +
 				"&amp;_=" + System.currentTimeMillis() + "'";
 		return new DefaultTool(
@@ -106,7 +104,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		if (kbName.isEmpty()) {
 			kbName = "knowledgebase";
 		}
-		String baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+		String baseUrl = userContext.getEnvironment().getWikiConnector().getBaseUrl();
 		// try to replace hostname by ip address to allow access in local
 		// networks
 		try {
@@ -120,7 +118,6 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		}
 		String kbURL = baseUrl + "action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
-				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
 				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web";
 		kbURL = Strings.encodeURL(kbURL);
 

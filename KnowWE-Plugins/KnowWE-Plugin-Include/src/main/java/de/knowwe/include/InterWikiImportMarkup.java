@@ -51,7 +51,6 @@ import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -110,7 +109,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	/** Maximum number of entries of the "Compare with source" selection, including the complete comparison. */
 	private static final int MAX_DIFF_OPTIONS = 10;
 
-	private static final InterWikiImportUpdateService UPDATE_SERVICE = new InterWikiImportUpdateService();
+	/**
+	 * The update service of the environment the section belongs to.
+	 */
+	private static InterWikiImportUpdateService updateService(Section<?> section) {
+		return InterWikiImportUpdateService.of(section.getEnvironment());
+	}
+
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
 
 	/**
@@ -122,7 +127,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	static {
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, false);
-		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, new TimeStampType());
+		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, () -> new TimeStampType());
 		MARKUP.addAnnotation(COMPILE_ANNOTATION, false, "true", "false");
 		MARKUP.addAnnotation(MODE_ANNOTATION, false, "import", "tracking");
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
@@ -134,7 +139,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(LATEST_CHANGE_ANNOTATION, false);
 		MARKUP.addAnnotation(TRACKING_ACCEPTED_AT_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
-		UPDATE_SERVICE.initialize();
 	}
 
 	public InterWikiImportMarkup() {
@@ -150,7 +154,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		Section<InterWikiImportMarkup> interWikiSection = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (interWikiSection == null) return null;
 		String path = getWikiAttachmentPath(interWikiSection);
-		return Environment.getInstance().getWikiConnector().getAttachment(path);
+		return section.getEnvironment().getWikiConnector().getAttachment(path);
 	}
 
 	@Override
@@ -249,7 +253,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	 * Sent both as the {@code requestFrom} URL parameter (single fetch) and in the bulk poll request body.
 	 */
 	String getImportSourceLabel(Section<InterWikiImportMarkup> section) {
-		String linkLabel = Environment.getInstance().getWikiConnector().getApplicationName();
+		String linkLabel = section.getEnvironment().getWikiConnector().getApplicationName();
 		if (Strings.isBlank(linkLabel) || "knowwe".equalsIgnoreCase(linkLabel)) {
 			linkLabel = "another wiki";
 		}
@@ -258,7 +262,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	/** Absolute link back to this importing section, shown on the source page's "imported by" marker. */
 	String getImportSourceLink(Section<InterWikiImportMarkup> section) {
-		return KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getURLLink(section));
+		return KnowWEUtils.getAsAbsoluteLink(section.getEnvironment(), KnowWEUtils.getURLLink(section));
 	}
 
 	@Nullable
@@ -367,7 +371,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
 			String fileName = path.substring(path.indexOf(PATH_SEPARATOR) + 1);
-			Environment.getInstance().getWikiConnector()
+			section.getEnvironment().getWikiConnector()
 					.storeAttachment(parentName, fileName, "SYSTEM", new ByteArrayInputStream(sourceBytes), isVersioning(section));
 			return true;
 		}
@@ -476,7 +480,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	void refreshNow(Section<InterWikiImportMarkup> section, boolean force) {
-		UPDATE_SERVICE.pollSingleMarkup(section, force);
+		updateService(section).pollSingleMarkup(section, force);
 	}
 
 	static String buildRefreshScript(String sectionId, boolean force) {
@@ -584,7 +588,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				.map(section -> $(section).closest(InterWikiImportMarkup.class).getFirst())
 				.filter(Objects::nonNull)
 				.toList();
-		UPDATE_SERVICE.pollMarkups(markups, force);
+		if (markups.isEmpty()) return;
+		updateService(markups.get(0)).pollMarkups(markups, force);
 	}
 
 	/**
@@ -599,7 +604,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force, boolean allowWaitForOtherDownloads) {
 		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (markup == null) return;
-		UPDATE_SERVICE.pollSingleMarkup(markup, force);
+		updateService(markup).pollSingleMarkup(markup, force);
 	}
 
 	/**
@@ -1134,7 +1139,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.append(new HtmlElement("p")
 						.clazz("warning")
 						.content("@interval is deprecated for InterWikiImport and no longer used. Updates are polled immediately after startup and then every "
-								+ TimeUnit.MILLISECONDS.toMinutes(UPDATE_SERVICE.getPollIntervalMillis())
+								+ TimeUnit.MILLISECONDS.toMinutes(updateService(markup).getPollIntervalMillis())
 								+ " minutes per source wiki."));
 			}
 		}
@@ -1188,18 +1193,18 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
 			if (section.get().getUrl(section) == null) {
-				UPDATE_SERVICE.deregister(section);
+				updateService(section).deregister(section);
 				Messages.clearMessages(section, TrackingMessages.class);
 				return;
 			}
-			UPDATE_SERVICE.register(section);
+			updateService(section).register(section);
 			section.get().refreshTrackingMessages(section);
 			section.get().restoreSyncMessage(section);
 		}
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
-			UPDATE_SERVICE.deregister(section);
+			updateService(section).deregister(section);
 			Messages.clearMessages(section, TrackingMessages.class);
 			Messages.clearMessages(section, SyncMessages.class);
 		}

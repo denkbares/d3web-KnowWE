@@ -39,7 +39,7 @@
 	}
 
 	String kdomID = parameters.get("kdomID");
-	Section<DiaFluxType> diafluxSection = Sections.get(kdomID, DiaFluxType.class);
+	Section<DiaFluxType> diafluxSection = Sections.get(Environment.of(request), kdomID, DiaFluxType.class);
 
 	if (diafluxSection == null) {
 		out.println("<h3>Flowchart not found. Please try opening the editor again.</h3>");
@@ -64,15 +64,14 @@
 			.getServletContext(), manager);
 
 	String topic = context.getTitle();
-	String web = context.getWeb();
-	Article article = Environment.getInstance().getArticle(web, topic);
+	Article article = context.getEnvironment().getArticle(topic);
 	if (article == null) {
 		// happens if article is no longer available
 		out.println("<h3>Article not found: '" + topic + "'.</h3>");
 		return;
 	}
 
-	WikiConnector connector = Environment.getInstance().getWikiConnector();
+	WikiConnector connector = context.getEnvironment().getWikiConnector();
 	boolean canEditPage = connector.userCanEditArticle(topic, context);
 
 	if (!canEditPage) {
@@ -176,14 +175,14 @@
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/jquery-treeTable.css'/>
 	<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/KnowWE-Plugin-AutoComplete.css'/>
 </head>
-<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(Sections.get(kdomID)).replace("\"", "&quot;") %>).showEditor();" class="light-mode">
+<body onload="new FlowEditor(<%= jspHelper.getArticleIDsAsArray(Sections.get(context, kdomID)).replace("\"", "&quot;") %>).showEditor();" class="light-mode">
 <%-- default kbinfo objects delivered from server --%>
 <data id="articleKBInfo" style="display:none;">
-	<%= jspHelper.getArticleInfoObjectsAsXML(Sections.get(kdomID)) %>
+	<%= jspHelper.getArticleInfoObjectsAsXML(Sections.get(context, kdomID)) %>
 </data>
 <%-- default kbinfo objects delivered from server --%>
 <data id="referredKBInfo" style="display:none;">
-	<%= JSPHelper.getReferredInfoObjectsAsXML(Sections.get(kdomID)) %>
+	<%= JSPHelper.getReferredInfoObjectsAsXML(Sections.get(context, kdomID)) %>
 </data>
 <data id="ajaxKBInfo" style="display:none;">
 	<input type='hidden' id='knowWEInfoXSRF' value="<%= csrfToken %>"/>

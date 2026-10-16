@@ -31,8 +31,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResultKeyValueStore;
 import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
@@ -43,7 +46,7 @@ import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
  * @author Sebastian Furth (denkbares GmbH)
  * @created Mar 4, 2011
  */
-public interface UserContext {
+public interface UserContext extends HasEnvironment {
 
 	String TEMPORARY_WRITE_PERMISSIONS_ATTRIBUTE = "temporaryWritePermissions";
 
@@ -112,13 +115,6 @@ public interface UserContext {
 	Article getArticle();
 
 	/**
-	 * Returns the web of the user's is currently visiting. It is the web the article belongs to.
-	 *
-	 * @created 14.10.2010
-	 */
-	String getWeb();
-
-	/**
 	 * Returns the parameter map of the http request with which the user is currently accessing the wiki server.
 	 *
 	 * @created 14.10.2010
@@ -170,6 +166,21 @@ public interface UserContext {
 	 * @created 14.01.2014
 	 */
 	ArticleManager getArticleManager();
+
+	/**
+	 * Returns the environment this context belongs to, i.e. the environment of its {@link #getArticleManager() article
+	 * manager}. This is the preferred way to reach the environment (and the wiki connector) from any action, renderer
+	 * or tag handler.
+	 *
+	 * @return the environment of this context
+	 * @throws IllegalStateException if the context belongs to no environment and none is initialized
+	 */
+	@Nullable
+	@Override
+	default Environment findEnvironment() {
+		ArticleManager manager = getArticleManager();
+		return manager == null ? null : manager.getEnvironment();
+	}
 
 	/**
 	 * Returns if a preview version is rendered when editing article

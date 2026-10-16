@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
@@ -68,7 +69,8 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 
 	private final C compiler;
 
-	private final ScriptManager<C> scriptManager;
+	/** resolved lazily: the compiler joins its compiler manager (and thus its environment) after construction */
+	private ScriptManager<C> scriptManager;
 
 	/**
 	 * Creates a new script compiler that runs scripts of the same priority in parallel.
@@ -82,7 +84,6 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	@SuppressWarnings("unchecked")
 	public ParallelScriptCompiler(C compiler, Mode mode, Class<?>... typeFilter) {
 		this.compiler = compiler;
-		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		this.step = mode;
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
@@ -113,7 +114,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 		synchronized (compileMap) {
 			boolean added = false;
 			Map<Priority, List<CompileScript<C, Type>>> scripts =
-					scriptManager.getScripts(Sections.cast(section, Type.class).get());
+					scriptManager().getScripts(Sections.cast(section, Type.class).get());
 			for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
 				Priority priority = entry.getKey();
 				List<CompilePair> compileSet = compileMap.get(priority);
@@ -149,7 +150,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	public Sections<?> addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		//noinspection DuplicatedCode
 		Sections<?> added = Sections.empty();
-		if (scriptManager.canHaveScriptsForSubtree(section.get())) {
+		if (scriptManager().canHaveScriptsForSubtree(section.get())) {
 			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
 					added.append(addSubtree(child, scriptFilter));
@@ -228,7 +229,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 
 	@Override
 	public void compile() {
-		EventManager.getInstance().fireEvent(new ScriptCompilerCompilePhaseStartEvent<>(this));
+		KnowWEUtils.getEventManager(compiler).fireEvent(new ScriptCompilerCompilePhaseStartEvent<>(this));
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
@@ -274,7 +275,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 			List<Section<?>> sectionListThisPrio = compileLog.getOrDefault(lastPriority, Collections.emptyList())
 					.stream().map(Pair::getA).collect(Collectors.toList());
 			// event needs to be fired _after_ the currentPriority (and Iterator) has been incremented
-			EventManager.getInstance()
+			KnowWEUtils.getEventManager(compiler)
 					.fireEvent(new CompilePriorityLevelFinishedEvent(compiler, lastPriority, sectionListThisPrio, !compileLog.isEmpty()));
 		}
 		else {
@@ -285,7 +286,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	@Override
 	@SuppressWarnings("unchecked")
 	public void destroy() {
-		EventManager.getInstance().fireEvent(new ScriptCompilerDestroyPhaseStartEvent<>(this));
+		KnowWEUtils.getEventManager(compiler).fireEvent(new ScriptCompilerDestroyPhaseStartEvent<>(this));
 		while (true) {
 			CompilePair pair = next();
 			if (pair == null) break;
@@ -310,4 +311,13 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 			super(a, b);
 		}
 	}
+
+	private ScriptManager<C> scriptManager() {
+		if (scriptManager == null) {
+			//noinspection unchecked
+			scriptManager = CompilerManager.getScriptManager(compiler);
+		}
+		return scriptManager;
+	}
+
 }

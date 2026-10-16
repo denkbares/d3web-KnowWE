@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 
 public class ReplacePageAction extends AbstractAction {
 
@@ -13,7 +12,7 @@ public class ReplacePageAction extends AbstractAction {
 		String newText = context.getParameter(Attributes.TEXT);
 
 		// Check for user access
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(name,
+		if (!context.getEnvironment().getWikiConnector().userCanEditArticle(name,
 				context)) {
 			return "perm";
 		}
@@ -25,7 +24,7 @@ public class ReplacePageAction extends AbstractAction {
 		newText = newText.replaceAll("\\s*$", "");
 
 
-		Environment.getInstance()
+		context.getEnvironment()
 				.getWikiConnector()
 				.writeArticleToWikiPersistence(name, newText, context, "DDOS");
 

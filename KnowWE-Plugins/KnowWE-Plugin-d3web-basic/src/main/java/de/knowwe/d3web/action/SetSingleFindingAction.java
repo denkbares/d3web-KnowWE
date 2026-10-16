@@ -38,6 +38,7 @@ import com.denkbares.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -74,7 +75,6 @@ public class SetSingleFindingAction extends AbstractAction {
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 
-		String web = context.getWeb();
 		String namespace;
 		String term;
 		String valueid = null;
@@ -90,7 +90,7 @@ public class SetSingleFindingAction extends AbstractAction {
 		if (namespace == null || objectid == null) {
 			return null;
 		}
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (!KnowWEUtils.canView(section, context)) {
 			return null;
 		}
@@ -101,7 +101,7 @@ public class SetSingleFindingAction extends AbstractAction {
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
-			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(KnowWEUtils.getArticleManager(web));
+			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(context.getArticleManager());
 			for (KnowledgeBase knowledgeBase : knowledgeBases) {
 				kb = knowledgeBase;
 				if (kb.getId() != null && kb.getId().equals(kbID)) {

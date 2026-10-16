@@ -23,13 +23,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import connector.DummyConnector;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
+import utils.OwnedEnvironment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -38,20 +42,24 @@ public class RecompileActionTest {
 
 	@Test
 	public void resolvesLatestArticleVersionsInsideRegistrationFrame() {
-		Article staleArticle = temporaryArticle("Article", "stale content");
-		Article currentArticle = temporaryArticle("Article", "current content");
-		Article deletedArticle = temporaryArticle("Deleted", "deleted content");
-		ArticleManager articleManager = new CurrentArticleManager(Map.of("Article", currentArticle));
+		// the temporary articles belong to an environment, a core-only one is enough here
+		try (OwnedEnvironment owned = OwnedEnvironment.create(new DummyConnector(), new RootType())) {
+			Environment environment = owned.get();
+			Article staleArticle = temporaryArticle(environment, "Article", "stale content");
+			Article currentArticle = temporaryArticle(environment, "Article", "current content");
+			Article deletedArticle = temporaryArticle(environment, "Deleted", "deleted content");
+			ArticleManager articleManager = new CurrentArticleManager(Map.of("Article", currentArticle));
 
-		List<Article> resolvedArticles = RecompileAction.resolveCurrentArticles(
-				articleManager, List.of(staleArticle, deletedArticle));
+			List<Article> resolvedArticles = RecompileAction.resolveCurrentArticles(
+					articleManager, List.of(staleArticle, deletedArticle));
 
-		assertEquals(1, resolvedArticles.size());
-		assertSame(currentArticle, resolvedArticles.get(0));
+			assertEquals(1, resolvedArticles.size());
+			assertSame(currentArticle, resolvedArticles.get(0));
+		}
 	}
 
-	private static Article temporaryArticle(String title, String content) {
-		return Article.createTemporaryArticle(content, title, "test", new RootType());
+	private static Article temporaryArticle(Environment environment, String title, String content) {
+		return Article.createTemporaryArticle(environment, content, title, new RootType());
 	}
 
 	private record CurrentArticleManager(Map<String, Article> articles) implements ArticleManager {
@@ -62,8 +70,8 @@ public class RecompileActionTest {
 		}
 
 		@Override
-		public String getWeb() {
-			return "test";
+		public @NotNull Environment getEnvironment() {
+			throw new UnsupportedOperationException();
 		}
 
 		@Override

@@ -22,10 +22,11 @@ package de.knowwe.core.utils.progress;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.Rule;
 import org.junit.Test;
 
-import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleLifecycleFixture;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -39,11 +40,17 @@ import static org.junit.Assert.assertSame;
 
 public class LongOperationUtilsTest {
 
+	/**
+	 * Provides the environment the long operations are scoped to; without it, no section can register operations.
+	 */
+	@Rule
+	public final ArticleLifecycleFixture environment = new ArticleLifecycleFixture();
+
 	@Test
 	public void cleanupWaitsUntilArticleRegistrationCommitIsComplete() throws Exception {
-		DefaultArticleManager articleManager = new DefaultArticleManager("test");
+		DefaultArticleManager articleManager = new DefaultArticleManager(environment.environment);
 		Article article = Article.createTemporaryArticle(
-				"content", "Article-" + UUID.randomUUID(), "test", new RootType());
+				environment.environment, "content", "Article-" + UUID.randomUUID(), new RootType());
 		Section<?> section = article.getRootSection();
 		LongOperation operation = new AbstractLongOperation() {
 			@Override
@@ -55,11 +62,11 @@ public class LongOperationUtilsTest {
 		try {
 			// During a batch registration, section IDs can temporarily point to sections that are not live yet. An event
 			// for one of the other articles must not clean the operation in this transient state.
-			EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleRegisteredEvent(article));
 			assertSame(operation, LongOperationUtils.getLongOperation(section, operationId));
 		}
 		finally {
-			EventManager.getInstance().fireEvent(new ArticleManagerCommitDoneEvent(articleManager, Set.of(article.getTitle())));
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleManagerCommitDoneEvent(articleManager, Set.of(article.getTitle())));
 			article.destroy(null);
 			ArticleLifecycleFixture.closeManager(articleManager);
 		}

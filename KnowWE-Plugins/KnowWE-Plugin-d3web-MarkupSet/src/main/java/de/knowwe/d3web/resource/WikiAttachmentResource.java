@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import de.d3web.core.knowledge.Resource;
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -39,8 +40,10 @@ public class WikiAttachmentResource implements Resource {
 	private final String knowledgebasePath;
 	private final String attachmentPath;
 	private final long attachmentSize;
+	private final WikiConnector connector;
 
-	public WikiAttachmentResource(String knowledgebasePath, String attachmentPath) throws IOException {
+	public WikiAttachmentResource(@NotNull WikiConnector connector, String knowledgebasePath, String attachmentPath) throws IOException {
+		this.connector = connector;
 		this.attachmentPath = attachmentPath;
 		this.knowledgebasePath = knowledgebasePath;
 
@@ -67,9 +70,7 @@ public class WikiAttachmentResource implements Resource {
 	}
 
 	private WikiAttachment getAttachment() throws IOException {
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		WikiAttachment attachment = wikiConnector.getAttachment(attachmentPath);
-		return attachment;
+		return connector.getAttachment(attachmentPath);
 	}
 
 }

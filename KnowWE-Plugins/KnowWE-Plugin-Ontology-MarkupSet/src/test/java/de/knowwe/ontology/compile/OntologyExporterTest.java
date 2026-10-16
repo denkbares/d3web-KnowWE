@@ -23,7 +23,7 @@ public class OntologyExporterTest {
 		Map<String, Timer> timers = new HashMap<>();
 		timers.put(UUID.randomUUID().toString(), timer);
 		try {
-			OntologyExporter.cancelOutdatedTimers(timers);
+			OntologyExporter.cancelOutdatedTimers(id -> false, timers);
 			assertTrue(timers.isEmpty());
 			assertThrows(IllegalStateException.class, () -> timer.schedule(new TimerTask() {
 				@Override public void run() { }

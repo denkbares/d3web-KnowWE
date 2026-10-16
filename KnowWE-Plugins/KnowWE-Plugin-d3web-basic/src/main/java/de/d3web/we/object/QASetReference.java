@@ -55,7 +55,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult string) {
-			Renderer delegate = PlainText.getInstance().getRenderer();
+			Renderer delegate = new PlainText().getRenderer();
 
 			// check if section is Questionnaire to use other renderer
 			Collection<D3webCompiler> compilers = Compilers.getCompilers(section,

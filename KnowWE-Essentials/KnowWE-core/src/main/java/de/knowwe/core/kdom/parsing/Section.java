@@ -42,9 +42,10 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -67,23 +68,10 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  *
  * @author Jochen
  */
-public final class Section<T extends Type> implements Comparable<Section<? extends Type>> {
+public final class Section<T extends Type> implements Comparable<Section<? extends Type>>, HasEnvironment {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Section.class);
 
-	/**
-	 * Stores Sections by their IDs.
-	 */
-	private static final Map<String, Section<?>> sectionMap = new HashMap<>(2048);
-
-	static {
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			LOGGER.info("Clearing sections.");
-			synchronized (sectionMap) {
-				sectionMap.clear();
-			}
-		});
-	}
 
 	private List<Integer> position = null;
 
@@ -410,12 +398,34 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return KnowWEUtils.getPackageManager(this).getPackagesOfSection(this);
 	}
 
-	public String getWeb() {
-		return this.article.getWeb();
-	}
-
 	public Article getArticle() {
 		return this.article;
+	}
+
+	/**
+	 * Returns the environment this section belongs to, via its article (and its article manager for temporary
+	 * articles).
+	 *
+	 * @throws IllegalStateException if the section belongs to no environment, e.g. in a plain unit test
+	 */
+	@NotNull
+	@Override
+	public Environment getEnvironment() {
+		Environment environment = findEnvironment();
+		if (environment == null) {
+			throw new IllegalStateException("No environment available for section of article '" + getTitle() + "'");
+		}
+		return environment;
+	}
+
+	/**
+	 * Returns the environment this section belongs to, via its article, or null if there is none.
+	 */
+	@Nullable
+	@Override
+	public Environment findEnvironment() {
+		Article article = getArticle();
+		return article == null ? null : article.findEnvironment();
 	}
 
 	/**
@@ -465,11 +475,15 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	@NotNull
 	public String getID() {
 		if (!hasID()) {
-			synchronized (sectionMap) {
+			synchronized (idLock(this)) {
 				if (!hasID()) {
-					id = UUID.nameUUIDFromBytes(getSignatureString().getBytes(StandardCharsets.UTF_8))
+					String computed = UUID.nameUUIDFromBytes(getSignatureString().getBytes(StandardCharsets.UTF_8))
 							.toString().replace("-", "");
-					if (article.isPublished()) sectionMap.put(id, this);
+					if (article.isPublished()) {
+						SectionRegistry registry = registry(this);
+						if (registry != null) registry.put(computed, this);
+					}
+					id = computed;
 				}
 			}
 		}
@@ -664,11 +678,34 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return List.copyOf(path);
 	}
 
+	/**
+	 * Returns the section registry of the environment the section belongs to, or null if the section does not belong
+	 * to an environment (e.g. articles created in plain unit tests). Only published sections are registered, and only
+	 * managed articles get published, so every section that needs the registry has one.
+	 */
+	@Nullable
+	private static SectionRegistry registry(Section<?> section) {
+		Environment environment = section.findEnvironment();
+		return environment == null ? null : environment.getSectionRegistry();
+	}
+
+	/**
+	 * Returns the object to synchronize id creation and (un-)registration on: the registry of the section's
+	 * environment, or the section itself if there is no environment.
+	 */
+	@NotNull
+	private static Object idLock(Section<?> section) {
+		SectionRegistry registry = registry(section);
+		return registry != null ? registry : section;
+	}
+
 	/** Publishes an already requested ID; does not eagerly allocate IDs for the rest of the tree. */
 	public static void publishSectionID(Section<?> section) {
-		synchronized (sectionMap) {
+		SectionRegistry registry = registry(section);
+		if (registry == null) return;
+		synchronized (registry) {
 			if (!section.hasID() || !section.getArticle().isPublished()) return;
-			sectionMap.put(section.id, section);
+			registry.put(section.id, section);
 		}
 	}
 
@@ -682,7 +719,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @created 04.12.2012
 	 */
 	public static void unregisterOrUpdateSectionID(Section<?> section, Article newArticle) {
-		synchronized (sectionMap) {
+		synchronized (idLock(section)) {
 			if (section.hasID()) {
 				if (newArticle != null && section.article.getSectionIdNamespace().equals(newArticle.getSectionIdNamespace())) {
 					Section<?> newSection = Sections.get(newArticle, section.getPositionInKDOM());
@@ -696,21 +733,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	private static void unregisterID(Section<?> section) {
-		synchronized (sectionMap) {
-			sectionMap.remove(section.id, section);
-		}
-	}
-
-	/**
-	 * This method is protected, use {@link Sections#get(String)} instead.
-	 *
-	 * @param id is the ID of the Section to be returned
-	 * @return the Section for the given ID or null if no Section exists for this ID.
-	 */
-	static Section<?> get(String id) {
-		synchronized (sectionMap) {
-			return sectionMap.get(id);
-		}
+		SectionRegistry registry = registry(section);
+		if (registry != null) registry.remove(section.id, section);
 	}
 
 	/**

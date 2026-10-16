@@ -76,13 +76,13 @@ public class UploadSnapshotAction extends AbstractAction {
 					throw new RuntimeException("'AutosaveSnapshot' can not be part of your filename. Try to use a more descriptive filename");
 				}
 
-				if (storageLimitWasReached()) {
+				if (storageLimitWasReached(context.getEnvironment())) {
 					throw new RuntimeException("Snapshot limit was reached. Please delete a snapshot before continuing.");
 				}
 
 				// store file
 				try {
-					File newSnapshotFile = new File(getSnapshotsPath(), file.getName());
+					File newSnapshotFile = new File(getSnapshotsPath(context.getEnvironment()), file.getName());
 					file.write(newSnapshotFile);
 				}
 				catch (Exception e) {

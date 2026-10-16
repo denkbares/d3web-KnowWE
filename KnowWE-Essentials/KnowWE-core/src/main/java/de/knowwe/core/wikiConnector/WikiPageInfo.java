@@ -24,6 +24,7 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 
 public class WikiPageInfo implements WikiObjectInfo {
 
@@ -32,8 +33,21 @@ public class WikiPageInfo implements WikiObjectInfo {
 	private final int version;
 	private final Date date;
 	private final String changeNote;
+	private final @Nullable WikiConnector connector;
 
-	public WikiPageInfo(String name, String author, int version, Date date, String changeNote) {
+	public WikiPageInfo(@NotNull WikiConnector connector, String name, String author, int version, Date date, String changeNote) {
+		this(name, author, version, date, changeNote, connector);
+	}
+
+	/**
+	 * For subclasses that carry the page text themselves and override {@link #getText()}.
+	 */
+	protected WikiPageInfo(String name, String author, int version, Date date, String changeNote) {
+		this(name, author, version, date, changeNote, null);
+	}
+
+	private WikiPageInfo(String name, String author, int version, Date date, String changeNote, @Nullable WikiConnector connector) {
+		this.connector = connector;
 		this.name = name;
 		this.author = author;
 		this.version = version;
@@ -42,7 +56,8 @@ public class WikiPageInfo implements WikiObjectInfo {
 	}
 
 	public String getText() {
-		return Environment.getInstance().getWikiConnector().getArticleText(name, version);
+		if (connector == null) throw new IllegalStateException("page info without connector must override getText()");
+		return connector.getArticleText(name, version);
 	}
 
 	@Override

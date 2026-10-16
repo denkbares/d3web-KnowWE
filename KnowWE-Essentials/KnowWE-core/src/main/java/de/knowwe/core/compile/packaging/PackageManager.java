@@ -100,8 +100,8 @@ public class PackageManager {// implements EventListener {
 
 	public static void addPackageAnnotation(DefaultMarkup markup, boolean warnForNotCompiledPackage) {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
-		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageRule(warnForNotCompiledPackage));
+		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, () -> new PackageAnnotationNameType());
+		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, () -> new PackageRule(warnForNotCompiledPackage));
 		markup.getAnnotation(PACKAGE_ATTRIBUTE_NAME)
 				.setDocumentation("Configure the package or package rule to which the content of the markup belongs.");
 	}
@@ -528,7 +528,7 @@ public class PackageManager {// implements EventListener {
 			packageToCompilingSections.computeIfAbsent(object, k -> new LinkedHashSet<>()).add(section);
 		}
 
-		EventManager.getInstance().fireEvent(new RegisteredPackageCompileSectionEvent(section));
+		KnowWEUtils.getEventManager(section).fireEvent(new RegisteredPackageCompileSectionEvent(section));
 	}
 
 	public boolean unregisterPackageCompileSection(Section<? extends PackageCompileType> section) {
@@ -545,7 +545,7 @@ public class PackageManager {// implements EventListener {
 			}
 		}
 
-		EventManager.getInstance().fireEvent(new UnregisteredPackageCompileSectionEvent(section));
+		KnowWEUtils.getEventManager(section).fireEvent(new UnregisteredPackageCompileSectionEvent(section));
 		return removed;
 	}
 

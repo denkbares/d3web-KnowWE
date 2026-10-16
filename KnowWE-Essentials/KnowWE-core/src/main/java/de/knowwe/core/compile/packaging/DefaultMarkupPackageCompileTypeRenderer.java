@@ -89,7 +89,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		Set<Article> errorArticles = new HashSet<>();
 		Set<Article> warningArticles = new HashSet<>();
 
-		for (Section<?> sectionWithMessage : Messages.getSectionsWithMessages(Message.Type.WARNING, Message.Type.ERROR)) {
+		for (Section<?> sectionWithMessage : Messages.getSectionsWithMessages(user.getEnvironment(), Message.Type.WARNING, Message.Type.ERROR)) {
 			if (!sectionWithMessage.getPackageNames().contains(packageName)) continue;
 			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
 			Collection<Message> errors = new ArrayList<>();

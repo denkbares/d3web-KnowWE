@@ -141,7 +141,7 @@ public class QuickInterviewRenderer {
 		// buffi.append("<link rel='stylesheet' type='text/css' href='KnowWEExtension/css/quicki.css' />");
 		this.kb = c.getKnowledgeBase();
 		this.session = c;
-		this.web = section.getWeb();
+		this.web = "default_web";
 		this.section = section;
 		this.kbSectionId = Objects.requireNonNull(D3webUtils.getCompiler(user, section)).getCompileSection().getID();
 		this.namespace = kb.getId();

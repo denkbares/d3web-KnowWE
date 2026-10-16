@@ -37,6 +37,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.utils.KnowWEUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import de.knowwe.core.Environment;
 
 /**
  * A simple type to be used in name annotations (and similar). It will register the section with the name/content of the
@@ -61,9 +62,9 @@ public class RegisteredNameType extends SimpleDefinition {
 	}
 
 	@NotNull
-	public static <T extends Type> Collection<Section<T>> getNamedMarkupSections(String registeredName, Class<T> registeredType) {
+	public static <T extends Type> Collection<Section<T>> getNamedMarkupSections(@NotNull Environment environment, String registeredName, Class<T> registeredType) {
 		if (registeredName == null) return Collections.emptyList();
-		DefaultGlobalCompiler defaultGlobalCompiler = Compilers.getGlobalCompiler(KnowWEUtils.getDefaultArticleManager());
+		DefaultGlobalCompiler defaultGlobalCompiler = Compilers.getGlobalCompiler(environment.getArticleManager());
 		Section<? extends Type> registeredSections = defaultGlobalCompiler.getTerminologyManager()
 				.getTermDefiningSection(new Identifier(registeredType.getSimpleName(), registeredName));
 		return $(registeredSections).closest(registeredType).asList();

@@ -40,7 +40,7 @@ public class ExpandCurrentConceptAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter("kdomid");
 		String conceptName = context.getParameter("concept");
-		Section<?> section = Sections.get(sectionID);
+		Section<?> section = Sections.get(context, sectionID);
 
 		String annotation = DefaultMarkupType.getAnnotation(section, "concept");
 		if (annotation != null) {
@@ -54,7 +54,7 @@ public class ExpandCurrentConceptAction extends AbstractAction {
 						.getID(), annotation);
 
 				if (rr != null) {
-					Section<?> newSection = Sections.get(Utils.findNewIDFromRenderResult(rr));
+					Section<?> newSection = Sections.get(context, Utils.findNewIDFromRenderResult(rr));
 					Section<VisualizationType> ancestorSection = Sections.ancestor(newSection, VisualizationType.class);
 					context.getOutputStream().write(ancestorSection.getID().getBytes());
 				}

@@ -19,19 +19,23 @@
 package de.knowwe.ontology.turtle;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.RecursiveType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 
 public class PredicateObjectSentenceList extends AbstractType {
 
-	private static PredicateObjectSentenceList instance = null;
+	/**
+	 * Recursive type: it is referenced from within its own child graph (BlankNode). {@link RecursiveType} registers the
+	 * instance before its children are built, so the recursion resolves to the same instance and construction
+	 * terminates. The scope is per construction (and therefore per environment); see S4.7.
+	 */
+	private static final ThreadLocal<PredicateObjectSentenceList> CONSTRUCTION = new ThreadLocal<>();
 
-	public static PredicateObjectSentenceList getInstance() {
-		if (instance == null) {
-			instance = new PredicateObjectSentenceList();
-			instance.init();
-		}
-		return instance;
+	public static PredicateObjectSentenceList create() {
+		return RecursiveType.create(CONSTRUCTION,
+				PredicateObjectSentenceList::new,
+				PredicateObjectSentenceList::init);
 	}
 
 	private PredicateObjectSentenceList() {

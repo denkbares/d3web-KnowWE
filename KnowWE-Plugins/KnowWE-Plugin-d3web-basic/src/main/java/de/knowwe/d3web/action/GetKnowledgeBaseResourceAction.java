@@ -57,7 +57,6 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getParameter("web");
 		String topic = context.getParameter("topic");
 		String path = context.getPath();
 		if (!KnowWEUtils.canView(topic, context)) {
@@ -65,7 +64,7 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 					"You are not allowed to access resources of this knowledge base");
 			return;
 		}
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(web, topic);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context.getArticleManager(), topic);
 		if (kb == null) {
 			context.sendError(404, "The specified knowledge base does not exist.");
 			return;

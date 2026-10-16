@@ -31,16 +31,10 @@ public abstract class AttachmentEvent implements Event {
 
 	private final String parentName;
 	private final String fileName;
-	private final String web;
 
-	public AttachmentEvent(String web, String parentName, String fileName) {
-		this.web = web;
+	public AttachmentEvent(String parentName, String fileName) {
 		this.parentName = parentName;
 		this.fileName = fileName;
-	}
-
-	public String getWeb() {
-		return web;
 	}
 
 	/**

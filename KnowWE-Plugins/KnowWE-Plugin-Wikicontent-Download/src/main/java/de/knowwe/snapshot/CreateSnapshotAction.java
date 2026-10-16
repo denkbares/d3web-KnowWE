@@ -40,17 +40,17 @@ public class CreateSnapshotAction extends SnapshotAction {
 			return;
 		}
 		String snapshotNameParam = context.getParameter("name");
-		String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(SNAPSHOT);
+		String wikiContentZipFilename = DownloadWikiZIPAction.generateWikiContentZipFilename(context.getEnvironment(), SNAPSHOT);
 		try {
 			if (snapshotNameParam != null && !snapshotNameParam.isBlank()) {
 				String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 				wikiContentZipFilename = timestamp + "_" + SNAPSHOT + "_" + snapshotNameParam + ".zip";
 			}
-			if (storageLimitWasReached()) {
+			if (storageLimitWasReached(context.getEnvironment())) {
 				throw new IOException("Snapshot limit was reached. Please delete a snapshot before continuing. " +
 						"(You can still download the current wiki with \"Download Wiki-Zip\" in the admin markup.)");
 			}
-			String createdFilePath = createAndStoreWikiContentSnapshot(context, getSnapshotsPath(), wikiContentZipFilename);
+			String createdFilePath = createAndStoreWikiContentSnapshot(context, getSnapshotsPath(context.getEnvironment()), wikiContentZipFilename);
 			// File downloadableTmpFile = new File(TmpFileDownloadToolProvider.getTmpFileFolder(), createdFilePath);
 			// FileUtils.copyFile(new File(createdFilePath), downloadableTmpFile);
 			// DownloadFileAction.writeFileToDownloadStream(context, downloadableTmpFile, createdFilePath, false);

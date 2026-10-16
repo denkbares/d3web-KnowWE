@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.Environment.CompilationMode;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -43,19 +45,23 @@ import de.knowwe.event.KDOMCreatedEvent;
  *
  * @author Jochen
  */
-public final class Article {
+public final class Article implements HasEnvironment {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Article.class);
 
 	public static final int LOG_THRESHOLD = 50;
 	private static final Pattern REMOVE_PATTERN = Pattern.compile("[\u200B\r]");
 	private static final Pattern WHITE_SPACE_PATTERN = Pattern.compile("[\u00A0\u2000-\u200B\u202F\u205F\u2060\u3000\u180E]");
 	private final ArticleManager articleManager;
+
+	/**
+	 * The environment this article belongs to; for temporary articles the environment they were created for.
+	 */
+	private final Environment environment;
 	/**
 	 * Name of this article (topic-name)
 	 */
 	private final String title;
 
-	private final String web;
 	private final String text;
 	private boolean sectionized = false;
 	private enum Lifecycle { DRAFT, PUBLISHED, RETIRED }
@@ -99,45 +105,38 @@ public final class Article {
 	 *                  versions if possible
 	 */
 	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, manager.getWeb(), manager, fullParse);
+		return createArticle(text, title, manager, fullParse, environmentOf(manager).getRootType());
 	}
 
 	/**
-	 * Create a new temporary article by parsing the given text into a section tree (KDOM). Use this method if and only
-	 * if the article will not be added to an article manager.
-	 *
-	 * @param text  the text of the article
-	 * @param title the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param web   the web the article belongs to (currently unused)
+	 * Creates a temporary article (not registered at any article manager) for the given environment.
 	 */
-	public static Article createTemporaryArticle(String text, String title, String web) {
-		return createArticle(text, title, web, null, true);
+	public static Article createTemporaryArticle(@NotNull Environment environment, String text, String title) {
+		return createArticle(text, title, null, environment, true, environment.getRootType());
 	}
 
-	public static Article createTemporaryArticle(String text, String title, String web, RootType root) {
-		return createArticle(text, title, web, null, true, root);
-	}
-
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
-		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType());
+	public static Article createTemporaryArticle(@NotNull Environment environment, String text, String title, RootType root) {
+		return createArticle(text, title, null, environment, true, root);
 	}
 
 	/**
-	 * Create a new article by parsing the given text into a section tree (KDOM)
-	 *
-	 * @param text      the text of the article
-	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param web       the web the article belongs to (currently unused)
-	 * @param manager   the article manager the article belongs to
-	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
-	 *                  versions if possible
-	 * @param root      RootType to be used
+	 * The environment of the manager, or the current one for articles without manager (temporary articles).
 	 */
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
+	private static Environment environmentOf(@Nullable ArticleManager manager) {
+		Environment environment = manager.findEnvironment();
+		if (environment == null) throw new IllegalStateException("Cannot create article: no environment available");
+		return environment;
+	}
+
+	private static Article createArticle(String text, String title, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
+		return createArticle(text, title, manager, null, fullParse, root);
+	}
+
+	private static Article createArticle(String text, String title, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, RootType root) {
 		Article article = null;
 		boolean complete = false;
 		try {
-			article = new Article(text, title, web, manager, fullParse, root);
+			article = new Article(text, title, manager, temporaryEnvironment, fullParse, root);
 			article.initialize();
 			complete = true;
 			return article;
@@ -151,28 +150,31 @@ public final class Article {
 		}
 	}
 
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root) {
+	private Article(@NotNull String text, @NotNull String title, @Nullable ArticleManager manager, @Nullable Environment temporaryEnvironment, boolean fullParse, @Nullable RootType root) {
 		if (root == null) {
-			rootType = RootType.getInstance();
+			rootType = manager.getEnvironment().getRootType();
 		}
 		else {
 			rootType = root;
 		}
 		this.title = title;
-		this.web = web;
 		String cleanedText = cleanupText(text);
 		this.text = cleanedText;
 		this.articleManager = manager;
+		Environment environment = manager != null ? manager.getEnvironment() : temporaryEnvironment;
+		if (environment == null) throw new IllegalStateException("article '" + title + "' created without an environment");
+		this.environment = environment;
 		this.publicationPredecessor = articleManager != null ? articleManager.getArticle(title) : null;
 		// Keep the established initialization behavior: before the environment is ready, parsing must not reuse an
 		// existing KDOM. The publication predecessor is nevertheless needed independently for the ID namespace.
-		this.lastVersion = Environment.isInitialized() ? publicationPredecessor : null;
+		this.lastVersion = environment.isReady() ? publicationPredecessor : null;
 		this.sectionIdNamespace = publicationPredecessor != null && publicationPredecessor.text.equals(cleanedText)
 				? publicationPredecessor.sectionIdNamespace : UUID.randomUUID().toString();
 
 		this.fullParse = fullParse
 				|| lastVersion == null
-				|| Environment.getInstance().getCompilationMode() == CompilationMode.DEFAULT;
+				|| environment == null
+				|| environment.getCompilationMode() == CompilationMode.DEFAULT;
 	}
 
 	private void initialize() {
@@ -273,7 +275,7 @@ public final class Article {
 		rootSection.setParent(null);
 		constructionRootSection = null;
 
-		EventManager.getInstance().fireEvent(new KDOMCreatedEvent(this));
+		KnowWEUtils.getEventManager(this).fireEvent(new KDOMCreatedEvent(this));
 	}
 
 	/**
@@ -304,10 +306,6 @@ public final class Article {
 	 */
 	public String getTitle() {
 		return title;
-	}
-
-	public String getWeb() {
-		return web;
 	}
 
 	/**
@@ -360,7 +358,6 @@ public final class Article {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		result = prime * result + ((web == null) ? 0 : web.hashCode());
 		return result;
 	}
 
@@ -371,14 +368,10 @@ public final class Article {
 		if (getClass() != obj.getClass()) return false;
 		Article other = (Article) obj;
 		if (title == null) {
-			if (other.title != null) return false;
-		}
-		else if (!title.equals(other.title)) return false;
-		if (web == null) {
-			return other.web == null;
+			return other.title == null;
 		}
 		else {
-			return web.equals(other.web);
+			return title.equals(other.title);
 		}
 	}
 
@@ -396,5 +389,30 @@ public final class Article {
 
 	public boolean isTemporary() {
 		return articleManager == null;
+	}
+
+	/**
+	 * Returns the environment this article belongs to, or null if there is none (e.g. articles created in plain unit
+	 * tests without an environment).
+	 */
+	@Nullable
+	@Override
+	public Environment findEnvironment() {
+		if (environment != null) return environment;
+		ArticleManager manager = getArticleManager();
+		return manager == null ? null : manager.getEnvironment();
+	}
+
+	/**
+	 * Returns the environment this article belongs to. For temporary articles this is the environment they were created
+	 * for.
+	 *
+	 * @throws IllegalStateException if the article has no environment
+	 */
+	@NotNull
+	@Override
+	public Environment getEnvironment() {
+		if (environment == null) throw new IllegalStateException("Article '" + title + "' has no environment");
+		return environment;
 	}
 }

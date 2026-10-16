@@ -12,35 +12,104 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventManager;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
+import de.knowwe.core.EnvironmentService;
 
 public class LongOperationUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LongOperationUtils.class);
 
-	private static ExecutorService threadPool;
+	/**
+	 * The long operations of one environment: the registered operations per section and the thread pool they run
+	 * in. Closed together with the environment, which stops the pool and drops the registrations.
+	 */
+	public static final class LongOperations implements EnvironmentService {
 
-	public static ExecutorService getThreadPool() {
-		// initialize thread pool if not exists
-		if (threadPool == null) {
-			int threadCount = Runtime.getRuntime().availableProcessors() * 3 / 2;
-			threadPool = Executors.newFixedThreadPool(threadCount, runnable -> {
-				Thread thread = new Thread(runnable, "long-operation-thread");
-				thread.setPriority(Thread.MIN_PRIORITY);
-				return thread;
-			});
-			LOGGER.debug("created multicore thread pool of size " + threadCount);
+		public static final ServiceKey<LongOperations> SERVICE = ServiceKey.of(LongOperations.class, LongOperations::new);
+
+		private final Map<String, Map<String, LongOperation>> operations = new ConcurrentHashMap<>();
+		private ExecutorService threadPool;
+		private final com.denkbares.events.EventListener cleaner = new com.denkbares.events.EventListener() {
+			@Override
+			public Collection<Class<? extends Event>> getEvents() {
+				return List.of(ArticleManagerCommitDoneEvent.class);
+			}
+
+			@Override
+			public void notify(Event event) {
+				cleanupOutdatedLongOperations();
+			}
+		};
+
+		private final Environment environment;
+
+		public LongOperations(@NotNull Environment environment) {
+			this.environment = environment;
+			environment.getEventManager().registerListener(cleaner);
 		}
-		// and return new executor based on the thread pool
-		return threadPool;
+
+		public synchronized ExecutorService getThreadPool() {
+			if (threadPool == null) {
+				int threadCount = Runtime.getRuntime().availableProcessors() * 3 / 2;
+				threadPool = Executors.newFixedThreadPool(threadCount, runnable -> {
+					Thread thread = new Thread(runnable, "long-operation-thread");
+					thread.setPriority(Thread.MIN_PRIORITY);
+					return thread;
+				});
+				LOGGER.debug("created multicore thread pool of size " + threadCount);
+			}
+			return threadPool;
+		}
+
+		private Map<String, LongOperation> access(Section<?> section, boolean create) {
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (section) {
+				Map<String, LongOperation> longOperationsOfSection = operations.get(section.getID());
+				if (longOperationsOfSection == null) {
+					if (!create) return Collections.emptyMap();
+					longOperationsOfSection = new LinkedHashMap<>();
+					operations.put(section.getID(), longOperationsOfSection);
+				}
+				return longOperationsOfSection;
+			}
+		}
+
+		private void cleanupOutdatedLongOperations() {
+			operations.keySet().removeIf(id -> !Sections.isLive(Sections.get(environment, id)));
+		}
+
+		@Override
+		public synchronized void close() {
+			environment.getEventManager().unregister(cleaner);
+			operations.clear();
+			if (threadPool != null) {
+				threadPool.shutdownNow();
+				threadPool = null;
+			}
+		}
+	}
+
+	private static LongOperations operations(Environment environment) {
+		return environment.getService(LongOperations.SERVICE);
+	}
+
+	/**
+	 * Returns the thread pool for long operations of the specified environment. It is stopped when the environment is
+	 * closed.
+	 */
+	public static ExecutorService getThreadPool(Environment environment) {
+		return operations(environment).getThreadPool();
 	}
 
 	/**
@@ -141,40 +210,8 @@ public class LongOperationUtils {
 		}
 	}
 
-	private volatile static com.denkbares.events.EventListener LONG_OPERATION_CLEANER = null;
-
-	private static final Map<String, Map<String, LongOperation>> LONG_OPERATIONS = new ConcurrentHashMap<>();
-
 	private static Map<String, LongOperation> accessLongOperations(Section<?> section, boolean create) {
-		lazyInitLongOperationCleaner();
-		// Equal IDs may belong to different Section instances, so a Section monitor cannot protect map creation.
-		return create ? LONG_OPERATIONS.computeIfAbsent(section.getID(), id -> new LinkedHashMap<>())
-				: LONG_OPERATIONS.getOrDefault(section.getID(), Collections.emptyMap());
-	}
-
-	private static void lazyInitLongOperationCleaner() {
-		if (LONG_OPERATION_CLEANER == null) {
-			synchronized (LongOperationUtils.class) {
-				if (LONG_OPERATION_CLEANER == null) {
-					LONG_OPERATION_CLEANER = new com.denkbares.events.EventListener() {
-						@Override
-						public Collection<Class<? extends Event>> getEvents() {
-							return List.of(ArticleManagerCommitDoneEvent.class);
-						}
-
-						@Override
-						public void notify(Event event) {
-							LongOperationUtils.cleanupOutdatedLongOperations();
-						}
-					};
-					EventManager.getInstance().registerListener(LONG_OPERATION_CLEANER);
-				}
-			}
-		}
-	}
-
-	private static void cleanupOutdatedLongOperations() {
-		LONG_OPERATIONS.keySet().removeIf(id -> !Sections.isLive(Sections.get(id)));
+		return operations(section.getEnvironment()).access(section, create);
 	}
 
 	/**

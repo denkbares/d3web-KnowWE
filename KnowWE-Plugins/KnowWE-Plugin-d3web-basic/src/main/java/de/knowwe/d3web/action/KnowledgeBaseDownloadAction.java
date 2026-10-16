@@ -125,7 +125,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			}
 		}
 
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		Section<PackageCompileType> compileSection = null;
 		if (section != null) {
 			compileSection = Sections.successor(section, PackageCompileType.class);

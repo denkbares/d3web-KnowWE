@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TermRenamings;
@@ -77,7 +76,7 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 	}
 
 	private boolean userCanEditArticle(UserActionContext context, Article article) {
-		return Environment.getInstance()
+		return context.getEnvironment()
 				.getWikiConnector()
 				.userCanEditArticle(article.getTitle(), context);
 	}

@@ -59,10 +59,10 @@ public class DefaultLogoAction extends AbstractAction {
 	 * @return the path of the logo file
 	 */
 	private String getLogoPath(UserActionContext context) {
-		String logoText = getDefaultLogoPath();
+		String logoText = getDefaultLogoPath(context);
 		String displayMode = context.getParameter("displayMode");
 		if ("dark-mode".equals(displayMode.replace("'", ""))) {
-			String darkModeLogoPath = getDarkModeLogoPath();
+			String darkModeLogoPath = getDarkModeLogoPath(context);
 			if (darkModeLogoPath != null) {
 				logoText = darkModeLogoPath;
 			}
@@ -73,9 +73,10 @@ public class DefaultLogoAction extends AbstractAction {
 	/**
 	 * Gets the path of the light-mode logo file.
 	 *
+	 * @param context the context of the request, e.g. to read wiki properties of its environment
 	 * @return the path of the default light-mode logo file
 	 */
-	public String getDefaultLogoPath() {
+	public String getDefaultLogoPath(UserActionContext context) {
 		return LOGO_PATH_LIGHT_MODE;
 	}
 
@@ -83,9 +84,10 @@ public class DefaultLogoAction extends AbstractAction {
 	 * Gets the path of the default dark-mode logo file.
 	 * If no dark-mode specific file exists, just call default method.
 	 *
+	 * @param context the context of the request, e.g. to read wiki properties of its environment
 	 * @return the path of the default dark-mode logo file
 	 */
-	public String getDarkModeLogoPath() {
+	public String getDarkModeLogoPath(UserActionContext context) {
 		return LOGO_PATH_DARK_MODE;
 	}
 

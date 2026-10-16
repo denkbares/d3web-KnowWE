@@ -45,6 +45,14 @@
 		<parameter-def id="priority" type="number" />
 	</extension-point>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener" id="OntologyExporter">
+		<parameter id="class" value="de.knowwe.ontology.compile.OntologyExporter" />
+		<parameter id="name" value="OntologyExporter" />
+		<parameter id="description" value="Exports ontologies to attachments after compilation" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SparqlFilterProviderAction">
 		<parameter id="class" value="de.knowwe.ontology.sparql.SparqlFilterProviderAction" />
 		<parameter id="name" value="SparqlFilterProviderAction" />

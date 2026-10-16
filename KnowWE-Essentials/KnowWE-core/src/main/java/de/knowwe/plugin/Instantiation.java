@@ -18,8 +18,21 @@
  */
 package de.knowwe.plugin;
 
-@FunctionalInterface
+import org.jetbrains.annotations.NotNull;
+
+import de.knowwe.core.Environment;
+
 public interface Instantiation {
 
-	void init(String web);
+	/**
+	 * Initializes this plugin part for the specified environment, right after the environment's type tree and
+	 * compilers are set up. Everything the plugin creates here (services, threads, listeners) should be attached to the
+	 * environment, e.g. via {@link Environment#getService(Class, java.util.function.Supplier)} and
+	 * {@link Environment#onClose(Runnable)}, so that it is released when the environment is closed.
+	 *
+	 * @param environment the environment being initialized
+	 */
+	default void init(@NotNull Environment environment) {
+		// default no-op; override to initialize this plugin part
+	}
 }

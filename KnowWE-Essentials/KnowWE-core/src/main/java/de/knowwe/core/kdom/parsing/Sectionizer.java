@@ -82,7 +82,7 @@ public class Sectionizer implements Parser {
 	private void splitToSections(String text, Section<?> parent, List<Type> types, int posInTypes) {
 		// use next child type, and PlainText as default last type
 		if (posInTypes > types.size()) return;
-		Type type = posInTypes == types.size() ? PlainText.getInstance() : types.get(posInTypes);
+		Type type = posInTypes == types.size() ? new PlainText() : types.get(posInTypes);
 		posInTypes++;
 
 		// check for valid sectionizable type

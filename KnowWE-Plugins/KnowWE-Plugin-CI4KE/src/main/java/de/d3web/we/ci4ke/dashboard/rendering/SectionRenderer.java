@@ -4,7 +4,6 @@
 
 package de.d3web.we.ci4ke.dashboard.rendering;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -27,7 +26,7 @@ public class SectionRenderer implements ObjectNameRenderer {
 	public void render(UserContext context, String objectName, RenderResult result) {
 		Section<?> section = null;
 		try {
-			section = Sections.get(objectName);
+			section = Sections.get(context, objectName);
 		}
 		catch (NumberFormatException ignore) {
 		}
@@ -35,7 +34,7 @@ public class SectionRenderer implements ObjectNameRenderer {
 		if (section == null) {
 			// seems to not be the id, try annotation "name"
 			displayName = objectName;
-			section = $(Environment.getInstance().getArticleManager(context.getWeb()))
+			section = $(context.getEnvironment().getArticleManager())
 					.successor(DefaultMarkupType.class)
 					.stream()
 					.filter(s -> objectName.equals(DefaultMarkupType.getAnnotation(s, "name")))

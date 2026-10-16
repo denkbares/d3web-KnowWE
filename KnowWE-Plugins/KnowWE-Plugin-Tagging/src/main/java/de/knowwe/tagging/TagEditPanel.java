@@ -36,8 +36,7 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String topic,
-						   UserContext user, Map<String, String> values, RenderResult result) {
+	public void renderHTML(String topic, UserContext user, Map<String, String> values, RenderResult result) {
 		render(user, result);
 	}
 

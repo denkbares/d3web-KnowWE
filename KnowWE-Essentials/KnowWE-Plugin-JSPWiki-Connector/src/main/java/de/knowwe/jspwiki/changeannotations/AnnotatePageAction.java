@@ -12,6 +12,8 @@ import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.pages.PageManager;
 
 import com.denkbares.strings.Strings;
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -46,7 +48,7 @@ public class AnnotatePageAction extends AbstractAction {
 			return;
 		}
 
-		Engine engine = engineFor();
+		Engine engine = engineFor(context);
 		if (engine == null) {
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Wiki engine not available.");
 			return;
@@ -59,7 +61,7 @@ public class AnnotatePageAction extends AbstractAction {
 		}
 
 		// Per-page view permission via the same path KnowWE uses for article rendering.
-		Article article = KnowWEUtils.getDefaultArticleManager().getArticle(pageName);
+		Article article = context.getArticleManager().getArticle(pageName);
 		if (article != null && !KnowWEUtils.canView(article, context)) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to view: " + pageName);
 			return;
@@ -76,12 +78,12 @@ public class AnnotatePageAction extends AbstractAction {
 	}
 
 	/**
-	 * The wiki engine behind this request, taken from the environment's connector because an action request carries
-	 * no wiki context to take it from. This is the same lookup {@link KnowWEUtils#canView} uses above.
+	 * The wiki engine behind this request, taken from the connector of the request's environment because an action
+	 * request carries no wiki context to take it from. This is the same lookup {@link KnowWEUtils#canView} uses above.
 	 */
-	private static Engine engineFor() {
-		if (Environment.isInitialized()
-				&& Environment.getInstance().getWikiConnector() instanceof JSPWikiConnector connector) {
+	private static Engine engineFor(@NotNull UserActionContext context) {
+		Environment environment = context.findEnvironment();
+		if (environment != null && environment.getWikiConnector() instanceof JSPWikiConnector connector) {
 			return connector.getEngine();
 		}
 		return null;

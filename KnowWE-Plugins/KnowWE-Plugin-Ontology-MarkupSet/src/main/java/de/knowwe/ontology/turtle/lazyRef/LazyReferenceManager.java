@@ -10,11 +10,12 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerRemovedEvent;
 import de.knowwe.core.compile.Compilers;
@@ -25,22 +26,45 @@ import de.knowwe.core.compile.terminology.TermDefinitionUnregisteredEvent;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.CompilerEvent;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
+import de.knowwe.core.EnvironmentService;
 
-public class LazyReferenceManager implements EventListener {
+public class LazyReferenceManager implements EventListener, EnvironmentService {
+	public static final ServiceKey<LazyReferenceManager> SERVICE = ServiceKey.of(LazyReferenceManager.class, environment -> {
+		LazyReferenceManager manager = new LazyReferenceManager(environment);
+		environment.getEventManager().registerListener(manager);
+		return manager;
+	});
 
-	public static LazyReferenceManager instance = null;
+
+	private final Environment environment;
 
 	private final Map<TermCompiler, Map<String, Set<Identifier>>> cache = new WeakHashMap<>();
 
-	private LazyReferenceManager() {
+	private LazyReferenceManager(@NotNull Environment environment) {
+		this.environment = environment;
 	}
 
-	public static LazyReferenceManager getInstance() {
-		if (instance == null) {
-			instance = new LazyReferenceManager();
-			EventManager.getInstance().registerListener(instance);
+	/**
+	 * Returns the lazy reference manager of the specified environment, created on first access and closed together
+	 * with the environment.
+	 *
+	 * @param source anything that knows its environment: a section, article, article manager, compiler,
+	 *               user context - or the environment itself
+	 */
+	@NotNull
+	public static LazyReferenceManager of(@NotNull HasEnvironment source) {
+		Environment environment = source.getEnvironment();
+		return environment.getService(LazyReferenceManager.SERVICE);
+	}
+
+	@Override
+	public void close() {
+		environment.getEventManager().unregister(this);
+		synchronized (this) {
+			cache.clear();
 		}
-		return instance;
 	}
 
 	@Override

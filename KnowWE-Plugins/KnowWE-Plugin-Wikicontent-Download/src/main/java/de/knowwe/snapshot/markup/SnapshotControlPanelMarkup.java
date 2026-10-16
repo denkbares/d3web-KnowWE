@@ -30,7 +30,7 @@ public class SnapshotControlPanelMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup(SNAPSHOT_MARKUP);
-		MARKUP.addContentType(new SnapshotControlPanelMarkupContent());
+		MARKUP.addContentType(() -> new SnapshotControlPanelMarkupContent());
 		MARKUP.addAnnotation(DEPENDENCY);
 	}
 

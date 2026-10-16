@@ -29,7 +29,7 @@ public class QuestionTreeRootType extends QuestionTree {
 
 	static {
 		m = new DefaultMarkup("Question");
-		m.addContentType(new QuestionDashTree());
+		m.addContentType(() -> new QuestionDashTree());
 		PackageManager.addPackageAnnotation(m);
 	}
 

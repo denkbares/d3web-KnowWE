@@ -43,10 +43,9 @@ public abstract class GraphDataBuilder {
 	protected GraphVisualizationRenderer graphRenderer = null;
 	protected boolean isTimeOut;
 
-	public static String createBaseURL() {
-		if (Environment.getInstance() != null
-				&& Environment.getInstance().getWikiConnector() != null) {
-			return Environment.getInstance().getWikiConnector().getBaseUrl() + "Wiki.jsp";
+	public static String createBaseURL(Environment environment) {
+		if (environment.getWikiConnector() != null) {
+			return environment.getWikiConnector().getBaseUrl() + "Wiki.jsp";
 		}
 		else {
 			// for tests only
@@ -130,7 +129,7 @@ public abstract class GraphDataBuilder {
 	}
 
 	public String createConceptURL(String to) {
-		return createBaseURL() + "?page=" + section.getTitle() + "&concept=" + to;
+		return createBaseURL(section.getEnvironment()) + "?page=" + section.getTitle() + "&concept=" + to;
 	}
 
 	/**

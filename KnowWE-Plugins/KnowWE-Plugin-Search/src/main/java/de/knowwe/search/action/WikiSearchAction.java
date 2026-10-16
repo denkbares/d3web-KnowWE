@@ -91,11 +91,9 @@ public class WikiSearchAction extends AbstractAction {
 	private static final int SCAN_FACTOR = 8;
 	private static final int MAX_SCAN = 300;
 
-	private final SearchResultRenderer renderer = new SearchResultRenderer();
-
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		WikiSearchService service = WikiSearchService.getInstance();
+		WikiSearchService service = WikiSearchService.of(context.getEnvironment());
 		WikiSearcher searcher = service.getSearcher();
 
 		JSONObject answer = new JSONObject();
@@ -234,7 +232,7 @@ public class WikiSearchAction extends AbstractAction {
 		if (rendering != null) json.put("url", rendering);
 		// only for the hits actually shown: rendering costs a wiki-syntax pass each
 		if (withPreview) {
-			SearchResultRenderer.Rendered rendered = renderer.render(hit.anchor(), context);
+			SearchResultRenderer.Rendered rendered = new SearchResultRenderer(context.getEnvironment()).render(hit.anchor(), context);
 			if (rendered != null) {
 				json.put("previewHtml", rendered.html());
 				if (rendered.stale()) json.put("stale", true);

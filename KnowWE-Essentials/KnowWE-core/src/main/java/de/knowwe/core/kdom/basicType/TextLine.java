@@ -27,12 +27,12 @@ import de.knowwe.kdom.sectionFinder.LineSectionFinder;
 public class TextLine extends AbstractType {
 
 	public TextLine() {
-		this(LineContent.getInstance());
+		this(new LineContent());
 	}
 
 	public TextLine(Type lineContent) {
 		this.addChildType(new LineBreak());
-		this.addChildType(EndLineComment.getInstance());
+		this.addChildType(new EndLineComment());
 		this.addChildType(lineContent);
 		setSectionFinder(LineSectionFinder.getInstance());
 	}

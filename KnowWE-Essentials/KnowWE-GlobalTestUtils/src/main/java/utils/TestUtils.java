@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.Attributes;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.action.UserActionContext;
@@ -108,18 +110,24 @@ public class TestUtils {
 	 * Creates an @link{UserActionContext} for test purposes. Both parameters
 	 * are optional (in case you don't need the Action...)
 	 *
+	 * @param environment the environment the context works in
 	 * @param actionName <strong>optional:</strong> The name of the desired
 	 *                   Action
 	 * @param path       <strong>optional:</strong> special path (very unlikely that
 	 *                   you need this)
 	 * @created Apr 28, 2011
 	 */
-	public static UserActionContext createTestActionContext(String actionName, String path) {
+	public static UserActionContext createTestActionContext(@NotNull Environment environment, String actionName, String path) {
 		Map<String, String> map = new HashMap<>();
-		map.put(Attributes.WEB, Environment.DEFAULT_WEB);
 		map.put(Attributes.USER, "Test User");
+		// there is no servlet context in tests, the action context belongs to the given environment
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",
-				map, new TestHttpServletRequest(), null, null, new TestAuthenticationManager());
+				map, new TestHttpServletRequest(), null, null, new TestAuthenticationManager()) {
+			@Override
+			public @NotNull Environment findEnvironment() {
+				return environment;
+			}
+		};
 	}
 
 	public static int countMatches(String text, String regex) {
@@ -135,8 +143,8 @@ public class TestUtils {
 	/**
 	 * Called by the Core-Junit-Tests
 	 */
-	public static void processAndUpdateArticleJunit(String username, String content, String topic, String web) {
-		Environment.getInstance().getArticleManager(web).registerArticle(topic, content);
+	public static void processAndUpdateArticleJunit(String username, String content, String topic, @NotNull ArticleManager articleManager) {
+		articleManager.registerArticle(topic, content);
 	}
 
 	public static String createKnowWEExtensionPath() {

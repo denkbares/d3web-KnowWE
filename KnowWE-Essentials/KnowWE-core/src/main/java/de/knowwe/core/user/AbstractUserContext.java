@@ -94,7 +94,7 @@ public abstract class AbstractUserContext implements UserContext {
 		else {
 			String sectionId = getSectionId();
 			if (Strings.isNotBlank(sectionId)) {
-				return Sections.get(sectionId).getArticle();
+				return Sections.get(this, sectionId).getArticle();
 			}
 			else {
 				throw new NoSuchElementException("Request is missing parameter to locate current Article");
@@ -104,20 +104,6 @@ public abstract class AbstractUserContext implements UserContext {
 
 	private String getSectionId() {
 		return this.getParameter(Attributes.SECTION_ID);
-	}
-
-	/**
-	 * Returns the web of the user's is currently visiting. It is the web the
-	 * article belongs to.
-	 *
-	 * @return the article's web
-	 * @created 04.03.2011
-	 */
-	@Override
-	public String getWeb() {
-		String web = this.getParameter(Attributes.WEB);
-		if (web == null) web = Environment.DEFAULT_WEB;
-		return web;
 	}
 
 	@Override
@@ -133,9 +119,17 @@ public abstract class AbstractUserContext implements UserContext {
 				: defaultValue;
 	}
 
+	/**
+	 * The environment this context works in. Subclasses know it from their request, servlet context or wiki engine;
+	 * it must not be derived from {@link #getArticleManager()}, which is defined the other way round.
+	 */
+	@Override
+	@NotNull
+	public abstract Environment findEnvironment();
+
 	@Override
 	@NotNull
 	public ArticleManager getArticleManager() {
-		return KnowWEUtils.getArticleManager(getWeb());
+		return getEnvironment().getArticleManager();
 	}
 }

@@ -30,7 +30,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -97,7 +96,7 @@ public class GetProgressAction extends AbstractAction {
 	private String getReport(UserActionContext context, LongOperation operation) {
 		final RenderResult renderResult = new RenderResult(context);
 		operation.renderReport(context, renderResult);
-		String rawResult = Environment.getInstance().getWikiConnector()
+		String rawResult = context.getEnvironment().getWikiConnector()
 				.renderWikiSyntax(renderResult.toStringRaw());
 		return RenderResult.unmask(rawResult, context);
 	}

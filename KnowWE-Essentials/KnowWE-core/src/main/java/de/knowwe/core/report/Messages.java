@@ -43,6 +43,9 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Supplier;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
@@ -60,7 +63,33 @@ public final class Messages {
 	/**
 	 * This set holds all Sections with Messages.
 	 */
-	private static final Map<Message.Type, Set<Section<?>>> sectionsWithMessages = new ConcurrentHashMap<>();
+	/**
+	 * Index of the sections that currently have messages, by message type. One per environment, see
+	 * {@link Environment#getService(Class, Supplier)}.
+	 */
+	public static final class SectionsWithMessages {
+
+		public static final ServiceKey<SectionsWithMessages> SERVICE = ServiceKey.of(SectionsWithMessages.class, environment -> new SectionsWithMessages());
+
+		private final Map<Message.Type, Set<Section<?>>> byType = new ConcurrentHashMap<>();
+	}
+
+	@NotNull
+	private static Map<Message.Type, Set<Section<?>>> index(@NotNull Environment environment) {
+		return environment.getService(SectionsWithMessages.SERVICE).byType;
+	}
+
+	/**
+	 * The index of the environment the section belongs to, or an empty map if the section belongs to no environment.
+	 */
+	@NotNull
+	private static Map<Message.Type, Set<Section<?>>> index(@NotNull Section<?> section) {
+		Environment environment = section.findEnvironment();
+		if (environment == null) return Collections.emptyMap();
+		// only look up, never create: reading or removing must also work while the environment is closing
+		SectionsWithMessages index = environment.getService(SectionsWithMessages.class);
+		return index == null ? Collections.emptyMap() : index.byType;
+	}
 
 	/**
 	 * Groups the given messages by their {@link Message.Type}. Sorts all groups by importance (warnings first),
@@ -159,7 +188,10 @@ public final class Messages {
 	 * @param compiler the compiler for which the messages should be removed
 	 */
 	public static void clearMessages(Compiler compiler) {
-		for (Section<?> section : getSectionsWithMessages()) {
+		// a compiler without environment (e.g. a bare test compiler) has no stored messages anywhere
+		Environment environment = compiler.findEnvironment();
+		if (environment == null) return;
+		for (Section<?> section : getSectionsWithMessages(environment)) {
 			clearMessages(compiler, section);
 		}
 	}
@@ -334,7 +366,7 @@ public final class Messages {
 				return !getMessagesMap(section).isEmpty();
 			}
 		}
-		for (Set<Section<?>> sections : sectionsWithMessages.values()) {
+		for (Set<Section<?>> sections : index(section).values()) {
 			if (sections.contains(section)) return true;
 		}
 		return false;
@@ -353,7 +385,7 @@ public final class Messages {
 				return !getMessagesMap(section, type).isEmpty();
 			}
 		}
-		return sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section);
+		return index(section).getOrDefault(type, Collections.emptySet()).contains(section);
 	}
 
 	/**
@@ -704,9 +736,9 @@ public final class Messages {
 				messagesMap.put(source, Collections.unmodifiableCollection(messages));
 				// store section for type collections
 				if (section.getArticle().isPublished()) {
+					Map<Message.Type, Set<Section<?>>> index = index(section.getEnvironment());
 					for (Message message : messages) {
-						sectionsWithMessages
-								.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+						index.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
 								.add(section);
 					}
 				}
@@ -754,14 +786,17 @@ public final class Messages {
 		}
 	}
 
+
 	/**
-	 * Returns all Sections that currently have stored Messages either of Type ERROR or WARNING.
+	 * Returns all Sections of the specified environment that currently have stored Messages of the specified types
+	 * (or of any type if no type is specified).
 	 */
-	public static Collection<Section<?>> getSectionsWithMessages(Message.Type... types) {
+	public static Collection<Section<?>> getSectionsWithMessages(@NotNull Environment environment, Message.Type... types) {
 		if (types.length == 0) types = Message.Type.values();
+		Map<Message.Type, Set<Section<?>>> index = index(environment);
 		Set<Section<?>> sections = new HashSet<>();
 		for (Message.Type type : types) {
-			sections.addAll(sectionsWithMessages.getOrDefault(type, Collections.emptySet()));
+			sections.addAll(index.getOrDefault(type, Collections.emptySet()));
 		}
 		return Collections.unmodifiableCollection(sections);
 	}
@@ -847,7 +882,7 @@ public final class Messages {
 	}
 
 	public static ResourceBundle getMessageBundle(UserContext user) {
-		return getMessageBundle(Environment.getInstance().getWikiConnector().getLocale(
+		return getMessageBundle(user.getEnvironment().getWikiConnector().getLocale(
 				user.getRequest()));
 	}
 
@@ -855,9 +890,10 @@ public final class Messages {
 	public static void registerMessagesSection(Section<?> section) {
 		synchronized (section) {
 			if (!section.getArticle().isPublished()) return;
+			Map<Message.Type, Set<Section<?>>> index = index(section);
 			for (Collection<Message> messages : getMessagesMap(section).values()) {
 				for (Message message : messages) {
-					sectionsWithMessages.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+					index.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
 							.add(section);
 				}
 			}
@@ -873,7 +909,7 @@ public final class Messages {
 	}
 
 	private static void removeSectionFromMessageTracking(Message.Type type, Section<?> section) {
-		Set<Section<?>> sections = sectionsWithMessages.get(type);
+		Set<Section<?>> sections = index(section).get(type);
 		if (sections != null) sections.remove(section);
 	}
 }

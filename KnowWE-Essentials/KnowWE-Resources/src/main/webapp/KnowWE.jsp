@@ -11,11 +11,6 @@
 	WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
 	WikiContext wikiContext = new WikiContext(wiki, request, WikiContext.VIEW);
 
-	// Check if KnowWE is initialized
-	if (!Environment.isInitialized()) {
-		Environment.initInstance(new JSPWikiConnector(wiki));
-	}
-
 	// We need to do this, because the parameterMap is locked!
 	Map<String, String> parameters = UserContextUtil.getParameters(request);
 

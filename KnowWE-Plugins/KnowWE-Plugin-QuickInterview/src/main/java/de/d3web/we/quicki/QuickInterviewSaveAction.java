@@ -33,7 +33,6 @@ import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -60,7 +59,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 		// get WikiConnector and Session
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (KnowWEUtils.canView(section, context)) {
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(context, section);
 			if (kb == null) {
@@ -93,7 +92,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 	private void saveToAttachments(UserActionContext context, Session session, String filename, Section<?> section) throws IOException {
 		/* WikiAttachment attachment = */
 		if (!KnowWEUtils.canWrite(section, context)) return;
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		WikiConnector wikiConnector = context.getEnvironment().getWikiConnector();
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		SessionPersistenceManager.getInstance().saveSessions(outputStream, SessionConversionFactory.copyToSessionRecord(session));
 		outputStream.flush();

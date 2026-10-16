@@ -34,8 +34,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -100,7 +100,7 @@ public abstract class AbstractAction implements Action {
 			String sectionId = user.getParameter(Attributes.SECTION_ID);
 			if (sectionId != null) {
 				JSONObject jsonObject = (JSONObject) user.getSession()
-						.getAttribute(getHttpSessionAttributeLocalSectionStorageKey(sectionId));
+						.getAttribute(getHttpSessionAttributeLocalSectionStorageKey(user.getEnvironment(), sectionId));
 				if (jsonObject != null) return jsonObject;
 
 			}
@@ -133,7 +133,7 @@ public abstract class AbstractAction implements Action {
 	public static JSONObject getLocalSectionStorage(UserContext user, String sectionId) {
 		if (sectionId.equals(user.getParameter(Attributes.SECTION_ID))) return getLocalSectionStorage(user);
 		if (user.getSession() == null) return new JSONObject();
-		Object stored = user.getSession().getAttribute(getHttpSessionAttributeLocalSectionStorageKey(sectionId));
+		Object stored = user.getSession().getAttribute(getHttpSessionAttributeLocalSectionStorageKey(user.getEnvironment(), sectionId));
 		return (stored instanceof JSONObject jsonObject) ? jsonObject : new JSONObject();
 	}
 
@@ -142,25 +142,26 @@ public abstract class AbstractAction implements Action {
 		String value = context.getParameter("value");
 		if (sectionId != null) {
 			context.getSession()
-					.setAttribute(getHttpSessionAttributeLocalSectionStorageKey(sectionId), new JSONObject(value));
+					.setAttribute(getHttpSessionAttributeLocalSectionStorageKey(context.getEnvironment(), sectionId), new JSONObject(value));
 		}
 	}
 
 	@NotNull
-	private static String getHttpSessionAttributeLocalSectionStorageKey(String sectionId) {
-		return Attributes.LOCAL_SECTION_STORAGE + "_" + getLocalSectionStorageKey(sectionId);
+	private static String getHttpSessionAttributeLocalSectionStorageKey(@NotNull Environment environment, String sectionId) {
+		return Attributes.LOCAL_SECTION_STORAGE + "_" + getLocalSectionStorageKey(environment, sectionId);
 	}
 
 	/**
 	 * Returns the key the local storage of the section with the specified id is kept under, see {@link
 	 * #getLocalSectionStorageKey(Section)}. If there is no such section (any more), the id itself is returned.
 	 *
-	 * @param sectionId the id of the section to get the storage key for
+	 * @param environment the environment the section belongs to
+	 * @param sectionId   the id of the section to get the storage key for
 	 * @return the key of the section's local storage
 	 */
 	@NotNull
-	public static String getLocalSectionStorageKey(String sectionId) {
-		Section<?> section = Sections.get(sectionId);
+	public static String getLocalSectionStorageKey(@NotNull Environment environment, String sectionId) {
+		Section<?> section = Sections.get(environment, sectionId);
 		return (section == null) ? sectionId : getLocalSectionStorageKey(section);
 	}
 
@@ -176,6 +177,12 @@ public abstract class AbstractAction implements Action {
 	 * @param section the section to get the storage key for
 	 * @return the key of the section's local storage
 	 */
+	/**
+	 * Leading part of the storage keys: the name of the former single web, kept so the keys stay the same as the ones
+	 * browsers already store.
+	 */
+	private static final String STORAGE_KEY_PREFIX = "default_web";
+
 	@NotNull
 	public static String getLocalSectionStorageKey(Section<?> section) {
 		String key = section.getObject(LOCAL_SECTION_STORAGE_KEY);
@@ -185,7 +192,7 @@ public abstract class AbstractAction implements Action {
 		int index = 0;
 		for (Section<? extends Type> other : Sections.successors(section.getArticle().getRootSection(), typeClass)) {
 			if (other.get().getClass() != typeClass) continue;
-			other.storeObject(LOCAL_SECTION_STORAGE_KEY, section.getWeb() + "/" + section.getTitle()
+			other.storeObject(LOCAL_SECTION_STORAGE_KEY, STORAGE_KEY_PREFIX + "/" + section.getTitle()
 					+ "/" + typeClass.getName() + "/" + index++);
 		}
 		key = section.getObject(LOCAL_SECTION_STORAGE_KEY);
@@ -212,7 +219,7 @@ public abstract class AbstractAction implements Action {
 			fail(context, HttpServletResponse.SC_NOT_FOUND,
 					"The request did not contain a section id, unable to execute action.");
 		}
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (section == null) {
 			fail(context, HttpServletResponse.SC_NOT_FOUND, "The referenced section was not found. " +
 					"Maybe the page content is outdated. Please reload.");
@@ -282,7 +289,7 @@ public abstract class AbstractAction implements Action {
 	 */
 	@Contract("_, _, _ -> fail")
 	public static void fail(UserContext context, int httpCode, String message) throws IOException {
-		throw new SendError(httpCode, Environment.getInstance().getWikiConnector().renderWikiSyntax(message));
+		throw new SendError(httpCode, context.getEnvironment().getWikiConnector().renderWikiSyntax(message));
 	}
 
 	/**

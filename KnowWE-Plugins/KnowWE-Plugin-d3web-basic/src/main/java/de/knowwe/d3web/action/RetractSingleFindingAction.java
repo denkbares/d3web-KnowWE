@@ -36,6 +36,7 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -72,7 +73,6 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 		String objectid = context.getParameter(Attributes.SEMANO_OBJECT_ID);
 
-		String web = context.getWeb();
 
 		String namespace = Strings.decodeURL(context.getParameter(Attributes.SEMANO_NAMESPACE));
 		String term = Strings.decodeURL(context.getParameter(Attributes.SEMANO_TERM_NAME));
@@ -89,7 +89,7 @@ public class RetractSingleFindingAction extends AbstractAction {
 			return null;
 		}
 
-		Section<?> section = Sections.get(sectionId);
+		Section<?> section = Sections.get(context, sectionId);
 		if (!KnowWEUtils.canView(section, context)) {
 			return null;
 		}
@@ -99,7 +99,7 @@ public class RetractSingleFindingAction extends AbstractAction {
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
 			String kbID = context.getParameter("KBid");
-			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(KnowWEUtils.getArticleManager(web));
+			Collection<KnowledgeBase> knowledgeBases = D3webUtils.getKnowledgeBases(context.getArticleManager());
 			for (KnowledgeBase knowledgeBase : knowledgeBases) {
 				kb = knowledgeBase;
 				if (kb.getId() != null && kb.getId().equals(kbID)) {

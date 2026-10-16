@@ -26,7 +26,6 @@ import java.util.Map;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -64,7 +63,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		String newText = context.getParameter(Attributes.TEXT);
 
 		// Check for user access
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(name,
+		if (!context.getEnvironment().getWikiConnector().userCanEditArticle(name,
 				context)) {
 			context.sendError(403, "You do not have the permission to edit this page.");
 			return;
@@ -77,7 +76,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 
 		Map<String, String> nodesMap = new HashMap<>();
 
-		Section<?> section = Sections.get(nodeID);
+		Section<?> section = Sections.get(context, nodeID);
 
 		if (!(section.get() instanceof Term)) {
 			context.sendError(500, "Invalid section type");
@@ -91,7 +90,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		nodesMap.put(nodeID, newNodeText);
 		Sections.replace(context, nodesMap).sendErrors(context);
 		try {
-			KnowWEUtils.getArticleManager(context.getWeb()).getCompilerManager().awaitTermination();
+			context.getArticleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
 			throw new IOException(e.getMessage());

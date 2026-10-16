@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -45,7 +44,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 
 	@Override
 	public void append(Article article, UserContext user, RenderResult html) {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
+		WikiConnector connector = user.getEnvironment().getWikiConnector();
 		if (article == null) return; // Can happen in preview mode
 		final String title = article.getTitle();
 		int version = connector.getVersion(title);
@@ -55,7 +54,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		String userName = user.getUserName();
 		String overallStatus = KnowWEUtils.getOverallStatus(user);
 
-		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='" + article.getWeb() + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='default_web'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value=" + Strings.quote(title) + ">");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");
@@ -71,7 +70,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanView' value='" + KnowWEUtils.canView(article, user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanCreatePages' value='" + KnowWEUtils.canCreatePages(user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoTemplate' value='" + connector.getTemplate() + "'>");
-		String token = Environment.getInstance().getWikiConnector().getAntiCsrfToken(user);
+		String token = user.getEnvironment().getWikiConnector().getAntiCsrfToken(user);
 		html.appendHtml("<input type='hidden' id='knowWEInfoXSRF' value='" + token + "'>");
 		html.appendHtml("</div>");
 		if (KnowWEUtils.canView(article, user)) {

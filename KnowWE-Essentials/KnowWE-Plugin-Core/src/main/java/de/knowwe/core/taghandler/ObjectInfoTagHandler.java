@@ -23,6 +23,8 @@ import java.util.Set;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TermCompiler;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.TermInfo;
 import de.knowwe.core.kdom.objects.TermUtils;
@@ -111,8 +113,8 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 		}
 	}
 
-	protected void findTermSections(String web, Identifier termIdentifier, Set<Section<?>> definitions, Set<Section<?>> references) {
-		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier);
+	protected void findTermSections(@NotNull ArticleManager articleManager, Identifier termIdentifier, Set<Section<?>> definitions, Set<Section<?>> references) {
+		TermInfo termInfo = TermUtils.getTermInfo(articleManager, termIdentifier);
 		if (termInfo == null) return;
 		for (TermCompiler compiler : termInfo) {
 			TerminologyManager termManager = compiler.getTerminologyManager();

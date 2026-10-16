@@ -39,14 +39,13 @@ public class CIStopBuildAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String dashboardName = Strings.decodeURL(context.getParameter("name"));
-		String web = context.getWeb();
-		CIDashboard dashboard = CIDashboardManager.getDashboard(KnowWEUtils.getArticleManager(web),
+		CIDashboard dashboard = CIDashboardManager.getDashboard(context.getArticleManager(),
 				dashboardName);
 		if (dashboard == null || !KnowWEUtils.canWrite(dashboard.getDashboardArticle(), context)) {
 			context.sendError(403, "You are not allowed to stop this build");
 			return;
 		}
-		CIBuildManager.getInstance().shutDownNow(dashboard);
+		CIBuildManager.of(dashboard).shutDownNow(dashboard);
 	}
 
 }

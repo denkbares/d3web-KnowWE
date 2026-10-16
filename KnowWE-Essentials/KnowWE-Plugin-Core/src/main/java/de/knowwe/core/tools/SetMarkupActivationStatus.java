@@ -40,7 +40,7 @@ public class SetMarkupActivationStatus extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter(Attributes.SECTION_ID);
 		String status = context.getParameter("status");
-		Section<?> section = Sections.get(sectionID);
+		Section<?> section = Sections.get(context, sectionID);
 		if (section == null) {
 			context.sendError(404, "Section not found: " + sectionID + ". Maybe you are not seeing the latest version of the page, try reloading.");
 			return;

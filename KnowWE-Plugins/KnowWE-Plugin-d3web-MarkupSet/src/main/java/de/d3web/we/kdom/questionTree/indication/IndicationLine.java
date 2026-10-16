@@ -31,7 +31,7 @@ public class IndicationLine extends AbstractType {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 
 		QuestionnaireReference qc = new QuestionnaireReference();
-		qc.addCompileScript(Priority.LOW, IndicationHandler.getInstance());
+		qc.addCompileScript(Priority.LOW, new IndicationHandler());
 		this.addChildType(qc);
 	}
 }

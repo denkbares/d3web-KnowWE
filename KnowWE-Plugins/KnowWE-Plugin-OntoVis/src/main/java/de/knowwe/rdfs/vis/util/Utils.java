@@ -50,7 +50,6 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.strings.Text;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -357,11 +356,11 @@ public class Utils {
 					.getPreviewAncestor(termDefiningSection);
 			String url = KnowWEUtils.getURLLink(anchorAncestor);
 			if (!url.startsWith("http:")) {
-				url = Environment.getInstance().getWikiConnector().getBaseUrl() + url;
+				url = config.getEnvironment().getWikiConnector().getBaseUrl() + url;
 			}
 			return url;
 		}
-		return OntoGraphDataBuilder.createBaseURL() + "?concept=" + to;
+		return OntoGraphDataBuilder.createBaseURL(config.getEnvironment()) + "?concept=" + to;
 	}
 
 	public static String getIdentifierIRI(Value uri, Rdf2GoCore repo) {

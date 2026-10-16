@@ -61,7 +61,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(COUNT, false, "true", "false");
 		MARKUP.addAnnotation(ASYNCHRONOUS, false, "true", "false");
 		MARKUP.addAnnotationRenderer(ASYNCHRONOUS, NothingRenderer.getInstance());
-		MARKUP.addContentType(new InlineSparqlNameReference());
+		MARKUP.addContentType(() -> new InlineSparqlNameReference());
 	}
 
 	private static class InlineSparqlNameReference extends SparqlNameReference {
@@ -90,7 +90,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					int start = link.lastIndexOf("|");
 					if (start < 1) start = 0;
 					link = Strings.trim(link.substring(start + 1, link.length() - 1));
-					Article article = KnowWEUtils.getArticle(section.getWeb(), link);
+					Article article = KnowWEUtils.getArticleManager(section).getArticle(link);
 					if (article != null) {
 						return $(article.getRootSection()).successor(SparqlMarkupType.class).getFirst();
 					}

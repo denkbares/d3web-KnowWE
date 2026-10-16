@@ -3,6 +3,7 @@
  */
 package de.knowwe.plugin;
 
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.CompileScript;
@@ -45,8 +47,6 @@ import de.knowwe.core.rightpanel.RightPanelTabProvider;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeUtils;
-import de.knowwe.event.DeInitEvent;
-import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -111,16 +111,15 @@ public class Plugins {
 	}
 
 	/**
-	 * Returns all plugged Instantiations These are used to initialize plugins.
-	 *
-	 * @return List of all Instantiations
+	 * Returns new instances of all plugged compilers. Compilers hold the knowledge of one wiki, so every environment
+	 * instantiates its own set (see {@link de.knowwe.core.Environment#isGlobalCompiler(Compiler)}).
 	 */
 	public static PriorityList<Double, Compiler> getCompilers() {
 		PluginManager pm = PluginManager.getInstance();
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_Compiler);
 		PriorityList<Double, Compiler> result = new PriorityList<>(5d);
 		for (Extension e : extensions) {
-			result.add(e.getPriority(), (Compiler) e.getSingleton());
+			result.add(e.getPriority(), (Compiler) e.getNewInstance());
 		}
 		return result;
 	}
@@ -253,14 +252,17 @@ public class Plugins {
 		}
 	}
 
-	public static void addRendererToType(Type type, Type[] path) {
+	/**
+	 * Plugs the renderer matching the path into the type, remembering the replaced renderer at the environment.
+	 */
+	public static void addRendererToType(Environment environment, Type type, Type[] path) {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
 				EXTENDED_POINT_Renderer);
 		Extension match = ScopeUtils.getMatchingExtension(extensions, path);
 		if (match != null) {
 			if (type instanceof AbstractType) {
 				Renderer currentRenderer = type.getRenderer();
-				Environment.getInstance().addRendererForType(type, currentRenderer);
+				environment.addRendererForType(type, currentRenderer);
 				((AbstractType) type).setRenderer((Renderer) match.getSingleton());
 			}
 			else {
@@ -281,36 +283,40 @@ public class Plugins {
 					EXTENDED_POINT_Annotation);
 			for (Extension extension : ScopeUtils.getMatchingExtensions(extensions, path)) {
 
-				// add the annotation itself to the markup
-				String regex = extension.getParameter("regex");
+				// The markup may be shared by all type trees (e.g. a static MARKUP field), so its annotations must
+				// only be decorated once, even if the type tree is decorated once per environment. The content types
+				// of the annotations are factories anyway, so they create fresh types per markup type instance.
 				String name = extension.getName();
-				if (Strings.isBlank(regex)) {
-					markup.addAnnotation(name, false);
-				}
-				else {
-					markup.addAnnotation(name, false, regex);
-				}
+				Annotation annotation = markup.getAnnotation(name);
+				if (annotation == null) {
+					// add the annotation itself to the markup
+					String regex = extension.getParameter("regex");
+					if (Strings.isBlank(regex)) {
+						markup.addAnnotation(name, false);
+					}
+					else {
+						markup.addAnnotation(name, false, regex);
+					}
+					annotation = markup.getAnnotation(name);
 
-				// add the documentation from the plugin definition
-				markup.getAnnotation(name).setDocumentation(extension.getParameter("description"));
+					// add the documentation from the plugin definition
+					annotation.setDocumentation(extension.getParameter("description"));
 
-				// add children type(s) defined as class attribute(s)
-				for (String subTypeClass : extension.getParameters("class")) {
-					Type subType = (Type) getNewInstance(extension, subTypeClass);
-					markup.addAnnotationContentType(name, subType);
-				}
+					// add children type(s) defined as class attribute(s)
+					for (String subTypeClass : extension.getParameters("class")) {
+						markup.addAnnotationContentType(name, () -> (Type) getNewInstance(extension, subTypeClass));
+					}
 
-				// set renderer for the annotation
-				String renderer = extension.getParameter("renderer");
-				if (!Strings.isBlank(renderer)) {
-					Renderer pluggedRenderer = (Renderer) getNewInstance(extension, renderer);
-					markup.addAnnotationRenderer(name, pluggedRenderer);
+					// set renderer for the annotation, as a factory, so that each type tree gets its own instance
+					String renderer = extension.getParameter("renderer");
+					if (!Strings.isBlank(renderer)) {
+						markup.addAnnotationRenderer(name, () -> (Renderer) getNewInstance(extension, renderer));
+					}
 				}
 
 				for (Type childTyp : childrenTypes) {
 					if (childTyp.getClass().equals(UnknownAnnotationType.class)) {
-						Annotation annotation = markup.getAnnotation(name);
-						type.addChildType(new AnnotationType(annotation));
+						markupType.addAnnotationType(annotation);
 						break;
 					}
 				}
@@ -351,32 +357,17 @@ public class Plugins {
 	}
 
 	/**
-	 * Right panel tabs registered programmatically, e.g. by an {@link Instantiation} during startup.
-	 * Populated before any panel request, then merged with the {@code plugin.xml}-declared providers in
-	 * {@link #getRightPanelTabs()}.
+	 * The programmatically registered right panel tabs, one registry per environment.
 	 */
-	private static final List<RightPanelTab> registeredRightPanelTabs = new CopyOnWriteArrayList<>();
+	public static final class RightPanelTabRegistry {
 
-	/**
-	 * Clears the programmatic right panel tab registry when the environment is shut down. A subsequent
-	 * re-initialization re-runs all {@link Instantiation}s, so without this the registry would accumulate stale
-	 * providers from previous lifecycles (the JVM-singleton {@link EventManager} keeps this listener alive across
-	 * re-inits, and {@link DeInitEvent} fires on every shutdown).
-	 */
-	private static final EventListener RIGHT_PANEL_TAB_REGISTRY_CLEANER = new EventListener() {
-		@Override
-		public Collection<Class<? extends Event>> getEvents() {
-			return Collections.singleton(DeInitEvent.class);
-		}
+		public static final ServiceKey<RightPanelTabRegistry> SERVICE = ServiceKey.of(RightPanelTabRegistry.class, environment -> new RightPanelTabRegistry());
 
-		@Override
-		public void notify(Event event) {
-			registeredRightPanelTabs.clear();
-		}
-	};
+		private final List<RightPanelTab> tabs = new CopyOnWriteArrayList<>();
+	}
 
-	static {
-		EventManager.getInstance().registerListener(RIGHT_PANEL_TAB_REGISTRY_CLEANER);
+	private static List<RightPanelTab> registeredRightPanelTabs(Environment environment) {
+		return environment.getService(RightPanelTabRegistry.SERVICE).tabs;
 	}
 
 	/**
@@ -387,29 +378,15 @@ public class Plugins {
 	 * @param provider the provider to register
 	 * @see #registerRightPanelTabProvider(String, RightPanelTabProvider, double)
 	 */
-	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider) {
-		registerRightPanelTabProvider(id, provider, 5d);
+	public static void registerRightPanelTabProvider(Environment environment, String id, RightPanelTabProvider provider) {
+		registerRightPanelTabProvider(environment, id, provider, 5d);
 	}
 
 	/**
-	 * Registers a right panel tab provider programmatically, e.g. via an {@link Instantiation}. Providers registered
-	 * here are merged with the {@code plugin.xml}-declared {@code RightPanelTab} extensions by
-	 * {@link #getRightPanelTabs()}. The id and priority are the values a {@code plugin.xml}-declared tab
-	 * gets from its extension {@code id} attribute / {@code priority} parameter (priority ascending, KnowWE convention:
-	 * higher priority == lower number).
-	 * <p>
-	 * Note: resources ({@code script} / {@code css} / {@code module}) of a purely programmatic provider are not
-	 * auto-loaded by the {@code initJS} / {@code initCSS} / {@code initJsModules} scans (those only see
-	 * {@code plugin.xml} extensions). Such a provider should render server-side HTML that pulls its own resources, or
-	 * register them alongside the provider.
-	 *
-	 * @param id       the stable, unique tab id (matches a declared tab's extension {@code id}; used as the DOM
-	 *                 {@code data-tab} key, client storage key and lazy-fetch parameter)
-	 * @param provider the provider to register
-	 * @param priority the sort priority of the tab (ascending; lower number == earlier/leftmost)
+	 * Registers a right panel tab provider programmatically for the specified environment.
 	 */
-	public static void registerRightPanelTabProvider(String id, RightPanelTabProvider provider, double priority) {
-		registeredRightPanelTabs.add(new RightPanelTab(id, priority, provider));
+	public static void registerRightPanelTabProvider(Environment environment, String id, RightPanelTabProvider provider, double priority) {
+		registeredRightPanelTabs(environment).add(new RightPanelTab(id, priority, provider));
 	}
 
 	/**
@@ -423,7 +400,7 @@ public class Plugins {
 	 *
 	 * @return the sorted, deduplicated list of right panel tabs
 	 */
-	public static List<RightPanelTab> getRightPanelTabs() {
+	public static List<RightPanelTab> getRightPanelTabs(@NotNull Environment environment) {
 		List<RightPanelTab> all = new ArrayList<>();
 		for (Extension extension : PluginManager.getInstance()
 				.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_RightPanelTab)) {
@@ -433,7 +410,7 @@ public class Plugins {
 					(RightPanelTabProvider) extension.getSingleton())
 			);
 		}
-		all.addAll(registeredRightPanelTabs);
+		all.addAll(registeredRightPanelTabs(environment));
 		Map<String, RightPanelTab> deduped = new LinkedHashMap<>();
 		for (RightPanelTab tab : all) {
 			deduped.putIfAbsent(tab.id(), tab);

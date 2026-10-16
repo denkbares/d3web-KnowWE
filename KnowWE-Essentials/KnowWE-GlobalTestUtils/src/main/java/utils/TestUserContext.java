@@ -43,6 +43,7 @@ import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.jspwiki.KnowWEPlugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -79,8 +80,8 @@ public class TestUserContext implements UserContext, UserActionContext {
 	 *
 	 * @param articleName the name of the article to be created.
 	 */
-	public TestUserContext(String articleName) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
+	public TestUserContext(@NotNull Environment environment, String articleName) {
+		this(Article.createTemporaryArticle(environment, "", articleName));
 	}
 
 	/**
@@ -92,21 +93,21 @@ public class TestUserContext implements UserContext, UserActionContext {
 	 * @param articleName the name of the article to be created
 	 * @param username    the name the user is signed in with
 	 */
-	public TestUserContext(String articleName, String username) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB), false, true, true);
+	public TestUserContext(@NotNull Environment environment, String articleName, String username) {
+		this(Article.createTemporaryArticle(environment, "", articleName), false, true, true);
 		this.username = username;
 	}
 
 	/**
 	 * Creates a test user that is signed in under the specified name, for an article with the specified root type.
-	 * See {@link #TestUserContext(String, String)} for the properties of the user.
+	 * See {@link #TestUserContext(Environment, String, String)} for the properties of the user.
 	 *
 	 * @param articleName the name of the article to be created
 	 * @param username    the name the user is signed in with
 	 * @param rootType    the root type of the article
 	 */
-	public TestUserContext(String articleName, String username, RootType rootType) {
-		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB, rootType), false, true, true);
+	public TestUserContext(@NotNull Environment environment, String articleName, String username, RootType rootType) {
+		this(Article.createTemporaryArticle(environment, "", articleName, rootType), false, true, true);
 		this.username = username;
 	}
 
@@ -119,7 +120,6 @@ public class TestUserContext implements UserContext, UserActionContext {
 		this.isAdmin = isAdmin;
 		this.isAsserted = isAsserted;
 		this.isAuthenticated = isAuthenticated;
-		addParameter(Attributes.WEB, getWeb());
 		addParameter(Attributes.TITLE, getTitle());
 		addParameter(Attributes.USER, getUserName());
 	}
@@ -147,11 +147,6 @@ public class TestUserContext implements UserContext, UserActionContext {
 	@Override
 	public String getTitle() {
 		return article.getTitle();
-	}
-
-	@Override
-	public String getWeb() {
-		return article.getWeb();
 	}
 
 	@Override
@@ -273,8 +268,20 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	@Override
+	public @NotNull Environment getEnvironment() {
+		return article.getEnvironment();
+	}
+
+	@Override
+	public Environment findEnvironment() {
+		return article.findEnvironment();
+	}
+
+	@Override
 	public ArticleManager getArticleManager() {
-		return article.getArticleManager();
+		// temporary test articles have no article manager, the environment's one is the wiki's
+		ArticleManager manager = article.getArticleManager();
+		return manager != null ? manager : article.getEnvironment().getArticleManager();
 	}
 
 	@Override

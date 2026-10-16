@@ -11,6 +11,7 @@ import org.apache.wiki.util.TextUtil;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
@@ -182,9 +183,10 @@ public class WikiFileProviderUtils {
 	 * @param file the file to access the article for
 	 * @return the article belonging to that file
 	 */
-	public static Article getArticle(String web, File wikiFolder, File file) {
+
+	public static Article getArticle(@NotNull Environment environment, File wikiFolder, File file) {
 		String title = getArticleTitle(wikiFolder, file);
 		if (title == null) return null;
-		return Environment.getInstance().getArticleManager(web).getArticle(title);
+		return environment.getArticleManager().getArticle(title);
 	}
 }

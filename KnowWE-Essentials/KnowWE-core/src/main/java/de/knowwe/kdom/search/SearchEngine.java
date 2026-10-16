@@ -79,7 +79,7 @@ public class SearchEngine {
 			// TODO: This produces a StackOverflowError (We have to wait for a
 			// JSPWiki fix...)
 			// if
-			// (Environment.getInstance().getWikiConnector().userCanViewPage(
+			// (article.getArticleManager().getEnvironment().getWikiConnector().userCanViewPage(
 			// article.getTitle())) {
 			Collection<Result> articleResults = search(query, article, clazz);
 			if (!articleResults.isEmpty()) {

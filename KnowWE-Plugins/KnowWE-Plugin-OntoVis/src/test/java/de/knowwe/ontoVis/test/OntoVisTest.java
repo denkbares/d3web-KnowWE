@@ -58,12 +58,15 @@ import de.knowwe.visualization.SubGraphData;
 import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
 import static org.junit.Assert.assertEquals;
+import org.junit.AfterClass;
 
 /**
  * @author Johanna Latt
  * @created 19.07.2014.
  */
 public class OntoVisTest {
+
+	private static Environment environment;
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntoVisTest.class);
 
 	static Rdf2GoCore rdfRepository = null;
@@ -72,7 +75,7 @@ public class OntoVisTest {
 	@BeforeClass
 	public static void setUp() throws IOException, RDFParseException, RepositoryException {
 		InitPluginManager.init();
-		Environment.initInstance(new DummyConnector());
+		environment = Environment.create(new DummyConnector());
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=", RepositoryConfigs.find("OWL2_RL_OPTIMIZED"));
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		rdfRepository.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
@@ -97,7 +100,7 @@ public class OntoVisTest {
 
 	@Test
 	public void testInstances() throws IOException {
-		Config config = new Config();
+		Config config = new Config(environment);
 		config.setConcept("si:bart");
 		config.setFormat("svg");
 		config.addFilterRelations("si:sibling", "si:child");
@@ -119,7 +122,7 @@ public class OntoVisTest {
 
 	@Test
 	public void testClasses() throws IOException {
-		Config config = new Config();
+		Config config = new Config(environment);
 		config.setConcept("si:Human");
 		config.setFormat("png");
 		config.addExcludeNodes("owl:Nothing", "owl:Thing");
@@ -141,7 +144,7 @@ public class OntoVisTest {
 
 	@Test
 	public void testProperties() throws IOException {
-		Config config = new Config();
+		Config config = new Config(environment);
 		config.addConcept("si:child");
 		config.setFormat("svg");
 		config.addExcludeRelations("rdf:type");
@@ -162,7 +165,7 @@ public class OntoVisTest {
 
 	@Test
 	public void testTable() throws IOException {
-		Config config = new Config();
+		Config config = new Config(environment);
 		config.setConcept("si:lisa");
 		config.addFilterRelations("si:age", "rdfs:label", "si:child");
 		config.setShowOutgoingEdges(false);
@@ -175,7 +178,7 @@ public class OntoVisTest {
 
 	@Test
 	public void testTwoConcepts() throws IOException {
-		Config config = new Config();
+		Config config = new Config(environment);
 		config.setConcept("si:abraham", "si:maggie");
 		config.addFilterRelations("si:child");
 		//Old implementation
@@ -224,7 +227,7 @@ public class OntoVisTest {
 
 	@Test
 	public void testSparql() throws IOException {
-		Config config = new Config();
+		Config config = new Config(environment);
 		config.setCacheDirectoryPath("target");
 		config.setCacheFileID("sparql");
 		config.setShowLabels("false");
@@ -299,7 +302,7 @@ public class OntoVisTest {
 	@SuppressWarnings("Duplicates") // Took testSparql as Template
 	@Test
 	public void testSubProperties() throws IOException {
-		Config config = new Config();
+		Config config = new Config(environment);
 		config.setCacheDirectoryPath("target");
 		config.setCacheFileID("subProperties");
 		config.setShowLabels("false");
@@ -376,4 +379,10 @@ public class OntoVisTest {
 
 		compare(generatedSource, expectedSource);
 	}
+
+	@AfterClass
+	public static void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

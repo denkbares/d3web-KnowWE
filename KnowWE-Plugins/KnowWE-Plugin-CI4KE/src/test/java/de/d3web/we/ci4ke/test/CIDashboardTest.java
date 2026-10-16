@@ -31,12 +31,14 @@ import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.renderer.KDOMRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.After;
 
 /**
  * 
@@ -45,27 +47,26 @@ import static org.junit.Assert.assertTrue;
  */
 public class CIDashboardTest {
 
+	private Environment environment;
+
 	private Environment env;
 
 	@Before
 	public void setUp() throws Exception {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			// RootType.getInstance().addChildType(new CIDashboardType());
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
-		env = Environment.getInstance();
+		// RootType.getInstance().addChildType(new CIDashboardType());
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
+		env = environment;
 	}
 
 	private Article loadArticle() {
 		String text = Strings.readStream(
 				getClass().getResourceAsStream("/" + "Dashboard" + ".txt"));
 		// create article with the new content
-		String web = Environment.DEFAULT_WEB;
-		env.getArticleManager(web).registerArticle("Dashboard", text);
-		return env.getArticle(web, "Dashboard");
+		environment.getArticleManager().registerArticle("Dashboard", text);
+		return environment.getArticleManager().getArticle("Dashboard");
 	}
 
 	@Test
@@ -81,6 +82,12 @@ public class CIDashboardTest {
 		dashboard.getRenderer().renderProgressInfo(progressInfo);
 		assertTrue(progressInfo.toStringRaw().contains("dashname_progress-duration"));
 
+	}
+
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
 	}
 
 }

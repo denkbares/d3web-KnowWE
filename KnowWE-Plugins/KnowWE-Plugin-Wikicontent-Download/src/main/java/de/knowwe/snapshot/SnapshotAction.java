@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
 
 import de.knowwe.core.Environment;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -74,8 +75,8 @@ public abstract class SnapshotAction extends AbstractAction {
 		return false;
 	}
 
-	public static String getSnapshotsPath() {
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+	public static String getSnapshotsPath(@NotNull Environment environment) {
+		WikiConnector wikiConnector = environment.getWikiConnector();
 		String wikiProperty = wikiConnector.getWikiProperty("var.snapshots.dir");
 		if (wikiProperty == null || wikiProperty.isBlank()) {
 			return new File(wikiConnector.getSavePath()).getParentFile().getAbsolutePath();
@@ -87,8 +88,9 @@ public abstract class SnapshotAction extends AbstractAction {
 	 *
 	 * @return storage limit in GB
 	 */
-	public static int getSnapshotsStorageLimit() {
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+
+	public static int getSnapshotsStorageLimit(@NotNull Environment environment) {
+		WikiConnector wikiConnector = environment.getWikiConnector();
 		String wikiProperty = wikiConnector.getWikiProperty("var.snapshots.limit");
 		if (wikiProperty == null || wikiProperty.isBlank()) {
 			return 2;
@@ -96,8 +98,8 @@ public abstract class SnapshotAction extends AbstractAction {
 		return Integer.parseInt(wikiProperty);
 	}
 
-	public static boolean storageLimitWasReached() {
-		return getDirectorySize(getSnapshotsPath()) >= getSnapshotsStorageLimit() * Math.pow(1000, 3);
+	public static boolean storageLimitWasReached(@NotNull Environment environment) {
+		return getDirectorySize(getSnapshotsPath(environment)) >= getSnapshotsStorageLimit(environment) * Math.pow(1000, 3);
 	}
 
 	/**

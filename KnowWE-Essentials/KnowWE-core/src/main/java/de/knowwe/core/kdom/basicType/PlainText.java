@@ -44,15 +44,10 @@ import de.knowwe.core.report.CompilerMessage;
  */
 public class PlainText extends AbstractType {
 
-	private static PlainText instance;
-
-	public static synchronized PlainText getInstance() {
-		if (instance == null) {
-			instance = new PlainText();
-		}
-		return instance;
-	}
-
+	/**
+	 * Returns the shared plain text type of the current environment (one instance per environment, so decorations of
+	 * one environment's type tree do not leak into the next). Without an environment a fresh instance is returned.
+	 */
 	public PlainText() {
 		this.setRenderer(DefaultTextRenderer.getInstance());
 		this.setSectionFinder(AllTextFinder.getInstance());

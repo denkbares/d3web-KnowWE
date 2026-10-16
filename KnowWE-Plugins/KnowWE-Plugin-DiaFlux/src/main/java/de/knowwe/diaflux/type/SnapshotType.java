@@ -32,9 +32,8 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class SnapshotType extends AbstractXMLType {
 
-	private static SnapshotType instance;
 
-	private SnapshotType() {
+	public SnapshotType() {
 		super("snapshot");
 		XMLContent content = new XMLContent();
 		addChildType(content);
@@ -43,10 +42,5 @@ public class SnapshotType extends AbstractXMLType {
 		content.setRenderer(StyleRenderer.DEFAULT.withMaskMode(MaskMode.none));
 	}
 
-	public static SnapshotType getInstance() {
-		if (instance == null) instance = new SnapshotType();
-
-		return instance;
-	}
 
 }

@@ -11,6 +11,8 @@ import org.apache.wiki.search.LuceneSearchProvider;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.EnvironmentAware;
 import de.knowwe.plugin.Plugins;
 
 /**
@@ -35,6 +37,9 @@ public class ExtensibleLuceneSearchProvider extends LuceneSearchProvider {
 			Object newInstance = extension.getNewInstance();
 			if (newInstance instanceof SearchProvider) {
 				SearchProvider provider = ((SearchProvider) newInstance);
+				if (provider instanceof EnvironmentAware aware) {
+					aware.attach(Environment.of(wikiContext.getEngine().getServletContext()));
+				}
 				// execute search for plugged provider
 				List<? extends SearchResult> providerResults = provider.findResults(
 						query, flags);

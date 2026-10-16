@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -59,7 +58,7 @@ public class GetSectionTextAction extends AbstractAction {
 
 		Section<?> referencedSection = null;
 		if (sectionId != null) {
-			referencedSection = Sections.get(sectionId);
+			referencedSection = Sections.get(context, sectionId);
 			fileName = referencedSection.getID();
 		}
 		else if (article != null && name != null) {
@@ -75,7 +74,7 @@ public class GetSectionTextAction extends AbstractAction {
 		if (referencedSection != null) {
 			if (KnowWEUtils.canView(referencedSection, context)) {
 				sectionText = referencedSection.getText();
-				lastModified = Environment.getInstance()
+				lastModified = context.getEnvironment()
 						.getWikiConnector()
 						.getLastModifiedDate(referencedSection.getTitle(), -1).toInstant();
 			}

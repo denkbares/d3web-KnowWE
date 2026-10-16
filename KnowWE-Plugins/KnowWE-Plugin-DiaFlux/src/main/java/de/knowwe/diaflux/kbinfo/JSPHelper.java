@@ -44,10 +44,6 @@ public class JSPHelper {
 
 	public JSPHelper(UserContext userContext) {
 		this.userContext = userContext;
-		if (this.userContext.getWeb() == null) {
-			this.userContext.getParameters().put(Attributes.WEB,
-					Environment.DEFAULT_WEB);
-		}
 	}
 
 	private static Collection<Identifier> getAllMatches(String className, Section<?> flowchart) {
@@ -78,7 +74,7 @@ public class JSPHelper {
 	}
 
 	public String getSectionText(String id) {
-		Section<?> sec = Sections.get(id);
+		Section<?> sec = Sections.get(userContext, id);
 		String data = "Section not found: " + id;
 		if (sec != null) {
 			data = sec.getText();
@@ -127,7 +123,7 @@ public class JSPHelper {
 	@SuppressWarnings("unchecked")
 	public String loadFlowchart(String kdomID) {
 
-		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) Sections.get(kdomID);
+		Section<DefaultMarkupType> diaFluxSection = (Section<DefaultMarkupType>) Sections.get(userContext, kdomID);
 
 		if (diaFluxSection == null) {
 			throw new IllegalArgumentException("Could not find flowchart at: "
@@ -170,7 +166,7 @@ public class JSPHelper {
 
 	private String getFlowchartAttributeValue(String attributeName) {
 		Section<FlowchartType> section = Sections.successor(
-				Sections.get(userContext.getParameter("kdomID")), FlowchartType.class);
+				Sections.get(userContext, userContext.getParameter("kdomID")), FlowchartType.class);
 
 		return AbstractXMLType.getAttributes(section).get(attributeName);
 	}

@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -39,9 +40,18 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDefinitionProvider {
 
+	private final Environment environment;
+
+	/**
+	 * @param environment the environment whose terminology the links point into
+	 */
+	public PackageCompileLinkToTermDefinitionProvider(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
 	@Override
 	public String getLinkToTermDefinition(Identifier name, String masterArticle) {
-		TerminologyManager terminologyManager = getTerminologyManager(masterArticle);
+		TerminologyManager terminologyManager = getTerminologyManager(environment, masterArticle);
 		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(name);
 		String targetArticle = name.toString();
 		if (!termDefinitions.isEmpty()) {
@@ -54,8 +64,8 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 		return KnowWEUtils.getURLLink(targetArticle);
 	}
 
-	public static TerminologyManager getTerminologyManager(String master) {
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+	public static TerminologyManager getTerminologyManager(@NotNull Environment environment, String master) {
+		ArticleManager articleManager = environment.getArticleManager();
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(articleManager,
 				PackageCompiler.class);
 		for (PackageCompiler ontologyCompiler : compilers) {
@@ -74,8 +84,8 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	 * @return
 	 * @created 29.11.2012
 	 */
-	public String createBaseURL() {
-		return Environment.getInstance().getWikiConnector().getBaseUrl() + "Wiki.jsp";
+	public String createBaseURL(@NotNull Environment environment) {
+		return environment.getWikiConnector().getBaseUrl() + "Wiki.jsp";
 	}
 
 	// @SuppressWarnings("unchecked")
@@ -84,7 +94,7 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	// masterArticle) {
 	//
 	// TerminologyManager terminologyManager =
-	// Environment.getInstance().getTerminologyManager(
+	// compileSection.getEnvironment().getTerminologyManager(
 	// Environment.DEFAULT_WEB, masterArticle);
 	// Collection<Section<?>> definitions =
 	// terminologyManager.getTermDefiningSections(new Identifier(

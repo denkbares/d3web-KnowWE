@@ -29,7 +29,7 @@ import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.Priority;
@@ -122,7 +122,7 @@ public class AttachmentType extends AbstractType {
 	@Nullable
 	public static WikiAttachment getAttachment(Section<? extends AttachmentType> section) throws IOException {
 		String path = getPath(section);
-		return Environment.getInstance().getWikiConnector().getAttachment(path);
+		return section.getEnvironment().getWikiConnector().getAttachment(path);
 	}
 
 	public static String getPath(Section<? extends AttachmentType> section) {
@@ -139,8 +139,8 @@ public class AttachmentType extends AbstractType {
 
 		private AttachmentChangedListener(Section<AttachmentType> section) {
 			this.section = section;
-			synchronized (EventManager.getInstance()) {
-				EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+			synchronized (KnowWEUtils.getEventManager(section)) {
+				KnowWEUtils.getEventManager(section).registerListener(this, EventManager.RegistrationType.WEAK);
 			}
 		}
 
@@ -161,7 +161,7 @@ public class AttachmentType extends AbstractType {
 		}
 
 		public void destroy() {
-			EventManager.getInstance().unregister(this);
+			KnowWEUtils.getEventManager(section).unregister(this);
 		}
 
 		@Override
@@ -172,8 +172,6 @@ public class AttachmentType extends AbstractType {
 		@Override
 		public void notify(Event event) {
 			AttachmentEvent attachmentEvent = (AttachmentEvent) event;
-			String web = section.getWeb();
-			if (!web.equals(attachmentEvent.getWeb())) return;
 
 			String thisAttachmentPath = getPath(section);
 			String eventAttachmentPath = attachmentEvent.getPath();

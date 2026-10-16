@@ -52,7 +52,7 @@ public class FindLiteralsForConceptAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter("kdomid");
 		String conceptName = context.getParameter("concept");
-		Section<?> section = Sections.get(sectionID);
+		Section<?> section = Sections.get(context, sectionID);
 		if (section == null || !KnowWEUtils.canView(section, context)) {
 			context.sendError(403, "You are not allowed to see the literals of this concept");
 			return;

@@ -39,6 +39,7 @@ import com.denkbares.strings.Strings;
 import de.knowwe.event.GitCommitEvent;
 import de.knowwe.jspwiki.auth.AuthenticatedIdentities;
 import de.uniwue.d3web.gitConnector.CommitUserData;
+import de.knowwe.core.Environment;
 
 /**
  * The engine facing side of a git backed page or attachment provider, holding the wiki {@link Engine} and the
@@ -59,7 +60,7 @@ public record WikiGitContext(
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiGitContext.class);
 
 	public WikiGitContext(Engine engine, Properties properties) {
-		this(engine, GitCommentStrategy.fromProperties(properties));
+		this(engine, GitCommentStrategy.fromProperties(engine, properties));
 	}
 
 	/**
@@ -134,7 +135,10 @@ public record WikiGitContext(
 			GitCommitEvent.Origin origin
 	) {
 		WikiEventManager.fireEvent(source, new GitVersioningWikiEvent(source, eventType, author, pages, commitHash));
-		EventManager.getInstance().fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, origin));
+		// the environment of this wiki, if it is already running (the git provider may commit before KnowWE is initialized)
+		Environment environment = Environment.findIn(engine.getServletContext());
+		EventManager eventManager = environment != null ? environment.getEventManager() : EventManager.getInstance();
+		eventManager.fireEvent(new GitCommitEvent(repoPath, commitHash, pages, author, origin));
 	}
 
 	/**

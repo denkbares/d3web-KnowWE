@@ -106,8 +106,8 @@ public class IncludeMarkup extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
-		m.addContentType(new CommentLineType());
-		m.addContentType(new WikiReference());
+		m.addContentType(() -> new CommentLineType());
+		m.addContentType(() -> new WikiReference());
 		m.addAnnotation(ANNOTATION_DEFINITION, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_FRAME, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_ZOOM, false);
@@ -117,7 +117,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 		m.addAnnotation(ANNOTATION_AUTHOR, false);
 		m.addAnnotation(ANNOTATION_TEMPLATE, false);
 		m.addAnnotation(ANNOTATION_VERSION, false, Pattern.compile("\\d+(\\.\\d+)*"));
-		m.addAnnotationContentType(ANNOTATION_TEMPLATE, new AttachmentType());
+		m.addAnnotationContentType(ANNOTATION_TEMPLATE, () -> new AttachmentType());
 	}
 
 	public IncludeMarkup() {

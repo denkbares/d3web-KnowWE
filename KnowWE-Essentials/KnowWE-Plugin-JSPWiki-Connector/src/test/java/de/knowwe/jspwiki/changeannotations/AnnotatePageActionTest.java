@@ -6,8 +6,6 @@ package de.knowwe.jspwiki.changeannotations;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +26,6 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.user.AuthenticationManager;
-import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.jspwiki.JSPWikiConnector;
 
 import static org.junit.Assert.assertFalse;
@@ -51,17 +48,14 @@ public class AnnotatePageActionTest {
 
 	private static final String PAGE = "Main";
 
-	private Environment previousEnvironment;
-	private boolean previousInitialized;
+	private Environment environment;
 	private StringWriter written;
 	private HttpServletResponse response;
 
 	@Before
 	public void setUp() throws Exception {
-		previousEnvironment = Environment.isInitialized() ? Environment.getInstance() : null;
-		previousInitialized = Environment.isInitialized();
-
-		installEnvironment(engineBackedConnector());
+		// no plugins here: an environment without them is enough for the action's engine lookup
+		environment = Environment.create(engineBackedConnector());
 
 		written = new StringWriter();
 		response = mock(HttpServletResponse.class);
@@ -69,9 +63,8 @@ public class AnnotatePageActionTest {
 	}
 
 	@After
-	public void tearDown() throws Exception {
-		setStaticField("instance", previousEnvironment);
-		setStaticField("initialized", previousInitialized);
+	public void tearDown() {
+		if (environment != null) environment.close();
 	}
 
 	@Test
@@ -92,11 +85,17 @@ public class AnnotatePageActionTest {
 	 */
 	private ActionContext actionContextFor(String pageName) {
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put(Attributes.WEB, Environment.DEFAULT_WEB);
 		parameters.put(Attributes.USER, "Test User");
 		parameters.put("page", pageName);
+		Environment environment = this.environment;
+		// a context of exactly that type, but knowing its environment: there is no servlet context in a test
 		return new ActionContext("AnnotatePageAction", "", parameters, mock(HttpServletRequest.class), response,
-				null, mock(AuthenticationManager.class));
+				null, mock(AuthenticationManager.class)) {
+			@Override
+			public Environment findEnvironment() {
+				return environment;
+			}
+		};
 	}
 
 	/**
@@ -133,20 +132,4 @@ public class AnnotatePageActionTest {
 		return page;
 	}
 
-	/**
-	 * Installs an environment holding the given connector without running the full initialisation, which would pull
-	 * in plugins and compilers this test has no use for.
-	 */
-	private static void installEnvironment(WikiConnector connector) throws Exception {
-		Constructor<Environment> constructor = Environment.class.getDeclaredConstructor(WikiConnector.class);
-		constructor.setAccessible(true);
-		setStaticField("instance", constructor.newInstance(connector));
-		setStaticField("initialized", true);
-	}
-
-	private static void setStaticField(String name, Object value) throws Exception {
-		Field field = Environment.class.getDeclaredField(name);
-		field.setAccessible(true);
-		field.set(null, value);
-	}
 }

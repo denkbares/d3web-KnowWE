@@ -24,17 +24,10 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 public class DashTreeElementContent extends AbstractType {
 
-	private static DashTreeElementContent defaultInstance = null;
-
-	public static DashTreeElementContent getDefaultInstance() {
-		if (defaultInstance == null) {
-			defaultInstance = new DashTreeElementContent();
-
-		}
-
-		return defaultInstance;
-	}
-
+	/**
+	 * Returns the shared default instance of the current environment (one instance per environment). Without an
+	 * environment a fresh instance is returned.
+	 */
 	public DashTreeElementContent() {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 	}

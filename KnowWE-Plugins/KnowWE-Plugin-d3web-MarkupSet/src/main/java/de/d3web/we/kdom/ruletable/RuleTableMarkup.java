@@ -39,9 +39,12 @@ public class RuleTableMarkup extends DefaultMarkupType
 
 	static {
 		MARKUP = new DefaultMarkup("RuleTable");
-		Table content = new Table();
-		MARKUP.addContentType(content);
+		MARKUP.addContentType(RuleTableMarkup::createContent);
 		PackageManager.addPackageAnnotation(MARKUP);
+	}
+
+	private static Table createContent() {
+		Table content = new Table();
 
 
 		/*
@@ -97,7 +100,7 @@ public class RuleTableMarkup extends DefaultMarkupType
 				tableIndexConstraintAction));
 		content.injectTableCellContentChildtype(actionCellType);
 
-
+		return content;
 	}
 
 	public RuleTableMarkup() {

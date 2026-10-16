@@ -84,7 +84,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 			return;
 		}
 
-		String filename = generateWikiContentZipFilename(SNAPSHOT);
+		String filename = generateWikiContentZipFilename(context.getEnvironment(), SNAPSHOT);
 
 		//String filename = wikiFolder.getName() + ".zip";
 		context.setContentType(BINARY);
@@ -100,20 +100,20 @@ public class DownloadWikiZIPAction extends AbstractAction {
 		stopwatch.log(LOGGER, "Finished writing wiki content to output stream: " + filename);
 	}
 
-	public static @NotNull String generateWikiContentZipFilename(String prefix) {
+	public static @NotNull String generateWikiContentZipFilename(@NotNull Environment environment, String prefix) {
 		String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
-		return timestamp + "_" + prefix + "_" + getWikiFolder().getName() + ".zip";
+		return timestamp + "_" + prefix + "_" + getWikiFolder(environment).getName() + ".zip";
 	}
 
-	public static @NotNull File getWikiFolder() {
-		JSPWikiConnector con = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+	public static @NotNull File getWikiFolder(@NotNull Environment environment) {
+		JSPWikiConnector con = (JSPWikiConnector) environment.getWikiConnector();
 		String wikiProperty = Objects.requireNonNull(con.getWikiProperty("var.basedir"));
 		return new File(wikiProperty);
 	}
 
 	public static void writeWikiContentZipStreamToOutputStream(UserActionContext context, OutputStream outs, boolean includeVersions, boolean fingerprint) throws IOException {
 		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs))) {
-			zipDir(getWikiFolder(), zos, context, includeVersions);
+			zipDir(getWikiFolder(context.getEnvironment()), zos, context, includeVersions);
 			if (fingerprint) zipFingerprint(zos, context);
 		}
 	}
@@ -121,13 +121,12 @@ public class DownloadWikiZIPAction extends AbstractAction {
 	private static void zipFingerprint(ZipOutputStream zos, UserActionContext context) throws IOException {
 		File tempDir = Files.createTempDir();
 		try {
-			ArticleManager manager = Environment.getInstance().getArticleManager(
-					Environment.DEFAULT_WEB);
+			ArticleManager manager = context.getEnvironment().getArticleManager();
 			Collection<Article> articles = new LinkedList<>();
 			for (Article article : manager.getArticles()) {
 				if (checkRights(article, context)) articles.add(article);
 			}
-			Fingerprint.createFingerprint(articles, tempDir);
+			Fingerprint.createFingerprint(context.getEnvironment(), articles, tempDir);
 			File[] files = tempDir.listFiles();
 			for (File file : Objects.requireNonNull(files)) {
 				String relativePath = FINGERPRINT_ENTRY_PREFIX + file.getName();
@@ -154,8 +153,7 @@ public class DownloadWikiZIPAction extends AbstractAction {
 
 		// ignore all files if they belong to an article
 		// we have no read access for
-		Article article = WikiFileProviderUtils.getArticle(
-				context.getWeb(), wikiRootFolder, file);
+		Article article = WikiFileProviderUtils.getArticle(context.getEnvironment(), wikiRootFolder, file);
 		if (article != null && !checkRights(article, context)) {
 			return;
 		}

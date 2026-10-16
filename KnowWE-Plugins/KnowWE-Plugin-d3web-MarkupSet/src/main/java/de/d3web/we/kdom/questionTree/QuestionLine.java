@@ -114,7 +114,7 @@ public class QuestionLine extends AbstractType {
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
 			this.addCompileScript(Priority.HIGHER, new CreateQuestionHandler());
-			this.addCompileScript(IndicationHandler.getInstance());
+			this.addCompileScript(new IndicationHandler());
 			this.addCompileScript(Priority.ABOVE_DEFAULT, new QuestionTreeQuestionRelationScript());
 		}
 

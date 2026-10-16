@@ -1,6 +1,7 @@
 package de.knowwe.core;
 
 import java.util.ArrayList;
+import de.knowwe.core.utils.KnowWEUtils;
 import java.util.List;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -43,19 +44,31 @@ public class ServletContextEventListener implements ServletContextListener {
 		return destroyInProgress;
 	}
 
+	/**
+	 * The event manager of the environment running in the servlet context; before the environment exists (context
+	 * initialization) or after it is gone, the global manager.
+	 */
+	private static EventManager eventManager(ServletContextEvent event) {
+		Environment environment = Environment.findIn(event.getServletContext());
+		return environment != null ? environment.getEventManager() : EventManager.getInstance();
+	}
+
 	@Override
 	public void contextInitialized(final ServletContextEvent servletContextEvent) {
-		EventManager.getInstance().fireEvent(new ServletContextInitializedEvent(servletContextEvent));
+		eventManager(servletContextEvent).fireEvent(new ServletContextInitializedEvent(servletContextEvent));
 	}
 
 	@Override
 	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 		destroyInProgress = true;
 		LOGGER.info("Executing ContextDestroyedTask...");
-		EventManager.getInstance().fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
+		eventManager(servletContextEvent).fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
 		contextDestroyedTask.forEach(task -> task.accept(servletContextEvent));
 		LOGGER.info("Done executing ContextDestroyedTask, clearing...");
 		contextDestroyedTask.clear();
+		// the environment of this servlet context, published there when it was initialized
+		Environment environment = Environment.findIn(servletContextEvent.getServletContext());
+		if (environment != null) environment.close();
 		destroyInProgress = false;
 	}
 }

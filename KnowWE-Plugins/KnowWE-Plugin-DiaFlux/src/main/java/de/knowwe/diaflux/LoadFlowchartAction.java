@@ -29,7 +29,6 @@ import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -62,9 +61,8 @@ public class LoadFlowchartAction extends AbstractAction {
 
 		if (nodeID == null) {
 			// also allow to specify the flowchart by name, if no section id is specified
-			String web = context.getParameter(Attributes.WEB);
 			Identifier id = Identifier.fromExternalForm(context.getParameter("FlowIdentifier"));
-			ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
+			ArticleManager articleManager = context.getArticleManager();
 			Article master = articleManager.getArticle(id.getPathElementAt(0));
 			D3webCompiler compiler = Compilers.getCompiler(master, D3webCompiler.class);
 			section = Sections.definitions(compiler, id.rest(1))
@@ -98,18 +96,6 @@ public class LoadFlowchartAction extends AbstractAction {
 			if (oldId.equals(id)) return oldFlow;
 		}
 		return null;
-	}
-
-	// FIXME This method is a dirty hack and should be removed in the future:
-	// It is used to sectionize old versions of an article to get the
-	// diaflux-related stuff without altering the KB and so on
-	//
-	public static Section<RootType> sectionizeArticle(String text) {
-		Section<RootType> rootSection = Section.createSection(text, RootType.getInstance(), null);
-		Article article = Article.createTemporaryArticle("", "DiaFluxHelper", "default_web");
-		rootSection.setArticle(article);
-		RootType.getInstance().getParser().parse(text, rootSection);
-		return rootSection;
 	}
 
 	private static void writeSource(UserActionContext context, String flowSource) throws IOException {

@@ -41,6 +41,7 @@ import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.AbstractPackageCompiler;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.Priority;
@@ -95,8 +96,9 @@ public class OntologyCompiler extends AbstractPackageCompiler
 							Class<? extends Type> compilingType,
 							RepositoryConfig ruleSet, MultiDefinitionMode multiDefMode, ReferenceValidationMode referenceValidationMode) {
 		super(manager, compileSection, compilingType);
-		synchronized (EventManager.getInstance()) {
-			EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+		EventManager eventManager = KnowWEUtils.getEventManager(compileSection);
+		synchronized (eventManager) {
+			eventManager.registerListener(this, EventManager.RegistrationType.WEAK);
 		}
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
 		this.referenceValidationMode = referenceValidationMode == null ? ReferenceValidationMode.error : referenceValidationMode;
@@ -152,7 +154,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	public void destroy() {
 		super.destroy();
 		shutDownScriptCompilers();
-		EventManager.getInstance().unregister(this);
+		KnowWEUtils.getEventManager(this).unregister(this);
 		this.rdf2GoCore.close();
 		this.rdf2GoCore = null; // make sure the core can be gc-ed, even if there are still references to the compiler
 	}
@@ -229,7 +231,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
 			if (this.rdf2GoCore != null) this.rdf2GoCore.close();
-			this.rdf2GoCore = new Rdf2GoCore(getName(), null, ruleSet);
+			this.rdf2GoCore = new Rdf2GoCore(this.getEnvironment(), getName(), null, ruleSet);
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 		}
@@ -241,13 +243,13 @@ public class OntologyCompiler extends AbstractPackageCompiler
 			getTerminologyManager().cleanupStaleSection();
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
-		EventManager.getInstance()
+		KnowWEUtils.getEventManager(this)
 				.fireEvent(new OntologyCompilerStartEvent(this, sectionsOfPackage, sectionsOfPackageRemoved, completeCompilation));
 		getCompilerManager().setCurrentCompilePriority(this, Priority.INIT);
 		compile(sectionsOfPackage);
 
 		if (getCommitType(this) == CommitType.onDemand) {
-			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
+			NotificationManager.addGlobalNotification(this.getEnvironment(), new StandardNotification("There are changes not yet committed to " +
 					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
 					"click <a onclick=\"KNOWWE.plugin.ontology.commitOntology('" + getCompileSection().getID() + "')\">here</a>.",
 					Message.Type.INFO, getCommitNotificationId(this)));
@@ -261,7 +263,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		Set<TermRegistrationEvent<OntologyCompiler>> unregisteredTerms = new HashSet<>(termsUnregistered.values());
 		registeredTerms.removeAll(termsUnregistered.values());
 		unregisteredTerms.removeAll(termsRegistered.values());
-		EventManager.getInstance()
+		KnowWEUtils.getEventManager(this)
 				.fireEvent(new OntologyCompilerFinishedEvent(this, changed, unregisteredTerms, registeredTerms));
 
 		// clean up and prepare for next compilation step
@@ -315,7 +317,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 	public static boolean commitOntology(OntologyCompiler compiler) {
 		boolean changed = compiler.rdf2GoCore.commit();
-		NotificationManager.removeGlobalNotification(getCommitNotificationId(compiler));
+		NotificationManager.removeGlobalNotification(compiler.getEnvironment(), getCommitNotificationId(compiler));
 		return changed;
 	}
 

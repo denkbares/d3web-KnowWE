@@ -43,7 +43,7 @@ public class SectionReplacementLifecycleTest {
 		try {
 			edit = executor.submit(() -> {
 				editingThread.set(Thread.currentThread());
-				return Sections.replace(Sections.ReplaceContext.of(wiki.manager.getWeb(), title -> true, "test"),
+				return Sections.replace(Sections.ReplaceContext.of(wiki.environment, title -> true, "test"),
 						Map.of(oldId, "browser edit\n"), null);
 			});
 			long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);

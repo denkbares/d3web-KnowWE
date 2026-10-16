@@ -21,6 +21,7 @@ package de.knowwe.search.render;
 
 import java.io.IOException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,20 +45,16 @@ import static org.junit.Assert.assertNull;
  */
 public class PreviewSizeLimitTest {
 
-	private static final String WEB = Environment.DEFAULT_WEB;
-
 	private final ArticleChunker chunker = new ArticleChunker();
 	private UserContext user;
+	private Environment environment;
 
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
-		PreviewCache.getInstance().clear();
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
 	}
 
 	@Test
@@ -91,7 +88,7 @@ public class PreviewSizeLimitTest {
 		SearchResultRenderer renderer = new SearchResultRenderer(1_000_000, 100);
 		assertNull(render(renderer, article, 0));
 		String sectionId = chunker.chunk(article).get(0).anchor().getID();
-		assertEquals("", PreviewCache.getInstance().get(article.getTitle(), sectionId, user.getUserName()));
+		assertEquals("", PreviewCache.of(environment).get(article.getTitle(), sectionId, user.getUserName()));
 		assertNull(render(renderer, article, 0));
 	}
 
@@ -104,8 +101,8 @@ public class PreviewSizeLimitTest {
 	}
 
 	private Article article(String title, String content) {
-		Environment.getInstance().getArticleManager(WEB).registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(WEB, title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticle(title);
 		user = new TestUserContext(article);
 		return article;
 	}
@@ -116,5 +113,10 @@ public class PreviewSizeLimitTest {
 		SectionAnchor anchor = new SectionAnchor(article.getTitle(), chunk.anchor().getID(), path, chunk.heading());
 		SearchResultRenderer.Rendered rendered = renderer.render(anchor, user);
 		return rendered == null ? null : rendered.html();
+	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
 	}
 }

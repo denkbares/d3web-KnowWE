@@ -116,12 +116,15 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("HierarchyTable");
-		Table content = new Table();
-		MARKUP.addContentType(content);
+		MARKUP.addContentType(HierarchyTableMarkup::createContent);
 		PackageManager.addPackageAnnotation(MARKUP);
 
 		MARKUP.addAnnotation(ANNOTATION_TYPE_RELATION, false);
-		MARKUP.addAnnotationContentType(ANNOTATION_TYPE_RELATION, new TurtleURI());
+		MARKUP.addAnnotationContentType(ANNOTATION_TYPE_RELATION, () -> new TurtleURI());
+	}
+
+	private static Table createContent() {
+		Table content = new Table();
 
 
 		/*
@@ -181,6 +184,7 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 				new TableIndexConstraint(2, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 		content.injectTableCellContentChildtype(cellEntry);
 
+		return content;
 	}
 
 	public HierarchyTableMarkup() {

@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
@@ -62,13 +63,15 @@ public final class WikiRefresh {
 	 * removed. Reads the whole content directory, so prefer {@link #refresh(Collection, String)} when the changed
 	 * titles are known.
 	 *
+	 * @param source the wiki to refresh, as anything that knows its environment
 	 * @param reason a short description of what caused the refresh, for the compile message and the log
 	 * @throws IOException if the wiki persistence cannot be read
 	 */
 	@NotNull
-	public static Result refreshAll(@NotNull String reason) throws IOException {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		ArticleManager articleManager = Environment.getInstance().getArticleManager();
+	public static Result refreshAll(@NotNull HasEnvironment source, @NotNull String reason) throws IOException {
+		Environment environment = source.getEnvironment();
+		WikiConnector connector = environment.getWikiConnector();
+		ArticleManager articleManager = environment.getArticleManager();
 
 		Set<String> candidates = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		candidates.addAll(connector.readArticleTitlesFromPersistence());
@@ -81,16 +84,13 @@ public final class WikiRefresh {
 	 * Refreshes the given titles, dropping those whose file is gone. Titles whose file matches what the wiki already
 	 * holds are left alone, so calling this with more titles than necessary is safe.
 	 *
+	 * @param source the wiki to refresh, as anything that knows its environment
 	 * @param reason a short description of what caused the refresh, for the compile message and the log
 	 */
 	@NotNull
-	public static Result refresh(@NotNull Collection<String> titles, @NotNull String reason) {
-		return apply(
-				Environment.getInstance().getWikiConnector(),
-				Environment.getInstance().getArticleManager(),
-				titles,
-				reason
-		);
+	public static Result refresh(@NotNull HasEnvironment source, @NotNull Collection<String> titles, @NotNull String reason) {
+		Environment environment = source.getEnvironment();
+		return apply(environment.getWikiConnector(), environment.getArticleManager(), titles, reason);
 	}
 
 	private static Result apply(

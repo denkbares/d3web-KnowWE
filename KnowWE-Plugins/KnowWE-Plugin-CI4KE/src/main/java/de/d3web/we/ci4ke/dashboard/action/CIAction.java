@@ -32,6 +32,7 @@ import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -58,10 +59,9 @@ public class CIAction extends AbstractAction {
 			throw new IOException(
 					"CIAction.execute(): Required parameters not set!");
 		}
-		String web = context.getWeb();
 
 		CIDashboard dashboard = CIDashboardManager.getDashboard(
-				KnowWEUtils.getArticleManager(web),
+				context.getArticleManager(),
 				dashboardName);
 		if (dashboard == null) {
 			//context.sendError(404, "<message will be inserted in JS>");
@@ -98,8 +98,8 @@ public class CIAction extends AbstractAction {
 				// is managed in JS
 				return;
 			}
-			CIBuildManager.getInstance().startBuild(CIDashboardManager.getDashboard(
-					KnowWEUtils.getArticleManager(web),
+			CIBuildManager.of(context.getEnvironment()).startBuild(CIDashboardManager.getDashboard(
+					context.getArticleManager(),
 					dashboardName));
 			// TODO: Why are we rendering the old build? Necessary?
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
@@ -135,7 +135,7 @@ public class CIAction extends AbstractAction {
 		// ensure jspwiki markup is rendered in similar way as on full page
 		// reload
 		RenderResult temp = new RenderResult(html);
-		temp.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(
+		temp.append(context.getEnvironment().getWikiConnector().renderWikiSyntax(
 				html.toStringRaw()));
 
 		context.setContentType(HTML);

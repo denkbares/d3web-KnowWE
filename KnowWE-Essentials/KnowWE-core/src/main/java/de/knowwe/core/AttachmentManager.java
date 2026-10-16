@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,6 +28,7 @@ import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -61,9 +63,29 @@ public class AttachmentManager implements EventListener {
 
 	public AttachmentManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
-		synchronized (EventManager.getInstance()) {
-			EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+		synchronized (KnowWEUtils.getEventManager(articleManager)) {
+			KnowWEUtils.getEventManager(articleManager).registerListener(this, EventManager.RegistrationType.WEAK);
 		}
+	}
+
+	/**
+	 * Stops the background thread of this manager and unregisters it from the event manager. Called when the owning
+	 * environment is closed.
+	 */
+	public void shutdown() {
+		KnowWEUtils.getEventManager(articleManager).unregister(this);
+		executor.shutdownNow();
+	}
+
+	/**
+	 * Stops the background thread like {@link #shutdown()} and waits for it to end. For tests that must not leak the
+	 * thread into the next test; the servlet shutdown does not wait.
+	 *
+	 * @return whether the thread ended within the given time
+	 */
+	public boolean shutdownAndAwait(long timeout, @NotNull TimeUnit unit) throws InterruptedException {
+		shutdown();
+		return executor.awaitTermination(timeout, unit);
 	}
 
 	@Override
@@ -227,7 +249,7 @@ public class AttachmentManager implements EventListener {
 
 	private void createAndRegisterAttachmentArticle(String attachmentPath) {
 		try {
-			WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(attachmentPath);
+			WikiAttachment attachment = articleManager.getEnvironment().getWikiConnector().getAttachment(attachmentPath);
 			if (attachment == null) return;
 			String attachmentText = Strings.readStream(attachment.getInputStream());
 			if (allArticlesInitialized) {

@@ -43,7 +43,7 @@ import de.knowwe.diaflux.type.NodeType;
 public class ActionNodeHandler extends AbstractNodeHandler<ActionType> {
 
 	public ActionNodeHandler() {
-		super(ActionType.getInstance());
+		super(new ActionType());
 	}
 
 	@Override

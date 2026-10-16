@@ -22,6 +22,9 @@ package de.knowwe.snapshot;
 import java.io.File;
 
 import de.knowwe.core.utils.progress.DownloadFileAction;
+import org.jetbrains.annotations.NotNull;
+import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.plugin.Instantiation;
 
 import static de.knowwe.snapshot.SnapshotAction.getSnapshotsPath;
@@ -29,7 +32,7 @@ import static de.knowwe.snapshot.SnapshotAction.getSnapshotsPath;
 public class SnapshotDirectoryPermissionInstantiation implements Instantiation {
 
 	@Override
-	public void init(String web) {
-		DownloadFileAction.allowDirectory(new File(getSnapshotsPath()));
+	public void init(@NotNull Environment environment) {
+		DownloadFileAction.allowDirectory(new File(getSnapshotsPath(environment)));
 	}
 }

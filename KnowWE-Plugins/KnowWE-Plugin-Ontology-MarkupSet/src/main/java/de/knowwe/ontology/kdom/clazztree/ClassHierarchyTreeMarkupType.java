@@ -20,7 +20,7 @@ public class ClassHierarchyTreeMarkupType extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup("ClassHierarchy");
-		m.addContentType(new HierarchyDashTree(new ClassHierarchyDashtreeElementContent()));
+		m.addContentType(() -> new HierarchyDashTree(new ClassHierarchyDashtreeElementContent()));
 		m.addAnnotation(ANNOTATION_RELATION, false);
 		m.addAnnotation(ANNOTATION_NAMESPACE);
 	}

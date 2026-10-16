@@ -81,7 +81,7 @@ public record SectionAnchor(@NotNull String title, @Nullable String sectionId, @
 		if (sectionId == null || sectionId.isBlank()) return null;
 		Section<?> section;
 		try {
-			section = Sections.get(sectionId);
+			section = Sections.get(article.getEnvironment(), sectionId);
 		}
 		catch (RuntimeException e) {
 			// an id is read as a hexadecimal number, so anything else in the index -- a value from an older schema,

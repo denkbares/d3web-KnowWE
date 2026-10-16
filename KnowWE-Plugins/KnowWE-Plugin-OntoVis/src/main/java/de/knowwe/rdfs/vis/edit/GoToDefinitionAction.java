@@ -22,6 +22,7 @@ package de.knowwe.rdfs.vis.edit;
 import java.io.IOException;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -52,7 +53,7 @@ public class GoToDefinitionAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionID = context.getParameter("kdomid");
 		String conceptName = context.getParameter("concept");
-		Section<?> section = Sections.get(sectionID);
+		Section<?> section = Sections.get(context, sectionID);
 		if (section == null || !KnowWEUtils.canView(section, context)) {
 			context.sendError(403, "You are not allowed to see the definition of this concept");
 			return;
@@ -66,17 +67,18 @@ public class GoToDefinitionAction extends AbstractAction {
 			try {
 				uriProvider = (LinkToTermDefinitionProvider) Class.forName(
 						"de.knowwe.compile.utils.IncrementalCompilerLinkToTermDefinitionProvider")
-						.newInstance();
+						.getConstructor(Environment.class)
+						.newInstance(context.getEnvironment());
 			}
 			catch (Exception e) {
 				uriProvider = (name, masterArticle) -> null;
 			}
 		}
 		else {
-			uriProvider = new PackageCompileLinkToTermDefinitionProvider();
+			uriProvider = new PackageCompileLinkToTermDefinitionProvider(context.getEnvironment());
 		}
 
-		Config config = new Config();
+		Config config = new Config(context.getEnvironment());
 		config.init(Sections.cast(section, DefaultMarkupType.class), context);
 		String uri = Rdf2GoUtils.expandNamespace(compiler.getRdf2GoCore(), conceptName);
 

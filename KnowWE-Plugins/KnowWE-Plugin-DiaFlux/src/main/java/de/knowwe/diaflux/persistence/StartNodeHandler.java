@@ -40,7 +40,7 @@ import de.knowwe.diaflux.type.StartType;
 public class StartNodeHandler extends AbstractNodeHandler<StartType> {
 
 	public StartNodeHandler() {
-		super(StartType.getInstance(), null);
+		super(new StartType(), null);
 	}
 
 	@Override

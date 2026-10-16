@@ -48,7 +48,7 @@ public class ListSnapshotsAction extends SnapshotAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		File snapshotPath = new File(getSnapshotsPath());
+		File snapshotPath = new File(getSnapshotsPath(context.getEnvironment()));
 		if (!snapshotPath.exists() || snapshotPath.listFiles() == null) {
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Snapshot storage path does not exist");
 			return;

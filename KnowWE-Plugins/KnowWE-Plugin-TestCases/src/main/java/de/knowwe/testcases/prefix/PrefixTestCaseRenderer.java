@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
@@ -37,7 +38,7 @@ public class PrefixTestCaseRenderer implements Renderer {
 		List<TestCaseProvider> found = (prefix == null)
 				? Collections.<TestCaseProvider>emptyList()
 				: TestCaseUtils.getTestCaseProviders(
-				section.getWeb(), section.getPackageNames(),
+				KnowWEUtils.getArticleManager(section), section.getPackageNames(),
 				"^" + Pattern.quote(prefix) + "$");
 		if (prefix != null && found.isEmpty()) {
 			Message warning = Messages.warning("Prefix testcase '" + prefix

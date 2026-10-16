@@ -27,6 +27,8 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
@@ -47,7 +49,6 @@ import de.knowwe.core.report.Messages;
 public class TerminologyManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TerminologyManager.class);
 
-	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 	private static final String REFERENCES_KEY = TerminologyManager.class.getName() + "#Identifiers";
 	private static final String DEFINITIONS_KEY = TerminologyManager.class.getName() + "#Definitions";
 
@@ -61,12 +62,6 @@ public class TerminologyManager {
 
 	public TerminologyManager(boolean caseSensitive) {
 		termLogManager = new TermLogManager(caseSensitive);
-	}
-
-	public void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
-		for (String occupiedTermInExternalForm : terminologyExtension.getTermNames()) {
-			occupiedTerms.add(Identifier.fromExternalForm(occupiedTermInExternalForm));
-		}
 	}
 
 	/**
@@ -113,7 +108,7 @@ public class TerminologyManager {
 
 		Compiler messageCompiler = compiler instanceof AbstractPackageCompiler
 				? (AbstractPackageCompiler) compiler : null;
-		if (occupiedTerms.contains(termIdentifier)) {
+		if (compiler.getEnvironment().isOccupiedTerm(termIdentifier)) {
 			Message msg = Messages.error("The term '"
 										 + termIdentifier
 										 + "' is reserved by the system.");
@@ -132,7 +127,7 @@ public class TerminologyManager {
 			registeredDefinitions.add(termIdentifier);
 		}
 
-		EventManager.getInstance().fireEvent(new TermDefinitionRegisteredEvent<>(compiler, termIdentifier, termClass));
+		KnowWEUtils.getEventManager(termDefinition).fireEvent(new TermDefinitionRegisteredEvent<>(compiler, termIdentifier, termClass));
 		Messages.clearMessages(messageCompiler, termDefinition, this.getClass());
 	}
 
@@ -272,7 +267,7 @@ public class TerminologyManager {
 				boolean removedTermDefinition = termRefLog.removeTermDefinition(compiler, termDefinition,
 						termClass, termIdentifier);
 				//if(removedTermDefinition) {
-				EventManager.getInstance()
+				KnowWEUtils.getEventManager(compiler)
 						.fireEvent(new TermDefinitionUnregisteredEvent<>(compiler, termIdentifier, termClass));
 				//}
 			}

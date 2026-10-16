@@ -26,19 +26,22 @@ import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup;
+import de.knowwe.core.Environment;
+import de.d3web.we.ci4ke.build.WikiTestObjectProvider;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
-public class SparqlExpectedSectionTestObjectProvider implements TestObjectProvider {
+public class SparqlExpectedSectionTestObjectProvider implements WikiTestObjectProvider {
 
 	@Override
-	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
+	public <T> List<TestObjectContainer<T>> getTestObjects(@NotNull Environment environment, Class<T> clazz, String name) {
 		List<TestObjectContainer<T>> result = new ArrayList<>();
 		if (!clazz.equals(SparqlExpectedResultSection.class)) return result;
 
-		Collection<Section<ExpectedSparqlResultTableMarkup>> sparqlQueryContentSections = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(name);
+		Collection<Section<ExpectedSparqlResultTableMarkup>> sparqlQueryContentSections = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(environment, name);
 		for (Section<ExpectedSparqlResultTableMarkup> section : sparqlQueryContentSections) {
 			result.add(new TestObjectContainer<>(SparqlTestObjectProviderUtils.getName(section),
 					clazz.cast(new SparqlExpectedResultSection(section))));

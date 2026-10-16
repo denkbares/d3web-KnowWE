@@ -53,7 +53,6 @@ import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
 import de.d3web.we.ci4ke.hook.CIHookManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -133,12 +132,12 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		// add content for individual annotations
 		markup.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
-		markup.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(FROZEN_TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
-		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestDeclarationType());
-		markup.addAnnotationContentType(FROZEN_TEST_KEY, new TestDeclarationType());
+		markup.addAnnotationContentType(TEST_KEY, () -> new TestIgnoreType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, () -> new TestIgnoreType());
+		markup.addAnnotationContentType(FROZEN_TEST_KEY, () -> new TestIgnoreType());
+		markup.addAnnotationContentType(TEST_KEY, () -> new TestDeclarationType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, () -> new TestDeclarationType());
+		markup.addAnnotationContentType(FROZEN_TEST_KEY, () -> new TestDeclarationType());
 		markup.addAnnotation(TEMPLATE, false);
 		markup.addAnnotation(SKIP_TESTS, false);
 
@@ -433,7 +432,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		private void processOnSaveTrigger(Matcher matcher, Set<String> monitoredArticles, List<Message> msgs, Section<CIDashboardType> section) {
 			while (matcher.find()) {
 				String parameter = parseParameter(matcher.group());
-				if (Environment.getInstance().getWikiConnector().doesArticleExist(parameter)) {
+				if (section.getEnvironment().getWikiConnector().doesArticleExist(parameter)) {
 					monitoredArticles.add(parameter);
 				}
 				else {
@@ -511,7 +510,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(section, tests);
 			if (trigger == CIBuildTriggers.onSave) {
 				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
-				CIHookManager.getInstance().registerHook(ciHook);
+				CIHookManager.of(section).registerHook(ciHook);
 				// store to be able to unregister hook in destroy method
 				KnowWEUtils.storeObject(section, CIHook.CI_HOOK_STORE_KEY, ciHook);
 			}
@@ -538,7 +537,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
 			Object object = section.getObject(CIHook.CI_HOOK_STORE_KEY);
 			if (object instanceof CIHook ciHook) {
-				CIHookManager.getInstance().unregisterHook(ciHook);
+				CIHookManager.of(section).unregisterHook(ciHook);
 			}
 			else if (object instanceof JobKey jobKey) {
 				QuartzSchedulerJobServer.deleteJob(jobKey);

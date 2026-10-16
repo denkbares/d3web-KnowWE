@@ -46,7 +46,7 @@ public class CIDashboardJob implements Job {
 		Object object = context.getJobDetail().getJobDataMap().get(DASHBOARD_KEY);
 		if (object instanceof CIDashboard dashboard) {
 			LOGGER.info("Starting scheduled build of dashboard: {}", dashboard.getDashboardName());
-			CIBuildManager.getInstance().startBuild(dashboard);
+			CIBuildManager.of(dashboard).startBuild(dashboard);
 		}
 	}
 }

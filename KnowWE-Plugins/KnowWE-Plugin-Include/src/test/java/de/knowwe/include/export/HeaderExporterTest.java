@@ -20,8 +20,11 @@ package de.knowwe.include.export;
 
 import org.junit.Test;
 
+import connector.DummyConnector;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
+import utils.OwnedEnvironment;
 
 import static org.junit.Assert.*;
 
@@ -30,14 +33,18 @@ public class HeaderExporterTest {
 	/** Opaque section IDs must not be parsed as longs when creating Word bookmark names. */
 	@Test
 	public void crossReferenceAcceptsFullSectionId() {
-		Article article = Article.createTemporaryArticle("Heading", "Page", "test", new RootType());
-		assertNotNull(article);
-		String sectionId = article.getRootSection().getID();
-		String reference = HeaderExporter.getCrossReferenceID(article.getRootSection());
-		assertEquals(32, sectionId.length());
-		assertEquals("_Ref" + sectionId, reference);
-		assertTrue(reference.matches("_Ref[0-9a-f]{32}"));
-		assertTrue("Word bookmark names must fit the length limit", reference.length() <= 40);
+		// temporary articles belong to an environment, a core-only one is enough here
+		try (OwnedEnvironment owned = OwnedEnvironment.create(new DummyConnector(), new RootType())) {
+			Environment environment = owned.get();
+			Article article = Article.createTemporaryArticle(environment, "Heading", "Page", new RootType());
+			assertNotNull(article);
+			String sectionId = article.getRootSection().getID();
+			String reference = HeaderExporter.getCrossReferenceID(article.getRootSection());
+			assertEquals(32, sectionId.length());
+			assertEquals("_Ref" + sectionId, reference);
+			assertTrue(reference.matches("_Ref[0-9a-f]{32}"));
+			assertTrue("Word bookmark names must fit the length limit", reference.length() <= 40);
+		}
 	}
 
 	@Test

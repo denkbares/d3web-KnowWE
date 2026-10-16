@@ -25,18 +25,11 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 
 public class LineContent extends AbstractType {
 
-	private static LineContent instance = null;
-
-	public static LineContent getInstance() {
-		if (instance == null) {
-			instance = new LineContent();
-
-		}
-
-		return instance;
-	}
-
-	protected LineContent() {
+	/**
+	 * Returns the shared line content type of the current environment (one instance per environment). Without an
+	 * environment a fresh instance is returned.
+	 */
+	public LineContent() {
 		this.setSectionFinder(AllTextFinder.getInstance());
 	}
 }

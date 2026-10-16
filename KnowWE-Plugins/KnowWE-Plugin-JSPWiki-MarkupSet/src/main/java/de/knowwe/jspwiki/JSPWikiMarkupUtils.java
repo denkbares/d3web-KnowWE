@@ -104,7 +104,8 @@ public class JSPWikiMarkupUtils {
 		Extension[] extensions = manager.getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID, Plugins.EXTENDED_POINT_Type);
 		List<Extension> matches = ScopeUtils.getMatchingExtensions(
-				extensions, new Type[] { RootType.getInstance() });
+				// the scope matching only looks at the type classes of the path, so any root type instance will do
+				extensions, new Type[] { new RootType() });
 
 		Plugin plugin = manager.getPlugin("KnowWE-Plugin-JSPWiki-MarkupSet");
 		List<Type> result = new LinkedList<>();

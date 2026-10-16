@@ -51,17 +51,19 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(DOMAIN_ANNOTATION_NAME, false);
 		MARKUP.addAnnotation(FUNCTIONAL_ANNOTATION_NAME, false, "true", "false");
-		MARKUP.addAnnotationContentType(DOMAIN_ANNOTATION_NAME, new DomainRangeAnnotationType(
+		MARKUP.addAnnotationContentType(DOMAIN_ANNOTATION_NAME, () -> new DomainRangeAnnotationType(
 				DomainRangeAnnotationType.DomainRange.DOMAIN));
 		MARKUP.addAnnotation(RANGE_ANNOTATION_NAME, false);
-		MARKUP.addAnnotationContentType(RANGE_ANNOTATION_NAME, new DomainRangeAnnotationType(
+		MARKUP.addAnnotationContentType(RANGE_ANNOTATION_NAME, () -> new DomainRangeAnnotationType(
 				DomainRangeAnnotationType.DomainRange.RANGE));
 
-		OntologyLineType lineType = new OntologyLineType();
-		AbbreviatedPropertyDefinition propertyDefinition = new AbbreviatedPropertyDefinition();
-		propertyDefinition.addCompileScript(new AbbreviatedObjectPropertyHandler());
-		lineType.addChildType(propertyDefinition);
-		MARKUP.addContentType(lineType);
+		MARKUP.addContentType(() -> {
+			OntologyLineType lineType = new OntologyLineType();
+			AbbreviatedPropertyDefinition propertyDefinition = new AbbreviatedPropertyDefinition();
+			propertyDefinition.addCompileScript(new AbbreviatedObjectPropertyHandler());
+			lineType.addChildType(propertyDefinition);
+			return lineType;
+		});
 	}
 
 	public ObjectPropertyType() {

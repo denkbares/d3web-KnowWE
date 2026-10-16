@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.RecursiveType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -43,14 +44,15 @@ import de.knowwe.ontology.turtle.TurtleCollection.ItemList.CollectionItem;
 
 public class TurtleCollection extends AbstractType implements ResourceProvider<TurtleCollection>, StatementProvider<TurtleCollection> {
 
-	private static TurtleCollection instance = null;
+	/**
+	 * Recursive type: it is referenced from within its own child graph (CollectionItem). {@link RecursiveType}
+	 * registers the instance before its children are built, so the recursion resolves to the same instance and
+	 * construction terminates. The scope is per construction (and therefore per environment); see S4.7.
+	 */
+	private static final ThreadLocal<TurtleCollection> CONSTRUCTION = new ThreadLocal<>();
 
-	public static TurtleCollection getInstance() {
-		if (instance == null) {
-			instance = new TurtleCollection();
-			instance.init();
-		}
-		return instance;
+	public static TurtleCollection create() {
+		return RecursiveType.create(CONSTRUCTION, TurtleCollection::new, TurtleCollection::init);
 	}
 
 	private void init() {
@@ -86,7 +88,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 			public CollectionItem() {
 
-				this.addChildType(TurtleCollection.getInstance());
+				this.addChildType(TurtleCollection.create());
 				this.addChildType(new BlankNode());
 				this.addChildType(new BlankNodeID());
 				this.addChildType(new TurtleLiteralType());

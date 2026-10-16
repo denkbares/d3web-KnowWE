@@ -45,9 +45,7 @@ import de.knowwe.core.user.UserContext;
  */
 public class UnrecognizedSyntaxType extends AbstractType {
 
-	private static final UnrecognizedSyntaxType instance = new UnrecognizedSyntaxType();
-
-	private UnrecognizedSyntaxType() {
+	public UnrecognizedSyntaxType() {
 		this.setSectionFinder(new AllTextFinderTrimmed(AllTextFinderTrimmed.TrimType.SPACES_AND_LINE_BREAKS));
 		this.setRenderer(new Renderer() {
 			@Override
@@ -64,9 +62,5 @@ public class UnrecognizedSyntaxType extends AbstractType {
 				return msgs;
 			}
 		});
-	}
-
-	public static UnrecognizedSyntaxType getInstance() {
-		return instance;
 	}
 }

@@ -38,7 +38,8 @@ public class SectionContentType extends AbstractType {
 
 	@Override
 	public void init(Type[] path) {
-		for (Type type : RootType.getInstance().getChildrenTypes()) {
+		// the root type of the type tree this type is decorated in, i.e. of the environment being built
+		for (Type type : path[0].getChildrenTypes()) {
 			this.addChildType(type);
 		}
 		ParagraphType paragraph = Types.getLastOfType(path, ParagraphType.class);

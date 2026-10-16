@@ -31,11 +31,28 @@ import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
+import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.d3web.testing.TestSpecification;
+import de.d3web.we.ci4ke.test.CITestSpecification;
 
 public class CIUtils {
+
+	/**
+	 * Returns the environment of the wiki the specified CI test specification belongs to. Every specification a
+	 * dashboard executes is a {@link CITestSpecification}, so tests may rely on it in
+	 * {@link de.d3web.testing.Test#execute(TestSpecification, Object)}.
+	 *
+	 * @throws IllegalArgumentException if the specification was not created by a CI dashboard
+	 */
+	@NotNull
+	public static Environment environment(@NotNull TestSpecification<?> specification) {
+		if (specification instanceof CITestSpecification<?> ciSpecification) return ciSpecification.getEnvironment();
+		throw new IllegalArgumentException("test specification of " + specification.getTestName()
+				+ " was not created by a CI dashboard, no environment available");
+	}
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIUtils.class);
 
 	public static Collection<Section<CIDashboardType>> getDashboardSections(ArticleManager manager, String dashboardName) {
@@ -48,8 +65,9 @@ public class CIUtils {
 	 * 
 	 * @return the save path for ci-build xml´s
 	 */
-	public static File getCIBuildDir() {
-		String wikiDir = getWikiContentDirectory();
+
+	public static File getCIBuildDir(@NotNull Environment environment) {
+		String wikiDir = getWikiContentDirectory(environment);
 		File buildDir = new File(wikiDir + "ci-builds");
 		// check if the path exists
 		if (!buildDir.exists()) {
@@ -63,8 +81,8 @@ public class CIUtils {
 	 * @created 10.11.2010
 	 * @return
 	 */
-	private static String getWikiContentDirectory() {
-		WikiConnector con = Environment.getInstance().getWikiConnector();
+	private static String getWikiContentDirectory(Environment environment) {
+		WikiConnector con = environment.getWikiConnector();
 		String wikiDir = con.getSavePath();
 		if (wikiDir == null || wikiDir.isEmpty()) {
 			LOGGER.warn("Wiki SavePath could not be retrieved! (null or empty!)");
@@ -84,8 +102,9 @@ public class CIUtils {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static File getAttachmentsDirectory(String articleTitle) {
-		String wikiDir = getWikiContentDirectory();
+
+	public static File getAttachmentsDirectory(@NotNull Environment environment, String articleTitle) {
+		String wikiDir = getWikiContentDirectory(environment);
 		String folderName = Strings.encodeURL(articleTitle) + "-att" + File.separator;
 		File attachmentsDir = new File(wikiDir + folderName);
 		if (!attachmentsDir.exists()) {

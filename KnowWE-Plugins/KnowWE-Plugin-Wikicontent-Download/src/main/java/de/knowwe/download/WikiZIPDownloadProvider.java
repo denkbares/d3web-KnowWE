@@ -53,7 +53,6 @@ public class WikiZIPDownloadProvider implements ToolProvider {
 		// tool to provide download capability
 		String jsAction = "window.location='action/DownloadWikiZIP" +
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
-				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
 				"&amp;" + DownloadWikiZIPAction.PARAM_FINGERPRINT + "=" + fingerprint +
 				"&amp;" + DownloadWikiZIPAction.PARAM_VERSIONS + "=" + !fingerprint +
 				"'";

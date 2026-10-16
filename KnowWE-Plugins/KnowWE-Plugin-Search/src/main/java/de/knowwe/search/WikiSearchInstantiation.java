@@ -19,10 +19,11 @@
 
 package de.knowwe.search;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.Environment;
 import de.knowwe.plugin.Instantiation;
 
 /**
@@ -38,10 +39,9 @@ public class WikiSearchInstantiation implements Instantiation {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WikiSearchInstantiation.class);
 
 	@Override
-	public void init(String web) {
-		WikiSearchService service = WikiSearchService.getInstance();
-		LOGGER.info("Wiki search initialised for web '{}'", web);
-		// an index writer left open makes the index files undeletable on Windows for the lifetime of the JVM
-		ServletContextEventListener.registerOnContextDestroyedTask(context -> service.shutdown());
+	public void init(@NotNull Environment environment) {
+		// creating the service opens the index; it is closed together with the environment
+		WikiSearchService.of(environment);
+		LOGGER.info("Wiki search initialised");
 	}
 }

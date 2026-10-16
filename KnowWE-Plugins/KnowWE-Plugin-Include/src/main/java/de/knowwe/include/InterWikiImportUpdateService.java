@@ -34,17 +34,17 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
-import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.Environment;
+import de.knowwe.core.EnvironmentService;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.jspwiki.ActionAllowListChecker;
@@ -52,7 +52,13 @@ import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
-public final class InterWikiImportUpdateService {
+public final class InterWikiImportUpdateService implements EnvironmentService {
+
+	public static final ServiceKey<InterWikiImportUpdateService> SERVICE = ServiceKey.of(InterWikiImportUpdateService.class, environment -> {
+		InterWikiImportUpdateService service = new InterWikiImportUpdateService(environment);
+		service.initialize();
+		return service;
+	});
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InterWikiImportUpdateService.class);
 
@@ -81,14 +87,34 @@ public final class InterWikiImportUpdateService {
 		}
 	}
 
+	/**
+	 * The environment of the wiki whose imports this service keeps up to date.
+	 */
+	private final Environment environment;
+
+	private InterWikiImportUpdateService(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
+	/**
+	 * Returns the update service of the specified environment, started on first access and closed together with the
+	 * environment.
+	 */
+	public static InterWikiImportUpdateService of(@NotNull Environment environment) {
+		return environment.getService(InterWikiImportUpdateService.SERVICE);
+	}
+
+	@Override
+	public void close() {
+		LOGGER.info("Shutting down InterWikiImport update poller.");
+		environment.getEventManager().unregister(pageSaveListener);
+		poller.shutdownNow();
+	}
+
 	public void initialize() {
 		if (!initialized.compareAndSet(false, true)) return;
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			LOGGER.info("Shutting down InterWikiImport update poller.");
-			poller.shutdownNow();
-		});
 		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
-		EventManager.getInstance().registerListener(pageSaveListener);
+		environment.getEventManager().registerListener(pageSaveListener);
 
 		poller.scheduleWithFixedDelay(this::pollAllSources, 0, pollIntervalMillis,
 				TimeUnit.MILLISECONDS);
@@ -125,7 +151,7 @@ public final class InterWikiImportUpdateService {
 				List<String> titles = commitEvent.getCommittedTitles().stream()
 						.filter(title -> savedTitles.remove(title.toLowerCase()))
 						.toList();
-				if (titles.isEmpty() || !AttachmentUpdateMarkup.isAutoUpdatingActive()) return;
+				if (titles.isEmpty() || !AttachmentUpdateMarkup.isAutoUpdatingActive(environment)) return;
 				ArticleManager articleManager = commitEvent.getArticleManager();
 				poller.execute(() -> forceUpdateAfterSave(articleManager, titles));
 			}
@@ -169,7 +195,7 @@ public final class InterWikiImportUpdateService {
 	 * (e.g. its {@code @latestChange}) would be overwritten by the next one.
 	 */
 	public void pollMarkups(Collection<Section<InterWikiImportMarkup>> markups, boolean force) {
-		if (!AttachmentUpdateMarkup.isAutoUpdatingActive() && !force) return;
+		if (!AttachmentUpdateMarkup.isAutoUpdatingActive(environment) && !force) return;
 		Map<String, List<ImportInfo>> snapshotsByWiki = new LinkedHashMap<>();
 		for (Section<InterWikiImportMarkup> markup : markups) {
 			if (!Sections.isLive(markup)) continue;
@@ -186,7 +212,7 @@ public final class InterWikiImportUpdateService {
 		}
 		if (snapshotsByWiki.isEmpty()) return;
 
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		ArticleManager articleManager = environment.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 			defaultArticleManager.awaitInitialization();
 		}
@@ -218,9 +244,9 @@ public final class InterWikiImportUpdateService {
 	}
 
 	private void pollAllSources() {
-		if (!AttachmentUpdateMarkup.isAutoUpdatingActive()) return;
+		if (!AttachmentUpdateMarkup.isAutoUpdatingActive(environment)) return;
 
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		ArticleManager articleManager = environment.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 			defaultArticleManager.awaitInitialization();
 		}
@@ -274,7 +300,7 @@ public final class InterWikiImportUpdateService {
 	private List<ImportInfo> getImportSnapshots() {
 		List<ImportInfo> snapshots = new ArrayList<>();
 		for (String markupId : registeredMarkupIds) {
-			Section<InterWikiImportMarkup> markup = Sections.get(markupId, InterWikiImportMarkup.class);
+			Section<InterWikiImportMarkup> markup = Sections.get(environment, markupId, InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) {
 				registeredMarkupIds.remove(markupId);
 				continue;
@@ -312,7 +338,7 @@ public final class InterWikiImportUpdateService {
 			stopwatch.log(LOGGER, "Found " + changes.getUpdates()
 					.size() + " changed InterWikiImport markups for " + wiki + ": " + changes.getUpdates()
 					.stream()
-					.map(u -> Sections.get(u.requestingSectionId()))
+					.map(u -> Sections.get(environment, u.requestingSectionId()))
 					.filter(Objects::nonNull)
 					.map(Section::getTitle)
 					.collect(Collectors.joining(", ")));
@@ -334,7 +360,7 @@ public final class InterWikiImportUpdateService {
 	private void recordOutcome(List<ImportInfo> snapshots, PollResult result) {
 		String message = syncFailureMessage(result);
 		for (ImportInfo snapshot : snapshots) {
-			Section<InterWikiImportMarkup> markup = Sections.get(snapshot.sectionId(), InterWikiImportMarkup.class);
+			Section<InterWikiImportMarkup> markup = Sections.get(environment, snapshot.sectionId(), InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) continue;
 			markup.get().recordSyncOutcome(markup, message);
 		}
@@ -352,7 +378,7 @@ public final class InterWikiImportUpdateService {
 		Map<String, String> replacements = new LinkedHashMap<>();
 		int updatedImports = 0;
 		for (InterWikiChanges.Update update : updates) {
-			Section<InterWikiImportMarkup> markup = Sections.get(update.requestingSectionId(), InterWikiImportMarkup.class);
+			Section<InterWikiImportMarkup> markup = Sections.get(environment, update.requestingSectionId(), InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) {
 				registeredMarkupIds.remove(update.requestingSectionId());
 				continue;
@@ -366,7 +392,7 @@ public final class InterWikiImportUpdateService {
 			updatedImports++;
 		}
 		if (!replacements.isEmpty()) {
-			Sections.replaceAsSystem(replacements, "Update after changes in remote wiki");
+			Sections.replaceAsSystem(environment, replacements, "Update after changes in remote wiki");
 		}
 		return updatedImports;
 	}

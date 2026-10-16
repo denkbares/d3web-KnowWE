@@ -2,6 +2,11 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -10,7 +15,20 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Volker Belli (denkbares GmbH)
  * @created 30.10.2013
  */
-public interface Compiler {
+public interface Compiler extends HasEnvironment {
+
+	/**
+	 * Returns the environment this compiler belongs to, via the article manager of its {@link CompilerManager}, or
+	 * null if it is attached to none.
+	 */
+	@Nullable
+	@Override
+	default Environment findEnvironment() {
+		CompilerManager compilerManager = getCompilerManager();
+		ArticleManager articleManager = compilerManager == null ? null : compilerManager.getArticleManager();
+		return articleManager == null ? null : articleManager.getEnvironment();
+	}
+
 
 	CompilerManager getCompilerManager();
 

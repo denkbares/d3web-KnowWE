@@ -28,17 +28,11 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class TargetType extends AbstractXMLType {
 
-	private static TargetType instance;
 
-	private TargetType() {
+	public TargetType() {
 		super("target");
 		addChildType(new XMLContent());
 	}
 
-	public static TargetType getInstance() {
-		if (instance == null) instance = new TargetType();
-
-		return instance;
-	}
 
 }

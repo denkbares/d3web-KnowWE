@@ -39,8 +39,8 @@ public record FileChange(
 	 * @return the inferred change, or {@code null} if the current article already has the requested state
 	 */
 	@Nullable
-	public static FileChange fromArticle(@NotNull String articleName, @Nullable String newContent) {
-		return fromArticle(articleName, articleName, newContent);
+	public static FileChange fromArticle(@NotNull ArticleManager articleManager, @NotNull String articleName, @Nullable String newContent) {
+		return fromArticle(articleManager, articleName, articleName, newContent);
 	}
 
 	/**
@@ -53,8 +53,9 @@ public record FileChange(
 	 * @return the inferred change, or {@code null} if there is no visible change to render or no article name is set
 	 */
 	@Nullable
-	@Contract("null, null, _ -> null")
+	@Contract("_, null, null, _ -> null")
 	public static FileChange fromArticle(
+			@NotNull ArticleManager articleManager,
 			@Nullable String oldName,
 			@Nullable String newName,
 			@Nullable String newContent
@@ -63,7 +64,6 @@ public record FileChange(
 		String effectiveName = newName == null ? oldName : newName;
 		String existingName = oldName == null ? newName : oldName;
 
-		ArticleManager articleManager = Environment.getInstance().getArticleManager();
 		Article oldArticle = articleManager.getArticle(existingName);
 		String oldContent = oldArticle == null ? null : oldArticle.getText();
 

@@ -28,7 +28,9 @@ import utils.TestUtils;
 
 import com.denkbares.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
+import org.junit.After;
 
 /**
  * Class for testing some functionality of class Section.
@@ -37,6 +39,8 @@ import de.knowwe.core.kdom.Article;
  * 
  */
 public class TableTest extends TestCase {
+
+	private Environment environment;
 
 	@Override
 	protected void setUp() throws IOException {
@@ -54,9 +58,8 @@ public class TableTest extends TestCase {
 		 */
 		DummyConnector connector = new DummyConnector();
 		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-		Environment.initInstance(connector);
-		Environment env = Environment.getInstance();
-		final String web = Environment.DEFAULT_WEB;
+		environment = Environment.create(connector);
+		Environment env = environment;
 
 		/**
 		 * Build an Article and register it at env.
@@ -64,13 +67,19 @@ public class TableTest extends TestCase {
 		String content = "!!Table\n\n%%Table\n| |Apple|Lemon|Coconut\n|sweetness|+|-|hm\n|grows in central europe|+|+|-\n|size|-|+|+\n%";
 		String title = "Test_Article";
 		// create article with the new content
-		env.getArticleManager(web).registerArticle(title, content);
-		Article article = env.getArticle(web, title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticleManager().getArticle(title);
 
 		/**
 		 * Beginning the test
 		 */
 		assertEquals(content, article.collectTextsFromLeaves());
+	}
+
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
 	}
 
 }

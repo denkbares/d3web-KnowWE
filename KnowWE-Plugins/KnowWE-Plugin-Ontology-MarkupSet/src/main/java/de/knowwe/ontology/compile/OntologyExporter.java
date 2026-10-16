@@ -38,7 +38,6 @@ import com.denkbares.events.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -58,16 +57,12 @@ public class OntologyExporter implements EventListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyExporter.class);
 
 	private static final int DEFAULT_EXPORT_DELAY = 20000; // 20 seconds
-	private static OntologyExporter instance = null;
-
 	private final Map<String, Timer> timers = new HashMap<>();
 
-	public static OntologyExporter getInstance() {
-		if (instance == null) instance = new OntologyExporter();
-		return instance;
-	}
-
-	private OntologyExporter() {
+	/**
+	 * Plugged as EventListener extension; the environment registers it at its event manager.
+	 */
+	public OntologyExporter() {
 	}
 
 	@Override
@@ -88,7 +83,7 @@ public class OntologyExporter implements EventListener {
 			Timer lastTimer = timers.get(ontologySection.getID());
 			if (lastTimer != null) lastTimer.cancel();
 			// cleanup times of now longer existing sections
-			cancelOutdatedTimers(timers);
+			cancelOutdatedTimers(compiler.getEnvironment(), timers);
 		}
 
 		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyMarkup.ANNOTATION_EXPORT);
@@ -111,7 +106,7 @@ public class OntologyExporter implements EventListener {
 					+ " only annotation-name.syntax instead."));
 			return;
 		}
-		if (KnowWEUtils.getArticle(ontologySection.getWeb(), title) == null) {
+		if (KnowWEUtils.getArticleManager(ontologySection).getArticle(title) == null) {
 			Messages.storeMessage(exportAnnotation, this.getClass(), Messages.error("Article '" + title + "' does not"
 					+ " exist, export has to point to an existing article."));
 			return;
@@ -130,7 +125,7 @@ public class OntologyExporter implements EventListener {
 			public void run() {
 				if (!Sections.isLive(ontologySection)) return;
 				Stopwatch stopwatch = new Stopwatch();
-				WikiConnector connector = Environment.getInstance().getWikiConnector();
+				WikiConnector connector = ontologySection.getEnvironment().getWikiConnector();
 				ByteArrayInputStream stream;
 				try {
 					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -169,9 +164,14 @@ public class OntologyExporter implements EventListener {
 	}
 
 	/** Removing the map entry alone leaves its delayed task running against the retired ontology. Caller holds the map lock. */
-	static void cancelOutdatedTimers(Map<String, Timer> timers) {
+	static void cancelOutdatedTimers(de.knowwe.core.Environment environment, Map<String, Timer> timers) {
+		cancelOutdatedTimers(id -> Sections.get(environment, id) != null, timers);
+	}
+
+	/** Removing the map entry alone leaves its delayed task running against the retired ontology. Caller holds the map lock. */
+	static void cancelOutdatedTimers(java.util.function.Predicate<String> isLiveSection, Map<String, Timer> timers) {
 		timers.entrySet().removeIf(entry -> {
-			if (Sections.get(entry.getKey()) != null) return false;
+			if (isLiveSection.test(entry.getKey())) return false;
 			entry.getValue().cancel();
 			return true;
 		});

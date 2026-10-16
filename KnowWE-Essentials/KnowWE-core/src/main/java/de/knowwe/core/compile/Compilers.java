@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.NumberAwareComparator;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -203,8 +202,7 @@ public class Compilers {
 
 	@NotNull
 	public static DefaultGlobalCompiler getGlobalCompiler(Section<?> section) {
-		return getGlobalCompiler(section.getArticleManager() == null
-				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
+		return getGlobalCompiler(KnowWEUtils.getArticleManager(section));
 	}
 
 	@NotNull
@@ -219,8 +217,7 @@ public class Compilers {
 
 	@NotNull
 	public static PackageRegistrationCompiler getPackageRegistrationCompiler(Section<?> section) {
-		return getPackageRegistrationCompiler(section.getArticleManager() == null
-				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
+		return getPackageRegistrationCompiler(KnowWEUtils.getArticleManager(section));
 	}
 
 	@NotNull
@@ -235,8 +232,7 @@ public class Compilers {
 
 	@NotNull
 	public static PackageUnregistrationCompiler getPackageUnregistrationCompiler(Section<?> section) {
-		return getPackageUnregistrationCompiler(section.getArticleManager() == null
-				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
+		return getPackageUnregistrationCompiler(KnowWEUtils.getArticleManager(section));
 	}
 
 	@NotNull
@@ -377,7 +373,7 @@ public class Compilers {
 	 * @return the fallback compiler with the specific type
 	 */
 	private static Optional<String> getFallbackDefaultCompiler(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
-		Set<Compiler> childCompilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class)
+		Set<Compiler> childCompilers = Compilers.getCompilers(context.getArticleManager(), GroupingCompiler.class)
 				.stream()
 				.flatMap(c -> c.getChildCompilers().stream())
 				.collect(Collectors.toSet());
@@ -452,10 +448,8 @@ public class Compilers {
 	public static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, @NotNull Section<?> section, Class<C> compilerClass) {
 
 		// GET ALL COMPILERS
-		ArticleManager articleManager = section.getArticleManager();
-		if (articleManager == null) { // can happen in preview, use fall back
-			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
-		}
+		// temporary articles (preview) have no article manager of their own, use the one of the environment
+		ArticleManager articleManager = KnowWEUtils.getArticleManager(section);
 		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
 
 		// FILTER TO CORRECT TYPE
@@ -620,10 +614,6 @@ public class Compilers {
 	 * @param web the web we want the {@link CompilerManager} from
 	 * @created 07.01.2014
 	 */
-	@NotNull
-	public static CompilerManager getCompilerManager(String web) {
-		return KnowWEUtils.getArticleManager(web).getCompilerManager();
-	}
 
 	public static void destroyAndRecompileSubtree(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
 		if (!compiler.isIncrementalBuild()) return;

@@ -46,8 +46,7 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 
 	public DefaultMarkup createMarkup() {
 		DefaultMarkup markup = new DefaultMarkup(getMarkupName());
-		SparqlVisContentType sparqlContentType = new SparqlVisContentType();
-		markup.addContentType(sparqlContentType);
+		markup.addContentType(SparqlVisContentType::new);
 
 		PackageManager.addPackageAnnotation(markup);
 

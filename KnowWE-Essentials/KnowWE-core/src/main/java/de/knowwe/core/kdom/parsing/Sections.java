@@ -1443,23 +1443,31 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * @param id is the ID of the Section to be returned
-	 * @return the Section for the given ID or null if no Section exists for this ID.
+	 * Returns the section with the specified id of the given environment, or null if there is no such section (e.g.
+	 * the article was changed since the id was handed out).
 	 */
-	public static Section<?> get(String id) {
-		return Section.get(id);
+	@Nullable
+	public static Section<?> get(@NotNull Environment environment, @Nullable String id) {
+		return id == null ? null : environment.getSectionRegistry().get(id);
 	}
 
 	/**
-	 * Returns the section with the given id and casts it to the supplied class. For more information see get(id) and
-	 * cast(section, class);
-	 *
-	 * @param id        is the ID of the Section to be returned
-	 * @param typeClass the class to cast the generic section to
-	 * @return the Section for the given ID or null if no Section exists for this ID.
+	 * Returns the section with the specified id of the environment of the given user context, see
+	 * {@link #get(Environment, String)}.
 	 */
-	public static <T extends Type> Section<T> get(String id, Class<T> typeClass) {
-		return cast(get(id), typeClass);
+	@Nullable
+	public static Section<?> get(@NotNull UserContext context, @Nullable String id) {
+		return get(context.getEnvironment(), id);
+	}
+
+	@Nullable
+	public static <T extends Type> Section<T> get(@NotNull Environment environment, @Nullable String id, Class<T> typeClass) {
+		return cast(get(environment, id), typeClass);
+	}
+
+	@Nullable
+	public static <T extends Type> Section<T> get(@NotNull UserContext context, @Nullable String id, Class<T> typeClass) {
+		return cast(get(context, id), typeClass);
 	}
 
 	/**
@@ -1470,9 +1478,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the Section on the given position in the KDOM, if it exists
 	 * @created 11.12.2011
 	 */
-	public static Section<?> get(String web, String title, List<Integer> positionInKDOM) {
-		return get(Environment.getInstance().getArticle(web, title), positionInKDOM);
-	}
 
 	/**
 	 * @param article        is the article in which the Section should be searched
@@ -1617,8 +1622,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param changeNote  the change notes to be associated with the given changes
 	 * @return a result object containing some information about the replacement success or the errors occurred
 	 */
-	public static @NotNull ReplaceResult replaceAsSystem(Map<String, String> sectionsMap, @Nullable String changeNote) {
-		return replace(ReplaceContext.of(Environment.DEFAULT_WEB, title -> true, "SYSTEM"), sectionsMap, changeNote);
+	public static @NotNull ReplaceResult replaceAsSystem(@NotNull Environment environment, Map<String, String> sectionsMap, @Nullable String changeNote) {
+		return replace(ReplaceContext.of(environment, title -> true, "SYSTEM"), sectionsMap, changeNote);
 	}
 
 	/**
@@ -1640,12 +1645,12 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		Collection<String> missingIDs = new LinkedList<>();
 		Collection<String> forbiddenArticles = new LinkedList<>();
 
-		KnowWEUtils.getArticleManager(context.getWeb()).open();
+		context.getEnvironment().getArticleManager().open();
 		try {
 			// A preceding registration may replace the article while open() waits. Resolve IDs only after acquiring
 			// the frame, otherwise obsolete IDs can be accepted and silently ignored when rebuilding the current text.
-			sectionInfos = getSectionInfos(sectionsMap);
-			Map<Article, Collection<String>> idsByTitle = getIdsByArticle(sectionsMap.keySet());
+			sectionInfos = getSectionInfos(context.getEnvironment(), sectionsMap);
+			Map<Article, Collection<String>> idsByTitle = getIdsByArticle(context.getEnvironment(), sectionsMap.keySet());
 			for (Map.Entry<Article, Collection<String>> entry : idsByTitle.entrySet()) {
 				Collection<String> idsForCurrentTitle = entry.getValue();
 				boolean errorsForThisTitle = handleErrors(entry.getKey(), idsForCurrentTitle, context.getUserCanEdit(),
@@ -1657,7 +1662,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			}
 		}
 		finally {
-			KnowWEUtils.getArticleManager(context.getWeb()).commit();
+			context.getEnvironment().getArticleManager().commit();
 		}
 
 		if (!missingIDs.isEmpty()) {
@@ -1673,10 +1678,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
 
-	private static List<SectionInfo> getSectionInfos(Map<String, String> sectionsMap) {
+	private static List<SectionInfo> getSectionInfos(Environment environment, Map<String, String> sectionsMap) {
 		List<SectionInfo> sectionInfos = new ArrayList<>(sectionsMap.size());
 		for (String id : sectionsMap.keySet()) {
-			Section<?> section = Sections.get(id);
+			Section<?> section = Sections.get(environment, id);
 			SectionInfo sectionInfo = new SectionInfo();
 			sectionInfos.add(sectionInfo);
 			if (section != null) {
@@ -1685,7 +1690,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				sectionInfo.offSet = section.getOffsetInArticle();
 				sectionInfo.sectionExists = true;
 				sectionInfo.title = section.getTitle();
-				sectionInfo.web = section.getWeb();
+				sectionInfo.articleManager = KnowWEUtils.getArticleManager(section);
 				sectionInfo.newText = sectionsMap.get(id);
 			}
 			sectionInfo.oldId = id;
@@ -1693,10 +1698,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return sectionInfos;
 	}
 
-	private static Map<Article, Collection<String>> getIdsByArticle(Collection<String> allIds) {
+	private static Map<Article, Collection<String>> getIdsByArticle(Environment environment, Collection<String> allIds) {
 		Map<Article, Collection<String>> idsByTitle = new HashMap<>();
 		for (String id : allIds) {
-			Section<?> section = Sections.get(id);
+			Section<?> section = Sections.get(environment, id);
 			Article article = section == null ? null : section.getArticle();
 			Collection<String> ids = idsByTitle.computeIfAbsent(article, k -> new ArrayList<>());
 			ids.add(id);
@@ -1735,8 +1740,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	private static void replaceForTitle(String title, Map<String, String> sectionsMapForCurrentTitle,
 										ReplaceContext context, @Nullable String changeNote) {
-		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context.getWeb());
-		Environment.getInstance()
+		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
+		context.getEnvironment()
 				.getWikiConnector()
 				.writeArticleToWikiPersistence(title, newArticleText, context.getAuthor(), context.getHttpRequest(), changeNote);
 	}
@@ -1744,39 +1749,41 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	private static String getNewArticleText(
 			String title,
 			Map<String, String> sectionsMapForCurrentTitle,
-			String web) {
+			ReplaceContext context) {
 
-		Article article = Environment.getInstance().getArticle(web, title);
+		Article article = context.getEnvironment().getArticleManager().getArticle(title);
 		return collectTextAndReplace(article, sectionsMapForCurrentTitle);
 	}
 
 	public static class ReplaceContext {
-		private final String web;
+		private final Environment environment;
 		private final Predicate<String> userCanEdit;
 		private final @Nullable HttpServletRequest httpRequest;
 		private final String author;
 
-		private ReplaceContext(String web, Predicate<String> userCanEdit,
+		private ReplaceContext(Environment environment, Predicate<String> userCanEdit,
 							  @Nullable HttpServletRequest httpRequest, String author) {
-			this.web = web;
+			this.environment = environment;
 			this.userCanEdit = userCanEdit;
 			this.httpRequest = httpRequest;
 			this.author = author;
 		}
 
 		public static ReplaceContext of(UserContext userContext) {
-			Predicate<String> userCanEdit = title -> Environment.getInstance()
+			Predicate<String> userCanEdit = title -> userContext.getEnvironment()
 					.getWikiConnector()
 					.userCanEditArticle(title, userContext);
-			return new ReplaceContext(userContext.getWeb(), userCanEdit, userContext.getRequest(), userContext.getUserName());
+			return new ReplaceContext(userContext.getEnvironment(), userCanEdit, userContext.getRequest(), userContext.getUserName());
 		}
 
-		public static ReplaceContext of(String web, Predicate<String> userCanEdit, String author) {
-			return new ReplaceContext(web, userCanEdit, null, author);
+		public static ReplaceContext of(@NotNull Environment environment, Predicate<String> userCanEdit, String author) {
+			return new ReplaceContext(environment, userCanEdit, null, author);
 		}
 
-		public String getWeb() {
-			return web;
+
+		@NotNull
+		public Environment getEnvironment() {
+			return environment;
 		}
 
 		public Predicate<String> getUserCanEdit() {
@@ -1865,8 +1872,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		for (SectionInfo sectionInfo : sectionInfos) {
 			if (sectionInfo.sectionExists) {
 
-				Section<?> section = get(sectionInfo.web, sectionInfo.title,
-						sectionInfo.positionInKDOM);
+				Section<?> section = get(sectionInfo.articleManager.getArticle(sectionInfo.title), sectionInfo.positionInKDOM);
 				if (section == null) continue;
 
 				String text = section.getText();

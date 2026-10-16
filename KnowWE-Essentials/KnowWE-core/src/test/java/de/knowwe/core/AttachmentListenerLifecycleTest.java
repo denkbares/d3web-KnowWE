@@ -92,7 +92,7 @@ public class AttachmentListenerLifecycleTest {
 			try (Listener successor = new Listener(current)) {
 				assertNotEquals(previous.callback, successor.callback);
 				previous.close();
-				EventManager.getInstance().fireEvent(event(current));
+				wiki.environment.getEventManager().fireEvent(event(current));
 				wiki.awaitCompilation();
 				assertNotSame("Current listener must still recompile the article", current, wiki.manager.getArticle("Page"));
 				assertEquals(current.getText(), wiki.manager.getArticle("Page").getText());
@@ -112,7 +112,7 @@ public class AttachmentListenerLifecycleTest {
 	}
 
 	private static AttachmentStoredEvent event(Article article) {
-		return new AttachmentStoredEvent(article.getWeb(), article.getTitle(), "file.bin");
+		return new AttachmentStoredEvent(article.getTitle(), "file.bin");
 	}
 
 	private static final class Listener implements AutoCloseable {

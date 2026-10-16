@@ -59,13 +59,4 @@ public class RootType extends AbstractType {
 		});
 	}
 
-	public static RootType getInstance() {
-		if (Environment.getInstance() != null) {
-			return Environment.getInstance().getRootType();
-		}
-		else {
-			// is a dummy object for testing only
-			return new RootType();
-		}
-	}
 }

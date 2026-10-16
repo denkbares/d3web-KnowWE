@@ -27,7 +27,7 @@ public class PropagationLoopHandler implements EventListener {
 		if (event instanceof FindingSetEvent) {
 			FindingSetEvent findingSetEvent = (FindingSetEvent) event;
 			D3webUtils.handleLoopDetectionNotification(
-					KnowWEUtils.getArticleManager(findingSetEvent.getUserContext().getWeb()),
+					findingSetEvent.getUserContext().getArticleManager(),
 					findingSetEvent.getUserContext(),
 					findingSetEvent.getSession());
 		}

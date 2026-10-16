@@ -32,8 +32,7 @@ public class DumpHandler extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String topic,
-			UserContext user, Map<String, String> values, RenderResult result) {
+	public void renderHTML(String topic, UserContext user, Map<String, String> values, RenderResult result) {
 
 //		Rdf2GoCore.get().dumpModel();
 

@@ -43,6 +43,6 @@ public class OntoVisReRenderAction extends AbstractAction {
 		// Execute clean up and clearCache methods in ConceptVisualizationRenderer
 		// getSection also asserts the read access rights of the user for the requested section
 		Section<?> section = getSection(context);
-		PreRenderWorker.getInstance().clearCache(section);
+		PreRenderWorker.of(context.getEnvironment()).clearCache(section);
 	}
 }

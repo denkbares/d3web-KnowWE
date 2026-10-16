@@ -11,12 +11,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.denkbares.collections.PriorityList;
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.event.InitEvent;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -26,7 +22,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Volker Belli (denkbares GmbH)
  * @created 30.10.2013
  */
-public class ScriptManager<C extends Compiler> implements EventListener {
+public class ScriptManager<C extends Compiler> {
 
 	private static class ScriptList<C extends Compiler, T extends Type>
 			extends PriorityList<Priority, CompileScript<C, T>> {
@@ -50,7 +46,6 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 
 	public ScriptManager(Class<C> compilerClass) {
 		this.compilerClass = compilerClass;
-		EventManager.getInstance().registerListener(this);
 	}
 
 	/**
@@ -131,6 +126,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	public <T extends Type> void removeScript(T type, Class<? extends CompileScript<C, T>> clazz) {
 		@SuppressWarnings("unchecked")
 		ScriptList<C, T> scriptsOfType = scripts.get(type);
+		if (scriptsOfType == null) return;
 		List<CompileScript<C, T>> remove = new ArrayList<>();
 		synchronized (scriptsOfType) {
 			for (CompileScript<C, T> compileScript : scriptsOfType) {
@@ -150,23 +146,15 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		return compilerClass;
 	}
 
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		List<Class<? extends Event>> events = new ArrayList<>();
-		events.add(InitEvent.class);
-		return events;
-	}
-
-	@Override
-	public void notify(Event event) {
-		if (event instanceof InitEvent) {
-			// we have to do this after type are initialized, because while
-			// scripts are added to the manager, not all parent-child-links may
-			// be established
-			initialized = true;
-			for (Type type : getTypes()) {
-				addSubtreeTypesWithScripts(type);
-			}
+	/**
+	 * Marks this manager as initialized: no more scripts can be added, and the index which subtrees can have scripts
+	 * is built. Called by the environment after its type tree is completely decorated, because only then all
+	 * parent-child links of the types are established.
+	 */
+	public void initialize() {
+		initialized = true;
+		for (Type type : getTypes()) {
+			addSubtreeTypesWithScripts(type);
 		}
 	}
 

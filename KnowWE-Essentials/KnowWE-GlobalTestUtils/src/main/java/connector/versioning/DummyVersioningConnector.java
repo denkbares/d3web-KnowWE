@@ -23,7 +23,7 @@ public class DummyVersioningConnector extends DummyConnector {
 	@Override
 	public List<WikiAttachmentInfo> getAttachmentHistory(String path) {
 		if (getAttachment(path) == null) return Collections.emptyList();
-		return Collections.singletonList(new WikiAttachmentInfo(path, DUMMY_USER, 1, getLastModifiedDate(path, 1)));
+		return Collections.singletonList(new WikiAttachmentInfo(this, path, DUMMY_USER, 1, getLastModifiedDate(path, 1)));
 	}
 
 	@Override

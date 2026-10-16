@@ -64,15 +64,17 @@ public class DescriptionMarkup extends DefaultMarkupType {
 
 	static {
 		m = new DefaultMarkup("Description");
-		m.addContentType(new DescriptionTextType());
+		m.addContentType(() -> new DescriptionTextType());
 		m.addAnnotation(ANNOTATION_OBJECT, true);
 		m.addAnnotation(ANNOTATION_SEVERITY, true, false, severity.caution.name(), severity.cautionSevere.name(), severity.note.name());
 		m.addAnnotation(ANNOTATION_PLACE, false, "above", "below");
 		m.addAnnotation(ANNOTATION_LOCALE, false);
-		LocaleType localeType = new LocaleType();
-		localeType.addChildType(new LocaleNameDisplay());
-		m.addAnnotationContentType(ANNOTATION_LOCALE, localeType);
-		m.addAnnotationContentType(ANNOTATION_OBJECT, new DescriptionObjectReference());
+		m.addAnnotationContentType(ANNOTATION_LOCALE, () -> {
+			LocaleType localeType = new LocaleType();
+			localeType.addChildType(new LocaleNameDisplay());
+			return localeType;
+		});
+		m.addAnnotationContentType(ANNOTATION_OBJECT, () -> new DescriptionObjectReference());
 		PackageManager.addPackageAnnotation(m);
 		m.getAnnotation(ANNOTATION_OBJECT).setDocumentation("Name of the object in \", which gets the description attached to it");
 		m.getAnnotation(ANNOTATION_SEVERITY).setDocumentation("Severity in which the text should be styled in");

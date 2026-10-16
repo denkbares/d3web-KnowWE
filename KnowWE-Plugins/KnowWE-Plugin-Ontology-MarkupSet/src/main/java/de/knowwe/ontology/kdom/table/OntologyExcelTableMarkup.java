@@ -80,12 +80,11 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyExcelTable");
-		Table content = new Table();
-		MARKUP.addContentType(content);
+		MARKUP.addContentType(Table::new);
 		PackageManager.addPackageAnnotation(MARKUP);
 
 		MARKUP.addAnnotation(ANNOTATION_CONFIG, true);
-		MARKUP.addAnnotationContentType(ANNOTATION_CONFIG, new ConfigAnnotationType());
+		MARKUP.addAnnotationContentType(ANNOTATION_CONFIG, () -> new ConfigAnnotationType());
 		String documentation = """
 				Some examples:
 				@config: Sheet 1-3, Rows 5+, Subject $columnA, Predicate rdf:type, Object lns:ImportedRow
@@ -94,7 +93,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 				@config: Sheet 4, Rows 5-120, Subject $column1, Predicate $column4, Object $column5""";
 		MARKUP.getAnnotation(ANNOTATION_CONFIG).setDocumentation(documentation);
 		MARKUP.addAnnotation(ANNOTATION_XLSX, true);
-		MARKUP.addAnnotationContentType(ANNOTATION_XLSX, new AttachmentType());
+		MARKUP.addAnnotationContentType(ANNOTATION_XLSX, () -> new AttachmentType());
 	}
 
 	public OntologyExcelTableMarkup() {

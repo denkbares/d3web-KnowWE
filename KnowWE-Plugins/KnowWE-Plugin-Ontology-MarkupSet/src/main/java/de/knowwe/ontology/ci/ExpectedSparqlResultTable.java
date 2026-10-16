@@ -83,8 +83,8 @@ public class ExpectedSparqlResultTable extends Table {
 		return resultTableModelBuilder.build();
 	}
 
-	private static boolean isCompatibilityMode() {
-		return !Environment.getInstance().getWikiConnector().getBaseUrl().equals(DummyConnector.BASE_URL);
+	private static boolean isCompatibilityMode(Environment environment) {
+		return !environment.getWikiConnector().getBaseUrl().equals(DummyConnector.BASE_URL);
 	}
 
 	@SuppressWarnings({
@@ -92,8 +92,8 @@ public class ExpectedSparqlResultTable extends Table {
 	private static Map<String, Value> createResultRow(OntologyCompiler core, Section<TableLine> line, List<String> variables) {
 		List<Section<TableCellContent>> cells = Sections.successors(line, TableCellContent.class);
 		Map<String, Value> row = new HashMap<>();
-		boolean compatibilityMode = isCompatibilityMode();
-		String currentBaseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+		boolean compatibilityMode = isCompatibilityMode(core.getEnvironment());
+		String currentBaseUrl = line.getEnvironment().getWikiConnector().getBaseUrl();
 		int column = 0;
 		for (Section<TableCellContent> cell : cells) {
 			String variable = variables.get(column);

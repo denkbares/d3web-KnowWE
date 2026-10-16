@@ -32,10 +32,12 @@ public class ClassType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("Class");
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(PROPERTY_ANNOTATION_NAME, false);
-		MARKUP.addAnnotationContentType(PROPERTY_ANNOTATION_NAME, new PropertyAnnotationType());
-		OntologyLineType lineType = new OntologyLineType();
-		lineType.addChildType(new AbbreviatedClassDefinition());
-		MARKUP.addContentType(lineType);
+		MARKUP.addAnnotationContentType(PROPERTY_ANNOTATION_NAME, () -> new PropertyAnnotationType());
+		MARKUP.addContentType(() -> {
+			OntologyLineType lineType = new OntologyLineType();
+			lineType.addChildType(new AbbreviatedClassDefinition());
+			return lineType;
+		});
 	}
 
 	public ClassType() {

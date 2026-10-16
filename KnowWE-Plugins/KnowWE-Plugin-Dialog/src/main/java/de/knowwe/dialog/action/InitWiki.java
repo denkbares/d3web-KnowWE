@@ -47,7 +47,7 @@ public class InitWiki extends AbstractAction {
 
 		@Override
 		public KnowledgeBase getKnowledgeBase(UserActionContext context) throws IOException {
-			Section<?> section = Sections.get(sectionId);
+			Section<?> section = Sections.get(context, sectionId);
 			if (section == null) {
 				throw new IOException(
 						"no section with id '" + sectionId + "' found");
@@ -80,7 +80,7 @@ public class InitWiki extends AbstractAction {
 
 		@Override
 		public boolean canView(UserActionContext context) {
-			Section<?> section = Sections.get(sectionId);
+			Section<?> section = Sections.get(context, sectionId);
 			return section != null && KnowWEUtils.canView(section, context);
 		}
 

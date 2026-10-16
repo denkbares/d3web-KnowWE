@@ -32,17 +32,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIDashboardPriorityOverrideEvent;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.event.UserDefaultDashboardUpdateEvent;
+import de.knowwe.core.ServiceKey;
 import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.PackageCompiler;
@@ -50,17 +51,26 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.FullParseEvent;
+import de.knowwe.core.Environment;
+import de.knowwe.core.HasEnvironment;
+import de.knowwe.core.EnvironmentService;
 
 /**
  * @author Marc-Oliver Ochlast, Albrecht Striffler
  */
-public class CIHookManager implements EventListener {
+public class CIHookManager implements EventListener, EnvironmentService {
+	public static final ServiceKey<CIHookManager> SERVICE = ServiceKey.of(CIHookManager.class, environment -> {
+		CIHookManager manager = new CIHookManager(environment);
+		environment.getEventManager().registerListener(manager);
+		return manager;
+	});
+
 
 	public static final String KNOWWE_CI_HOOKS_ACTIVE = "knowwe.ci.hooks.active";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIHookManager.class);
 
-	private static CIHookManager instance = null;
+	private final Environment environment;
 
 	private volatile String lastTriggeringUser = "";
 
@@ -72,16 +82,34 @@ public class CIHookManager implements EventListener {
 	private final MultiMap<String, CIHook> hooks = new DefaultMultiMap<>();
 	private final Set<CIDashboard> dashboardsToRestartWithNextTrigger = new HashSet<>();
 
-	public static CIHookManager getInstance() {
-		if (instance == null) {
-			instance = new CIHookManager();
-		}
-		return instance;
+	/**
+	 * Returns the hook manager of the specified environment, created on first access and closed together with the
+	 * environment.
+	 *
+	 * @param source anything that knows its environment: a section, article, article manager, compiler,
+	 *               user context - or the environment itself
+	 */
+	@NotNull
+	public static CIHookManager of(@NotNull HasEnvironment source) {
+		Environment environment = source.getEnvironment();
+		return environment.getService(CIHookManager.SERVICE);
 	}
 
-	private CIHookManager() {
-		// prevent instantiation
-		EventManager.getInstance().registerListener(this);
+	/**
+	 * Returns the hook manager responsible for the specified article, i.e. the one of the article's environment.
+	 */
+	@NotNull
+	public static CIHookManager of(@NotNull Article article) {
+		return of(article.getEnvironment());
+	}
+
+	private CIHookManager(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	public void close() {
+		environment.getEventManager().unregister(this);
 	}
 
 	public synchronized void registerHook(CIHook hook) {
@@ -126,7 +154,7 @@ public class CIHookManager implements EventListener {
 		}
 		dashboardsToRestartWithNextTrigger.clear();
 
-		CIBuildManager.getInstance().startBuilds(dashboardsToTrigger);
+		CIBuildManager.of(environment).startBuilds(dashboardsToTrigger);
 		List<String> triggered = dashboardsToTrigger.stream().map(CIDashboard::getDashboardName).sorted().toList();
 		if (!triggered.isEmpty()) LOGGER.info("Triggered the following dashboards: " + String.join(", ", triggered));
 	}
@@ -138,7 +166,7 @@ public class CIHookManager implements EventListener {
 			if (defaultDashboardsOfTriggeringUser.contains(hook.getDashboard().getDashboardName())) {
 				LOGGER.info("Set max prio for CI dashboard " + hook.getDashboard()
 						.getDashboardName() + " due to user " + userName + " triggering the last compilation");
-				EventManager.getInstance()
+				environment.getEventManager()
 						.fireEvent(new CIDashboardPriorityOverrideEvent(hook.getDashboard(), Double.MAX_VALUE));
 			}
 		}
@@ -175,7 +203,7 @@ public class CIHookManager implements EventListener {
 		}
 		if (event instanceof CompilationFinishedEvent) {
 			synchronized (articlesToTrigger) {
-				CIHookManager.getInstance().triggerHooks(articlesToTrigger.values());
+				triggerHooks(articlesToTrigger.values());
 				articlesToTrigger.clear();
 			}
 		}

@@ -137,6 +137,20 @@ public class JSPWikiConnector implements WikiConnector {
 	private final ServletContext context;
 	private final Engine engine;
 
+	private Environment environment;
+
+	@Override
+	public void setEnvironment(@NotNull Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
+	@NotNull
+	public Environment getEnvironment() {
+		if (environment == null) throw new IllegalStateException("Wiki connector is not bound to an environment yet");
+		return environment;
+	}
+
 	public JSPWikiConnector(Engine eng) {
 		this.context = eng.getServletContext();
 		this.engine = eng;
@@ -215,7 +229,7 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 		// create article with the new content
-		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
+		getEnvironment().getArticleManager().registerArticle(title, content);
 		return getPageManager().getPureText(wp);
 	}
 
@@ -264,7 +278,7 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public Map<String, String> getAllArticles(String web) {
+	public Map<String, String> getAllArticles() {
 		Map<String, String> result = new HashMap<>();
 		Collection<Page> pages;
 		PageManager pageManager = getPageManager();
@@ -322,9 +336,15 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getApplicationRootPath() {
-		ServletContext servletContext = getServletContext();
+		return getApplicationRootPath(getServletContext());
+	}
+
+	/**
+	 * The application root path of the web application running in the given servlet context, or the working
+	 * directory if the context has no real path (e.g. in tests).
+	 */
+	public static String getApplicationRootPath(ServletContext servletContext) {
 		String realPath = servletContext.getRealPath("");
-		String rootPath;
 		if (realPath != null) {
 			return realPath.replaceAll("/+$", "");
 		}
@@ -479,7 +499,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 		if (zipEntryAttachments == null) {
 			zipEntryAttachments = new ArrayList<>();
-			WikiAttachment att = KnowWEUtils.getAttachment(attachment.getParentName(), attachment.getFileName());
+			WikiAttachment att = KnowWEUtils.getAttachment(getEnvironment(), attachment.getParentName(), attachment.getFileName());
 			File attachmentFile = att.asFile();
 			if (!attachmentFile.exists()) {
 				throw new IllegalStateException("Attachment file not found: " + attachmentFile.getAbsolutePath());
@@ -560,7 +580,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getKnowWEExtensionPath() {
-		return KnowWEUtils.getRealPath(KnowWEUtils.getConfigBundle()
+		return KnowWEUtils.getRealPath(getEnvironment(), KnowWEUtils.getConfigBundle()
 				.getString("path_to_knowweextension"));
 	}
 
@@ -744,7 +764,7 @@ public class JSPWikiConnector implements WikiConnector {
 			versionHistory = Collections.singletonList(currentVersion);
 		}
 		return versionHistory.stream()
-				.map(page -> new WikiPageInfo(page.getName(), page.getAuthor(), page.getVersion(), page.getLastModified(), page.getAttribute(WikiPage.CHANGENOTE)))
+				.map(page -> new WikiPageInfo(this, page.getName(), page.getAuthor(), page.getVersion(), page.getLastModified(), page.getAttribute(WikiPage.CHANGENOTE)))
 				.collect(Collectors.toList());
 	}
 
@@ -752,7 +772,7 @@ public class JSPWikiConnector implements WikiConnector {
 	public List<WikiAttachmentInfo> getAttachmentHistory(String name) throws IOException {
 		try {
 			return getAttachmentManager().getVersionHistory(name).stream()
-					.map(page -> new WikiAttachmentInfo(page.getName(), page.getAuthor(), page.getVersion(),
+					.map(page -> new WikiAttachmentInfo(this, page.getName(), page.getAuthor(), page.getVersion(),
 							page.getLastModified()))
 					.collect(Collectors.toList());
 		}
@@ -1123,14 +1143,14 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanEditArticle(String title, UserContext context) {
-		if (KnowWEUtils.isAttachmentArticle(title)) return false;
+		if (KnowWEUtils.isAttachmentArticle(context.getEnvironment().getArticleManager(), title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, context, "edit");
 	}
 
 	@Override
 	public boolean userCanUploadAttachment(String title, UserContext context) {
-		if (KnowWEUtils.isAttachmentArticle(title)) return false;
+		if (KnowWEUtils.isAttachmentArticle(context.getEnvironment().getArticleManager(), title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, context, "upload");
 	}
@@ -1142,7 +1162,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanDeleteArticle(String title, UserContext context) {
-		if (KnowWEUtils.isAttachmentArticle(title)) return false;
+		if (KnowWEUtils.isAttachmentArticle(context.getEnvironment().getArticleManager(), title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, context, "delete");
 	}

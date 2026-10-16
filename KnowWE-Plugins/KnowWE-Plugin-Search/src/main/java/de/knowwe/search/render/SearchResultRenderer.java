@@ -89,9 +89,12 @@ public class SearchResultRenderer {
 	private final int maxSourceLength;
 	private final int maxHtmlLength;
 
-	public SearchResultRenderer() {
-		this(intProperty(PROPERTY_MAX_SOURCE_LENGTH, DEFAULT_MAX_SOURCE_LENGTH),
-				intProperty(PROPERTY_MAX_HTML_LENGTH, DEFAULT_MAX_HTML_LENGTH));
+	/**
+	 * Creates a renderer with the preview limits configured for the specified environment.
+	 */
+	public SearchResultRenderer(@NotNull Environment environment) {
+		this(intProperty(environment, PROPERTY_MAX_SOURCE_LENGTH, DEFAULT_MAX_SOURCE_LENGTH),
+				intProperty(environment, PROPERTY_MAX_HTML_LENGTH, DEFAULT_MAX_HTML_LENGTH));
 	}
 
 	SearchResultRenderer(int maxSourceLength, int maxHtmlLength) {
@@ -112,7 +115,8 @@ public class SearchResultRenderer {
 		// the query is not part of this: the matches are marked in the browser, so the same section renders the same
 		// html for every keystroke of the same search
 		String cacheKey = section.getID();
-		String cached = PreviewCache.getInstance().get(anchor.title(), cacheKey, user.getUserName());
+		PreviewCache cache = PreviewCache.of(user.getEnvironment());
+		String cached = cache.get(anchor.title(), cacheKey, user.getUserName());
 		if (cached != null) return cached.isEmpty() ? null : new Rendered(cached, resolution.stale());
 
 		try {
@@ -136,12 +140,12 @@ public class SearchResultRenderer {
 			if (!hasVisibleText(html) && !isAsynchronous(html)) html = markupContents(section, user);
 			if (html.length() > maxHtmlLength) {
 				// remembered as empty so the next keystroke does not pay for the same oversized rendering again
-				PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), "");
+				cache.put(anchor.title(), cacheKey, user.getUserName(), "");
 				return null;
 			}
 			// an empty frame says less than the indexed text, and it looks like something failed to load
 			if (!hasVisibleText(html) && !isAsynchronous(html)) return null;
-			PreviewCache.getInstance().put(anchor.title(), cacheKey, user.getUserName(), html);
+			cache.put(anchor.title(), cacheKey, user.getUserName(), html);
 			return new Rendered(html, resolution.stale());
 		}
 		catch (RuntimeException e) {
@@ -283,7 +287,7 @@ public class SearchResultRenderer {
 	private static String toHtml(RenderResult result, UserContext user) {
 		String raw = result.toStringRaw().replaceAll("@!!!", "@\n!!!");
 		raw = TABLE_OF_CONTENTS.matcher(raw).replaceAll("");
-		String markup = Environment.getInstance().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
+		String markup = user.getEnvironment().getWikiConnector().renderWikiSyntax(joinRenderedLines(raw, result));
 		return RenderResult.unmask(markup, user);
 	}
 
@@ -403,8 +407,8 @@ public class SearchResultRenderer {
 		return end == start ? null : masked.substring(start, end).toLowerCase(java.util.Locale.ROOT);
 	}
 
-	private static int intProperty(String property, int defaultValue) {
-		String value = KnowWEUtils.getProperty(property);
+	private static int intProperty(Environment environment, String property, int defaultValue) {
+		String value = KnowWEUtils.getProperty(environment, property);
 		if (value == null || value.isBlank()) return defaultValue;
 		try {
 			return Integer.parseInt(value.trim());

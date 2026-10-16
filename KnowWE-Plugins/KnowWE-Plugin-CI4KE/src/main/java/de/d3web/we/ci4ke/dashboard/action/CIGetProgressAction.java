@@ -78,7 +78,7 @@ public class CIGetProgressAction extends AbstractAction {
 			new CIBuildProgressStream().stream(names,
 					name -> lookupStatus(articleManager, name),
 					name -> renderBubble(context, name),
-					CIBuildManager.getBuildChanges(), sse);
+					CIBuildManager.of(context.getEnvironment()).getBuildChanges(), sse);
 		}
 		catch (IOException e) {
 			// the browser closed the stream, e.g. the page was left while a build was running

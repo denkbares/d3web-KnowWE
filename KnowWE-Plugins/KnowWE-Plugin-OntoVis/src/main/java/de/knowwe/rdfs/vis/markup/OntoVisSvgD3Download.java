@@ -29,7 +29,6 @@ import java.io.PrintStream;
 
 import javax.servlet.ServletContext;
 
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -86,7 +85,7 @@ public class OntoVisSvgD3Download extends AbstractAction {
 			}
 		}
 
-		String url = Environment.getInstance().getWikiConnector().getBaseUrl() + tmpPath
+		String url = context.getEnvironment().getWikiConnector().getBaseUrl() + tmpPath
 				+ "svgSource.svg";
 
 		OutputStream ous = context.getOutputStream();

@@ -38,13 +38,13 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.knowwe.core.Environment;
 
-import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -82,7 +82,7 @@ public class GitAutoUpdater {
 		}
 
 		Git git = new Git(repository);
-		ArticleManager articleManager = getDefaultArticleManager();
+		ArticleManager articleManager = Environment.of(engine.getServletContext()).getArticleManager();
 
 		updateMasterBranch(articleManager, git);
 	}
@@ -108,7 +108,7 @@ public class GitAutoUpdater {
 
 	private void performRebase(ArticleManager articleManager, Git git) throws IOException, GitAPIException {
 		// Warten bis der KnowWe-Compiler fertig ist
-		Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+		Compilers.awaitTermination(articleManager.getCompilerManager());
 
 		Stopwatch stopwatch = new Stopwatch();
 
@@ -172,8 +172,8 @@ public class GitAutoUpdater {
 
 		if (title != null) {
 			LOGGER.info("do full parse");
-			Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
-			EventManager.getInstance().fireEvent(new FullParseEvent(article, null));
+			Article article = articleManager.getArticle(title);
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new FullParseEvent(article, null));
 		}
 
 		stopwatch.log(LOGGER, "Update of wiki lasts");
@@ -208,7 +208,7 @@ public class GitAutoUpdater {
 		}
 		catch (InterruptedException ignored) {
 		}
-		Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+		Compilers.awaitTermination(articleManager.getCompilerManager());
 		LOGGER.info("Compile ends");
 	}
 

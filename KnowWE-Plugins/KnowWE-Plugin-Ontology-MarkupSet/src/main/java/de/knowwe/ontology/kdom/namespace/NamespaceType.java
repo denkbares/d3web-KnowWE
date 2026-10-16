@@ -31,12 +31,14 @@ public class NamespaceType extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("Namespace");
 		PackageManager.addPackageAnnotation(MARKUP);
-		OntologyLineType lineType = new OntologyLineType();
-		// remove EndLineComm, its not practical with urls...
-		lineType.clearChildrenTypes();
-		lineType.addChildType(new LineBreak());
-		lineType.addChildType(new NamespaceAbbreviationDefinition());
-		MARKUP.addContentType(lineType);
+		MARKUP.addContentType(() -> {
+			OntologyLineType lineType = new OntologyLineType();
+			// remove EndLineComm, its not practical with urls...
+			lineType.clearChildrenTypes();
+			lineType.addChildType(new LineBreak());
+			lineType.addChildType(new NamespaceAbbreviationDefinition());
+			return lineType;
+		});
 		MARKUP.setTemplate("%%namespace \u00ABabbreviation\u00BB \u00ABexpanded-URI\u00BB\n");
 	}
 

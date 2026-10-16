@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+import java.util.WeakHashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -58,7 +60,8 @@ public class Scope {
 	private static final String ROOT = "root";
 	private static final String SEPERATOR = "/";
 
-	private static final Map<Type, Set<String>> CACHED_NAMES_OF_KDOM_TYPE = new ConcurrentHashMap<>();
+	// weakly keyed: type instances belong to an environment's type tree and die with it
+	private static final Map<Type, Set<String>> CACHED_NAMES_OF_KDOM_TYPE = Collections.synchronizedMap(new WeakHashMap<>());
 
 	private static final Map<String, Scope> CACHED_SCOPES = new ConcurrentHashMap<>();
 

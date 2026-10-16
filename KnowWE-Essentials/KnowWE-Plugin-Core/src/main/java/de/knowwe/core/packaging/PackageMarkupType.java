@@ -24,10 +24,12 @@ public class PackageMarkupType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Package");
-		PackageRule packageRule = new PackageRule();
-		packageRule.addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
-		packageRule.addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
-		MARKUP.addContentType(packageRule);
+		MARKUP.addContentType(() -> {
+			PackageRule packageRule = new PackageRule();
+			packageRule.addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
+			packageRule.addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
+			return packageRule;
+		});
 		MARKUP.setTemplate("%%package \u00ABpackage-name\u00BB\n");
 	}
 

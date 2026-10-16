@@ -39,6 +39,7 @@ import utils.TestUtils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.After;
 
 /**
  * Every chunk that can be found must also be able to show itself.
@@ -58,25 +59,24 @@ import static org.junit.Assert.assertTrue;
  */
 public class PreviewCoverageTest {
 
-	private static final String WEB = Environment.DEFAULT_WEB;
+	private Environment environment;
+
+	private static final String WEB = "default_web";
 
 	private final ArticleChunker chunker = new ArticleChunker();
-	private final SearchResultRenderer renderer = new SearchResultRenderer();
+	private SearchResultRenderer renderer;
 	private UserContext user;
 
 	@Before
 	public void setUp() throws IOException {
 		InitPluginManager.init();
-		if (!Environment.isInitialized()) {
-			DummyConnector connector = new DummyConnector();
-			connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
-			Environment.initInstance(connector);
-		}
+		DummyConnector connector = new DummyConnector();
+		connector.setKnowWEExtensionPath(TestUtils.createKnowWEExtensionPath());
+		environment = Environment.create(connector);
+		renderer = new SearchResultRenderer(environment);
 		// after the environment, and built from a registered article: a context built from a name alone carries a
 		// temporary article, whose article manager is null -- and the renderer resolves its anchor through that manager
 		user = null;
-		// the fixtures reuse section ids across tests, and a cached preview would answer for the wrong one
-		PreviewCache.getInstance().clear();
 	}
 
 	@Test
@@ -204,8 +204,8 @@ public class PreviewCoverageTest {
 	}
 
 	private Article article(String title, String content) {
-		Environment.getInstance().getArticleManager(WEB).registerArticle(title, content);
-		Article article = Environment.getInstance().getArticle(WEB, title);
+		environment.getArticleManager().registerArticle(title, content);
+		Article article = environment.getArticle(title);
 		user = new TestUserContext(article);
 		return article;
 	}
@@ -226,4 +226,10 @@ public class PreviewCoverageTest {
 	private static String pathOf(IndexChunk chunk) {
 		return String.valueOf(chunk.anchor().getArticle().getRootSection().getChildren().indexOf(chunk.anchor()));
 	}
+
+	@After
+	public void closeEnvironment() {
+		if (environment != null) environment.close();
+	}
+
 }

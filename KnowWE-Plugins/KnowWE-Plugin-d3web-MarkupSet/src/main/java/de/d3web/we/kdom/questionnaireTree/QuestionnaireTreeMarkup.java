@@ -30,7 +30,7 @@ public class QuestionnaireTreeMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Questionnaire");
-		MARKUP.addContentType(new QuestionDashTree());
+		MARKUP.addContentType(() -> new QuestionDashTree());
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.setDeprecated("%%Question");
 	}
