@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.wiki.util.CsrfProtectionAllowList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -47,7 +46,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
 import de.knowwe.event.ArticleUpdateEvent;
-import de.knowwe.jspwiki.ActionAllowListChecker;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -113,7 +111,6 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 
 	public void initialize() {
 		if (!initialized.compareAndSet(false, true)) return;
-		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
 		environment.getEventManager().registerListener(pageSaveListener);
 
 		poller.scheduleWithFixedDelay(this::pollAllSources, 0, pollIntervalMillis,

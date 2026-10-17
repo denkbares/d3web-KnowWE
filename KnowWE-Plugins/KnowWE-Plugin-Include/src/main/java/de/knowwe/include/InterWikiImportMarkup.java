@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.wiki.util.CsrfProtectionAllowList;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
@@ -75,6 +76,7 @@ import de.knowwe.core.tools.HelpToolProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.jspwiki.ActionAllowListChecker;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
@@ -139,6 +141,9 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(LATEST_CHANGE_ANNOTATION, false);
 		MARKUP.addAnnotation(TRACKING_ACCEPTED_AT_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
+		// the source wiki must accept the change polls of other wikis, also if it has no imports of its own and
+		// therefore never starts an update service; the allowlist is global, so register it once with the type
+		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
 	}
 
 	public InterWikiImportMarkup() {
