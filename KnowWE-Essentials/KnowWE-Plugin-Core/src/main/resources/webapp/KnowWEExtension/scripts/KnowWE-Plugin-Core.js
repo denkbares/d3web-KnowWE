@@ -513,9 +513,16 @@ KNOWWE.plugin.listSection = function() {
       // restore last value (browser history sometimes forgets)
       $input.each(function() {
         let $this = jq$(this);
-        $this.val(getFilter(getSectionId($this)));
-        // make sure we rerender, the page may have been rendered without the filter of the local section storage
-        getRerenderTarget($this).rerender({callback: highlight});
+        // the filter the server rendered the list with (value attribute, see GroupedFilterListSectionsRenderer)
+        const renderedFilter = ($this.attr("value") || "").trim();
+        const storedFilter = getFilter(getSectionId($this));
+        $this.val(storedFilter);
+        // only rerender if the page was rendered with another filter than the one of the local section storage,
+        // e.g. because the server's copy of the storage got lost with the http session; rendering large lists
+        // takes some seconds, so we do not want to render them twice on each page load
+        if (storedFilter.trim() !== renderedFilter) {
+          getRerenderTarget($this).rerender({callback: highlight});
+        }
       });
 
       // focus and highlight first input on page
