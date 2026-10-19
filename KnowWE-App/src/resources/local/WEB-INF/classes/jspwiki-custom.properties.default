@@ -113,7 +113,7 @@ jspwiki.pageProvider = VersioningFileProvider
 #  NB: This replaces the JSPWiki 1.x "CachingProvider" setting, since it
 #      probably was too confusing.
 #
-jspwiki.usePageCache = true
+jspwiki.cache.enable = true
 
 #
 #  Determines where wiki files are kept for FileSystemProvider i.e.:
@@ -150,7 +150,7 @@ jspwiki.fileSystemProvider.pageDir = $basedir
 #    * Leave the value empty (or just comment the line out)
 #      the attachment functionality is disabled
 #
-jspwiki.attachmentProvider = KnowWEAttachmentProvider
+jspwiki.attachment.provider = KnowWEAttachmentProvider
 
 #
 #  The BasicAttachmentProvider needs to know where to store the files
