@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -66,6 +67,12 @@ public interface PackageCompiler extends Compiler, NamedCompiler {
 
 	@Override
 	default String getName() {
-		return getCompileSection().get().getName(getCompileSection());
+		Section<? extends PackageCompileType> compileSection = getCompileSection();
+		CompilerManager compilerManager = getCompilerManager();
+		if (compilerManager == null) return compileSection.get().getName(compileSection);
+		// the name is requested very often, e.g. to sort the compilers of every rendered line of a list, but has to be
+		// read from the compile section's subtree (or even from its siblings), so we cache it for the compilation
+		return CompilationLocal.getCached(compilerManager, new Pair<>(PackageCompiler.class, compileSection),
+				() -> compileSection.get().getName(compileSection));
 	}
 }

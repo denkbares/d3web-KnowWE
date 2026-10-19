@@ -275,13 +275,25 @@ public class Icon {
 	}
 
 	private boolean isFontAweSomeProAvailable() {
-		// maybe make this nicer?
-		try {
-			Class.forName("com.denkbares.knowwe.fontawesome.FontAwesomeLoader");
-			return true;
-		}
-		catch (ClassNotFoundException e) {
-			return false;
+		return FontAwesomePro.AVAILABLE;
+	}
+
+	/**
+	 * Checks only once whether font awesome pro is available, as a new icon is created for each modification of an
+	 * icon (e.g. for each tool of each line of a long list), and looking up a missing class is expensive.
+	 */
+	private static final class FontAwesomePro {
+		private static final boolean AVAILABLE = isAvailable();
+
+		private static boolean isAvailable() {
+			// maybe make this nicer?
+			try {
+				Class.forName("com.denkbares.knowwe.fontawesome.FontAwesomeLoader");
+				return true;
+			}
+			catch (ClassNotFoundException e) {
+				return false;
+			}
 		}
 	}
 

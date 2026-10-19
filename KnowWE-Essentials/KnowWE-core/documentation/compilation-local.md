@@ -193,6 +193,19 @@ return CompilationLocal.getCached(compiler, solutionSection, "isRestrictedToNotB
 Hier ist `solutionSection` der Section-Anteil des Schluessels — die Berechnung passiert
 einmal pro Solution, aber nur einmal pro Compile-Lauf.
 
+### 6. Compiler-Namen (Per-CompilerManager, Section als Schluessel)
+
+```java
+// PackageCompiler.getName
+return CompilationLocal.getCached(compilerManager, new Pair<>(PackageCompiler.class, compileSection),
+        () -> compileSection.get().getName(compileSection));
+```
+
+`Compilers.getCompilers(...)` sortiert bei jedem Aufruf nach Namen, und Listen-Markups fragen das fuer jede Zeile
+ab; ungecached wurde der Name jedes Mal aus dem KDOM gelesen (bei der Turm-Testwiki ~15 % der Renderzeit von
+`%%ListTSMCovering`). Nicht am Section-Objekt cachen: Sections werden ueber Artikelversionen wiederverwendet, und
+der aus dem Titel generierte Name haengt auch von den Geschwister-Sections ab.
+
 ## Best Practices
 
 1. **CacheKey eindeutig waehlen**: Strings, Class-Token oder Pair sind ueblich. Wenn der
