@@ -23,11 +23,9 @@
 
 	<!-- Log to stdout -->
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %highlight(%-5level) %cyan(%logger{36}) - %msg%n
-			</Pattern>
-		</layout>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+		</encoder>
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">

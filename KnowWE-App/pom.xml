@@ -50,6 +50,10 @@
 						<overlay>
 							<groupId>de.uniwue.d3web</groupId>
 							<artifactId>KnowWE-Resources</artifactId>
+							<excludes>
+								<!-- jcl-over-slf4j provides the commons-logging API -->
+								<exclude>WEB-INF/lib/commons-logging-*.jar</exclude>
+							</excludes>
 						</overlay>
 					</overlays>
 					<webResources>
@@ -849,8 +853,22 @@
 			<artifactId>log4j-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-to-slf4j</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<!-- provided keeps the commons-logging jars out of the war, jcl-over-slf4j replaces them -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
@@ -914,6 +932,7 @@
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
