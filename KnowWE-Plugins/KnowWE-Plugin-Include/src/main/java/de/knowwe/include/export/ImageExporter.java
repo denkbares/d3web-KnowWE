@@ -29,7 +29,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.MyXWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
@@ -87,10 +86,7 @@ public class ImageExporter implements Exporter<PluginType> {
 			Dimension dim = getImageDimension(section, attachment);
 			try (InputStream stream = attachment.getInputStream()) {
 				XWPFRun run = manager.getNewParagraph(Style.image).createRun();
-				MyXWPFRun.addPicture(
-						run, stream, getFormat(path), file,
-						Units.toEMU(dim.width),
-						Units.toEMU(dim.height));
+				run.addPicture(stream, getFormat(path), file, Units.toEMU(dim.width), Units.toEMU(dim.height));
 			}
 
 			String caption = attr(section, "caption");
