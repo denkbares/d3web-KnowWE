@@ -651,7 +651,7 @@ public class ListSectionsRenderer<T extends Type> {
 		String tooltip = Strings.isBlank(description)
 				? tool.getTitle()
 				: tool.getTitle() + ":\n" + description;
-		List<String> attributePairs = new ArrayList<>(List.of(
+		List<String> attributePairs = new ArrayList<>(Arrays.asList(
 				"title", Strings.encodeHtml(tooltip),
 				ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool)
 		));

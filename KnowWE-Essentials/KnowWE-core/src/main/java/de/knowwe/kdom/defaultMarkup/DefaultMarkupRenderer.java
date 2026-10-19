@@ -20,6 +20,7 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -651,7 +652,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	protected void appendToolbarTools(ToolSet tools, UserContext user, RenderResult result) {
 		for (Tool tool : tools) {
 			result.appendHtmlTag("div", "class", "list-group " + tool.getClass().getSimpleName());
-			List<String> attributePairs = new ArrayList<>(List.of(
+			List<String> attributePairs = new ArrayList<>(Arrays.asList(
 					"class", "list-group-item",
 					"title", tool.getDescription(),
 					ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool)
@@ -743,7 +744,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
 		result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
 		result.appendHtmlTag("div", "class", "list-group");
-		List<String> attributePairs = new ArrayList<>(List.of(
+		List<String> attributePairs = new ArrayList<>(Arrays.asList(
 				"class", "markupMenuItem list-group-item",
 				"title", Strings.encodeHtml(tool.getDescription()),
 				ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool)
