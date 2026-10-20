@@ -87,8 +87,14 @@
 <wiki:PageExists>
 
 <wiki:PageType type="page">
-  <div class="form-frame">
-  <p>
+  <wiki:Permission permission="rename">
+    <wiki:Messages div="alert alert-danger" topic="rename" prefix='<%=LocaleSupport.getLocalizedMessage(pageContext,"prefs.errorprefix.rename")%>'/>
+  </wiki:Permission>
+
+  <%-- page facts and page actions share a single row to leave the room below for the history and the diff --%>
+  <div class="page-info-header">
+  <div class="page-info-bar">
+  <div class="page-info-facts">
   <fmt:message key='info.lastmodified'>
     <fmt:param><span class="badge"><wiki:PageVersion >1</wiki:PageVersion></span></fmt:param>
     <fmt:param>
@@ -100,10 +106,9 @@
     <fmt:param><wiki:Author /></fmt:param>
   </fmt:message>
   <wiki:RSSImageLink mode="wiki" title="<fmt:message key='info.feed'/>" />
-  </p>
 
   <wiki:CheckVersion mode="notfirst">
-  <p>
+    <span class="page-info-created">
     <fmt:message key='info.createdon'>
       <fmt:param>
         <wiki:Link version="1">
@@ -112,54 +117,54 @@
       </fmt:param>
       <fmt:param><%= creationAuthor %></fmt:param>
     </fmt:message>
-  </p>
+    </span>
   </wiki:CheckVersion>
+  </div>
 
+  <div class="page-info-actions">
   <wiki:Permission permission="rename">
-
-    <wiki:Messages div="alert alert-danger" topic="rename" prefix='<%=LocaleSupport.getLocalizedMessage(pageContext,"prefs.errorprefix.rename")%>'/>
-
     <form action="<wiki:Link format='url' jsp='Rename.jsp'/>"
-           class="form-group form-inline"
+           class="form-inline"
               id="renameform"
           method="post" accept-charset="<wiki:ContentEncoding />" >
       <wiki:CsrfProtection/>
       <input type="hidden" name="page" value="<wiki:Variable var='pagename' />" />
-      <input class="btn btn-success" type="submit" name="rename" value="<fmt:message key='info.rename.submit' />" />
-      <input class="form-control form-col-50" type="text" name="renameto"
+      <input class="btn btn-success btn-sm" type="submit" name="rename" value="<fmt:message key='info.rename.submit' />" />
+      <input class="form-control input-sm" type="text" name="renameto"
              value="<c:out value='${param.renameto}' default='<%= wikiPage.getName() %>'/>" size="40" />
-      <label class="btn btn-default" for="references">
+      <label class="page-info-referrers" for="references">
         <input type="checkbox" name="references" id="references" checked="checked" />
         <fmt:message key="info.updatereferrers"/>
       </label>
     </form>
   </wiki:Permission>
   <wiki:Permission permission="!rename">
-    <p class="text-warning"><fmt:message key="info.rename.permission"/></p>
+    <span class="text-warning"><fmt:message key="info.rename.permission"/></span>
   </wiki:Permission>
 
   <wiki:Permission permission="delete">
     <form action="<wiki:Link format='url' context='<%=ContextEnum.PAGE_DELETE.getRequestContext()%>' />"
-           class="form-group"
               id="deleteForm"
           method="post" accept-charset="<wiki:ContentEncoding />" >
       <wiki:CsrfProtection/>
-      <input class="btn btn-danger <%=allowPageDeletionForNonAdmin ? "hide" : ""%>" type="submit" name="delete-all" id="delete-all"
+      <input class="btn btn-danger btn-sm <%=allowPageDeletionForNonAdmin ? "hide" : ""%>" type="submit" name="delete-all" id="delete-all"
         data-modal="+ .modal"
             value="<fmt:message key='info.delete.submit'/>" />
-      <input class="btn btn-danger <%=c.hasAdminPermissions() || allowPageDeletionForNonAdmin ? "admin" : "noneAdmin"%>" type="submit" name="delete-admin" id="delete-admin"
+      <input class="btn btn-danger btn-sm <%=c.hasAdminPermissions() || allowPageDeletionForNonAdmin ? "admin" : "noneAdmin"%>" type="submit" name="delete-admin" id="delete-admin"
              data-modal="+ .modal"
              value="Delete page (including its revision history)" />
       <div class="modal"><fmt:message key='info.confirmdelete'/></div>
     </form>
   </wiki:Permission>
   <wiki:Permission permission="!delete">
-    <p class="text-warning"><fmt:message key="info.delete.permission"/></p>
+    <span class="text-warning"><fmt:message key="info.delete.permission"/></span>
   </wiki:Permission>
-
+  </div>
+  </div>
   </div>
 
-
+  <%-- positioned container that lets the diff version picker sit at the end of the tab navigation --%>
+  <div class="page-info-tabs">
   <div class="tabs">
     <h4 id="history"><fmt:message key="info.history"/></h4>
 
@@ -252,6 +257,7 @@
       <wiki:Include page="DiffTab.jsp"/>
     </wiki:CheckRequestContext>
 
+  </div>
   </div>
 
 </wiki:PageType>

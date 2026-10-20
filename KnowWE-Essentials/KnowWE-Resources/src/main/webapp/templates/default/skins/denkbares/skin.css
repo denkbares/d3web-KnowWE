@@ -708,6 +708,35 @@ td .information, td .info, td .warning, td .error {
 	margin-bottom: 1em;
 }
 
+/* on the page info the version selector moves into the free space at the end of the tab navigation, if there is any */
+@container page-info-tabs (min-width: 1050px) {
+	.page-info-tabs .diffbody > p.btn-block {
+		position: absolute;
+		top: 0;
+		right: 15px;
+		display: flex;
+		align-items: center;
+		gap: 0.4em;
+		width: auto;
+		/* matches the height of the bootstrap tab links, line height plus vertical padding and border */
+		height: calc(1.428571em + 22px);
+		margin: 0;
+		padding: 0;
+		border: none;
+		background: none;
+		box-shadow: none;
+		font-size: inherit;
+		color: var(--text-color-secondary);
+	}
+
+	.page-info-tabs .diffbody > p.btn-block select.form-control {
+		width: auto;
+		height: 28px;
+		padding: 0 0.4em;
+		font-size: 0.875em;
+	}
+}
+
 /* .diffnote equals .information */
 td.diffadd, td.diffrem, td.diff {
 	font: 110% Monaco, "Courier New", Courier, monospace;
@@ -1093,6 +1122,93 @@ a.tool:hover {
 
 /* +++ 465 InfoContent +++ */
 #infocontent {
+}
+
+/* the page facts, the page actions, the tab labels and the diff version selector share one horizontal inset */
+.page-info-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5em 2em;
+	padding: 0.5em 15px;
+	margin-bottom: 0.5em;
+}
+
+.page-info-header {
+	container: page-info-header / inline-size;
+}
+
+/* without room for both, the actions go below the facts and line up with them instead of hanging at the far end */
+@container page-info-header (max-width: 1400px) {
+	.page-info-header .page-info-actions {
+		justify-content: flex-start;
+	}
+}
+
+@container page-info-header (max-width: 600px) {
+	.page-info-header .page-info-actions form {
+		flex-wrap: wrap;
+	}
+}
+
+.page-info-facts {
+	flex: 0 1 auto;
+	min-width: 0;
+	font-size: 0.875em;
+	line-height: 1.5;
+	color: var(--text-color-secondary);
+}
+
+.page-info-facts .badge {
+	font-size: 0.85em;
+	padding: 1px 6px;
+}
+
+.page-info-created {
+	display: block;
+}
+
+.page-info-actions {
+	display: flex;
+	flex: 1 1 auto;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 0.5em 1.25em;
+	font-size: 0.875em;
+}
+
+/* the rename controls stay on one line, a wrapping flex container would be sized too narrow for its content */
+.page-info-actions form {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0;
+}
+
+.page-info-actions input[name="renameto"] {
+	flex: 0 1 28em;
+	width: auto;
+	min-width: 10em;
+}
+
+.page-info-referrers {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	margin: 0;
+	font-weight: normal;
+	color: var(--text-color-secondary);
+}
+
+.page-info-referrers input {
+	margin: 0;
+}
+
+.page-info-tabs {
+	position: relative;
+	container: page-info-tabs / inline-size;
 }
 
 #incomingLinks, #outgoingLinks, #externalLinks, #attachmentLinks, #versionhistory {
