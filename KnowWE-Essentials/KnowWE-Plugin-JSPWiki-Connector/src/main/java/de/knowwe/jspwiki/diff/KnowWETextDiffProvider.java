@@ -12,13 +12,13 @@ import org.apache.wiki.diff.DiffProvider;
 import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
 import com.denkbares.knowwe.textdiff.DiffRenderOptions;
 import com.denkbares.knowwe.textdiff.DiffView;
-import com.denkbares.knowwe.textdiff.FileChange;
+import com.denkbares.knowwe.textdiff.TextDiff;
 
 /**
  * JSPWiki {@link DiffProvider} that renders page-version diffs through KnowWE's
  * {@code <knowwe-text-diff>} web component (see {@code KnowWE-Plugin-TextDiff}). The diff is built in the
- * browser, side by side where the page is wide enough, inside a {@code <knowwe-file-change>} frame whose header
- * carries the line counts and the layout and whitespace switches. The choices are remembered for the page history.
+ * browser, side by side where the page is wide enough, with the layout and whitespace switches of the component.
+ * The choices are remembered for the page history.
  * <p>
  * Activate by setting in {@code jspwiki-custom.properties}:
  * <pre>
@@ -50,7 +50,6 @@ public class KnowWETextDiffProvider implements DiffProvider {
 		String newText = newWikiText == null ? "" : newWikiText;
 		if (Objects.equals(oldText, newText)) return "";
 
-		FileChange change = FileChange.modified(context.getPage().getName(), oldText, newText);
-		return DiffHtmlRenderer.renderFileChange(change, OPTIONS);
+		return DiffHtmlRenderer.renderTextDiff(new TextDiff(oldText, newText), OPTIONS);
 	}
 }
