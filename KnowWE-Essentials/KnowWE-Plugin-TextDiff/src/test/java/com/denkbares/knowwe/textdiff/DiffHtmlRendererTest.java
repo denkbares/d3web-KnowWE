@@ -161,12 +161,22 @@ class DiffHtmlRendererTest {
 		TextDiff diff = new TextDiff("a\nb\nc\n", "a\nB\nc\n");
 		String html = DiffHtmlRenderer.renderTextDiff(diff, DiffRenderOptions.defaults()
 				.withRenderer(DiffRenderer.CODEMIRROR));
-		assertTrue(html.contains("<knowwe-text-diff data-view=\"unified\" data-context-lines=\"3\" data-renderer=\"codemirror\">"), html);
+		assertTrue(html.contains("<knowwe-text-diff data-layout=\"unified\" data-context-lines=\"3\" data-renderer=\"codemirror\">"), html);
 		assertTrue(html.contains("<template shadowrootmode=\"open\">"), html);
 		assertTrue(html.contains("KnowWE-Plugin-TextDiff.css"), html);
 		assertTrue(html.contains("class=\"diff-frame diff-placeholder\" part=\"frame\" style=\"--diff-placeholder-lines: 5\""), html);
 		assertTrue(html.contains("<script type=\"application/json\" class=\"diff-data\">{\"old\":\"a\\nb\\nc\\n\",\"new\":\"a\\nB\\nc\\n\",\"stats\":{\"added\":1,\"removed\":1}}</script>"), html);
 		assertFalse(html.contains("<table"), html);
+	}
+
+	@Test
+	void codemirrorRendererEmitsTheRequestedLayout() {
+		TextDiff diff = new TextDiff("a", "b");
+		DiffRenderOptions options = DiffRenderOptions.defaults().withRenderer(DiffRenderer.CODEMIRROR);
+		assertTrue(DiffHtmlRenderer.renderTextDiff(diff, options.withView(DiffView.SIDE_BY_SIDE))
+				.startsWith("<knowwe-text-diff data-layout=\"split\""));
+		assertTrue(DiffHtmlRenderer.renderTextDiff(diff, options.withView(DiffView.AUTO))
+				.startsWith("<knowwe-text-diff data-layout=\"auto\""));
 	}
 
 	@Test

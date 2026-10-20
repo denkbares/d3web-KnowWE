@@ -206,7 +206,8 @@ function digits(diff) {
 /**
  * Creates the CodeMirror view of a computed diff in the parent element. Options: root (the shadow root the view is
  * mounted in), layout "unified" or "split", language, highlight (whether to color the text at all), wrap,
- * contextLines (-1 shows every line). Returns the view and a destroy function.
+ * contextLines (-1 shows every line). Returns the view, the editor showing the new text, an align function that
+ * brings the heights of the view up to date at once, and a destroy function.
  */
 export function createDiffView(parent, diff, options = {}) {
 	const changes = diff.changes.map(c => new Change(c.fromA, c.toA, c.fromB, c.toB));
@@ -249,5 +250,12 @@ export function createDiffView(parent, diff, options = {}) {
 			})
 		});
 	}
-	return {view, destroy: () => view.destroy()};
+	const split = options.layout === "split";
+	return {
+		view,
+		editor: split ? view.b : view,
+		// the split view pads its sides in a frame callback, which callers measuring right away cannot wait for
+		align: () => split && typeof view.measure === "function" && view.measure(),
+		destroy: () => view.destroy()
+	};
 }

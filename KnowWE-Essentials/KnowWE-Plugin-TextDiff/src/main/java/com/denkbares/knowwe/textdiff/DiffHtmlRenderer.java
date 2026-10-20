@@ -48,13 +48,10 @@ public final class DiffHtmlRenderer {
 	 */
 	@NotNull
 	public static String renderTextDiff(@NotNull TextDiff diff, @NotNull DiffRenderOptions options) {
-		if (options.view() == DiffView.SIDE_BY_SIDE) {
-			throw new UnsupportedOperationException("SIDE_BY_SIDE view is not yet implemented");
-		}
-
+		requireSupportedView(options);
 		StringBuilder sb = new StringBuilder();
-		sb.append("<knowwe-text-diff data-view=\"unified\" data-context-lines=\"")
-				.append(options.contextLines()).append("\"");
+		sb.append("<knowwe-text-diff data-layout=\"").append(layoutAttribute(options.view()))
+				.append("\" data-context-lines=\"").append(options.contextLines()).append("\"");
 		if (options.renderer() == DiffRenderer.CODEMIRROR) sb.append(" data-renderer=\"codemirror\"");
 		sb.append(">");
 		if (options.shadowDom()) {
@@ -117,12 +114,25 @@ public final class DiffHtmlRenderer {
 	 */
 	@NotNull
 	public static String renderTextDiffShadowContent(@NotNull TextDiff diff, @NotNull DiffRenderOptions options) {
-		if (options.view() == DiffView.SIDE_BY_SIDE) {
-			throw new UnsupportedOperationException("SIDE_BY_SIDE view is not yet implemented");
-		}
+		requireSupportedView(options);
 		StringBuilder sb = new StringBuilder();
 		appendTextDiffShadowContent(sb, diff, options, true);
 		return sb.toString();
+	}
+
+	// the table knows one layout, the browser built view all of them
+	private static void requireSupportedView(DiffRenderOptions options) {
+		if (options.view() != DiffView.UNIFIED && options.renderer() == DiffRenderer.TABLE) {
+			throw new UnsupportedOperationException(options.view() + " view is not supported by the table renderer");
+		}
+	}
+
+	private static String layoutAttribute(DiffView view) {
+		return switch (view) {
+			case UNIFIED -> "unified";
+			case SIDE_BY_SIDE -> "split";
+			case AUTO -> "auto";
+		};
 	}
 
 	private static void appendTextDiffShadowContent(StringBuilder sb, TextDiff diff, DiffRenderOptions options, boolean includeStylesheet) {

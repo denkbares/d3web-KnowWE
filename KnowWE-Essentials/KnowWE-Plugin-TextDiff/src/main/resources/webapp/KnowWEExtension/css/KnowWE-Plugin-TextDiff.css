@@ -539,6 +539,49 @@
 	color: var(--file-change-blue);
 }
 
+.file-change-layout {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--file-change-muted-fg);
+	font: inherit;
+	cursor: pointer;
+	transition: background-color 120ms ease, color 120ms ease;
+}
+
+.file-change-layout:hover {
+	color: var(--file-change-blue);
+	background: var(--file-change-bg);
+}
+
+.file-change-layout:focus-visible {
+	outline: 2px solid var(--file-change-focus);
+	outline-offset: -2px;
+}
+
+.file-change-layout[hidden] {
+	display: none;
+}
+
+.file-change-layout .icon {
+	display: block;
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
 .file-change-body {
 	background: var(--file-change-bg);
 }

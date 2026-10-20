@@ -28,13 +28,29 @@
  *             attribute changes.
  *
  * The stats show the given additions and deletions until a <knowwe-text-diff> in the body reports the counts of
- * the diff it computed, which replace them.
+ * the diff it computed, which replace them. A diff that can show both texts side by side gets a layout button in
+ * the header, which switches between one column and two.
  */
 const STYLESHEET_URL = 'KnowWEExtension/css/KnowWE-Plugin-TextDiff.css';
 const CHEVRON_DOWN_ICON =
 	'<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
 	'  <path d="M4 6l4 4 4-4"/>' +
 	'</svg>';
+// the layout each button click switches to, shown as its icon
+const LAYOUT_SWITCH = {
+	unified: {
+		next: 'split',
+		label: 'Show side by side',
+		icon: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+			'<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M8 2.5v11"/></svg>',
+	},
+	split: {
+		next: 'unified',
+		label: 'Show in one column',
+		icon: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+			'<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M4.5 6h7M4.5 8.5h7M4.5 11h4"/></svg>',
+	},
+};
 const CHANGE_TYPES = {
 	added: { label: 'Added' },
 	deleted: { label: 'Deleted' },
@@ -80,6 +96,9 @@ class KnowweFileChange extends HTMLElement {
 			if (event.target.parentElement !== this) return;
 			this.setAttribute('data-additions', String(event.detail.added));
 			this.setAttribute('data-deletions', String(event.detail.removed));
+		});
+		this.addEventListener('knowwe-text-diff-layout', (event) => {
+			if (event.target.parentElement === this) this._updateLayoutButton(event.detail.effective);
 		});
 	}
 
@@ -129,12 +148,37 @@ class KnowweFileChange extends HTMLElement {
 			'      <span class="file-change-stat deletions" part="deletions"></span>' +
 			'    </span>' +
 			'    <span class="file-change-actions" part="actions"><slot name="actions"></slot></span>' +
+			'    <button class="file-change-layout" part="layout-button" type="button" hidden></button>' +
 			'    <span class="file-change-badge" part="badge"></span>' +
 			'  </header>' +
 			'  <div class="file-change-body" part="body"><slot></slot></div>' +
 			'</article>';
 		root.querySelector('.file-change-header').addEventListener('click', (event) => this._onHeaderClick(event));
+		root.querySelector('.file-change-layout').addEventListener('click', () => this._switchLayout());
 		root.querySelector('slot:not([name])').addEventListener('slotchange', () => this._updateSlotState());
+	}
+
+	_textDiff() {
+		return this.querySelector(':scope > knowwe-text-diff');
+	}
+
+	// the button shows the layout a click switches to, and only for a diff that has layouts at all
+	_updateLayoutButton(effective) {
+		const button = this.shadowRoot && this.shadowRoot.querySelector('.file-change-layout');
+		if (!button) return;
+		const current = LAYOUT_SWITCH[effective];
+		button.hidden = !current;
+		if (!current) return;
+		button.innerHTML = LAYOUT_SWITCH[current.next].icon;
+		button.title = current.label;
+		button.setAttribute('aria-label', current.label);
+		button.setAttribute('data-layout', effective);
+	}
+
+	_switchLayout() {
+		const diff = this._textDiff();
+		const current = diff && LAYOUT_SWITCH[diff.effectiveLayout];
+		if (current) diff.layout = current.next;
 	}
 
 	_update() {
@@ -185,6 +229,9 @@ class KnowweFileChange extends HTMLElement {
 		this.toggleAttribute('data-empty-body', !hasBody);
 		const toggle = this.shadowRoot && this.shadowRoot.querySelector('.file-change-toggle');
 		if (toggle) toggle.hidden = !hasBody;
+		// a diff that was upgraded before this frame has announced its layout already
+		const diff = this._textDiff();
+		this._updateLayoutButton(diff && 'effectiveLayout' in diff ? diff.effectiveLayout : null);
 	}
 
 	_toggleCollapsed() {
@@ -198,7 +245,7 @@ class KnowweFileChange extends HTMLElement {
 
 	_onHeaderClick(event) {
 		if (this.hasAttribute('data-empty-body')) return;
-		if (event.target.closest('a')) return;
+		if (event.target.closest('a, .file-change-layout')) return;
 		this._toggleCollapsed();
 	}
 

@@ -33,9 +33,14 @@ markups are highlighted, changed tokens within a line are marked, unchanged regi
 and the view searches with Mod-F. Without the attribute, or when the CodeMirror bundle is missing, the table of the
 server is shown. If the view cannot be created, the component builds the table in the browser from the same texts.
 
-Further attributes of the CodeMirror renderer: `data-layout="unified|split"`, `data-language="wiki|none"`,
-`data-highlight-limit` (characters, default 200000, larger diffs render without highlighting) and
-`data-wrap="false"`. `data-context-lines` applies to both renderers.
+Further attributes of the CodeMirror renderer: `data-layout="unified|split|auto"` (`auto` shows elements of at
+least 900 px side by side), `data-language="wiki|none"`, `data-highlight-limit` (characters, default 200000, larger
+diffs render without highlighting) and `data-wrap="false"`. `data-context-lines` applies to both renderers.
+
+The `layout` property switches between `unified` and `split` while the view is shown, keeping the line at the top
+of the viewport in place. With `data-context="name"` the choice is stored in `localStorage` and applied to every
+element of that context, now and on later pages. The element dispatches `knowwe-text-diff-layout` on connect and on
+every change, with the requested and the effective layout in `detail`.
 
 The view exists only while the element is near the viewport. When it scrolls far away, the view is destroyed and the
 frame keeps its height, so a long list of diffs holds only the views on screen.
@@ -157,7 +162,8 @@ The component also accepts common aliases like `create`, `delete`, `removed`, `r
 `rename-modified`.
 
 The whole header toggles collapse. Links inside the header still navigate. `data-collapsed`
-renders the body collapsed initially.
+renders the body collapsed initially. A `<knowwe-text-diff>` with the CodeMirror renderer in the body adds a layout
+button to the header (part `layout-button`), which switches the diff between one column and two.
 
 Extra controls such as links to related views go into the `actions` slot and appear in the header
 between the stats and the badge:
