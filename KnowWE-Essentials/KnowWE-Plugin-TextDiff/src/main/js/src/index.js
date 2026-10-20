@@ -2,6 +2,8 @@
 import "./components/text-diff.js";
 import "./components/file-change.js";
 
-export {computeDiff, findMoves} from "./diff/index.js";
+export {preferences} from "./components/text-diff.js";
+
+export {computeDiff} from "./diff/index.js";
 export {renderTable} from "./renderer/table.js";
 export {createDiffView} from "./renderer/codemirror.js";

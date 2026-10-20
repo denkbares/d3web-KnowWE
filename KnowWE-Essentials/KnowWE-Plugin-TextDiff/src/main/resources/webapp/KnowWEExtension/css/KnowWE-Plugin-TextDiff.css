@@ -90,12 +90,12 @@
 	--diff-num-bg: var(--bg-color-secondary, #151b23);
 
 	--diff-added-bg: rgba(46, 160, 67, 0.15);
-	--diff-added-num-bg: rgba(46, 160, 67, 0.3);
+	--diff-added-num-bg: rgba(46, 160, 67, 0.4);
 	--diff-added-emph-bg: rgba(46, 160, 67, 0.4);
 	--diff-added-fg: #3fb950;
 
 	--diff-removed-bg: rgba(248, 81, 73, 0.15);
-	--diff-removed-num-bg: rgba(248, 81, 73, 0.3);
+	--diff-removed-num-bg: rgba(248, 81, 73, 0.4);
 	--diff-removed-emph-bg: rgba(248, 81, 73, 0.4);
 	--diff-removed-fg: #f85149;
 
@@ -539,7 +539,7 @@
 	color: var(--file-change-blue);
 }
 
-.file-change-layout {
+.file-change-button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -557,21 +557,27 @@
 	transition: background-color 120ms ease, color 120ms ease;
 }
 
-.file-change-layout:hover {
+.file-change-button:hover {
 	color: var(--file-change-blue);
 	background: var(--file-change-bg);
 }
 
-.file-change-layout:focus-visible {
+.file-change-button[aria-pressed="true"] {
+	color: var(--file-change-blue);
+	background: var(--file-change-bg);
+	box-shadow: inset 0 0 0 1px var(--file-change-blue);
+}
+
+.file-change-button:focus-visible {
 	outline: 2px solid var(--file-change-focus);
 	outline-offset: -2px;
 }
 
-.file-change-layout[hidden] {
+.file-change-button[hidden] {
 	display: none;
 }
 
-.file-change-layout .icon {
+.file-change-button .icon {
 	display: block;
 	width: 16px;
 	height: 16px;

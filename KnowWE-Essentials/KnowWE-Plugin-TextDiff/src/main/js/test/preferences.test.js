@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from "vitest";
+import {fixtures} from "./fixtures.js";
 
 // jsdom has no IntersectionObserver, every element counts as visible at once
 class VisibleAtOnce {
@@ -92,10 +93,10 @@ describe("layouts", () => {
 		document.body.innerHTML = host("");
 		const el = document.querySelector("knowwe-text-diff");
 		await settled();
-		expect(events).toEqual([{layout: "unified", effective: "unified"}]);
+		expect(events).toEqual([{layout: "unified", effective: "unified", layouts: ["unified", "split"]}]);
 		el.layout = "split";
 		expect(events).toHaveLength(2);
-		expect(events[1]).toEqual({layout: "split", effective: "split"});
+		expect(events[1]).toEqual({layout: "split", effective: "split", layouts: ["unified", "split"]});
 		expect(shown(el)).toBe("split");
 	});
 
@@ -175,5 +176,69 @@ describe("knowwe-file-change layout button", () => {
 			<knowwe-file-change data-new-name="B"></knowwe-file-change>`;
 		await settled();
 		for (const change of document.querySelectorAll("knowwe-file-change")) expect(button(change).hidden).toBe(true);
+	});
+});
+
+describe("whitespace mode", () => {
+	const f = fixtures.find(x => x.name === "whitespace-only");
+	const inline = attributes => `<knowwe-text-diff data-renderer="codemirror" ${attributes}><template shadowrootmode="open">
+		<div class="diff-frame"></div><script type="application/json" class="diff-data">${JSON.stringify({old: f.old, new: f.new, stats: f.stats})}</script>
+		</template></knowwe-text-diff>`;
+
+	it("recomputes the diff without a request and reports the counts of the mode", async () => {
+		const stats = [];
+		document.body.addEventListener("knowwe-text-diff-stats", e => stats.push(e.detail));
+		document.body.innerHTML = inline("");
+		const el = document.querySelector("knowwe-text-diff");
+		await settled();
+		expect(el.ignoreWhitespace).toBe(false);
+		expect(el.stats).toEqual({added: 2, removed: 2});
+		expect(shown(el)).toBe("unified");
+		el.ignoreWhitespace = true;
+		expect(el.getAttribute("data-whitespace")).toBe("ignore");
+		expect(el.stats).toEqual({added: 0, removed: 0});
+		expect(stats.map(s => [s.added, s.removed, s.ignoreWhitespace])).toEqual([[2, 2, false], [0, 0, true]]);
+		expect(el.shadowRoot.querySelector(".diff-note").textContent).toBe("Only whitespace changed.");
+		expect(shown(el)).toBeNull();
+		el.ignoreWhitespace = false;
+		expect(shown(el)).toBe("unified");
+	});
+
+	it("keeps the choice per context and announces it", async () => {
+		const events = [];
+		document.body.addEventListener("knowwe-text-diff-whitespace", e => events.push(e.detail.ignore));
+		document.body.innerHTML = inline('data-context="review"') + inline('data-context="review"');
+		const [first, second] = document.querySelectorAll("knowwe-text-diff");
+		await settled();
+		expect(events).toEqual([false, false]);
+		second.ignoreWhitespace = true;
+		expect(window.localStorage.getItem("knowwe-text-diff.whitespace.review")).toBe("ignore");
+		expect(first.ignoreWhitespace).toBe(true);
+		expect(first.stats).toEqual({added: 0, removed: 0});
+		expect(events).toEqual([false, false, true, true]);
+	});
+
+	it("notes an unchanged text", async () => {
+		document.body.innerHTML = `<knowwe-text-diff data-renderer="codemirror"><template shadowrootmode="open">
+			<div class="diff-frame"></div><script type="application/json" class="diff-data">{"old":"a\\n","new":"a\\n","stats":{"added":0,"removed":0}}</script>
+			</template></knowwe-text-diff>`;
+		await settled();
+		expect(document.querySelector("knowwe-text-diff").shadowRoot.querySelector(".diff-note").textContent).toBe("No changes.");
+	});
+
+	it("has a header button that is pressed while whitespace is hidden", async () => {
+		document.body.innerHTML = `<knowwe-file-change data-new-name="A">${inline("")}</knowwe-file-change>`;
+		const change = document.querySelector("knowwe-file-change");
+		const diff = document.querySelector("knowwe-text-diff");
+		await settled();
+		const button = change.shadowRoot.querySelector(".file-change-whitespace");
+		expect(button.hidden).toBe(false);
+		expect(button.getAttribute("aria-pressed")).toBe("false");
+		button.click();
+		expect(diff.ignoreWhitespace).toBe(true);
+		expect(button.getAttribute("aria-pressed")).toBe("true");
+		expect(button.title).toBe("Show whitespace changes");
+		expect(change.getAttribute("data-additions")).toBe("0");
+		expect(change.hasAttribute("data-collapsed")).toBe(false);
 	});
 });

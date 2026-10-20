@@ -38,9 +38,16 @@ least 900 px side by side), `data-language="wiki|none"`, `data-highlight-limit` 
 diffs render without highlighting) and `data-wrap="false"`. `data-context-lines` applies to both renderers.
 
 The `layout` property switches between `unified` and `split` while the view is shown, keeping the line at the top
-of the viewport in place. With `data-context="name"` the choice is stored in `localStorage` and applied to every
-element of that context, now and on later pages. The element dispatches `knowwe-text-diff-layout` on connect and on
-every change, with the requested and the effective layout in `detail`.
+of the viewport in place. `data-whitespace="ignore"` and the `ignoreWhitespace` property diff the lines with all
+whitespace removed, as `git diff -w` does, and leave whitespace tokens unmarked. A diff that then has no changes
+says so instead of showing an empty view. With `data-context="name"` both choices are stored in `localStorage` and
+applied to every element of that context, now and on later pages. The element dispatches `knowwe-text-diff-layout`
+and `knowwe-text-diff-whitespace` on connect and on every change, and `knowwe-text-diff-stats` carries the counts
+of the current mode.
+
+`data-layouts="unified"` fixes the layout for places too narrow for two columns, and the exported
+`KnowWETextDiff.preferences` reads and sets the choices of a context (`get(context, "whitespace")`,
+`set(context, "layout", "split")`) for controls that sit outside the diffs.
 
 The view exists only while the element is near the viewport. When it scrolls far away, the view is destroyed and the
 frame keeps its height, so a long list of diffs holds only the views on screen.
@@ -162,8 +169,10 @@ The component also accepts common aliases like `create`, `delete`, `removed`, `r
 `rename-modified`.
 
 The whole header toggles collapse. Links inside the header still navigate. `data-collapsed`
-renders the body collapsed initially. A `<knowwe-text-diff>` with the CodeMirror renderer in the body adds a layout
-button to the header (part `layout-button`), which switches the diff between one column and two.
+renders the body collapsed initially. A `<knowwe-text-diff>` with the CodeMirror renderer in the body adds two
+buttons to the header, one that switches the diff between one column and two (part `layout-button`) and one that
+hides whitespace changes (part `whitespace-button`, pressed while they are hidden). `data-controls` names the
+buttons to offer, `data-controls=""` shows none, and a diff with a fixed layout gets no layout button.
 
 Extra controls such as links to related views go into the `actions` slot and appear in the header
 between the stats and the badge:
