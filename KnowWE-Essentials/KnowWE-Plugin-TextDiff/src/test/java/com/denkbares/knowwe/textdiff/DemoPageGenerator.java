@@ -39,6 +39,8 @@ class DemoPageGenerator {
 		return null;
 	}
 
+	private static final String CODEMIRROR_BUNDLE = "../../KnowWE-Resources/src/main/webapp/KnowWEExtension/scripts/codemirror.min.js";
+
 	private static Path findWebappResourceBase() throws Exception {
 		Path cwd = Path.of("").toAbsolutePath().normalize();
 		Path candidate = cwd.resolve("src/main/resources/webapp").normalize();
@@ -292,6 +294,11 @@ class DemoPageGenerator {
 				</section>
 				""");
 
+		// the component script is built against the vendored CodeMirror bundle of KnowWE-Resources, which has to load
+		// first. Without it the demo shows a note instead of the diffs.
+		page.append("<script src=\"" + CODEMIRROR_BUNDLE + "\"></script>");
+		page.append("<script>if (typeof CodeMirror === 'undefined') document.body.insertAdjacentHTML('afterbegin', "
+				+ "'<p style=\"color:#b00\">codemirror.min.js of KnowWE-Resources was not found, the components cannot load.</p>');</script>");
 		page.append("<script src=\"KnowWEExtension/scripts/KnowWE-Plugin-TextDiff.js\"></script>");
 		page.append("</body></html>");
 		return withDemoResourceUrls(page.toString(), resourceBaseUri);

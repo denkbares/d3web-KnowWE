@@ -819,5 +819,10 @@ window.KnowWEEditor = (function () {
 		return typeof CodeMirror !== "undefined";
 	}
 
-	return {create, setWrapping, toggleHelp, isHelpOpen, isAvailable, detectIndentUnit};
+	/** The highlight style of the editor, for read-only views that should color wiki text the same way. */
+	function highlightStyle() {
+		return sharedParts().highlightStyle;
+	}
+
+	return {create, setWrapping, toggleHelp, isHelpOpen, isAvailable, detectIndentUnit, highlightStyle};
 })();

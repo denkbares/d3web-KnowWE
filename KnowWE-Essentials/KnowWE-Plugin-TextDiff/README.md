@@ -4,15 +4,44 @@ Reusable front and back end text diff components.
 
 ## Components
 
-The plugin ships two web components from
-`src/main/resources/webapp/KnowWEExtension/scripts/KnowWE-Plugin-TextDiff.js`:
+The plugin ships two web components in `KnowWEExtension/scripts/KnowWE-Plugin-TextDiff.js`:
 
-- `<knowwe-text-diff>` displays a unified text diff.
+- `<knowwe-text-diff>` displays a text diff, as a CodeMirror view built in the browser or as a table.
 - `<knowwe-file-change>` displays one GitHub-inspired file/article change entry and can wrap a
   `<knowwe-text-diff>` when the change includes content changes.
 
-Styles live in
-`src/main/resources/webapp/KnowWEExtension/css/KnowWE-Plugin-TextDiff.css`.
+Styles live in `src/main/resources/webapp/KnowWEExtension/css/KnowWE-Plugin-TextDiff.css`.
+
+The script is built from the Vite project in `src/main/js` and committed. CodeMirror resolves to the vendored global
+bundle of KnowWE-Resources, which loads on every page, and the wiki language to the global `KnowWEWikiLanguage`.
+
+    cd src/main/js
+    pnpm install
+    pnpm build
+    pnpm test
+
+- `src/diff/` computes the diff: a minimal Myers line diff, in-line refinement by tokens, a whitespace insensitive
+  mode and moved block detection. It has no DOM or CodeMirror dependency.
+- `src/renderer/codemirror.js` builds the read-only merge view, `src/renderer/table.js` the table.
+- `src/components/` holds the two web components.
+- `test/` runs with Vitest. The Myers tests compare against the Java chunks of the shared fixtures.
+
+## Renderers
+
+`data-renderer="codemirror"` switches a `<knowwe-text-diff>` to the view built in the browser: wiki and embedded
+markups are highlighted, changed tokens within a line are marked, unchanged regions are folded and expand in place,
+and the view searches with Mod-F. Without the attribute, or when the CodeMirror bundle is missing, the table of the
+server is shown. If the view cannot be created, the component builds the table in the browser from the same texts.
+
+Further attributes of the CodeMirror renderer: `data-layout="unified|split"`, `data-language="wiki|none"`,
+`data-highlight-limit` (characters, default 200000, larger diffs render without highlighting) and
+`data-wrap="false"`. `data-context-lines` applies to both renderers.
+
+The view exists only while the element is near the viewport. When it scrolls far away, the view is destroyed and the
+frame keeps its height, so a long list of diffs holds only the views on screen.
+
+Once the browser computed a diff, the component dispatches `knowwe-text-diff-stats` with the line counts, and a
+`<knowwe-file-change>` around it replaces its additions and deletions by them.
 
 ## Backend Diff
 
@@ -35,8 +64,10 @@ component then only hydrates the shadow root and wires the collapsed-context exp
 
 ## Lazy Diff Mode
 
-If `<knowwe-text-diff>` has no server-rendered shadow content, it posts `oldText`, `newText`, and
-optional `contextLines` to `action/TextDiffAction` when it enters the viewport.
+If `<knowwe-text-diff>` has no server-rendered shadow content, it loads its diff when it enters the viewport. The
+table renderer posts `oldText`, `newText`, and optional `contextLines` to `action/TextDiffAction`. The CodeMirror
+renderer diffs slotted and programmatic texts in the browser without a request, and asks an action url for the
+texts with `format=json`.
 
 ```html
 <knowwe-text-diff data-context-lines="3">
