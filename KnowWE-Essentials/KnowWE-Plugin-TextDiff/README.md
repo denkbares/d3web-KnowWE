@@ -55,6 +55,28 @@ diff.newText = newText;
 
 Use `data-action-url` to point at a different backend endpoint.
 
+## JSON Format
+
+The browser side renderer (opt in, see below) needs both texts rather than rendered HTML. `DiffJsonRenderer` writes
+them as one JSON document together with the line counts, and `TextDiffAction` returns that document instead of HTML
+when called with the parameter `format=json`. Endpoints of other plugins that feed `<knowwe-text-diff>` should
+support the same parameter.
+
+```json
+{"old": "full old text", "new": "full new text", "stats": {"added": 7, "removed": 10}}
+```
+
+Line endings are normalized to `\n`, a missing side is `null`. The counts are those of the browser diff, which
+gives both texts a trailing newline, so a newline that only one side ends with is not counted. The output contains
+no `<` character and can be inlined into a script element.
+
+`DiffRenderOptions.withRenderer(DiffRenderer.CODEMIRROR)` makes the server render a placeholder of a plausible height
+plus the JSON in a `<script type="application/json" class="diff-data">` inside the shadow root, and marks the host
+with `data-renderer="codemirror"`. The default renderer stays the server rendered table.
+
+The fixtures in `src/test/resources/com/denkbares/knowwe/textdiff/fixtures/` pin the JSON and the line chunks of the
+Java diff for both the Java tests and the browser tests of the diff module.
+
 ## Created And Deleted Files
 
 `TextDiff` uses `null` for a missing side:

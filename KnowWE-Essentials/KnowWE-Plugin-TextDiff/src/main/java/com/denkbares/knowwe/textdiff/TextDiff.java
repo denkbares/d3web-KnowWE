@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 public final class TextDiff implements Iterable<TextDiff.Line> {
 
 	private final List<Line> lines;
+	private final String oldText;
+	private final String newText;
 
 	/**
 	 * One line in the diff. Line numbers are 1-based; {@code -1} means the line is absent on that side.
@@ -50,11 +52,15 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 	 * Computes the diff between two texts. Either side may be {@code null}.
 	 */
 	public TextDiff(@Nullable String oldText, @Nullable String newText) {
-		this.lines = diff(oldText, newText);
+		this.oldText = oldText == null ? null : normalize(oldText);
+		this.newText = newText == null ? null : normalize(newText);
+		this.lines = diff(this.oldText, this.newText);
 	}
 
 	private TextDiff(@NotNull List<Line> lines) {
 		this.lines = lines;
+		this.oldText = null;
+		this.newText = null;
 	}
 
 	/**
@@ -87,6 +93,22 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 			}
 		}
 		return new Stats(added, removed);
+	}
+
+	/**
+	 * The old text with normalized line endings, null for a created file.
+	 */
+	@Nullable
+	public String oldText() {
+		return oldText;
+	}
+
+	/**
+	 * The new text with normalized line endings, null for a deleted file.
+	 */
+	@Nullable
+	public String newText() {
+		return newText;
 	}
 
 	/**
@@ -188,7 +210,10 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 	}
 
 	private static List<String> splitLines(String text) {
-		String normalized = text.replace("\r\n", "\n").replace("\r", "\n");
-		return new ArrayList<>(Arrays.asList(normalized.split("\n", -1)));
+		return new ArrayList<>(Arrays.asList(text.split("\n", -1)));
+	}
+
+	private static String normalize(String text) {
+		return text.replace("\r\n", "\n").replace("\r", "\n");
 	}
 }

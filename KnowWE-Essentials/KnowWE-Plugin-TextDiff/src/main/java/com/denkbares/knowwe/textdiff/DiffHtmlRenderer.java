@@ -54,7 +54,9 @@ public final class DiffHtmlRenderer {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<knowwe-text-diff data-view=\"unified\" data-context-lines=\"")
-				.append(options.contextLines()).append("\">");
+				.append(options.contextLines()).append("\"");
+		if (options.renderer() == DiffRenderer.CODEMIRROR) sb.append(" data-renderer=\"codemirror\"");
+		sb.append(">");
 		if (options.shadowDom()) {
 			sb.append("<template shadowrootmode=\"open\">");
 			appendTextDiffShadowContent(sb, diff, options, true);
@@ -127,6 +129,10 @@ public final class DiffHtmlRenderer {
 		if (includeStylesheet) {
 			appendStylesheetLink(sb, TEXT_DIFF_STYLESHEET);
 		}
+		if (options.renderer() == DiffRenderer.CODEMIRROR) {
+			appendPlaceholder(sb, diff, options);
+			return;
+		}
 		sb.append("<div class=\"diff-frame\" part=\"frame\">");
 
 		List<TextDiff.Line> lines = diff.lines();
@@ -177,6 +183,23 @@ public final class DiffHtmlRenderer {
 
 		sb.append("</tbody></table>");
 		sb.append("</div>");
+	}
+
+	/**
+	 * The browser replaces the placeholder by its own view once it has read the inlined JSON. The placeholder takes
+	 * the height of the lines the view will show, so the page does not shift when the view appears.
+	 */
+	private static void appendPlaceholder(StringBuilder sb, TextDiff diff, DiffRenderOptions options) {
+		List<TextDiff.Line> lines = diff.lines();
+		int rows = 0;
+		for (boolean visible : computeVisibility(lines, options.contextLines())) {
+			if (visible) rows++;
+		}
+		sb.append("<div class=\"diff-frame diff-placeholder\" part=\"frame\" style=\"--diff-placeholder-lines: ")
+				.append(Math.max(1, rows)).append("\"></div>");
+		sb.append("<script type=\"application/json\" class=\"diff-data\">")
+				.append(DiffJsonRenderer.render(diff))
+				.append("</script>");
 	}
 
 	private static void appendStylesheetLink(StringBuilder sb, String href) {

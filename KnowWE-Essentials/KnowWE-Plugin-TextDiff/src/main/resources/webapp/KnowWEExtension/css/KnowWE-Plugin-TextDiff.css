@@ -125,6 +125,12 @@
 	-moz-tab-size: var(--diff-tab-size);
 }
 
+/* server rendered stand-in for the browser built view, sized by the lines that view will show */
+.diff-placeholder {
+	min-height: calc(var(--diff-placeholder-lines, 1) * var(--diff-font-size) * var(--diff-line-height));
+	background: var(--diff-num-bg);
+}
+
 .diff-note {
 	margin: 0;
 	padding: 10px 16px;

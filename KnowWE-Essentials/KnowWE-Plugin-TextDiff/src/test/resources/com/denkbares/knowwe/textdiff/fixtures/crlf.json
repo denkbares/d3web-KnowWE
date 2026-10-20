@@ -1,0 +1,9 @@
+{
+  "old" : "a\r\nb\r\nc\r\n",
+  "new" : "a\r\nB\r\nc\r\n",
+  "stats" : {
+    "added" : 1,
+    "removed" : 1
+  },
+  "chunks" : [ [ 1, 1, 1, 1 ] ]
+}

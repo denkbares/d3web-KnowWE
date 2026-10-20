@@ -1,0 +1,9 @@
+{
+  "old" : null,
+  "new" : "!! New article\n\nSome text.\n",
+  "stats" : {
+    "added" : 3,
+    "removed" : 0
+  },
+  "chunks" : [ [ 0, 0, 0, 3 ] ]
+}

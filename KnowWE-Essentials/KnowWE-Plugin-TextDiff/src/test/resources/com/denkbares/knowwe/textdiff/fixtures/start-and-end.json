@@ -1,0 +1,9 @@
+{
+  "old" : "first\nmiddle\nlast\n",
+  "new" : "FIRST\nmiddle\nLAST\n",
+  "stats" : {
+    "added" : 2,
+    "removed" : 2
+  },
+  "chunks" : [ [ 0, 1, 0, 1 ], [ 2, 1, 2, 1 ] ]
+}

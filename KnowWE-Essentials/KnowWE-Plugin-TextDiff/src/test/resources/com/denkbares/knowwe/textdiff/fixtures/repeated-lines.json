@@ -1,0 +1,9 @@
+{
+  "old" : "{\n\tx\n}\n\n{\n\tx\n}\n\n{\n\tx\n}\n\n{\n\tx\n}\n\n{\n\tx\n}\n\n{\n\tx\n}\n\n",
+  "new" : "{\n\tx\n}\n\n{\n\tx\n}\n\n{\n\tx\n}\n\n{\n\tx\n\ty\n}\n\n{\n\tx\n}\n\n{\n\tx\n}\n\n{\n\tx\n}\n\n",
+  "stats" : {
+    "added" : 5,
+    "removed" : 0
+  },
+  "chunks" : [ [ 14, 0, 14, 1 ], [ 24, 0, 25, 4 ] ]
+}

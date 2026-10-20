@@ -1,0 +1,9 @@
+{
+  "old" : "%%COOM:DSL\nbehavior Tuch {\n\tdefine  breite = stoff.breite\n\n\tcondition  breite > 3000\n\t\timply  warnung = _ZuBreit\n}\n\nbehavior Antrieb {\n\tdefine  motor = antrieb.motor\n\n\tcondition  motor != _Ohne\n\t\timply  strom = _Ja\n}\n@package: KM_constraints\n%\n",
+  "new" : "%%COOM:DSL\nbehavior Antrieb {\n\tdefine  motor = antrieb.motor\n\n\tcondition  motor != _Ohne\n\t\timply  strom = _Ja\n}\n\nbehavior Tuch {\n\tdefine  breite = stoff.breite\n\tdefine  hoehe = stoff.hoehe\n\n\tcondition  breite > 3000\n\t\timply  warnung = _ZuBreit\n}\n@package: KM_constraints\n%\n",
+  "stats" : {
+    "added" : 8,
+    "removed" : 7
+  },
+  "chunks" : [ [ 1, 7, 1, 0 ], [ 14, 0, 7, 8 ] ]
+}

@@ -1,0 +1,9 @@
+{
+  "old" : "a = 1\nb  =  2\n\tc = 3\n",
+  "new" : "a = 1\nb = 2\n    c = 3\n",
+  "stats" : {
+    "added" : 2,
+    "removed" : 2
+  },
+  "chunks" : [ [ 1, 2, 1, 2 ] ]
+}

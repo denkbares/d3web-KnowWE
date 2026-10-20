@@ -1,0 +1,9 @@
+{
+  "old" : "|| Art.-Nr. || Name || Farbe\n| _2017000\t| _Stoff0\t| _Grau\n| _2017001\t| _Stoff1\t| _Grau\n| _2017002\t| _Stoff2\t| _Grau\n| _2017003\t| _Stoff3\t| _Grau\n| _2017004\t| _Stoff4\t| _Grau\n| _2017005\t| _Stoff5\t| _Grau\n| _2017006\t| _Stoff6\t| _Grau\n| _2017007\t| _Stoff7\t| _Grau\n| _2017008\t| _Stoff8\t| _Grau\n| _2017009\t| _Stoff9\t| _Grau\n| _2017010\t| _Stoff10\t| _Grau\n| _2017011\t| _Stoff11\t| _Grau\n",
+  "new" : "|| Art.-Nr. || Name || Farbe\n| _2017000\t| _Stoff0\t| _Grau\n| _2017001\t| _Stoff1\t| _Grau\n| _2017002\t| _Stoff2\t| _Grau\n| _2017003\t| _Stoff3\t| _Anthrazit\n| _2017004\t| _Stoff4\t| _Grau\n| _2017005\t| _Stoff5\t| _Grau\n| _2017006\t| _Stoff6\t| _Grau\n| _2017007\t| _Stoff7\t| _Grau\n| _2017008\t| _Stoff8Dunkel\t| _Grau\n| _2018120\t| _Stoff8Hell\t| _Grau\n| _2017009\t| _Stoff9\t| _Grau\n| _2017010\t| _Stoff10\t| _Grau\n| _2017011\t| _Stoff11\t| _Grau\n",
+  "stats" : {
+    "added" : 3,
+    "removed" : 2
+  },
+  "chunks" : [ [ 4, 1, 4, 1 ], [ 9, 1, 9, 2 ] ]
+}

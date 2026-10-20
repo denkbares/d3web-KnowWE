@@ -1,0 +1,9 @@
+{
+  "old" : "Größe: 5 m²\nStoff 🎨 blau\nEnde\n",
+  "new" : "Größe: 6 m²\nStoff 🎨 rot\nEnde\n",
+  "stats" : {
+    "added" : 2,
+    "removed" : 2
+  },
+  "chunks" : [ [ 0, 2, 0, 2 ] ]
+}

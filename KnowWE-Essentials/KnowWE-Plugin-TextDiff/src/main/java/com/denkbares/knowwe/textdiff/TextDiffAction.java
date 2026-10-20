@@ -16,7 +16,9 @@ import de.knowwe.core.utils.KnowWEUtils;
  * (stylesheet link + diff table) suitable for injection into a {@code <knowwe-text-diff>}
  * web component on the client. Used by the JS component's lazy-load path.
  *
- * <p>Expects a JSON request body in the {@code data} parameter; see {@link Request}.
+ * <p>Expects a JSON request body in the {@code data} parameter; see {@link Request}. With the parameter
+ * {@code format=json} the response is the JSON document of {@link DiffJsonRenderer} instead of HTML, for the
+ * renderer that builds the diff in the browser.
  */
 public class TextDiffAction extends AbstractAction {
 
@@ -47,6 +49,11 @@ public class TextDiffAction extends AbstractAction {
 		int contextLines = request.contextLines != null ? request.contextLines : DEFAULT_CONTEXT_LINES;
 
 		TextDiff diff = new TextDiff(request.oldText, request.newText);
+		if ("json".equals(context.getParameter("format"))) {
+			context.setContentType("application/json; charset=UTF-8");
+			context.getWriter().write(DiffJsonRenderer.render(diff));
+			return;
+		}
 		DiffRenderOptions options = DiffRenderOptions.defaults().withContextLines(contextLines);
 		String html = DiffHtmlRenderer.renderTextDiffShadowContent(diff, options);
 
