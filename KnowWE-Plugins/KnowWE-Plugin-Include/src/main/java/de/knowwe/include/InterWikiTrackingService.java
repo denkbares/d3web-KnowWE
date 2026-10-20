@@ -332,11 +332,12 @@ final class InterWikiTrackingService {
 
 	/**
 	 * Returns the lines a rendered diff shows: the added and removed lines and the unchanged lines around
-	 * them, without their line numbers.
+	 * them, without their line numbers. The browser folds unchanged regions by a slightly different rule, which
+	 * does not matter for telling two diffs apart.
 	 */
 	private static List<String> getShownLines(TextDiff diff) {
 		List<TextDiff.Line> lines = diff.lines();
-		int context = DiffRenderOptions.defaults().contextLines();
+		int context = DiffRenderOptions.DEFAULT_CONTEXT_LINES;
 		if (context < 0) context = lines.size(); // all lines are shown
 		boolean[] visible = new boolean[lines.size()];
 		for (int i = 0; i < lines.size(); i++) {

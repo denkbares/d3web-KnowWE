@@ -40,12 +40,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpSession;
 
 import org.apache.wiki.util.CsrfProtectionAllowList;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
+import com.denkbares.knowwe.textdiff.DiffRenderOptions;
+import com.denkbares.knowwe.textdiff.DiffView;
 import com.denkbares.knowwe.textdiff.TextDiff;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
@@ -632,13 +633,16 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return false;
 	}
 
+	/** The context under which the tracking diffs remember the choices of the user. */
+	private static final DiffRenderOptions DIFF_OPTIONS = DiffRenderOptions.defaults()
+			.withView(DiffView.AUTO)
+			.withContext("interwiki-import");
+
 	/**
-	 * Renders the diff as HTML in the light or dark theme of the user.
+	 * Renders the diff as HTML, built in the browser, side by side where the page is wide enough.
 	 */
-	static String renderTrackingDiff(TextDiff diff, UserContext user) {
-		String theme = getDiffTheme(user);
-		return DiffHtmlRenderer.renderTextDiff(diff)
-				.replaceFirst("<knowwe-text-diff ", "<knowwe-text-diff data-theme=\"" + theme + "\" ");
+	static String renderTrackingDiff(TextDiff diff) {
+		return DiffHtmlRenderer.renderTextDiff(diff, DIFF_OPTIONS);
 	}
 
 	/**
@@ -660,7 +664,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				element.children(new P().clazz("note").plainText("No changes to apply, the local content already contains them."));
 			}
 			else {
-				element.children(new HtmlNode(renderTrackingDiff(localChanges, user)));
+				element.children(new HtmlNode(renderTrackingDiff(localChanges)));
 			}
 			return element;
 		}
@@ -671,7 +675,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			element.children(new P().clazz("note").plainText("No changes in the source."));
 		}
 		else {
-			element.children(new HtmlNode(renderTrackingDiff(sourceChanges, user)));
+			element.children(new HtmlNode(renderTrackingDiff(sourceChanges)));
 		}
 		if (local.equals(option.resultText())) {
 			element.children(new P().clazz("note").plainText(getNothingToApplyText(
@@ -679,7 +683,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 		else if (InterWikiTrackingService.isLocalChangesDiffNeeded(sourceChanges, localChanges)) {
 			element.children(new P().clazz("tracking-diff-title").plainText("The following changes can be applied to the local content:"));
-			element.children(new HtmlNode(renderTrackingDiff(localChanges, user)));
+			element.children(new HtmlNode(renderTrackingDiff(localChanges)));
 		}
 		return element;
 	}
@@ -700,19 +704,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	 */
 	static boolean isApplicable(InterWikiTrackingService.DiffOption option, String localText) {
 		return !InterWikiTrackingService.normalizeForComparison(localText).equals(option.resultText());
-	}
-
-	// Mirrors DefaultLogoAction#getLogoPath: derive light/dark from the user's "DisplayMode"
-	// preference, defaulting to light when no preference is available.
-	private static String getDiffTheme(UserContext user) {
-		HttpSession session = user.getSession();
-		if (session == null) return "light";
-		Object prefs = session.getAttribute("prefs");
-		if (prefs instanceof Map<?, ?> map) {
-			Object mode = map.get("DisplayMode");
-			if (mode != null && "dark-mode".equals(mode.toString())) return "dark";
-		}
-		return "light";
 	}
 
 	private class InterWikiImportRenderer extends DefaultMarkupRenderer implements AsyncPreviewRenderer {
