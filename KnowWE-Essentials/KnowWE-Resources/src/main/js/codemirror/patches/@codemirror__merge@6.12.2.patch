@@ -1,0 +1,44 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index f3f9998639e0b29d8c6bfce1ff2f7914731b3b85..79496f36c15e98adc56b988e29ff2095715fba05 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -507,6 +507,8 @@ unchanged ranges, and aligning changes to word boundaries when
+ appropriate.
+ */
+ function presentableDiff(a, b, config) {
++    if (config === null || config === void 0 ? void 0 : config.override)
++        return diff(a, b, config);
+     return makePresentable(diff(a, b, config), a, b);
+ }
+ 
+@@ -685,7 +687,7 @@ function toChunks(changes, a, b, offA, offB, precise) {
+         while (i < changes.length - 1) {
+             let next = changes[i + 1];
+             let [nextA, nextB] = fromLine(next.fromA + offA, next.fromB + offB, a, b);
+-            if (nextA > toA + 1 && nextB > toB + 1)
++            if (nextA > toA || nextB > toB)
+                 break;
+             chunk.push(next.offset(-fromA + offA, -fromB + offB));
+             [toA, toB] = toLine(next.toA + offA, next.toB + offB, a, b);
+diff --git a/dist/index.js b/dist/index.js
+index 8322cf9b1d463a8e6b4b0ccb4e36069e2de53bda..1578fd5112cebee9fd586ed0fddd36994d87168b 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -505,6 +505,8 @@ unchanged ranges, and aligning changes to word boundaries when
+ appropriate.
+ */
+ function presentableDiff(a, b, config) {
++    if (config === null || config === void 0 ? void 0 : config.override)
++        return diff(a, b, config);
+     return makePresentable(diff(a, b, config), a, b);
+ }
+ 
+@@ -683,7 +685,7 @@ function toChunks(changes, a, b, offA, offB, precise) {
+         while (i < changes.length - 1) {
+             let next = changes[i + 1];
+             let [nextA, nextB] = fromLine(next.fromA + offA, next.fromB + offB, a, b);
+-            if (nextA > toA + 1 && nextB > toB + 1)
++            if (nextA > toA || nextB > toB)
+                 break;
+             chunk.push(next.offset(-fromA + offA, -fromB + offB));
+             [toA, toB] = toLine(next.toA + offA, next.toB + offB, a, b);

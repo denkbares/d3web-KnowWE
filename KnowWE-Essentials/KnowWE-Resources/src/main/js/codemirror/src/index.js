@@ -7,9 +7,10 @@ import * as commands from "@codemirror/commands";
 import * as search from "@codemirror/search";
 import * as autocomplete from "@codemirror/autocomplete";
 import * as lint from "@codemirror/lint";
+import * as merge from "@codemirror/merge";
 import * as common from "@lezer/common";
 import * as highlight from "@lezer/highlight";
 import * as lr from "@lezer/lr";
 
-export {state, view, language, commands, search, autocomplete, lint};
+export {state, view, language, commands, search, autocomplete, lint, merge};
 export const lezer = {common, highlight, lr};

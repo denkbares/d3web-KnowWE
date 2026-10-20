@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@codemirror/merge@6.12.2':
+    hash: 7a5a078603b76926596e1e76939f8fb77b14f5d8e8757d74306c3ffdeb785b78
+    path: patches/@codemirror__merge@6.12.2.patch
+
 importers:
 
   .:
@@ -20,6 +25,9 @@ importers:
       '@codemirror/lint':
         specifier: 6.8.5
         version: 6.8.5
+      '@codemirror/merge':
+        specifier: 6.12.2
+        version: 6.12.2(patch_hash=7a5a078603b76926596e1e76939f8fb77b14f5d8e8757d74306c3ffdeb785b78)
       '@codemirror/search':
         specifier: 6.5.11
         version: 6.5.11
@@ -56,6 +64,9 @@ packages:
 
   '@codemirror/lint@6.8.5':
     resolution: {integrity: sha512-s3n3KisH7dx3vsoeGMxsbRAgKe4O1vbrnKBClm99PU0fWxmxsx5rR2PfqQgIt+2MMJBHbiJ5rfIdLYfB9NNvsA==}
+
+  '@codemirror/merge@6.12.2':
+    resolution: {integrity: sha512-V8JvyAPjHbPupqP7BeMcsdsYCbyPij74jxIbaIJDORI+VZzW44zFmon8bF+oxGWvOKhcRmkiUMXd8MxHr3YA2w==}
 
   '@codemirror/search@6.5.11':
     resolution: {integrity: sha512-KmWepDE6jUdL6n8cAAqIpRmLPBZ5ZKnicE8oGU/s3QrAVID+0VhLFrzUucVKHG5035/BSykhExDL/Xm7dHthiA==}
@@ -383,6 +394,14 @@ snapshots:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.1
       crelt: 1.0.7
+
+  '@codemirror/merge@6.12.2(patch_hash=7a5a078603b76926596e1e76939f8fb77b14f5d8e8757d74306c3ffdeb785b78)':
+    dependencies:
+      '@codemirror/language': 6.11.2
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.38.1
+      '@lezer/highlight': 1.2.1
+      style-mod: 4.1.4
 
   '@codemirror/search@6.5.11':
     dependencies:
