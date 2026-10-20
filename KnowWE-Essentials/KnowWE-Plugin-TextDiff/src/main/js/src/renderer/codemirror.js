@@ -31,7 +31,7 @@ const theme = EditorView.theme({
 		padding: "0 4px 0 2px",
 		textAlign: "right"
 	},
-	// the colored line numbers tell the changed lines already
+	// the line tints tell the changed lines already
 	".cm-changeGutter": {display: "none"},
 	// changed lines, the inner changes of a line and the deleted blocks of the unified view
 	"&.cm-merge-b .cm-changedLine, & .cm-insertedLine": {backgroundColor: "var(--diff-added-bg)"},
@@ -41,9 +41,6 @@ const theme = EditorView.theme({
 	"& .cm-deletedChunk": {padding: "0"},
 	"& .cm-deletedLine": {padding: "0 8px 0 6px", textDecoration: "none"},
 	"& .cm-deletedLine del, & .cm-insertedLine, & .cm-deletedLine del *": {textDecoration: "none"},
-	".cm-oldLineNumbers .cm-deletedNumbers": {backgroundColor: "var(--diff-removed-num-bg)"},
-	"&.cm-merge-b .cm-changedLineGutter": {background: "var(--diff-added-num-bg)"},
-	"&.cm-merge-a .cm-changedLineGutter, & .cm-deletedLineGutter": {background: "var(--diff-removed-num-bg)"},
 	".cm-collapsedLines": {
 		backgroundColor: "var(--diff-elide-bg)",
 		color: "var(--diff-elide-fg)",

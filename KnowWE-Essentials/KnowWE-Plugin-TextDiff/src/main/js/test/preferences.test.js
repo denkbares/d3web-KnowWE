@@ -85,19 +85,6 @@ describe("layouts", () => {
 		expect(el.layout).toBe("unified");
 	});
 
-	it("announces its layout on connect and on every change", async () => {
-		const events = [];
-		document.body.addEventListener("knowwe-text-diff-layout", e => events.push(e.detail));
-		document.body.innerHTML = host('data-context="review"');
-		const el = document.querySelector("knowwe-text-diff");
-		await settled();
-		expect(events).toEqual([{layout: "unified", effective: "unified", layouts: ["unified", "split"]}]);
-		el.layout = "split";
-		expect(events).toHaveLength(2);
-		expect(events[1]).toEqual({layout: "split", effective: "split", layouts: ["unified", "split"]});
-		expect(shown(el)).toBe("split");
-	});
-
 	it("keeps a choice per context and applies it to every element of the context", async () => {
 		document.body.innerHTML = host('data-context="review"') + host('data-context="review"') + host('data-context="other"');
 		const [first, second, other] = document.querySelectorAll("knowwe-text-diff");
@@ -141,30 +128,35 @@ describe("layouts", () => {
 
 });
 
-describe("knowwe-file-change layout button", () => {
-	const button = change => change.shadowRoot.querySelector(".file-change-layout");
+describe("layout switch", () => {
+	const button = el => el.shadowRoot.querySelector(".diff-controls .diff-layout");
 
-	it("switches the layout of its diff and shows the layout a click leads to", async () => {
+	it("switches the layout and shows the layout a click leads to", async () => {
 		document.body.innerHTML = `<knowwe-file-change data-new-name="A">${host('data-context="review"')}</knowwe-file-change>`;
 		const change = document.querySelector("knowwe-file-change");
 		const diff = document.querySelector("knowwe-text-diff");
 		await settled();
-		expect(button(change).hidden).toBe(false);
-		expect(button(change).title).toBe("Show side by side");
-		button(change).click();
+		expect(button(diff).title).toBe("Show side by side");
+		button(diff).click();
 		expect(shown(diff)).toBe("split");
-		expect(button(change).title).toBe("Show in one column");
-		expect(button(change).getAttribute("data-layout")).toBe("split");
+		expect(button(diff).title).toBe("Show in one column");
+		expect(button(diff).getAttribute("data-layout")).toBe("split");
 		expect(change.hasAttribute("data-collapsed")).toBe(false);
-		button(change).click();
+		button(diff).click();
 		expect(shown(diff)).toBe("unified");
 	});
 
-	it("stays hidden for a diff without a context and for an empty body", async () => {
-		document.body.innerHTML = `<knowwe-file-change data-new-name="A">${host("")}</knowwe-file-change>
-			<knowwe-file-change data-new-name="B"></knowwe-file-change>`;
+	it("is absent without a context, with a fixed layout and when left out", async () => {
+		document.body.innerHTML = host("") + host('data-context="review" data-layouts="unified"')
+			+ host('data-context="review" data-controls="whitespace"') + host('data-context="review" data-controls=""');
 		await settled();
-		for (const change of document.querySelectorAll("knowwe-file-change")) expect(button(change).hidden).toBe(true);
+		const [none, fixed, whitespaceOnly, bare] = document.querySelectorAll("knowwe-text-diff");
+		expect(none.shadowRoot.querySelector(".diff-controls")).toBeNull();
+		expect(button(fixed)).toBeNull();
+		expect(fixed.shadowRoot.querySelector(".diff-whitespace")).not.toBeNull();
+		expect(button(whitespaceOnly)).toBeNull();
+		expect(whitespaceOnly.shadowRoot.querySelector(".diff-whitespace")).not.toBeNull();
+		expect(bare.shadowRoot.querySelector(".diff-controls")).toBeNull();
 	});
 });
 
@@ -193,18 +185,14 @@ describe("whitespace mode", () => {
 		expect(shown(el)).toBe("unified");
 	});
 
-	it("keeps the choice per context and announces it", async () => {
-		const events = [];
-		document.body.addEventListener("knowwe-text-diff-whitespace", e => events.push(e.detail.ignore));
+	it("keeps the choice per context", async () => {
 		document.body.innerHTML = inline('data-context="review"') + inline('data-context="review"');
 		const [first, second] = document.querySelectorAll("knowwe-text-diff");
 		await settled();
-		expect(events).toEqual([false, false]);
 		second.ignoreWhitespace = true;
 		expect(window.localStorage.getItem("knowwe-text-diff.whitespace.review")).toBe("ignore");
 		expect(first.ignoreWhitespace).toBe(true);
 		expect(first.stats).toEqual({added: 0, removed: 0});
-		expect(events).toEqual([false, false, true, true]);
 	});
 
 	it("notes an unchanged text", async () => {
@@ -215,20 +203,22 @@ describe("whitespace mode", () => {
 		expect(document.querySelector("knowwe-text-diff").shadowRoot.querySelector(".diff-note").textContent).toBe("No changes.");
 	});
 
-	it("has a header button that is pressed while whitespace is hidden", async () => {
+	it("has a switch that is pressed while whitespace is hidden, also on the note", async () => {
 		document.body.innerHTML = `<knowwe-file-change data-new-name="A">${inline('data-context="review"')}</knowwe-file-change>`;
 		const change = document.querySelector("knowwe-file-change");
 		const diff = document.querySelector("knowwe-text-diff");
 		await settled();
-		const button = change.shadowRoot.querySelector(".file-change-whitespace");
-		expect(button.hidden).toBe(false);
-		expect(button.getAttribute("aria-pressed")).toBe("false");
-		button.click();
+		const button = () => diff.shadowRoot.querySelector(".diff-controls .diff-whitespace");
+		expect(button().getAttribute("aria-pressed")).toBe("false");
+		button().click();
 		expect(diff.ignoreWhitespace).toBe(true);
-		expect(button.getAttribute("aria-pressed")).toBe("true");
-		expect(button.title).toBe("Show whitespace changes");
+		expect(diff.shadowRoot.querySelector(".diff-note").textContent).toBe("Only whitespace changed.");
+		expect(button().getAttribute("aria-pressed")).toBe("true");
+		expect(button().title).toBe("Show whitespace changes");
 		expect(change.getAttribute("data-additions")).toBe("0");
 		expect(change.hasAttribute("data-collapsed")).toBe(false);
+		button().click();
+		expect(shown(diff)).toBe("unified");
 	});
 });
 

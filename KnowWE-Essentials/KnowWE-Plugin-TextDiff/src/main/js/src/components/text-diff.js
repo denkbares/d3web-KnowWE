@@ -27,6 +27,9 @@
  *   - data-context:         a name under which choices of the user, the layout and the whitespace mode, are
  *                           remembered and shared by all elements of the same context. Without one the element has
  *                           no choices to offer.
+ *   - data-controls:        the switches shown in the top right corner of a diff with a context, "layout
+ *                           whitespace" by default, an empty value shows none. The layout switch needs two
+ *                           layouts to choose from.
  *   - data-language:        wiki (default) | none, the highlighting
  *   - data-highlight-limit: texts above this many characters are shown without highlighting, default 200000
  *   - data-wrap:            false switches line wrapping off
@@ -37,16 +40,10 @@
  * Events:
  *   - knowwe-text-diff-stats: dispatched (bubbling) once the diff was computed, detail.added and detail.removed are
  *                             its line counts, detail.ignoreWhitespace the mode they count.
- *   - knowwe-text-diff-layout: dispatched (bubbling) when the element connects and whenever its layout changes,
- *                             detail.layout is the requested and detail.effective the shown layout, unified or
- *                             split, detail.layouts the choosable ones.
- *   - knowwe-text-diff-whitespace: dispatched (bubbling) when the element connects and whenever its whitespace mode
- *                             changes, detail.ignore tells whether whitespace is ignored.
  *
  * Properties: layout (the requested layout), layouts (the choosable ones), effectiveLayout (the shown layout),
  * ignoreWhitespace (the whitespace mode), stats (the line counts). Setting layout or ignoreWhitespace remembers the
- * choice for the context and applies it to every element of the context. The exported preferences object reads and
- * sets these choices for a context without an element at hand.
+ * choice for the context and applies it to every element of the context.
  *
  * The view is created when the element comes near the viewport and destroyed again when it leaves it by a wide
  * margin, keeping its height, so long lists of diffs stay light. When the texts cannot be loaded or the view cannot
@@ -67,6 +64,25 @@ const VIEW_MARGIN = "600px";
 const SPLIT_MIN_WIDTH = 900;
 const LAYOUTS = ["unified", "split"];
 const WHITESPACE_MODES = ["show", "ignore"];
+const CONTROLS = ["layout", "whitespace"];
+// the layout each click of the layout switch leads to, shown as its icon
+const LAYOUT_SWITCH = {
+	unified: {
+		next: "split",
+		label: "Show side by side",
+		icon: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+			'<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M8 2.5v11"/></svg>'
+	},
+	split: {
+		next: "unified",
+		label: "Show in one column",
+		icon: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+			'<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M4.5 6h7M4.5 8.5h7M4.5 11h4"/></svg>'
+	}
+};
+const WHITESPACE_ICON =
+	'<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
+	'<path d="M13 2H6.5a3 3 0 0 0 0 6H9M9 2v12M12 2v12"/></svg>';
 const STORAGE_PREFIX = "knowwe-text-diff.";
 // how long and how often a rebuilt view is checked for the line that should stay at the top
 const SETTLE_INTERVAL = 50;
@@ -96,24 +112,13 @@ function storeChoice(context, key, value) {
 	}
 }
 
-const CHOICES = {layout: LAYOUTS, whitespace: WHITESPACE_MODES};
-
-/**
- * The choices of the user per context. Keys are "layout" (unified or split) and "whitespace" (show or ignore).
- * Setting one stores it and applies it to every connected element of the context.
- */
-export const preferences = {
-	get(context, key) {
-		return storedChoice(context, key, CHOICES[key] || []);
-	},
-	set(context, key, value) {
-		if (!CHOICES[key] || !CHOICES[key].includes(value)) throw new Error("Unknown " + key + " " + value);
-		storeChoice(context, key, value);
-		for (const element of connectedElements) {
-			if (element.context === context) element._applyChoice(key);
-		}
+// stores a choice of the user for a context and applies it to every connected element of the context
+function choose(context, key, value) {
+	storeChoice(context, key, value);
+	for (const element of connectedElements) {
+		if (element.context === context) element._applyChoice(key);
 	}
-};
+}
 
 // the nearest scrolling ancestor, also across shadow roots, or the window
 function scrollParent(element) {
@@ -147,7 +152,6 @@ function resourceUrl(path) {
 function withWikiParams(url) {
 	try {
 		const u = new URL(url, window.location.href);
-		if (typeof Wiki !== "undefined" && Wiki.CsrfProtection) u.searchParams.set("X-XSRF-TOKEN", Wiki.CsrfProtection);
 		const page = typeof KNOWWE !== "undefined" && KNOWWE.helper.getPagename();
 		if (page && !u.searchParams.has("KWiki_Topic")) u.searchParams.set("KWiki_Topic", page);
 		return u.toString();
@@ -174,8 +178,6 @@ export class KnowweTextDiff extends HTMLElement {
 		this._connected = true;
 		this._hydrateTemplate();
 		this._observeSize();
-		this._announceLayout();
-		this._announceWhitespace();
 		const inline = this.shadowRoot && this.shadowRoot.querySelector("script.diff-data");
 		if (inline) {
 			try {
@@ -211,7 +213,7 @@ export class KnowweTextDiff extends HTMLElement {
 	/** Chooses unified or split for the context of the element, which remembers it and applies it to every element. */
 	set layout(value) {
 		if (!this.layouts.includes(value)) throw new Error("Layout " + value + " is not available");
-		if (this.context) preferences.set(this.context, "layout", value);
+		if (this.context) choose(this.context, "layout", value);
 	}
 
 	/** The layouts the user may choose, from the data-layouts attribute. */
@@ -227,7 +229,7 @@ export class KnowweTextDiff extends HTMLElement {
 
 	/** Switches the whitespace mode, remembered and applied like the layout. */
 	set ignoreWhitespace(value) {
-		if (this.context) preferences.set(this.context, "whitespace", value ? "ignore" : "show");
+		if (this.context) choose(this.context, "whitespace", value ? "ignore" : "show");
 	}
 
 	_applyChoice(key) {
@@ -309,14 +311,6 @@ export class KnowweTextDiff extends HTMLElement {
 			this._showView();
 			if (anchor) this._keepLine(anchor);
 		}
-		this._announceLayout();
-	}
-
-	_announceLayout() {
-		const detail = {layout: this.layout, effective: this._resolveLayout(), layouts: this.layouts};
-		if (this._announced && this._announced.layout === detail.layout && this._announced.effective === detail.effective) return;
-		this._announced = detail;
-		this.dispatchEvent(new CustomEvent("knowwe-text-diff-layout", {bubbles: true, detail}));
 	}
 
 	// diffs the kept texts anew in the current whitespace mode and shows the result where a view is shown
@@ -331,14 +325,6 @@ export class KnowweTextDiff extends HTMLElement {
 			}
 			this._dispatchStats();
 		}
-		this._announceWhitespace();
-	}
-
-	_announceWhitespace() {
-		const ignore = this.ignoreWhitespace;
-		if (this._announcedWhitespace === ignore) return;
-		this._announcedWhitespace = ignore;
-		this.dispatchEvent(new CustomEvent("knowwe-text-diff-whitespace", {bubbles: true, detail: {ignore}}));
 	}
 
 	_computeDiff() {
@@ -447,7 +433,8 @@ export class KnowweTextDiff extends HTMLElement {
 		}
 		this._setStatus("loading");
 		const fetchImpl = window.knowweTextDiffFetch || window.fetch.bind(window);
-		const res = await fetchImpl(withWikiParams(this.getAttribute("data-action-url")), {method: "POST"});
+		// a read of two texts, so a plain GET that needs no CSRF token
+		const res = await fetchImpl(withWikiParams(this.getAttribute("data-action-url")));
 		if (!res.ok) throw new Error("HTTP " + res.status);
 		return await res.json();
 	}
@@ -465,12 +452,13 @@ export class KnowweTextDiff extends HTMLElement {
 		frame.classList.remove("diff-placeholder");
 		frame.style.removeProperty("min-height");
 		this._rendered = true;
+		this._renderControls(frame);
 		if (this._diff.stats.added === 0 && this._diff.stats.removed === 0) {
 			// nothing to build a view of, which deserves a word when whitespace changes are hidden
 			const note = this._diff.ignoreWhitespace && this._data.old !== this._data.new
 				? "Only whitespace changed." : "No changes.";
 			frame.classList.remove("cm-diff");
-			frame.innerHTML = '<p class="diff-note" part="note">' + note + '</p>';
+			frame.insertAdjacentHTML("beforeend", '<p class="diff-note" part="note">' + note + '</p>');
 			this._setStatus("ready");
 			return;
 		}
@@ -489,6 +477,50 @@ export class KnowweTextDiff extends HTMLElement {
 		frame.classList.add("cm-diff");
 		frame.setAttribute("data-layout", layout);
 		this._setStatus("ready");
+	}
+
+	// the switches the user may make, from data-controls, none without a context to remember them under
+	_controls() {
+		if (!this.context) return [];
+		const value = this.getAttribute("data-controls");
+		const named = value === null ? CONTROLS : value.split(/\s+/);
+		return named.filter(c => CONTROLS.includes(c) && (c !== "layout" || this.layouts.length > 1));
+	}
+
+	// the switches in the top right corner of the frame, which stay in view while the diff scrolls
+	_renderControls(frame) {
+		const controls = this._controls();
+		if (!controls.length) return;
+		const box = document.createElement("div");
+		box.className = "diff-controls";
+		box.setAttribute("part", "controls");
+		const bar = box.appendChild(document.createElement("div"));
+		bar.className = "diff-controls-bar";
+		if (controls.includes("whitespace")) {
+			const ignore = this.ignoreWhitespace;
+			const button = bar.appendChild(document.createElement("button"));
+			button.type = "button";
+			button.className = "diff-control diff-whitespace";
+			button.setAttribute("part", "whitespace-button");
+			button.setAttribute("aria-pressed", String(ignore));
+			button.title = ignore ? "Show whitespace changes" : "Hide whitespace changes";
+			button.setAttribute("aria-label", button.title);
+			button.innerHTML = WHITESPACE_ICON;
+			button.addEventListener("click", () => this.ignoreWhitespace = !this.ignoreWhitespace);
+		}
+		if (controls.includes("layout")) {
+			const current = LAYOUT_SWITCH[this._resolveLayout()];
+			const button = bar.appendChild(document.createElement("button"));
+			button.type = "button";
+			button.className = "diff-control diff-layout";
+			button.setAttribute("part", "layout-button");
+			button.setAttribute("data-layout", this._resolveLayout());
+			button.title = current.label;
+			button.setAttribute("aria-label", current.label);
+			button.innerHTML = LAYOUT_SWITCH[current.next].icon;
+			button.addEventListener("click", () => this.layout = current.next);
+		}
+		frame.appendChild(box);
 	}
 
 	// frees the view of an element far from the viewport, the frame keeps its height until the view is rebuilt

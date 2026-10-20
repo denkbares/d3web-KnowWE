@@ -42,13 +42,13 @@ shows elements of at least 900 px side by side), `data-layouts="unified"` fixes 
 default 200000, larger diffs render without highlighting) and `data-wrap="false"`.
 
 With `data-context="name"` the user may choose the layout and whether whitespace changes are hidden. Both choices
-are stored in `localStorage` and applied to every element of that context, now and on later pages. The `layout`
-and `ignoreWhitespace` properties make the choice while the view is shown, keeping the line at the top of the
-viewport in place, and the exported `KnowWETextDiff.preferences` reads and sets the choices of a context for
-controls that sit outside the diffs (`get(context, "whitespace")`, `set(context, "layout", "split")`). The element
-dispatches `knowwe-text-diff-layout` and `knowwe-text-diff-whitespace` on connect and on every change, and
-`knowwe-text-diff-stats` carries the line counts of the current mode. Ignoring whitespace diffs the lines with
-all whitespace removed, as `git diff -w` does, and a diff that then has no changes says so.
+are stored in `localStorage` and applied to every element of that context, now and on later pages. A diff with a
+context shows both switches in its top right corner, which stay in view while the diff scrolls. `data-controls`
+names the switches to offer, `data-controls=""` shows none, and a diff with a fixed layout gets no layout switch.
+The `layout` and `ignoreWhitespace` properties make the same choice from script, keeping the line at the top of
+the viewport in place. Ignoring whitespace diffs the lines with all whitespace removed, as `git diff -w` does, and
+a diff that then has no changes says so. The element dispatches `knowwe-text-diff-stats` with the line counts of
+the current mode.
 
 Changed words are emphasized only where that helps, in lines that exist on both sides and changed in a few places.
 Lines that exist on one side only, rewritten lines (more than half of the text differs) and changes of whitespace
@@ -94,7 +94,8 @@ line chunks of the diff for both the Java tests and the browser tests of the dif
 ## File Change Frames
 
 `<knowwe-file-change>` owns the header, badge, rename display, optional article links, stats, and
-collapse behavior.
+collapse behavior. The switches of a diff in the body belong to the diff, the header holds the stats, the badge
+and the `actions` slot.
 
 ```html
 <knowwe-file-change
@@ -110,14 +111,9 @@ collapse behavior.
 ```
 
 Supported changes are `added`, `deleted`, `modified`, `renamed`, `renamed-modified`, and `added-deleted`
-(created and deleted again within the observed range). The whole header toggles collapse. Links inside the header
-still navigate. `data-collapsed` renders the body collapsed initially. Once the diff in the body computed its
-counts, they replace the given additions and deletions.
-
-A `<knowwe-text-diff>` with a context in the body adds two buttons to the header, one that switches the diff
-between one column and two (part `layout-button`) and one that hides whitespace changes (part `whitespace-button`,
-pressed while they are hidden). `data-controls` names the buttons to offer, `data-controls=""` shows none, and a
-diff with a fixed layout gets no layout button.
+(created and deleted again within the observed range). The whole header toggles collapse. Links and form controls
+inside the header still work without toggling. `data-collapsed` renders the body collapsed initially. Once the
+diff in the body computed its counts, they replace the given additions and deletions.
 
 Extra controls such as links to related views go into the `actions` slot and appear in the header
 between the stats and the badge:

@@ -14,15 +14,13 @@
  *   - data-additions: optional number of added lines
  *   - data-deletions: optional number of removed lines
  *   - data-collapsed: optional boolean attribute; collapses the body when present
- *   - data-controls:  the header buttons a diff in the body may get, "layout whitespace" by default, an empty
- *                     value shows none
  *   - data-theme:     optional explicit 'light' | 'dark' theme override
  *
  * Slots:
  *   - (default):      the body, typically a <knowwe-text-diff>
  *   - actions:        extra controls shown in the header between the stats and the badge, for
- *                     example links to related views. Clicks on links inside the header never
- *                     toggle the body.
+ *                     example links to related views. Clicks on links and form controls inside the
+ *                     header never toggle the body.
  *
  * Events:
  *   - toggle: dispatched (bubbling) when the user collapses or expands the body via the header.
@@ -30,34 +28,13 @@
  *             attribute changes.
  *
  * The stats show the given additions and deletions until a <knowwe-text-diff> in the body reports the counts of
- * the diff it computed, which replace them. A diff with a context gets two buttons in the header, one that switches
- * between one column and two and one that hides whitespace changes, unless data-controls leaves them out or the
- * diff has a fixed layout.
+ * the diff it computed, which replace them.
  */
 const STYLESHEET_URL = 'KnowWEExtension/css/KnowWE-Plugin-TextDiff.css';
 const CHEVRON_DOWN_ICON =
 	'<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
 	'  <path d="M4 6l4 4 4-4"/>' +
 	'</svg>';
-// the layout each button click switches to, shown as its icon
-const LAYOUT_SWITCH = {
-	unified: {
-		next: 'split',
-		label: 'Show side by side',
-		icon: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
-			'<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M8 2.5v11"/></svg>',
-	},
-	split: {
-		next: 'unified',
-		label: 'Show in one column',
-		icon: '<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
-			'<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M4.5 6h7M4.5 8.5h7M4.5 11h4"/></svg>',
-	},
-};
-const WHITESPACE_ICON =
-	'<svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">' +
-	'<path d="M13 2H6.5a3 3 0 0 0 0 6H9M9 2v12M12 2v12"/></svg>';
-const LAYOUTS_ALL = ['unified', 'split'];
 const CHANGE_TYPES = {
 	added: { label: 'Added' },
 	deleted: { label: 'Deleted' },
@@ -99,12 +76,6 @@ class KnowweFileChange extends HTMLElement {
 			this.setAttribute('data-additions', String(event.detail.added));
 			this.setAttribute('data-deletions', String(event.detail.removed));
 		});
-		this.addEventListener('knowwe-text-diff-layout', (event) => {
-			if (event.target.parentElement === this) this._updateLayoutButton(event.detail.effective, event.detail.layouts);
-		});
-		this.addEventListener('knowwe-text-diff-whitespace', (event) => {
-			if (event.target.parentElement === this) this._updateWhitespaceButton(event.detail.ignore);
-		});
 	}
 
 	static get observedAttributes() {
@@ -118,7 +89,6 @@ class KnowweFileChange extends HTMLElement {
 			'data-additions',
 			'data-deletions',
 			'data-collapsed',
-			'data-controls',
 		];
 	}
 
@@ -132,8 +102,7 @@ class KnowweFileChange extends HTMLElement {
 
 	attributeChangedCallback(name) {
 		if (!this.isConnected) return;
-		if (name === 'data-controls') this._updateSlotState();
-		else this._update();
+		this._update();
 	}
 
 	_ensureShadow() {
@@ -156,67 +125,12 @@ class KnowweFileChange extends HTMLElement {
 			'      <span class="file-change-stat deletions" part="deletions"></span>' +
 			'    </span>' +
 			'    <span class="file-change-actions" part="actions"><slot name="actions"></slot></span>' +
-			'    <button class="file-change-button file-change-whitespace" part="whitespace-button" type="button" hidden' +
-			' aria-pressed="false">' + WHITESPACE_ICON + '</button>' +
-			'    <button class="file-change-button file-change-layout" part="layout-button" type="button" hidden></button>' +
 			'    <span class="file-change-badge" part="badge"></span>' +
 			'  </header>' +
 			'  <div class="file-change-body" part="body"><slot></slot></div>' +
 			'</article>';
 		root.querySelector('.file-change-header').addEventListener('click', (event) => this._onHeaderClick(event));
-		root.querySelector('.file-change-layout').addEventListener('click', () => this._switchLayout());
-		root.querySelector('.file-change-whitespace').addEventListener('click', () => this._switchWhitespace());
 		root.querySelector('slot:not([name])').addEventListener('slotchange', () => this._updateSlotState());
-	}
-
-	_textDiff() {
-		return this.querySelector(':scope > knowwe-text-diff');
-	}
-
-	_controls() {
-		const value = this.getAttribute('data-controls');
-		return value === null ? ['layout', 'whitespace'] : value.split(/\s+/);
-	}
-
-	// a choice is only offered for a diff that remembers it, which needs a context
-	_choosing() {
-		const diff = this._textDiff();
-		return diff && 'effectiveLayout' in diff && diff.context !== null;
-	}
-
-	// the button shows the layout a click switches to, and only for a diff that has layouts to choose from
-	_updateLayoutButton(effective, layouts = LAYOUTS_ALL) {
-		const button = this.shadowRoot && this.shadowRoot.querySelector('.file-change-layout');
-		if (!button) return;
-		const current = LAYOUT_SWITCH[effective];
-		button.hidden = !current || layouts.length < 2 || !this._choosing() || !this._controls().includes('layout');
-		if (!current) return;
-		button.innerHTML = LAYOUT_SWITCH[current.next].icon;
-		button.title = current.label;
-		button.setAttribute('aria-label', current.label);
-		button.setAttribute('data-layout', effective);
-	}
-
-	_switchLayout() {
-		const diff = this._textDiff();
-		const current = diff && LAYOUT_SWITCH[diff.effectiveLayout];
-		if (current) diff.layout = current.next;
-	}
-
-	// the button is pressed while whitespace changes are hidden, and absent for a diff without the mode
-	_updateWhitespaceButton(ignore) {
-		const button = this.shadowRoot && this.shadowRoot.querySelector('.file-change-whitespace');
-		if (!button) return;
-		button.hidden = typeof ignore !== 'boolean' || !this._choosing() || !this._controls().includes('whitespace');
-		if (button.hidden) return;
-		button.setAttribute('aria-pressed', String(ignore));
-		button.title = ignore ? 'Show whitespace changes' : 'Hide whitespace changes';
-		button.setAttribute('aria-label', button.title);
-	}
-
-	_switchWhitespace() {
-		const diff = this._textDiff();
-		if (diff && typeof diff.ignoreWhitespace === 'boolean') diff.ignoreWhitespace = !diff.ignoreWhitespace;
 	}
 
 	_update() {
@@ -267,11 +181,6 @@ class KnowweFileChange extends HTMLElement {
 		this.toggleAttribute('data-empty-body', !hasBody);
 		const toggle = this.shadowRoot && this.shadowRoot.querySelector('.file-change-toggle');
 		if (toggle) toggle.hidden = !hasBody;
-		// a diff that was upgraded before this frame has announced its layout already
-		const diff = this._textDiff();
-		const upgraded = diff && 'effectiveLayout' in diff;
-		this._updateLayoutButton(upgraded ? diff.effectiveLayout : null, upgraded ? diff.layouts : undefined);
-		this._updateWhitespaceButton(upgraded ? diff.ignoreWhitespace : null);
 	}
 
 	_toggleCollapsed() {
@@ -285,7 +194,7 @@ class KnowweFileChange extends HTMLElement {
 
 	_onHeaderClick(event) {
 		if (this.hasAttribute('data-empty-body')) return;
-		if (event.target.closest('a, .file-change-button')) return;
+		if (event.target.closest('a, button, input, label')) return;
 		this._toggleCollapsed();
 	}
 

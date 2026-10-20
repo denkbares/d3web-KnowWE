@@ -18,15 +18,13 @@
 	--diff-num-fg: var(--text-color-secondary-shade, #59636e);
 	--diff-num-bg: var(--bg-color-secondary, #f6f8fa);
 
-	/* Added — three tonal layers: line bg, num gutter, sign emphasis */
+	/* Added, the line tint and the stronger tint of the changed words */
 	--diff-added-bg: #e6ffec;
-	--diff-added-num-bg: #ccffd8;
 	--diff-added-emph-bg: #bdf0c8;
 	--diff-added-fg: #1a7f37;
 
 	/* Removed */
 	--diff-removed-bg: #ffebe9;
-	--diff-removed-num-bg: #ffd7d5;
 	--diff-removed-emph-bg: #ffd0cb;
 	--diff-removed-fg: #cf222e;
 
@@ -89,12 +87,10 @@
 	--diff-num-bg: var(--bg-color-secondary, #151b23);
 
 	--diff-added-bg: rgba(46, 160, 67, 0.15);
-	--diff-added-num-bg: rgba(46, 160, 67, 0.3);
 	--diff-added-emph-bg: rgba(46, 160, 67, 0.3);
 	--diff-added-fg: #3fb950;
 
 	--diff-removed-bg: rgba(248, 81, 73, 0.15);
-	--diff-removed-num-bg: rgba(248, 81, 73, 0.3);
 	--diff-removed-emph-bg: rgba(248, 81, 73, 0.3);
 	--diff-removed-fg: #f85149;
 
@@ -107,11 +103,78 @@
 /* --- Card frame ---------------------------------------------------------- */
 
 .diff-frame {
+	position: relative;
 	background: var(--diff-bg);
 	border: var(--diff-frame-border, 1px solid var(--diff-border));
 	border-radius: var(--diff-frame-radius, var(--diff-radius));
-	overflow: hidden;
+	/* clips the corners without becoming a scroll container, so the controls can stick to the viewport */
+	overflow: clip;
 	box-shadow: var(--diff-frame-shadow, var(--diff-shadow));
+}
+
+/* --- Switches in the top right corner, staying in view while the diff scrolls ---- */
+
+.diff-controls {
+	position: sticky;
+	top: 0;
+	height: 0;
+	z-index: 3;
+}
+
+.diff-controls-bar {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	display: flex;
+	gap: 2px;
+	padding: 2px;
+	background: var(--diff-num-bg);
+	border: 1px solid var(--diff-border);
+	border-radius: var(--diff-radius);
+	box-shadow: var(--diff-shadow);
+}
+
+.diff-control {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 4px;
+	background: transparent;
+	color: var(--diff-fg-muted);
+	font: inherit;
+	cursor: pointer;
+}
+
+.diff-control:hover {
+	color: var(--diff-elide-hover-fg);
+	background: var(--diff-bg);
+}
+
+.diff-control[aria-pressed="true"] {
+	color: var(--diff-elide-hover-fg);
+	background: var(--diff-bg);
+	box-shadow: inset 0 0 0 1px var(--diff-elide-hover-fg);
+}
+
+.diff-control:focus-visible {
+	outline: 2px solid var(--diff-elide-hover-fg);
+	outline-offset: -2px;
+}
+
+.diff-control .icon {
+	display: block;
+	width: 15px;
+	height: 15px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 /* server rendered stand-in for the browser built view, sized by the lines that view will show */
@@ -408,55 +471,6 @@
 
 .file-change-actions ::slotted(a:hover) {
 	color: var(--file-change-blue);
-}
-
-.file-change-button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	flex: 0 0 auto;
-	width: 24px;
-	height: 24px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	border-radius: 6px;
-	background: transparent;
-	color: var(--file-change-muted-fg);
-	font: inherit;
-	cursor: pointer;
-	transition: background-color 120ms ease, color 120ms ease;
-}
-
-.file-change-button:hover {
-	color: var(--file-change-blue);
-	background: var(--file-change-bg);
-}
-
-.file-change-button[aria-pressed="true"] {
-	color: var(--file-change-blue);
-	background: var(--file-change-bg);
-	box-shadow: inset 0 0 0 1px var(--file-change-blue);
-}
-
-.file-change-button:focus-visible {
-	outline: 2px solid var(--file-change-focus);
-	outline-offset: -2px;
-}
-
-.file-change-button[hidden] {
-	display: none;
-}
-
-.file-change-button .icon {
-	display: block;
-	width: 16px;
-	height: 16px;
-	fill: none;
-	stroke: currentColor;
-	stroke-width: 1.5;
-	stroke-linecap: round;
-	stroke-linejoin: round;
 }
 
 .file-change-body {
