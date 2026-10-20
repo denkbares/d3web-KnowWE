@@ -23,7 +23,8 @@
  *   - data-layout:          unified (default) | split | auto. auto shows wide elements side by side and narrow ones
  *                           in one column. A layout the user chose for the context of the element takes precedence.
  *   - data-layouts:         the layouts the user may choose, "unified split" by default. With a single one the
- *                           layout is fixed and a frame around the element offers no switch.
+ *                           layout is fixed and the diff offers no switch. A created or a deleted file has one
+ *                           side only and is always shown in one column.
  *   - data-context:         a name under which choices of the user, the layout and the whitespace mode, are
  *                           remembered and shared by all elements of the same context. Without one the element has
  *                           no choices to offer.
@@ -166,29 +167,12 @@ function displayMode() {
 }
 
 export class KnowweTextDiff extends HTMLElement {
+	// The parser upgrades the element before its children exist when the bundle loaded ahead of the page, so the
+	// content is read once the element renders, not here. A moved element renders again from the kept diff.
 	connectedCallback() {
 		if (!this.hasAttribute("data-theme")) this.setAttribute("data-theme", displayMode());
 		connectedElements.add(this);
-		if (this._connected) {
-			// moved in the document, the view is rebuilt from the kept diff when it comes into view again
-			if (this._diff && !this._editor) this._observe();
-			this._observeSize();
-			return;
-		}
-		this._connected = true;
-		this._hydrateTemplate();
 		this._observeSize();
-		const inline = this.shadowRoot && this.shadowRoot.querySelector("script.diff-data");
-		if (inline) {
-			try {
-				this._data = JSON.parse(inline.textContent);
-				inline.remove();
-			}
-			catch (err) {
-				this._setStatus("error", "Invalid diff data");
-				return;
-			}
-		}
 		this._observe();
 	}
 
@@ -197,6 +181,7 @@ export class KnowweTextDiff extends HTMLElement {
 		this._unobserve();
 		this._unobserveSize();
 		this._destroyView();
+		this._rendered = false;
 	}
 
 	/** The name under which the choices of the user are remembered, or null. */
@@ -296,7 +281,13 @@ export class KnowweTextDiff extends HTMLElement {
 		}
 	}
 
+	// a created or a deleted file has nothing to show beside its text
+	_oneSided() {
+		return !!this._data && (this._data.old == null || this._data.new == null);
+	}
+
 	_resolveLayout() {
+		if (this._oneSided()) return "unified";
 		const layout = this.layout;
 		if (layout === "split") return "split";
 		if (layout === "auto") return this.getBoundingClientRect().width >= SPLIT_MIN_WIDTH ? "split" : "unified";
@@ -424,13 +415,31 @@ export class KnowweTextDiff extends HTMLElement {
 		}
 	}
 
-	// the texts, from the attributes or the endpoint
+	// the texts, inlined by the server, from the endpoint, or from the attributes
 	async _loadData() {
-		this._ensureStylesheet();
-		if (!this.hasAttribute("data-action-url")) {
-			return {old: this._readTextAttribute("data-old-text", "data-old-null"),
-				new: this._readTextAttribute("data-new-text", "data-new-null")};
+		// the content of a server rendered host is complete once the page is parsed
+		if (document.readyState === "loading") {
+			await new Promise(resolve => document.addEventListener("DOMContentLoaded", resolve, {once: true}));
 		}
+		this._hydrateTemplate();
+		const inline = this._ensureStylesheet().querySelector("script.diff-data");
+		if (inline) {
+			try {
+				return JSON.parse(inline.textContent);
+			}
+			catch (err) {
+				throw new Error("Invalid diff data");
+			}
+			finally {
+				inline.remove();
+			}
+		}
+		if (this.hasAttribute("data-action-url")) return this._fetchData();
+		return {old: this._readTextAttribute("data-old-text", "data-old-null"),
+			new: this._readTextAttribute("data-new-text", "data-new-null")};
+	}
+
+	async _fetchData() {
 		this._setStatus("loading");
 		const fetchImpl = window.knowweTextDiffFetch || window.fetch.bind(window);
 		// a read of two texts, so a plain GET that needs no CSRF token
@@ -484,7 +493,8 @@ export class KnowweTextDiff extends HTMLElement {
 		if (!this.context) return [];
 		const value = this.getAttribute("data-controls");
 		const named = value === null ? CONTROLS : value.split(/\s+/);
-		return named.filter(c => CONTROLS.includes(c) && (c !== "layout" || this.layouts.length > 1));
+		const switchable = this.layouts.length > 1 && !this._oneSided();
+		return named.filter(c => CONTROLS.includes(c) && (c !== "layout" || switchable));
 	}
 
 	// the switches in the top right corner of the frame, which stay in view while the diff scrolls

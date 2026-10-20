@@ -146,6 +146,18 @@ describe("layout switch", () => {
 		expect(shown(diff)).toBe("unified");
 	});
 
+	it("shows a created file in one column without a layout switch", async () => {
+		document.body.innerHTML = `<knowwe-text-diff data-layout="split" data-context="review"><template shadowrootmode="open">
+			<div class="diff-frame"></div><script type="application/json" class="diff-data">{"old":null,"new":"a\\nb\\n"}</script>
+			</template></knowwe-text-diff>`;
+		const el = document.querySelector("knowwe-text-diff");
+		await settled();
+		expect(shown(el)).toBe("unified");
+		expect(el.effectiveLayout).toBe("unified");
+		expect(button(el)).toBeNull();
+		expect(el.shadowRoot.querySelector(".diff-whitespace")).not.toBeNull();
+	});
+
 	it("is absent without a context, with a fixed layout and when left out", async () => {
 		document.body.innerHTML = host("") + host('data-context="review" data-layouts="unified"')
 			+ host('data-context="review" data-controls="whitespace"') + host('data-context="review" data-controls=""');

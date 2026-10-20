@@ -70,6 +70,24 @@ describe("knowwe-text-diff", () => {
 		expect(el.stats).toEqual({added: 1, removed: 1});
 	});
 
+	it("renders a host that was upgraded before its content and moved since", async () => {
+		// the parser connects the element before its children exist, while the document still loads
+		Object.defineProperty(document, "readyState", {value: "loading", configurable: true});
+		const el = document.createElement("knowwe-text-diff");
+		document.body.append(el);
+		el.innerHTML = `<template shadowrootmode="open"><div class="diff-frame diff-placeholder"></div>
+			<script type="application/json" class="diff-data">{"old":"a\\n","new":"b\\n"}</script></template>`;
+		const panel = document.body.appendChild(document.createElement("div"));
+		panel.append(el);
+		Object.defineProperty(document, "readyState", {value: "complete", configurable: true});
+		document.dispatchEvent(new Event("DOMContentLoaded"));
+		await settled();
+		await settled();
+		expect(el.getAttribute("data-status")).toBe("ready");
+		expect(el.shadowRoot.querySelector(".cm-editor")).not.toBeNull();
+		expect(el.stats).toEqual({added: 1, removed: 1});
+	});
+
 	it("diffs the texts of its attributes", async () => {
 		const fetch = vi.fn();
 		window.knowweTextDiffFetch = fetch;

@@ -44,7 +44,8 @@ default 200000, larger diffs render without highlighting) and `data-wrap="false"
 With `data-context="name"` the user may choose the layout and whether whitespace changes are hidden. Both choices
 are stored in `localStorage` and applied to every element of that context, now and on later pages. A diff with a
 context shows both switches in its top right corner, which stay in view while the diff scrolls. `data-controls`
-names the switches to offer, `data-controls=""` shows none, and a diff with a fixed layout gets no layout switch.
+names the switches to offer, `data-controls=""` shows none, and a diff with a fixed layout or with one side
+only, a created or a deleted file, gets no layout switch and stays in one column.
 The `layout` and `ignoreWhitespace` properties make the same choice from script, keeping the line at the top of
 the viewport in place. Ignoring whitespace diffs the lines with all whitespace removed, as `git diff -w` does, and
 a diff that then has no changes says so. The element dispatches `knowwe-text-diff-stats` with the line counts of
