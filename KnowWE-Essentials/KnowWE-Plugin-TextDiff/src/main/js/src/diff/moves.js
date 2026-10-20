@@ -1,8 +1,7 @@
 import {stripWhitespace} from "./lines.js";
 
-// a block counts as moved if it has this many lines, or fewer lines with this much content
+// shorter blocks recur too often to be moves worth marking
 const MIN_LINES = 3;
-const MIN_CHARS = 30;
 
 /**
  * Blocks of lines that were removed in one place and added in another with the same content up to whitespace.
@@ -32,7 +31,7 @@ export function findMoves(aLines, bLines, chunks) {
 				continue;
 			}
 			const [bStart, len] = match;
-			if (significant(aLines, i, len)) {
+			if (len >= MIN_LINES) {
 				moves.push({from: [i, len], to: [bStart, len]});
 				for (let j = 0; j < len; j++) usedB.add(bStart + j);
 				i += len;
@@ -60,11 +59,4 @@ function longestBlock(aLines, i, end, added, addedKeys, usedB) {
 		if (!best || len > best[1]) best = [bStart, len];
 	}
 	return best;
-}
-
-function significant(lines, start, len) {
-	if (len >= MIN_LINES) return true;
-	let chars = 0;
-	for (let i = 0; i < len; i++) chars += stripWhitespace(lines[start + i]).length;
-	return chars >= MIN_CHARS;
 }

@@ -155,19 +155,21 @@ describe("moves", () => {
 		const f = fixtures.find(x => x.name === "coom-moved-block");
 		const diff = computeDiff(f.old, f.new);
 		const moves = findMoves(diff.aLines, diff.bLines, diff.chunks);
-		// a line was added inside the moved block, so it is found in two parts
-		expect(moves).toEqual([{from: [1, 2], to: [8, 2]}, {from: [3, 4], to: [11, 4]}]);
-		expect(diff.aLines.slice(1, 3)).toEqual(diff.bLines.slice(8, 10));
+		// a line was added inside the moved block, so only its second part is long enough
+		expect(moves).toEqual([{from: [3, 4], to: [11, 4]}]);
 		expect(diff.aLines.slice(3, 7)).toEqual(diff.bLines.slice(11, 15));
 	});
 
-	it("ignores small blocks of little content", () => {
-		const diff = computeDiff("{\n}\na\n", "a\n{\n}\n");
-		expect(findMoves(diff.aLines, diff.bLines, diff.chunks)).toEqual([]);
+	it("ignores blocks shorter than three lines", () => {
+		// two swapped blocks, the diff moves one of them
+		const diff = computeDiff("a1\na2\na3\nb1\nb2\nb3\n", "b1\nb2\nb3\na1\na2\na3\n");
+		expect(findMoves(diff.aLines, diff.bLines, diff.chunks)).toEqual([{from: [0, 3], to: [3, 3]}]);
+		const short = computeDiff("a1\na2\nb1\nb2\n", "b1\nb2\na1\na2\n");
+		expect(findMoves(short.aLines, short.bLines, short.chunks)).toEqual([]);
 	});
 
 	it("matches up to whitespace", () => {
-		const diff = computeDiff("x\n  one two three four five six seven eight\ny\n", "x\ny\none two three four five six seven eight\n");
-		expect(findMoves(diff.aLines, diff.bLines, diff.chunks)).toEqual([{from: [1, 1], to: [2, 1]}]);
+		const diff = computeDiff("x\n  one\n  two\n  three\ny\n", "x\ny\none\ntwo\nthree\n");
+		expect(findMoves(diff.aLines, diff.bLines, diff.chunks)).toEqual([{from: [1, 3], to: [2, 3]}]);
 	});
 });

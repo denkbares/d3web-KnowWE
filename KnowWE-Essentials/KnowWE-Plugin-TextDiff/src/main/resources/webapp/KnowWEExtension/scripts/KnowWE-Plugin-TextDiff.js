@@ -356,7 +356,6 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	//#endregion
 	//#region src/diff/moves.js
 	var MIN_LINES = 3;
-	var MIN_CHARS = 30;
 	/**
 	* Blocks of lines that were removed in one place and added in another with the same content up to whitespace.
 	* Returns {from: [aPos, len], to: [bPos, len]} pairs, in order of the removed side. Every line takes part in at
@@ -382,7 +381,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 					continue;
 				}
 				const [bStart, len] = match;
-				if (significant(aLines, i, len)) {
+				if (len >= MIN_LINES) {
 					moves.push({
 						from: [i, len],
 						to: [bStart, len]
@@ -405,12 +404,6 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			if (!best || len > best[1]) best = [bStart, len];
 		}
 		return best;
-	}
-	function significant(lines, start, len) {
-		if (len >= MIN_LINES) return true;
-		let chars = 0;
-		for (let i = 0; i < len; i++) chars += stripWhitespace(lines[start + i]).length;
-		return chars >= MIN_CHARS;
 	}
 	//#endregion
 	//#region src/diff/index.js
