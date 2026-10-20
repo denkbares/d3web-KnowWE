@@ -70,6 +70,15 @@ register the language's parser, so the embedded trees carry the language the sco
     const style = HighlightStyle.define(specs, {scope: coomLanguage});
     KnowWEWikiLanguage.registerMarkup("COOM:DSL", {parser: coomLanguage.parser, highlight: style});
 
+### Standalone language
+
+A markup may also register the `LanguageSupport` of its body, so read-only views can show snippets of the content
+without the surrounding markup, for example code blocks in a chat. They combine it with the registered highlight
+style.
+
+    KnowWEWikiLanguage.registerMarkup("COOM:DSL", {parser: coomLanguage.parser, highlight: style, language: coom()});
+    const {language, highlight} = KnowWEWikiLanguage.getMarkup("COOM:DSL");
+
 ### Completion
 
 The editor installs the completion source `completeMarkup`. It finds the markup block at the caret and calls

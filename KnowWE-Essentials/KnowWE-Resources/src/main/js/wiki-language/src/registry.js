@@ -19,12 +19,15 @@ const markups = new Map();
  * (`HighlightStyle.define(specs, {scope: language})`) and register `language.parser`, which marks the embedded trees
  * with that language. Properties the style leaves out still come from the editor's style.
  *
+ * The `language` is a `LanguageSupport` for the body on its own, outside of a page. Read-only views use it with the
+ * `highlight` style to show snippets of the markup's content, for example code blocks in a chat.
+ *
  * Call this at the top level of a module script declared in the plugin.xml of the markup. Module scripts run before
  * the document is loaded, and editors are created on that event or later, so every registration precedes the first
  * parse. A second registration for the same name replaces the first.
  */
-export function registerMarkup(name, {parser = null, complete = null, highlight = null} = {}) {
-    markups.set(name.toLowerCase(), {parser, complete, highlight});
+export function registerMarkup(name, {parser = null, complete = null, highlight = null, language = null} = {}) {
+    markups.set(name.toLowerCase(), {parser, complete, highlight, language});
 }
 
 export function unregisterMarkup(name) {
