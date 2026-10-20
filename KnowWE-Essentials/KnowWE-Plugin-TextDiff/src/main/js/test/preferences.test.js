@@ -242,3 +242,50 @@ describe("whitespace mode", () => {
 		expect(change.hasAttribute("data-collapsed")).toBe(false);
 	});
 });
+
+describe("emphasis", () => {
+	const inline = (oldText, newText, attributes = "") => `<knowwe-text-diff data-renderer="codemirror" data-context-lines="-1" ${attributes}><template shadowrootmode="open">
+		<div class="diff-frame"></div><script type="application/json" class="diff-data">${JSON.stringify({old: oldText, new: newText, stats: {added: 0, removed: 0}})}</script>
+		</template></knowwe-text-diff>`;
+
+	it("marks the changed words of a line, in the new line and in the deleted row", async () => {
+		document.body.innerHTML = inline("keep\nalpha beta gamma\n", "keep\nalpha BETA gamma\n");
+		const el = document.querySelector("knowwe-text-diff");
+		await settled();
+		await new Promise(r => setTimeout(r, 20));
+		const root = el.shadowRoot;
+		expect([...root.querySelectorAll(".cm-line .cm-changedText")].map(e => e.textContent)).toEqual(["BETA"]);
+		expect([...root.querySelectorAll(".cm-deletedLine .cm-deletedText")].map(e => e.textContent)).toEqual(["beta"]);
+	});
+
+	it("leaves whole line insertions and rewrites without emphasis", async () => {
+		document.body.innerHTML = inline("keep\none two three\n", "keep\nnew line\nfour five six\n");
+		const el = document.querySelector("knowwe-text-diff");
+		await settled();
+		await new Promise(r => setTimeout(r, 20));
+		expect(el.shadowRoot.querySelectorAll(".cm-changedText, .cm-deletedText")).toHaveLength(0);
+	});
+
+	it("indents the continuation rows of wrapped lines like their first row, also in deleted rows", async () => {
+		document.body.innerHTML = inline("\t\tgone\n", "    kept\n        deeper\nflat\n");
+		const el = document.querySelector("knowwe-text-diff");
+		await settled();
+		await new Promise(r => setTimeout(r, 20));
+		const root = el.shadowRoot;
+		const styles = [...root.querySelectorAll(".cm-line")].map(l => l.getAttribute("style") || "");
+		expect(styles[0]).toContain("text-indent: -4ch");
+		expect(styles[1]).toMatch(/padding-left: calc\((6px \+ 8ch|8ch \+ 6px)\)/);
+		expect(styles[2]).toBe("");
+		expect(root.querySelector(".cm-deletedLine").getAttribute("style")).toContain("text-indent: -8ch");
+	});
+
+	it("marks both sides of the split view", async () => {
+		document.body.innerHTML = inline("alpha beta gamma\n", "alpha BETA gamma\n", 'data-layout="split"');
+		const el = document.querySelector("knowwe-text-diff");
+		await settled();
+		const root = el.shadowRoot;
+		expect([...root.querySelectorAll(".cm-merge-a .cm-changedText")].map(e => e.textContent)).toEqual(["beta"]);
+		expect([...root.querySelectorAll(".cm-merge-b .cm-changedText")].map(e => e.textContent)).toEqual(["BETA"]);
+	});
+
+});

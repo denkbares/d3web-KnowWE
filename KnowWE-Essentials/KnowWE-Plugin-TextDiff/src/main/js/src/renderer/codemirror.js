@@ -1,8 +1,9 @@
-import {EditorState} from "@codemirror/state";
-import {EditorView, GutterMarker, ViewPlugin, gutter, highlightSpecialChars, keymap, lineNumbers} from "@codemirror/view";
+import {EditorState, RangeSetBuilder} from "@codemirror/state";
+import {Decoration, EditorView, GutterMarker, ViewPlugin, gutter, highlightSpecialChars, keymap, lineNumbers} from "@codemirror/view";
 import {syntaxHighlighting} from "@codemirror/language";
 import {search, searchKeymap} from "@codemirror/search";
 import {Change, MergeView, unifiedMergeView} from "@codemirror/merge";
+import {lineOffsets} from "../diff/lines.js";
 
 // The colors and metrics of KnowWE-Plugin-TextDiff.css, so the editor and the table look alike and the custom
 // properties theme both. The merge view's own light and dark rules are overridden by these.
@@ -30,7 +31,8 @@ const theme = EditorView.theme({
 		padding: "0 4px 0 2px",
 		textAlign: "right"
 	},
-	".cm-changeGutter": {width: "3px", paddingLeft: "1px"},
+	// the colored line numbers tell the changed lines already
+	".cm-changeGutter": {display: "none"},
 	// changed lines, the inner changes of a line and the deleted blocks of the unified view
 	"&.cm-merge-b .cm-changedLine, & .cm-insertedLine": {backgroundColor: "var(--diff-added-bg)"},
 	"&.cm-merge-a .cm-changedLine, & .cm-deletedChunk": {backgroundColor: "var(--diff-removed-bg)"},
@@ -142,18 +144,134 @@ function oldLineNumberGutter(diff) {
 	});
 }
 
+const emphasisMark = Decoration.mark({class: "cm-changedText"});
+
+// a wrapped line keeps its indentation on the continuation rows, up to this many columns
+const MAX_HANGING_COLUMNS = 24;
+const LINE_PADDING_LEFT = "6px";
+
+// the indentation of a line in columns, or 0 for a blank line
+function indentColumns(text, tabSize) {
+	let columns = 0;
+	for (let i = 0; i < text.length; i++) {
+		const ch = text.charCodeAt(i);
+		if (ch === 9) columns += tabSize - columns % tabSize;
+		else if (ch === 32) columns++;
+		else return Math.min(columns, MAX_HANGING_COLUMNS);
+	}
+	return 0;
+}
+
+function hangingIndentStyle(columns) {
+	return "padding-left: calc(" + LINE_PADDING_LEFT + " + " + columns + "ch); text-indent: -" + columns + "ch";
+}
+
+// line decorations that indent the continuation rows of wrapped lines like their first row
+function hangingIndent(lines, tabSize) {
+	const offsets = lineOffsets(lines);
+	const builder = new RangeSetBuilder();
+	for (let i = 0; i < lines.length; i++) {
+		const columns = indentColumns(lines[i], tabSize);
+		if (columns) builder.add(offsets[i], offsets[i], Decoration.line({attributes: {style: hangingIndentStyle(columns)}}));
+	}
+	return EditorView.decorations.of(builder.finish());
+}
+
+// the emphasis of one side as mark decorations, the merge view's own highlighting being off
+function emphasisMarks(diff, side) {
+	const builder = new RangeSetBuilder();
+	const ranges = (diff.emphasis || [])
+		.map(c => side === "a" ? [c.fromA, c.toA] : [c.fromB, c.toB])
+		.filter(([from, to]) => to > from)
+		.sort((x, y) => x[0] - y[0]);
+	for (const [from, to] of ranges) builder.add(from, to, emphasisMark);
+	return EditorView.decorations.of(builder.finish());
+}
+
+// the emphasis ranges of each line of the old text, in offsets within the line
+function emphasisByLine(diff) {
+	const offsets = lineOffsets(diff.aLines);
+	const byLine = new Map();
+	for (const c of diff.emphasis || []) {
+		for (let pos = c.fromA; pos < c.toA;) {
+			const line = lineAt(offsets, pos), end = Math.min(c.toA, offsets[line + 1]);
+			if (!byLine.has(line)) byLine.set(line, []);
+			byLine.get(line).push([pos - offsets[line], end - offsets[line]]);
+			pos = end;
+		}
+	}
+	for (const ranges of byLine.values()) ranges.sort((x, y) => x[0] - y[0]);
+	return byLine;
+}
+
+function lineAt(offsets, pos) {
+	let lo = 0, hi = offsets.length - 2;
+	while (lo < hi) {
+		const mid = (lo + hi + 1) >> 1;
+		if (offsets[mid] <= pos) lo = mid;
+		else hi = mid - 1;
+	}
+	return lo;
+}
+
+// wraps the given ranges of the text of a row in emphasis spans, splitting text nodes at the bounds
+function emphasizeRow(row, ranges) {
+	const walker = document.createTreeWalker(row, NodeFilter.SHOW_TEXT);
+	const nodes = [];
+	let at = 0;
+	for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+		nodes.push([node, at]);
+		at += node.length;
+	}
+	for (const [node, start] of nodes) emphasizeNode(node, start, ranges);
+}
+
+// wraps the first range that reaches into the node and goes on with the remainder of the node
+function emphasizeNode(node, nodeStart, ranges) {
+	const nodeEnd = nodeStart + node.length;
+	for (const [from, to] of ranges) {
+		const a = Math.max(from, nodeStart) - nodeStart, b = Math.min(to, nodeEnd) - nodeStart;
+		if (a >= b) continue;
+		let piece = node;
+		if (a > 0) piece = piece.splitText(a);
+		const rest = b - a < piece.length ? piece.splitText(b - a) : null;
+		const span = document.createElement("span");
+		span.className = "cm-deletedText";
+		piece.parentNode.insertBefore(span, piece);
+		span.appendChild(piece);
+		if (rest) emphasizeNode(rest, nodeStart + b, ranges);
+		return;
+	}
+}
+
 // Deleted lines wrap like other lines, so the rows of their gutter numbers take the measured height of each line.
-function deletedLineHeights() {
+// The rows are built by the merge view, so what document lines get as decorations, the emphasis and the hanging
+// indent, is put into them here.
+function deletedLineRows(diff, options) {
+	const blocks = deletedBlocks(diff);
+	const emphasis = emphasisByLine(diff);
+	const hanging = options.wrap !== false;
 	return ViewPlugin.fromClass(class {
 		constructor(view) {
 			this.measure = {
 				read: v => {
-					const heights = Array.from(v.contentDOM.querySelectorAll(".cm-deletedChunk"))
-						.map(el => Array.from(el.querySelectorAll(".cm-deletedLine")).map(line => line.getBoundingClientRect().height));
+					const chunks = Array.from(v.contentDOM.querySelectorAll(".cm-deletedChunk"));
+					const heights = chunks.map(el => Array.from(el.querySelectorAll(".cm-deletedLine")).map(line => line.getBoundingClientRect().height));
 					const markers = Array.from(v.dom.querySelectorAll(".cm-oldLineNumbers .cm-deletedNumbers"));
-					return {heights, markers};
+					const unmarked = chunks.filter(el => !el.hasAttribute("data-emphasized")).map(el => [el, blocks.get(v.posAtDOM(el))]);
+					return {heights, markers, unmarked};
 				},
-				write: ({heights, markers}) => {
+				write: ({heights, markers, unmarked}) => {
+					for (const [el, chunk] of unmarked) {
+						el.setAttribute("data-emphasized", "");
+						if (!chunk) continue;
+						el.querySelectorAll(".cm-deletedLine").forEach((row, i) => {
+							const ranges = emphasis.get(chunk[0] + i);
+							if (ranges) emphasizeRow(row, ranges);
+							const columns = hanging ? indentColumns(diff.aLines[chunk[0] + i] || "", options.tabSize) : 0;
+							if (columns) row.style.cssText += ";" + hangingIndentStyle(columns);
+						});
+					}
 					if (heights.length !== markers.length) return;
 					for (let i = 0; i < markers.length; i++) {
 						const rows = markers[i].children;
@@ -184,7 +302,7 @@ function languageExtensions(options) {
 	return extensions;
 }
 
-function sideExtensions(options) {
+function sideExtensions(options, lines) {
 	return [
 		EditorState.readOnly.of(true),
 		EditorView.editable.of(false),
@@ -194,7 +312,7 @@ function sideExtensions(options) {
 		search({top: true}),
 		keymap.of(searchKeymap),
 		languageExtensions(options),
-		options.wrap === false ? [] : EditorView.lineWrapping,
+		options.wrap === false ? [] : [EditorView.lineWrapping, hangingIndent(lines, options.tabSize)],
 		theme
 	];
 }
@@ -205,11 +323,13 @@ function digits(diff) {
 
 /**
  * Creates the CodeMirror view of a computed diff in the parent element. Options: root (the shadow root the view is
- * mounted in), layout "unified" or "split", language, highlight (whether to color the text at all), wrap,
- * contextLines (-1 shows every line). Returns the view, the editor showing the new text, an align function that
- * brings the heights of the view up to date at once, and a destroy function.
+ * mounted in), layout "unified" or "split", language, highlight (whether to color the text at all), wrap (wrapped
+ * lines keep their indentation on the continuation rows), tabSize, contextLines (-1 shows every line). Returns the
+ * view, the editor showing the new text, an align function that brings the heights of the view up to date at once,
+ * and a destroy function.
  */
 export function createDiffView(parent, diff, options = {}) {
+	options = {tabSize: 4, ...options};
 	const changes = diff.changes.map(c => new Change(c.fromA, c.toA, c.fromB, c.toB));
 	const diffConfig = {override: () => changes};
 	const collapse = options.contextLines === -1 ? undefined : {margin: options.contextLines ?? 3, minSize: 4};
@@ -217,13 +337,13 @@ export function createDiffView(parent, diff, options = {}) {
 	let view;
 	if (options.layout === "split") {
 		view = new MergeView({
-			a: {doc: diff.docA, extensions: [sideExtensions(options), lineNumbers()]},
-			b: {doc: diff.docB, extensions: [sideExtensions(options), lineNumbers()]},
+			a: {doc: diff.docA, extensions: [sideExtensions(options, diff.aLines), lineNumbers(), emphasisMarks(diff, "a")]},
+			b: {doc: diff.docB, extensions: [sideExtensions(options, diff.bLines), lineNumbers(), emphasisMarks(diff, "b")]},
 			parent,
 			root: options.root,
 			diffConfig,
 			collapseUnchanged: collapse,
-			highlightChanges: true,
+			highlightChanges: false,
 			gutter: true
 		});
 	}
@@ -236,13 +356,16 @@ export function createDiffView(parent, diff, options = {}) {
 				extensions: [
 					oldLineNumberGutter(diff),
 					lineNumbers(),
-					sideExtensions(options),
-					deletedLineHeights(),
+					sideExtensions(options, diff.bLines),
+					deletedLineRows(diff, options),
+					emphasisMarks(diff, "b"),
 					unifiedMergeView({
 						original: diff.docA,
 						mergeControls: false,
 						diffConfig,
 						collapseUnchanged: collapse,
+						// the emphasis is drawn by emphasisMarks and deletedLineRows, only where it helps
+						highlightChanges: false,
 						gutter: true,
 						syntaxHighlightDeletions: true
 					})

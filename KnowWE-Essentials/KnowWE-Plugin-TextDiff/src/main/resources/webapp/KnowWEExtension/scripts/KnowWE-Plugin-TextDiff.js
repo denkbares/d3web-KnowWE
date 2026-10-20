@@ -275,7 +275,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	//#region src/diff/tokens.js
 	var TOKEN = /[\p{L}\p{N}_]+|[^\S\n]+|\n|./gsu;
 	var WORD_START = /^[\p{L}\p{N}_]/u;
-	var BLANK = /^\s/;
+	var BLANK$1 = /^\s/;
 	var MAX_TOKEN_D = 2e3;
 	var MAX_CHAR_D = 50;
 	/** The tokens of a text, concatenating to the text again. */
@@ -324,7 +324,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	}
 	function indexes(tokens, ignoreWhitespace) {
 		const out = [];
-		for (let i = 0; i < tokens.length; i++) if (!ignoreWhitespace || !BLANK.test(tokens[i])) out.push(i);
+		for (let i = 0; i < tokens.length; i++) if (!ignoreWhitespace || !BLANK$1.test(tokens[i])) out.push(i);
 		return out;
 	}
 	function positions(tokens) {
@@ -354,64 +354,16 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 		return p;
 	}
 	//#endregion
-	//#region src/diff/moves.js
-	var MIN_LINES = 3;
-	/**
-	* Blocks of lines that were removed in one place and added in another with the same content up to whitespace.
-	* Returns {from: [aPos, len], to: [bPos, len]} pairs, in order of the removed side. Every line takes part in at
-	* most one move.
-	*/
-	function findMoves(aLines, bLines, chunks) {
-		const added = /* @__PURE__ */ new Map();
-		const addedKeys = /* @__PURE__ */ new Map();
-		for (const [, , bPos, bLen] of chunks) for (let i = bPos; i < bPos + bLen; i++) {
-			const key = stripWhitespace(bLines[i]);
-			addedKeys.set(i, key);
-			if (!added.has(key)) added.set(key, []);
-			added.get(key).push(i);
-		}
-		const usedB = /* @__PURE__ */ new Set();
-		const moves = [];
-		for (const [aPos, aLen] of chunks) {
-			let i = aPos;
-			while (i < aPos + aLen) {
-				const match = longestBlock(aLines, i, aPos + aLen, added, addedKeys, usedB);
-				if (!match) {
-					i++;
-					continue;
-				}
-				const [bStart, len] = match;
-				if (len >= MIN_LINES) {
-					moves.push({
-						from: [i, len],
-						to: [bStart, len]
-					});
-					for (let j = 0; j < len; j++) usedB.add(bStart + j);
-					i += len;
-				} else i++;
-			}
-		}
-		return moves;
-	}
-	function longestBlock(aLines, i, end, added, addedKeys, usedB) {
-		const starts = added.get(stripWhitespace(aLines[i]));
-		if (!starts) return null;
-		let best = null;
-		for (const bStart of starts) {
-			if (usedB.has(bStart)) continue;
-			let len = 1;
-			while (i + len < end && !usedB.has(bStart + len) && addedKeys.get(bStart + len) === stripWhitespace(aLines[i + len])) len++;
-			if (!best || len > best[1]) best = [bStart, len];
-		}
-		return best;
-	}
-	//#endregion
 	//#region src/diff/index.js
 	var MAX_REFINED_CHARS = 2e4;
+	var MAX_EMPHASIS_RATIO = .5;
+	var BLANK = /^\s*$/;
 	/**
 	* Diffs two texts. Both get a trailing newline, a missing text is the empty text. Returns the documents, their
 	* lines, the line chunks [aPos, aLen, bPos, bLen], the character changes {fromA, toA, fromB, toB} for the merge
-	* view, which refine changed lines down to tokens where both sides of a chunk exist, and the line counts.
+	* view, which refine changed lines down to tokens where both sides of a chunk exist, the emphasis ranges (those
+	* refinements worth marking, since the lines changed in a few places and not only in their whitespace) and the
+	* line counts.
 	*/
 	function computeDiff(oldText, newText, { ignoreWhitespace = false, inline = true } = {}) {
 		const docA = withTrailingNewline(oldText), docB = withTrailingNewline(newText);
@@ -432,12 +384,14 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			0
 		]];
 		else chunks = lineDiff(aLines.slice(0, -1), bLines.slice(0, -1), { ignoreWhitespace });
-		const changes = [];
+		const changes = [], refined = [];
 		for (const [aPos, aLen, bPos, bLen] of chunks) {
 			const fromA = oa[aPos], toA = oa[aPos + aLen], fromB = ob[bPos], toB = ob[bPos + bLen];
 			const inner = inline && aLen && bLen ? refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen, ignoreWhitespace) : null;
-			if (inner && keepsChunk(inner, oa, ob, fromA, toA, fromB, toB)) changes.push(...inner);
-			else changes.push({
+			if (inner && keepsChunk(inner, oa, ob, fromA, toA, fromB, toB)) {
+				changes.push(...inner);
+				if (changedShare(inner) <= MAX_EMPHASIS_RATIO * (toA - fromA + toB - fromB)) refined.push(...inner.filter((c) => !BLANK.test(docA.slice(c.fromA, c.toA)) || !BLANK.test(docB.slice(c.fromB, c.toB))));
+			} else changes.push({
 				fromA,
 				toA,
 				fromB,
@@ -451,8 +405,14 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			bLines,
 			chunks,
 			changes,
+			emphasis: refined,
 			stats: countChunks(chunks)
 		};
+	}
+	function changedShare(changes) {
+		let n = 0;
+		for (const c of changes) n += c.toA - c.fromA + c.toB - c.fromB;
+		return n;
 	}
 	function refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen, ignoreWhitespace) {
 		const fromA = oa[aPos], toA = oa[aPos + aLen], fromB = ob[bPos], toB = ob[bPos + bLen];
@@ -618,10 +578,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			padding: "0 4px 0 2px",
 			textAlign: "right"
 		},
-		".cm-changeGutter": {
-			width: "3px",
-			paddingLeft: "1px"
-		},
+		".cm-changeGutter": { display: "none" },
 		"&.cm-merge-b .cm-changedLine, & .cm-insertedLine": { backgroundColor: "var(--diff-added-bg)" },
 		"&.cm-merge-a .cm-changedLine, & .cm-deletedChunk": { backgroundColor: "var(--diff-removed-bg)" },
 		"&.cm-merge-b .cm-changedText": { background: "var(--diff-added-emph-bg)" },
@@ -727,17 +684,109 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			}
 		});
 	}
-	function deletedLineHeights() {
+	var emphasisMark = _codemirror_view.Decoration.mark({ class: "cm-changedText" });
+	var MAX_HANGING_COLUMNS = 24;
+	function indentColumns(text, tabSize) {
+		let columns = 0;
+		for (let i = 0; i < text.length; i++) {
+			const ch = text.charCodeAt(i);
+			if (ch === 9) columns += tabSize - columns % tabSize;
+			else if (ch === 32) columns++;
+			else return Math.min(columns, MAX_HANGING_COLUMNS);
+		}
+		return 0;
+	}
+	function hangingIndentStyle(columns) {
+		return "padding-left: calc(6px + " + columns + "ch); text-indent: -" + columns + "ch";
+	}
+	function hangingIndent(lines, tabSize) {
+		const offsets = lineOffsets(lines);
+		const builder = new _codemirror_state.RangeSetBuilder();
+		for (let i = 0; i < lines.length; i++) {
+			const columns = indentColumns(lines[i], tabSize);
+			if (columns) builder.add(offsets[i], offsets[i], _codemirror_view.Decoration.line({ attributes: { style: hangingIndentStyle(columns) } }));
+		}
+		return _codemirror_view.EditorView.decorations.of(builder.finish());
+	}
+	function emphasisMarks(diff, side) {
+		const builder = new _codemirror_state.RangeSetBuilder();
+		const ranges = (diff.emphasis || []).map((c) => side === "a" ? [c.fromA, c.toA] : [c.fromB, c.toB]).filter(([from, to]) => to > from).sort((x, y) => x[0] - y[0]);
+		for (const [from, to] of ranges) builder.add(from, to, emphasisMark);
+		return _codemirror_view.EditorView.decorations.of(builder.finish());
+	}
+	function emphasisByLine(diff) {
+		const offsets = lineOffsets(diff.aLines);
+		const byLine = /* @__PURE__ */ new Map();
+		for (const c of diff.emphasis || []) for (let pos = c.fromA; pos < c.toA;) {
+			const line = lineAt(offsets, pos), end = Math.min(c.toA, offsets[line + 1]);
+			if (!byLine.has(line)) byLine.set(line, []);
+			byLine.get(line).push([pos - offsets[line], end - offsets[line]]);
+			pos = end;
+		}
+		for (const ranges of byLine.values()) ranges.sort((x, y) => x[0] - y[0]);
+		return byLine;
+	}
+	function lineAt(offsets, pos) {
+		let lo = 0, hi = offsets.length - 2;
+		while (lo < hi) {
+			const mid = lo + hi + 1 >> 1;
+			if (offsets[mid] <= pos) lo = mid;
+			else hi = mid - 1;
+		}
+		return lo;
+	}
+	function emphasizeRow(row, ranges) {
+		const walker = document.createTreeWalker(row, NodeFilter.SHOW_TEXT);
+		const nodes = [];
+		let at = 0;
+		for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+			nodes.push([node, at]);
+			at += node.length;
+		}
+		for (const [node, start] of nodes) emphasizeNode(node, start, ranges);
+	}
+	function emphasizeNode(node, nodeStart, ranges) {
+		const nodeEnd = nodeStart + node.length;
+		for (const [from, to] of ranges) {
+			const a = Math.max(from, nodeStart) - nodeStart, b = Math.min(to, nodeEnd) - nodeStart;
+			if (a >= b) continue;
+			let piece = node;
+			if (a > 0) piece = piece.splitText(a);
+			const rest = b - a < piece.length ? piece.splitText(b - a) : null;
+			const span = document.createElement("span");
+			span.className = "cm-deletedText";
+			piece.parentNode.insertBefore(span, piece);
+			span.appendChild(piece);
+			if (rest) emphasizeNode(rest, nodeStart + b, ranges);
+			return;
+		}
+	}
+	function deletedLineRows(diff, options) {
+		const blocks = deletedBlocks(diff);
+		const emphasis = emphasisByLine(diff);
+		const hanging = options.wrap !== false;
 		return _codemirror_view.ViewPlugin.fromClass(class {
 			constructor(view) {
 				this.measure = {
 					read: (v) => {
+						const chunks = Array.from(v.contentDOM.querySelectorAll(".cm-deletedChunk"));
 						return {
-							heights: Array.from(v.contentDOM.querySelectorAll(".cm-deletedChunk")).map((el) => Array.from(el.querySelectorAll(".cm-deletedLine")).map((line) => line.getBoundingClientRect().height)),
-							markers: Array.from(v.dom.querySelectorAll(".cm-oldLineNumbers .cm-deletedNumbers"))
+							heights: chunks.map((el) => Array.from(el.querySelectorAll(".cm-deletedLine")).map((line) => line.getBoundingClientRect().height)),
+							markers: Array.from(v.dom.querySelectorAll(".cm-oldLineNumbers .cm-deletedNumbers")),
+							unmarked: chunks.filter((el) => !el.hasAttribute("data-emphasized")).map((el) => [el, blocks.get(v.posAtDOM(el))])
 						};
 					},
-					write: ({ heights, markers }) => {
+					write: ({ heights, markers, unmarked }) => {
+						for (const [el, chunk] of unmarked) {
+							el.setAttribute("data-emphasized", "");
+							if (!chunk) continue;
+							el.querySelectorAll(".cm-deletedLine").forEach((row, i) => {
+								const ranges = emphasis.get(chunk[0] + i);
+								if (ranges) emphasizeRow(row, ranges);
+								const columns = hanging ? indentColumns(diff.aLines[chunk[0] + i] || "", options.tabSize) : 0;
+								if (columns) row.style.cssText += ";" + hangingIndentStyle(columns);
+							});
+						}
 						if (heights.length !== markers.length) return;
 						for (let i = 0; i < markers.length; i++) {
 							const rows = markers[i].children;
@@ -759,7 +808,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 		if ((options.language ?? "wiki") === "wiki" && typeof KnowWEWikiLanguage !== "undefined") extensions.push(KnowWEWikiLanguage.wiki());
 		return extensions;
 	}
-	function sideExtensions(options) {
+	function sideExtensions(options, lines) {
 		return [
 			_codemirror_state.EditorState.readOnly.of(true),
 			_codemirror_view.EditorView.editable.of(false),
@@ -768,7 +817,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			(0, _codemirror_search.search)({ top: true }),
 			_codemirror_view.keymap.of(_codemirror_search.searchKeymap),
 			languageExtensions(options),
-			options.wrap === false ? [] : _codemirror_view.EditorView.lineWrapping,
+			options.wrap === false ? [] : [_codemirror_view.EditorView.lineWrapping, hangingIndent(lines, options.tabSize)],
 			theme
 		];
 	}
@@ -777,11 +826,16 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	}
 	/**
 	* Creates the CodeMirror view of a computed diff in the parent element. Options: root (the shadow root the view is
-	* mounted in), layout "unified" or "split", language, highlight (whether to color the text at all), wrap,
-	* contextLines (-1 shows every line). Returns the view, the editor showing the new text, an align function that
-	* brings the heights of the view up to date at once, and a destroy function.
+	* mounted in), layout "unified" or "split", language, highlight (whether to color the text at all), wrap (wrapped
+	* lines keep their indentation on the continuation rows), tabSize, contextLines (-1 shows every line). Returns the
+	* view, the editor showing the new text, an align function that brings the heights of the view up to date at once,
+	* and a destroy function.
 	*/
 	function createDiffView(parent, diff, options = {}) {
+		options = {
+			tabSize: 4,
+			...options
+		};
 		const changes = diff.changes.map((c) => new _codemirror_merge.Change(c.fromA, c.toA, c.fromB, c.toB));
 		const diffConfig = { override: () => changes };
 		const collapse = options.contextLines === -1 ? void 0 : {
@@ -793,17 +847,25 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 		if (options.layout === "split") view = new _codemirror_merge.MergeView({
 			a: {
 				doc: diff.docA,
-				extensions: [sideExtensions(options), (0, _codemirror_view.lineNumbers)()]
+				extensions: [
+					sideExtensions(options, diff.aLines),
+					(0, _codemirror_view.lineNumbers)(),
+					emphasisMarks(diff, "a")
+				]
 			},
 			b: {
 				doc: diff.docB,
-				extensions: [sideExtensions(options), (0, _codemirror_view.lineNumbers)()]
+				extensions: [
+					sideExtensions(options, diff.bLines),
+					(0, _codemirror_view.lineNumbers)(),
+					emphasisMarks(diff, "b")
+				]
 			},
 			parent,
 			root: options.root,
 			diffConfig,
 			collapseUnchanged: collapse,
-			highlightChanges: true,
+			highlightChanges: false,
 			gutter: true
 		});
 		else view = new _codemirror_view.EditorView({
@@ -814,13 +876,15 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 				extensions: [
 					oldLineNumberGutter(diff),
 					(0, _codemirror_view.lineNumbers)(),
-					sideExtensions(options),
-					deletedLineHeights(),
+					sideExtensions(options, diff.bLines),
+					deletedLineRows(diff, options),
+					emphasisMarks(diff, "b"),
 					(0, _codemirror_merge.unifiedMergeView)({
 						original: diff.docA,
 						mergeControls: false,
 						diffConfig,
 						collapseUnchanged: collapse,
+						highlightChanges: false,
 						gutter: true,
 						syntaxHighlightDeletions: true
 					})
@@ -875,8 +939,13 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	*   - data-layout:          unified (default) | split | auto, CodeMirror renderer only. auto shows wide elements
 	*                           side by side and narrow ones in one column. A layout the user chose for the context
 	*                           of the element takes precedence.
-	*   - data-context:         a name under which choices of the user, such as the layout, are remembered and shared
-	*                           by all elements of the same context
+	*   - data-layouts:         the layouts the user may choose, "unified split" by default. With a single one the
+	*                           layout is fixed and a frame around the element offers no switch.
+	*   - data-whitespace:      show (default) | ignore, CodeMirror renderer only. ignore diffs the lines with all
+	*                           whitespace removed and leaves whitespace tokens unmarked. A choice of the user for the
+	*                           context takes precedence.
+	*   - data-context:         a name under which choices of the user, such as the layout and the whitespace mode,
+	*                           are remembered and shared by all elements of the same context
 	*   - data-language:        wiki (default) | none, the highlighting of the CodeMirror renderer
 	*   - data-highlight-limit: texts above this many characters are shown without highlighting, default 200000
 	*   - data-wrap:            false switches line wrapping off, CodeMirror renderer only
@@ -889,13 +958,18 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	*
 	* Events:
 	*   - knowwe-text-diff-stats: dispatched (bubbling) once the browser computed the diff, detail.added and
-	*                             detail.removed are its line counts.
+	*                             detail.removed are its line counts, detail.ignoreWhitespace the mode they count.
 	*   - knowwe-text-diff-layout: dispatched (bubbling) by the CodeMirror renderer when the element connects and
 	*                             whenever its layout changes, detail.layout is the requested and detail.effective the
-	*                             shown layout, unified or split.
+	*                             shown layout, unified or split, detail.layouts the choosable ones.
+	*   - knowwe-text-diff-whitespace: dispatched (bubbling) by the CodeMirror renderer when the element connects and
+	*                             whenever its whitespace mode changes, detail.ignore tells whether whitespace is
+	*                             ignored.
 	*
-	* Properties: layout (the requested layout, setting it remembers the choice for the context and applies it to
-	* every element of the context), effectiveLayout (the shown layout, null with the table renderer).
+	* Properties: layout (the requested layout), layouts (the choosable ones), effectiveLayout (the shown layout,
+	* null with the table renderer), ignoreWhitespace (the whitespace mode). Setting layout or ignoreWhitespace
+	* remembers the choice for the context and applies it to every element of the context. The exported preferences
+	* object reads and sets these choices for a context without an element at hand.
 	*
 	* The CodeMirror view is created when the element comes near the viewport and destroyed again when it leaves it by
 	* a wide margin, keeping its height, so long lists of diffs stay light.
@@ -909,25 +983,44 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	var VIEW_MARGIN = "600px";
 	var SPLIT_MIN_WIDTH = 900;
 	var LAYOUTS = ["unified", "split"];
-	var LAYOUT_STORAGE_PREFIX = "knowwe-text-diff.layout.";
+	var WHITESPACE_MODES = ["show", "ignore"];
+	var STORAGE_PREFIX = "knowwe-text-diff.";
 	var SETTLE_INTERVAL = 50;
 	var SETTLE_MAX_CHECKS = 20;
 	var SETTLE_STILL_CHECKS = 4;
 	var connectedElements = /* @__PURE__ */ new Set();
-	function storedLayout(context) {
+	function storedChoice(context, key, values) {
 		if (!context) return null;
 		try {
-			const layout = window.localStorage.getItem(LAYOUT_STORAGE_PREFIX + context);
-			return LAYOUTS.includes(layout) ? layout : null;
+			const value = window.localStorage.getItem(STORAGE_PREFIX + key + "." + context);
+			return values.includes(value) ? value : null;
 		} catch (_) {
 			return null;
 		}
 	}
-	function storeLayout(context, layout) {
+	function storeChoice(context, key, value) {
 		try {
-			window.localStorage.setItem(LAYOUT_STORAGE_PREFIX + context, layout);
+			window.localStorage.setItem(STORAGE_PREFIX + key + "." + context, value);
 		} catch (_) {}
 	}
+	var CHOICES = {
+		layout: LAYOUTS,
+		whitespace: WHITESPACE_MODES
+	};
+	/**
+	* The choices of the user per context. Keys are "layout" (unified or split) and "whitespace" (show or ignore).
+	* Setting one stores it and applies it to every connected element of the context.
+	*/
+	var preferences = {
+		get(context, key) {
+			return storedChoice(context, key, CHOICES[key] || []);
+		},
+		set(context, key, value) {
+			if (!CHOICES[key] || !CHOICES[key].includes(value)) throw new Error("Unknown " + key + " " + value);
+			storeChoice(context, key, value);
+			for (const element of connectedElements) if (element._context() === context) element._applyChoice(key);
+		}
+	};
 	function scrollParent(element) {
 		let node = element;
 		while (node) {
@@ -970,7 +1063,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	}
 	var KnowweTextDiff = class extends HTMLElement {
 		static get observedAttributes() {
-			return ["data-layout"];
+			return ["data-layout", "data-whitespace"];
 		}
 		connectedCallback() {
 			if (!this.hasAttribute("data-theme")) this.setAttribute("data-theme", displayMode$1());
@@ -984,6 +1077,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			this._hydrateTemplate();
 			this._observeSize();
 			this._announceLayout();
+			this._announceWhitespace();
 			const root = this.shadowRoot;
 			const inline = root && root.querySelector("script.diff-data");
 			if (inline) try {
@@ -1008,28 +1102,45 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			this._destroyView();
 		}
 		attributeChangedCallback(name) {
-			if (name === "data-layout" && this._connected) {
+			if (!this._connected) return;
+			if (name === "data-layout") {
 				this._observeSize();
 				this._applyLayout();
-			}
+			} else if (name === "data-whitespace") this._applyWhitespace();
 		}
 		/** The requested layout, the choice remembered for the context of the element or its data-layout attribute. */
 		get layout() {
-			return storedLayout(this._context()) || this.getAttribute("data-layout") || "unified";
+			return storedChoice(this._context(), "layout", this.layouts) || this.getAttribute("data-layout") || "unified";
 		}
 		/**
 		* Chooses unified or split. With a context the choice is remembered and applied to every element of the
 		* context, without one it becomes the data-layout attribute of this element.
 		*/
 		set layout(value) {
-			if (!LAYOUTS.includes(value)) throw new Error("Unknown layout " + value);
+			if (!this.layouts.includes(value)) throw new Error("Layout " + value + " is not available");
+			this._choose("layout", "data-layout", value);
+		}
+		/** The layouts the user may choose, from the data-layouts attribute. */
+		get layouts() {
+			const named = (this.getAttribute("data-layouts") || "").split(/\s+/).filter((l) => LAYOUTS.includes(l));
+			return named.length ? named : LAYOUTS;
+		}
+		/** Whether whitespace is ignored, by the choice remembered for the context or the data-whitespace attribute. */
+		get ignoreWhitespace() {
+			return (storedChoice(this._context(), "whitespace", WHITESPACE_MODES) || this.getAttribute("data-whitespace")) === "ignore";
+		}
+		/** Switches the whitespace mode, remembered and applied like the layout. */
+		set ignoreWhitespace(value) {
+			this._choose("whitespace", "data-whitespace", value ? "ignore" : "show");
+		}
+		_choose(key, attribute, value) {
 			const context = this._context();
-			if (!context) {
-				this.setAttribute("data-layout", value);
-				return;
-			}
-			storeLayout(context, value);
-			for (const element of connectedElements) if (element._context() === context) element._applyLayout();
+			if (context) preferences.set(context, key, value);
+			else this.setAttribute(attribute, value);
+		}
+		_applyChoice(key) {
+			if (key === "layout") this._applyLayout();
+			else this._applyWhitespace();
 		}
 		/** The shown layout, unified or split, or null when the diff is a table. */
 		get effectiveLayout() {
@@ -1054,6 +1165,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			this._unobserve();
 			this._data = null;
 			this._diff = null;
+			this._rendered = false;
 			return this._render();
 		}
 		_renderer() {
@@ -1083,8 +1195,8 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			}
 			this._observer = new IntersectionObserver((entries) => {
 				const visible = entries.some((e) => e.isIntersecting);
-				if (visible && !this._editor && !this._loading) this._render();
-				else if (!visible && this._editor) this._parkView();
+				if (visible && !this._rendered && !this._loading) this._render();
+				else if (!visible && this._rendered) this._parkView();
 			}, { rootMargin: VIEW_MARGIN });
 			this._observer.observe(this);
 		}
@@ -1130,11 +1242,52 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			if (this._renderer() !== "codemirror") return;
 			const detail = {
 				layout: this.layout,
-				effective: this._resolveLayout()
+				effective: this._resolveLayout(),
+				layouts: this.layouts
 			};
 			if (this._announced && this._announced.layout === detail.layout && this._announced.effective === detail.effective) return;
 			this._announced = detail;
 			this.dispatchEvent(new CustomEvent("knowwe-text-diff-layout", {
+				bubbles: true,
+				detail
+			}));
+		}
+		_applyWhitespace() {
+			const ignore = this.ignoreWhitespace;
+			if (this._data && this._renderer() === "codemirror" && this._diff && this._diff.ignoreWhitespace !== ignore) {
+				this._diff = this._computeDiff();
+				if (this._rendered) {
+					const anchor = this._editor ? this._topLine() : null;
+					this._showView();
+					if (anchor) this._keepLine(anchor);
+				}
+				this._dispatchStats();
+			}
+			this._announceWhitespace();
+		}
+		_announceWhitespace() {
+			if (this._renderer() !== "codemirror") return;
+			const ignore = this.ignoreWhitespace;
+			if (this._announcedWhitespace === ignore) return;
+			this._announcedWhitespace = ignore;
+			this.dispatchEvent(new CustomEvent("knowwe-text-diff-whitespace", {
+				bubbles: true,
+				detail: { ignore }
+			}));
+		}
+		_computeDiff() {
+			const ignoreWhitespace = this.ignoreWhitespace;
+			return {
+				...computeDiff(this._data.old, this._data.new, { ignoreWhitespace }),
+				ignoreWhitespace
+			};
+		}
+		_dispatchStats() {
+			const detail = {
+				...this._diff.stats,
+				ignoreWhitespace: this._diff.ignoreWhitespace
+			};
+			this.dispatchEvent(new CustomEvent("knowwe-text-diff-stats", {
 				bubbles: true,
 				detail
 			}));
@@ -1163,7 +1316,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			const check = () => {
 				if (!this._editor || this._editor.editor !== editor || scrollTop(anchor.container) !== anchor.scrollTop) return;
 				still = this._scrollToLine(anchor) ? still + 1 : 0;
-				if (still < SETTLE_STILL_CHECKS && ++checks < SETTLE_MAX_CHECKS) setTimeout(check, SETTLE_INTERVAL);
+				if (!anchor.stuck && still < SETTLE_STILL_CHECKS && ++checks < SETTLE_MAX_CHECKS) setTimeout(check, SETTLE_INTERVAL);
 			};
 			anchor.scrollTop = scrollTop(anchor.container);
 			check();
@@ -1180,8 +1333,13 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 					const delta = lineTop(editor, from) - top;
 					if (Math.abs(delta) < 1) break;
 					moved = true;
+					const before = scrollTop(container);
 					if (container === window) window.scrollBy(0, delta);
 					else container.scrollTop += delta;
+					if (scrollTop(container) === before) {
+						anchor.stuck = true;
+						break;
+					}
 				}
 			} catch (_) {}
 			anchor.scrollTop = scrollTop(container);
@@ -1196,12 +1354,9 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			try {
 				if (this._renderer() === "codemirror") {
 					if (!this._data) this._data = await this._loadData();
-					this._diff = computeDiff(this._data.old, this._data.new);
+					this._diff = this._computeDiff();
 					this._showView();
-					this.dispatchEvent(new CustomEvent("knowwe-text-diff-stats", {
-						bubbles: true,
-						detail: { ...this._diff.stats }
-					}));
+					this._dispatchStats();
 				} else await this._renderServerTable();
 			} catch (err) {
 				this._setStatus("error", err && err.message);
@@ -1231,6 +1386,14 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			frame.replaceChildren();
 			frame.classList.remove("diff-placeholder");
 			frame.style.removeProperty("min-height");
+			this._rendered = true;
+			if (this._diff.stats.added === 0 && this._diff.stats.removed === 0) {
+				const note = this._diff.ignoreWhitespace && this._data && this._data.old !== this._data.new ? "Only whitespace changed." : "No changes.";
+				frame.classList.remove("cm-diff");
+				frame.innerHTML = "<p class=\"diff-note\" part=\"note\">" + note + "</p>";
+				this._setStatus("ready");
+				return;
+			}
 			const size = this._diff.docA.length + this._diff.docB.length;
 			const limit = parseInt(this.getAttribute("data-highlight-limit"), 10);
 			const layout = this._resolveLayout();
@@ -1259,6 +1422,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			frame.style.minHeight = frame.getBoundingClientRect().height + "px";
 			this._destroyView();
 			frame.replaceChildren();
+			this._rendered = false;
 		}
 		_destroyView() {
 			if (this._editor) {
@@ -1364,6 +1528,8 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	*   - data-additions: optional number of added lines
 	*   - data-deletions: optional number of removed lines
 	*   - data-collapsed: optional boolean attribute; collapses the body when present
+	*   - data-controls:  the header buttons a diff in the body may get, "layout whitespace" by default, an empty
+	*                     value shows none
 	*   - data-theme:     optional explicit 'light' | 'dark' theme override
 	*
 	* Slots:
@@ -1378,8 +1544,9 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	*             attribute changes.
 	*
 	* The stats show the given additions and deletions until a <knowwe-text-diff> in the body reports the counts of
-	* the diff it computed, which replace them. A diff that can show both texts side by side gets a layout button in
-	* the header, which switches between one column and two.
+	* the diff it computed, which replace them. A diff built in the browser gets two buttons in the header, one that
+	* switches between one column and two and one that hides whitespace changes, unless data-controls leaves them out
+	* or the diff has a fixed layout.
 	*/
 	var STYLESHEET_URL = "KnowWEExtension/css/KnowWE-Plugin-TextDiff.css";
 	var LAYOUT_SWITCH = {
@@ -1394,6 +1561,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			icon: "<svg class=\"icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"1.5\" y=\"2.5\" width=\"13\" height=\"11\" rx=\"1.5\"/><path d=\"M4.5 6h7M4.5 8.5h7M4.5 11h4\"/></svg>"
 		}
 	};
+	var LAYOUTS_ALL = ["unified", "split"];
 	var CHANGE_TYPES = {
 		added: { label: "Added" },
 		deleted: { label: "Deleted" },
@@ -1433,7 +1601,10 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 				this.setAttribute("data-deletions", String(event.detail.removed));
 			});
 			this.addEventListener("knowwe-text-diff-layout", (event) => {
-				if (event.target.parentElement === this) this._updateLayoutButton(event.detail.effective);
+				if (event.target.parentElement === this) this._updateLayoutButton(event.detail.effective, event.detail.layouts);
+			});
+			this.addEventListener("knowwe-text-diff-whitespace", (event) => {
+				if (event.target.parentElement === this) this._updateWhitespaceButton(event.detail.ignore);
 			});
 		}
 		static get observedAttributes() {
@@ -1446,7 +1617,8 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 				"data-new-url",
 				"data-additions",
 				"data-deletions",
-				"data-collapsed"
+				"data-collapsed",
+				"data-controls"
 			];
 		}
 		connectedCallback() {
@@ -1456,25 +1628,32 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			this._update();
 			this._updateSlotState();
 		}
-		attributeChangedCallback() {
-			if (this.isConnected) this._update();
+		attributeChangedCallback(name) {
+			if (!this.isConnected) return;
+			if (name === "data-controls") this._updateSlotState();
+			else this._update();
 		}
 		_ensureShadow() {
 			if (this.shadowRoot) return;
 			const root = this.attachShadow({ mode: "open" });
-			root.innerHTML = "<link rel=\"stylesheet\" href=\"" + resourceUrl(STYLESHEET_URL) + "\"><article class=\"file-change\" part=\"frame\">  <header class=\"file-change-header\" part=\"header\">    <button class=\"file-change-toggle\" part=\"toggle\" type=\"button\" aria-label=\"Collapse file change\" aria-expanded=\"true\">      <svg class=\"icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\">  <path d=\"M4 6l4 4 4-4\"/></svg>    </button>    <span class=\"file-change-title\" part=\"title\">      <a class=\"file-change-name old\" part=\"old-name\"></a>      <span class=\"file-change-arrow\" part=\"rename-arrow\" aria-hidden=\"true\">&rarr;</span>      <a class=\"file-change-name new\" part=\"new-name\"></a>    </span>    <span class=\"file-change-stats\" part=\"stats\">      <span class=\"file-change-stat additions\" part=\"additions\"></span>      <span class=\"file-change-stat deletions\" part=\"deletions\"></span>    </span>    <span class=\"file-change-actions\" part=\"actions\"><slot name=\"actions\"></slot></span>    <button class=\"file-change-layout\" part=\"layout-button\" type=\"button\" hidden></button>    <span class=\"file-change-badge\" part=\"badge\"></span>  </header>  <div class=\"file-change-body\" part=\"body\"><slot></slot></div></article>";
+			root.innerHTML = "<link rel=\"stylesheet\" href=\"" + resourceUrl(STYLESHEET_URL) + "\"><article class=\"file-change\" part=\"frame\">  <header class=\"file-change-header\" part=\"header\">    <button class=\"file-change-toggle\" part=\"toggle\" type=\"button\" aria-label=\"Collapse file change\" aria-expanded=\"true\">      <svg class=\"icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\">  <path d=\"M4 6l4 4 4-4\"/></svg>    </button>    <span class=\"file-change-title\" part=\"title\">      <a class=\"file-change-name old\" part=\"old-name\"></a>      <span class=\"file-change-arrow\" part=\"rename-arrow\" aria-hidden=\"true\">&rarr;</span>      <a class=\"file-change-name new\" part=\"new-name\"></a>    </span>    <span class=\"file-change-stats\" part=\"stats\">      <span class=\"file-change-stat additions\" part=\"additions\"></span>      <span class=\"file-change-stat deletions\" part=\"deletions\"></span>    </span>    <span class=\"file-change-actions\" part=\"actions\"><slot name=\"actions\"></slot></span>    <button class=\"file-change-button file-change-whitespace\" part=\"whitespace-button\" type=\"button\" hidden aria-pressed=\"false\"><svg class=\"icon\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M13 2H6.5a3 3 0 0 0 0 6H9M9 2v12M12 2v12\"/></svg></button>    <button class=\"file-change-button file-change-layout\" part=\"layout-button\" type=\"button\" hidden></button>    <span class=\"file-change-badge\" part=\"badge\"></span>  </header>  <div class=\"file-change-body\" part=\"body\"><slot></slot></div></article>";
 			root.querySelector(".file-change-header").addEventListener("click", (event) => this._onHeaderClick(event));
 			root.querySelector(".file-change-layout").addEventListener("click", () => this._switchLayout());
+			root.querySelector(".file-change-whitespace").addEventListener("click", () => this._switchWhitespace());
 			root.querySelector("slot:not([name])").addEventListener("slotchange", () => this._updateSlotState());
 		}
 		_textDiff() {
 			return this.querySelector(":scope > knowwe-text-diff");
 		}
-		_updateLayoutButton(effective) {
+		_controls() {
+			const value = this.getAttribute("data-controls");
+			return value === null ? ["layout", "whitespace"] : value.split(/\s+/);
+		}
+		_updateLayoutButton(effective, layouts = LAYOUTS_ALL) {
 			const button = this.shadowRoot && this.shadowRoot.querySelector(".file-change-layout");
 			if (!button) return;
 			const current = LAYOUT_SWITCH[effective];
-			button.hidden = !current;
+			button.hidden = !current || layouts.length < 2 || !this._controls().includes("layout");
 			if (!current) return;
 			button.innerHTML = LAYOUT_SWITCH[current.next].icon;
 			button.title = current.label;
@@ -1485,6 +1664,19 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			const diff = this._textDiff();
 			const current = diff && LAYOUT_SWITCH[diff.effectiveLayout];
 			if (current) diff.layout = current.next;
+		}
+		_updateWhitespaceButton(ignore) {
+			const button = this.shadowRoot && this.shadowRoot.querySelector(".file-change-whitespace");
+			if (!button) return;
+			button.hidden = typeof ignore !== "boolean" || !this._controls().includes("whitespace");
+			if (button.hidden) return;
+			button.setAttribute("aria-pressed", String(ignore));
+			button.title = ignore ? "Show whitespace changes" : "Hide whitespace changes";
+			button.setAttribute("aria-label", button.title);
+		}
+		_switchWhitespace() {
+			const diff = this._textDiff();
+			if (diff && typeof diff.ignoreWhitespace === "boolean") diff.ignoreWhitespace = !diff.ignoreWhitespace;
 		}
 		_update() {
 			const change = normalizeChange(this.getAttribute("data-change") || "modified");
@@ -1531,7 +1723,9 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 			const toggle = this.shadowRoot && this.shadowRoot.querySelector(".file-change-toggle");
 			if (toggle) toggle.hidden = !hasBody;
 			const diff = this._textDiff();
-			this._updateLayoutButton(diff && "effectiveLayout" in diff ? diff.effectiveLayout : null);
+			const rich = diff && "effectiveLayout" in diff && diff.effectiveLayout !== null;
+			this._updateLayoutButton(rich ? diff.effectiveLayout : null, rich ? diff.layouts : void 0);
+			this._updateWhitespaceButton(rich ? diff.ignoreWhitespace : null);
 		}
 		_toggleCollapsed() {
 			if (this.hasAttribute("data-empty-body")) return;
@@ -1543,7 +1737,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 		}
 		_onHeaderClick(event) {
 			if (this.hasAttribute("data-empty-body")) return;
-			if (event.target.closest("a, .file-change-layout")) return;
+			if (event.target.closest("a, .file-change-button")) return;
 			this._toggleCollapsed();
 		}
 		_setNameLink(element, text, href) {
@@ -1561,7 +1755,7 @@ var KnowWETextDiff = (function(exports, _codemirror_state, _codemirror_view, _co
 	//#endregion
 	exports.computeDiff = computeDiff;
 	exports.createDiffView = createDiffView;
-	exports.findMoves = findMoves;
+	exports.preferences = preferences;
 	exports.renderTable = renderTable;
 	return exports;
 })({}, CodeMirror.state, CodeMirror.view, CodeMirror.language, CodeMirror.search, CodeMirror.merge);

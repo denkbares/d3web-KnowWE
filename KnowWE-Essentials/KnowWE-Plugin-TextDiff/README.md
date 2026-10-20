@@ -21,7 +21,7 @@ bundle of KnowWE-Resources, which loads on every page, and the wiki language to 
     pnpm test
 
 - `src/diff/` computes the diff: a minimal Myers line diff, in-line refinement by tokens, a whitespace insensitive
-  mode and moved block detection. It has no DOM or CodeMirror dependency.
+  mode. It has no DOM or CodeMirror dependency.
 - `src/renderer/codemirror.js` builds the read-only merge view, `src/renderer/table.js` the table.
 - `src/components/` holds the two web components.
 - `test/` runs with Vitest. The Myers tests compare against the Java chunks of the shared fixtures.
@@ -48,6 +48,11 @@ of the current mode.
 `data-layouts="unified"` fixes the layout for places too narrow for two columns, and the exported
 `KnowWETextDiff.preferences` reads and sets the choices of a context (`get(context, "whitespace")`,
 `set(context, "layout", "split")`) for controls that sit outside the diffs.
+
+Changed words are emphasized only where that helps, in lines that exist on both sides and changed in a few places.
+Lines that exist on one side only, rewritten lines (more than half of the text differs) and changes of whitespace
+alone, such as a new indentation, show the line tint alone. Wrapped lines keep their indentation on the
+continuation rows.
 
 The view exists only while the element is near the viewport. When it scrolls far away, the view is destroyed and the
 frame keeps its height, so a long list of diffs holds only the views on screen.

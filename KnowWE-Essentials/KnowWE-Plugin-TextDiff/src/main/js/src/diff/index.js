@@ -4,15 +4,19 @@ import {lineDiff, lineOffsets, splitLines, withTrailingNewline} from "./lines.js
 import {refine} from "./tokens.js";
 
 export {withTrailingNewline, splitLines, lineModel} from "./lines.js";
-export {findMoves} from "./moves.js";
 
 // chunks beyond this size are refined line by line, or not at all if their line counts differ
 const MAX_REFINED_CHARS = 20000;
+// a chunk whose refinement changes more of its text than this is a rewrite and gets no emphasis
+const MAX_EMPHASIS_RATIO = 0.5;
+const BLANK = /^\s*$/;
 
 /**
  * Diffs two texts. Both get a trailing newline, a missing text is the empty text. Returns the documents, their
  * lines, the line chunks [aPos, aLen, bPos, bLen], the character changes {fromA, toA, fromB, toB} for the merge
- * view, which refine changed lines down to tokens where both sides of a chunk exist, and the line counts.
+ * view, which refine changed lines down to tokens where both sides of a chunk exist, the emphasis ranges (those
+ * refinements worth marking, since the lines changed in a few places and not only in their whitespace) and the
+ * line counts.
  */
 export function computeDiff(oldText, newText, {ignoreWhitespace = false, inline = true} = {}) {
 	const docA = withTrailingNewline(oldText), docB = withTrailingNewline(newText);
@@ -25,15 +29,29 @@ export function computeDiff(oldText, newText, {ignoreWhitespace = false, inline 
 	// the empty element after the final newline is common by construction and must not match a blank line
 	else chunks = lineDiff(aLines.slice(0, -1), bLines.slice(0, -1), {ignoreWhitespace});
 
-	const changes = [];
+	const changes = [], refined = [];
 	for (const [aPos, aLen, bPos, bLen] of chunks) {
 		const fromA = oa[aPos], toA = oa[aPos + aLen], fromB = ob[bPos], toB = ob[bPos + bLen];
 		const inner = inline && aLen && bLen
 			? refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen, ignoreWhitespace) : null;
-		if (inner && keepsChunk(inner, oa, ob, fromA, toA, fromB, toB)) changes.push(...inner);
-		else changes.push({fromA, toA, fromB, toB});
+		if (inner && keepsChunk(inner, oa, ob, fromA, toA, fromB, toB)) {
+			changes.push(...inner);
+			if (changedShare(inner) <= MAX_EMPHASIS_RATIO * (toA - fromA + toB - fromB)) {
+				// a changed run of whitespace, such as a new indentation, is not worth a mark of its own
+				refined.push(...inner.filter(c => !BLANK.test(docA.slice(c.fromA, c.toA)) || !BLANK.test(docB.slice(c.fromB, c.toB))));
+			}
+		}
+		else {
+			changes.push({fromA, toA, fromB, toB});
+		}
 	}
-	return {docA, docB, aLines, bLines, chunks, changes, stats: countChunks(chunks)};
+	return {docA, docB, aLines, bLines, chunks, changes, emphasis: refined, stats: countChunks(chunks)};
+}
+
+function changedShare(changes) {
+	let n = 0;
+	for (const c of changes) n += c.toA - c.fromA + c.toB - c.fromB;
+	return n;
 }
 
 function refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen, ignoreWhitespace) {

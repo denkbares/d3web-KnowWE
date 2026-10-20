@@ -4,7 +4,6 @@ import {Change, Chunk} from "@codemirror/merge";
 import {encode, greedy, linear, myers} from "../src/diff/myers.js";
 import {lineDiff, lineModel, splitLines, withTrailingNewline} from "../src/diff/lines.js";
 import {refine, tokenize} from "../src/diff/tokens.js";
-import {findMoves} from "../src/diff/moves.js";
 import {computeDiff} from "../src/diff/index.js";
 import {fixtures, normalized} from "./fixtures.js";
 
@@ -150,26 +149,22 @@ describe("tokens", () => {
 	});
 });
 
-describe("moves", () => {
-	it("pairs a removed block with the same added block", () => {
-		const f = fixtures.find(x => x.name === "coom-moved-block");
-		const diff = computeDiff(f.old, f.new);
-		const moves = findMoves(diff.aLines, diff.bLines, diff.chunks);
-		// a line was added inside the moved block, so only its second part is long enough
-		expect(moves).toEqual([{from: [3, 4], to: [11, 4]}]);
-		expect(diff.aLines.slice(3, 7)).toEqual(diff.bLines.slice(11, 15));
+describe("emphasis", () => {
+	it("keeps the refinement of lines changed in a few places", () => {
+		const d = computeDiff("a b c\n", "a B c\n");
+		expect(d.emphasis).toEqual(d.changes);
+		expect(d.emphasis).toHaveLength(1);
 	});
 
-	it("ignores blocks shorter than three lines", () => {
-		// two swapped blocks, the diff moves one of them
-		const diff = computeDiff("a1\na2\na3\nb1\nb2\nb3\n", "b1\nb2\nb3\na1\na2\na3\n");
-		expect(findMoves(diff.aLines, diff.bLines, diff.chunks)).toEqual([{from: [0, 3], to: [3, 3]}]);
-		const short = computeDiff("a1\na2\nb1\nb2\n", "b1\nb2\na1\na2\n");
-		expect(findMoves(short.aLines, short.bLines, short.chunks)).toEqual([]);
+	it("drops changed runs of whitespace", () => {
+		const d = computeDiff("\ta = 1\n\tb  =  2\n", "    a = 1\n    b = 2 + c\n");
+		expect(d.changes.length).toBeGreaterThan(d.emphasis.length);
+		expect(d.emphasis.map(c => d.docB.slice(c.fromB, c.toB))).toEqual([" + c"]);
 	});
 
-	it("matches up to whitespace", () => {
-		const diff = computeDiff("x\n  one\n  two\n  three\ny\n", "x\ny\none\ntwo\nthree\n");
-		expect(findMoves(diff.aLines, diff.bLines, diff.chunks)).toEqual([{from: [1, 3], to: [2, 3]}]);
+	it("drops it for rewrites and has none for one sided chunks", () => {
+		expect(computeDiff("one two three four\n", "five six seven eight\n").emphasis).toEqual([]);
+		expect(computeDiff("a\n", "a\nb\n").emphasis).toEqual([]);
+		expect(computeDiff("a\nb\n", "a\n").emphasis).toEqual([]);
 	});
 });

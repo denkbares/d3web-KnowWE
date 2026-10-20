@@ -22,13 +22,13 @@
 	/* Added — three tonal layers: line bg, num gutter, sign emphasis */
 	--diff-added-bg: #e6ffec;
 	--diff-added-num-bg: #ccffd8;
-	--diff-added-emph-bg: #aceebb;
+	--diff-added-emph-bg: #bdf0c8;
 	--diff-added-fg: #1a7f37;
 
 	/* Removed */
 	--diff-removed-bg: #ffebe9;
 	--diff-removed-num-bg: #ffd7d5;
-	--diff-removed-emph-bg: #ffc1ba;
+	--diff-removed-emph-bg: #ffd0cb;
 	--diff-removed-fg: #cf222e;
 
 	/* Elision (collapsed-context expander) */
@@ -90,13 +90,13 @@
 	--diff-num-bg: var(--bg-color-secondary, #151b23);
 
 	--diff-added-bg: rgba(46, 160, 67, 0.15);
-	--diff-added-num-bg: rgba(46, 160, 67, 0.4);
-	--diff-added-emph-bg: rgba(46, 160, 67, 0.4);
+	--diff-added-num-bg: rgba(46, 160, 67, 0.3);
+	--diff-added-emph-bg: rgba(46, 160, 67, 0.3);
 	--diff-added-fg: #3fb950;
 
 	--diff-removed-bg: rgba(248, 81, 73, 0.15);
-	--diff-removed-num-bg: rgba(248, 81, 73, 0.4);
-	--diff-removed-emph-bg: rgba(248, 81, 73, 0.4);
+	--diff-removed-num-bg: rgba(248, 81, 73, 0.3);
+	--diff-removed-emph-bg: rgba(248, 81, 73, 0.3);
 	--diff-removed-fg: #f85149;
 
 	--diff-elide-bg: var(--bg-color-secondary, #151b23);
