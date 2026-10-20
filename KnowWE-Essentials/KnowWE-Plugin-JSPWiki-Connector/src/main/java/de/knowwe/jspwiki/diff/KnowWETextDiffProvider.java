@@ -13,11 +13,16 @@ import org.apache.wiki.diff.DiffProvider;
 import org.apache.wiki.preferences.Preferences;
 
 import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
-import com.denkbares.knowwe.textdiff.TextDiff;
+import com.denkbares.knowwe.textdiff.DiffRenderOptions;
+import com.denkbares.knowwe.textdiff.DiffRenderer;
+import com.denkbares.knowwe.textdiff.DiffView;
+import com.denkbares.knowwe.textdiff.FileChange;
 
 /**
  * JSPWiki {@link DiffProvider} that renders page-version diffs through KnowWE's
- * {@code <knowwe-text-diff>} web component (see {@code KnowWE-Plugin-TextDiff}).
+ * {@code <knowwe-text-diff>} web component (see {@code KnowWE-Plugin-TextDiff}). The diff is built in the
+ * browser, side by side where the page is wide enough, inside a {@code <knowwe-file-change>} frame whose header
+ * carries the line counts and the layout and whitespace switches. The choices are remembered for the page history.
  * <p>
  * Activate by setting in {@code jspwiki-custom.properties}:
  * <pre>
@@ -29,6 +34,11 @@ import com.denkbares.knowwe.textdiff.TextDiff;
  * additional resource wiring is required.
  */
 public class KnowWETextDiffProvider implements DiffProvider {
+
+	private static final String CONTEXT = "page-history";
+	private static final DiffRenderOptions OPTIONS = DiffRenderOptions.defaults()
+			.withRenderer(DiffRenderer.CODEMIRROR)
+			.withView(DiffView.AUTO);
 
 	@Override
 	public void initialize(Engine engine, Properties properties) throws NoRequiredPropertyException, IOException {
@@ -45,9 +55,11 @@ public class KnowWETextDiffProvider implements DiffProvider {
 		String newText = newWikiText == null ? "" : newWikiText;
 		if (Objects.equals(oldText, newText)) return "";
 
-		String html = DiffHtmlRenderer.renderTextDiff(new TextDiff(oldText, newText));
+		FileChange change = FileChange.modified(context.getPage().getName(), oldText, newText);
+		String html = DiffHtmlRenderer.renderFileChange(change, OPTIONS);
 		String theme = resolveTheme(context);
-		return html.replaceFirst("<knowwe-text-diff ", "<knowwe-text-diff data-theme=\"" + theme + "\" ");
+		return html.replaceFirst("<knowwe-text-diff ",
+				"<knowwe-text-diff data-theme=\"" + theme + "\" data-context=\"" + CONTEXT + "\" ");
 	}
 
 	// Mirrors DefaultLogoAction#getLogoPath: derive light/dark from the user's "DisplayMode"
