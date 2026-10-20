@@ -15,7 +15,7 @@ export default defineConfig({
     build: {
         outDir: "../resources/webapp/KnowWEExtension/scripts",
         emptyOutDir: false,
-        minify: false,
+        minify: true,
         sourcemap: false,
         lib: {
             entry: "src/index.js",

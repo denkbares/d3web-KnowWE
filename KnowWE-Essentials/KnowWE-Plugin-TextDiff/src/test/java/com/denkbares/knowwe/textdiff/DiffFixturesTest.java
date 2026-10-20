@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Checks the fixtures in {@code fixtures/}, which the browser tests of the diff module use as well. Each fixture
- * holds both texts as given, the JSON stats of {@link DiffJsonRenderer}, whose texts are the given ones with
- * normalized line endings, and the chunks {@code [oldPos, oldLen, newPos,
- * newLen]} of the line diff as the browser computes it: over the lines before the final newline of each text, a
- * missing or empty side as no lines, and a missing side diffed as one chunk of all lines of the other side.
+ * holds both texts as given, the JSON of {@link DiffTexts}, whose texts are the given ones with normalized
+ * line endings, the line counts the browser diff reports, and the chunks {@code [oldPos, oldLen, newPos, newLen]} of
+ * the line diff as the browser computes it: over the lines before the final newline of each text, a missing or
+ * empty side as no lines, and a missing side diffed as one chunk of all lines of the other side.
  */
 class DiffFixturesTest {
 
@@ -47,10 +47,9 @@ class DiffFixturesTest {
 		String newText = text(fixture.get("new"));
 		TextDiff diff = new TextDiff(oldText, newText);
 
-		JsonNode json = mapper.readTree(DiffJsonRenderer.render(diff));
+		JsonNode json = mapper.readTree(diff.texts().toJson());
 		assertEquals(normalize(oldText), text(json.get("old")), name);
 		assertEquals(normalize(newText), text(json.get("new")), name);
-		assertEquals(fixture.get("stats"), json.get("stats"), name);
 		assertEquals(fixture.get("chunks"), mapper.valueToTree(chunksAsShown(diff)), name);
 	}
 
@@ -64,7 +63,6 @@ class DiffFixturesTest {
 
 	private static List<int[]> chunksAsShown(TextDiff diff) {
 		List<int[]> chunks = new ArrayList<>();
-		TextDiff.Stats stats = diff.stats();
 		if (diff.oldText() == null && diff.newText() == null) return chunks;
 		if (diff.oldText() == null) {
 			chunks.add(new int[] { 0, 0, 0, lineCount(diff.newText()) });
@@ -83,7 +81,7 @@ class DiffFixturesTest {
 		int oldPos = 0;
 		int newPos = 0;
 		int[] current = null;
-		for (TextDiff.Line line : shown) {
+		for (TextDiff.Line line : shown.lines()) {
 			switch (line.status()) {
 				case COMMON -> {
 					oldPos++;

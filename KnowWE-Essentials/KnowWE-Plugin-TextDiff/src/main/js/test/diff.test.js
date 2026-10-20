@@ -2,7 +2,7 @@ import {describe, expect, it} from "vitest";
 import {Text} from "@codemirror/state";
 import {Change, Chunk} from "@codemirror/merge";
 import {encode, greedy, linear, myers} from "../src/diff/myers.js";
-import {lineDiff, lineModel, splitLines, withTrailingNewline} from "../src/diff/lines.js";
+import {lineDiff, splitLines, withTrailingNewline} from "../src/diff/lines.js";
 import {refine, tokenize} from "../src/diff/tokens.js";
 import {computeDiff} from "../src/diff/index.js";
 import {fixtures, normalized} from "./fixtures.js";
@@ -82,21 +82,6 @@ describe("computeDiff", () => {
 		const diff = computeDiff("| _2017003\t| _Stoff3\t| _Grau\n", "| _2017003\t| _Stoff3\t| _Anthrazit\n");
 		expect(diff.changes).toEqual([{fromA: 23, toA: 28, fromB: 23, toB: 33}]);
 	});
-
-	it("builds the line model", () => {
-		const diff = computeDiff("a\nb\nc\n", "a\nB\nc\n");
-		expect(lineModel(diff.aLines, diff.bLines, diff.chunks)).toEqual([
-			{old: 1, new: 1, status: "common", text: "a"},
-			{old: 2, new: 0, status: "removed", text: "b"},
-			{old: 0, new: 2, status: "added", text: "B"},
-			{old: 3, new: 3, status: "common", text: "c"},
-		]);
-	});
-
-	it("builds the line model of a created file", () => {
-		const diff = computeDiff(null, "a\nb");
-		expect(lineModel(diff.aLines, diff.bLines, diff.chunks).map(l => l.status + l.new)).toEqual(["added1", "added2"]);
-	});
 });
 
 describe("whitespace mode", () => {
@@ -113,8 +98,9 @@ describe("whitespace mode", () => {
 		expect(diff.chunks).toEqual([[1, 1, 1, 1]]);
 	});
 
-	it("skips whitespace tokens in the in-line changes", () => {
-		expect(refine("x  = 1", "x = 2", {ignoreWhitespace: true})).toEqual([{fromA: 5, toA: 6, fromB: 4, toB: 5}]);
+	it("leaves changed whitespace runs without emphasis", () => {
+		const diff = computeDiff("x  = 1\n", "x = 2\n", {ignoreWhitespace: true});
+		expect(diff.emphasis).toEqual([{fromA: 5, toA: 6, fromB: 4, toB: 5}]);
 	});
 
 	it("compares lines without whitespace", () => {

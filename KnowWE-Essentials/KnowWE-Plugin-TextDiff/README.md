@@ -6,14 +6,16 @@ Reusable front and back end text diff components.
 
 The plugin ships two web components in `KnowWEExtension/scripts/KnowWE-Plugin-TextDiff.js`:
 
-- `<knowwe-text-diff>` displays a text diff, as a CodeMirror view built in the browser or as a table.
+- `<knowwe-text-diff>` displays a text diff as a CodeMirror view built in the browser from both texts.
 - `<knowwe-file-change>` displays one GitHub-inspired file/article change entry and can wrap a
   `<knowwe-text-diff>` when the change includes content changes.
 
-Styles live in `src/main/resources/webapp/KnowWEExtension/css/KnowWE-Plugin-TextDiff.css`.
+Styles live in `src/main/resources/webapp/KnowWEExtension/css/KnowWE-Plugin-TextDiff.css`. Both files are
+registered at startup by the `TextDiffResources` instantiation.
 
 The script is built from the Vite project in `src/main/js` and committed. CodeMirror resolves to the vendored global
-bundle of KnowWE-Resources, which loads on every page, and the wiki language to the global `KnowWEWikiLanguage`.
+bundle of KnowWE-Resources, which loads before it on every page, and the wiki language to the global
+`KnowWEWikiLanguage`.
 
     cd src/main/js
     pnpm install
@@ -22,32 +24,31 @@ bundle of KnowWE-Resources, which loads on every page, and the wiki language to 
 
 - `src/diff/` computes the diff: a minimal Myers line diff, in-line refinement by tokens, a whitespace insensitive
   mode. It has no DOM or CodeMirror dependency.
-- `src/renderer/codemirror.js` builds the read-only merge view, `src/renderer/table.js` the table.
+- `src/renderer/codemirror.js` builds the read-only merge view.
 - `src/components/` holds the two web components.
 - `test/` runs with Vitest. The Myers tests compare against the Java chunks of the shared fixtures.
 
-## Renderers
+## The Diff Host
 
-`data-renderer="codemirror"` switches a `<knowwe-text-diff>` to the view built in the browser: wiki and embedded
-markups are highlighted, changed tokens within a line are marked, unchanged regions are folded and expand in place,
-and the view searches with Mod-F. Without the attribute, or when the CodeMirror bundle is missing, the table of the
-server is shown. If the view cannot be created, the component builds the table in the browser from the same texts.
+`<knowwe-text-diff>` takes its texts from one of three places: a server rendered declarative shadow root holding
+both texts as JSON, the attributes `data-old-text` and `data-new-text` (with `data-old-null` and `data-new-null`
+for a missing side), or an endpoint named by `data-action-url` that answers the same JSON document. In the latter
+two cases the diff is loaded once the element comes near the viewport.
 
-Further attributes of the CodeMirror renderer: `data-layout="unified|split|auto"` (`auto` shows elements of at
-least 900 px side by side), `data-language="wiki|none"`, `data-highlight-limit` (characters, default 200000, larger
-diffs render without highlighting) and `data-wrap="false"`. `data-context-lines` applies to both renderers.
+Wiki and embedded markups are highlighted, changed tokens within a line are marked, unchanged regions are folded
+and expand in place, and the view searches with Mod-F. Attributes: `data-layout="unified|split|auto"` (`auto`
+shows elements of at least 900 px side by side), `data-layouts="unified"` fixes the layout for narrow places,
+`data-context-lines` (default 3, -1 shows all), `data-language="wiki|none"`, `data-highlight-limit` (characters,
+default 200000, larger diffs render without highlighting) and `data-wrap="false"`.
 
-The `layout` property switches between `unified` and `split` while the view is shown, keeping the line at the top
-of the viewport in place. `data-whitespace="ignore"` and the `ignoreWhitespace` property diff the lines with all
-whitespace removed, as `git diff -w` does, and leave whitespace tokens unmarked. A diff that then has no changes
-says so instead of showing an empty view. With `data-context="name"` both choices are stored in `localStorage` and
-applied to every element of that context, now and on later pages. The element dispatches `knowwe-text-diff-layout`
-and `knowwe-text-diff-whitespace` on connect and on every change, and `knowwe-text-diff-stats` carries the counts
-of the current mode.
-
-`data-layouts="unified"` fixes the layout for places too narrow for two columns, and the exported
-`KnowWETextDiff.preferences` reads and sets the choices of a context (`get(context, "whitespace")`,
-`set(context, "layout", "split")`) for controls that sit outside the diffs.
+With `data-context="name"` the user may choose the layout and whether whitespace changes are hidden. Both choices
+are stored in `localStorage` and applied to every element of that context, now and on later pages. The `layout`
+and `ignoreWhitespace` properties make the choice while the view is shown, keeping the line at the top of the
+viewport in place, and the exported `KnowWETextDiff.preferences` reads and sets the choices of a context for
+controls that sit outside the diffs (`get(context, "whitespace")`, `set(context, "layout", "split")`). The element
+dispatches `knowwe-text-diff-layout` and `knowwe-text-diff-whitespace` on connect and on every change, and
+`knowwe-text-diff-stats` carries the line counts of the current mode. Ignoring whitespace diffs the lines with
+all whitespace removed, as `git diff -w` does, and a diff that then has no changes says so.
 
 Changed words are emphasized only where that helps, in lines that exist on both sides and changed in a few places.
 Lines that exist on one side only, rewritten lines (more than half of the text differs) and changes of whitespace
@@ -57,98 +58,38 @@ continuation rows.
 The view exists only while the element is near the viewport. When it scrolls far away, the view is destroyed and the
 frame keeps its height, so a long list of diffs holds only the views on screen.
 
-Once the browser computed a diff, the component dispatches `knowwe-text-diff-stats` with the line counts, and a
-`<knowwe-file-change>` around it replaces its additions and deletions by them.
-
-## Backend Diff
+## Backend
 
 The Java side lives in `src/main/java/com/denkbares/knowwe/textdiff/`:
 
-- `TextDiff` computes the line model.
-- `FileChange` describes one article/file operation and can infer article changes from the live wiki.
-- `DiffHtmlRenderer` renders that model as `<knowwe-text-diff>` HTML.
-- `TextDiffAction` computes lazy diffs requested by the browser component.
-
-Preferred server-side text diff usage:
+- `TextDiff` computes the line model with java-diff-utils, for line counts and the height of the placeholder.
+- `FileChange` describes one article/file operation.
+- `DiffHtmlRenderer` renders both as web component HTML.
+- `DiffTexts` holds both texts with normalized line endings and writes the JSON document the browser diffs.
 
 ```java
 TextDiff diff = new TextDiff(oldText, newText);
-String html = DiffHtmlRenderer.renderTextDiff(diff);
+String html = DiffHtmlRenderer.renderTextDiff(diff, DiffRenderOptions.defaults()
+        .withView(DiffView.AUTO)
+        .withContext("page-history"));
 ```
 
-This emits a `<knowwe-text-diff>` with declarative shadow DOM and a linked stylesheet. The browser
-component then only hydrates the shadow root and wires the collapsed-context expand buttons.
+This emits a `<knowwe-text-diff>` with a declarative shadow root holding the stylesheet link, a placeholder of the
+height the view will take and both texts as JSON. `DiffRenderOptions` names the view the diff opens in, the
+context lines and the context of the user's choices. `null` for a side of `TextDiff` means a created or a deleted
+file, `null` for both an empty diff.
 
-## Lazy Diff Mode
-
-If `<knowwe-text-diff>` has no server-rendered shadow content, it loads its diff when it enters the viewport. The
-table renderer posts `oldText`, `newText`, and optional `contextLines` to `action/TextDiffAction`. The CodeMirror
-renderer diffs slotted and programmatic texts in the browser without a request, and asks an action url for the
-texts with `format=json`.
-
-```html
-<knowwe-text-diff data-context-lines="3">
-  <script type="text/plain" slot="old">old content</script>
-  <script type="text/plain" slot="new">new content</script>
-</knowwe-text-diff>
-```
-
-Programmatic usage is also supported:
-
-```js
-const diff = document.querySelector('knowwe-text-diff');
-diff.oldText = oldText;
-diff.newText = newText;
-```
-
-Use `data-action-url` to point at a different backend endpoint.
-
-## JSON Format
-
-The browser side renderer (opt in, see below) needs both texts rather than rendered HTML. `DiffJsonRenderer` writes
-them as one JSON document together with the line counts, and `TextDiffAction` returns that document instead of HTML
-when called with the parameter `format=json`. Endpoints of other plugins that feed `<knowwe-text-diff>` should
-support the same parameter.
+Endpoints that feed a `<knowwe-text-diff>` through `data-action-url` answer with `new DiffTexts(oldText, newText).toJson()`:
 
 ```json
-{"old": "full old text", "new": "full new text", "stats": {"added": 7, "removed": 10}}
+{"old": "full old text", "new": "full new text"}
 ```
 
-Line endings are normalized to `\n`, a missing side is `null`. The counts are those of the browser diff, which
-gives both texts a trailing newline, so a newline that only one side ends with is not counted. The output contains
-no `<` character and can be inlined into a script element.
+Line endings are normalized to `\n`, a missing side is `null`. The output contains no `<` character and can be
+inlined into a script element.
 
-`DiffRenderOptions.withRenderer(DiffRenderer.CODEMIRROR)` makes the server render a placeholder of a plausible height
-plus the JSON in a `<script type="application/json" class="diff-data">` inside the shadow root, and marks the host
-with `data-renderer="codemirror"`. The default renderer stays the server rendered table.
-
-The fixtures in `src/test/resources/com/denkbares/knowwe/textdiff/fixtures/` pin the JSON and the line chunks of the
-Java diff for both the Java tests and the browser tests of the diff module.
-
-## Created And Deleted Files
-
-`TextDiff` uses `null` for a missing side:
-
-- `new TextDiff(null, newText)` means created/all-added.
-- `new TextDiff(oldText, null)` means deleted/all-removed.
-- `new TextDiff(null, null)` means empty diff.
-
-The renderer detects created/deleted files and emits a compact single-line-number layout:
-`single-line-number new-only` or `single-line-number old-only`.
-
-In lazy mode, use explicit null attributes:
-
-```html
-<knowwe-text-diff data-old-null>
-  <script type="text/plain" slot="new">created content</script>
-</knowwe-text-diff>
-
-<knowwe-text-diff data-new-null>
-  <script type="text/plain" slot="old">deleted content</script>
-</knowwe-text-diff>
-```
-
-An absent slot without one of these null attributes is treated as an empty string.
+The fixtures in `src/test/resources/com/denkbares/knowwe/textdiff/fixtures/` pin the JSON, the line counts and the
+line chunks of the diff for both the Java tests and the browser tests of the diff module.
 
 ## File Change Frames
 
@@ -169,15 +110,14 @@ collapse behavior.
 ```
 
 Supported changes are `added`, `deleted`, `modified`, `renamed`, `renamed-modified`, and `added-deleted`
-(created and deleted again within the observed range).
-The component also accepts common aliases like `create`, `delete`, `removed`, `rename`, and
-`rename-modified`.
+(created and deleted again within the observed range). The whole header toggles collapse. Links inside the header
+still navigate. `data-collapsed` renders the body collapsed initially. Once the diff in the body computed its
+counts, they replace the given additions and deletions.
 
-The whole header toggles collapse. Links inside the header still navigate. `data-collapsed`
-renders the body collapsed initially. A `<knowwe-text-diff>` with the CodeMirror renderer in the body adds two
-buttons to the header, one that switches the diff between one column and two (part `layout-button`) and one that
-hides whitespace changes (part `whitespace-button`, pressed while they are hidden). `data-controls` names the
-buttons to offer, `data-controls=""` shows none, and a diff with a fixed layout gets no layout button.
+A `<knowwe-text-diff>` with a context in the body adds two buttons to the header, one that switches the diff
+between one column and two (part `layout-button`) and one that hides whitespace changes (part `whitespace-button`,
+pressed while they are hidden). `data-controls` names the buttons to offer, `data-controls=""` shows none, and a
+diff with a fixed layout gets no layout button.
 
 Extra controls such as links to related views go into the `actions` slot and appear in the header
 between the stats and the badge:
@@ -189,41 +129,24 @@ between the stats and the badge:
 </knowwe-file-change>
 ```
 
-Preferred server-side file/article change usage:
+Server side:
 
 ```java
-FileChange change = FileChange.fromArticle("OldArticle", "NewArticle", newArticleText);
-if (change == null) return "";
-
-String html = DiffHtmlRenderer.renderFileChange(change);
+FileChange change = FileChange.modified("Article", oldText, newText);
+String html = DiffHtmlRenderer.renderFileChange(change, options);
 ```
 
-`FileChange.fromArticle(...)` uses `Environment.getInstance().getArticleManager()` to load the
-current article text and infer the operation. It returns `null` when there is no visible change.
-
-Convenience forms:
-
-```java
-FileChange changed = FileChange.fromArticle("Article", newContent);
-FileChange deleted = FileChange.fromArticle("Article", null);
-FileChange created = FileChange.fromArticle(null, "NewArticle", newContent);
-```
-
-Manual construction remains available through `new FileChange(...)` or helpers such as
-`FileChange.added(...)`, `FileChange.deleted(...)`, `FileChange.modified(...)`,
-`FileChange.renamed(...)`, and `FileChange.renamedModified(...)`.
-
-Additions/deletions are computed from the diff model by `DiffHtmlRenderer` and written as component
-attributes.
+`FileChange.added(...)`, `deleted(...)`, `modified(...)`, `renamed(...)` and `renamedModified(...)` build the
+model of one article operation with the article links, `new FileChange(...)` takes names and urls as they are.
 
 ## Styling And Errors
 
-Both components use shadow DOM and expose CSS `part` attributes plus custom properties for
-theming. Set `data-theme="light"` or `data-theme="dark"` to explicitly overwrite the theme.
+Both components use shadow DOM and expose CSS `part` attributes plus custom properties for theming. The components
+follow the display mode of the wiki, `data-theme="light"` or `data-theme="dark"` overrides it.
 
-`<knowwe-text-diff>` sets `data-status="loading"`, `ready`, or `error`. Fetch/backend errors render
-as a small status placeholder. `<knowwe-file-change>` is forgiving: unknown change types fall back
-to `modified`, invalid stats are hidden, and missing names render as `Unnamed file`.
+`<knowwe-text-diff>` sets `data-status="loading"`, `ready`, or `error`. A failed request and a view that cannot be
+built render as a small status placeholder. `<knowwe-file-change>` is forgiving:
+unknown change types fall back to `modified`, invalid stats are hidden, and missing names render as `Unnamed file`.
 
 ## Demo
 

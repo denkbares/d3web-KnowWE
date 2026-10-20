@@ -126,14 +126,4 @@ class TextDiffTest {
 		TextDiff diff = new TextDiff(a.toString(), b.toString());
 		assertTrue(diff.lines().size() > 5000);
 	}
-
-	@Test
-	void iterableYieldsSameLines() {
-		TextDiff diff = new TextDiff("a\nb", "a\nc");
-		List<TextDiff.Line> viaIterator = new java.util.ArrayList<>();
-		for (TextDiff.Line line : diff) {
-			viaIterator.add(line);
-		}
-		assertEquals(diff.lines(), viaIterator);
-	}
 }

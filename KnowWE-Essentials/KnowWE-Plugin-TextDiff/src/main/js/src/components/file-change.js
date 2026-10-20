@@ -30,9 +30,9 @@
  *             attribute changes.
  *
  * The stats show the given additions and deletions until a <knowwe-text-diff> in the body reports the counts of
- * the diff it computed, which replace them. A diff built in the browser gets two buttons in the header, one that
- * switches between one column and two and one that hides whitespace changes, unless data-controls leaves them out
- * or the diff has a fixed layout.
+ * the diff it computed, which replace them. A diff with a context gets two buttons in the header, one that switches
+ * between one column and two and one that hides whitespace changes, unless data-controls leaves them out or the
+ * diff has a fixed layout.
  */
 const STYLESHEET_URL = 'KnowWEExtension/css/KnowWE-Plugin-TextDiff.css';
 const CHEVRON_DOWN_ICON =
@@ -77,11 +77,6 @@ function resourceUrl(path) {
 }
 
 function normalizeChange(value) {
-	if (value === 'create' || value === 'created') return 'added';
-	if (value === 'delete' || value === 'removed') return 'deleted';
-	if (value === 'rename') return 'renamed';
-	if (value === 'rename-modified' || value === 'renamed-with-modifications') return 'renamed-modified';
-	if (value === 'add-delete' || value === 'created-deleted' || value === 'transient') return 'added-deleted';
 	return Object.prototype.hasOwnProperty.call(CHANGE_TYPES, value) ? value : 'modified';
 }
 
@@ -183,12 +178,18 @@ class KnowweFileChange extends HTMLElement {
 		return value === null ? ['layout', 'whitespace'] : value.split(/\s+/);
 	}
 
+	// a choice is only offered for a diff that remembers it, which needs a context
+	_choosing() {
+		const diff = this._textDiff();
+		return diff && 'effectiveLayout' in diff && diff.context !== null;
+	}
+
 	// the button shows the layout a click switches to, and only for a diff that has layouts to choose from
 	_updateLayoutButton(effective, layouts = LAYOUTS_ALL) {
 		const button = this.shadowRoot && this.shadowRoot.querySelector('.file-change-layout');
 		if (!button) return;
 		const current = LAYOUT_SWITCH[effective];
-		button.hidden = !current || layouts.length < 2 || !this._controls().includes('layout');
+		button.hidden = !current || layouts.length < 2 || !this._choosing() || !this._controls().includes('layout');
 		if (!current) return;
 		button.innerHTML = LAYOUT_SWITCH[current.next].icon;
 		button.title = current.label;
@@ -206,7 +207,7 @@ class KnowweFileChange extends HTMLElement {
 	_updateWhitespaceButton(ignore) {
 		const button = this.shadowRoot && this.shadowRoot.querySelector('.file-change-whitespace');
 		if (!button) return;
-		button.hidden = typeof ignore !== 'boolean' || !this._controls().includes('whitespace');
+		button.hidden = typeof ignore !== 'boolean' || !this._choosing() || !this._controls().includes('whitespace');
 		if (button.hidden) return;
 		button.setAttribute('aria-pressed', String(ignore));
 		button.title = ignore ? 'Show whitespace changes' : 'Hide whitespace changes';
@@ -268,9 +269,9 @@ class KnowweFileChange extends HTMLElement {
 		if (toggle) toggle.hidden = !hasBody;
 		// a diff that was upgraded before this frame has announced its layout already
 		const diff = this._textDiff();
-		const rich = diff && 'effectiveLayout' in diff && diff.effectiveLayout !== null;
-		this._updateLayoutButton(rich ? diff.effectiveLayout : null, rich ? diff.layouts : undefined);
-		this._updateWhitespaceButton(rich ? diff.ignoreWhitespace : null);
+		const upgraded = diff && 'effectiveLayout' in diff;
+		this._updateLayoutButton(upgraded ? diff.effectiveLayout : null, upgraded ? diff.layouts : undefined);
+		this._updateWhitespaceButton(upgraded ? diff.ignoreWhitespace : null);
 	}
 
 	_toggleCollapsed() {

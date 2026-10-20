@@ -6,101 +6,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DiffHtmlRendererTest {
 
-	private final DiffRenderOptions noShadow = DiffRenderOptions.defaults().withShadowDom(false);
-
 	@Test
-	void rendersAddedRemovedAndCommonClasses() {
-		TextDiff diff = new TextDiff("a\nB\nc", "a\nb\nc");
-		String html = DiffHtmlRenderer.renderTextDiff(diff, noShadow);
-		assertTrue(html.contains("class=\"line common"), html);
-		assertTrue(html.contains("class=\"line added"), html);
-		assertTrue(html.contains("class=\"line removed"), html);
-		assertFalse(html.contains("<template"));
-	}
-
-	@Test
-	void shadowDomWrapperIncludesStylesheet() {
-		TextDiff diff = new TextDiff("a", "b");
+	void hostCarriesPlaceholderAndJsonInShadowRoot() {
+		TextDiff diff = new TextDiff("a\nb\nc\n", "a\nB\nc\n");
 		String html = DiffHtmlRenderer.renderTextDiff(diff);
-		assertTrue(html.contains("<template shadowrootmode=\"open\">"));
-		assertTrue(html.contains("KnowWE-Plugin-TextDiff.css"));
+		assertTrue(html.startsWith("<knowwe-text-diff data-layout=\"unified\" data-context-lines=\"3\">"), html);
+		assertTrue(html.contains("<template shadowrootmode=\"open\">"), html);
+		assertTrue(html.contains("KnowWE-Plugin-TextDiff.css"), html);
+		assertTrue(html.contains("class=\"diff-frame diff-placeholder\" part=\"frame\" style=\"--diff-placeholder-lines: 5\""), html);
+		assertTrue(html.contains("<script type=\"application/json\" class=\"diff-data\">{\"old\":\"a\\nb\\nc\\n\",\"new\":\"a\\nB\\nc\\n\"}</script>"), html);
+		assertTrue(html.endsWith("</template></knowwe-text-diff>"), html);
 	}
 
 	@Test
-	void escapesHtmlSpecialChars() {
-		TextDiff diff = new TextDiff("<a>&\"'", "different");
-		String html = DiffHtmlRenderer.renderTextDiff(diff, noShadow);
-		assertTrue(html.contains("&lt;a&gt;&amp;&quot;&apos;"), html);
-		assertFalse(html.contains("<a>"), html);
+	void textInJsonIsSafeInsideTheScriptElement() {
+		String html = DiffHtmlRenderer.renderTextDiff(new TextDiff("</script><a>", "x"));
+		assertFalse(html.contains("</script><a>"), html);
+		assertTrue(html.contains("\\u003c/script>\\u003ca>"), html);
 	}
 
 	@Test
-	void elidedRegionsAppearWhenLongUnchanged() {
+	void placeholderCountsEveryLineWithoutElision() {
 		StringBuilder a = new StringBuilder();
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < 20; i++) {
-			a.append("line ").append(i).append('\n');
-			b.append("line ").append(i).append('\n');
-		}
-		a.append("END_OLD\n");
-		b.append("END_NEW\n");
-		TextDiff diff = new TextDiff(a.toString(), b.toString());
-		String html = DiffHtmlRenderer.renderTextDiff(diff, noShadow.withContextLines(2));
-		assertTrue(html.contains("class=\"elided\""), html);
-		assertTrue(html.contains("class=\"line common hidden\""), html);
+		for (int i = 0; i < 30; i++) a.append("line ").append(i).append('\n');
+		String b = a + "extra\n";
+		String html = DiffHtmlRenderer.renderTextDiff(new TextDiff(a.toString(), b),
+				DiffRenderOptions.defaults().withContextLines(-1));
+		assertTrue(html.contains("--diff-placeholder-lines: 32"), html);
 	}
 
 	@Test
-	void contextLinesNegativeShowsAllNoElision() {
-		StringBuilder a = new StringBuilder();
-		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < 30; i++) {
-			a.append("line ").append(i).append('\n');
-			b.append("line ").append(i).append('\n');
-		}
-		a.append("OLD\n");
-		b.append("NEW\n");
-		String html = DiffHtmlRenderer.renderTextDiff(new TextDiff(a.toString(), b.toString()),
-				noShadow.withContextLines(-1));
-		assertFalse(html.contains("class=\"elided\""));
-		assertFalse(html.contains("hidden"));
-	}
-
-	@Test
-	void emitsPartAttributes() {
-		String html = DiffHtmlRenderer.renderTextDiff(new TextDiff("a\nB", "a\nb"), noShadow);
-		assertTrue(html.contains("part=\"line common\""), html);
-		assertTrue(html.contains("part=\"line added\""), html);
-		assertTrue(html.contains("part=\"line removed\""), html);
-		assertTrue(html.contains("part=\"num old\""), html);
-		assertTrue(html.contains("part=\"num new\""), html);
-		assertTrue(html.contains("part=\"sign\""), html);
-		assertTrue(html.contains("part=\"text\""), html);
-	}
-
-	@Test
-	void renderTextDiffShadowContentOmitsHostAndTemplate() {
-		String html = DiffHtmlRenderer.renderTextDiffShadowContent(new TextDiff("a", "b"), DiffRenderOptions.defaults());
-		assertFalse(html.contains("<knowwe-text-diff"));
-		assertFalse(html.contains("<template"));
-		assertTrue(html.contains("<link rel=\"stylesheet\""));
-		assertTrue(html.contains("<table class=\"diff "), html);
-	}
-
-	@Test
-	void addedFileUsesSingleNewLineNumberColumn() {
-		String html = DiffHtmlRenderer.renderTextDiff(new TextDiff(null, "a\nb"), noShadow);
-		assertTrue(html.contains("<table class=\"diff single-line-number new-only\""), html);
-		assertFalse(html.contains("class=\"num old\""), html);
-		assertTrue(html.contains("class=\"num new\""), html);
-	}
-
-	@Test
-	void removedFileUsesSingleOldLineNumberColumn() {
-		String html = DiffHtmlRenderer.renderTextDiff(new TextDiff("a\nb", null), noShadow);
-		assertTrue(html.contains("<table class=\"diff single-line-number old-only\""), html);
-		assertTrue(html.contains("class=\"num old\""), html);
-		assertFalse(html.contains("class=\"num new\""), html);
+	void emitsTheRequestedLayoutAndContext() {
+		TextDiff diff = new TextDiff("a", "b");
+		DiffRenderOptions options = DiffRenderOptions.defaults().withContext("page-history");
+		assertTrue(DiffHtmlRenderer.renderTextDiff(diff, options.withView(DiffView.SIDE_BY_SIDE))
+				.startsWith("<knowwe-text-diff data-layout=\"split\" data-context=\"page-history\""));
+		assertTrue(DiffHtmlRenderer.renderTextDiff(diff, options.withView(DiffView.AUTO))
+				.startsWith("<knowwe-text-diff data-layout=\"auto\" data-context=\"page-history\""));
 	}
 
 	@Test
@@ -112,10 +54,9 @@ class DiffHtmlRendererTest {
 				null,
 				"Wiki.jsp?page=Old&x=1",
 				"Wiki.jsp?page=New\"Article\"",
-				new TextDiff("a\nb", "a\nc\nd"),
-				true);
+				new TextDiff("a\nb", "a\nc\nd"));
 
-		String html = DiffHtmlRenderer.renderFileChange(change, noShadow);
+		String html = DiffHtmlRenderer.renderFileChange(change);
 		assertTrue(html.startsWith("<knowwe-file-change"), html);
 		assertTrue(html.contains("data-change=\"renamed-modified\""), html);
 		assertTrue(html.contains("data-old-name=\"Old&lt;Article&gt;\""), html);
@@ -124,69 +65,19 @@ class DiffHtmlRendererTest {
 		assertTrue(html.contains("data-new-url=\"Wiki.jsp?page=New&quot;Article&quot;\""), html);
 		assertTrue(html.contains("data-additions=\"2\""), html);
 		assertTrue(html.contains("data-deletions=\"1\""), html);
-		assertTrue(html.contains("data-collapsed"), html);
 		assertTrue(html.contains("<knowwe-text-diff"), html);
 	}
 
 	@Test
 	void rendersRenameOnlyFileChangeWithoutDiffBodyAttributes() {
-		FileChange change = new FileChange(
-				FileChange.ChangeType.RENAMED,
-				"OldArticle",
-				"NewArticle",
-				null,
-				null,
-				null,
-				null,
-				false);
+		FileChange change = new FileChange(FileChange.ChangeType.RENAMED, "OldArticle", "NewArticle", null, null, null, null);
 
-		String html = DiffHtmlRenderer.renderFileChange(change, noShadow);
+		String html = DiffHtmlRenderer.renderFileChange(change);
 		assertTrue(html.contains("data-change=\"renamed\""), html);
 		assertTrue(html.contains("data-old-name=\"OldArticle\""), html);
 		assertTrue(html.contains("data-new-name=\"NewArticle\""), html);
 		assertFalse(html.contains("<knowwe-text-diff"), html);
 		assertFalse(html.contains("data-additions"), html);
 		assertFalse(html.contains("data-deletions"), html);
-	}
-
-	@Test
-	void sideBySideThrows() {
-		assertThrows(UnsupportedOperationException.class,
-				() -> DiffHtmlRenderer.renderTextDiff(TextDiff.empty(),
-						DiffRenderOptions.defaults().withView(DiffView.SIDE_BY_SIDE)));
-	}
-
-	@Test
-	void codemirrorRendererEmitsPlaceholderAndJson() {
-		TextDiff diff = new TextDiff("a\nb\nc\n", "a\nB\nc\n");
-		String html = DiffHtmlRenderer.renderTextDiff(diff, DiffRenderOptions.defaults()
-				.withRenderer(DiffRenderer.CODEMIRROR));
-		assertTrue(html.contains("<knowwe-text-diff data-layout=\"unified\" data-context-lines=\"3\" data-renderer=\"codemirror\">"), html);
-		assertTrue(html.contains("<template shadowrootmode=\"open\">"), html);
-		assertTrue(html.contains("KnowWE-Plugin-TextDiff.css"), html);
-		assertTrue(html.contains("class=\"diff-frame diff-placeholder\" part=\"frame\" style=\"--diff-placeholder-lines: 5\""), html);
-		assertTrue(html.contains("<script type=\"application/json\" class=\"diff-data\">{\"old\":\"a\\nb\\nc\\n\",\"new\":\"a\\nB\\nc\\n\",\"stats\":{\"added\":1,\"removed\":1}}</script>"), html);
-		assertFalse(html.contains("<table"), html);
-	}
-
-	@Test
-	void codemirrorRendererEmitsTheRequestedLayout() {
-		TextDiff diff = new TextDiff("a", "b");
-		DiffRenderOptions options = DiffRenderOptions.defaults().withRenderer(DiffRenderer.CODEMIRROR);
-		assertTrue(DiffHtmlRenderer.renderTextDiff(diff, options.withView(DiffView.SIDE_BY_SIDE))
-				.startsWith("<knowwe-text-diff data-layout=\"split\""));
-		assertTrue(DiffHtmlRenderer.renderTextDiff(diff, options.withView(DiffView.AUTO))
-				.startsWith("<knowwe-text-diff data-layout=\"auto\""));
-	}
-
-	@Test
-	void codemirrorShadowContentHasNoHostElement() {
-		TextDiff diff = new TextDiff("a", "b");
-		String html = DiffHtmlRenderer.renderTextDiffShadowContent(diff, DiffRenderOptions.defaults()
-				.withRenderer(DiffRenderer.CODEMIRROR));
-		assertFalse(html.contains("<knowwe-text-diff"), html);
-		assertTrue(html.contains("<link rel=\"stylesheet\""), html);
-		assertTrue(html.contains("diff-placeholder"), html);
-		assertTrue(html.contains("<script type=\"application/json\""), html);
 	}
 }

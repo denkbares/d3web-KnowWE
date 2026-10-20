@@ -3,7 +3,6 @@ import {encode, greedy} from "./myers.js";
 // words are runs of letters, digits and underscores, whitespace runs stay one token, anything else is one character
 const TOKEN = /[\p{L}\p{N}_]+|[^\S\n]+|\n|./gsu;
 const WORD_START = /^[\p{L}\p{N}_]/u;
-const BLANK = /^\s/;
 
 // beyond these edit distances the sides are too different for a useful in-line view
 const MAX_TOKEN_D = 2000;
@@ -16,24 +15,20 @@ export function tokenize(text) {
 
 /**
  * The character changes {fromA, toA, fromB, toB} between two strings, relative to the strings. Tokens are diffed as
- * units, and a single replaced word is diffed by characters if both words are similar. With ignoreWhitespace,
- * whitespace tokens take no part in the comparison. Null if the strings are too different.
+ * units, and a single replaced word is diffed by characters if both words are similar. Null if the strings are too
+ * different.
  */
-export function refine(a, b, {ignoreWhitespace = false} = {}) {
+export function refine(a, b) {
 	const ta = tokenize(a), tb = tokenize(b);
 	const pa = positions(ta), pb = positions(tb);
-	// indexes of the tokens that are compared, all of them or the non blank ones
-	const ia = indexes(ta, ignoreWhitespace), ib = indexes(tb, ignoreWhitespace);
-	const [ea, eb] = encode(ia.map(i => ta[i]), ib.map(i => tb[i]));
+	const [ea, eb] = encode(ta, tb);
 	const chunks = greedy(ea, eb, MAX_TOKEN_D);
 	if (!chunks) return null;
 	const out = [];
 	for (const [ci, cl, di, dl] of chunks) {
-		// a chunk of compared tokens maps back to a range of all tokens, blanks at its edges excluded
-		const fromA = pa[ci < ia.length ? ia[ci] : ta.length], toA = cl ? pa[ia[ci + cl - 1] + 1] : fromA;
-		const fromB = pb[di < ib.length ? ib[di] : tb.length], toB = dl ? pb[ib[di + dl - 1] + 1] : fromB;
+		const fromA = pa[ci], toA = pa[ci + cl], fromB = pb[di], toB = pb[di + dl];
 		if (cl === 1 && dl === 1) {
-			const wa = ta[ia[ci]], wb = tb[ib[di]];
+			const wa = ta[ci], wb = tb[di];
 			if (WORD_START.test(wa) && WORD_START.test(wb)) {
 				const inner = charDiff(wa, wb);
 				if (inner) {
@@ -45,14 +40,6 @@ export function refine(a, b, {ignoreWhitespace = false} = {}) {
 			}
 		}
 		out.push({fromA, toA, fromB, toB});
-	}
-	return out;
-}
-
-function indexes(tokens, ignoreWhitespace) {
-	const out = [];
-	for (let i = 0; i < tokens.length; i++) {
-		if (!ignoreWhitespace || !BLANK.test(tokens[i])) out.push(i);
 	}
 	return out;
 }

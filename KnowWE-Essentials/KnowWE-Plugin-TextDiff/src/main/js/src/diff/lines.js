@@ -35,32 +35,3 @@ export function lineDiff(aLines, bLines, {ignoreWhitespace = false} = {}) {
 		: encode(aLines, bLines);
 	return myers(a, b);
 }
-
-/**
- * The line model of a diff, one entry per shown line with the 1-based old and new line numbers (0 for a missing
- * side) and the status "common", "removed" or "added". The empty line after a final newline is left out.
- */
-export function lineModel(aLines, bLines, chunks) {
-	const lines = [];
-	const lastA = aLines.length - 1, lastB = bLines.length - 1;
-	let ai = 0, bi = 0;
-	const common = (untilA) => {
-		while (ai < untilA) {
-			if (ai < lastA) lines.push({old: ai + 1, new: bi + 1, status: "common", text: aLines[ai]});
-			ai++;
-			bi++;
-		}
-	};
-	for (const [aPos, aLen, bPos, bLen] of chunks) {
-		common(aPos);
-		for (let i = 0; i < aLen; i++, ai++) {
-			lines.push({old: ai + 1, new: 0, status: "removed", text: aLines[ai]});
-		}
-		for (let i = 0; i < bLen; i++, bi++) {
-			lines.push({old: 0, new: bi + 1, status: "added", text: bLines[bi]});
-		}
-		if (bi !== bPos + bLen) throw new Error("chunks out of order");
-	}
-	common(lastA);
-	return lines;
-}

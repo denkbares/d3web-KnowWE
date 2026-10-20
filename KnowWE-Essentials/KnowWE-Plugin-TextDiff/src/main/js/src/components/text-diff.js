@@ -1,83 +1,63 @@
 /**
- * <knowwe-text-diff> renders a text diff inside its own shadow DOM, as a CodeMirror view built in the browser or as
- * a table.
+ * <knowwe-text-diff> renders a text diff inside its own shadow DOM as a CodeMirror view built in the browser from
+ * both texts. The texts come from one of three places:
  *
- * Usage modes, any one of them:
+ *   1. Server rendered. The host carries a declarative shadow root with a placeholder and both texts as JSON:
  *
- *   1. Server rendered. The host carries a declarative shadow root. With the table renderer it holds the complete
- *      table, with the CodeMirror renderer a placeholder and both texts as JSON:
- *
- *        <knowwe-text-diff data-renderer="codemirror">
+ *        <knowwe-text-diff data-layout="auto" data-context="page-history">
  *          <template shadowrootmode="open">
  *            <link rel="stylesheet" href=".../KnowWE-Plugin-TextDiff.css">
  *            <div class="diff-frame diff-placeholder"></div>
- *            <script type="application/json" class="diff-data">{"old": "...", "new": "...", "stats": {...}}</script>
+ *            <script type="application/json" class="diff-data">{"old": "...", "new": "..."}</script>
  *          </template>
  *        </knowwe-text-diff>
  *
- *   2. Slotted raw text. The texts are diffed in the browser with the CodeMirror renderer, or posted to the backend
- *      with the table renderer, once the element scrolls near the viewport:
+ *   2. Attributes. data-old-text and data-new-text hold the texts, data-old-null and data-new-null mark a missing
+ *      side, meaning a created or a deleted article. An absent attribute is the empty text.
  *
- *        <knowwe-text-diff data-context-lines="3">
- *          <script type="text/plain" slot="old">...</script>
- *          <script type="text/plain" slot="new">...</script>
- *        </knowwe-text-diff>
+ *   3. Endpoint driven. data-action-url names a backend action that answers the same JSON document:
  *
- *   3. Programmatic. Set the oldText and newText properties, the diff renders once both are set, or call load().
- *
- *   4. Endpoint driven. data-action-url names a backend action that derives the diff from the url itself. The
- *      CodeMirror renderer requests it with format=json, the table renderer as HTML:
- *
- *        <knowwe-text-diff data-action-url="action/MyDiffHtmlAction?file=..."></knowwe-text-diff>
+ *        <knowwe-text-diff data-action-url="action/MyDiffAction?file=..."></knowwe-text-diff>
  *
  * Attributes:
- *   - data-renderer:        codemirror | table (default). The CodeMirror renderer falls back to a table built in the
- *                           browser if the view cannot be created.
- *   - data-layout:          unified (default) | split | auto, CodeMirror renderer only. auto shows wide elements
- *                           side by side and narrow ones in one column. A layout the user chose for the context
- *                           of the element takes precedence.
+ *   - data-layout:          unified (default) | split | auto. auto shows wide elements side by side and narrow ones
+ *                           in one column. A layout the user chose for the context of the element takes precedence.
  *   - data-layouts:         the layouts the user may choose, "unified split" by default. With a single one the
  *                           layout is fixed and a frame around the element offers no switch.
- *   - data-whitespace:      show (default) | ignore, CodeMirror renderer only. ignore diffs the lines with all
- *                           whitespace removed and leaves whitespace tokens unmarked. A choice of the user for the
- *                           context takes precedence.
- *   - data-context:         a name under which choices of the user, such as the layout and the whitespace mode,
- *                           are remembered and shared by all elements of the same context
- *   - data-language:        wiki (default) | none, the highlighting of the CodeMirror renderer
+ *   - data-context:         a name under which choices of the user, the layout and the whitespace mode, are
+ *                           remembered and shared by all elements of the same context. Without one the element has
+ *                           no choices to offer.
+ *   - data-language:        wiki (default) | none, the highlighting
  *   - data-highlight-limit: texts above this many characters are shown without highlighting, default 200000
- *   - data-wrap:            false switches line wrapping off, CodeMirror renderer only
+ *   - data-wrap:            false switches line wrapping off
  *   - data-context-lines:   number of unchanged lines to show around each change, -1 shows all. Defaults to 3.
- *   - data-action-url:      the backend endpoint, default action/TextDiffAction
- *   - data-old-null:        the old side is missing, meaning a created file or article
- *   - data-new-null:        the new side is missing, meaning a deleted file or article
  *   - data-status:          set by the component to loading | ready | error
  *   - data-theme:           optional explicit light | dark theme override
  *
  * Events:
- *   - knowwe-text-diff-stats: dispatched (bubbling) once the browser computed the diff, detail.added and
- *                             detail.removed are its line counts, detail.ignoreWhitespace the mode they count.
- *   - knowwe-text-diff-layout: dispatched (bubbling) by the CodeMirror renderer when the element connects and
- *                             whenever its layout changes, detail.layout is the requested and detail.effective the
- *                             shown layout, unified or split, detail.layouts the choosable ones.
- *   - knowwe-text-diff-whitespace: dispatched (bubbling) by the CodeMirror renderer when the element connects and
- *                             whenever its whitespace mode changes, detail.ignore tells whether whitespace is
- *                             ignored.
+ *   - knowwe-text-diff-stats: dispatched (bubbling) once the diff was computed, detail.added and detail.removed are
+ *                             its line counts, detail.ignoreWhitespace the mode they count.
+ *   - knowwe-text-diff-layout: dispatched (bubbling) when the element connects and whenever its layout changes,
+ *                             detail.layout is the requested and detail.effective the shown layout, unified or
+ *                             split, detail.layouts the choosable ones.
+ *   - knowwe-text-diff-whitespace: dispatched (bubbling) when the element connects and whenever its whitespace mode
+ *                             changes, detail.ignore tells whether whitespace is ignored.
  *
- * Properties: layout (the requested layout), layouts (the choosable ones), effectiveLayout (the shown layout,
- * null with the table renderer), ignoreWhitespace (the whitespace mode). Setting layout or ignoreWhitespace
- * remembers the choice for the context and applies it to every element of the context. The exported preferences
- * object reads and sets these choices for a context without an element at hand.
+ * Properties: layout (the requested layout), layouts (the choosable ones), effectiveLayout (the shown layout),
+ * ignoreWhitespace (the whitespace mode), stats (the line counts). Setting layout or ignoreWhitespace remembers the
+ * choice for the context and applies it to every element of the context. The exported preferences object reads and
+ * sets these choices for a context without an element at hand.
  *
- * The CodeMirror view is created when the element comes near the viewport and destroyed again when it leaves it by
- * a wide margin, keeping its height, so long lists of diffs stay light.
+ * The view is created when the element comes near the viewport and destroyed again when it leaves it by a wide
+ * margin, keeping its height, so long lists of diffs stay light. When the texts cannot be loaded or the view cannot
+ * be built, the element shows an error note. The bundle itself needs the CodeMirror bundle of KnowWE-Resources,
+ * which loads before it on every page.
  *
  * Test seam: assign a function to window.knowweTextDiffFetch to intercept the backend call.
  */
 import {computeDiff} from "../diff/index.js";
-import {renderTable} from "../renderer/table.js";
 import {createDiffView} from "../renderer/codemirror.js";
 
-const DEFAULT_ACTION_URL = "action/TextDiffAction";
 const STYLESHEET_URL = "KnowWEExtension/css/KnowWE-Plugin-TextDiff.css";
 const DEFAULT_CONTEXT_LINES = 3;
 const DEFAULT_HIGHLIGHT_LIMIT = 200000;
@@ -130,7 +110,7 @@ export const preferences = {
 		if (!CHOICES[key] || !CHOICES[key].includes(value)) throw new Error("Unknown " + key + " " + value);
 		storeChoice(context, key, value);
 		for (const element of connectedElements) {
-			if (element._context() === context) element._applyChoice(key);
+			if (element.context === context) element._applyChoice(key);
 		}
 	}
 };
@@ -164,13 +144,12 @@ function resourceUrl(path) {
 }
 
 // the backend checks the access of the reader against the page the component sits on, so the request carries it
-function withWikiParams(url, params = {}) {
+function withWikiParams(url) {
 	try {
 		const u = new URL(url, window.location.href);
 		if (typeof Wiki !== "undefined" && Wiki.CsrfProtection) u.searchParams.set("X-XSRF-TOKEN", Wiki.CsrfProtection);
 		const page = typeof KNOWWE !== "undefined" && KNOWWE.helper.getPagename();
 		if (page && !u.searchParams.has("KWiki_Topic")) u.searchParams.set("KWiki_Topic", page);
-		for (const [name, value] of Object.entries(params)) u.searchParams.set(name, value);
 		return u.toString();
 	}
 	catch (_) {
@@ -182,15 +161,7 @@ function displayMode() {
 	return typeof KNOWWE !== "undefined" && KNOWWE.helper.getDisplayMode ? KNOWWE.helper.getDisplayMode() : "light";
 }
 
-function codeMirrorAvailable() {
-	return typeof CodeMirror !== "undefined" && !!CodeMirror.merge;
-}
-
 export class KnowweTextDiff extends HTMLElement {
-	static get observedAttributes() {
-		return ["data-layout", "data-whitespace"];
-	}
-
 	connectedCallback() {
 		if (!this.hasAttribute("data-theme")) this.setAttribute("data-theme", displayMode());
 		connectedElements.add(this);
@@ -205,26 +176,18 @@ export class KnowweTextDiff extends HTMLElement {
 		this._observeSize();
 		this._announceLayout();
 		this._announceWhitespace();
-		const root = this.shadowRoot;
-		const inline = root && root.querySelector("script.diff-data");
+		const inline = this.shadowRoot && this.shadowRoot.querySelector("script.diff-data");
 		if (inline) {
 			try {
 				this._data = JSON.parse(inline.textContent);
 				inline.remove();
-				this._observe();
-				return;
 			}
 			catch (err) {
 				this._setStatus("error", "Invalid diff data");
 				return;
 			}
 		}
-		if (root && root.querySelector(".diff-frame")) {
-			this._wireExpanders();
-			return;
-		}
-		// only hosts that opted into lazy loading fetch, server rendered ones must never surface a load error
-		if (this._hasLazyInputs()) this._observe();
+		this._observe();
 	}
 
 	disconnectedCallback() {
@@ -234,30 +197,21 @@ export class KnowweTextDiff extends HTMLElement {
 		this._destroyView();
 	}
 
-	attributeChangedCallback(name) {
-		if (!this._connected) return;
-		if (name === "data-layout") {
-			this._observeSize();
-			this._applyLayout();
-		}
-		else if (name === "data-whitespace") {
-			this._applyWhitespace();
-		}
+	/** The name under which the choices of the user are remembered, or null. */
+	get context() {
+		return this.getAttribute("data-context") || null;
 	}
 
 	/** The requested layout, the choice remembered for the context of the element or its data-layout attribute. */
 	get layout() {
-		const chosen = storedChoice(this._context(), "layout", this.layouts);
+		const chosen = storedChoice(this.context, "layout", this.layouts);
 		return chosen || this.getAttribute("data-layout") || "unified";
 	}
 
-	/**
-	 * Chooses unified or split. With a context the choice is remembered and applied to every element of the
-	 * context, without one it becomes the data-layout attribute of this element.
-	 */
+	/** Chooses unified or split for the context of the element, which remembers it and applies it to every element. */
 	set layout(value) {
 		if (!this.layouts.includes(value)) throw new Error("Layout " + value + " is not available");
-		this._choose("layout", "data-layout", value);
+		if (this.context) preferences.set(this.context, "layout", value);
 	}
 
 	/** The layouts the user may choose, from the data-layouts attribute. */
@@ -266,21 +220,14 @@ export class KnowweTextDiff extends HTMLElement {
 		return named.length ? named : LAYOUTS;
 	}
 
-	/** Whether whitespace is ignored, by the choice remembered for the context or the data-whitespace attribute. */
+	/** Whether whitespace is ignored, by the choice remembered for the context. */
 	get ignoreWhitespace() {
-		const mode = storedChoice(this._context(), "whitespace", WHITESPACE_MODES) || this.getAttribute("data-whitespace");
-		return mode === "ignore";
+		return storedChoice(this.context, "whitespace", WHITESPACE_MODES) === "ignore";
 	}
 
 	/** Switches the whitespace mode, remembered and applied like the layout. */
 	set ignoreWhitespace(value) {
-		this._choose("whitespace", "data-whitespace", value ? "ignore" : "show");
-	}
-
-	_choose(key, attribute, value) {
-		const context = this._context();
-		if (context) preferences.set(context, key, value);
-		else this.setAttribute(attribute, value);
+		if (this.context) preferences.set(this.context, "whitespace", value ? "ignore" : "show");
 	}
 
 	_applyChoice(key) {
@@ -288,47 +235,14 @@ export class KnowweTextDiff extends HTMLElement {
 		else this._applyWhitespace();
 	}
 
-	/** The shown layout, unified or split, or null when the diff is a table. */
+	/** The shown layout, unified or split. */
 	get effectiveLayout() {
-		return this._renderer() === "codemirror" ? this._resolveLayout() : null;
+		return this._resolveLayout();
 	}
 
-	/** Set the "before" text. Once both oldText and newText are set, the diff renders. */
-	set oldText(value) {
-		this._oldText = value;
-		this._maybeReload();
-	}
-
-	/** Set the "after" text. Once both oldText and newText are set, the diff renders. */
-	set newText(value) {
-		this._newText = value;
-		this._maybeReload();
-	}
-
-	/** The line counts of the shown diff, once it was computed in the browser. */
+	/** The line counts of the shown diff, once it was computed. */
 	get stats() {
 		return this._diff ? this._diff.stats : null;
-	}
-
-	/** Loads and renders the diff now. Returns a promise that resolves when the content is rendered. */
-	load() {
-		this._unobserve();
-		this._data = null;
-		this._diff = null;
-		this._rendered = false;
-		return this._render();
-	}
-
-	_renderer() {
-		return this.getAttribute("data-renderer") === "codemirror" && codeMirrorAvailable() ? "codemirror" : "table";
-	}
-
-	_hasLazyInputs() {
-		if (this.querySelector(':scope > [slot="old"]') !== null) return true;
-		if (this.querySelector(':scope > [slot="new"]') !== null) return true;
-		if (this.hasAttribute("data-action-url")) return true;
-		return this.hasAttribute("data-old-text") || this.hasAttribute("data-new-text")
-			|| this.hasAttribute("data-old-null") || this.hasAttribute("data-new-null");
 	}
 
 	_hydrateTemplate() {
@@ -339,12 +253,7 @@ export class KnowweTextDiff extends HTMLElement {
 		tpl.remove();
 	}
 
-	_maybeReload() {
-		if (!this.isConnected) return;
-		if (this._oldText !== undefined && this._newText !== undefined) this.load();
-	}
-
-	// renders when the element comes near the viewport, and for the CodeMirror renderer frees the view when it leaves
+	// renders when the element comes near the viewport and frees the view when it leaves
 	_observe() {
 		if (this._observer) return;
 		if (!("IntersectionObserver" in window)) {
@@ -364,10 +273,6 @@ export class KnowweTextDiff extends HTMLElement {
 			this._observer.disconnect();
 			this._observer = null;
 		}
-	}
-
-	_context() {
-		return this.getAttribute("data-context") || null;
 	}
 
 	// the auto layout follows the width of the element
@@ -398,6 +303,7 @@ export class KnowweTextDiff extends HTMLElement {
 
 	// rebuilds an existing view when the shown layout changed, keeping the line at the top of the viewport in place
 	_applyLayout() {
+		this._observeSize();
 		if (this._editor && this._editor.layout !== this._resolveLayout()) {
 			const anchor = this._topLine();
 			this._showView();
@@ -407,7 +313,6 @@ export class KnowweTextDiff extends HTMLElement {
 	}
 
 	_announceLayout() {
-		if (this._renderer() !== "codemirror") return;
 		const detail = {layout: this.layout, effective: this._resolveLayout(), layouts: this.layouts};
 		if (this._announced && this._announced.layout === detail.layout && this._announced.effective === detail.effective) return;
 		this._announced = detail;
@@ -417,7 +322,7 @@ export class KnowweTextDiff extends HTMLElement {
 	// diffs the kept texts anew in the current whitespace mode and shows the result where a view is shown
 	_applyWhitespace() {
 		const ignore = this.ignoreWhitespace;
-		if (this._data && this._renderer() === "codemirror" && this._diff && this._diff.ignoreWhitespace !== ignore) {
+		if (this._data && this._diff && this._diff.ignoreWhitespace !== ignore) {
 			this._diff = this._computeDiff();
 			if (this._rendered) {
 				const anchor = this._editor ? this._topLine() : null;
@@ -430,7 +335,6 @@ export class KnowweTextDiff extends HTMLElement {
 	}
 
 	_announceWhitespace() {
-		if (this._renderer() !== "codemirror") return;
 		const ignore = this.ignoreWhitespace;
 		if (this._announcedWhitespace === ignore) return;
 		this._announcedWhitespace = ignore;
@@ -517,17 +421,16 @@ export class KnowweTextDiff extends HTMLElement {
 		}
 		this._loading = true;
 		try {
-			if (this._renderer() === "codemirror") {
-				if (!this._data) this._data = await this._loadData();
-				this._diff = this._computeDiff();
-				this._showView();
-				this._dispatchStats();
-			}
-			else {
-				await this._renderServerTable();
-			}
+			if (!this._data) this._data = await this._loadData();
+			this._diff = this._computeDiff();
+			this._showView();
+			this._dispatchStats();
 		}
 		catch (err) {
+			console.warn("knowwe-text-diff: cannot show the diff", err);
+			// the error note is styled by the stylesheet in the shadow root and replaces the placeholder
+			const frame = this._ensureStylesheet().querySelector(".diff-frame");
+			if (frame) frame.remove();
 			this._setStatus("error", err && err.message);
 		}
 		finally {
@@ -535,25 +438,25 @@ export class KnowweTextDiff extends HTMLElement {
 		}
 	}
 
-	// the texts, from the inline data, the endpoint, or the slotted and programmatic inputs without a request
+	// the texts, from the attributes or the endpoint
 	async _loadData() {
 		this._ensureStylesheet();
 		if (!this.hasAttribute("data-action-url")) {
-			return {old: this._readTextInput("_oldText", "old", "data-old-text", "data-old-null"),
-				new: this._readTextInput("_newText", "new", "data-new-text", "data-new-null")};
+			return {old: this._readTextAttribute("data-old-text", "data-old-null"),
+				new: this._readTextAttribute("data-new-text", "data-new-null")};
 		}
 		this._setStatus("loading");
 		const fetchImpl = window.knowweTextDiffFetch || window.fetch.bind(window);
-		const res = await fetchImpl(withWikiParams(this.getAttribute("data-action-url"), {format: "json"}), {
-			method: "POST",
-			headers: {"Content-Type": "application/json; charset=UTF-8"},
-			body: JSON.stringify({contextLines: this._contextLines()})
-		});
+		const res = await fetchImpl(withWikiParams(this.getAttribute("data-action-url")), {method: "POST"});
 		if (!res.ok) throw new Error("HTTP " + res.status);
 		return await res.json();
 	}
 
-	// the CodeMirror view, or the table built in the browser if the view fails
+	_readTextAttribute(textAttribute, nullAttribute) {
+		if (this.hasAttribute(nullAttribute)) return null;
+		return this.getAttribute(textAttribute) || "";
+	}
+
 	_showView() {
 		const root = this._ensureStylesheet();
 		this._destroyView();
@@ -564,7 +467,7 @@ export class KnowweTextDiff extends HTMLElement {
 		this._rendered = true;
 		if (this._diff.stats.added === 0 && this._diff.stats.removed === 0) {
 			// nothing to build a view of, which deserves a word when whitespace changes are hidden
-			const note = this._diff.ignoreWhitespace && this._data && this._data.old !== this._data.new
+			const note = this._diff.ignoreWhitespace && this._data.old !== this._data.new
 				? "Only whitespace changed." : "No changes.";
 			frame.classList.remove("cm-diff");
 			frame.innerHTML = '<p class="diff-note" part="note">' + note + '</p>';
@@ -574,25 +477,17 @@ export class KnowweTextDiff extends HTMLElement {
 		const size = (this._diff.docA.length + this._diff.docB.length);
 		const limit = parseInt(this.getAttribute("data-highlight-limit"), 10);
 		const layout = this._resolveLayout();
-		try {
-			this._editor = createDiffView(frame, this._diff, {
-				root,
-				layout,
-				language: this.getAttribute("data-language") || "wiki",
-				highlight: size <= (Number.isNaN(limit) ? DEFAULT_HIGHLIGHT_LIMIT : limit),
-				wrap: this.getAttribute("data-wrap") !== "false",
-				contextLines: this._contextLines()
-			});
-			this._editor.layout = layout;
-			frame.classList.add("cm-diff");
-			frame.setAttribute("data-layout", layout);
-		}
-		catch (err) {
-			console.warn("knowwe-text-diff: CodeMirror view failed, showing a table", err);
-			frame.classList.remove("cm-diff");
-			frame.innerHTML = renderTable(this._diff, {contextLines: this._contextLines()});
-			this._wireExpanders();
-		}
+		this._editor = createDiffView(frame, this._diff, {
+			root,
+			layout,
+			language: this.getAttribute("data-language") || "wiki",
+			highlight: size <= (Number.isNaN(limit) ? DEFAULT_HIGHLIGHT_LIMIT : limit),
+			wrap: this.getAttribute("data-wrap") !== "false",
+			contextLines: this._contextLines()
+		});
+		this._editor.layout = layout;
+		frame.classList.add("cm-diff");
+		frame.setAttribute("data-layout", layout);
 		this._setStatus("ready");
 	}
 
@@ -612,43 +507,9 @@ export class KnowweTextDiff extends HTMLElement {
 		}
 	}
 
-	async _renderServerTable() {
-		const oldText = this._readTextInput("_oldText", "old", "data-old-text", "data-old-null");
-		const newText = this._readTextInput("_newText", "new", "data-new-text", "data-new-null");
-		const url = this.getAttribute("data-action-url") || DEFAULT_ACTION_URL;
-		const fetchImpl = window.knowweTextDiffFetch || window.fetch.bind(window);
-		// the loading and error placeholders are styled by the stylesheet inside the shadow root, so it has to be
-		// present before the first response arrives (and stays if the response never arrives)
-		this._ensureStylesheet();
-		this._setStatus("loading");
-		const res = await fetchImpl(withWikiParams(url), {
-			method: "POST",
-			headers: {"Content-Type": "application/json; charset=UTF-8"},
-			body: JSON.stringify({oldText, newText, contextLines: this._contextLines()})
-		});
-		if (!res.ok) throw new Error("HTTP " + res.status);
-		this.shadowRoot.innerHTML = await res.text();
-		this._wireExpanders();
-		this._setStatus("ready");
-	}
-
 	_contextLines() {
 		const n = parseInt(this.getAttribute("data-context-lines"), 10);
 		return Number.isNaN(n) ? DEFAULT_CONTEXT_LINES : n;
-	}
-
-	_readSlot(name) {
-		const el = this.querySelector(':scope > [slot="' + name + '"]');
-		return el ? el.textContent : null;
-	}
-
-	_readTextInput(property, slotName, textAttribute, nullAttribute) {
-		if (this[property] !== undefined) return this[property];
-		if (this.hasAttribute(nullAttribute)) return null;
-		const slotted = this._readSlot(slotName);
-		if (slotted !== null) return slotted;
-		const attributed = this.getAttribute(textAttribute);
-		return attributed !== null ? attributed : "";
 	}
 
 	_ensureStylesheet() {
@@ -678,24 +539,6 @@ export class KnowweTextDiff extends HTMLElement {
 		this.setAttribute("data-status", status);
 		if (message) this.setAttribute("data-status-message", message);
 		else this.removeAttribute("data-status-message");
-	}
-
-	_wireExpanders() {
-		const root = this.shadowRoot || this;
-		root.querySelectorAll("tr.elided button.expand").forEach(btn => {
-			btn.addEventListener("click", () => this._expand(btn));
-		});
-	}
-
-	_expand(btn) {
-		const elidedRow = btn.closest("tr.elided");
-		if (!elidedRow) return;
-		let row = elidedRow.nextElementSibling;
-		while (row && row.classList.contains("hidden")) {
-			row.classList.remove("hidden");
-			row = row.nextElementSibling;
-		}
-		elidedRow.remove();
 	}
 }
 

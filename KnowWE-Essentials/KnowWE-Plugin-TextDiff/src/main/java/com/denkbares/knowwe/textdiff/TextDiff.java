@@ -3,7 +3,6 @@ package com.denkbares.knowwe.textdiff;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import com.github.difflib.DiffUtils;
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * Line-by-line diff between two texts. Line endings are normalized ({@code \r\n} and {@code \r} → {@code \n}),
  * a {@code null} side is treated as if the entire other side was added/removed.
  */
-public final class TextDiff implements Iterable<TextDiff.Line> {
+public final class TextDiff {
 
 	private final List<Line> lines;
 	private final String oldText;
@@ -52,22 +51,9 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 	 * Computes the diff between two texts. Either side may be {@code null}.
 	 */
 	public TextDiff(@Nullable String oldText, @Nullable String newText) {
-		this.oldText = oldText == null ? null : normalize(oldText);
-		this.newText = newText == null ? null : normalize(newText);
+		this.oldText = normalize(oldText);
+		this.newText = normalize(newText);
 		this.lines = diff(this.oldText, this.newText);
-	}
-
-	private TextDiff(@NotNull List<Line> lines) {
-		this.lines = lines;
-		this.oldText = null;
-		this.newText = null;
-	}
-
-	/**
-	 * A diff with no lines — convenient for "no input" branches.
-	 */
-	public static TextDiff empty() {
-		return new TextDiff(Collections.emptyList());
 	}
 
 	/**
@@ -111,18 +97,18 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 		return newText;
 	}
 
+	/** Both texts as the browser diffs them. */
+	@NotNull
+	public DiffTexts texts() {
+		return new DiffTexts(oldText, newText);
+	}
+
 	/**
 	 * The diff lines in display order (old-side common lines, then deltas, in source order).
 	 */
 	@NotNull
 	public List<Line> lines() {
 		return lines;
-	}
-
-	@Override
-	@NotNull
-	public Iterator<Line> iterator() {
-		return lines.iterator();
 	}
 
 	@NotNull
@@ -213,7 +199,9 @@ public final class TextDiff implements Iterable<TextDiff.Line> {
 		return new ArrayList<>(Arrays.asList(text.split("\n", -1)));
 	}
 
-	private static String normalize(String text) {
-		return text.replace("\r\n", "\n").replace("\r", "\n");
+	/** The text with {@code \r\n} and {@code \r} turned into {@code \n}, null stays null. */
+	@Nullable
+	static String normalize(@Nullable String text) {
+		return text == null ? null : text.replace("\r\n", "\n").replace("\r", "\n");
 	}
 }

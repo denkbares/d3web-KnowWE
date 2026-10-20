@@ -47,7 +47,7 @@ const settled = () => new Promise(resolve => setTimeout(resolve, 0));
 const DATA = '<script type="application/json" class="diff-data">{"old":"a\\nb\\n","new":"a\\nB\\n","stats":{"added":1,"removed":1}}</script>';
 
 function host(attributes) {
-	return `<knowwe-text-diff data-renderer="codemirror" ${attributes}><template shadowrootmode="open">
+	return `<knowwe-text-diff ${attributes}><template shadowrootmode="open">
 		<div class="diff-frame diff-placeholder"></div>${DATA}</template></knowwe-text-diff>`;
 }
 
@@ -64,25 +64,23 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-	window.CodeMirror = {merge: {}};
 	window.localStorage.clear();
 });
 
 afterEach(() => {
 	document.body.replaceChildren();
 	resizeObservers.clear();
-	delete window.CodeMirror;
 });
 
 describe("layouts", () => {
-	it("shows the requested layout and rebuilds the view when the attribute changes", async () => {
-		document.body.innerHTML = host('data-layout="split"');
+	it("shows the requested layout and rebuilds the view when the choice changes", async () => {
+		document.body.innerHTML = host('data-layout="split" data-context="review"');
 		const el = document.querySelector("knowwe-text-diff");
 		await settled();
 		expect(shown(el)).toBe("split");
 		expect(el.shadowRoot.querySelector(".diff-frame").getAttribute("data-layout")).toBe("split");
 		expect(el.effectiveLayout).toBe("split");
-		el.setAttribute("data-layout", "unified");
+		el.layout = "unified";
 		expect(shown(el)).toBe("unified");
 		expect(el.layout).toBe("unified");
 	});
@@ -90,7 +88,7 @@ describe("layouts", () => {
 	it("announces its layout on connect and on every change", async () => {
 		const events = [];
 		document.body.addEventListener("knowwe-text-diff-layout", e => events.push(e.detail));
-		document.body.innerHTML = host("");
+		document.body.innerHTML = host('data-context="review"');
 		const el = document.querySelector("knowwe-text-diff");
 		await settled();
 		expect(events).toEqual([{layout: "unified", effective: "unified", layouts: ["unified", "split"]}]);
@@ -141,14 +139,6 @@ describe("layouts", () => {
 		expect(() => el.layout = "diagonal").toThrow();
 	});
 
-	it("has no layout with the table renderer", async () => {
-		const events = [];
-		document.body.addEventListener("knowwe-text-diff-layout", e => events.push(e.detail));
-		document.body.innerHTML = `<knowwe-text-diff><template shadowrootmode="open"><div class="diff-frame"><table></table></div></template></knowwe-text-diff>`;
-		await settled();
-		expect(events).toEqual([]);
-		expect(document.querySelector("knowwe-text-diff").effectiveLayout).toBeNull();
-	});
 });
 
 describe("knowwe-file-change layout button", () => {
@@ -170,9 +160,8 @@ describe("knowwe-file-change layout button", () => {
 		expect(shown(diff)).toBe("unified");
 	});
 
-	it("stays hidden for a table and for an empty body", async () => {
-		document.body.innerHTML = `<knowwe-file-change data-new-name="A"><knowwe-text-diff><template shadowrootmode="open">
-			<div class="diff-frame"><table></table></div></template></knowwe-text-diff></knowwe-file-change>
+	it("stays hidden for a diff without a context and for an empty body", async () => {
+		document.body.innerHTML = `<knowwe-file-change data-new-name="A">${host("")}</knowwe-file-change>
 			<knowwe-file-change data-new-name="B"></knowwe-file-change>`;
 		await settled();
 		for (const change of document.querySelectorAll("knowwe-file-change")) expect(button(change).hidden).toBe(true);
@@ -181,21 +170,21 @@ describe("knowwe-file-change layout button", () => {
 
 describe("whitespace mode", () => {
 	const f = fixtures.find(x => x.name === "whitespace-only");
-	const inline = attributes => `<knowwe-text-diff data-renderer="codemirror" ${attributes}><template shadowrootmode="open">
+	const inline = attributes => `<knowwe-text-diff ${attributes}><template shadowrootmode="open">
 		<div class="diff-frame"></div><script type="application/json" class="diff-data">${JSON.stringify({old: f.old, new: f.new, stats: f.stats})}</script>
 		</template></knowwe-text-diff>`;
 
 	it("recomputes the diff without a request and reports the counts of the mode", async () => {
 		const stats = [];
 		document.body.addEventListener("knowwe-text-diff-stats", e => stats.push(e.detail));
-		document.body.innerHTML = inline("");
+		document.body.innerHTML = inline('data-context="review"');
 		const el = document.querySelector("knowwe-text-diff");
 		await settled();
 		expect(el.ignoreWhitespace).toBe(false);
 		expect(el.stats).toEqual({added: 2, removed: 2});
 		expect(shown(el)).toBe("unified");
 		el.ignoreWhitespace = true;
-		expect(el.getAttribute("data-whitespace")).toBe("ignore");
+		expect(window.localStorage.getItem("knowwe-text-diff.whitespace.review")).toBe("ignore");
 		expect(el.stats).toEqual({added: 0, removed: 0});
 		expect(stats.map(s => [s.added, s.removed, s.ignoreWhitespace])).toEqual([[2, 2, false], [0, 0, true]]);
 		expect(el.shadowRoot.querySelector(".diff-note").textContent).toBe("Only whitespace changed.");
@@ -227,7 +216,7 @@ describe("whitespace mode", () => {
 	});
 
 	it("has a header button that is pressed while whitespace is hidden", async () => {
-		document.body.innerHTML = `<knowwe-file-change data-new-name="A">${inline("")}</knowwe-file-change>`;
+		document.body.innerHTML = `<knowwe-file-change data-new-name="A">${inline('data-context="review"')}</knowwe-file-change>`;
 		const change = document.querySelector("knowwe-file-change");
 		const diff = document.querySelector("knowwe-text-diff");
 		await settled();
@@ -244,7 +233,7 @@ describe("whitespace mode", () => {
 });
 
 describe("emphasis", () => {
-	const inline = (oldText, newText, attributes = "") => `<knowwe-text-diff data-renderer="codemirror" data-context-lines="-1" ${attributes}><template shadowrootmode="open">
+	const inline = (oldText, newText, attributes = "") => `<knowwe-text-diff data-context-lines="-1" ${attributes}><template shadowrootmode="open">
 		<div class="diff-frame"></div><script type="application/json" class="diff-data">${JSON.stringify({old: oldText, new: newText, stats: {added: 0, removed: 0}})}</script>
 		</template></knowwe-text-diff>`;
 

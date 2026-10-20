@@ -2,8 +2,6 @@ package com.denkbares.knowwe.textdiff;
 
 import org.junit.jupiter.api.Test;
 
-import de.knowwe.core.ArticleManager;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileChangeTest {
@@ -40,11 +38,5 @@ class FileChangeTest {
 		assertNotNull(change.oldUrl());
 		assertNotNull(change.newUrl());
 		assertNull(change.diff());
-	}
-
-	@Test
-	void fromArticleReturnsNullWhenBothNamesAreMissing() {
-		// without any name the article manager is never consulted
-		assertNull(FileChange.fromArticle((ArticleManager) null, null, null, "content"));
 	}
 }

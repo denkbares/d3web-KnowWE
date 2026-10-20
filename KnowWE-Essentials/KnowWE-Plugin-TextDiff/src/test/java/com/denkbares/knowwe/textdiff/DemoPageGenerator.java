@@ -5,9 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Generates a static HTML demo page that exercises the {@code <knowwe-text-diff>} web component
- * with a few representative diffs. Open the resulting file in a browser to eyeball rendering,
- * theming, and the "expand elided region" interaction. Not part of the production artefact.
+ * Generates a static HTML demo page that exercises both web components with a few representative diffs. Open the
+ * resulting file in a browser to eyeball rendering, theming, the layout and whitespace switches and the folded
+ * context. Not part of the production artefact.
  */
 class DemoPageGenerator {
 
@@ -39,7 +39,7 @@ class DemoPageGenerator {
 		return null;
 	}
 
-	private static final String CODEMIRROR_BUNDLE = "../../KnowWE-Resources/src/main/webapp/KnowWEExtension/scripts/codemirror.min.js";
+	private static final String CODEMIRROR_BUNDLE = "../../../../../KnowWE-Resources/src/main/webapp/KnowWEExtension/scripts/codemirror.min.js";
 
 	private static Path findWebappResourceBase() throws Exception {
 		Path cwd = Path.of("").toAbsolutePath().normalize();
@@ -73,6 +73,7 @@ class DemoPageGenerator {
 	}
 
 	private static String buildPage(String resourceBaseUri, String themeVariablesUri) {
+		DiffRenderOptions auto = DiffRenderOptions.defaults().withView(DiffView.AUTO).withContext("demo");
 
 		String oldShort = "= Title =\nFirst line.\nSecond line.\nThird line.\n";
 		String newShort = "= Title =\nFirst line.\nSecond line, edited.\nThird line.\nFourth line added.\n";
@@ -111,7 +112,7 @@ class DemoPageGenerator {
 				</style>
 				</head>
 				<body class="light-mode">
-				<h1>KnowWE TextDiff — demo</h1>
+				<h1>KnowWE TextDiff demo</h1>
 				<p>Each section renders <code>&lt;knowwe-text-diff&gt;</code> or wraps it in
 				  <code>&lt;knowwe-file-change&gt;</code> with declarative shadow DOM.</p>
 				<p>
@@ -145,7 +146,7 @@ class DemoPageGenerator {
 				.append(DiffHtmlRenderer.renderTextDiff(new TextDiff(oldShort, newShort)))
 				.append("</section>");
 
-		page.append("<section><h2>2. Long file with elided context (3 lines)</h2>")
+		page.append("<section><h2>2. Long file with folded context (3 lines)</h2>")
 				.append(DiffHtmlRenderer.renderTextDiff(new TextDiff(longOld.toString(), longNew.toString())))
 				.append("</section>");
 
@@ -161,24 +162,10 @@ class DemoPageGenerator {
 				.append(DiffHtmlRenderer.renderTextDiff(new TextDiff("alpha\nbeta\ngamma\n", null)))
 				.append("</section>");
 
-		page.append("<section><h2>6. No elision (contextLines = -1)</h2>")
+		page.append("<section><h2>6. No folding (contextLines = -1), side by side where wide enough</h2>")
 				.append(DiffHtmlRenderer.renderTextDiff(new TextDiff(longOld.toString(), longNew.toString()),
-						DiffRenderOptions.defaults().withContextLines(-1)))
+						auto.withContextLines(-1)))
 				.append("</section>");
-
-		page.append("""
-				<section>
-				  <h2>7. Custom theming via ::part()</h2>
-				  <p>The host page tints this instance via <code>::part(line added)</code> and friends.</p>
-				  <style>
-				    .themed knowwe-text-diff::part(line added)   { background: #fff3bf; color: #5c3c00; }
-				    .themed knowwe-text-diff::part(line removed) { background: #f3d9fa; color: #5f3dc4; }
-				    .themed knowwe-text-diff::part(num)          { font-style: italic; }
-				  </style>
-				""");
-		page.append("<div class=\"themed\">")
-				.append(DiffHtmlRenderer.renderTextDiff(new TextDiff(oldShort, newShort)))
-				.append("</div></section>");
 
 		String createdArticle = "%%COOM:DSL\nproduct DemoBike {\n\tnum weight\n}\n%%\n";
 		String deletedArticle = "%%COOM:DSL\nproduct LegacyBike {\n\tbool deprecated\n}\n%%\n";
@@ -189,116 +176,45 @@ class DemoPageGenerator {
 
 		page.append("""
 				<section>
-				  <h2>8. File/article change frames</h2>
+				  <h2>7. File/article change frames</h2>
 				  <p>The reusable <code>&lt;knowwe-file-change&gt;</code> component renders a GitHub-inspired
-				    file header and leaves content diffs to <code>&lt;knowwe-text-diff&gt;</code>.</p>
+				    file header with the layout and whitespace switches and leaves content diffs to
+				    <code>&lt;knowwe-text-diff&gt;</code>. The choices are shared by all diffs of the demo context.</p>
 				  <div class="file-change-demo">
 				""");
 		page.append(DiffHtmlRenderer.renderFileChange(new FileChange(
-				FileChange.ChangeType.ADDED,
-				null,
-				"CreatedArticle",
-				"https://example.com/wiki/CreatedArticle",
-				null,
-				null,
-				new TextDiff(null, createdArticle),
-				false)));
+				FileChange.ChangeType.ADDED, null, "CreatedArticle", "https://example.com/wiki/CreatedArticle", null, null,
+				new TextDiff(null, createdArticle)), auto));
 		page.append(DiffHtmlRenderer.renderFileChange(new FileChange(
-				FileChange.ChangeType.DELETED,
-				"DeletedArticle",
-				null,
-				"https://example.com/wiki/DeletedArticle",
-				null,
-				null,
-				new TextDiff(deletedArticle, null),
-				false)));
+				FileChange.ChangeType.DELETED, "DeletedArticle", null, "https://example.com/wiki/DeletedArticle", null, null,
+				new TextDiff(deletedArticle, null)), auto));
 		page.append(DiffHtmlRenderer.renderFileChange(new FileChange(
-				FileChange.ChangeType.MODIFIED,
-				"ModifiedArticle",
-				"ModifiedArticle",
-				"https://example.com/wiki/ModifiedArticle",
-				null,
-				null,
-				new TextDiff(modifiedOld, modifiedNew),
-				false)));
+				FileChange.ChangeType.MODIFIED, "ModifiedArticle", "ModifiedArticle", "https://example.com/wiki/ModifiedArticle",
+				null, null, new TextDiff(modifiedOld, modifiedNew)), auto));
 		page.append(DiffHtmlRenderer.renderFileChange(new FileChange(
-				FileChange.ChangeType.RENAMED,
-				"OldArticleName",
-				"NewArticleName",
-				null,
-				"https://example.com/wiki/OldArticleName",
-				"https://example.com/wiki/NewArticleName",
-				null,
-				false)));
+				FileChange.ChangeType.RENAMED, "OldArticleName", "NewArticleName", null,
+				"https://example.com/wiki/OldArticleName", "https://example.com/wiki/NewArticleName", null), auto));
 		page.append(DiffHtmlRenderer.renderFileChange(new FileChange(
-				FileChange.ChangeType.RENAMED_MODIFIED,
-				"OldArticleWithContent",
-				"NewArticleWithContent",
-				null,
-				"https://example.com/wiki/OldArticleWithContent",
-				"https://example.com/wiki/NewArticleWithContent",
-				new TextDiff(renamedModifiedOld, renamedModifiedNew),
-				true)));
+				FileChange.ChangeType.RENAMED_MODIFIED, "OldArticleWithContent", "NewArticleWithContent", null,
+				"https://example.com/wiki/OldArticleWithContent", "https://example.com/wiki/NewArticleWithContent",
+				new TextDiff(renamedModifiedOld, renamedModifiedNew)), auto));
 		page.append("""
 				  </div>
 				</section>
 				""");
 
-		String lazyOld = "config:\n  retries: 3\n  timeout: 30s\n  endpoint: api.example.com\n";
-		String lazyNew = "config:\n  retries: 5\n  timeout: 60s\n  endpoint: api.example.com\n  features:\n    - x\n    - y\n";
-		String lazyResponse = withDemoResourceUrls(DiffHtmlRenderer.renderTextDiffShadowContent(new TextDiff(lazyOld, lazyNew),
-				DiffRenderOptions.defaults().withContextLines(3)), resourceBaseUri);
-
 		page.append("""
 				<section>
-				  <h2>9. Lazy-loaded via slotted text + mocked backend</h2>
-				  <p>The component sees no pre-rendered shadow content, gathers raw text from
-				    <code>&lt;script type="text/plain" slot="…"&gt;</code> children, and POSTs to
-				    <code>action/TextDiffAction.action</code>. Below the fetch is intercepted and answered
-				    with the server-pre-baked HTML so this works in a static demo.</p>
-				  <script>
-				    window.__demoLazyResponses = {
-				      'demo-config': %s
-				    };
-				    window.knowweTextDiffFetch = async (url, init) => {
-				      const payload = JSON.parse(init && init.body || '{}');
-				      // demo: route by a marker in oldText (just look up the config example)
-				      const key = (payload.oldText || '').includes('retries: 3') ? 'demo-config' : null;
-				      const html = window.__demoLazyResponses[key];
-				      if (!html) return new Response('not mocked', { status: 404 });
-				      await new Promise(r => setTimeout(r, 400));   // simulate latency
-				      return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html' } });
-				    };
-				  </script>
-				  <knowwe-text-diff data-context-lines="3">
-				    <script type="text/plain" slot="old">%s</script>
-				    <script type="text/plain" slot="new">%s</script>
-				  </knowwe-text-diff>
-				</section>
-				""".formatted(jsString(lazyResponse), lazyOld, lazyNew));
-
-		page.append("""
-				<section>
-				  <h2>10. Programmatic load via JS properties</h2>
-				  <p>Same lazy path, but the consumer sets <code>el.oldText</code> / <code>el.newText</code> instead
-				    of slotting text. Click the button to trigger.</p>
-				  <button id="programmatic-trigger" type="button">Load diff</button>
-				  <knowwe-text-diff id="programmatic-diff" data-context-lines="3"></knowwe-text-diff>
-				  <script>
-				    document.getElementById('programmatic-trigger').addEventListener('click', () => {
-				      const el = document.getElementById('programmatic-diff');
-				      el.oldText = "config:\\n  retries: 3\\n  timeout: 30s\\n  endpoint: api.example.com\\n";
-				      el.newText = "config:\\n  retries: 5\\n  timeout: 60s\\n  endpoint: api.example.com\\n  features:\\n    - x\\n    - y\\n";
-				    });
-				  </script>
+				  <h2>8. Texts given as attributes</h2>
+				  <p>A host without server rendered content diffs the texts of its attributes once it scrolls near the viewport.</p>
+				  <knowwe-text-diff data-context="demo" data-old-text="config:&#10;  retries: 3&#10;  timeout: 30s&#10;"
+				                    data-new-text="config:&#10;  retries: 5&#10;  timeout: 60s&#10;  features:&#10;    - x&#10;"></knowwe-text-diff>
 				</section>
 				""");
 
 		// the component script is built against the vendored CodeMirror bundle of KnowWE-Resources, which has to load
-		// first. Without it the demo shows a note instead of the diffs.
+		// first
 		page.append("<script src=\"" + CODEMIRROR_BUNDLE + "\"></script>");
-		page.append("<script>if (typeof CodeMirror === 'undefined') document.body.insertAdjacentHTML('afterbegin', "
-				+ "'<p style=\"color:#b00\">codemirror.min.js of KnowWE-Resources was not found, the components cannot load.</p>');</script>");
 		page.append("<script src=\"KnowWEExtension/scripts/KnowWE-Plugin-TextDiff.js\"></script>");
 		page.append("</body></html>");
 		return withDemoResourceUrls(page.toString(), resourceBaseUri);

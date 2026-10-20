@@ -3,7 +3,7 @@ import {countChunks} from "./myers.js";
 import {lineDiff, lineOffsets, splitLines, withTrailingNewline} from "./lines.js";
 import {refine} from "./tokens.js";
 
-export {withTrailingNewline, splitLines, lineModel} from "./lines.js";
+export {withTrailingNewline, splitLines} from "./lines.js";
 
 // chunks beyond this size are refined line by line, or not at all if their line counts differ
 const MAX_REFINED_CHARS = 20000;
@@ -32,8 +32,7 @@ export function computeDiff(oldText, newText, {ignoreWhitespace = false, inline 
 	const changes = [], refined = [];
 	for (const [aPos, aLen, bPos, bLen] of chunks) {
 		const fromA = oa[aPos], toA = oa[aPos + aLen], fromB = ob[bPos], toB = ob[bPos + bLen];
-		const inner = inline && aLen && bLen
-			? refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen, ignoreWhitespace) : null;
+		const inner = inline && aLen && bLen ? refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen) : null;
 		if (inner && keepsChunk(inner, oa, ob, fromA, toA, fromB, toB)) {
 			changes.push(...inner);
 			if (changedShare(inner) <= MAX_EMPHASIS_RATIO * (toA - fromA + toB - fromB)) {
@@ -54,16 +53,16 @@ function changedShare(changes) {
 	return n;
 }
 
-function refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen, ignoreWhitespace) {
+function refineChunk(docA, docB, aLines, bLines, oa, ob, aPos, aLen, bPos, bLen) {
 	const fromA = oa[aPos], toA = oa[aPos + aLen], fromB = ob[bPos], toB = ob[bPos + bLen];
 	const shift = (inner, a, b) => inner && inner.map(c => ({fromA: c.fromA + a, toA: c.toA + a, fromB: c.fromB + b, toB: c.toB + b}));
 	if (toA - fromA + toB - fromB <= MAX_REFINED_CHARS) {
-		return shift(refine(docA.slice(fromA, toA), docB.slice(fromB, toB), {ignoreWhitespace}), fromA, fromB);
+		return shift(refine(docA.slice(fromA, toA), docB.slice(fromB, toB)), fromA, fromB);
 	}
 	if (aLen !== bLen) return null;
 	const out = [];
 	for (let i = 0; i < aLen; i++) {
-		const inner = shift(refine(aLines[aPos + i], bLines[bPos + i], {ignoreWhitespace}), oa[aPos + i], ob[bPos + i]);
+		const inner = shift(refine(aLines[aPos + i], bLines[bPos + i]), oa[aPos + i], ob[bPos + i]);
 		if (!inner) return null;
 		out.push(...inner);
 	}
