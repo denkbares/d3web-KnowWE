@@ -48,6 +48,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	let panelResizeObserver = null;
 
+	let resizing = false;
+
 	jq$(window).resize(function () {
 		if (showSidebar) {
 			windowWidth = jq$(window).width();
@@ -190,7 +192,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 			bottom: '0',
 			right: '0'
 		});
-		setRightPanelWidth(getStoredRightPanelWidth(), false);
+		// the page announces its own width changes as window resizes, which a drag causes on every move, the stored
+		// width would then fight the dragged one until the drag ends
+		if (!resizing) setRightPanelWidth(getStoredRightPanelWidth(), false);
 		rightPanelScroll();
 		jq$(KNOWWE.core.util.getPageContentSelector()).css('padding-bottom', '');
 	}
@@ -199,7 +203,6 @@ KNOWWE.core.plugin.rightPanel = function () {
 		if (rightPanel.find(".right-panel-resize-handle").length) return;
 
 		const $handle = jq$("<div class=\"right-panel-resize-handle\"></div>").prependTo(rightPanel);
-		let dragging = false;
 		let startX = 0;
 		let startWidth = 0;
 
@@ -207,7 +210,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 			if (isOnBottom) return;
 
 			const panelRect = rightPanel[0].getBoundingClientRect();
-			dragging = true;
+			resizing = true;
 			startX = e.clientX;
 			startWidth = panelRect.width;
 			jq$("body").addClass("right-panel-resizing");
@@ -216,7 +219,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 		jq$(document).off(".rightPanelResize");
 		jq$(document).on("mousemove.rightPanelResize", function(e) {
-			if (!dragging) return;
+			if (!resizing) return;
 
 			const delta = startX - e.clientX;
 			setRightPanelWidth(startWidth + delta, false);
@@ -225,9 +228,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 		});
 
 		jq$(document).on("mouseup.rightPanelResize", function() {
-			if (!dragging) return;
+			if (!resizing) return;
 
-			dragging = false;
+			resizing = false;
 			jq$("body").removeClass("right-panel-resizing");
 			setRightPanelWidth(rightPanel[0].getBoundingClientRect().width, true);
 		});
@@ -278,6 +281,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function hideMountedPanel() {
 		jq$(document).off(".rightPanelResize");
 		jq$("body").removeClass("right-panel-resizing");
+		resizing = false;
 		if (rightPanel && rightPanel.length) {
 			rightPanel.find(".right-panel-resize-handle").remove();
 			rightPanel.removeAttr("style").attr("hidden", "");
