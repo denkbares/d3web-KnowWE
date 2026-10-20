@@ -303,7 +303,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		String searchPhrase = getFilter(context, id);
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
 		ColumnFilterPredicate columnPredicate = columnFiltering
-				? new ColumnFilterPredicate(PaginationRenderer.getFilter(context))
+				? new ColumnFilterPredicate(PaginationRenderer.getFilter(context, id))
 				: null;
 		boolean textFiltered = Strings.nonBlank(searchPhrase);
 		boolean columnFiltered = columnPredicate != null && !columnPredicate.isEmpty();
@@ -322,8 +322,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		if (columnFiltered) filter = filter.and(columnPredicate);
 
 		int defaultCount = getDefaultCount();
-		int count = PaginationRenderer.getCount(context, defaultCount);
-		int startRow = count == Integer.MAX_VALUE ? 1 : PaginationRenderer.getStartRow(context);
+		int count = PaginationRenderer.getCount(context, id, defaultCount);
+		int startRow = count == Integer.MAX_VALUE ? 1 : PaginationRenderer.getStartRow(context, id);
 		int maximumMatches = textFiltered || columnFiltered ? -1 : noFilterLimit;
 		OpenPaginationPredicate<Section<T>> pagination = new OpenPaginationPredicate<>(filter, startRow - 1,
 				count, maximumMatches);
@@ -383,7 +383,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 							"sorting-mode", PaginationRenderer.SortingMode.off.name(),
 							"filtering", Boolean.toString(columnFiltering),
 							"reset-start-row-on-count-change", "true",
-							AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, storageKey)
+							AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, storageKey,
+							PaginationRenderer.RENDERED_STATE_ATTRIBUTE, PaginationRenderer.getRenderedState(context, id))
 					.children(paginationChildren.toArray(HtmlProvider[]::new));
 		}
 
@@ -493,7 +494,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	public List<String> collectFilterValues(String columnName, @Nullable String filterTextQuery, int maxCount) {
 		String searchPhrase = getFilter(context, id);
 		SearchPredicate searchPredicate = new SearchPredicate(searchPhrase);
-		Map<String, Set<Pattern>> columnFilters = new HashMap<>(PaginationRenderer.getFilter(context));
+		Map<String, Set<Pattern>> columnFilters = new HashMap<>(PaginationRenderer.getFilter(context, id));
 		// ignore the column's own filter, otherwise the current selection could never be widened again
 		columnFilters.remove(columnName);
 		ColumnFilterPredicate columnPredicate = new ColumnFilterPredicate(columnFilters);
@@ -604,7 +605,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				List<Predicate<Section<T>>> filtersList = new ArrayList<>();
 				while (matcher.find()) {
 					String phrase = matcher.group();
-					Predicate<Section<T>> sectionTextFilter = createFilter(Section::getText, phrase.replaceAll("\"", ""));
+					Predicate<Section<T>> sectionTextFilter = createFilter(Section::getText, phrase.replace("\"", ""));
 					filtersList.add(sectionTextFilter);
 					for (Function<Section<T>, String> filter : keylessFilterProviders) {
 						filtersList.add(createFilter(filter, phrase));

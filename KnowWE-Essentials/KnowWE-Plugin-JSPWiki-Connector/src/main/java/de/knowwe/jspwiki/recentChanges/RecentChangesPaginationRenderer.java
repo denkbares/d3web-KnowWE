@@ -53,9 +53,9 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 
     @Override
     protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
-        boolean tickedPage = showPages(user);
-        boolean tickedAtt = isShowAttachments(user);
-        boolean tickedInterm = showIntermediates(user);
+        boolean tickedPage = showPages(user, section.getID());
+        boolean tickedAtt = isShowAttachments(user, section.getID());
+        boolean tickedInterm = showIntermediates(user, section.getID());
         if (tickedPage) {
             result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-pages", "id", "showPages", "name", "showPages", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'page')", "checked", "checked");
         } else {
@@ -98,7 +98,7 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 
     public List<Page> getRecentChanges(Section<?> sec, UserContext user) {
         Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
-        Set<Page> filteredRecentChanges = getRecentChangesFiltered(user, filter);
+        Set<Page> filteredRecentChanges = getRecentChangesFiltered(user, sec.getID(), filter);
         PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
         return sortPages(sec, user, filteredRecentChanges);
     }

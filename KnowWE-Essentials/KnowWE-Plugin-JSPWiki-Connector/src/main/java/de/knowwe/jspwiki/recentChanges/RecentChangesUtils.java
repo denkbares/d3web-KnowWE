@@ -40,7 +40,6 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiConnector;
 
 import static java.time.ZoneId.systemDefault;
@@ -65,8 +64,8 @@ public class RecentChangesUtils {
 		});
 	}
 
-	public static Set<Page> getRecentChangesFiltered(UserContext user, @NotNull Map<String, Set<Pattern>> filter) {
-		Set<Page> pages = getRecentChangesForPageTypeSelection(user);
+	public static Set<Page> getRecentChangesFiltered(UserContext user, String sectionId, @NotNull Map<String, Set<Pattern>> filter) {
+		Set<Page> pages = getRecentChangesForPageTypeSelection(user, sectionId);
 
 		Set<Page> filteredPages = new LinkedHashSet<>();
 		if (filter.isEmpty()) {
@@ -94,12 +93,12 @@ public class RecentChangesUtils {
 		return filteredPages;
 	}
 
-	private static Set<Page> getRecentChangesForPageTypeSelection(UserContext user) {
+	private static Set<Page> getRecentChangesForPageTypeSelection(UserContext user, String sectionId) {
 		Set<Page> recentChanges = getRecentChangesFromJSPWiki(user.getEnvironment());
 		// can take quite some time for large wikis, so we cache this...
-		boolean showPages = showPages(user);
-		boolean showAttachments = isShowAttachments(user);
-		boolean showIntermediate = showIntermediates(user);
+		boolean showPages = showPages(user, sectionId);
+		boolean showAttachments = isShowAttachments(user, sectionId);
+		boolean showIntermediate = showIntermediates(user, sectionId);
 		return CompilationLocal.getCached(user.getArticleManager().getCompilerManager(),
 				"recentChangesWithFilterFromJSPWiki-" + showPages + "-" + showAttachments + "-" + showIntermediate,
 				() -> {
@@ -140,20 +139,25 @@ public class RecentChangesUtils {
 		}
 	}
 
-	public static boolean showIntermediates(UserContext user) {
-		return getCheckbox(user, "intermediate");
+	public static boolean showIntermediates(UserContext user, String sectionId) {
+		return getCheckbox(user, sectionId, "intermediate");
 	}
 
-	public static boolean isShowAttachments(UserContext user) {
-		return getCheckbox(user, "attachment");
+	public static boolean isShowAttachments(UserContext user, String sectionId) {
+		return getCheckbox(user, sectionId, "attachment");
 	}
 
-	public static boolean showPages(UserContext user) {
-		return getCheckbox(user, "page");
+	public static boolean showPages(UserContext user, String sectionId) {
+		return getCheckbox(user, sectionId, "page");
 	}
 
-	private static boolean getCheckbox(UserContext userContext, String checkBox) {
-		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext);
+	/**
+	 * The checkboxes are stored in the local section storage of the pagination wrapper (see
+	 * KNOWWE.plugin.jspwikiConnector.setPageFilter), so the storage of that section is used, also while rendering the
+	 * whole page, see {@link AbstractAction#getLocalSectionStorage(UserContext, String)}.
+	 */
+	private static boolean getCheckbox(UserContext userContext, String sectionId, String checkBox) {
+		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext, sectionId);
 		if (!localSectionStorage.isEmpty() && !isFilterActive(localSectionStorage) && !checkBox.equals("page")) {
 			return false;
 		}

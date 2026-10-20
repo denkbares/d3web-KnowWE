@@ -1,5 +1,6 @@
 package de.knowwe.kdom.renderer;
 
+import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -60,7 +61,10 @@ public class AsynchronousRenderer implements Renderer {
 
 	protected void renderPreview(Section<?> section, UserContext user, RenderResult result) {
 		String id = section.getID();
-		String[] attributes = new String[] { "class", ASYNCHRON_RENDERER, "sectionId", id, "rel", "rel=\"{id:'" + id + "'}\"" };
+		// the storage key lets the asynchronous request send the section's local storage (e.g. pagination settings),
+		// even if the preview does not contain an element carrying it
+		String[] attributes = new String[] { "class", ASYNCHRON_RENDERER, "sectionId", id, "rel", "rel=\"{id:'" + id + "'}\"",
+				AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, AbstractAction.getLocalSectionStorageKey(section) };
 
 		result.appendHtmlTag("div", attributes);
 		if (decoratedRenderer instanceof AsyncPreviewRenderer) {

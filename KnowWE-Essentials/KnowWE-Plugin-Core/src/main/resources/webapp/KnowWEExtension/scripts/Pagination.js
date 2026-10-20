@@ -33,6 +33,8 @@ KNOWWE.core.plugin.pagination = function() {
   const filterProviderActionAttribute = "filter-provider-action";
   const filterTextsProperty = "filter-texts";
   const paginationClickEvent = "click.pagination-filter";
+  // pagination state the table was rendered with, see PaginationRenderer#RENDERED_STATE_ATTRIBUTE
+  const renderedStateAttribute = "rendered-pagination-state";
 
   const getColumnName = $el => {
     return $el.attr(columnNameAttribute) || $el.text();
@@ -564,7 +566,45 @@ KNOWWE.core.plugin.pagination = function() {
     });
   }
 
-  function decoratePagination($paginationWrapper, rerenderIfFilterActive) {
+  /**
+   * Returns the given pagination state reduced to what affects the rendering on the server, as JSON string with
+   * sorted keys, so that states can be compared independently of the order of their keys. The column filters
+   * (including hidden columns) only apply while the filter is active.
+   */
+  function getEffectiveState(paginationState) {
+    const state = jq$.extend(true, {}, paginationState);
+    if (!state.filter || !state.filter.active) delete state.filter;
+    const sortKeys = value => {
+      if (Array.isArray(value)) return value.map(sortKeys);
+      if (!value || typeof value !== "object") return value;
+      const sorted = {};
+      Object.keys(value).sort().forEach(key => sorted[key] = sortKeys(value[key]));
+      return sorted;
+    };
+    return JSON.stringify(sortKeys(state));
+  }
+
+  /**
+   * Checks whether the server rendered the table with the pagination state of the local section storage. The server
+   * renders the state it used as attribute to the wrapper (see PaginationRenderer#getRenderedState).
+   */
+  function isRenderedWithStoredState($paginationWrapper, sectionId) {
+    const storedState = getPaginationState(sectionId);
+    const renderedStateString = $paginationWrapper.attr(renderedStateAttribute);
+    if (typeof renderedStateString === "undefined") {
+      // rendered without the attribute, so we only know that an active filter has to be applied on the server
+      return !(storedState.filter && storedState.filter.active);
+    }
+    let renderedState;
+    try {
+      renderedState = JSON.parse(renderedStateString);
+    } catch (e) {
+      return false;
+    }
+    return getEffectiveState(storedState) === getEffectiveState(renderedState);
+  }
+
+  function decoratePagination($paginationWrapper, rerenderIfStateDiffers) {
 
     const sectionId = $paginationWrapper.attr("id");
 
@@ -602,6 +642,14 @@ KNOWWE.core.plugin.pagination = function() {
       filterTools.hide();
     } else {
       clearFilter.prop("disabled", !anyActiveFilter(filterState));
+    }
+
+    // when loading the page, rerender if the server rendered the table with other settings than the ones of the
+    // local section storage, e.g. because the server's copy of the storage got lost with the http session; rendering
+    // large tables takes some seconds, so we do not want to render them twice on each page load. This happens before
+    // the table handling, because the stale settings may have filtered out all rows.
+    if (rerenderIfStateDiffers && !isRenderedWithStoredState($paginationWrapper, sectionId)) {
+      updateNode(sectionId);
     }
 
     const $table = $paginationWrapper.find("table");
@@ -650,11 +698,6 @@ KNOWWE.core.plugin.pagination = function() {
     handlePaginationBelowTableVisibility($paginationWrapper);
 
     KNOWWE.helper.observer.notify("paginationTableDecorated");
-
-    // when loading filters initially, rerender to apply filter to result on server
-    if (rerenderIfFilterActive && filterState.active) {
-      updateNode(sectionId);
-    }
 
     //on first load
     notifyFilterChanged(sectionId);

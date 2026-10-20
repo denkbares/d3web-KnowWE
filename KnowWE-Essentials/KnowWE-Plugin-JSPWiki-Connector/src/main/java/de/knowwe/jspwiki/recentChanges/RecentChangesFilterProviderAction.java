@@ -38,12 +38,11 @@ import org.json.JSONObject;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
-import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
+import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.LAST_MODIFIED;
 
 public class RecentChangesFilterProviderAction extends AbstractAction {
 
@@ -127,7 +126,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		Section<?> section = getSection(context);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
 		filter.put(columnName, Collections.emptySet());
-		Set<Page> filteredRecentChanges = RecentChangesUtils.getRecentChangesFiltered(context, filter);
+		Set<Page> filteredRecentChanges = RecentChangesUtils.getRecentChangesFiltered(context, section.getID(), filter);
 		for (Page page : filteredRecentChanges) {
 			String text = RecentChangesUtils.getColumnValueByName(columnName, page);
 			if (valueTexts.contains(text) || filteredOut.contains(text)) continue;

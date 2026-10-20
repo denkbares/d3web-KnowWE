@@ -95,6 +95,12 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	private static final String SELECTED_TEXTS = "selectedTexts";
 	private static final String SELECTED_CUSTOM_TEXTS = "selectedCustomTexts";
 	public static final String SELECT_ALL = "selectAll";
+	/**
+	 * Name of the attribute of the pagination wrapper (the element with the class <tt>knowwe-paginationWrapper</tt>)
+	 * carrying the pagination settings the table was rendered with, see {@link #getRenderedState(UserContext,
+	 * String)}.
+	 */
+	public static final String RENDERED_STATE_ATTRIBUTE = "rendered-pagination-state";
 	private static final String ACTIVE = "active";
 	private final Renderer decoratedRenderer;
 	private final SortingMode sorting;
@@ -160,7 +166,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	@NotNull
 	public static Set<String> getHiddenColumns(Section<?> section, UserContext user) {
 		Set<String> hiddenColumns = new HashSet<>();
-		JSONObject paginationSettings = getPaginationSettings(user);
+		JSONObject paginationSettings = getPaginationSettings(user, section.getID());
 		if (paginationSettings == null) return hiddenColumns;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return hiddenColumns;
@@ -179,7 +185,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 
 	@NotNull
 	public static Map<String, Set<Pattern>> getFilter(Section<?> section, UserContext user) {
-		return getFilter(user);
+		return getFilter(user, section.getID());
 	}
 
 	/**
@@ -189,13 +195,15 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 * filtering off, an empty map is returned.
 	 *
 	 * @param user the user context of the current request
+	 * @param id   the id of the section the pagination belongs to, see {@link #getPaginationSettings(UserContext,
+	 *             String)}
 	 * @return the patterns to filter for, by column name
 	 */
 	@NotNull
-	public static Map<String, Set<Pattern>> getFilter(UserContext user) {
+	public static Map<String, Set<Pattern>> getFilter(UserContext user, String id) {
 		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();
 
-		JSONObject paginationSettings = getPaginationSettings(user);
+		JSONObject paginationSettings = getPaginationSettings(user, id);
 		if (paginationSettings == null) return filterMap;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return filterMap;
@@ -279,7 +287,8 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		wrapper.clazz("knowwe-paginationWrapper")
 				.id(section.getID())
 				.attributes("sorting-mode", sorting.name(), "filtering", Boolean.toString(supportFiltering),
-						AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, AbstractAction.getLocalSectionStorageKey(section))
+						AbstractAction.LOCAL_SECTION_STORAGE_KEY_ATTRIBUTE, AbstractAction.getLocalSectionStorageKey(section),
+						RENDERED_STATE_ATTRIBUTE, getRenderedState(user, section.getID()))
 				.children(
 						page -> renderPaginationInternal(section, user, page),
 						page -> page.append(table),
@@ -392,7 +401,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 
 	private void renderTableSizeSelector(String id, UserContext user, RenderResult result, int defaultCount,
 			int[] countOptions, HtmlProvider resultSize) {
-		int count = getCount(user, defaultCount);
+		int count = getCount(user, id, defaultCount);
 		List<HtmlProvider> options = new ArrayList<>();
 		boolean foundSelected = false;
 		for (int size : countOptions) {
@@ -424,8 +433,8 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	private void renderNavigation(String id, UserContext user, RenderResult result, int defaultCount) {
-		int count = getCount(user, defaultCount);
-		int startRow = getStartRow(user);
+		int count = getCount(user, id, defaultCount);
+		int startRow = getStartRow(user, id);
 		if (isOpenResult(user, id)) {
 			renderOpenNavigation(id, user, result, count, startRow);
 			return;
@@ -532,23 +541,46 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		return new A().attributes("onclick", action + ";").children(iconHtml);
 	}
 
-	private static JSONObject getPaginationSettings(UserContext user) {
-		return AbstractAction.getLocalSectionStorage(user).optJSONObject(PAGINATION_KEY);
-	}
-
-	public static int getStartRow(Section<?> sec, UserContext user) {
-		return getStartRow(user);
+	/**
+	 * Returns the pagination settings of the specified section. While the section itself is rerendered (e.g. after
+	 * the user has changed the settings), these are the ones sent with the request. Otherwise, e.g. while rendering
+	 * the whole page, these are the copy of the user's local section storage kept in the http session, see {@link
+	 * AbstractAction#getLocalSectionStorage(UserContext, String)}.
+	 */
+	private static JSONObject getPaginationSettings(UserContext user, String id) {
+		return AbstractAction.getLocalSectionStorage(user, id).optJSONObject(PAGINATION_KEY);
 	}
 
 	/**
-	 * Returns the one-based index of the first row selected for the current section.
+	 * Returns the pagination settings the specified section is rendered with, as a JSON string, to be rendered as
+	 * attribute {@link #RENDERED_STATE_ATTRIBUTE} to the pagination wrapper. On page load, the client only rerenders
+	 * the section if the settings in its local section storage differ from these, e.g. because the copy in the http
+	 * session got lost or the user is not known to the wiki (see Pagination.js).
+	 *
+	 * @param user the user context of the current request
+	 * @param id   the id of the section the pagination belongs to
+	 * @return the pagination settings as JSON string, "{}" if there are none
+	 */
+	@NotNull
+	public static String getRenderedState(UserContext user, String id) {
+		JSONObject paginationSettings = getPaginationSettings(user, id);
+		return paginationSettings == null ? "{}" : paginationSettings.toString();
+	}
+
+	public static int getStartRow(Section<?> sec, UserContext user) {
+		return getStartRow(user, sec.getID());
+	}
+
+	/**
+	 * Returns the one-based index of the first row selected for the specified section.
 	 *
 	 * @param user current user context
+	 * @param id   the id of the section the pagination belongs to
 	 * @return one-based start row
 	 */
-	public static int getStartRow(UserContext user) {
+	public static int getStartRow(UserContext user, String id) {
 		try {
-			JSONObject jsonObject = getPaginationSettings(user);
+			JSONObject jsonObject = getPaginationSettings(user, id);
 			if (jsonObject != null && jsonObject.has(START_ROW)) {
 				return jsonObject.getInt(START_ROW);
 			}
@@ -579,19 +611,20 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 * @created 22.01.2014
 	 */
 	public static int getCount(Section<?> sec, UserContext user) {
-		return getCount(user, COUNT_DEFAULT);
+		return getCount(user, sec.getID(), COUNT_DEFAULT);
 	}
 
 	/**
 	 * Returns the selected page size, using the supplied default if no client-side setting exists.
 	 *
 	 * @param user         current user context
+	 * @param id           the id of the section the pagination belongs to
 	 * @param defaultCount page size to use without a stored setting
 	 * @return selected page size
 	 */
-	public static int getCount(UserContext user, int defaultCount) {
+	public static int getCount(UserContext user, String id, int defaultCount) {
 		try {
-			JSONObject jsonObject = getPaginationSettings(user);
+			JSONObject jsonObject = getPaginationSettings(user, id);
 			if (jsonObject != null && jsonObject.has(COUNT)) {
 				return jsonObject.optInt(COUNT, defaultCount);
 			}
@@ -653,7 +686,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 
 	private static JSONArray getSortingArray(Section<?> sec, UserContext user) {
 		try {
-			JSONObject jsonObject = getPaginationSettings(user);
+			JSONObject jsonObject = getPaginationSettings(user, sec.getID());
 			if (jsonObject != null && jsonObject.has(SORTING)) {
 				return jsonObject.getJSONArray(SORTING);
 			}
@@ -687,7 +720,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				.clazz("resultSize")
 				.style("display:none")
 				.attributes("value", resultSize);
-		String prefix = getCount(user, defaultCount) == Integer.MAX_VALUE ? " " : " of ";
+		String prefix = getCount(user, id, defaultCount) == Integer.MAX_VALUE ? " " : " of ";
 		Span label = new Span(prefix + resultSize + " " + Strings.pluralOf(resultSizeInt, "row", false));
 		label.clazz("fillText");
 		return List.of(input, label);
