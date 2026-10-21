@@ -19,13 +19,13 @@
 	--diff-num-bg: var(--bg-color-secondary, #f6f8fa);
 
 	/* Added, the line tint and the stronger tint of the changed words */
-	--diff-added-bg: #e6ffec;
-	--diff-added-emph-bg: #bdf0c8;
+	--diff-added-bg: #f7fff9;
+	--diff-added-emph-bg: #def7e3;
 	--diff-added-fg: #1a7f37;
 
 	/* Removed */
-	--diff-removed-bg: #ffebe9;
-	--diff-removed-emph-bg: #ffd0cb;
+	--diff-removed-bg: #fff9f8;
+	--diff-removed-emph-bg: #ffe7e5;
 	--diff-removed-fg: #cf222e;
 
 	/* Elision (collapsed-context expander) */
