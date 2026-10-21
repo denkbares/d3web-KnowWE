@@ -57,7 +57,7 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		if (!KnowWEUtils.canView(context.getArticle(), context)) {
-			context.sendError(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN,
+			context.sendError(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN,
 					"You are not allowed to resolve watch expressions on this article");
 			return;
 		}

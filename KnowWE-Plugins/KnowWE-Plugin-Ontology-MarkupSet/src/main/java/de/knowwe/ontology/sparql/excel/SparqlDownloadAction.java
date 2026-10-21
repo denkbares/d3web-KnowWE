@@ -22,7 +22,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.denkbares.semanticcore.utils.ResultTableModel;
 import com.denkbares.utils.Files;

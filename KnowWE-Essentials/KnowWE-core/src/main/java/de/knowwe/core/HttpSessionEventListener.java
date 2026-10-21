@@ -1,7 +1,7 @@
 package de.knowwe.core;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
 import com.denkbares.events.Event;
 import de.knowwe.event.HttpSessionCreatedEvent;

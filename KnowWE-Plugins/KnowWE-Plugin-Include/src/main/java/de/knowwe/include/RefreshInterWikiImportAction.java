@@ -26,7 +26,7 @@ public class RefreshInterWikiImportAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		Section<InterWikiImportMarkup> markup = getSection(context, InterWikiImportMarkup.class);
 		if (!KnowWEUtils.canWrite(markup, context)) {
-			context.sendError(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN,
+			context.sendError(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN,
 					"You are not allowed to refresh this import");
 			return;
 		}

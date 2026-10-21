@@ -212,14 +212,12 @@ jspwiki.basicAttachmentProvider.storageDir = $basedir
 #  To show differences between page versions, you can define a
 # difference provider.
 #  The following choices are available:
-#    * TraditionalDiffProvider - Uses internal (java) diff
-#        to create a list of changes and shows it line by
-#        line colored. This is the default
-#    * ContextualDiffProvider - Uses internal (java) diff
-#        to create changes inline and shows it on a word by
-#        word basis using CSS. This is much superior to the
-#        traditional diff provider, however, it is still quite
-#        new and not much tested. YMMV.
+#    * de.knowwe.jspwiki.diff.KnowWETextDiffProvider - KnowWE's line and
+#        word diff. This is the default: KnowWETextDiffActivator sets it
+#        when the property is unset or names a JSPWiki built-in provider.
+#    * SvnStyleDiffProvider - JSPWiki's internal (java) diff in the style
+#        of an svn diff view (TraditionalDiffProvider and
+#        ContextualDiffProvider were removed in JSPWiki 3).
 #    * ExternalDiffProvider - uses a system diff program (which
 #        can be configured using "jspwiki.diffCommand") to
 #        create an unified (!) diff.
@@ -227,7 +225,7 @@ jspwiki.basicAttachmentProvider.storageDir = $basedir
 #        Example for a diff command:
 #        jspwiki.diffCommand = /usr/bin/diff -u %s1 %s2
 #
-jspwiki.diffProvider = TraditionalDiffProvider
+jspwiki.diffProvider = de.knowwe.jspwiki.diff.KnowWETextDiffProvider
 
 #  Determines if you need to have relative urls or not.  If the baseURL
 #  is not set, then this has no effect, but if you set the baseURL (which

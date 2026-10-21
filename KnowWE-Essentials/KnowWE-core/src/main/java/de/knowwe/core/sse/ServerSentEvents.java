@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.time.Duration;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

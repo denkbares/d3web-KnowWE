@@ -22,7 +22,7 @@
 <%@ page import="org.apache.wiki.render.RenderingManager" %>
 <%@ page import="org.apache.wiki.ui.EditorManager" %>
 <%@ page import="de.knowwe.jspwiki.KnowWEPlugin" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%
