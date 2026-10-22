@@ -23,6 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wiki.api.providers.WikiProvider;
@@ -180,6 +183,41 @@ public class GitRepoIndexTest {
 		RawGitExecutor.executeGitCommand("git checkout " + mainBranch, repo.getAbsolutePath());
 		assertEquals(1, index.versionCount("Base.txt"));
 		assertEquals(0, index.versionCount("Feature0.txt"));
+	}
+
+	@Test
+	public void reportsFilesOfCommitsMadeOutsideTheWiki() throws IOException {
+		commit("A.txt", "a1", "Alice", "first");
+		commit("B.txt", "b1", "Alice", "first");
+		List<Set<String>> moves = new ArrayList<>();
+		index.onHeadMove(moves::add);
+		// the first index of a branch has nothing to compare against
+		assertEquals(1, index.versionCount("A.txt"));
+		assertTrue(moves.isEmpty());
+
+		// a plain command line commit the wiki never saw
+		FileUtils.writeStringToFile(new File(repo, "A.txt"), "a2", StandardCharsets.UTF_8);
+		RawGitExecutor.executeGitCommand("git add A.txt", repo.getAbsolutePath());
+		RawGitExecutor.executeGitCommand(new String[] { "git", "-c", "user.name=Bob", "-c",
+				"user.email=bob@test.invalid", "commit", "-q", "-m", "outside" }, repo.getAbsolutePath());
+
+		assertEquals(2, index.versionCount("A.txt"));
+		assertEquals(List.of(Set.of("A.txt")), moves);
+	}
+
+	@Test
+	public void reportsRewoundFilesOnBackwardReset() throws IOException {
+		String a1 = commit("A.txt", "a1", "Alice", "first");
+		commit("B.txt", "b1", "Alice", "first");
+		commit("C.txt", "c1", "Alice", "first");
+		assertEquals(1, index.versionCount("C.txt"));
+		List<Set<String>> moves = new ArrayList<>();
+		index.onHeadMove(moves::add);
+
+		RawGitExecutor.executeGitCommand("git reset --hard " + a1, repo.getAbsolutePath());
+
+		assertEquals(0, index.versionCount("C.txt"));
+		assertEquals(List.of(Set.of("B.txt", "C.txt")), moves);
 	}
 
 	@Test
