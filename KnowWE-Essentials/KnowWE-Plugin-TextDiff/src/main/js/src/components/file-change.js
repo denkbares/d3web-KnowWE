@@ -194,7 +194,8 @@ class KnowweFileChange extends HTMLElement {
 
 	_onHeaderClick(event) {
 		if (this.hasAttribute('data-empty-body')) return;
-		if (event.target.closest('a, button, input, label')) return;
+		const control = event.target.closest('a, button, input, label');
+		if (control && !control.classList.contains('file-change-toggle')) return;
 		this._toggleCollapsed();
 	}
 
