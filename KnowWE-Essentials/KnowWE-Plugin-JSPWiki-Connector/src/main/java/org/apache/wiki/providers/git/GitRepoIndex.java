@@ -242,24 +242,36 @@ public class GitRepoIndex {
 			return BranchIndex.EMPTY;
 		}
 
+		Refresh refresh = refresh(branch, gitHead);
+		// the listener evicts pages from caches with locks of their own, so it must not run under the rebuild lock
+		if (!refresh.changed().isEmpty()) {
+			headMoveListener.accept(refresh.changed());
+		}
+		return refresh.index();
+	}
+
+	/**
+	 * The index of the current branch and the files that changed since the previously indexed {@code HEAD}.
+	 */
+	private record Refresh(BranchIndex index, Set<String> changed) {
+	}
+
+	private Refresh refresh(String branch, String gitHead) {
 		synchronized (rebuildLock) {
 			// get() also marks the branch most-recently-used, so the access-order LRU never evicts the current branch
 			BranchIndex existing = byBranch.get(branch);
 			if (existing != null && gitHead.equals(existing.head())) {
-				return existing;
+				return new Refresh(existing, Set.of());
 			}
 			BranchIndex updated = (existing == null || existing.head() == null)
 					? buildFull(gitHead)
 					: update(existing, gitHead);
 			// put() bounds the map via removeEldestEntry (evicts the least-recently-used branch, never this one)
 			byBranch.put(branch, updated);
-			if (existing != null && existing.head() != null) {
-				Set<String> changed = changedFiles(existing, updated);
-				if (!changed.isEmpty()) {
-					headMoveListener.accept(changed);
-				}
-			}
-			return updated;
+			Set<String> changed = (existing == null || existing.head() == null)
+					? Set.of()
+					: changedFiles(existing, updated);
+			return new Refresh(updated, changed);
 		}
 	}
 
