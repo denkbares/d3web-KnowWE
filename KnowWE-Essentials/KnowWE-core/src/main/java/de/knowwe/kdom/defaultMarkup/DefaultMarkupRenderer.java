@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,6 @@ import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.NamedCompiler;
@@ -467,7 +467,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	private boolean isOnlyCompilerOfTypeInWiki(PackageCompiler c) {
-		return Compilers.getCompilers(c.getCompileSection().getArticleManager(), c.getClass()).size() == 1;
+		return Compilers.getCompilers(Objects.requireNonNull(c.getCompileSection().getArticleManager()), c.getClass()).size() == 1;
 	}
 
 	/**
@@ -588,9 +588,13 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	protected @NotNull String getClassNamesString(Section<?> section, UserContext user) {
-		String defaultCompilerClass = getDefaultCompilerClass(section, user);
+		String defaultCompilerClass = getDefaultCompilerClassProtected(section, user);
 		return "defaultMarkupFrame toolMenuParent type_" + section.get()
 				.getName() + defaultCompilerClass + (framed ? "" : " frameless") + (renderHeader ? "" : " headerless");
+	}
+
+	protected String getDefaultCompilerClassProtected(Section<?> section, UserContext user) {
+		return getDefaultCompilerClass(section, user);
 	}
 
 	@NotNull
