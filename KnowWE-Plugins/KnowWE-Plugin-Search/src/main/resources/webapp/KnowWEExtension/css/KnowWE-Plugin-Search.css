@@ -980,3 +980,9 @@
 	vertical-align: middle;
 	cursor: pointer;
 }
+
+/* An empty page has nothing to show, so its hit says so -- quietly, as a remark rather than as content. */
+.knowwe-search-empty-page {
+	font-style: italic;
+	color: var(--text-color-secondary-shade);
+}

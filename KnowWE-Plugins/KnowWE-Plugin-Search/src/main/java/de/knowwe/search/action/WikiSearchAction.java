@@ -226,6 +226,9 @@ public class WikiSearchAction extends AbstractAction {
 			json.put("attachment", true);
 			return json;
 		}
+		// said rather than shown: an empty page has no preview and no snippet, and a bare title reads as a broken hit
+		Article article = context.getArticleManager().getArticle(hit.title());
+		if (article != null && article.getText().isBlank()) json.put("emptyPage", true);
 		String rendering = renderingArticle(hit, context);
 		// both of them to where the content is actually visible -- the attachment's own section anchor does not hold there
 		json.put("pageUrl", rendering != null ? rendering : "Wiki.jsp?page=" + hit.title().replace(" ", "+"));

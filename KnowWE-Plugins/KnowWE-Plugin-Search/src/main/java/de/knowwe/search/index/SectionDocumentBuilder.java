@@ -95,6 +95,13 @@ public class SectionDocumentBuilder {
 			if (text.body().isBlank() && chunk.heading() == null && chunk.kind() != IndexChunk.Kind.MARKUP) continue;
 			documents.add(build(title, chunk, text, lastModified));
 		}
+		// A page without anything worth a section is still a page: emptied in the editor, it exists for the wiki -- so
+		// the search offers no "create" for it either -- and without a document it could not be found by its name.
+		// One document for the page as a whole keeps it findable by title.
+		if (documents.isEmpty()) {
+			IndexChunk page = new IndexChunk(IndexChunk.Kind.INTRO, article.getRootSection(), null, List.of(), List.of(), 0);
+			documents.add(build(title, page, ExtractedText.EMPTY, lastModified));
+		}
 		return documents;
 	}
 
