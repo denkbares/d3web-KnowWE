@@ -47,6 +47,12 @@
      </jsp-property-group>
    </jsp-config>
 
+    <!-- Track sessions by cookie only, never by ;jsessionid in URLs (they end up in links, browser history and logs).
+         The timeout is left to the container default. -->
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
     <!-- Resource bundle default location -->
     <context-param>
         <param-name>jakarta.servlet.jsp.jstl.fmt.localizationContext</param-name>
