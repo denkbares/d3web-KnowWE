@@ -704,20 +704,6 @@
 		</profile>
 
 		<profile>
-			<id>avl</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.denkbares.ssp</groupId>
-					<artifactId>d3web-Plugin-AVL</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
 			<id>ktm-knowwe</id>
 			<dependencies>
 				<dependency>

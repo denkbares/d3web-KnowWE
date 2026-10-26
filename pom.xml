@@ -1026,11 +1026,6 @@
 			<!-- ===== SSP/KONAP/MATE Module ===== -->
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
-				<artifactId>d3web-Plugin-AVL</artifactId>
-				<version>${SemanticServicePlatform.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-CBX</artifactId>
 				<version>${KnowWE-SSP.version}</version>
 			</dependency>
