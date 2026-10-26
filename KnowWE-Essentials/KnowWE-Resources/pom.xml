@@ -54,6 +54,13 @@
 								<exclude>WEB-INF/lib/log4j-core-*.jar</exclude>
 								<exclude>WEB-INF/lib/httpcore-*.jar</exclude>
 								<exclude>WEB-INF/lib/jdom2-*.jar</exclude>
+								<!-- Kendra search provider is not used by KnowWE, drop it together with the AWS SDK it pulls in -->
+								<exclude>WEB-INF/lib/jspwiki-knowwe-kendra-searchprovider-*.jar</exclude>
+								<exclude>WEB-INF/lib/aws-java-sdk-*.jar</exclude>
+								<exclude>WEB-INF/lib/jmespath-java-*.jar</exclude>
+								<exclude>WEB-INF/lib/ion-java-*.jar</exclude>
+								<exclude>WEB-INF/lib/jackson-dataformat-cbor-*.jar</exclude>
+								<exclude>WEB-INF/lib/joda-time-*.jar</exclude>
 								<exclude>WEB-INF/web.xml</exclude>
 								<exclude>META-INF/MANIFEST.MF</exclude>
 							</excludes>

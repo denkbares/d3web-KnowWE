@@ -21,9 +21,13 @@ package org.apache.wiki.providers.git;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import org.apache.wiki.api.providers.WikiProvider;
 import org.jetbrains.annotations.NotNull;
@@ -88,8 +92,21 @@ public class GitRepoIndex {
 	 */
 	private final Object rebuildLock = new Object();
 
+	private volatile Consumer<Set<String>> headMoveListener = paths -> {};
+
 	public GitRepoIndex(GitConnector connector) {
 		this.connector = connector;
+	}
+
+	/**
+	 * Registers the callback that is told which files changed when the current branch moves to a new {@code HEAD}. It
+	 * covers commits made outside the wiki, such as a {@code git commit} on the command line, which callers holding
+	 * per-file state learn about only this way. Not called when a branch is indexed for the first time.
+	 *
+	 * @param listener receives the repo-relative paths whose history differs between the old and the new {@code HEAD}
+	 */
+	public void onHeadMove(@NotNull Consumer<Set<String>> listener) {
+		this.headMoveListener = listener;
 	}
 
 	/**
@@ -225,19 +242,59 @@ public class GitRepoIndex {
 			return BranchIndex.EMPTY;
 		}
 
+		Refresh refresh = refresh(branch, gitHead);
+		// the listener evicts pages from caches with locks of their own, so it must not run under the rebuild lock
+		if (!refresh.changed().isEmpty()) {
+			headMoveListener.accept(refresh.changed());
+		}
+		return refresh.index();
+	}
+
+	/**
+	 * The index of the current branch and the files that changed since the previously indexed {@code HEAD}.
+	 */
+	private record Refresh(BranchIndex index, Set<String> changed) {
+	}
+
+	private Refresh refresh(String branch, String gitHead) {
 		synchronized (rebuildLock) {
 			// get() also marks the branch most-recently-used, so the access-order LRU never evicts the current branch
 			BranchIndex existing = byBranch.get(branch);
 			if (existing != null && gitHead.equals(existing.head())) {
-				return existing;
+				return new Refresh(existing, Set.of());
 			}
 			BranchIndex updated = (existing == null || existing.head() == null)
 					? buildFull(gitHead)
 					: update(existing, gitHead);
 			// put() bounds the map via removeEldestEntry (evicts the least-recently-used branch, never this one)
 			byBranch.put(branch, updated);
-			return updated;
+			Set<String> changed = (existing == null || existing.head() == null)
+					? Set.of()
+					: changedFiles(existing, updated);
+			return new Refresh(updated, changed);
 		}
+	}
+
+	/**
+	 * The files whose history differs between two snapshots of one branch, including files that only one of them has.
+	 */
+	private static Set<String> changedFiles(BranchIndex before, BranchIndex after) {
+		Set<String> changed = new HashSet<>();
+		after.byFile().forEach((path, revisions) -> {
+			List<GitFileRevision> previous = before.byFile().get(path);
+			// a forward fold keeps the list of every untouched file, so the identity check settles most files
+			if (previous != revisions && (previous == null || previous.size() != revisions.size()
+					|| !Objects.equals(latestHash(previous), latestHash(revisions)))) {
+				changed.add(path);
+			}
+		});
+		before.byFile().keySet().stream().filter(path -> !after.byFile().containsKey(path)).forEach(changed::add);
+		return changed;
+	}
+
+	@Nullable
+	private static String latestHash(List<GitFileRevision> revisions) {
+		return revisions.isEmpty() ? null : revisions.get(0).commitHash();
 	}
 
 	private BranchIndex buildFull(String gitHead) {

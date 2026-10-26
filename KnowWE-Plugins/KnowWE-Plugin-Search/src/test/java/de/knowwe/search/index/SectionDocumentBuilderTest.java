@@ -202,6 +202,17 @@ public class SectionDocumentBuilderTest {
 		assertEquals(1, documents.size());
 	}
 
+	@Test
+	public void anEmptyPageIsStillFoundByItsName() throws IOException {
+		// emptied in the editor, the page still exists -- so the search does not offer to create it either, and without
+		// a document of its own nobody could get to it at all
+		index("Emptied Page", "");
+		index("Blank Page", "  \n\n ");
+
+		assertEquals(List.of("Emptied Page"), breadcrumbs(term(SearchFields.TITLE_EXACT, "emptied page")));
+		assertEquals(List.of("Blank Page"), breadcrumbs(term(SearchFields.TITLE_EXACT, "blank page")));
+	}
+
 	private void index(String title, String content) throws IOException {
 		writer.addDocuments(builder.build(register(title, content)));
 	}

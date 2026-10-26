@@ -514,10 +514,6 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-PlantUML</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TimeDB</artifactId>
 				</dependency>
 				<dependency>
@@ -593,7 +589,6 @@
 					KnowWE-Plugin-EditMode,
 					d3web-Plugin-ImageMap,
 					KnowWE-Plugin-ImageMap,
-					KnowWE-Plugin-PlantUML,
 					KnowWE-Plugin-Todos,
 					KnowWE-Plugin-SparqlEndpoint,
 					KnowWE-Plugin-RightPanel
@@ -620,10 +615,6 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-ImageMap</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-PlantUML</artifactId>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>

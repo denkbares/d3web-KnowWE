@@ -110,3 +110,28 @@ describe("knowwe-text-diff", () => {
 		expect(el.getAttribute("data-status-message")).toBe("HTTP 500");
 	});
 });
+
+describe("knowwe-file-change", () => {
+	function change() {
+		document.body.innerHTML = `<knowwe-file-change data-new-name="A">
+			<a slot="actions" href="#history">history</a><button slot="actions">action</button>
+			<div>body</div></knowwe-file-change>`;
+		return document.querySelector("knowwe-file-change");
+	}
+
+	it("toggles the body from the chevron and from empty header space", () => {
+		const el = change();
+		el.shadowRoot.querySelector(".file-change-toggle .icon").dispatchEvent(new MouseEvent("click", {bubbles: true, composed: true}));
+		expect(el.hasAttribute("data-collapsed")).toBe(true);
+		el.shadowRoot.querySelector(".file-change-header").click();
+		expect(el.hasAttribute("data-collapsed")).toBe(false);
+	});
+
+	it("leaves the body alone for clicks on header links and slotted controls", () => {
+		const el = change();
+		el.shadowRoot.querySelector(".file-change-name.old").click();
+		el.querySelector("a[slot]").click();
+		el.querySelector("button[slot]").click();
+		expect(el.hasAttribute("data-collapsed")).toBe(false);
+	});
+});

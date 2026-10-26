@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.rendering.elements.Div;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
+import de.knowwe.core.rightpanel.RightPanel;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
@@ -64,8 +65,10 @@ public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 	}
 
 	public static boolean requiresWrapper(UserContext user) {
-		// we need the rerender wrapper-div if we are not using the user action or if we render asynchron
-		return !(user instanceof UserActionContext) || AsynchronousRenderer.isAsynchronousRerenderingRequest(user);
+		// we need the rerender wrapper-div if we are not using the user action or if we render asynchron, or the
+		// content of a lazy tab of the right panel, which is new on the page like the result of an asynchronous rendering
+		return !(user instanceof UserActionContext) || AsynchronousRenderer.isAsynchronousRerenderingRequest(user)
+				|| RightPanel.isTabContentRequest(user);
 	}
 
 	public static void renderOpen(Section<?> sec, RenderResult result) {

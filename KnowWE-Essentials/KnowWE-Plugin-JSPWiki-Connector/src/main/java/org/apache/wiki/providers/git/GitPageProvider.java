@@ -116,6 +116,12 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 		// build the commit-graph to accelerate git-log reads
 		connector.repo().executeCommitGraph();
 		this.repository = new GitWikiRepository(connector);
+		// the page cache holds the latest version number next to the working-tree text, so a commit made outside the
+		// wiki would leave the cache claiming the previous version is the latest one, and serve the new text for it
+		repository.index().onHeadMove(paths -> context.evictPages(paths.stream()
+				.filter(GitPageProvider::isPagePath)
+				.map(GitPageProvider::wikiName)
+				.toList()));
 		this.batchRegistry = new GitCommitBatchRegistry(repository);
 		this.backend = new GitWikiBackend(repository, batchRegistry, context);
 

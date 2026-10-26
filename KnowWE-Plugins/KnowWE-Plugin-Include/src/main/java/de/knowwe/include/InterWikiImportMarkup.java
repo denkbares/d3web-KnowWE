@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -39,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
-
 
 import org.apache.wiki.util.CsrfProtectionAllowList;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +58,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.elements.A;
 import de.knowwe.core.kdom.rendering.elements.Div;
@@ -716,6 +713,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		@Override
 		public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
 			render(section, user, result, false);
+		}
+
+		@Override
+		protected String getDefaultCompilerClassProtected(Section<?> section, UserContext user) {
+			// InterWikiImport should never be greyed out.
+			// Only the markups within the imported article should be greyed out if they are not part of the default compiler
+			return "";
 		}
 
 		private void render(Section<?> section, UserContext user, RenderResult result, boolean waitForUpdate) {

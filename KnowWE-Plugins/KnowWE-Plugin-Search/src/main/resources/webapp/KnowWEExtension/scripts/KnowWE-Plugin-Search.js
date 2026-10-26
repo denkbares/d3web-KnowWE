@@ -663,8 +663,15 @@
 		else {
 			var snippet = document.createElement('div');
 			snippet.className = 'knowwe-search-snippet';
-			// safe: the server escapes the body and only adds its own <mark> tags around the matches
-			snippet.innerHTML = hit.snippet || '';
+			if (hit.emptyPage) {
+				// nothing to preview and nothing to quote -- without a word, the bare title looks like a broken hit
+				snippet.classList.add('knowwe-search-empty-page');
+				snippet.textContent = '<empty page>';
+			}
+			else {
+				// safe: the server escapes the body and only adds its own <mark> tags around the matches
+				snippet.innerHTML = hit.snippet || '';
+			}
 			content.appendChild(snippet);
 		}
 		return wrapper;
@@ -1047,8 +1054,15 @@
 		else {
 			var snippet = document.createElement('div');
 			snippet.className = 'knowwe-quicksearch-snippet';
-			// safe: the server escapes the body and only adds its own <mark> tags around the matches
-			snippet.innerHTML = hit.snippet || '';
+			if (hit.emptyPage) {
+				// nothing to preview and nothing to quote -- without a word, the bare title looks like a broken hit
+				snippet.classList.add('knowwe-search-empty-page');
+				snippet.textContent = '<empty page>';
+			}
+			else {
+				// safe: the server escapes the body and only adds its own <mark> tags around the matches
+				snippet.innerHTML = hit.snippet || '';
+			}
 			qbody.appendChild(snippet);
 		}
 		return wrapper;
