@@ -137,7 +137,7 @@
 
 			    mvn -o clean package -P core-plugins,denkbares,knowsec,upload-war
 
-			  <dist> ist die Property war.upload.dist. Das Profil knowsec setzt sie auf "knowsec"; für andere
+			  <dist> ist die Property war.upload.dist. Die Profile knowsec und cbx setzen sie auf ihren Namen; für andere
 			  Kombinationen -Dwar.upload.dist=<name> mitgeben, ohne sie bricht validate ab. Die Zugangsdaten kommen
 			  aus dem <server> der settings.xml mit der Id war.upload.serverId (Default: der Server der
 			  distributionManagement). Ziel und Server lassen sich per -Dwar.upload.url und -Dwar.upload.serverId
@@ -164,7 +164,7 @@
 									<rules>
 										<requireProperty>
 											<property>war.upload.dist</property>
-											<message>Profil upload-war: -Dwar.upload.dist=&lt;name&gt; fehlt. Das WAR wird als KnowWE-&lt;name&gt;.war hochgeladen; nur das Profil knowsec setzt die Property selbst.</message>
+											<message>Profil upload-war: -Dwar.upload.dist=&lt;name&gt; fehlt. Das WAR wird als KnowWE-&lt;name&gt;.war hochgeladen; nur die Profile knowsec und cbx setzen die Property selbst.</message>
 											<regex>[A-Za-z0-9._-]+</regex>
 											<regexMessage>war.upload.dist darf nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich enthalten.</regexMessage>
 										</requireProperty>
@@ -755,6 +755,10 @@
 
 		<profile>
 			<id>cbx</id>
+			<properties>
+				<!-- Name des WARs im Docker-Testserver-Repository, s. Profil upload-war -->
+				<war.upload.dist>cbx</war.upload.dist>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>

@@ -24,7 +24,7 @@ wird dafür auskommentiert, sonst überschreibt der nächste Master-Lauf den Bra
    ```
 
    Hochgeladen wird `target/KnowWE-App-<version>.war` (dasselbe WAR wie beim Jenkins-Job) als
-   `KnowWE-knowsec.war`. Der Name kommt aus `war.upload.dist`; das Profil `knowsec` setzt ihn, für andere
+   `KnowWE-knowsec.war`. Der Name kommt aus `war.upload.dist`; die Profile `knowsec` und `cbx` setzen ihn, für andere
    Kombinationen `-Dwar.upload.dist=<name>` mitgeben. Ohne die Property bricht `validate` mit einer
    Fehlermeldung ab, statt ein `KnowWE-${war.upload.dist}.war` abzulegen.
 3. Zugangsdaten: ein `<server>` in `~/.m2/settings.xml`, dessen Id `war.upload.serverId` entspricht.
