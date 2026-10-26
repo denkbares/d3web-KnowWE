@@ -19,11 +19,13 @@
 package de.knowwe.rightpanel;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.rightpanel.RightPanel;
 import de.knowwe.core.rightpanel.RightPanelTab;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.plugin.Plugins;
@@ -46,14 +48,21 @@ public class RightPanelAppendHandler implements PageAppendHandler {
 		// no article on preview renders; nothing to scaffold
 		if (article == null) return;
 
-		List<RightPanelTab> available = Plugins.getRightPanelTabs(user.getEnvironment()).stream()
-				.filter(tab -> tab.provider().isAvailable(user))
-				.toList();
+		List<RightPanelTab> available = RightPanel.getAvailableTabs(user);
 
 		// zero tabs -> no panel at all (and the JS adds no toggle)
 		if (available.isEmpty()) return;
 
-		result.appendHtml("<div id=\"rightPanel\" hidden>");
+		// the JS keeps the panel collapsed if the most recently activated tab is contextual and missing on this page,
+		// and notifies if it shows or hides the panel unlike the server assumed when rendering the page
+		String contextual = Plugins.getRightPanelTabs(user.getEnvironment()).stream()
+				.filter(tab -> tab.provider().isContextual())
+				.map(RightPanelTab::id)
+				.collect(Collectors.joining(" "));
+		result.appendHtml("<div id=\"rightPanel\" hidden");
+		result.appendHtml(" data-contextual=\"" + Strings.encodeHtml(contextual) + "\"");
+		result.appendHtml(" data-open=\"" + RightPanel.isOpen(user, available) + "\"");
+		result.appendHtml(">");
 
 		// tab list header, hides itself in CSS when there is only one tab
 		result.appendHtml("<div class=\"right-panel-tablist\">");

@@ -29,6 +29,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 	const rightPanelStorageKey = "rightPanel";
 	const rightPanelWidthStorageKey = "knowwe.rightPanel.width";
 	const tabOrderStorageKey = "knowwe.rightPanel.tabOrder";
+	// mirror of the user's choice for the server, see de.knowwe.core.rightpanel.RightPanel
+	const openCookie = "knowwe-rightpanel-open";
+	const tabCookie = "knowwe-rightpanel-tab";
 	const defaultRightPanelWidth = 300;
 	const minRightPanelWidth = 300;
 
@@ -51,6 +54,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 	let resizing = false;
 
 	jq$(window).resize(function () {
+		// content changing while the panel slides in may toggle the scrollbar of the page, which resizes the window;
+		// placing the panel then would fight the animation frame by frame, so it is placed when the animation is done
+		if (rightPanel && rightPanel.is(":animated")) return;
 		if (showSidebar) {
 			windowWidth = jq$(window).width();
 
@@ -265,15 +271,17 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}
 	}
 
-	function growPage() {
+	function growPage(onHidden) {
 		if (!isOnBottom) {
 			jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right': '0'}, globalFloatingTime);
 			rightPanel.animate({'right': -getRightPanelWidth() + 'px'}, globalFloatingTime, function () {
 				removeRightPanel();
+				onHidden();
 			});
 		} else {
 			rightPanel.animate({'bottom': -rightPanel.height() + 'px'}, globalFloatingTime, function () {
 				removeRightPanel();
+				onHidden();
 			});
 		}
 	}
@@ -400,6 +408,28 @@ KNOWWE.core.plugin.rightPanel = function () {
 		try {
 			localStorage.setItem(tabOrderStorageKey, JSON.stringify(order));
 		} catch (e) { }
+		writeStateCookies();
+	}
+
+	function writeStateCookies() {
+		KNOWWE.helper.cookie.create(openCookie, String(isRightPanelShown()), 365);
+		KNOWWE.helper.cookie.create(tabCookie, getStoredTabOrder()[0] || "", 365);
+	}
+
+	/**
+	 * Returns true if the tab the user activated most recently is contextual and missing on this page. The panel then
+	 * stays collapsed on this page, without changing the user's choice to show it (see
+	 * RightPanelTabProvider.isContextual).
+	 */
+	function isCollapsedOnThisPage() {
+		const lastTab = getStoredTabOrder()[0];
+		if (!lastTab || tabButton(lastTab).length) return false;
+		const contextual = (rightPanel.attr("data-contextual") || "").split(" ");
+		return contextual.includes(lastTab);
+	}
+
+	function dispatchPanelEvent(shown) {
+		document.dispatchEvent(new CustomEvent(shown ? "rightPanelShown" : "rightPanelHidden"));
 	}
 
 	function activateTab(id, userInitiated) {
@@ -489,7 +519,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 			simpleStorage.deleteKey(rightPanelStorageKey);
 		}
 		simpleStorage.set(rightPanelStorageKey, b);
-
+		writeStateCookies();
 	}
 
 	function bindCollapseIcons() {
@@ -564,11 +594,15 @@ KNOWWE.core.plugin.rightPanel = function () {
 			bindUiActions();
 			initRightPanelTabs();
 			globalFloatingTime = 500;
+			// when restored on page load, the server already knows the panel is shown (see init)
+			if (!fromCookie) dispatchPanelEvent(true);
 		}
 	}
 
 	function terminateRightPanel() {
-		growPage();
+		if (!showSidebar) return;
+		// notified when the panel has slid out, so its content does not change while it is still visible
+		growPage(() => dispatchPanelEvent(false));
 		changeHideToShow();
 		setRightPanelCookie(false);
 		showSidebar = false;
@@ -631,7 +665,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function bindRightPanelToggleButton() {
 		jq$('#rightPanel-toggle-button').unbind('click').click(function () {
 			const $this = jq$(this);
-			if (isRightPanelShown()) {
+			// the panel may be collapsed on this page although the user chose to show it (isCollapsedOnThisPage)
+			if (showSidebar) {
 				KNOWWE.core.plugin.rightPanel.hideRightPanel();
 				$this.removeClass("fa-angles-right").addClass("fa-angles-left").attr("title", "Show right panel");
 			} else {
@@ -655,11 +690,14 @@ KNOWWE.core.plugin.rightPanel = function () {
 			rightPanel = locateScaffold();
 			if (!rightPanel.length) return;
 
-			const isShown = isRightPanelShown();
+			const isShown = isRightPanelShown() && !isCollapsedOnThisPage();
 			if (isShown) {
 				initRightPanel(true);
 			}
 			initRightPanelToggleButton(isShown);
+			// the server renders the page for the state of the cookies, which may be missing or outdated
+			writeStateCookies();
+			if (isShown !== (rightPanel.attr("data-open") === "true")) dispatchPanelEvent(isShown);
 			jq$(window).scroll(function() {
 				// wait for animation frame since we check for changes also done on scroll... we make sure we see these changes
 				window.requestAnimationFrame(rightPanelScroll);
@@ -691,7 +729,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		},
 
 		isShownOnRight: function () {
-			return isRightPanelShown() && !isOnBottom;
+			return showSidebar && !isOnBottom;
 		},
 
 		setTabEnabled: function (id, enabled) {

@@ -79,6 +79,19 @@ public interface RightPanelTabProvider {
 	}
 
 	/**
+	 * Whether this tab shows content of the page it is available on, like the media panel of ServiceMate. If the tab
+	 * the user activated most recently is contextual and not available on the current page, the right panel stays
+	 * collapsed on this page, without changing the user's choice to show the panel. It opens again with that tab on
+	 * the next page the tab is available on. A missing tab that is not contextual is replaced by another available
+	 * tab, and the panel stays open. Defaults to {@code false}.
+	 *
+	 * @see RightPanel#isOpen(UserContext)
+	 */
+	default boolean isContextual() {
+		return false;
+	}
+
+	/**
 	 * Render the body only on first activation instead of upfront. A lazy tab's body is fetched separately when the tab
 	 * is first activated.
 	 */
