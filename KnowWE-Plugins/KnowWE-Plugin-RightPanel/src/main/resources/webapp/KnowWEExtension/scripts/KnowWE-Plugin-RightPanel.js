@@ -387,6 +387,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}).done(function (html) {
 			$body.html(html);
 			$body.attr("data-loaded", "true");
+			// the content is new, updates deferred before are already contained
+			$body.removeAttr("data-rerender-pending");
 			onDone();
 		}).fail(_IE.onErrorBehavior);
 	}
@@ -441,8 +443,10 @@ KNOWWE.core.plugin.rightPanel = function () {
 		function show() {
 			rightPanel.find(".right-panel-tablist button").removeAttr("data-active");
 			$btn.attr("data-active", "");
-			rightPanel.find(".right-panel-tab").attr("hidden", "");
-			$body.removeAttr("hidden");
+			// inactive tabs are not rendered again on updates, but when they are shown (see rerenderShown)
+			rightPanel.find(".right-panel-tab").attr("hidden", "").attr("data-defer-rerender", "");
+			$body.removeAttr("hidden").removeAttr("data-defer-rerender");
+			KNOWWE.core.rerendercontent.rerenderPending($body[0]);
 			if (userInitiated) recordTabActivation(id);
 			dispatchTabEvent("rightPanelTabShown", id, $body[0]);
 		}
@@ -740,7 +744,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 				$btn.removeAttr("hidden");
 			} else {
 				$btn.attr("hidden", "");
-				$body.attr("hidden", "");
+				$body.attr("hidden", "").attr("data-defer-rerender", "");
 			}
 		}
 

@@ -711,12 +711,37 @@ KNOWWE.core.rerendercontent = function() {
                 if (typeof this == "object" && this !== window) {
                     jq$.extend(parameters, this);
                 }
-                jq$(".ReRenderSectionMarker").rerender(parameters);
+                KNOWWE.core.rerendercontent.rerenderShown(jq$(".ReRenderSectionMarker"), parameters);
             });
             KNOWWE.helper.observer.subscribe("afterRerender", function() {
                 KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible(this);
             });
             KNOWWE.core.rerendercontent.loadAsynchronousWhenVisible();
+        },
+
+        /**
+         * Function: rerenderShown
+         * Rerenders the given ReRenderSectionMarkers, except the ones inside a part of the page that is not shown and
+         * carries the attribute data-defer-rerender, e.g. an inactive tab of the right panel. Such a part gets the
+         * attribute data-rerender-pending instead, and is rendered again by rerenderPending when it is shown.
+         */
+        rerenderShown: function($markers, parameters) {
+            const $deferred = $markers.filter(function() {
+                return this.closest("[data-defer-rerender]") !== null;
+            });
+            $deferred.closest("[data-defer-rerender]").attr("data-rerender-pending", "true");
+            $markers.not($deferred).rerender(parameters);
+        },
+
+        /**
+         * Function: rerenderPending
+         * Rerenders the ReRenderSectionMarkers inside the given element, if their rerendering has been deferred by
+         * rerenderShown while the element was not shown.
+         */
+        rerenderPending: function(element) {
+            if (!element || !element.hasAttribute("data-rerender-pending")) return;
+            element.removeAttribute("data-rerender-pending");
+            jq$(element).find(".ReRenderSectionMarker").rerender();
         },
 
         /**

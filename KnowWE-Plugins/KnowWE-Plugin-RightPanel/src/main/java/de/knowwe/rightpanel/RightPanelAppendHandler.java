@@ -88,7 +88,8 @@ public class RightPanelAppendHandler implements PageAppendHandler {
 			RightPanelTab tab = available.get(i);
 			boolean active = (i == 0);
 			result.appendHtml("<div class=\"right-panel-tab\" data-tab=\"" + Strings.encodeHtml(tab.id()) + "\"");
-			if (!active) result.appendHtml(" hidden");
+			// inactive tabs are not rendered again on updates, but when they are shown (see KNOWWE.core.rerendercontent)
+			if (!active) result.appendHtml(" hidden data-defer-rerender");
 			result.appendHtml(">");
 			// non-lazy bodies ship inline, lazy bodies are fetched on first activation
 			if (!tab.provider().isLazy()) {

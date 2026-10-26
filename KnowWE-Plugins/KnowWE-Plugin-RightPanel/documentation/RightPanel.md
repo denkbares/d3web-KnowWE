@@ -86,6 +86,14 @@ Waehrend das Panel animiert, ignoriert es `resize`-Events des Fensters und platz
 sich beim Ein- oder Ausblenden der Seiteninhalt, kann die Scrollleiste der Seite erscheinen oder verschwinden, und das
 Fenster meldet ein Resize; das Panel sprang sonst Frame fuer Frame zwischen Animation und Endposition.
 
+## Inaktive Tabs
+
+Inaktive Tabs tragen `hidden` und `data-defer-rerender`. `KNOWWE.core.rerendercontent.rerenderShown` (in
+`KnowWE.js`, genutzt vom `update`-Event) rendert `ReRenderSectionMarker` darin nicht neu, sondern setzt am Tab
+`data-rerender-pending`; beim Aktivieren rendert `rerenderPending` sie einmal nach. Plugins, die eigene Inhalte bei
+`update` laden (z.B. das CBX-Wiring), pruefen `closest("[data-defer-rerender]")` und laden bei `rightPanelTabShown`
+nach.
+
 ## JS-API
 
 `KNOWWE.core.plugin.rightPanel`: `showRightPanel`, `hideRightPanel`, `activateTab(id)`, `setTabEnabled(id, enabled)`,
