@@ -21,7 +21,7 @@
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%@ page import="java.security.Principal" %>
 <%@ page import="java.util.Arrays" %>
-<%@ page import="org.apache.wiki.auth.PrincipalComparator" %>
+<%@ page import="org.apache.wiki.util.comparators.PrincipalComparator" %>
 <%@ page import="org.apache.wiki.auth.authorize.Group" %>
 <%@ page import="org.apache.wiki.*" %>
 <%@ page import="org.apache.wiki.util.TextUtil" %>

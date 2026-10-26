@@ -20,6 +20,7 @@
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%@ page import="org.apache.wiki.*" %>
+<%@ page import="org.apache.wiki.api.Release" %>
 <%@ page import="jakarta.servlet.jsp.jstl.fmt.*" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>

@@ -20,6 +20,8 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ page import="org.apache.wiki.*" %>
+<%@ page import="org.apache.wiki.api.core.Page" %>
+<%@ page import="org.apache.wiki.pages.PageManager" %>
 <%@ page import="org.apache.wiki.auth.*" %>
 <%@ page import="org.apache.wiki.auth.permissions.*" %>
 <%@ page import="org.apache.wiki.tags.*" %>
@@ -48,7 +50,7 @@
   String clone = request.getParameter( "clone" );
   if( clone != null )
   {
-    WikiPage p = engine.getPage( clone );
+    Page p = engine.getManager( PageManager.class ).getPage( clone );
     if( p != null )
     {
         AuthorizationManager mgr = engine.getAuthorizationManager();
@@ -58,7 +60,7 @@
         {
           if( mgr.checkPermission( context.getWikiSession(), pp ) )
           {
-            usertext = engine.getPureText( p );
+            usertext = engine.getManager( PageManager.class ).getPureText( p );
           }
         }
         catch( Exception e ) {  /*log.error( "Accessing clone page "+clone, e );*/ }
@@ -69,7 +71,7 @@
 <%
   if( usertext == null )
   {
-    usertext = engine.getPureText( context.getPage() );
+    usertext = engine.getManager( PageManager.class ).getPureText( context.getPage() );
   }
 %>
 </wiki:CheckRequestContext>

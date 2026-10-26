@@ -43,7 +43,7 @@
 
   String wikimarkup = request.getParameter( "wikimarkup" );
   String html = KnowWEPlugin.renderPreview(wikiContext, wikimarkup);
-  String result = wiki.textToHTML(wikiContext, html);
+  String result = wiki.getManager(org.apache.wiki.render.RenderingManager.class).textToHTML(wikiContext, html);
 
 %>
 <%=result%>

@@ -23,6 +23,7 @@
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%@ page import="org.apache.wiki.*" %>
+<%@ page import="org.apache.wiki.api.Release" %>
 
 <div id="favorites">
 

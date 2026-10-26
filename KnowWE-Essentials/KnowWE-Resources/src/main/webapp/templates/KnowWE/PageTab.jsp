@@ -19,6 +19,8 @@
 
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ page import="org.apache.wiki.*" %>
+<%@ page import="org.apache.wiki.api.providers.WikiProvider" %>
+<%@ page import="org.apache.wiki.pages.PageManager" %>
 <%@ page import="org.apache.wiki.util.TextUtil" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%@ page import="jakarta.servlet.jsp.jstl.fmt.*" %><%--CHECK why is this needed --%>
@@ -52,7 +54,7 @@
           <%--<wiki:PageVersion/>--%>
           <select id="version" name="version" onchange="this.form.submit();" >
 <% 
-   int latestVersion = c.getEngine().getPage( pagename, WikiProvider.LATEST_VERSION ).getVersion();
+   int latestVersion = c.getEngine().getManager( PageManager.class ).getPage( pagename, WikiProvider.LATEST_VERSION ).getVersion();
    int thisVersion = p.getVersion();
 
    if( thisVersion == WikiProvider.LATEST_VERSION ) thisVersion = latestVersion; //should not happen
