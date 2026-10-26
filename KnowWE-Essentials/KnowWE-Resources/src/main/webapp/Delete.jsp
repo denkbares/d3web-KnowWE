@@ -76,12 +76,15 @@
 		return;
 	}
 	// Check permanent deletion on the server as well; request parameters are user-controlled.
-	if ((attachment || deleteAdmin != null || delete != null) && !canDelete
-			&& !(wikiContext.getWikiSession().isAuthenticated()
-				&& KnowWEUtils.allowDeletionByCreator(Environment.of(request), wikiContext.getName(), attachment,
-					wikiContext.getCurrentUser().getName()))) {
-		response.sendError(HttpServletResponse.SC_FORBIDDEN);
-		return;
+	boolean permanentDeletion = attachment || deleteAdmin != null || delete != null;
+	if (permanentDeletion && !canDelete) {
+		boolean authenticated = wikiContext.getWikiSession().isAuthenticated();
+		boolean allowDeletionByCreator = authenticated && KnowWEUtils.allowDeletionByCreator(Environment.of(request),
+				wikiContext.getName(), attachment, wikiContext.getCurrentUser().getName());
+		if (!allowDeletionByCreator) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
 	}
 	// Deleting a page also deletes its attachments. The creator exception must cover each of them.
 	if (!attachment && deleteAdmin != null && !canDelete) {
