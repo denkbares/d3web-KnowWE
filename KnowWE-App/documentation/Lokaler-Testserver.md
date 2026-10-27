@@ -17,7 +17,7 @@
 ## Voraussetzungen
 
 - **Java 25** für Build und Laufzeit (das WAR ist für Class-File-Version 69 gebaut).
-- **Apache Tomcat 9** (Servlet 4, `javax.servlet`). Eine passende Distribution liegt z. B. unter
+- **Apache Tomcat 11** (Servlet 6.1, `jakarta.servlet`). Eine passende Distribution liegt z. B. unter
   `KnowWE-Distribution` bzw. lässt sich als Zip von tomcat.apache.org beziehen.
 - **Ein dediziertes Maven-Repository** für die Aufgabe. Nie in das geteilte `~/.m2/repository` installieren.
   Die Third-Party-Abhängigkeiten kommen aus dem vorhandenen lokalen Bestand, etwa per
