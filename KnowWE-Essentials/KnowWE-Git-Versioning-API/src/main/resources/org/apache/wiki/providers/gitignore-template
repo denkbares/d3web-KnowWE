@@ -6,6 +6,11 @@ ci-build*.xml
 ci-build*.xml-dir
 */*ci-build-*.xml-dir
 *.properties
+# user and group databases with their backup and integrity check files, they hold password hashes
+userdatabase.xml
+userdatabase.xml.*
+groupdatabase.xml
+groupdatabase.xml.*
 OLD
 OLD/*
 .DS_Store
