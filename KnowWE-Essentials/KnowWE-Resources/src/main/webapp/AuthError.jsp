@@ -1,7 +1,7 @@
 <%@ page import="org.apache.wiki.*" %>
 <%@ page isErrorPage="true" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%
 	WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
 	WikiContext wikiContext = new WikiContext(wiki, request, WikiContext.ERROR);

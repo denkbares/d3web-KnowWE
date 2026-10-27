@@ -6,7 +6,7 @@ package de.knowwe.jspwiki.changeannotations;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.pages.PageManager;

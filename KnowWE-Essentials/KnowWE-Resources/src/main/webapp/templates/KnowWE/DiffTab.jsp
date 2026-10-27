@@ -20,18 +20,19 @@
 <%@ page import="org.apache.wiki.tags.InsertDiffTag" %>
 <%@ page import="org.apache.wiki.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="org.apache.wiki.api.core.Context" %>
+<%@ page import="org.apache.wiki.pages.PageManager" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ page import="jakarta.servlet.jsp.jstl.fmt.*" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 
 <% 
-  WikiContext c = WikiContext.findContext( pageContext );  
-  List history = c.getEngine().getVersionHistory(c.getPage().getName());
+  Context c = Context.findContext( pageContext );
+  List history = c.getEngine().getManager( PageManager.class ).getVersionHistory( c.getPage().getName() );
   pageContext.setAttribute( "history", history );
-  pageContext.setAttribute( "diffprovider", c.getEngine().getVariable(c,"jspwiki.diffProvider"));
  %>
 
 <wiki:PageExists>
@@ -57,14 +58,6 @@
          </fmt:param>
        </fmt:message>
   </h4>
-
-  <c:if test='${diffprovider eq "ContextualDiffProvider"}' >
-    <div class="diffnote">
-      <a href="#change-1" title="<fmt:message key='diff.gotofirst.title'/>" class="diff-nextprev" >
-         <fmt:message key="diff.gotofirst"/>
-      </a>&raquo;&raquo;
-    </div>
-  </c:if>
 
   <div class="diffbody">
     <wiki:InsertDiff><i><fmt:message key="diff.nodiff"/></i></wiki:InsertDiff> 

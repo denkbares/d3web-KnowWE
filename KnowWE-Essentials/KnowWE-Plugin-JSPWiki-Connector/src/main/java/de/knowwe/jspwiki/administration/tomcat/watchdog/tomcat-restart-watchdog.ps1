@@ -6,7 +6,7 @@
 
 # --- Configuration ---
 $flagPath   = "C:\tomcat-restart\restart.flag"      # Path to flag file
-$service    = "Tomcat9"                             # Service name
+$service    = "Tomcat11"                            # Service name
 $logFile    = "C:\tomcat-restart\watchdog.log"      # Path to log file
 $logMaxSize = 1048576                               # 1 MB
 

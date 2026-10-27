@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;

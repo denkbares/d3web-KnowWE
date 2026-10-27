@@ -46,8 +46,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -1685,18 +1685,22 @@ public class KnowWEUtils {
 	 */
 	public static boolean allowDeletionByCreator(@NotNull Environment environment, String objectName,
 			boolean attachment, String userName) throws IOException {
+		WikiConnector connector = environment.getWikiConnector();
 		List<? extends WikiObjectInfo> history = attachment
-				? environment.getWikiConnector().getAttachmentHistory(objectName)
-				: environment.getWikiConnector().getArticleHistory(objectName);
-		return allowDeletionByCreator(history, userName, System.currentTimeMillis());
+				? connector.getAttachmentHistory(objectName)
+				: connector.getArticleHistory(objectName);
+		// git backed history names the author by full name, other providers by login name
+		return allowDeletionByCreator(history, userName, connector.getUserFullName(userName), System.currentTimeMillis());
 	}
 
-	static boolean allowDeletionByCreator(List<? extends WikiObjectInfo> history, String userName, long currentTime) {
+	static boolean allowDeletionByCreator(List<? extends WikiObjectInfo> history, String userName, @Nullable String fullName, long currentTime) {
 		if (history == null || history.isEmpty() || StringUtils.isBlank(userName)) return false;
 		// The creator and creation time belong to revision 1, regardless of the provider's history order.
 		for (WikiObjectInfo revision : history) {
 			if (revision.getVersion() != 1) continue;
-			if (!userName.equals(revision.getAuthor()) || revision.getSaveDate() == null) return false;
+			boolean isCreator = userName.equals(revision.getAuthor())
+					|| (!StringUtils.isBlank(fullName) && fullName.equals(revision.getAuthor()));
+			if (!isCreator || revision.getSaveDate() == null) return false;
 			long age = currentTime - revision.getSaveDate().getTime();
 			return age >= 0 && age <= 60 * 60 * 1000L;
 		}

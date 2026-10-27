@@ -22,7 +22,7 @@
     Deliberately just a mount point: everything else lives in KnowWE-Plugin-Search.js, which talks to
     /action/WikiSearchAction. Keeping this file thin means the search can be changed without touching a JSP.
 --%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 

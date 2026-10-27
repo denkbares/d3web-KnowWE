@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.strings.Strings.Encoding;

@@ -23,7 +23,7 @@ package de.knowwe.diaflux;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;

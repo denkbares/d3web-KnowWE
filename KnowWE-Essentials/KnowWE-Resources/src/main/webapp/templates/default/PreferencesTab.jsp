@@ -11,10 +11,10 @@
 <%@ page import="org.apache.wiki.ui.*" %>
 <%@ page import="org.apache.wiki.preferences.*" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
+<%@ page import="jakarta.servlet.jsp.jstl.fmt.*" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default" />
 <%
@@ -172,7 +172,7 @@
             let newClass = mode === 'light-mode' ? 'light-mode' : 'dark-mode';
             bodyElement.classList.add(newClass);
             let logo = document.getElementById('knowwe-logo');
-            logo.src = "KnowWE.jsp?action=LogoAction&displayMode=" + mode;
+            logo.src = "action/LogoAction?displayMode=" + mode;
           }
 		</script>
 		<%-- if color schemes ares added, please adjust dropdown and script updateBodyClass() --%>

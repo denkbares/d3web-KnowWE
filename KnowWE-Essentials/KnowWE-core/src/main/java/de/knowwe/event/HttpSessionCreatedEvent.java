@@ -1,6 +1,6 @@
 package de.knowwe.event;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import com.denkbares.events.Event;
 

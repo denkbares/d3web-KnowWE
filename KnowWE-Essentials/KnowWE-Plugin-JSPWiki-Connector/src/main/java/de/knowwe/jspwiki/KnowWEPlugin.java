@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.wiki.WikiContext;
@@ -70,7 +69,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
@@ -647,14 +645,26 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			else {
 				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
 				String gitCommitRev = gitEvent.getGitCommitRev();
-				String pageFile = JSPUtils.mangleName(pageTitle) + ".txt";
-				int latestVersionNumber = getGitConnector().log().numberOfCommitsForFile(pageFile);
+				int latestVersionNumber = getGitConnector().log().numberOfCommitsForFile(repositoryPath(pageTitle));
 				ArticleUpdateEvent.Version version = new ArticleUpdateEvent.Version(latestVersionNumber);
 				version.setCommitHash(gitCommitRev);
 				articleUpdateEvent.setVersion(version);
 			}
 			environment.getEventManager().fireEvent(articleUpdateEvent);
 		}
+	}
+
+	/**
+	 * The path of a page or attachment file in the wiki repository, for an attachment ({@code <page>/<file>}) the one
+	 * of the git attachment providers.
+	 */
+	private static String repositoryPath(String wikiName) {
+		int separator = wikiName.lastIndexOf('/');
+		if (separator == -1) {
+			return JSPUtils.mangleName(wikiName) + ".txt";
+		}
+		return JSPUtils.getAttachmentDir(wikiName.substring(0, separator)) + "/"
+			   + JSPUtils.mangleName(wikiName.substring(separator + 1));
 	}
 
 	private GitConnector gitConnector = null;

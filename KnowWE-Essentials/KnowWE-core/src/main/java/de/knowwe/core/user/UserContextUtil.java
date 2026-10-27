@@ -24,9 +24,9 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class UserContextUtil {
 		// for post request (additionally) parse the content and add them as data
 		if ("POST".equals(request.getMethod())) {
 			// do not handle file uploads, leave this to the action
-			if (!ServletFileUpload.isMultipartContent(request)) {
+			if (!JakartaServletFileUpload.isMultipartContent(request)) {
 				try {
 					String data = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 					parameters.put("data", data);

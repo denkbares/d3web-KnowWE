@@ -19,7 +19,7 @@
 
 package de.knowwe.event;
 
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextEvent;
 
 import com.denkbares.events.Event;
 

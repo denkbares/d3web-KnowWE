@@ -8,8 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.eclipse.rdf4j.http.protocol.Protocol;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.sparqlendpoint.SparqlEndpointAction;
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static jakarta.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 /**
  * Interceptor for repository requests. Handles the opening and closing of

@@ -68,14 +68,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>net.sourceforge.stripes</groupId>
-			<artifactId>stripes</artifactId>
+			<!-- jspwiki 3's TestEngine mocks the servlet API with Mockito (HttpMockFactory) instead of Stripes -->
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

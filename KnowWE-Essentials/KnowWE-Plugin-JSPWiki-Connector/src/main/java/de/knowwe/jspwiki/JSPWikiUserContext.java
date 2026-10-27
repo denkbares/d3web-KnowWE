@@ -22,9 +22,9 @@ package de.knowwe.jspwiki;
 
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.jetbrains.annotations.NotNull;
 import org.apache.wiki.api.core.Context;

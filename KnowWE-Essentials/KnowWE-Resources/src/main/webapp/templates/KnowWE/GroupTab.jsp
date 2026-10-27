@@ -23,14 +23,14 @@
 <%@ page import="java.util.*" %>
 <%@ page import="org.apache.wiki.WikiContext" %>
 <%@ page import="org.apache.wiki.auth.*" %>
-<%@ page import="org.apache.wiki.auth.PrincipalComparator" %>
+<%@ page import="org.apache.wiki.util.comparators.PrincipalComparator" %>
 <%@ page import="org.apache.wiki.auth.authorize.Group" %>
 <%@ page import="org.apache.wiki.auth.authorize.GroupManager" %>
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="org.apache.log4j.*" %>
 <%@ page errorPage="/Error.jsp" %>
-<%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="jakarta.servlet.jsp.jstl.fmt.*" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%!

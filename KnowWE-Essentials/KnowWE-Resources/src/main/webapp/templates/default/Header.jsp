@@ -18,9 +18,9 @@
 --%>
 
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ page import="org.apache.wiki.api.core.*" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default" />
@@ -48,7 +48,7 @@
 			   href="<wiki:Link page='${frontpage}' format='url' />"
 			   title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> "><wiki:Variable
 					var="ApplicationName" default="KnowWE" />
-				<img id="knowwe-logo" src="KnowWE.jsp?action=LogoAction&displayMode='${prefs.DisplayMode}'"
+				<img id="knowwe-logo" src="action/LogoAction?displayMode='${prefs.DisplayMode}'"
 					 alt="knowwe logo">
 			</a>
 			<wiki:PageExists page="HomeMenu">

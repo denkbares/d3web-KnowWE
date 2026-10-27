@@ -24,13 +24,14 @@
 <%@ page import="org.apache.wiki.api.spi.Wiki" %>
 <%@ page import="org.apache.wiki.auth.*" %>
 <%@ page import="org.apache.wiki.auth.permissions.*" %>
+<%@ page import="org.apache.wiki.http.filter.CsrfProtectionFilter" %>
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="de.knowwe.jspwiki.KnowWEPlugin" %>
 <%@ page import="de.knowwe.jspwiki.JSPWikiUserContext" %>
 <%@ page import="de.knowwe.core.user.UserContextUtil" %>
 <%@ page import="org.apache.wiki.render.RenderingManager" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%! 
   public void jspInit()
   {
@@ -40,9 +41,23 @@
   Engine wiki;
 %>
 <%
-  // Copied from a top-level jsp -- which would be a better place to put this 
-  Context wikiContext = Wiki.context().create( wiki, request, ContextEnum.PAGE_VIEW.getRequestContext() );
-  if( !wiki.getManager( AuthorizationManager.class ).hasAccess( wikiContext, response ) ) return;
+  // Previews render arbitrary submitted markup, so they are guarded like an edit
+  if( !"POST".equalsIgnoreCase( request.getMethod() ) ) {
+    response.sendError( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
+    return;
+  }
+  if( !CsrfProtectionFilter.isCsrfProtectedPost( request ) ) {
+    response.sendRedirect( request.getContextPath() + "/error/Forbidden.html" );
+    return;
+  }
+  Context wikiContext = Wiki.context().create( wiki, request, ContextEnum.PAGE_EDIT.getRequestContext() );
+  AuthorizationManager authorization = wiki.getManager( AuthorizationManager.class );
+  // Commenters preview their comment, which they may post anyway
+  if( !authorization.checkPermission( wikiContext.getWikiSession(),
+          PermissionFactory.getPagePermission( wikiContext.getPage(), "edit" ) ) ) {
+    wikiContext.setRequestContext( ContextEnum.PAGE_COMMENT.getRequestContext() );
+  }
+  if( !authorization.hasAccess( wikiContext, response ) ) return;
 
   response.setContentType("text/html; charset="+wiki.getContentEncoding() );
 

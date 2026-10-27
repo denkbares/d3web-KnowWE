@@ -22,7 +22,7 @@ package de.knowwe.jspwiki;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.wiki.util.CsrfProtectionAllowListChecker;
 

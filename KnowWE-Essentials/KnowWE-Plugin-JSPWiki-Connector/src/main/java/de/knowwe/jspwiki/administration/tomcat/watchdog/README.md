@@ -76,8 +76,8 @@ Alternativ: Neue leere Datei mit diesem Namen manuell im Windows-Explorer anlege
 Beispielausgabe:
 ```
 [2025-10-17 10:23:14] Watchdog gestartet als Benutzer: SYSTEM
-[2025-10-17 10:23:25] Restart-Flag erkannt -> Dienst 'Tomcat9' wird neu gestartet...
-[2025-10-17 10:23:32] Dienst 'Tomcat9' erfolgreich neu gestartet.
+[2025-10-17 10:23:25] Restart-Flag erkannt -> Dienst 'Tomcat11' wird neu gestartet...
+[2025-10-17 10:23:32] Dienst 'Tomcat11' erfolgreich neu gestartet.
 [2025-10-17 10:23:32] Restart-Flag entfernt.
 ```
 

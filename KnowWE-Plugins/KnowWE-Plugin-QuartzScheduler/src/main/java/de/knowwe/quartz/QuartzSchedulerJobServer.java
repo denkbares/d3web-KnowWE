@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Josua Nürnberger (Feanor GmbH)
  * @created 21.07.21
  */
-@javax.servlet.annotation.WebListener
+@jakarta.servlet.annotation.WebListener
 public class QuartzSchedulerJobServer implements ServletContextListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QuartzSchedulerJobServer.class);
 

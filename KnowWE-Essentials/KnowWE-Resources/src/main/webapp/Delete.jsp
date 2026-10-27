@@ -25,6 +25,7 @@
 <%@ page import="org.apache.wiki.api.core.Attachment" %>
 <%@ page import="org.apache.wiki.auth.AuthorizationManager" %>
 <%@ page import="org.apache.wiki.auth.permissions.PermissionFactory" %>
+<%@ page import="org.apache.wiki.http.filter.CsrfProtectionFilter" %>
 <%@ page import="org.apache.wiki.pages.PageManager" %>
 <%@ page import="org.apache.wiki.tags.BreadcrumbsTag" %>
 <%@ page import="org.apache.wiki.tags.BreadcrumbsTag.FixedQueue" %>
@@ -62,7 +63,10 @@
 	String deleteAdmin = request.getParameter("delete-admin");
 	String deleteall = request.getParameter("delete-all");
 	String delete = request.getParameter("delete");
-
+	if ((delete != null || deleteall != null || deleteAdmin != null) && !CsrfProtectionFilter.isCsrfProtectedPost(request)) {
+		response.sendRedirect(request.getContextPath() + "/error/Forbidden.html");
+		return;
+	}
 
 	if (!attachment && deleteall != null && deleteAdmin == null && delete == null) {
 		String deleteText = "Deleted by " + wikiContext.getCurrentUser()

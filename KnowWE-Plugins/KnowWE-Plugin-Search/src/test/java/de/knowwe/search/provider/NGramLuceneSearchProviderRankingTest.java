@@ -269,7 +269,7 @@ public class NGramLuceneSearchProviderRankingTest {
 	}
 
 	private static Context createContext(Engine engine, int maxItems) {
-		Object request = proxy(javax.servlet.http.HttpServletRequest.class, (proxy, method, args) -> {
+		Object request = proxy(jakarta.servlet.http.HttpServletRequest.class, (proxy, method, args) -> {
 			if ("getParameter".equals(method.getName()) && args != null && args.length == 1) {
 				String key = (String) args[0];
 				if ("start".equals(key)) return "0";

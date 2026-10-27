@@ -40,6 +40,8 @@ public class PluggableAuthenticationManagerTest {
 		when(profile.getLoginName()).thenReturn("alice");
 		UserDatabase database = mock(UserDatabase.class);
 		when(database.find("alice")).thenReturn(profile);
+		// jspwiki 3 resolves the session user by login name only
+		when(database.findByLoginName("alice")).thenReturn(profile);
 		when(database.getPrincipals("alice")).thenReturn(
 				new Principal[] { new WikiPrincipal("alice", WikiPrincipal.LOGIN_NAME) });
 		UserManager users = mock(UserManager.class);

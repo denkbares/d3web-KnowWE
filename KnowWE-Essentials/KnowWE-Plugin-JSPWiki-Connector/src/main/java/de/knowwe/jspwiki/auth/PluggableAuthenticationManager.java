@@ -7,7 +7,7 @@ import java.util.Set;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.spi.LoginModule;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Session;
@@ -104,6 +104,16 @@ public class PluggableAuthenticationManager implements AuthenticationManager {
 	public void fireEvent(int type, Principal principal, Object target) {
 		if (delegate != null) {
 			delegate.fireEvent(type, principal, target);
+		}
+	}
+
+	/**
+	 * Fires on the delegate for the same reason as {@link #fireEvent(int, Principal, Object)}.
+	 */
+	@Override
+	public void fireEvent(int type, Principal principal, Object target, HttpServletRequest request) {
+		if (delegate != null) {
+			delegate.fireEvent(type, principal, target, request);
 		}
 	}
 

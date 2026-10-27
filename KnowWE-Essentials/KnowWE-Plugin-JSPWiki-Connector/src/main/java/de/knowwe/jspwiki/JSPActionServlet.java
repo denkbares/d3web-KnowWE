@@ -20,8 +20,8 @@ package de.knowwe.jspwiki;
 
 import java.io.Serial;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;

@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
@@ -60,7 +60,7 @@ public class GetKnowledgeBaseResourceAction extends AbstractAction {
 		String topic = context.getParameter("topic");
 		String path = context.getPath();
 		if (!KnowWEUtils.canView(topic, context)) {
-			context.sendError(javax.servlet.http.HttpServletResponse.SC_FORBIDDEN,
+			context.sendError(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN,
 					"You are not allowed to access resources of this knowledge base");
 			return;
 		}

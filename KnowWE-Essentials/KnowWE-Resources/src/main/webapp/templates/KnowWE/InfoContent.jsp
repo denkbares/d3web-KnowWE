@@ -26,9 +26,9 @@
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="org.apache.wiki.util.TextUtil" %>
 <%@ page import="java.security.Permission" %>
-<%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="jakarta.servlet.jsp.jstl.fmt.*" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
 <%
@@ -47,10 +47,10 @@
   String creationAuthor ="";
 
   //FIXME -- seems not to work correctly for attachments !!
-  WikiPage firstPage = c.getEngine().getPage( wikiPage.getName(), 1 );
+  WikiPage firstPage = (WikiPage) c.getEngine().getManager( org.apache.wiki.pages.PageManager.class ).getPage( wikiPage.getName(), 1 );
   if( firstPage != null )
   {
-    creationAuthor = firstPage.getAuthor();
+    creationAuthor = c.getEngine().getManager( UserManager.class ).getDisplayName( firstPage.getAuthor() );
 
     if( creationAuthor != null && creationAuthor.length() > 0 )
     {

@@ -25,7 +25,7 @@
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="de.knowwe.jspwiki.KnowWEPlugin" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%! 
   public void jspInit()
   {
@@ -43,7 +43,7 @@
 
   String wikimarkup = request.getParameter( "wikimarkup" );
   String html = KnowWEPlugin.renderPreview(wikiContext, wikimarkup);
-  String result = wiki.textToHTML(wikiContext, html);
+  String result = wiki.getManager(org.apache.wiki.render.RenderingManager.class).textToHTML(wikiContext, html);
 
 %>
 <%=result%>

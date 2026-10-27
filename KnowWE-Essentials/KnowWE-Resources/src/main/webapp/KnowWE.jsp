@@ -5,7 +5,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="de.knowwe.core.*" %>
 <%@ page import="com.denkbares.strings.Strings" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%
 	//Create wiki context; authorization check not needed
 	WikiEngine wiki = WikiEngine.getInstance(getServletConfig());

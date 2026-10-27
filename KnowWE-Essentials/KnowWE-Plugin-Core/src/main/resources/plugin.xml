@@ -733,4 +733,12 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetAntiCsrfTokenAction">
+		<parameter id="class" value="de.knowwe.core.action.GetAntiCsrfTokenAction" />
+		<parameter id="name" value="GetAntiCsrfTokenAction" />
+		<parameter id="description" value="Returns the anti-CSRF token of the current session." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 </plugin>

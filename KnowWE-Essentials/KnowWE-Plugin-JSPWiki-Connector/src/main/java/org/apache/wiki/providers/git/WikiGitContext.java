@@ -25,6 +25,7 @@ import java.util.Properties;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
+import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.cache.CachingManager;
 import org.apache.wiki.event.GitVersioningWikiEvent;
@@ -91,12 +92,19 @@ public record WikiGitContext(
 
 	@Nullable
 	private UserProfile getUserProfile(String user) {
+		UserDatabase database = engine.getManager(UserManager.class).getUserDatabase();
+		// the wiki hands over the login name, older history and callers may still pass the full name
 		try {
-			return engine.getManager(UserManager.class).getUserDatabase().findByFullName(user);
+			return database.findByLoginName(user);
 		}
 		catch (NoSuchPrincipalException e) {
-			LOGGER.debug("No user profile for '{}'; using raw author for the commit.", user);
-			return null;
+			try {
+				return database.findByFullName(user);
+			}
+			catch (NoSuchPrincipalException e2) {
+				LOGGER.debug("No user profile for '{}'; using raw author for the commit.", user);
+				return null;
+			}
 		}
 	}
 
@@ -134,7 +142,7 @@ public record WikiGitContext(
 			String repoPath,
 			GitCommitEvent.Origin origin
 	) {
-		WikiEventManager.fireEvent(source, new GitVersioningWikiEvent(source, eventType, author, pages, commitHash));
+		WikiEventManager.fireEvent(source, GitVersioningWikiEvent.ofWikiNames(source, eventType, author, pages, commitHash));
 		// the environment of this wiki, if it is already running (the git provider may commit before KnowWE is initialized)
 		Environment environment = Environment.findIn(engine.getServletContext());
 		EventManager eventManager = environment != null ? environment.getEventManager() : EventManager.getInstance();

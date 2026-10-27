@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.activation.MimetypesFileTypeMap;
+import jakarta.servlet.http.HttpServletResponse;
 
 import de.knowwe.dialog.SessionConstants;
 import de.d3web.core.knowledge.KnowledgeBase;

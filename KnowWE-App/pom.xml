@@ -129,6 +129,75 @@
 
 	<profiles>
 		<profile>
+			<!--
+			  Lädt das gepackte WAR als KnowWE-<dist>.war in das generische Artifactory-Repository hoch, aus dem die
+			  Docker-Testserver ihre WARs beziehen - dasselbe, was der Jenkins-Job für jede Profilkombination per
+			  "jfrog rt u" macht. Gedacht für manuelle Builds, etwa von einem Release-Branch, dessen Artefakte nur
+			  lokal gebaut sind (deshalb offline, damit keine Remote-SNAPSHOTs des Masters hineingeraten):
+
+			    mvn -o clean package -P core-plugins,denkbares,knowsec,upload-war
+
+			  <dist> ist die Property war.upload.dist. Die Profile knowsec und cbx setzen sie auf ihren Namen; für andere
+			  Kombinationen -Dwar.upload.dist=<name> mitgeben, ohne sie bricht validate ab. Die Zugangsdaten kommen
+			  aus dem <server> der settings.xml mit der Id war.upload.serverId (Default: der Server der
+			  distributionManagement). Ziel und Server lassen sich per -Dwar.upload.url und -Dwar.upload.serverId
+			  ändern; ein file:///...-Ziel eignet sich zum Ausprobieren ohne Server.
+			-->
+			<id>upload-war</id>
+			<properties>
+				<war.upload.url>https://repo.denkbares.com/artifacts-des/knowwe-docker-builds</war.upload.url>
+				<war.upload.serverId>des-snapshots-public</war.upload.serverId>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>require-war-upload-dist</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireProperty>
+											<property>war.upload.dist</property>
+											<message>Profil upload-war: -Dwar.upload.dist=&lt;name&gt; fehlt. Das WAR wird als KnowWE-&lt;name&gt;.war hochgeladen; nur die Profile knowsec und cbx setzen die Property selbst.</message>
+											<regex>[A-Za-z0-9._-]+</regex>
+											<regexMessage>war.upload.dist darf nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich enthalten.</regexMessage>
+										</requireProperty>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>wagon-maven-plugin</artifactId>
+						<version>2.0.2</version>
+						<executions>
+							<execution>
+								<id>upload-war</id>
+								<phase>package</phase>
+								<goals>
+									<goal>upload-single</goal>
+								</goals>
+								<configuration>
+									<!-- dasselbe WAR, das der Jenkins-Job umbenennt und hochlädt (KnowWE-App-<version>.war) -->
+									<fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
+									<url>${war.upload.url}</url>
+									<toFile>KnowWE-${war.upload.dist}.war</toFile>
+									<serverId>${war.upload.serverId}</serverId>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>dist</id>
 			<build>
 				<plugins>
@@ -310,6 +379,10 @@
 
 		<profile>
 			<id>knowsec</id>
+			<properties>
+				<!-- Name des WARs im Docker-Testserver-Repository, s. Profil upload-war -->
+				<war.upload.dist>knowsec</war.upload.dist>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
@@ -673,6 +746,10 @@
 
 		<profile>
 			<id>cbx</id>
+			<properties>
+				<!-- Name des WARs im Docker-Testserver-Repository, s. Profil upload-war -->
+				<war.upload.dist>cbx</war.upload.dist>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
@@ -707,20 +784,6 @@
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-ILME</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>avl</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.denkbares.ssp</groupId>
-					<artifactId>d3web-Plugin-AVL</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -885,8 +948,12 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.prefuse</groupId>
@@ -917,9 +984,20 @@
 			<artifactId>tomcat-servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<!-- container APIs, they come in transitively with compile scope but must not be packaged -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.el</groupId>
+			<artifactId>jakarta.el-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>

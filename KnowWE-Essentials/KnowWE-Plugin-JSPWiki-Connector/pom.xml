@@ -123,6 +123,17 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.jspwiki</groupId>
+			<artifactId>jspwiki-knowwe-main</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.mvel</groupId>
 			<artifactId>mvel2</artifactId>
 			<scope>compile</scope>

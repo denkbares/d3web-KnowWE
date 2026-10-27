@@ -49,6 +49,6 @@ public class D3webLogoAction extends DefaultLogoAction {
 
 	@Override
 	public void setCharsetEncoding(UserActionContext context) {
-		context.getResponse().setCharacterEncoding(null);
+		context.getResponse().setCharacterEncoding((String) null);
 	}
 }

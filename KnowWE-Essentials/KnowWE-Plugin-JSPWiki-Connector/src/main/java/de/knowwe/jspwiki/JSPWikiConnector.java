@@ -48,10 +48,10 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import javax.mail.MessagingException;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;
@@ -115,6 +115,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.jspwiki.auth.AuthenticatedIdentities;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
 
 import static org.apache.wiki.cache.CachingManager.*;
@@ -309,21 +310,52 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String[] getAllUsers() {
-		String[] users = null;
+		return getUserProfiles().stream().map(UserProfile::getLoginName).toArray(String[]::new);
+	}
 
+	@Override
+	public @Nullable String getLoginName(@Nullable String userName) {
+		if (Strings.isBlank(userName)) return null;
 		try {
-			Principal[] princ = getUserManager().listWikiNames();
-			users = new String[princ.length];
-			for (int i = 0; i < princ.length; i++) {
-				users[i] = getUserManager().getUserDatabase().findByWikiName(
-						princ[i].getName()).getFullname();
+			return getUserManager().getUserDatabase().findByLoginName(userName).getLoginName();
+		}
+		catch (NoSuchPrincipalException e) {
+			// not a login name, maybe the full name of exactly one user
+		}
+		List<String> loginNames = getUserProfiles().stream()
+				.filter(profile -> userName.equals(profile.getFullname()))
+				.map(UserProfile::getLoginName)
+				.toList();
+		return loginNames.size() == 1 ? loginNames.get(0) : null;
+	}
+
+	private List<UserProfile> getUserProfiles() {
+		List<UserProfile> profiles = new ArrayList<>();
+		try {
+			UserDatabase database = getUserManager().getUserDatabase();
+			for (Principal wikiName : database.getWikiNames()) {
+				UserProfile profile = database.findByWikiName(wikiName.getName());
+				if (!Strings.isBlank(profile.getLoginName())) profiles.add(profile);
 			}
 		}
 		catch (WikiSecurityException e) {
 			LOGGER.error("Exception while retrieving users.", e);
 		}
+		return profiles;
+	}
 
-		return users;
+	@Override
+	public @Nullable String getUserFullName(@Nullable String loginName) {
+		if (Strings.isBlank(loginName)) return null;
+		try {
+			String fullName = getUserManager().getUserDatabase().findByLoginName(loginName).getFullname();
+			if (!Strings.isBlank(fullName)) return fullName;
+		}
+		catch (NoSuchPrincipalException e) {
+			// not in the user database, the identity provider may still know the user
+		}
+		AuthenticatedIdentities.Identity identity = AuthenticatedIdentities.of(engine, loginName);
+		return identity == null ? null : identity.fullName();
 	}
 
 	public UserManager getUserManager() {

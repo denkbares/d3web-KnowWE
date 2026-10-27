@@ -43,23 +43,10 @@
 							<excludes>
 								<exclude>WEB-INF/classes/jspwiki-custom.properties</exclude>
 								<exclude>WEB-INF/classes/jspwiki-custom-jspwiki.properties</exclude>
-								<exclude>WEB-INF/lib/commons-*.jar</exclude>
-								<exclude>WEB-INF/lib/slf4j-log4j12-*.jar</exclude>
-								<exclude>WEB-INF/lib/slf4j-api-*.jar</exclude>
-								<exclude>WEB-INF/lib/logback-*.jar</exclude>
-								<exclude>WEB-INF/lib/log4j-core-*.jar</exclude>
-								<exclude>WEB-INF/lib/httpcore-*.jar</exclude>
-								<exclude>WEB-INF/lib/httpclient-*.jar</exclude>
-								<exclude>WEB-INF/lib/jdom2-*.jar</exclude>
-								<!-- Kendra search provider is not used by KnowWE, drop it together with the AWS SDK it pulls in -->
-								<exclude>WEB-INF/lib/jspwiki-knowwe-kendra-searchprovider-*.jar</exclude>
-								<exclude>WEB-INF/lib/aws-java-sdk-*.jar</exclude>
-								<exclude>WEB-INF/lib/jmespath-java-*.jar</exclude>
-								<exclude>WEB-INF/lib/ion-java-*.jar</exclude>
-								<exclude>WEB-INF/lib/jackson-dataformat-cbor-*.jar</exclude>
-								<exclude>WEB-INF/lib/joda-time-*.jar</exclude>
-								<!-- subset of javax.mail, which is present in the same version -->
-								<exclude>WEB-INF/lib/mailapi-*.jar</exclude>
+								<!-- The libraries of the jspwiki war are resolved as regular dependencies instead (see
+									below), so that the versions KnowWE manages apply. Taken from the overlay they would
+									sit next to the managed versions of the same libraries. -->
+								<exclude>WEB-INF/lib/*.jar</exclude>
 								<exclude>WEB-INF/web.xml</exclude>
 								<exclude>META-INF/MANIFEST.MF</exclude>
 							</excludes>
@@ -144,6 +131,34 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
+		</dependency>
+		<!-- container APIs, they come in transitively with compile scope but must not be packaged -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.el</groupId>
+			<artifactId>jakarta.el-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- the jspwiki war libraries that jspwiki-knowwe-main does not bring along -->
+		<dependency>
+			<groupId>org.apache.jspwiki</groupId>
+			<artifactId>jspwiki-knowwe-bootstrap</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jspwiki</groupId>
+			<artifactId>jspwiki-knowwe-markdown</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- implementation of the activation API, without it mail cannot handle multipart content -->
+		<dependency>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>angus-activation</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 	</dependencies>

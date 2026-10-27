@@ -10,21 +10,23 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 
 /**
  * Dummy request for test purposes.
@@ -35,6 +37,7 @@ import javax.servlet.http.Part;
 public class TestHttpServletRequest implements HttpServletRequest {
 
 	Map<String, Object> attributes = new HashMap<>();
+	private final String requestId = UUID.randomUUID().toString();
 	private HttpSession session;
 
 	public TestHttpServletRequest() {
@@ -185,6 +188,42 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
+	public String getRequestId() {
+		return requestId;
+	}
+
+	@Override
+	public String getProtocolRequestId() {
+		// HTTP/1.1 has no protocol defined request id
+		return "";
+	}
+
+	@Override
+	public ServletConnection getServletConnection() {
+		return new ServletConnection() {
+			@Override
+			public String getConnectionId() {
+				return requestId;
+			}
+
+			@Override
+			public String getProtocol() {
+				return "HTTP/1.1";
+			}
+
+			@Override
+			public String getProtocolConnectionId() {
+				return "";
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+		};
+	}
+
+	@Override
 	public String getProtocol() {
 		// TODO Auto-generated method stub
 		return null;
@@ -192,12 +231,6 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public BufferedReader getReader() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getRealPath(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -376,13 +409,14 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String changeSessionId() {
-		return null;
+		if (session == null) throw new IllegalStateException("The request has no session");
+		// the test session cannot be given a new id, so it keeps its current one
+		return session.getId();
 	}
 
 	@Override
-	public HttpSession getSession(boolean arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public HttpSession getSession(boolean create) {
+		return this.session;
 	}
 
 	@Override
@@ -399,12 +433,6 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public boolean isRequestedSessionIdFromURL() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isRequestedSessionIdFromUrl() {
 		// TODO Auto-generated method stub
 		return false;
 	}
