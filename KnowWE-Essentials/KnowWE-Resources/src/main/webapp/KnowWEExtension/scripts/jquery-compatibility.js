@@ -80,10 +80,19 @@ function postWithXSRFRetry(settings) {
   });
 
   attempt(undefined, true);
-  return deferred.promise({
+  // like a jqXHR, the returned object tells the state of the request, here of its latest attempt
+  const jqXHR = deferred.promise({
     abort: function(statusText) {
       current.abort(statusText);
       return this;
     },
   });
+  ['readyState', 'status', 'statusText', 'responseText', 'responseJSON', 'responseXML'].forEach(field =>
+    Object.defineProperty(jqXHR, field, {get: () => current[field]}));
+  ['getResponseHeader', 'getAllResponseHeaders', 'overrideMimeType', 'setRequestHeader', 'statusCode'].forEach(method =>
+    jqXHR[method] = function() {
+      const result = current[method].apply(current, arguments);
+      return result === current ? jqXHR : result;
+    });
+  return jqXHR;
 }
