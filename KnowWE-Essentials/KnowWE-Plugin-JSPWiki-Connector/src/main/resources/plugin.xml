@@ -58,6 +58,17 @@
 		<parameter id="script" value="KnowWE-Plugin-JSPWiki-Connector.js" />
 	</extension>
 
+	<!-- before the generic JSPWikiPlugin type (priority 99), which would otherwise take [{ALLOW ...}] -->
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="AccessRuleType">
+		<parameter id="class" value="de.knowwe.jspwiki.acl.AccessRuleType" />
+		<parameter id="name" value="AccessRuleType" />
+		<parameter id="description" value="Page ACL, warns about entries that do not take effect" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ReadOnlyMarkup">
 		<parameter id="class" value="de.knowwe.jspwiki.readOnly.ReadOnlyMarkup" />

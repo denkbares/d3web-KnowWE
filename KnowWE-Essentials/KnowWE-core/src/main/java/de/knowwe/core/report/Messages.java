@@ -874,7 +874,10 @@ public final class Messages {
 	}
 
 	public static ResourceBundle getMessageBundle(Locale locale) {
-		return ResourceBundle.getBundle("KnowWE_messages", locale);
+		// without falling back to the server's default locale: on a German server, an English user would get the
+		// German texts instead of the English base bundle
+		return ResourceBundle.getBundle("KnowWE_messages", locale,
+				ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
 	}
 
 	public static ResourceBundle getMessageBundle() {
