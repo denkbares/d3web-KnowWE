@@ -21,12 +21,12 @@
 <%@ page import="org.apache.wiki.auth.*" %>
 <%@ page import="org.apache.wiki.auth.permissions.*" %>
 <%@ page import="org.apache.wiki.attachment.*" %>
+<%@ page import="org.apache.wiki.api.core.Attachment" %>
 <%@ page import="org.apache.wiki.i18n.InternationalizationManager" %>
 <%@ page import="org.apache.wiki.pages.PageManager" %>
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="org.apache.wiki.ui.progress.ProgressManager" %>
 <%@ page import="org.apache.wiki.util.TextUtil" %>
-<%@ page import="java.security.Permission" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
@@ -80,7 +80,24 @@
   /* startitem drives the pagination logic */
   /* startitem=-1:show all; startitem=0:show block 1-20; startitem=20:block 21-40 ... */
 
-  boolean allowPageDeletionForNonAdmin = KnowWEUtils.allowPageDeletionForNonAdmin(Environment.of(request), c.getName());
+  AuthorizationManager authorization = c.getEngine().getManager(AuthorizationManager.class);
+  boolean canEdit = authorization.checkPermission(c.getWikiSession(), PermissionFactory.getPagePermission(wikiPage, "edit"));
+  boolean canDelete = authorization.checkPermission(c.getWikiSession(), PermissionFactory.getPagePermission(wikiPage, "delete"));
+  boolean allowDeletion = canDelete || (canEdit && c.getWikiSession().isAuthenticated()
+      && KnowWEUtils.allowDeletionByCreator(Environment.of(request), c.getName(), wikiPage instanceof Attachment,
+          c.getCurrentUser().getName()));
+  // Page deletion cascades to attachments, so the creator exception must also cover every child.
+  if (allowDeletion && !canDelete && !(wikiPage instanceof Attachment)) {
+    for (Attachment child : c.getEngine().getManager(AttachmentManager.class).listAttachments(wikiPage)) {
+      boolean canDeleteChild = authorization.checkPermission(c.getWikiSession(), PermissionFactory.getPagePermission(child, "delete"));
+      boolean canEditChild = authorization.checkPermission(c.getWikiSession(), PermissionFactory.getPagePermission(child, "edit"));
+      if (!canDeleteChild && !(canEditChild && KnowWEUtils.allowDeletionByCreator(Environment.of(request),
+          child.getName(), true, c.getCurrentUser().getName()))) {
+        allowDeletion = false;
+        break;
+      }
+    }
+  }
 %>
 <div class="page-content">
 
@@ -142,23 +159,24 @@
     <span class="text-warning"><fmt:message key="info.rename.permission"/></span>
   </wiki:Permission>
 
-  <wiki:Permission permission="delete">
+  <% if (canEdit || canDelete) { %>
     <form action="<wiki:Link format='url' context='<%=ContextEnum.PAGE_DELETE.getRequestContext()%>' />"
               id="deleteForm"
           method="post" accept-charset="<wiki:ContentEncoding />" >
       <wiki:CsrfProtection/>
-      <input class="btn btn-danger btn-sm <%=allowPageDeletionForNonAdmin ? "hide" : ""%>" type="submit" name="delete-all" id="delete-all"
+      <input class="btn btn-danger btn-sm" type="submit" name="delete-all" id="delete-all"
         data-modal="+ .modal"
             value="<fmt:message key='info.delete.submit'/>" />
-      <input class="btn btn-danger btn-sm <%=c.hasAdminPermissions() || allowPageDeletionForNonAdmin ? "admin" : "noneAdmin"%>" type="submit" name="delete-admin" id="delete-admin"
+      <% if (allowDeletion) { %>
+      <input class="btn btn-danger btn-sm" type="submit" name="delete-admin" id="delete-admin"
              data-modal="+ .modal"
              value="Delete page (including its revision history)" />
+      <% } %>
       <div class="modal"><fmt:message key='info.confirmdelete'/></div>
     </form>
-  </wiki:Permission>
-  <wiki:Permission permission="!delete">
+  <% } else { %>
     <span class="text-warning"><fmt:message key="info.delete.permission"/></span>
-  </wiki:Permission>
+  <% } %>
   </div>
   </div>
   </div>
@@ -328,12 +346,12 @@
   </a>
 --%>
   <wiki:CsrfProtection/>
-  <wiki:Permission permission="delete">
+  <% if (allowDeletion) { %>
     <input class="btn btn-danger" type="submit" name="delete-all" id="delete-all"
       data-modal="+ .modal"
            value="<fmt:message key='info.deleteattachment.submit' />" />
     <div class="modal"><fmt:message key='info.confirmdelete'/></div>
-  </wiki:Permission>
+  <% } %>
 </form>
 
 

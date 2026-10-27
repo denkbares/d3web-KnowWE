@@ -66,11 +66,8 @@ import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
-import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -1682,20 +1679,27 @@ public class KnowWEUtils {
 		}
 	}
 
-	public static boolean allowPageDeletionForNonAdmin(@NotNull Environment environment, String pageName) throws IOException {
-		List<WikiPageInfo> versionHistory = environment.getWikiConnector().getArticleHistory(pageName);
-		long currentTime = System.currentTimeMillis();
-		Date firstModified;
-		if (versionHistory == null || versionHistory.isEmpty()) {
-			firstModified = new Date(currentTime);
-			versionHistory = new ArrayList<>();
+	/**
+	 * Checks whether the given user created the page or attachment within the last hour.
+	 * The caller must additionally verify authentication and the edit permission for the object.
+	 */
+	public static boolean allowDeletionByCreator(@NotNull Environment environment, String objectName,
+			boolean attachment, String userName) throws IOException {
+		List<? extends WikiObjectInfo> history = attachment
+				? environment.getWikiConnector().getAttachmentHistory(objectName)
+				: environment.getWikiConnector().getArticleHistory(objectName);
+		return allowDeletionByCreator(history, userName, System.currentTimeMillis());
+	}
+
+	static boolean allowDeletionByCreator(List<? extends WikiObjectInfo> history, String userName, long currentTime) {
+		if (history == null || history.isEmpty() || StringUtils.isBlank(userName)) return false;
+		// The creator and creation time belong to revision 1, regardless of the provider's history order.
+		for (WikiObjectInfo revision : history) {
+			if (revision.getVersion() != 1) continue;
+			if (!userName.equals(revision.getAuthor()) || revision.getSaveDate() == null) return false;
+			long age = currentTime - revision.getSaveDate().getTime();
+			return age >= 0 && age <= 60 * 60 * 1000L;
 		}
-		else {
-			firstModified = versionHistory.get(0).getSaveDate();
-		}
-		long firstModifiedTime = firstModified.getTime();
-		// if non-admin-button was pressed, last change >1h ago, >=3 versions -> only clear
-		int oneHour = 60 * 60 * 1000;
-		return (currentTime - firstModifiedTime) <= oneHour && versionHistory.size() <= 3;
+		return false;
 	}
 }

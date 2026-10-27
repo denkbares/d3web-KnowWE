@@ -22,18 +22,16 @@
 <%@ page import="org.slf4j.LoggerFactory" %>
 <%@ page import="org.apache.wiki.api.core.*" %>
 <%@ page import="org.apache.wiki.api.spi.Wiki" %>
-<%@ page import="org.apache.wiki.attachment.Attachment" %>
+<%@ page import="org.apache.wiki.api.core.Attachment" %>
 <%@ page import="org.apache.wiki.auth.AuthorizationManager" %>
+<%@ page import="org.apache.wiki.auth.permissions.PermissionFactory" %>
 <%@ page import="org.apache.wiki.pages.PageManager" %>
-<%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="org.apache.wiki.tags.BreadcrumbsTag" %>
 <%@ page import="org.apache.wiki.tags.BreadcrumbsTag.FixedQueue" %>
 <%@ page import="org.apache.wiki.ui.TemplateManager" %>
 <%@ page import="org.apache.wiki.util.HttpUtil" %>
 <%@ page import="org.apache.wiki.util.TextUtil" %>
 <%@ page errorPage="/Error.jsp" %>
-<%@ page import="org.apache.wiki.ui.EditorManager" %>
-<%@ page import="org.joda.time.DateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="de.knowwe.core.Environment" %>
@@ -49,7 +47,14 @@
 	Engine wiki = Wiki.engine().find(getServletConfig());
 	// Create wiki context and check for authorization
 	Context wikiContext = Wiki.context().create(wiki, request, ContextEnum.PAGE_DELETE.getRequestContext());
-	if (!wiki.getManager(AuthorizationManager.class).hasAccess(wikiContext, response)) return;
+	boolean attachment = wikiContext.getPage() instanceof Attachment;
+	AuthorizationManager authorization = wiki.getManager(AuthorizationManager.class);
+	boolean canDelete = authorization.checkPermission(wikiContext.getWikiSession(),
+			PermissionFactory.getPagePermission(wikiContext.getPage(), "delete"));
+	// Editors can clear page content and may delete their own newly created objects.
+	if (!canDelete) wikiContext.setRequestContext(ContextEnum.PAGE_EDIT.getRequestContext());
+	if (!authorization.hasAccess(wikiContext, response)) return;
+	wikiContext.setRequestContext(ContextEnum.PAGE_DELETE.getRequestContext());
 	if (wikiContext.getCommand().getTarget() == null) {
 		response.sendRedirect(wikiContext.getURL(wikiContext.getRequestContext(), wikiContext.getName()));
 		return;
@@ -59,7 +64,7 @@
 	String delete = request.getParameter("delete");
 
 
-	if (!(wikiContext.getPage() instanceof Attachment) && deleteAdmin == null && !KnowWEUtils.allowPageDeletionForNonAdmin(Environment.of(request), wikiContext.getName())) {
+	if (!attachment && deleteall != null && deleteAdmin == null && delete == null) {
 		String deleteText = "Deleted by " + wikiContext.getCurrentUser()
 				.getName() + " at " + FORMATTER.format(LocalDateTime.now());
 		// the context's page describes the latest version, so saving it as is would credit the previous author
@@ -69,6 +74,31 @@
 		wiki.getManager(PageManager.class).putPageText(deletion, deleteText);
 		response.sendRedirect(wikiContext.getURL(ContextEnum.PAGE_VIEW.getRequestContext(), wikiContext.getName()));
 		return;
+	}
+	// Check permanent deletion on the server as well; request parameters are user-controlled.
+	boolean permanentDeletion = attachment || deleteAdmin != null || delete != null;
+	if (permanentDeletion && !canDelete) {
+		boolean authenticated = wikiContext.getWikiSession().isAuthenticated();
+		boolean allowDeletionByCreator = authenticated && KnowWEUtils.allowDeletionByCreator(Environment.of(request),
+				wikiContext.getName(), attachment, wikiContext.getCurrentUser().getName());
+		if (!allowDeletionByCreator) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+	}
+	// Deleting a page also deletes its attachments. The creator exception must cover each of them.
+	if (!attachment && deleteAdmin != null && !canDelete) {
+		for (Attachment child : wiki.getManager(org.apache.wiki.attachment.AttachmentManager.class).listAttachments(wikiContext.getPage())) {
+			boolean canDeleteChild = authorization.checkPermission(wikiContext.getWikiSession(),
+					PermissionFactory.getPagePermission(child, "delete"));
+			boolean canEditChild = authorization.checkPermission(wikiContext.getWikiSession(),
+					PermissionFactory.getPagePermission(child, "edit"));
+			if (!canDeleteChild && !(canEditChild && KnowWEUtils.allowDeletionByCreator(Environment.of(request),
+					child.getName(), true, wikiContext.getCurrentUser().getName()))) {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN);
+				return;
+			}
+		}
 	}
 	String pagereq = wikiContext.getName();
 

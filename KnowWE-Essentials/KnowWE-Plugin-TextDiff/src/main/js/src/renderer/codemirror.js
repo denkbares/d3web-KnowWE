@@ -329,7 +329,7 @@ export function createDiffView(parent, diff, options = {}) {
 	options = {tabSize: 4, ...options};
 	const changes = diff.changes.map(c => new Change(c.fromA, c.toA, c.fromB, c.toB));
 	const diffConfig = {override: () => changes};
-	const collapse = options.contextLines === -1 ? undefined : {margin: options.contextLines ?? 3, minSize: 4};
+	const collapse = options.contextLines === -1 ? undefined : {margin: options.contextLines ?? 3, minSize: 10};
 	parent.style.setProperty("--diff-gutter-width", (digits(diff) + 2) + "ch");
 	let view;
 	if (options.layout === "split") {
