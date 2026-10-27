@@ -172,7 +172,7 @@
             let newClass = mode === 'light-mode' ? 'light-mode' : 'dark-mode';
             bodyElement.classList.add(newClass);
             let logo = document.getElementById('knowwe-logo');
-            logo.src = "KnowWE.jsp?action=LogoAction&displayMode=" + mode;
+            logo.src = "action/LogoAction?displayMode=" + mode;
           }
 		</script>
 		<%-- if color schemes ares added, please adjust dropdown and script updateBodyClass() --%>

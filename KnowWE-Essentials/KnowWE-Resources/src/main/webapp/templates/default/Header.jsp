@@ -48,7 +48,7 @@
 			   href="<wiki:Link page='${frontpage}' format='url' />"
 			   title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> "><wiki:Variable
 					var="ApplicationName" default="KnowWE" />
-				<img id="knowwe-logo" src="KnowWE.jsp?action=LogoAction&displayMode='${prefs.DisplayMode}'"
+				<img id="knowwe-logo" src="action/LogoAction?displayMode='${prefs.DisplayMode}'"
 					 alt="knowwe logo">
 			</a>
 			<wiki:PageExists page="HomeMenu">
