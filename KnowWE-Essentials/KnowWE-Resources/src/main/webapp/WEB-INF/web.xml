@@ -93,8 +93,8 @@
 		<filter-class>de.knowwe.jspwiki.auth.PluggableAuthenticationFilter</filter-class>
 		<async-supported>true</async-supported>
 	</filter>
-	<!-- Declared and mapped on /* by the jspwiki-http web fragment; repeated here only to enable async support, which
-	     the fragment does not declare and async servlets behind it require. web.xml wins over the fragment here. -->
+	<!-- Rejects state changing requests without a valid anti-CSRF token. Async support is needed by the async servlets
+	     behind it. -->
 	<filter>
 		<filter-name>CsrfProtectionFilter</filter-name>
 		<filter-class>org.apache.wiki.http.filter.CsrfProtectionFilter</filter-class>
@@ -132,6 +132,10 @@
     <filter-mapping>
         <filter-name>PluggableLoginPageFilter</filter-name>
         <url-pattern>/Login.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CsrfProtectionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <!--
