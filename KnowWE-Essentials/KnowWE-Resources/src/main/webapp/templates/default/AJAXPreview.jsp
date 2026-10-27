@@ -51,7 +51,13 @@
     return;
   }
   Context wikiContext = Wiki.context().create( wiki, request, ContextEnum.PAGE_EDIT.getRequestContext() );
-  if( !wiki.getManager( AuthorizationManager.class ).hasAccess( wikiContext, response ) ) return;
+  AuthorizationManager authorization = wiki.getManager( AuthorizationManager.class );
+  // Commenters preview their comment, which they may post anyway
+  if( !authorization.checkPermission( wikiContext.getWikiSession(),
+          PermissionFactory.getPagePermission( wikiContext.getPage(), "edit" ) ) ) {
+    wikiContext.setRequestContext( ContextEnum.PAGE_COMMENT.getRequestContext() );
+  }
+  if( !authorization.hasAccess( wikiContext, response ) ) return;
 
   response.setContentType("text/html; charset="+wiki.getContentEncoding() );
 
