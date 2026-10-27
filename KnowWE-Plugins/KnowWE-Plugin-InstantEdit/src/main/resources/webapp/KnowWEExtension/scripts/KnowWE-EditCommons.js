@@ -134,11 +134,22 @@ KNOWWE.editCommons = function () {
 			_EC.showAjaxLoader();
 			let xhr = new XMLHttpRequest();
 			let url = _KA.appendXSRFToken(KNOWWE.core.util.getURL(params));
+			let retried = false;
 			xhr.open("POST", url, async);
 			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.onreadystatechange = function () {
 				if (xhr.readyState === 4) {
-					if (xhr.status === 200) {
+					// an outdated token is refreshed and the save retried once, synchronous saves cannot wait
+					if (async && !retried && _KA.isXSRFRejection(xhr.responseURL)) {
+						retried = true;
+						_KA.refreshXSRFToken().then(token => {
+							xhr.open("POST", _KA.setXSRFToken(url, token), async);
+							xhr.setRequestHeader("Content-Type", "application/json");
+							xhr.send(JSON.stringify(sectionData));
+						}, () => _EC.onErrorBehavior.call(xhr));
+						return;
+					}
+					if (xhr.status === 200 && !_KA.isXSRFRejection(xhr.responseURL)) {
 						window.onbeforeunload = null;
 						window.onunload = null;
 						KNOWWE.helper.observer.notify('saved');

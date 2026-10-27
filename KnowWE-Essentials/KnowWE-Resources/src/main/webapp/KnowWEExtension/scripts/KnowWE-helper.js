@@ -737,6 +737,7 @@ KNOWWE.helper.ajax = function(options) {
     }
   };
   var http = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+  var retriedXSRF = false;
 
   init();
 
@@ -826,6 +827,7 @@ KNOWWE.helper.ajax = function(options) {
    */
   this.send = function() {
     if (!http) return;
+    const self = this;
 
     var headers = new KNOWWE.helper.hash(oDefault.headers);
     if (oDefault.urlEncoded) {
@@ -840,7 +842,19 @@ KNOWWE.helper.ajax = function(options) {
       http.setRequestHeader(k, v);
     });
 
-    http.onreadystatechange = oDefault.fn;
+    http.onreadystatechange = function() {
+      // a post rejected for an outdated token is retried once with a refreshed one, synchronous ones cannot wait
+      if (http.readyState === 4 && !retriedXSRF && oDefault.async && oDefault.method.toUpperCase() === 'POST'
+        && KNOWWE.helper.ajax.isXSRFRejection(http.responseURL)) {
+        retriedXSRF = true;
+        KNOWWE.helper.ajax.refreshXSRFToken().then(token => {
+          oDefault.url = KNOWWE.helper.ajax.setXSRFToken(oDefault.url, token);
+          self.send();
+        }, () => oDefault.fn.call(http));
+        return;
+      }
+      oDefault.fn.call(this);
+    };
 
     if (oDefault.data) {
       http.send(oDefault.data);
@@ -873,6 +887,81 @@ KNOWWE.helper.ajax.appendXSRFToken = function(url) {
     }
     return url + separator + "X-XSRF-TOKEN=" + meta.getAttribute("content");
   }
+}
+
+/**
+ * Returns the url with its X-XSRF-TOKEN parameter set to the given token, or to the token currently known to the page.
+ */
+KNOWWE.helper.ajax.setXSRFToken = function(url, token) {
+  if (token === undefined) {
+    const input = document.getElementById("knowWEInfoXSRF");
+    const meta = document.querySelector('head > meta[name="wikiCsrfProtection"]');
+    token = input ? input.value : meta ? meta.getAttribute("content") : window.Wiki && Wiki.CsrfProtection;
+  }
+  const absolute = new URL(url, document.baseURI);
+  absolute.searchParams.set("X-XSRF-TOKEN", token);
+  return absolute.toString();
+}
+
+/**
+ * Whether the given response url is the page the CSRF filter redirects rejected posts to.
+ */
+KNOWWE.helper.ajax.isXSRFRejection = function(responseUrl) {
+  return !!responseUrl && responseUrl.indexOf("/error/Forbidden.html") >= 0;
+}
+
+/**
+ * Fetches the current anti-CSRF token of the session and updates all places of the page that hold it. The token
+ * changes when the session does, e.g. after a login in another tab.
+ *
+ * Returns:
+ *     A promise of the new token.
+ */
+KNOWWE.helper.ajax.refreshXSRFToken = function() {
+  // concurrent rejections share one request
+  if (!KNOWWE.helper.ajax.pendingXSRFRefresh) {
+    KNOWWE.helper.ajax.pendingXSRFRefresh = fetch("action/GetAntiCsrfTokenAction", {cache: "no-store"})
+      .then(response => {
+        if (!response.ok) throw new Error("Unable to refresh the security token (" + response.status + ")");
+        return response.json();
+      })
+      .then(json => {
+        const token = json.token;
+        if (window.Wiki) Wiki.CsrfProtection = token;
+        const meta = document.querySelector('head > meta[name="wikiCsrfProtection"]');
+        if (meta) meta.setAttribute("content", token);
+        const input = document.getElementById("knowWEInfoXSRF");
+        if (input) input.value = token;
+        document.querySelectorAll('form input[name="X-XSRF-TOKEN"]').forEach(field => field.value = token);
+        return token;
+      })
+      .finally(() => KNOWWE.helper.ajax.pendingXSRFRefresh = null);
+  }
+  return KNOWWE.helper.ajax.pendingXSRFRefresh;
+}
+
+/**
+ * Like window.fetch, but sets the X-XSRF-TOKEN parameter of the url. If the server rejects the token because the
+ * session changed meanwhile, the token is refreshed and the request is retried once. A request that is still rejected
+ * fails with an error instead of resolving to the error page. The body must therefore be reusable, e.g. a string,
+ * FormData or Blob.
+ */
+KNOWWE.helper.ajax.fetchWithXSRFToken = async function(url, init) {
+  init = init || {};
+  // a rejection is only recognizable by following its redirect, so "error" is emulated below
+  const send = token => fetch(KNOWWE.helper.ajax.setXSRFToken(url, token),
+    Object.assign({}, init, {redirect: init.redirect === "error" ? "follow" : init.redirect}));
+  let response = await send();
+  if (KNOWWE.helper.ajax.isXSRFRejection(response.url)) {
+    response = await send(await KNOWWE.helper.ajax.refreshXSRFToken());
+    if (KNOWWE.helper.ajax.isXSRFRejection(response.url)) {
+      throw new Error("The request was rejected because its security token is invalid. Please reload the page.");
+    }
+  }
+  if (init.redirect === "error" && response.redirected) {
+    throw new TypeError("Unexpected redirect to " + response.url);
+  }
+  return response;
 }
 
 KNOWWE.helper.ajax.xhrExtractMessage = function(jqXHR) {
