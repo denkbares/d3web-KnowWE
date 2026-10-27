@@ -209,23 +209,8 @@ jspwiki.basicAttachmentProvider.storageDir = $basedir
 #
 #  page Diff Representation
 #
-#  To show differences between page versions, you can define a
-# difference provider.
-#  The following choices are available:
-#    * de.knowwe.jspwiki.diff.KnowWETextDiffProvider - KnowWE's line and
-#        word diff. This is the default: KnowWETextDiffActivator sets it
-#        when the property is unset or names a JSPWiki built-in provider.
-#    * SvnStyleDiffProvider - JSPWiki's internal (java) diff in the style
-#        of an svn diff view (TraditionalDiffProvider and
-#        ContextualDiffProvider were removed in JSPWiki 3).
-#    * ExternalDiffProvider - uses a system diff program (which
-#        can be configured using "jspwiki.diffCommand") to
-#        create an unified (!) diff.
-#
-#        Example for a diff command:
-#        jspwiki.diffCommand = /usr/bin/diff -u %s1 %s2
-#
-jspwiki.diffProvider = de.knowwe.jspwiki.diff.KnowWETextDiffProvider
+#  KnowWE activates its own diff provider. Set jspwiki.diffProvider only to use
+#  a different one, for example ExternalDiffProvider with jspwiki.diffCommand.
 
 #  Determines if you need to have relative urls or not.  If the baseURL
 #  is not set, then this has no effect, but if you set the baseURL (which
@@ -859,81 +844,7 @@ mail.smtp.port = 25
 
 ###########################################################################
 #
-#  Configure logs.  See log4j2 documentation for more information on how you can configure the logs.
-#
-#  By default we load the log4j2 config statements from this file (see below), unless
-#  the property jspwiki.use.external.logconfig=true, in that case we let log4j2 figure out the
-#  logging configuration to use.
-#
-# If Jansi is added to the container's classpath, stdout messages will have some colouring,
-# see https://logging.apache.org/log4j/2.x/manual/layouts.html#enable-jansi for details.
-jspwiki.use.external.logconfig = true
-
-status = warn
-name = jspwiki-log4j2-configuration
-
-appender.console.type = Console
-appender.console.name = ConsoleAppender
-appender.console.target = SYSTEM_ERR
-appender.console.layout.type = PatternLayout
-appender.console.layout.pattern = %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%t] %c{1.} %msg%n%ex
-
-# Log to console
-logger.jspwiki.name = org.apache.wiki
-logger.jspwiki.level = info
-logger.jspwiki.additivity = false
-logger.jspwiki.appenderRef.stdout.ref = ConsoleAppender
-
-
-rootLogger.level = warn
-rootLogger.appenderRef.stdout.ref = ConsoleAppender
-
-#  Log4j is available at https://logging.apache.org/log4j/2.x/index.html
-#
-#  WARNING WARNING WILL ROBINSON: If you turn on DEBUG logging, be aware
-#  that some security-sensitive information will be logged (such as session IDs).
-#  Please be careful.
-#
-# Uncomment these lines if you want to see detailed security event logging.
-# The logging levels are as follows:
-#  ERROR: login errors (other than failed/expired logins)
-#  WARN:  access denied, failed login (account expired, password/credential expired)
-#  INFO:  login, logout
-#  DEBUG: add/remove group, add/remove group member, clear groups/group members, access allowed
-#
-#logger.security.name=SecurityLog
-#logger.security.level=INFO
-#logger.security.appenderRef.stdout.ref = STDOUT,RollingFileSecurity
-#appender.rolling-security.name = RollingFileSecurity
-#appender.rolling-security.type = RollingFile
-#appender.rolling-security.fileName = security.log
-#appender.rolling-security.filePattern = security.log.%d{dd-MMM}.log.gz
-#appender.rolling-security.layout.type = PatternLayout
-#appender.rolling-security.layout.pattern = %d{yyyy-MM-dd HH:mm:ss} %-5p %m%n
-#appender.rolling-security.policies.type = Policies
-#appender.rolling-security.policies.size.type = SizeBasedTriggeringPolicy
-#appender.rolling-security.policies.size.size=10MB
-#appender.rolling-security.strategy.type = DefaultRolloverStrategy
-#appender.rolling-security.strategy.max = 5
-
-#
-#  Uncomment these lines if you wish to receive detailed spam
-#  filter logging.
-#
-#logger.spam.name=SpamLog
-#logger.spam.level=INFO
-#logger.spam.appenderRef.stdout.ref = STDOUT,RollingFileSpam
-#appender.rolling-spam.name = RollingFileSpam
-#appender.rolling-spam.type = RollingFile
-#appender.rolling-spam.fileName = spam.log
-#appender.rolling-spam.filePattern = spam.log.%d{dd-MMM}.log.gz
-#appender.rolling-spam.layout.type = PatternLayout
-#appender.rolling-spam.layout.pattern = %d{yyyy-MM-dd HH:mm:ss} %-5p %m%n
-#appender.rolling-spam.policies.type = Policies
-#appender.rolling-spam.policies.size.type = SizeBasedTriggeringPolicy
-#appender.rolling-spam.policies.size.size=10MB
-#appender.rolling-spam.strategy.type = DefaultRolloverStrategy
-#appender.rolling-spam.strategy.max = 5
+#  Logging is configured in WEB-INF/classes/logback.xml.
 
 ###########################################################################
 #
