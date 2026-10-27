@@ -80,7 +80,7 @@
 		<angus-activation.version>2.0.3</angus-activation.version>
 		<spring.version>6.2.19</spring.version>
 		<httpcore.version>4.4.16</httpcore.version>
-		<httpclient.version>4.5.13</httpclient.version>
+		<httpclient.version>4.5.14</httpclient.version>
 
 		<!-- kotlin, shared by ktor in the Agents plugin and the akismet client of jspwiki -->
 		<kotlin.version>2.4.0</kotlin.version>
@@ -1321,6 +1321,11 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore</artifactId>
+				<version>${httpcore.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpcore-nio</artifactId>
 				<version>${httpcore.version}</version>
 			</dependency>
 

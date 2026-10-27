@@ -91,6 +91,11 @@
 			<groupId>org.apache.jspwiki</groupId>
 			<artifactId>jspwiki-knowwe-main</artifactId>
 			<exclusions>
+				<!-- HttpClient 3.0 (2005) is only used by Akismet in the SpamFilter, which KnowWE does not configure -->
+				<exclusion>
+					<groupId>commons-httpclient</groupId>
+					<artifactId>commons-httpclient</artifactId>
+				</exclusion>
 				<exclusion>
 					<artifactId>log4j-api</artifactId>
 					<groupId>org.apache.logging.log4j</groupId>
@@ -149,6 +154,13 @@
 		<dependency>
 			<groupId>org.apache.jspwiki</groupId>
 			<artifactId>jspwiki-knowwe-util</artifactId>
+			<exclusions>
+				<!-- subset of javax.mail, which jspwiki-knowwe-main brings in the same version -->
+				<exclusion>
+					<groupId>com.sun.mail</groupId>
+					<artifactId>mailapi</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

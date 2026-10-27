@@ -754,6 +754,23 @@
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-CBX</artifactId>
+					<exclusions>
+						<!-- javax JAXB and Bean Validation are already provided by GraphDB (profile denkbares) as
+						jaxb-runtime 2.3.6, jakarta.xml.bind-api 2.3.3 and jakarta.validation-api 2.0.2 (same javax
+						packages); excluded only here in the WAR, so the libraries keep their javax artifacts -->
+						<exclusion>
+							<groupId>com.sun.xml.bind</groupId>
+							<artifactId>jaxb-impl</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>javax.xml.bind</groupId>
+							<artifactId>jaxb-api</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>javax.validation</groupId>
+							<artifactId>validation-api</artifactId>
+						</exclusion>
+					</exclusions>
 				</dependency>
 				<!-- CBX zieht es ohnehin transitiv, aber Plugins stehen hier explizit -->
 				<dependency>
