@@ -50,7 +50,7 @@
   WikiPage firstPage = (WikiPage) c.getEngine().getManager( org.apache.wiki.pages.PageManager.class ).getPage( wikiPage.getName(), 1 );
   if( firstPage != null )
   {
-    creationAuthor = firstPage.getAuthor();
+    creationAuthor = c.getEngine().getManager( UserManager.class ).getDisplayName( firstPage.getAuthor() );
 
     if( creationAuthor != null && creationAuthor.length() > 0 )
     {

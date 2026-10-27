@@ -49,7 +49,7 @@
   Page firstPage = c.getEngine().getManager( PageManager.class ).getPage( wikiPage.getName(), 1 );
   if( firstPage != null )
   {
-    creationAuthor = firstPage.getAuthor();
+    creationAuthor = c.getEngine().getManager( UserManager.class ).getDisplayName( firstPage.getAuthor() );
 
     if( creationAuthor != null && creationAuthor.length() > 0 )
     {

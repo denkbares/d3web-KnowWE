@@ -40,6 +40,8 @@ import jakarta.servlet.http.HttpSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Strings;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -150,7 +152,8 @@ public interface WikiConnector {
 	Map<String, String> getAllArticles();
 
 	/**
-	 * Returns all users registered to the wiki.
+	 * Returns the login names of all users registered to the wiki. Use {@link #getUserDisplayName(String)} to show
+	 * them.
 	 */
 	String[] getAllUsers();
 
@@ -158,6 +161,23 @@ public interface WikiConnector {
 	 * Returns the readable full name of the user with the given login name, or null if the wiki does not know the user.
 	 */
 	default @Nullable String getUserFullName(@Nullable String loginName) {
+		return null;
+	}
+
+	/**
+	 * Returns the name to show for the given user name. This is the full name if the given name is the login name of a
+	 * known user, otherwise the given name itself, e.g. for names recorded before users were identified by login name.
+	 */
+	default String getUserDisplayName(String userName) {
+		String fullName = getUserFullName(userName);
+		return Strings.isBlank(fullName) ? userName : fullName;
+	}
+
+	/**
+	 * Returns the login name of the registered user the given name denotes, either because it is that user's login
+	 * name or the full name of exactly this one user. Returns null if no or more than one registered user matches.
+	 */
+	default @Nullable String getLoginName(@Nullable String userName) {
 		return null;
 	}
 

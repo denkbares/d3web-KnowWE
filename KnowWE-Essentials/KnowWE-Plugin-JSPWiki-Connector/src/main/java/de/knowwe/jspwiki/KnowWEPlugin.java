@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.wiki.WikiContext;
@@ -70,7 +69,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;

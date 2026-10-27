@@ -310,21 +310,38 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String[] getAllUsers() {
-		String[] users = null;
+		return getUserProfiles().stream().map(UserProfile::getLoginName).toArray(String[]::new);
+	}
 
+	@Override
+	public @Nullable String getLoginName(@Nullable String userName) {
+		if (Strings.isBlank(userName)) return null;
 		try {
-			Principal[] princ = getUserManager().listWikiNames();
-			users = new String[princ.length];
-			for (int i = 0; i < princ.length; i++) {
-				users[i] = getUserManager().getUserDatabase().findByWikiName(
-						princ[i].getName()).getFullname();
+			return getUserManager().getUserDatabase().findByLoginName(userName).getLoginName();
+		}
+		catch (NoSuchPrincipalException e) {
+			// not a login name, maybe the full name of exactly one user
+		}
+		List<String> loginNames = getUserProfiles().stream()
+				.filter(profile -> userName.equals(profile.getFullname()))
+				.map(UserProfile::getLoginName)
+				.toList();
+		return loginNames.size() == 1 ? loginNames.get(0) : null;
+	}
+
+	private List<UserProfile> getUserProfiles() {
+		List<UserProfile> profiles = new ArrayList<>();
+		try {
+			UserDatabase database = getUserManager().getUserDatabase();
+			for (Principal wikiName : database.getWikiNames()) {
+				UserProfile profile = database.findByWikiName(wikiName.getName());
+				if (!Strings.isBlank(profile.getLoginName())) profiles.add(profile);
 			}
 		}
 		catch (WikiSecurityException e) {
 			LOGGER.error("Exception while retrieving users.", e);
 		}
-
-		return users;
+		return profiles;
 	}
 
 	@Override
