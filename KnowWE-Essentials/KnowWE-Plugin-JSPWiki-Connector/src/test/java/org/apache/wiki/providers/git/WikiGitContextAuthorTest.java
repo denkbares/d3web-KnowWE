@@ -44,6 +44,7 @@ public class WikiGitContextAuthorTest {
 		doAnswer(call -> attributes.put(call.getArgument(0), call.getArgument(1)))
 				.when(engine).setAttribute(anyString(), any());
 		users = mock(UserDatabase.class);
+		when(users.findByLoginName(anyString())).thenThrow(new NoSuchPrincipalException("nobody"));
 		when(users.findByFullName(anyString())).thenThrow(new NoSuchPrincipalException("nobody"));
 		UserManager userManager = mock(UserManager.class);
 		when(userManager.getUserDatabase()).thenReturn(users);
@@ -56,7 +57,7 @@ public class WikiGitContextAuthorTest {
 		UserProfile profile = mock(UserProfile.class);
 		when(profile.getFullname()).thenReturn("Hedwig Owl");
 		when(profile.getEmail()).thenReturn("hedwig@hogwarts.example");
-		doReturn(profile).when(users).findByFullName("hedwig");
+		doReturn(profile).when(users).findByLoginName("hedwig");
 		AuthenticatedIdentities.remember(engine,
 				new AuthenticatedIdentities.Identity("hedwig", "Someone Else", "else@example.com"));
 
@@ -65,6 +66,19 @@ public class WikiGitContextAuthorTest {
 		assertEquals("Hedwig Owl", author.user);
 		assertEquals("hedwig@hogwarts.example", author.email);
 		assertEquals("saved", author.message);
+	}
+
+	@Test
+	public void anAuthorGivenByFullNameStillFindsTheProfile() throws Exception {
+		UserProfile profile = mock(UserProfile.class);
+		when(profile.getFullname()).thenReturn("Hedwig Owl");
+		when(profile.getEmail()).thenReturn("hedwig@hogwarts.example");
+		doReturn(profile).when(users).findByFullName("Hedwig Owl");
+
+		CommitUserData author = context.userData("Hedwig Owl", "saved");
+
+		assertEquals("Hedwig Owl", author.user);
+		assertEquals("hedwig@hogwarts.example", author.email);
 	}
 
 	@Test

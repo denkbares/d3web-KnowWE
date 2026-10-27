@@ -46,6 +46,7 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
+import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.event.WikiEventManager;
@@ -511,14 +512,19 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	}
 
 	private UserProfile getUserProfile(String user) {
+		UserDatabase database = engine.getManager(UserManager.class).getUserDatabase();
+		// the wiki hands over the login name, older callers may still pass the full name
 		try {
-			return engine.getManager(UserManager.class)
-					.getUserDatabase()
-					.findByFullName(user);
+			return database.findByLoginName(user);
 		}
 		catch (NoSuchPrincipalException e) {
-			LOGGER.error("Tried to access user: " + user + " but that user does not exist!");
-			return null;
+			try {
+				return database.findByFullName(user);
+			}
+			catch (NoSuchPrincipalException e2) {
+				LOGGER.error("Tried to access user: " + user + " but that user does not exist!");
+				return null;
+			}
 		}
 	}
 

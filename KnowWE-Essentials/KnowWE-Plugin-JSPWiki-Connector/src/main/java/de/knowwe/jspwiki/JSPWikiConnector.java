@@ -115,6 +115,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.jspwiki.auth.AuthenticatedIdentities;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
 
 import static org.apache.wiki.cache.CachingManager.*;
@@ -324,6 +325,20 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 
 		return users;
+	}
+
+	@Override
+	public @Nullable String getUserFullName(@Nullable String loginName) {
+		if (Strings.isBlank(loginName)) return null;
+		try {
+			String fullName = getUserManager().getUserDatabase().findByLoginName(loginName).getFullname();
+			if (!Strings.isBlank(fullName)) return fullName;
+		}
+		catch (NoSuchPrincipalException e) {
+			// not in the user database, the identity provider may still know the user
+		}
+		AuthenticatedIdentities.Identity identity = AuthenticatedIdentities.of(engine, loginName);
+		return identity == null ? null : identity.fullName();
 	}
 
 	public UserManager getUserManager() {

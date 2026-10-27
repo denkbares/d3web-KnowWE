@@ -155,6 +155,13 @@ public interface WikiConnector {
 	String[] getAllUsers();
 
 	/**
+	 * Returns the readable full name of the user with the given login name, or null if the wiki does not know the user.
+	 */
+	default @Nullable String getUserFullName(@Nullable String loginName) {
+		return null;
+	}
+
+	/**
 	 * Returns the path to the root of the application.
 	 *
 	 * @created 12.04.2012
