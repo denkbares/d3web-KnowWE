@@ -52,7 +52,8 @@
 		<maven-enforcer.version>3.6.2</maven-enforcer.version>
 
 		<!-- logging -->
-		<slf4j.version>2.0.15</slf4j.version>
+		<!-- at least the version jspwiki is built against -->
+		<slf4j.version>2.0.18</slf4j.version>
 		<log4j.version>2.22.0</log4j.version>
 		<logback.version>1.5.19</logback.version>
 
@@ -70,6 +71,7 @@
 		<tomcat.version>11.0.27</tomcat.version>
 		<stripes.version>1.7.0-async-beta</stripes.version>
 		<jakarta-servlet-api.version>6.1.0</jakarta-servlet-api.version>
+		<jakarta-el-api.version>5.0.1</jakarta-el-api.version>
 		<jakarta-jstl-api.version>3.0.2</jakarta-jstl-api.version>
 		<jakarta-jstl.version>3.0.1</jakarta-jstl.version>
 		<jakarta-mail-api.version>2.1.5</jakarta-mail-api.version>
@@ -80,6 +82,13 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpclient.version>4.5.13</httpclient.version>
 
+		<!-- kotlin, shared by ktor in the Agents plugin and the akismet client of jspwiki -->
+		<kotlin.version>2.4.0</kotlin.version>
+		<kotlinx-serialization.version>1.9.0</kotlinx-serialization.version>
+		<kotlinx-io.version>0.8.0</kotlinx-io.version>
+		<okhttp.version>4.12.0</okhttp.version>
+		<okio.version>3.6.0</okio.version>
+
 		<!-- search -->
 		<!-- muss zu denkbares-Internals und dem jspwiki-Fork passen, sonst liegen zwei
 			 Lucene-Versionen im WAR -->
@@ -87,11 +96,12 @@
 
 		<!-- apache commons -->
 		<commons-csv.version>1.4</commons-csv.version>
-		<commons-text.version>1.10.0</commons-text.version>
+		<!-- commons-text, commons-io and commons-codec at least at the versions jspwiki is built against -->
+		<commons-text.version>1.15.0</commons-text.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
-		<commons-io.version>2.18.0</commons-io.version>
+		<commons-io.version>2.22.0</commons-io.version>
 		<commons-fileupload2.version>2.0.0-M5</commons-fileupload2.version>
-		<commons-codec.version>1.14</commons-codec.version>
+		<commons-codec.version>1.22.1</commons-codec.version>
 		<commons-beanutils.version>1.11.0</commons-beanutils.version>
 
 		<!-- testing -->
@@ -115,7 +125,7 @@
 		<batik.version>1.19</batik.version>
 		<jgrapht.version>1.4.0</jgrapht.version>
 		<mvel.version>2.2.4.Final</mvel.version>
-		<jetbrains-annotations.version>19.0.0</jetbrains-annotations.version>
+		<jetbrains-annotations.version>24.0.1</jetbrains-annotations.version>
 		<implementationVersion>${revision}</implementationVersion>
 
 		<!-- sonar/clover -->
@@ -1242,6 +1252,11 @@
 				<version>${jakarta-servlet-api.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>jakarta.el</groupId>
+				<artifactId>jakarta.el-api</artifactId>
+				<version>${jakarta-el-api.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>jakarta.servlet.jsp.jstl</groupId>
 				<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 				<version>${jakarta-jstl-api.version}</version>
@@ -1307,6 +1322,74 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore</artifactId>
 				<version>${httpcore.version}</version>
+			</dependency>
+
+			<!-- ===== Third-party: kotlin ===== -->
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jdk7</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-jdk8</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-reflect</artifactId>
+				<version>${kotlin.version}</version>
+			</dependency>
+			<!-- holds no classes and is published without jar since Kotlin 1.9.20, so pin the last version with one -->
+			<dependency>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-stdlib-common</artifactId>
+				<version>1.9.10</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlinx</groupId>
+				<artifactId>kotlinx-io-core-jvm</artifactId>
+				<version>${kotlinx-io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlinx</groupId>
+				<artifactId>kotlinx-io-bytestring-jvm</artifactId>
+				<version>${kotlinx-io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlinx</groupId>
+				<artifactId>kotlinx-serialization-core-jvm</artifactId>
+				<version>${kotlinx-serialization.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jetbrains.kotlinx</groupId>
+				<artifactId>kotlinx-serialization-json-jvm</artifactId>
+				<version>${kotlinx-serialization.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>${okhttp.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>logging-interceptor</artifactId>
+				<version>${okhttp.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okio</groupId>
+				<artifactId>okio</artifactId>
+				<version>${okio.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okio</groupId>
+				<artifactId>okio-jvm</artifactId>
+				<version>${okio.version}</version>
 			</dependency>
 
 			<!-- ===== Third-party: apache commons ===== -->

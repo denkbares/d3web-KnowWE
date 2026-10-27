@@ -132,6 +132,17 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 		</dependency>
+		<!-- container APIs, they come in transitively with compile scope but must not be packaged -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.el</groupId>
+			<artifactId>jakarta.el-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<!-- the jspwiki war libraries that jspwiki-knowwe-main does not bring along -->
 		<dependency>
 			<groupId>org.apache.jspwiki</groupId>
