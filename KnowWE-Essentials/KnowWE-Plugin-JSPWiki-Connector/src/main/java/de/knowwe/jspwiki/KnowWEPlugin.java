@@ -647,14 +647,26 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			else {
 				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
 				String gitCommitRev = gitEvent.getGitCommitRev();
-				String pageFile = JSPUtils.mangleName(pageTitle) + ".txt";
-				int latestVersionNumber = getGitConnector().log().numberOfCommitsForFile(pageFile);
+				int latestVersionNumber = getGitConnector().log().numberOfCommitsForFile(repositoryPath(pageTitle));
 				ArticleUpdateEvent.Version version = new ArticleUpdateEvent.Version(latestVersionNumber);
 				version.setCommitHash(gitCommitRev);
 				articleUpdateEvent.setVersion(version);
 			}
 			environment.getEventManager().fireEvent(articleUpdateEvent);
 		}
+	}
+
+	/**
+	 * The path of a page or attachment file in the wiki repository, for an attachment ({@code <page>/<file>}) the one
+	 * of the git attachment providers.
+	 */
+	private static String repositoryPath(String wikiName) {
+		int separator = wikiName.lastIndexOf('/');
+		if (separator == -1) {
+			return JSPUtils.mangleName(wikiName) + ".txt";
+		}
+		return JSPUtils.getAttachmentDir(wikiName.substring(0, separator)) + "/"
+			   + JSPUtils.mangleName(wikiName.substring(separator + 1));
 	}
 
 	private GitConnector gitConnector = null;

@@ -51,11 +51,14 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.event.GitVersioningWikiEvent;
+import org.apache.wiki.event.WikiAttachmentEvent;
+import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.AbstractFileProvider;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
+import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,11 +180,10 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		String relPath = attachmentPath(attachment);
 		byte[] bytes = data.readAllBytes();
 		// bracket the file write and its commit, like the page provider's save (no sweep may interleave)
+		boolean written;
 		try {
-			repository.withRepositoryLock(() -> {
-				putAttachmentDataLocked(attachment, bytes, attFile, relPath, repository);
-				return null;
-			});
+			written = repository.withRepositoryLock(
+					() -> putAttachmentDataLocked(attachment, bytes, attFile, relPath, repository));
 		}
 		catch (ProviderException | IOException e) {
 			throw e;
@@ -189,14 +191,20 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		catch (Exception e) {
 			throw new ProviderException("Could not save attachment '" + relPath + "': " + e.getMessage());
 		}
+		if (written) {
+			fireAttachmentEvent(WikiAttachmentEvent.STORED, attachment);
+		}
 	}
 
-	private void putAttachmentDataLocked(Attachment attachment, byte[] bytes, File attFile, String relPath,
-										 GitWikiRepository repository) throws ProviderException {
+	/**
+	 * Writes and commits (or stages) the attachment, and returns whether anything was written.
+	 */
+	private boolean putAttachmentDataLocked(Attachment attachment, byte[] bytes, File attFile, String relPath,
+											GitWikiRepository repository) throws ProviderException {
 		// a rule that so far exists only in the working tree or exclude file must already route the write
 		if (repository.isIgnoredForCommit(relPath + ATTDIR_EXTENSION)) {
 			putVersionedOnFilesystem(attachment, bytes, attFile);
-			return;
+			return true;
 		}
 		File dir = attFile.getParentFile();
 		if (!dir.exists() && !dir.mkdirs()) {
@@ -204,7 +212,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		}
 		// git creates no commit if no byte changed, and we also do not rewrite the file
 		if (contentEquals(attFile, bytes)) {
-			return;
+			return false;
 		}
 		writeFile(attachment, bytes, attFile);
 		attachment.setSize(attFile.length());
@@ -218,6 +226,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 				fireEvent(GitVersioningWikiEvent.UPDATE, attachment, commitHash, repository);
 			}
 		}
+		return true;
 	}
 
 	/**
@@ -488,6 +497,16 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	@Override
 	public void deleteAttachment(Attachment attachment) throws ProviderException {
 		GitWikiRepository repository = repository();
+		boolean exists = attachmentFile(repository, attachment).exists()
+						 || legacyVersionDir(attachment.getParentName(), attachment.getFileName()).exists();
+		deleteAttachmentFiles(attachment, repository);
+		// a caller replacing the attachment suppresses the delete event, the store that follows announces the change
+		if (exists && !"false".equals(attachment.getAttribute(KnowWEAttachmentProvider.FIRE_DELETE_EVENT))) {
+			fireAttachmentEvent(WikiAttachmentEvent.DELETED, attachment);
+		}
+	}
+
+	private void deleteAttachmentFiles(Attachment attachment, GitWikiRepository repository) throws ProviderException {
 		File attFile = attachmentFile(repository, attachment);
 		if (!attFile.exists()) {
 			deleteLegacyAttachment(attachment, repository);
@@ -679,6 +698,17 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 	private static String attachmentNameOf(String relativePath) {
 		String name = JSPUtils.unmangleName(relativePath.split("/", 2)[0]);
 		return name.endsWith(ATTDIR_EXTENSION) ? name.substring(0, name.length() - ATTDIR_EXTENSION.length()) : name;
+	}
+
+	/**
+	 * Tells the listeners of this provider, KnowWE among them, that an attachment was stored or deleted. This is
+	 * independent of git, a store staged in a transaction or a git-ignored attachment is announced as well.
+	 *
+	 * @param type {@link WikiAttachmentEvent#STORED} or {@link WikiAttachmentEvent#DELETED}
+	 */
+	private void fireAttachmentEvent(int type, Attachment attachment) {
+		WikiEventManager.fireEvent(this,
+				new WikiAttachmentEvent(this, attachment.getParentName(), attachment.getFileName(), type));
 	}
 
 	/**

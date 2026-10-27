@@ -142,7 +142,7 @@ public record WikiGitContext(
 			String repoPath,
 			GitCommitEvent.Origin origin
 	) {
-		WikiEventManager.fireEvent(source, new GitVersioningWikiEvent(source, eventType, author, pages, commitHash));
+		WikiEventManager.fireEvent(source, GitVersioningWikiEvent.ofWikiNames(source, eventType, author, pages, commitHash));
 		// the environment of this wiki, if it is already running (the git provider may commit before KnowWE is initialized)
 		Environment environment = Environment.findIn(engine.getServletContext());
 		EventManager eventManager = environment != null ? environment.getEventManager() : EventManager.getInstance();

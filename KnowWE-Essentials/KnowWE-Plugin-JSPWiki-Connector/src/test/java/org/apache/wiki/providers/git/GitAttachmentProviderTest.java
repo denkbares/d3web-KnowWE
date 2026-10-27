@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -39,8 +40,12 @@ import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.cache.CachingManager;
+import org.apache.wiki.event.WikiAttachmentEvent;
+import org.apache.wiki.event.WikiEventListener;
+import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.AbstractFileProvider;
+import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,6 +74,8 @@ public class GitAttachmentProviderTest {
 	private Engine engine;
 	private GitPageProvider pageProvider;
 	private GitAttachmentProvider attachmentProvider;
+	// held here, the event manager only keeps a weak reference
+	private WikiEventListener attachmentListener;
 
 	@Before
 	public void setUp() throws Exception {
@@ -94,6 +101,9 @@ public class GitAttachmentProviderTest {
 
 	@After
 	public void tearDown() throws IOException {
+		if (attachmentListener != null) {
+			WikiEventManager.removeWikiEventListener(attachmentProvider, attachmentListener);
+		}
 		FileUtils.deleteDirectory(pageDir);
 	}
 
@@ -390,6 +400,58 @@ public class GitAttachmentProviderTest {
 		assertTrue(new File(pageDir, ".git/info/exclude").exists());
 		assertTrue(new File(pageDir, "Dashboard-att/ci-build-Nightly.xml-dir/1.xml").exists());
 		assertEquals(commitsBefore, commitsOnBranch());
+	}
+
+	@Test
+	public void storesAndDeletesAreAnnounced() throws Exception {
+		List<String> events = recordAttachmentEvents();
+		putAttachment("Topic", "doc.txt", "content");
+		putAttachment("Topic", "doc.txt", "content");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "Topic", "doc.txt");
+		att.setAuthor(AUTHOR);
+		attachmentProvider.deleteAttachment(att);
+		// deleting what is gone already changes nothing
+		attachmentProvider.deleteAttachment(att);
+
+		// the unchanged second store wrote nothing, so it is not announced
+		assertEquals(List.of("stored Topic/doc.txt", "deleted Topic/doc.txt"), events);
+	}
+
+	@Test
+	public void aDeleteMarkedAsReplacementIsNotAnnounced() throws Exception {
+		putAttachment("Topic", "doc.txt", "content");
+		List<String> events = recordAttachmentEvents();
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "Topic", "doc.txt");
+		att.setAuthor(AUTHOR);
+		att.setAttribute(KnowWEAttachmentProvider.FIRE_DELETE_EVENT, "false");
+		attachmentProvider.deleteAttachment(att);
+
+		assertFalse(new File(pageDir, "Topic-att/doc.txt").exists());
+		assertEquals(List.of(), events);
+	}
+
+	@Test
+	public void aGitIgnoredAttachmentIsAnnounced() throws Exception {
+		excludeGenerated();
+		List<String> events = recordAttachmentEvents();
+		putAttachment("Topic", "gen-report.xml", "<report/>");
+
+		assertEquals(List.of("stored Topic/gen-report.xml"), events);
+	}
+
+	/**
+	 * Records the attachment events of the provider for the rest of the test.
+	 */
+	private List<String> recordAttachmentEvents() {
+		List<String> events = new ArrayList<>();
+		attachmentListener = event -> {
+			if (event instanceof WikiAttachmentEvent attachmentEvent) {
+				String type = attachmentEvent.getType() == WikiAttachmentEvent.STORED ? "stored" : "deleted";
+				events.add(type + " " + attachmentEvent.getParentName() + "/" + attachmentEvent.getFileName());
+			}
+		};
+		WikiEventManager.addWikiEventListener(attachmentProvider, attachmentListener);
+		return events;
 	}
 
 	private void excludeGenerated() {
