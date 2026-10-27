@@ -107,6 +107,16 @@ public class PluggableAuthenticationManager implements AuthenticationManager {
 		}
 	}
 
+	/**
+	 * Fires on the delegate for the same reason as {@link #fireEvent(int, Principal, Object)}.
+	 */
+	@Override
+	public void fireEvent(int type, Principal principal, Object target, HttpServletRequest request) {
+		if (delegate != null) {
+			delegate.fireEvent(type, principal, target, request);
+		}
+	}
+
 	@Override
 	public void removeWikiEventListener(WikiEventListener listener) {
 		delegate.removeWikiEventListener(listener);
