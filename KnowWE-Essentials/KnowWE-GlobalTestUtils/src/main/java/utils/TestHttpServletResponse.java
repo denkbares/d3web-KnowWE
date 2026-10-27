@@ -68,6 +68,11 @@ public class TestHttpServletResponse implements HttpServletResponse {
 	}
 
 	@Override
+	public void sendRedirect(String location, int statusCode, boolean clearBuffer) throws IOException {
+		this.status = statusCode;
+	}
+
+	@Override
 	public void setDateHeader(String s, long l) {
 
 	}

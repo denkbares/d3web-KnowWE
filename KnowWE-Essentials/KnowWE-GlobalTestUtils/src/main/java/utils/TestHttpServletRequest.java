@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
@@ -36,6 +37,7 @@ import jakarta.servlet.http.Part;
 public class TestHttpServletRequest implements HttpServletRequest {
 
 	Map<String, Object> attributes = new HashMap<>();
+	private final String requestId = UUID.randomUUID().toString();
 	private HttpSession session;
 
 	public TestHttpServletRequest() {
@@ -187,20 +189,38 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getRequestId() {
-		// TODO Auto-generated method stub
-		return null;
+		return requestId;
 	}
 
 	@Override
 	public String getProtocolRequestId() {
-		// TODO Auto-generated method stub
-		return null;
+		// HTTP/1.1 has no protocol defined request id
+		return "";
 	}
 
 	@Override
 	public ServletConnection getServletConnection() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ServletConnection() {
+			@Override
+			public String getConnectionId() {
+				return requestId;
+			}
+
+			@Override
+			public String getProtocol() {
+				return "HTTP/1.1";
+			}
+
+			@Override
+			public String getProtocolConnectionId() {
+				return "";
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+		};
 	}
 
 	@Override
@@ -389,13 +409,14 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String changeSessionId() {
-		return null;
+		if (session == null) throw new IllegalStateException("The request has no session");
+		// the test session cannot be given a new id, so it keeps its current one
+		return session.getId();
 	}
 
 	@Override
-	public HttpSession getSession(boolean arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public HttpSession getSession(boolean create) {
+		return this.session;
 	}
 
 	@Override
