@@ -36,13 +36,19 @@ public abstract class TermRenamingEvent implements Event {
 
 	private final ArticleManager articleManager;
 	private final UserActionContext context;
+	private final String author;
 	private final Identifier term;
 	private final Identifier replacementTerm;
 
 
 	public TermRenamingEvent(ArticleManager articleManager, @Nullable UserActionContext context, Identifier term, Identifier replacementTerm) {
+		this(articleManager, context, context == null ? null : context.getUserName(), term, replacementTerm);
+	}
+
+	public TermRenamingEvent(ArticleManager articleManager, @Nullable UserActionContext context, @Nullable String author, Identifier term, Identifier replacementTerm) {
 		this.articleManager = articleManager;
 		this.context = context;
+		this.author = author;
 		this.term = term;
 		this.replacementTerm = replacementTerm;
 	}
@@ -66,5 +72,13 @@ public abstract class TermRenamingEvent implements Event {
 	@Nullable
 	public UserActionContext getContext() {
 		return context;
+	}
+
+	/**
+	 * The name of the user the rename is attributed to, or {@code null} if it is not known.
+	 */
+	@Nullable
+	public String getAuthor() {
+		return author;
 	}
 }

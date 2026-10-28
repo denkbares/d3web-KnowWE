@@ -35,4 +35,8 @@ public class TermRenamingFinishEvent extends TermRenamingEvent {
 	public TermRenamingFinishEvent(ArticleManager articleManager, @Nullable UserActionContext context, Identifier term, Identifier replacementTerm) {
 		super(articleManager, context, term, replacementTerm);
 	}
+
+	public TermRenamingFinishEvent(ArticleManager articleManager, @Nullable UserActionContext context, @Nullable String author, Identifier term, Identifier replacementTerm) {
+		super(articleManager, context, author, term, replacementTerm);
+	}
 }
