@@ -529,6 +529,26 @@ public interface WikiConnector {
 	String renamePage(String fromPage, String toPage, HttpServletRequest request) throws IOException;
 
 	/**
+	 * Renames an article in the name of the given author, so the rename joins an open page transaction of that author.
+	 * The history and the attachments move with the article, and links in referring articles are updated. Unlike
+	 * {@link #renamePage(String, String, HttpServletRequest)} this does not change the article manager, the caller
+	 * registers the renamed article and the returned referring articles itself.
+	 * <p>
+	 * The default implementation delegates to {@link #renamePage(String, String, HttpServletRequest)} and reports no
+	 * referring articles.
+	 *
+	 * @param fromTitle the current title of the article
+	 * @param toTitle   the new title, which must not exist yet
+	 * @param author    the user the rename is attributed to
+	 * @return the titles of other articles whose text changed because their links were updated
+	 * @throws IOException if the article does not exist, the new title exists already or the rename failed
+	 */
+	default Collection<String> renameArticle(String fromTitle, String toTitle, String author) throws IOException {
+		renamePage(fromTitle, toTitle, null);
+		return List.of();
+	}
+
+	/**
 	 * Removes the lock for the article.
 	 *
 	 * @param title the title of the article to be unlocked

@@ -1540,14 +1540,14 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Renames and article
+	 * Renames an article in the article manager. Does nothing if no article with the old title is registered.
 	 */
-
 	public static void renameArticle(@NotNull Environment environment, final String oldArticleTitle, final String newArticleTitle) {
 		final ArticleManager manager = environment.getArticleManager();
-		final Article oldArticle = manager.getArticle(oldArticleTitle);
 		manager.open();
 		try {
+			final Article oldArticle = manager.getArticle(oldArticleTitle);
+			if (oldArticle == null) return;
 			manager.deleteArticle(oldArticleTitle);
 			// create article with the new content
 			Article newArticle = manager.registerArticle(newArticleTitle, oldArticle.getText());

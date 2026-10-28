@@ -72,6 +72,7 @@ import org.apache.wiki.auth.AuthorizationManager;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.SessionMonitor;
 import org.apache.wiki.auth.UserManager;
+import org.apache.wiki.auth.WikiPrincipal;
 import org.apache.wiki.auth.WikiSecurityException;
 import org.apache.wiki.auth.authorize.GroupManager;
 import org.apache.wiki.auth.permissions.PagePermission;
@@ -1151,6 +1152,47 @@ public class JSPWikiConnector implements WikiConnector {
 		catch (WikiException e) {
 			throw new IOException(e);
 		}
+	}
+
+	@Override
+	public Collection<String> renameArticle(String fromTitle, String toTitle, String author) throws IOException {
+		Page fromPage = getPageManager().getPage(fromTitle);
+		if (fromPage == null) throw new IOException("No such article " + fromTitle);
+		// same referrers as DefaultPageRenamer, read before the rename so changed texts can be detected
+		Set<String> referrers = new LinkedHashSet<>();
+		ReferenceManager references = getEngine().getManager(ReferenceManager.class);
+		Collection<String> pageReferrers = references.findReferrers(fromTitle);
+		if (pageReferrers != null) referrers.addAll(pageReferrers);
+		for (WikiAttachment attachment : getAttachments(fromTitle)) {
+			Collection<String> attachmentReferrers = references.findReferrers(attachment.getPath());
+			if (attachmentReferrers != null) referrers.addAll(attachmentReferrers);
+		}
+		referrers.remove(fromTitle);
+		referrers.remove(toTitle);
+		Map<String, String> textsBefore = new HashMap<>();
+		referrers.forEach(referrer -> textsBefore.put(referrer, getArticleText(referrer)));
+
+		// The renamer attributes the move, the attachment move and the referrer updates to the current user of the
+		// context, and the git provider adds them to the open commit of exactly that user.
+		WikiContext context = new WikiContext(getEngine(), fromPage) {
+			@Override
+			public Principal getCurrentUser() {
+				return new WikiPrincipal(author);
+			}
+		};
+		try {
+			getEngine().getManager(PageRenamer.class).renamePage(context, fromTitle, toTitle, true);
+		}
+		catch (WikiException e) {
+			throw new IOException(e);
+		}
+
+		List<String> changed = new ArrayList<>();
+		for (String referrer : referrers) {
+			String text = getArticleText(referrer);
+			if (text != null && !text.equals(textsBefore.get(referrer))) changed.add(referrer);
+		}
+		return changed;
 	}
 
 	@Override

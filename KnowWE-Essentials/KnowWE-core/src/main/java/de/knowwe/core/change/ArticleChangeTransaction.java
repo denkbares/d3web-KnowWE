@@ -6,6 +6,7 @@ package de.knowwe.core.change;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.ArticleDeletedEvent;
+import de.knowwe.event.ArticleRenamedEvent;
 import de.knowwe.event.ArticleUpdateEvent;
 
 /**
@@ -193,11 +195,7 @@ final class ArticleChangeTransaction {
 		if (changes.hasExpectedVersion(title) && !Objects.equals(changes.expectedVersion(title), oldVersion)) {
 			throw conflict(title, "Article \"" + title + "\" was changed in the meantime");
 		}
-		String text = change.text();
-		if (text == null && existing != null && kind == Outcome.Kind.RENAMED) {
-			text = existing.getText();
-		}
-		return new Step(kind, title, change.newTitle(), text, existing, oldVersion);
+		return new Step(kind, title, change.newTitle(), change.text(), existing, oldVersion);
 	}
 
 	private static void requireExisting(@Nullable Article existing, String title) throws ArticleChangeException {
@@ -266,11 +264,7 @@ final class ArticleChangeTransaction {
 					articleManager.registerArticle(step.title(), text);
 					events.add(new ArticleUpdateEvent(step.title(), author));
 				}
-				case RENAMED -> {
-					// Remove and create within the same frame, so the compilers never see both articles at once.
-					remove(step);
-					create(Objects.requireNonNull(step.newTitle()), step.text());
-				}
+				case RENAMED -> rename(step);
 				case DELETED -> remove(step);
 			}
 		}
@@ -286,6 +280,36 @@ final class ArticleChangeTransaction {
 		}
 		articleManager.registerArticle(title, content);
 		events.add(new ArticleUpdateEvent(title, author));
+	}
+
+	/**
+	 * Renames the page in persistence right away, unlike deletes. The page rename listener in {@code KnowWEPlugin}
+	 * waits for the frame and then finds the article manager already up to date, or the page back at its old title.
+	 */
+	private void rename(Step step) throws IOException {
+		String newTitle = Objects.requireNonNull(step.newTitle());
+		Article existing = Objects.requireNonNull(step.existing());
+		Collection<String> referrers = connector.renameArticle(step.title(), newTitle, author);
+		String text = step.text();
+		if (text == null) {
+			// the renamed page may link to itself, so its text can have changed as well
+			String persisted = connector.getArticleText(newTitle);
+			text = persisted == null ? existing.getText() : persisted;
+		}
+		else if (!connector.writeArticleToWikiPersistence(newTitle, text, author, changeNote)) {
+			throw new IOException("The wiki did not save the renamed article");
+		}
+		// remove and register within the same frame, so the compilers never see both articles at once
+		articleManager.deleteArticle(step.title());
+		Article renamed = articleManager.registerArticle(newTitle, text);
+		events.add(new ArticleRenamedEvent(existing, renamed));
+		events.add(new ArticleUpdateEvent(newTitle, author));
+		for (String referrer : referrers) {
+			String referrerText = connector.getArticleText(referrer);
+			if (referrerText == null || articleManager.getArticle(referrer) == null) continue;
+			articleManager.registerArticle(referrer, referrerText);
+			events.add(new ArticleUpdateEvent(referrer, author));
+		}
 	}
 
 	private void remove(Step step) {

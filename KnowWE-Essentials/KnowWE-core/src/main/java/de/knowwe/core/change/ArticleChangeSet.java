@@ -164,7 +164,8 @@ public final class ArticleChangeSet {
 			 */
 			WRITE,
 			/**
-			 * moves an existing article to a new title that must not exist yet
+			 * moves an existing article with its history and attachments to a new title that must not exist yet and
+			 * updates the links in referring articles
 			 */
 			RENAME,
 			/**
@@ -270,6 +271,10 @@ public final class ArticleChangeSet {
 			return add(new Change(Change.Kind.WRITE, title, null, Objects.requireNonNull(text)));
 		}
 
+		/**
+		 * Renames the article. Its history and attachments move along, and links in referring articles are updated as
+		 * part of the same change.
+		 */
 		@NotNull
 		public Builder rename(@NotNull String title, @NotNull String newTitle) {
 			return add(new Change(Change.Kind.RENAME, title, requireTitle(newTitle), null));

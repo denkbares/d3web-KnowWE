@@ -617,7 +617,18 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			new Thread(() -> {
 				String oldArticleTitle = renameEvent.getOldPageName();
 				String newArticleTitle = renameEvent.getNewPageName();
-				KnowWEUtils.renameArticle(environment, oldArticleTitle, newArticleTitle);
+				// A rename within an ArticleChangeSet registers the articles itself, and if it is rolled back the page
+				// is back at its old title. Both are only decided once the set has released the frame.
+				ArticleManager articleManager = getDefaultArticleManager(environment);
+				articleManager.open();
+				try {
+					if (environment.getWikiConnector().doesArticleExist(newArticleTitle)) {
+						KnowWEUtils.renameArticle(environment, oldArticleTitle, newArticleTitle);
+					}
+				}
+				finally {
+					articleManager.commit();
+				}
 			}).start();
 		}
 		else if (event instanceof WikiAttachmentEvent) {

@@ -33,6 +33,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.event.ArticleDeletedEvent;
+import de.knowwe.event.ArticleRenamedEvent;
 import de.knowwe.event.ArticleUpdateEvent;
 
 import static org.junit.Assert.*;
@@ -49,6 +50,7 @@ public class ArticleChangeSetTest {
 	private final List<Event> notifications = new ArrayList<>();
 	private final Set<String> denied = new HashSet<>();
 	private Map<String, String> snapshot;
+	private final Map<String, String> referrerRewrites = new LinkedHashMap<>();
 	private String failingWrite;
 	private Runnable onRollback = () -> { };
 	private Environment environment;
@@ -57,7 +59,7 @@ public class ArticleChangeSetTest {
 	private final EventListener listener = new EventListener() {
 		@Override
 		public Collection<Class<? extends Event>> getEvents() {
-			return List.of(ArticleUpdateEvent.class, ArticleDeletedEvent.class);
+			return List.of(ArticleUpdateEvent.class, ArticleDeletedEvent.class, ArticleRenamedEvent.class);
 		}
 
 		@Override
@@ -112,6 +114,18 @@ public class ArticleChangeSetTest {
 						pending.add((String) args[0]);
 						yield true;
 					}
+					case "getArticleText" -> disk.get((String) args[0]);
+					case "renameArticle" -> {
+						String from = (String) args[0];
+						String to = (String) args[1];
+						transactions.add("rename " + from + " -> " + to + " by " + args[2]);
+						disk.put(to, disk.remove(from));
+						versions.put(to, versions.remove(from));
+						pending.add(to);
+						disk.putAll(referrerRewrites);
+						pending.addAll(referrerRewrites.keySet());
+						yield List.copyOf(referrerRewrites.keySet());
+					}
 					case "deleteArticle" -> {
 						disk.remove((String) args[0]);
 						versions.remove((String) args[0]);
@@ -153,7 +167,7 @@ public class ArticleChangeSetTest {
 
 		manager.getCompilerManager().awaitTermination();
 		assertEquals(compilation + 1, manager.getCompilerManager().getCompilationId());
-		assertEquals(List.of("open", "commit"), transactions);
+		assertEquals(List.of("open", "rename Rename -> Renamed by author", "commit"), transactions);
 		assertEquals("updated", disk.get("Update"));
 		assertEquals("original", disk.get("Renamed"));
 		assertFalse(disk.containsKey("Delete"));
@@ -174,10 +188,37 @@ public class ArticleChangeSetTest {
 		assertEquals(Integer.valueOf(1), created.newVersion());
 		assertNull(result.outcomes().get(3).newVersion());
 
-		// update, created, written, deleted, renamed source deleted and renamed target updated
+		// update, created, written, deleted, renamed and renamed target updated
 		assertEquals(6, notifications.size());
 		ArticleUpdateEvent updateEvent = (ArticleUpdateEvent) notifications.get(0);
 		assertEquals(2, updateEvent.getVersion().getWikiVersionNumber());
+		assertFrameReleased();
+	}
+
+	@Test
+	public void renameMovesThePageAndRegistersUpdatedReferrers() throws Exception {
+		Article original = manager.getArticle("Rename");
+		referrerRewrites.put("Other", "links to Renamed");
+		int compilation = manager.getCompilerManager().getCompilationId();
+
+		ArticleChangeSet.Result result = ArticleChangeSet.builder()
+				.rename("Rename", "Renamed")
+				.build()
+				.applyAs(environment, "author", "note");
+
+		manager.getCompilerManager().awaitTermination();
+		assertEquals(compilation + 1, manager.getCompilerManager().getCompilationId());
+		assertEquals(Map.of("Rename", "Renamed"), result.renamed());
+		assertEquals(Integer.valueOf(2), result.outcomes().get(0).newVersion());
+		assertNull(manager.getArticle("Rename"));
+		assertEquals("original", manager.getArticle("Renamed").getText());
+		assertEquals("links to Renamed", manager.getArticle("Other").getText());
+		assertEquals(3, notifications.size());
+		ArticleRenamedEvent renamed = (ArticleRenamedEvent) notifications.get(0);
+		assertSame(original, renamed.getOldArticle());
+		assertEquals("Renamed", renamed.getArticle().getTitle());
+		assertEquals("Renamed", ((ArticleUpdateEvent) notifications.get(1)).getTitle());
+		assertEquals("Other", ((ArticleUpdateEvent) notifications.get(2)).getTitle());
 		assertFrameReleased();
 	}
 
@@ -208,7 +249,9 @@ public class ArticleChangeSetTest {
 		assertNull(manager.getArticle("Created"));
 		assertNull(manager.getArticle("Renamed"));
 		assertEquals("original", disk.get("Update"));
-		assertEquals(List.of("open", "rollback"), transactions);
+		assertEquals(List.of("open", "rename Rename -> Renamed by author", "rollback"), transactions);
+		assertEquals("original", disk.get("Rename"));
+		assertFalse(disk.containsKey("Renamed"));
 		assertTrue(manager.getQueuedArticles().isEmpty());
 		assertEquals(compilation, manager.getCompilerManager().getCompilationId());
 		assertTrue(notifications.isEmpty());
