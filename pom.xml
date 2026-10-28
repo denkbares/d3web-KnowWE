@@ -280,6 +280,7 @@
 										<writeCall>de.knowwe.core.utils.KnowWEUtils#canCreatePages</writeCall>
 										<writeCall>de.knowwe.core.utils.KnowWEUtils#assertCanCreatePages</writeCall>
 										<writeCall>de.knowwe.core.kdom.parsing.Sections#replace</writeCall>
+										<writeCall>de.knowwe.core.change.ArticleChangeSet#apply</writeCall>
 										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanEditArticle</writeCall>
 										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanUploadAttachment</writeCall>
 										<writeCall>de.knowwe.core.wikiConnector.WikiConnector#userCanCreateArticles</writeCall>

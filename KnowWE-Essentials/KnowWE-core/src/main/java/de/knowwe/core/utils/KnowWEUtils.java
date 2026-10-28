@@ -212,9 +212,9 @@ public class KnowWEUtils {
 		while (matcher.find()) {
 			final String link = matcher.group(1);
 			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
-				&& !link.startsWith("http")
-				&& !link.startsWith("file")
-				&& !link.startsWith("attach")) {
+					&& !link.startsWith("http")
+					&& !link.startsWith("file")
+					&& !link.startsWith("attach")) {
 				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
@@ -310,13 +310,13 @@ public class KnowWEUtils {
 			return null;
 		}
 		String result = text;
-		result = result.replaceAll("Ä", "&Auml;");
-		result = result.replaceAll("Ö", "&Ouml;");
-		result = result.replaceAll("Ü", "&Uuml;");
-		result = result.replaceAll("ä", "&auml;");
-		result = result.replaceAll("ö", "&ouml;");
-		result = result.replaceAll("ü", "&uuml;");
-		result = result.replaceAll("ß", "&szlig;");
+		result = result.replace("Ä", "&Auml;");
+		result = result.replace("Ö", "&Ouml;");
+		result = result.replace("Ü", "&Uuml;");
+		result = result.replace("ä", "&auml;");
+		result = result.replace("ö", "&ouml;");
+		result = result.replace("ü", "&uuml;");
+		result = result.replace("ß", "&szlig;");
 		return result;
 	}
 
@@ -366,8 +366,8 @@ public class KnowWEUtils {
 				.getAttachments();
 		for (final WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
-				 && attachment.getParentName().equals(title))
-				|| attachment.getPath().equals(fileName)) {
+					&& attachment.getParentName().equals(title))
+					|| attachment.getPath().equals(fileName)) {
 				actualAttachment = attachment;
 				break;
 			}
@@ -779,7 +779,6 @@ public class KnowWEUtils {
 	 *
 	 * @param article the article to check
 	 * @return true if the given article is an attachment article, false otherwise
-	 * @compile: true)
 	 */
 	public static boolean isAttachmentArticle(Article article) {
 		ArticleManager articleManager = article.getArticleManager();
@@ -928,8 +927,7 @@ public class KnowWEUtils {
 	 */
 	public static String getURLLink(ArticleManager manager, String title, final int version) {
 		title = fixAttachmentArticleLinks(manager, title);
-		return "Wiki.jsp?page=" + Strings.encodeURL(title)
-			   + (version == -1 ? "" : "&version=" + version);
+		return "Wiki.jsp?page=" + Strings.encodeURL(title) + (version == -1 ? "" : "&version=" + version);
 	}
 
 	/**
@@ -1425,13 +1423,6 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns the default {@link ArticleManager} of the given web.
-	 *
-	 * @param web the web we want the {@link ArticleManager} from
-	 * @created 07.01.2014
-	 */
-
-	/**
 	 * Returns the {@link PackageManager} of the given {@link ArticleManager}.
 	 *
 	 * @param manager the ArticleManager we want the {@link PackageManager} from
@@ -1452,13 +1443,6 @@ public class KnowWEUtils {
 	public static PackageManager getPackageManager(final Section<?> section) {
 		return getPackageManager(getArticleManager(section));
 	}
-
-	/**
-	 * Returns the default {@link PackageManager} of the given web.
-	 *
-	 * @param web the web we want the {@link PackageManager} from
-	 * @created 07.01.2014
-	 */
 
 	public static void storeObject(final Section<?> s, final String key, final Object o) {
 		KnowWEUtils.storeObject(null, s, key, o);
@@ -1505,6 +1489,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Returns the latest @{@link WikiPageInfo instance from the given article's history.
+	 * <p>
 	 *
 	 * @param article Required
 	 * @return null if no history exists
@@ -1582,50 +1567,62 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Opens a page transaction for a large file based operation
-	 * Also opens a transaction in ArticleManager
-	 * Only works if GitVersioningFileProvider is active
+	 * Opens a page transaction and a registration frame of the article manager for code that changes several articles
+	 * in place. Prefer {@link de.knowwe.core.change.ArticleChangeSet} if the new article texts are known up front.
+	 * Persistence is only grouped and rolled back if the page provider supports it, see
+	 * {@link WikiConnector#hasRollbackPageProvider()}.
 	 */
 	public static void openPageTransaction(final UserContext context) {
-		final ArticleManager articleManager = context.getArticleManager();
-		articleManager.open();
+		// same order as ArticleChangeSet, the page transaction is acquired before the frame
 		context.getEnvironment().getWikiConnector().openPageTransaction(context.getUserName());
+		try {
+			context.getArticleManager().open();
+		}
+		catch (RuntimeException e) {
+			context.getEnvironment().getWikiConnector().rollbackPageTransaction(context.getUserName());
+			throw e;
+		}
 	}
 
 	/**
-	 * Commits an open file transaction
-	 * Also commits an ArticleManager transaction
-	 * Only works if GitVersioningFileProvider is active
-	 * Awaits termination of compile manager, although ArticleManager.commit() seems to do the same,
-	 * it seems to be necessary for some actions, to get a correct section, which was just changed, in a following
-	 * transaction
+	 * Commits a transaction opened by {@link #openPageTransaction(UserContext)} and waits until the changed articles
+	 * are compiled, so that a following transaction sees their current sections.
 	 */
 	public static void commitPageTransaction(final UserContext context, final String commitMsg) {
-		context.getEnvironment().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
 		final ArticleManager articleManager = context.getArticleManager();
-		articleManager.commit();
+		try {
+			context.getEnvironment().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
+		}
+		finally {
+			articleManager.commit();
+		}
 		try {
 			articleManager.getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			LOGGER.error("awaitTermination was interrupted", e);
 		}
 	}
 
 	/**
-	 * Rollbacks an open file transaction
-	 * Also rollbacks an ArticleManager transaction
-	 * Only works if GitVersioningFileProvider is active
+	 * Rolls back a transaction opened by {@link #openPageTransaction(UserContext)}. The registration frame is only
+	 * rolled back if persistence could be rolled back as well, otherwise it stays open and the caller has to commit it
+	 * with {@link #commitPageTransaction(UserContext, String)}.
+	 *
+	 * @return whether the transaction was rolled back and closed
 	 */
 	public static boolean rollbackPageTransaction(final UserContext context) {
-		boolean rolledBack = false;
-		if (context.getEnvironment().getWikiConnector().hasRollbackPageProvider()) {
-			final ArticleManager articleManager = context.getArticleManager();
-			articleManager.rollback();
-			rolledBack = true;
+		WikiConnector connector = context.getEnvironment().getWikiConnector();
+		boolean rollbackFrame = connector.hasRollbackPageProvider();
+		try {
+			// ArticleManager.rollback() expects the files to be restored already
+			connector.rollbackPageTransaction(context.getUserName());
 		}
-		context.getEnvironment().getWikiConnector().rollbackPageTransaction(context.getUserName());
-		return rolledBack;
+		finally {
+			if (rollbackFrame) context.getArticleManager().rollback();
+		}
+		return rollbackFrame;
 	}
 
 	/**
@@ -1666,7 +1663,8 @@ public class KnowWEUtils {
 
 	public static String getThreadDumpViaJcmd() {
 		try {
-			Process process = new ProcessBuilder("jcmd", Long.toString(ProcessHandle.current().pid()), "Thread.print", "-l")
+			Process process = new ProcessBuilder("jcmd", Long.toString(ProcessHandle.current()
+					.pid()), "Thread.print", "-l")
 					.redirectErrorStream(true)
 					.start();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
@@ -1683,8 +1681,12 @@ public class KnowWEUtils {
 	 * Checks whether the given user created the page or attachment within the last hour.
 	 * The caller must additionally verify authentication and the edit permission for the object.
 	 */
-	public static boolean allowDeletionByCreator(@NotNull Environment environment, String objectName,
-			boolean attachment, String userName) throws IOException {
+	public static boolean allowDeletionByCreator(
+			@NotNull Environment environment,
+			String objectName,
+			boolean attachment,
+			String userName
+	) throws IOException {
 		WikiConnector connector = environment.getWikiConnector();
 		List<? extends WikiObjectInfo> history = attachment
 				? connector.getAttachmentHistory(objectName)
@@ -1693,7 +1695,12 @@ public class KnowWEUtils {
 		return allowDeletionByCreator(history, userName, connector.getUserFullName(userName), System.currentTimeMillis());
 	}
 
-	static boolean allowDeletionByCreator(List<? extends WikiObjectInfo> history, String userName, @Nullable String fullName, long currentTime) {
+	static boolean allowDeletionByCreator(
+			List<? extends WikiObjectInfo> history,
+			String userName,
+			@Nullable String fullName,
+			long currentTime
+	) {
 		if (history == null || history.isEmpty() || StringUtils.isBlank(userName)) return false;
 		// The creator and creation time belong to revision 1, regardless of the provider's history order.
 		for (WikiObjectInfo revision : history) {

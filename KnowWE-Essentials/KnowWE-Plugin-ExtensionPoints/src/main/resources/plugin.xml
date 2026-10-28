@@ -286,4 +286,13 @@
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
 	</extension-point>
+
+	<!-- vetoes article change sets before they are applied, see de.knowwe.core.change.ArticleChangeGuard -->
+	<extension-point id="ArticleChangeGuard">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
 </plugin>

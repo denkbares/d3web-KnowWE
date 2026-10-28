@@ -3,10 +3,7 @@
  */
 package de.knowwe.plugin;
 
-import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.PriorityList;
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.JPFExtension;
 import com.denkbares.plugin.PluginManager;
@@ -34,6 +29,7 @@ import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.change.ArticleChangeGuard;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Priority;
@@ -81,6 +77,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_StatusProvider = "StatusProvider";
 	public static final String EXTENDED_POINT_IncludeExporter = "IncludeExporter";
 	public static final String EXTENDED_POINT_CredentialProvider = "CredentialProvider";
+	public static final String EXTENDED_POINT_ArticleChangeGuard = "ArticleChangeGuard";
 
 	private static <T> List<T> getSingletons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
@@ -446,6 +443,14 @@ public class Plugins {
 			result.add(e.getPriority(), (CredentialProvider) e.getSingleton());
 		}
 		return result;
+	}
+
+	/**
+	 * Returns all plugged guards of article change sets, none if no plugins are loaded.
+	 */
+	public static List<ArticleChangeGuard> getArticleChangeGuards() {
+		if (!PluginManager.isInitialized()) return List.of();
+		return getSingletons(EXTENDED_POINT_ArticleChangeGuard, ArticleChangeGuard.class);
 	}
 
 	/**
