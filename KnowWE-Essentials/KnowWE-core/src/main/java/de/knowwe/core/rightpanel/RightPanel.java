@@ -19,6 +19,7 @@
 package de.knowwe.core.rightpanel;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +91,8 @@ public final class RightPanel {
 	}
 
 	/**
-	 * Decides whether the panel is shown, see {@link RightPanelTabProvider#isContextual()}.
+	 * Decides whether the panel is shown, see {@link RightPanelTabProvider#isContextual()} and
+	 * {@link RightPanelTabProvider#getGroup()}.
 	 *
 	 * @param open      whether the user chose to show the panel
 	 * @param lastTab   the id of the tab the user activated most recently, or null
@@ -101,6 +103,10 @@ public final class RightPanel {
 		if (!open || available.isEmpty()) return false;
 		if (lastTab == null || lastTab.isEmpty()) return true;
 		if (available.stream().anyMatch(tab -> tab.id().equals(lastTab))) return true;
+		// an available tab of the same group is shown instead
+		String group = tabs.stream().filter(tab -> tab.id().equals(lastTab))
+				.map(tab -> tab.provider().getGroup()).filter(Objects::nonNull).findFirst().orElse(null);
+		if (group != null && available.stream().anyMatch(tab -> group.equals(tab.provider().getGroup()))) return true;
 		return tabs.stream().noneMatch(tab -> tab.id().equals(lastTab) && tab.provider().isContextual());
 	}
 }

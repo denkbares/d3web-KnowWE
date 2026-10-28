@@ -419,13 +419,28 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	/**
-	 * Returns true if the tab the user activated most recently is contextual and missing on this page. The panel then
-	 * stays collapsed on this page, without changing the user's choice to show it (see
-	 * RightPanelTabProvider.isContextual).
+	 * Returns the id of the tab on this page that shows the specified tab: the tab itself, or a tab of its group (see
+	 * RightPanelTabProvider.getGroup), or null if there is none.
+	 */
+	function availableTab(id) {
+		if (tabButton(id).length) return id;
+		const entry = (rightPanel.attr("data-groups") || "").split(" ").find(entry => entry.startsWith(id + "="));
+		if (!entry) return null;
+		const group = entry.substring(id.length + 1);
+		const ids = (rightPanel.attr("data-groups") || "").split(" ")
+				.filter(entry => entry.endsWith("=" + group))
+				.map(entry => entry.substring(0, entry.length - group.length - 1));
+		return ids.find(other => tabButton(other).length) || null;
+	}
+
+	/**
+	 * Returns true if the tab the user activated most recently is contextual and missing on this page, and no tab of
+	 * its group replaces it. The panel then stays collapsed on this page, without changing the user's choice to show
+	 * it (see RightPanelTabProvider.isContextual).
 	 */
 	function isCollapsedOnThisPage() {
 		const lastTab = getStoredTabOrder()[0];
-		if (!lastTab || tabButton(lastTab).length) return false;
+		if (!lastTab || availableTab(lastTab)) return false;
 		const contextual = (rightPanel.attr("data-contextual") || "").split(" ");
 		return contextual.includes(lastTab);
 	}
@@ -498,10 +513,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 		const order = getStoredTabOrder();
 		let activeId = null;
 		for (let i = 0; i < order.length; i++) {
-			if (tabButton(order[i]).length) {
-				activeId = order[i];
-				break;
-			}
+			// a missing tab is replaced by a tab of its group, without changing the stored order
+			activeId = availableTab(order[i]);
+			if (activeId) break;
 		}
 		if (!activeId) {
 			const $default = $tablist.find("button[data-active]").first();

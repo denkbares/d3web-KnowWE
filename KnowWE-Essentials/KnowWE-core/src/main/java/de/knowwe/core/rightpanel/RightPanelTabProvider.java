@@ -19,6 +19,7 @@
 package de.knowwe.core.rightpanel;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -89,6 +90,19 @@ public interface RightPanelTabProvider {
 	 */
 	default boolean isContextual() {
 		return false;
+	}
+
+	/**
+	 * The group of this tab, or null if it has none. Tabs of the same group show the same kind of content from
+	 * different sources, e.g. the 3D view of a debugger and the 3D view of some TSM elements. If the tab the user
+	 * activated most recently is not available on the current page, an available tab of its group is shown instead,
+	 * and the panel stays open, even if the missing tab is contextual. Defaults to {@code null}.
+	 *
+	 * @see RightPanel#isOpen(UserContext)
+	 */
+	@Nullable
+	default String getGroup() {
+		return null;
 	}
 
 	/**

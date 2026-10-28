@@ -59,8 +59,14 @@ public class RightPanelAppendHandler implements PageAppendHandler {
 				.filter(tab -> tab.provider().isContextual())
 				.map(RightPanelTab::id)
 				.collect(Collectors.joining(" "));
+		// a missing tab is replaced by an available tab of its group, so the JS needs the groups of all tabs
+		String groups = Plugins.getRightPanelTabs(user.getEnvironment()).stream()
+				.filter(tab -> tab.provider().getGroup() != null)
+				.map(tab -> tab.id() + "=" + tab.provider().getGroup())
+				.collect(Collectors.joining(" "));
 		result.appendHtml("<div id=\"rightPanel\" hidden");
 		result.appendHtml(" data-contextual=\"" + Strings.encodeHtml(contextual) + "\"");
+		result.appendHtml(" data-groups=\"" + Strings.encodeHtml(groups) + "\"");
 		result.appendHtml(" data-open=\"" + RightPanel.isOpen(user, available) + "\"");
 		result.appendHtml(">");
 

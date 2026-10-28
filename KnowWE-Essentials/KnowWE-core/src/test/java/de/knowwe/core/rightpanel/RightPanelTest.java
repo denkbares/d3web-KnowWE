@@ -34,7 +34,10 @@ public class RightPanelTest {
 	private static final RightPanelTab WATCHES = tab("watches", false);
 	private static final RightPanelTab CUSTOM = tab("custom", false);
 	private static final RightPanelTab DEBUGGER = tab("debugger", true);
-	private static final List<RightPanelTab> ALL = List.of(WATCHES, CUSTOM, DEBUGGER);
+	private static final RightPanelTab DEBUGGER_3D = tab("debugger-3d", true, "3d");
+	private static final RightPanelTab ELEMENTS_3D = tab("elements-3d", true, "3d");
+	private static final RightPanelTab ELEMENTS_WIRING = tab("elements-wiring", true, "wiring");
+	private static final List<RightPanelTab> ALL = List.of(WATCHES, CUSTOM, DEBUGGER, DEBUGGER_3D, ELEMENTS_3D, ELEMENTS_WIRING);
 
 	@Test
 	public void hiddenIfNotChosen() {
@@ -71,7 +74,22 @@ public class RightPanelTest {
 		assertFalse(RightPanel.isOpen(true, "debugger", ALL, List.of(WATCHES, CUSTOM)));
 	}
 
+	@Test
+	public void openIfTabOfSameGroupAvailable() {
+		assertTrue(RightPanel.isOpen(true, "debugger-3d", ALL, List.of(WATCHES, ELEMENTS_3D)));
+		assertTrue(RightPanel.isOpen(true, "elements-3d", ALL, List.of(DEBUGGER_3D)));
+	}
+
+	@Test
+	public void collapsedIfOnlyTabOfOtherGroupAvailable() {
+		assertFalse(RightPanel.isOpen(true, "debugger-3d", ALL, List.of(WATCHES, ELEMENTS_WIRING)));
+	}
+
 	private static RightPanelTab tab(String id, boolean contextual) {
+		return tab(id, contextual, null);
+	}
+
+	private static RightPanelTab tab(String id, boolean contextual, String group) {
 		return new RightPanelTab(id, 5, new RightPanelTabProvider() {
 			@Override
 			public @NotNull String getTitle(UserContext user) {
@@ -81,6 +99,11 @@ public class RightPanelTest {
 			@Override
 			public boolean isContextual() {
 				return contextual;
+			}
+
+			@Override
+			public String getGroup() {
+				return group;
 			}
 
 			@Override
