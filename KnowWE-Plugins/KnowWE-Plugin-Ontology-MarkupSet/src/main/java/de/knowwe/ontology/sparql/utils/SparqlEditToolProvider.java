@@ -47,6 +47,7 @@ public class SparqlEditToolProvider implements ToolProvider {
 				Icon.EDIT,
 				"Edit SPARQL",
 				"Edit this SPARQL markup",
-				section, "KNOWWE.plugin.sparql.editTool");
+				// the CodeMirror edit tool with a button to indent the query, see sparql-language.js
+				section, "KNOWWE.plugin.sparql.codeMirrorEditTool");
 	}
 }

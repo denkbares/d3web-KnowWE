@@ -43,17 +43,31 @@ KNOWWE.plugin.ontology = function() {
   };
 }();
 
-KNOWWE.plugin.sparql.editTool = {};
-jq$.extend(KNOWWE.plugin.sparql.editTool, KNOWWE.plugin.defaultEditTool);
-
-KNOWWE.plugin.sparql.editTool.generateButtons = function(id) {
-  KNOWWE.plugin.sparql.editTool.format = function() {
-    KNOWWE.core.plugin.formatterAjax(id, "SparqlFormatAction");
+/**
+ * Instant edit tool of SPARQL markups, the CodeMirror edit tool with a button to indent the query, see
+ * sparql-language.js. The base tool is looked up on each call, so the load order of the scripts does not matter.
+ */
+KNOWWE.plugin.sparql.codeMirrorEditTool = function() {
+  const base = () => KNOWWE.plugin.codeMirrorEditTool;
+  return {
+    generateHTML: id => base().generateHTML(id),
+    generateButtons: function(id) {
+      const indent = "<a class='action indent' title='Indent the SPARQL query by its brackets (Shift-Alt-I)'"
+        + " onclick=\"KNOWWE.plugin.sparql.codeMirrorEditTool.indent('" + id + "')\">Indent</a>";
+      return base().generateButtons(id, window.SparqlLanguage ? [indent] : []);
+    },
+    postProcessHTML: id => base().postProcessHTML(id),
+    unloadCondition: id => base().unloadCondition(id),
+    generateWikiText: id => base().generateWikiText(id),
+    indent: function(id) {
+      const view = base().getView(id);
+      if (!view || !window.SparqlLanguage) return;
+      // the caret may still be on the declaration line, before the body of the markup
+      if (!SparqlLanguage.indentBlock(view)) SparqlLanguage.indentBlock(view, view.state.doc.line(1).to);
+      view.focus();
+    }
   };
-  return _EC.elements.getSaveCancelDeleteButtons(id,
-    ["<a class='action format' onclick='KNOWWE.plugin.sparql.editTool.format(\"" + id + "\")'>" +
-    "Format</a>"]);
-};
+}();
 
 KNOWWE.plugin.turtle = {};
 KNOWWE.plugin.turtle.editTool = {};

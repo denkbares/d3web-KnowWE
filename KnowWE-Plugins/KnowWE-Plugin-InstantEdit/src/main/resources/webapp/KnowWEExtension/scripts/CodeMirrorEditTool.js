@@ -58,11 +58,15 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 			return "<div id='" + createContainerID(id) + "' class='codeMirrorEditTool'></div>";
 		},
 
-		generateButtons: function (id) {
+		/**
+		 * Returns the buttons of the tool bar. Tools that extend this one pass their own `buttons` as HTML, they are
+		 * placed before the help button and left out without the CodeMirror bundle.
+		 */
+		generateButtons: function (id, buttons = []) {
 			if (!available()) return fallback().generateButtons(id);
 			const help = "<a class='action help' title='Keyboard shortcuts and tips'"
 				+ " onclick=\"KNOWWE.plugin.codeMirrorEditTool.toggleHelp('" + id + "')\">Help</a>";
-			return _EC.elements.getSaveCancelDeleteButtons(id, [help]);
+			return _EC.elements.getSaveCancelDeleteButtons(id, [...buttons, help]);
 		},
 
 		postProcessHTML: function (id) {
@@ -91,6 +95,11 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 			const editor = editors[id];
 			if (!editor) return fallback().unloadCondition(id);
 			return editor.view.state.doc.eq(editor.initialDoc);
+		},
+
+		/** Returns the editor view of the section, or null if it is not edited or edited in the plain textarea. */
+		getView: function (id) {
+			return editors[id]?.view ?? null;
 		},
 
 		toggleHelp: function (id) {

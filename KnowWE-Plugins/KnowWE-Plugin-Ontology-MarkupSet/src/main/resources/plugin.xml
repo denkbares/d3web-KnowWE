@@ -112,6 +112,8 @@
 		<parameter id="priority" value="3" />
 		<parameter id="scope" value="root" />
 		<parameter id="css" value="KnowWE-Plugin-Rdf2GoSemanticCore.css" />
+		<!-- SPARQL in the CodeMirror editor, for all markups with a SPARQL body including those of OntoVis -->
+		<parameter id="module" value="sparql-language.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlConsoleMarkupType">
@@ -374,14 +376,6 @@
 		<parameter id="class" value=" de.knowwe.ontology.sparql.SparqlConsoleRenderAction" />
 		<parameter id="name" value="SparqlConsoleRenderAction" />
 		<parameter id="description" value="Renders the input insida a sparql console text area." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SparqlFormatAction">
-		<parameter id="class" value="de.knowwe.ontology.sparql.SparqlFormatAction" />
-		<parameter id="name" value="SparqlFormatAction" />
-		<parameter id="description" value="Pretty prints SPARQLs" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
