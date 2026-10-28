@@ -258,10 +258,11 @@ final class ArticleChangeTransaction {
 				case CREATED -> create(step.title(), step.text());
 				case UPDATED -> {
 					String text = Objects.requireNonNull(step.text());
-					boolean written = context == null
-							? connector.writeArticleToWikiPersistence(step.title(), text, author, changeNote)
-							: connector.writeArticleToWikiPersistence(step.title(), text, author, context.getRequest(), changeNote);
-					if (!written) throw new IOException("The wiki did not save the article");
+					// Without a request JSPWiki's KnowWEPlugin.postSave does not update the article itself, which would
+					// fire an ArticleUpdateEvent before the commit. The article is registered and announced here instead.
+					if (!connector.writeArticleToWikiPersistence(step.title(), text, author, changeNote)) {
+						throw new IOException("The wiki did not save the article");
+					}
 					articleManager.registerArticle(step.title(), text);
 					events.add(new ArticleUpdateEvent(step.title(), author));
 				}
