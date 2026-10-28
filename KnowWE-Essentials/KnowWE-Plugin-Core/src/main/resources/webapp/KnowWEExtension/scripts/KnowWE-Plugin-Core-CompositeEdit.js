@@ -719,6 +719,10 @@ KNOWWE.plugin.compositeEditTool = function() {
                 jq$(this).mousedown(function(event) {
                   event.stopPropagation();
                 });
+                // a click next to the (modal) dialog closes it, like the close button, but not while editing
+                jq$(document).off("click.compositeEditOutside").on("click.compositeEditOutside", ".ui-widget-overlay", function() {
+                  if (_CE.dialogDiv && _CE.mode === _CE.ModeEnum.VIEW) _CE.disable();
+                });
                 jq$("body").trigger("OpenCompositeEdit");
               },
               closeOnEscape: false,
@@ -921,6 +925,7 @@ KNOWWE.plugin.compositeEditTool = function() {
       restoreDefaultKeybindings();
       unregisterSaveCancelEvents(document, _CE.save, enableCompositeViewMode);
       jq$(document).off("keydown", escapeFunction);
+      jq$(document).off("click.compositeEditOutside");
     },
 
     save: function() {
