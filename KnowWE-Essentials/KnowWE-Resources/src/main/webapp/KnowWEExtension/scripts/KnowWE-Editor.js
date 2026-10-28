@@ -437,7 +437,7 @@ window.KnowWEEditor = (function () {
 				{text: "Next match", key: ["F3", "Mod-g"]},
 				{text: "Previous match", key: ["Shift-F3", "Shift-Mod-g"]},
 				{text: "Go to line", key: "Mod-Alt-g"},
-				{text: "Select next occurrence", key: "Mod-d"},
+				{text: "Select next occurrence", key: "Alt-j", mac: "Ctrl-g"},
 				{text: "Select all occurrences", key: "Mod-Shift-l"}
 			]
 		},
@@ -445,10 +445,11 @@ window.KnowWEEditor = (function () {
 			title: "Lines", entries: [
 				{text: "Move up / down", key: ["Alt-ArrowUp", "Alt-ArrowDown"]},
 				{text: "Duplicate up / down", key: ["Shift-Alt-ArrowUp", "Shift-Alt-ArrowDown"]},
-				{text: "Delete", key: ["Alt-d", "Shift-Mod-k"]},
-				{text: "Toggle // comment", key: "Mod-/"},
+				{text: "Delete", key: ["Mod-d", "Alt-d", "Shift-Mod-k"]},
+				{text: "Toggle // comment", key: ["Mod-7", "Mod-/"]},
 				{text: "Insert blank line below", key: "Mod-Enter"},
-				{text: "Indent / unindent", key: ["Tab", "Shift-Tab"]}
+				{text: "Indent", key: "Tab"},
+				{text: "Remove a leading -, #, *, // or indentation", key: "Shift-Tab"}
 			]
 		},
 		{
@@ -681,15 +682,19 @@ window.KnowWEEditor = (function () {
 	}
 
 	/**
-	 * Editing behavior known from the textarea of the instant edit: Alt-D deletes lines, Ctrl-Shift-Z redoes on Windows
-	 * as well, typing "-", "#", "*" or a space while several lines are selected puts it in front of each of these lines,
-	 * and Shift-Space removes such a first character again. Line comments start with "//", which other languages of the
-	 * text, e.g. embedded in markups, may override.
+	 * Editing behavior known from the textarea of the instant edit: Mod-D and Alt-D delete lines, Ctrl-Shift-Z redoes on
+	 * Windows as well, Mod-7 toggles line comments, Shift-Tab removes a leading list or comment mark before indentation,
+	 * typing "-", "#", "*" or a space while several lines are selected puts it in front of each of these lines, and
+	 * Shift-Space removes such a first character again. Selecting the next occurrence moves from Mod-D to Alt-J (Ctrl-G
+	 * on a Mac) as in IntelliJ. Line comments start with "//", which other languages of the text, e.g. embedded in
+	 * markups, may override.
 	 */
 	function textareaEditing() {
 		const {EditorState, EditorSelection, Prec} = CodeMirror.state;
 		const {EditorView, keymap} = CodeMirror.view;
-		const {deleteLine, redo} = CodeMirror.commands;
+		const {deleteLine, redo, toggleComment} = CodeMirror.commands;
+		const {selectNextOccurrence} = CodeMirror.search;
+		const {getIndentUnit} = CodeMirror.language;
 		const PREFIXES = ["-", "#", "*", " "];
 
 		// the lines of a single selection over several lines, a selection ending at the start of a line excludes it
@@ -721,6 +726,29 @@ window.KnowWEEditor = (function () {
 			return true;
 		}
 
+		// removes from every selected line a leading list or comment mark, otherwise up to one unit of indentation
+		function outdentLines(view) {
+			const {state} = view;
+			const unit = getIndentUnit(state);
+			const changes = [];
+			let done = 0;
+			for (const range of state.selection.ranges) {
+				let last = state.doc.lineAt(range.to);
+				if (range.to === last.from && range.to > range.from) last = state.doc.line(last.number - 1);
+				for (let n = Math.max(state.doc.lineAt(range.from).number, done + 1); n <= last.number; n++) {
+					const line = state.doc.line(n);
+					const mark = /^(?:[-#*]|\/\/ ?|\t| +)/.exec(line.text);
+					if (mark) {
+						const length = mark[0][0] === " " ? Math.min(mark[0].length, unit) : mark[0].length;
+						changes.push({from: line.from, to: line.from + length});
+					}
+					done = n;
+				}
+			}
+			if (changes.length) view.dispatch({changes, scrollIntoView: true, userEvent: "delete.dedent"});
+			return true;
+		}
+
 		const prefixLines = EditorView.inputHandler.of((view, from, to, text) =>
 			PREFIXES.includes(text) && changeLines(view, line => ({from: line.from, insert: text})));
 		const unprefixLines = view => changeLines(view, line =>
@@ -728,7 +756,11 @@ window.KnowWEEditor = (function () {
 
 		return [
 			keymap.of([
+				{key: "Mod-d", run: deleteLine, preventDefault: true},
 				{key: "Alt-d", run: deleteLine},
+				{key: "Alt-j", mac: "Ctrl-g", run: selectNextOccurrence, preventDefault: true},
+				{key: "Mod-7", run: toggleComment, preventDefault: true},
+				{key: "Shift-Tab", run: outdentLines},
 				{win: "Ctrl-Shift-z", run: redo, preventDefault: true},
 				{key: "Shift-Space", run: unprefixLines}
 			]),
@@ -779,7 +811,8 @@ window.KnowWEEditor = (function () {
 			...closeBracketsKeymap,
 			parts.help.closeKey,
 			...defaultKeymap,
-			...searchKeymap,
+			// Mod-D deletes lines, see textareaEditing()
+			...searchKeymap.filter(binding => binding.key !== "Mod-d"),
 			...historyKeymap,
 			...foldKeymap,
 			...completionKeymap,
