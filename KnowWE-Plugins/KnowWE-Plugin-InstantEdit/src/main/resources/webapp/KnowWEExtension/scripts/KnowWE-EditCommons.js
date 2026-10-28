@@ -38,6 +38,7 @@ KNOWWE.editCommons = function () {
 			const editor = jq$('#' + sectionId);
 			editor.css('position', 'relative');
 			editor.append(toolbar);
+			_EC.editTools.decorateToolBar(sectionId, toolbar);
 		},
 
 		wrapHTML: function (id, locked, html) {
@@ -330,6 +331,206 @@ KNOWWE.editCommons.elements = function () {
 		newSection: newSection
 	};
 
+}();
+
+
+/**
+ * Decides which tool a section is edited with, in instant edit and in the edit mode. Sections edited as plain text
+ * get the CodeMirror editor instead of the textarea, tools derived from the textarea tool keep their buttons. Sections
+ * with an own edit tool (table grid, forms, ...) keep it, but a button in the tool bar switches them to the CodeMirror
+ * editor and back. The choice is remembered per markup type in the local storage.
+ */
+KNOWWE.editCommons.editTools = function () {
+
+	const PREFERENCE_KEY = "knowwe.editTool.text.";
+
+	/** The edited sections by id, each with its own tool, the tool it is edited with and its markup type. */
+	const sections = {};
+
+	function codeMirror() {
+		return KNOWWE.plugin.codeMirrorEditTool;
+	}
+
+	function codeMirrorAvailable() {
+		return typeof KnowWEEditor !== "undefined" && KnowWEEditor.isAvailable();
+	}
+
+	// tools derived from the textarea tool by jq$.extend only add buttons, they edit plain text as well
+	function isTextAreaTool(tool) {
+		const textAreaTool = KNOWWE.plugin.defaultEditTool;
+		return tool === textAreaTool || (textAreaTool && tool.generateHTML === textAreaTool.generateHTML);
+	}
+
+	function isSwitchable(tool) {
+		return !tool.codeMirror && !isTextAreaTool(tool) && typeof tool.generateHTML === "function"
+			&& codeMirror() !== undefined && codeMirrorAvailable();
+	}
+
+	/** The markup type of the section, from the type class of its rendering, or null if there is none. */
+	function findType(id) {
+		const $section = jq$('#' + id).add(jq$('[sectionid="' + id + '"]').filter('.editelement'));
+		const $frame = $section.filter('.defaultMarkupFrame').add($section.find('.defaultMarkupFrame').first()).first();
+		const typeClass = ($frame.attr('class') || "").split(/\s+/).find(c => c.startsWith("type_"));
+		if (typeClass) return typeClass.substring("type_".length);
+		return $section.is('table') || $section.find('table').exists() ? "Table" : null;
+	}
+
+	function prefersText(type) {
+		if (!type) return false;
+		try {
+			return localStorage.getItem(PREFERENCE_KEY + type) === "true";
+		} catch (e) {
+			return false;
+		}
+	}
+
+	function setPrefersText(type, text) {
+		if (!type) return;
+		try {
+			if (text) localStorage.setItem(PREFERENCE_KEY + type, "true");
+			else localStorage.removeItem(PREFERENCE_KEY + type);
+		} catch (e) {
+			// the choice is kept for this section only
+		}
+	}
+
+	/** The textarea based tool with its functions for the editor area replaced by the ones of the CodeMirror tool. */
+	function withCodeMirror(tool) {
+		const cm = codeMirror();
+		if (!cm) return tool;
+		return jq$.extend({}, tool, {
+			codeMirror: true,
+			generateHTML: cm.generateHTML,
+			postProcessHTML: cm.postProcessHTML,
+			unloadCondition: cm.unloadCondition,
+			generateWikiText: cm.generateWikiText,
+			getView: cm.getView,
+			destroy: cm.destroy
+		});
+	}
+
+	/**
+	 * Returns the tool object stored for the section. It is a tool of its own, so changes like the reset of the unload
+	 * condition on cancel do not affect other sections. If the text the section was opened with differs from the wiki
+	 * text, because it was taken over from another tool, the section counts as changed until it has the wiki text again.
+	 */
+	function sectionTool(id, tool, carried) {
+		const entry = sections[id];
+		entry.tool = tool;
+		const result = Object.create(tool);
+		result.ownTool = entry.own;
+		if (carried && tool.generateWikiText) {
+			const original = _EC.getWikiText(id);
+			result.unloadCondition = sectionId => tool.generateWikiText(sectionId) === original;
+		}
+		return result;
+	}
+
+	/** Replaces the tool of the open section by the given one, which is opened with the given text. */
+	function replaceTool(id, tool, text) {
+		const mode = _EC.mode;
+		const original = _EC.getWikiText(id);
+		const result = sectionTool(id, tool, text !== original);
+		mode.toolNameSpace[id] = result;
+
+		// the area keeps its element, so its key bindings and its position in the edit mode stay
+		const $area = jq$('#' + id);
+		const $lockWarning = $area.children().first().filter('.error');
+		$area.contents().not($lockWarning).remove();
+		_EC.wikiText[id] = text;
+		try {
+			$area.append(result.generateHTML(id));
+			if (result.generateButtons) _EC.appendToolBar(id, result.generateButtons(id));
+			result.postProcessHTML(id);
+		} finally {
+			_EC.wikiText[id] = original;
+		}
+		if (mode.adjustEditToolbars) mode.adjustEditToolbars();
+	}
+
+	return {
+
+		/**
+		 * Returns the tool to edit the section with, for the tool its markup asks for. Called when the section is
+		 * opened, also with the tool returned before.
+		 */
+		resolve: function (id, tool) {
+			if (!tool) return tool;
+			const own = tool.ownTool || tool;
+			sections[id] = {own: own, type: findType(id)};
+			let initial = own;
+			if (isTextAreaTool(own)) {
+				initial = withCodeMirror(own);
+			}
+			else if (isSwitchable(own) && prefersText(sections[id].type)) {
+				initial = codeMirror();
+			}
+			return sectionTool(id, initial, false);
+		},
+
+		/** Adds the button to switch the editor of the section. */
+		decorateToolBar: function (id, toolbar) {
+			const entry = sections[id];
+			if (!entry || !entry.tool) return;
+			const $toolbar = jq$(toolbar);
+			const $buttons = $toolbar.find('.editbuttons').first();
+			const add = html => ($buttons.exists() ? $buttons : $toolbar).append("<p>" + html + "</p>");
+			if (!isSwitchable(entry.own)) return;
+			if (entry.tool === entry.own) {
+				add("<a class='action switch-editor' title='Edit the markup as text in the CodeMirror editor'"
+					+ " onclick=\"_EC.editTools.switchToText('" + id + "')\">Text</a>");
+			}
+			else {
+				add("<a class='action switch-editor' title='Back to the visual editor of the markup'"
+					+ " onclick=\"_EC.editTools.switchBack('" + id + "')\">Visual</a>");
+			}
+		},
+
+		/** Switches the open section from its own tool to the CodeMirror editor, keeping the changes made so far. */
+		switchToText: function (id) {
+			const entry = sections[id];
+			const current = _EC.mode.toolNameSpace[id];
+			if (!entry || !current) return;
+			// without changes the wiki text is kept as it is, tools may format the text they generate
+			let text = _EC.getWikiText(id);
+			if (!current.unloadCondition || !current.unloadCondition(id)) {
+				let generated = null;
+				try {
+					if (current.generateWikiText) generated = current.generateWikiText(id);
+				} catch (e) {
+					console.warn("Could not take over the text of the edit tool", e);
+				}
+				if (generated != null) {
+					text = generated;
+				}
+				else if (!confirm("The changes cannot be taken over to the text editor. Discard them?")) {
+					return;
+				}
+			}
+			setPrefersText(entry.type, true);
+			replaceTool(id, codeMirror(), text);
+		},
+
+		/**
+		 * Switches the open section back to its own tool. The tool starts again from the wiki text, the changes made
+		 * in the text editor are discarded after asking.
+		 */
+		switchBack: function (id) {
+			const entry = sections[id];
+			const current = _EC.mode.toolNameSpace[id];
+			if (!entry || !current) return;
+			if (current.unloadCondition && !current.unloadCondition(id)
+				&& !confirm("The visual editor starts again from the saved text, your changes will be discarded. Continue?")) return;
+			setPrefersText(entry.type, false);
+			if (entry.tool.destroy) entry.tool.destroy(id);
+			_EC.mode.reopenSection(id);
+		},
+
+		isSwitchable: function (id) {
+			const entry = sections[id];
+			return entry !== undefined && isSwitchable(entry.own);
+		}
+	};
 }();
 
 

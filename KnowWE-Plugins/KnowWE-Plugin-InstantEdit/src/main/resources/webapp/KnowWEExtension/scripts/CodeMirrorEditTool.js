@@ -20,8 +20,9 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.plugin = KNOWWE.plugin || {};
 
 /**
- * Instant edit tool that edits the full text of a section in the CodeMirror editor of the page editor. Markups opt in
- * by naming this namespace in their InstantEditTool. Without the CodeMirror bundle it behaves like the default tool.
+ * Instant edit tool that edits the full text of a section in the CodeMirror editor of the page editor. Sections edited
+ * with the textarea tool get this editor instead, see KNOWWE.editCommons.editTools, markups can also name this
+ * namespace in their InstantEditTool. Without the CodeMirror bundle it behaves like the default tool.
  */
 KNOWWE.plugin.codeMirrorEditTool = function () {
 
@@ -36,6 +37,19 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 
 	function fallback() {
 		return KNOWWE.plugin.defaultEditTool;
+	}
+
+	/**
+	 * Returns the editor of the section, or null if there is none. An editor whose section was closed again, e.g. by
+	 * canceling it in the edit mode, is dropped, so the section falls back to its wiki text.
+	 */
+	function editorOf(id) {
+		const editor = editors[id];
+		if (!editor) return null;
+		if (editor.view.dom.isConnected) return editor;
+		editor.view.destroy();
+		delete editors[id];
+		return null;
 	}
 
 	function createContainerID(id) {
@@ -53,6 +67,9 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 
 	return {
 
+		/** Marks this tool and the ones built on it as CodeMirror based, see KNOWWE.editCommons.editTools. */
+		codeMirror: true,
+
 		generateHTML: function (id) {
 			if (!available()) return fallback().generateHTML(id);
 			return "<div id='" + createContainerID(id) + "' class='codeMirrorEditTool'></div>";
@@ -60,18 +77,17 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 
 		/**
 		 * Returns the buttons of the tool bar. Tools that extend this one pass their own `buttons` as HTML, they are
-		 * placed before the help button and left out without the CodeMirror bundle.
+		 * left out without the CodeMirror bundle.
 		 */
 		generateButtons: function (id, buttons = []) {
 			if (!available()) return fallback().generateButtons(id);
-			const help = "<a class='action help' title='Keyboard shortcuts and tips'"
-				+ " onclick=\"KNOWWE.plugin.codeMirrorEditTool.toggleHelp('" + id + "')\">Help</a>";
-			return _EC.elements.getSaveCancelDeleteButtons(id, [...buttons, help]);
+			return _EC.elements.getSaveCancelDeleteButtons(id, buttons);
 		},
 
 		postProcessHTML: function (id) {
 			if (!available()) return fallback().postProcessHTML(id);
 			const container = document.getElementById(createContainerID(id));
+			editorOf(id); // drops the editor of an earlier opening of the section
 			try {
 				const view = KnowWEEditor.create(container, {
 					doc: _EC.getWikiText(id),
@@ -85,32 +101,32 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 				// any failure ends in the textarea of the default tool, which the other functions use without an editor
 				console.error("CodeMirror editor could not be started, falling back to the plain textarea", error);
 				delete editors[id];
-				jq$('#' + id + ' a.action.help').parent().remove();
 				container.outerHTML = fallback().generateHTML(id);
 				fallback().postProcessHTML(id);
 			}
 		},
 
 		unloadCondition: function (id) {
-			const editor = editors[id];
+			const editor = editorOf(id);
 			if (!editor) return fallback().unloadCondition(id);
 			return editor.view.state.doc.eq(editor.initialDoc);
 		},
 
 		/** Returns the editor view of the section, or null if it is not edited or edited in the plain textarea. */
 		getView: function (id) {
-			return editors[id]?.view ?? null;
+			return editorOf(id)?.view ?? null;
 		},
 
-		toggleHelp: function (id) {
+		/** Closes the editor of the section, e.g. before the section is edited with another tool. */
+		destroy: function (id) {
 			const editor = editors[id];
 			if (!editor) return;
-			KnowWEEditor.toggleHelp(editor.view);
-			editor.view.focus();
+			editor.view.destroy();
+			delete editors[id];
 		},
 
 		generateWikiText: function (id) {
-			const editor = editors[id];
+			const editor = editorOf(id);
 			if (!editor) return fallback().generateWikiText(id);
 			return editor.view.state.doc.toString();
 		}

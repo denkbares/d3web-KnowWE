@@ -48,6 +48,9 @@ KNOWWE.plugin.instantEdit = function() {
 
     toolNameSpace: {},
 
+    /** The rendered sections replaced by their edit tools, to open them again with another tool */
+    cancelCache: {},
+
     enabled: false,
 
     enable: function(id, toolNameSpace) {
@@ -65,6 +68,7 @@ KNOWWE.plugin.instantEdit = function() {
 
       _EC.mode = _IE;
 
+      toolNameSpace = _EC.editTools.resolve(id, toolNameSpace);
       _IE.toolNameSpace[id] = toolNameSpace;
 
       const params = {
@@ -89,6 +93,7 @@ KNOWWE.plugin.instantEdit = function() {
             if (toolNameSpace.generateHTML) {
               let html = toolNameSpace.generateHTML(id);
               const $section = jq$('#' + id);
+              _IE.cancelCache[id] = $section;
               html = _EC.wrapHTML(id, locked, html);
               $section.replaceWith(html);
             }
@@ -229,6 +234,20 @@ KNOWWE.plugin.instantEdit = function() {
     cancel: function(id) {
       _IE.toolNameSpace[id].unloadCondition = null;
       _IE.disable(id, true, null);
+    },
+
+    /**
+     * Opens the edited section again with the tool of its markup, discarding the changes, see
+     * KNOWWE.editCommons.editTools.
+     */
+    reopenSection: function(id) {
+      const tool = _IE.toolNameSpace[id];
+      _IE.disable(id, false, null);
+      window.onbeforeunload = null;
+      window.onunload = null;
+      jq$('#' + id).replaceWith(_IE.cancelCache[id]);
+      _IE.enabled = false;
+      _IE.enable(id, tool.ownTool || tool);
     },
 
     deleteSection: function(id) {

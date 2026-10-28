@@ -50,6 +50,7 @@ KNOWWE.plugin.ontology = function() {
 KNOWWE.plugin.sparql.codeMirrorEditTool = function() {
   const base = () => KNOWWE.plugin.codeMirrorEditTool;
   return {
+    codeMirror: true,
     generateHTML: id => base().generateHTML(id),
     generateButtons: function(id) {
       const indent = "<a class='action indent' title='Indent the SPARQL query by its brackets (Shift-Alt-I)'"

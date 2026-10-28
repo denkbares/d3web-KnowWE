@@ -713,8 +713,10 @@ KNOWWE.core.plugin.attachment = function() {
 
 KNOWWE.core.plugin.formatterAjax = function(id, actionClass) {
 
+  // the section is edited in the CodeMirror editor or, without it, in the textarea
+  const view = KNOWWE.plugin.codeMirrorEditTool?.getView(id);
   const textarea = jq$("#defaultEdit" + id);
-  const wikiText = textarea.val();
+  const wikiText = view ? view.state.doc.toString() : textarea.val();
 
   jq$.ajax("action/" + actionClass, {
     data: {
@@ -724,7 +726,11 @@ KNOWWE.core.plugin.formatterAjax = function(id, actionClass) {
     type: "post",
     cache: false,
     success: function(json) {
-      textarea.val(json.wikiText);
+      if (view) {
+        view.dispatch({changes: {from: 0, to: view.state.doc.length, insert: json.wikiText}});
+      } else {
+        textarea.val(json.wikiText);
+      }
     }
   });
 

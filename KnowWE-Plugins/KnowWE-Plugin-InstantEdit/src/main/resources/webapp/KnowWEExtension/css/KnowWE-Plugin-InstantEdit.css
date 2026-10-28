@@ -25,7 +25,7 @@
 }
 
 .editarea a.action.save, .editarea a.action.cancel, .editarea a.action.add, .editarea a.action.delete, .editarea a.action.format,
-.editarea a.action.help {
+.editarea a.action.switch-editor {
     padding: 0.25em 0.5em;
     display: inline-block;
     text-decoration: none;
