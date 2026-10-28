@@ -132,6 +132,19 @@
 
 		root.querySelector("[data-editor-cmd=wrap]").classList.toggle("active", isWrapping());
 
+		// tables as grids come from the instant edit plugin, the button only makes sense with it
+		const tablesButton = root.querySelector("[data-editor-cmd=tables]");
+		const hasTables = typeof KnowWETableEditor !== "undefined" && KnowWETableEditor.isAvailable();
+		if (tablesButton) {
+			tablesButton.hidden = !hasTables;
+			if (hasTables) tablesButton.classList.toggle("active", KnowWETableEditor.isEnabled(view));
+		}
+
+		function setTables(enabled) {
+			KnowWETableEditor.setEnabled(view, enabled);
+			tablesButton.classList.toggle("active", enabled);
+		}
+
 		root.addEventListener("click", event => {
 			const button = event.target.closest("[data-editor-cmd]");
 			if (!button) return;
@@ -155,6 +168,9 @@
 					return;
 				case "wrap":
 					setWrapping(!isWrapping());
+					break;
+				case "tables":
+					if (hasTables) setTables(!KnowWETableEditor.isEnabled(view));
 					break;
 				case "help":
 					KnowWEEditor.toggleHelp(view);

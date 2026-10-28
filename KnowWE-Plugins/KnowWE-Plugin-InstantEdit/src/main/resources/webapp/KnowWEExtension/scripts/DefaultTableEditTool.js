@@ -403,12 +403,17 @@ SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
 
 };
 
+/**
+ * Creates a spreadsheet in the element with the given ID, or in the given element itself, which then needs an ID as
+ * well but does not have to be in the document yet.
+ */
 function Spreadsheet(elementID, saveFun, cancelFun) {
-  this.elementID = elementID;
+  const element = typeof elementID === "string" ? null : elementID;
+  this.elementID = element ? element.id : elementID;
   this.saveFunction = saveFun;
   this.cancelFunction = cancelFun;
   this.supportLinks = true;
-  this.element = jq$("#" + elementID);
+  this.element = element ? jq$(element) : jq$("#" + elementID);
   this.undoHistory = [];
   this.redoHistory = [];
 
@@ -419,6 +424,18 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 Spreadsheet.prototype.setWikiMarkup = function(wikiText) {
   this.setModel(new SpreadsheetModel(wikiText, this.supportLinks));
   this.snapshot();
+};
+
+/**
+ * Sets a function that is called after each change of the table content, i.e. whenever a new undo step is recorded,
+ * and after undo and redo.
+ */
+Spreadsheet.prototype.setChangeListener = function(listener) {
+  this.changeListener = listener;
+};
+
+Spreadsheet.prototype.notifyChange = function() {
+  if (this.changeListener) this.changeListener(this);
 };
 
 Spreadsheet.prototype.setSupportLinks = function(support) {
@@ -747,6 +764,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
     if (!cancel) spreadsheet.setCellText(row, col, editArea.val());
     editDiv.detach();
     spreadsheet.selectCell(row, col);
+    if (!cancel) spreadsheet.snapshot();
   };
   //editArea.focusout(this.stopEditCellFunction);
 
@@ -1324,6 +1342,7 @@ Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
   if (this.selected) snap.selected = jq$.extend(true, {}, this.selected);
   if (this.selectedRange) snap.selectedRange = jq$.extend(true, {}, this.selectedRange);
   this.undoHistory.push(snap);
+  this.notifyChange();
 };
 
 Spreadsheet.prototype.undo = function() {
@@ -1359,6 +1378,7 @@ Spreadsheet.prototype.restoreSnapshot = function(snapshot) {
     if (range) this.selectCell(range.toRow, range.toCol, false);
     this.selectCell(sel.row, sel.col, range);
   }
+  this.notifyChange();
 };
 
 Spreadsheet.areEqual = function(x, y) {

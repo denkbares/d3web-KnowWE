@@ -378,9 +378,34 @@ window.KnowWEEditor = (function () {
 			explicitCompletion: explicitCompletion(),
 			help: helpPanel(),
 			textareaEditing: textareaEditing(),
-			wrapping: new CodeMirror.state.Compartment()
+			wrapping: new CodeMirror.state.Compartment(),
+			// the onSave option, so extensions with their own key handling can save as well
+			save: CodeMirror.state.Facet.define({combine: values => values.length ? values[0] : null})
 		};
 		return shared;
+	}
+
+	// functions that add extensions to every editor created afterwards, see registerExtension()
+	const extensionProviders = [];
+
+	/**
+	 * Registers a function that returns further extensions for each editor created afterwards, e.g. by a plugin. It
+	 * receives the options of create() with the resolved `mode` and may return an empty array to leave an editor alone.
+	 * Register before editors are created. Registering the same function again has no effect.
+	 */
+	function registerExtension(provider) {
+		if (!extensionProviders.includes(provider)) extensionProviders.push(provider);
+	}
+
+	function providedExtensions(options) {
+		return extensionProviders.map(provider => {
+			try {
+				return provider(options) ?? [];
+			} catch (error) {
+				console.error("Editor extension could not be created", error);
+				return [];
+			}
+		});
 	}
 
 	// the platform the way CodeMirror keymaps tell it, which also decides whether Mod is Cmd or Ctrl
@@ -718,7 +743,8 @@ window.KnowWEEditor = (function () {
 	 *
 	 * Options are the text as `doc`, the title of the edited `article`, the `mode` "page" for an editor that fills
 	 * its parent and tints markup blocks or "section" for one that grows with its content, whether to `wrap` lines,
-	 * `onSave(view)` called on Mod-S, `onChange(update)` called on every view update and further `extensions`.
+	 * `onSave(view)` called on Mod-S, `onChange(update)` called on every view update and further `extensions`, which
+	 * follow those of registerExtension().
 	 */
 	function create(parent, options = {}) {
 		const {EditorState} = CodeMirror.state;
@@ -792,10 +818,20 @@ window.KnowWEEditor = (function () {
 				parts.baseTheme,
 				mode === "page" ? parts.pageTheme : parts.sectionTheme,
 				options.onChange ? EditorView.updateListener.of(options.onChange) : [],
+				options.onSave ? parts.save.of(options.onSave) : [],
+				providedExtensions({...options, mode}),
 				options.extensions ?? []
 			]
 		});
 		return new EditorView({parent, state});
+	}
+
+	/** Saves like Mod-S does, returns false if the editor was created without `onSave`. */
+	function save(view) {
+		const onSave = view.state.facet(sharedParts().save);
+		if (!onSave) return false;
+		onSave(view);
+		return true;
 	}
 
 	/** Switches line wrapping of an editor created by this factory. */
@@ -824,5 +860,8 @@ window.KnowWEEditor = (function () {
 		return sharedParts().highlightStyle;
 	}
 
-	return {create, setWrapping, toggleHelp, isHelpOpen, isAvailable, detectIndentUnit, highlightStyle};
+	return {
+		create, save, registerExtension, setWrapping, toggleHelp, isHelpOpen, isAvailable, detectIndentUnit,
+		highlightStyle
+	};
 })();

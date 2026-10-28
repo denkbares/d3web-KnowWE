@@ -41,6 +41,11 @@ table.spreadsheet tr td {
 	padding: 0px;
 }
 
+/* the wiki table style of the skin keeps only the bottom border of cells, a spreadsheet needs all of them */
+table.wikitable.spreadsheet > tbody > tr > td {
+	border: 1px solid var(--border-color-default);
+}
+
 table.spreadsheet tr td.multiSelected {
 	background-color: var(--table-row-mulit-selected);
 }

@@ -122,6 +122,7 @@
 		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
 		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
 		<parameter id="script" value="DefaultTableEditTool.js" />
+		<parameter id="script" value="CodeMirrorTableEditor.js" />
 		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
 		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
 		<parameter id="css" value="DefaultTableEditTool.css" />
