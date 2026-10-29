@@ -980,10 +980,12 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
         // a table inside a box scrolling vertically (having a max-height) floats its header inside that box,
         // otherwise the header floats along with the page far beyond the visible part of the table, and sticks below
         // the page header as soon as the box is scrolled (an empty result lets the header float with the page);
-        // the max-height is required, because horizontal scrolling (overflow-x) also turns overflow-y into auto
+        // the max-height is required, because horizontal scrolling (overflow-x) also turns overflow-y into auto;
+        // boxes scrolling with a fixed height (e.g. the content of a right panel tab) are marked by a class instead
         scrollContainer: function($table) {
           return $table.parentsUntil(".page-content").filter(function() {
             const $box = jq$(this);
+            if ($box.hasClass("sticky-header-scroll-container")) return true;
             return /(auto|scroll)/.test($box.css("overflow-y")) && $box.css("max-height") !== "none";
           }).first();
         },
