@@ -1123,3 +1123,13 @@ table.knowwe-pagination th img.filter:hover {
 	border-radius: 10px;
 	padding: 2px;
 }
+
+/* a box scrolling its content in both directions (e.g. the content of a right panel tab): the headers of its tables
+   stick to its top natively, per table (instead of floatThead, see KNOWWE.core.plugin.stickyTableHeaders); the tables
+   must not scroll in a box of their own inside */
+.sticky-header-scroll-container table.sticky-header > thead > tr > th {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	background-clip: padding-box;
+}

@@ -968,7 +968,10 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
   let pageResizeObserver = null;
   return {
     init: function() {
-      jq$(".haddock table.sticky-header, .haddock .wikitable").not(".renderKDOMTable").floatThead({
+      // the tables in a box marked as sticky-header-scroll-container get sticky headers by CSS (see
+      // KnowWE-Plugin-Core.css), floatThead would only handle one table filling the box
+      jq$(".haddock table.sticky-header, .haddock .wikitable").not(".renderKDOMTable")
+          .not(".sticky-header-scroll-container table").floatThead({
         top: function() {
           let $header = jq$(".header .navigation");
           let rect = $header[0].getBoundingClientRect();
@@ -980,12 +983,10 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
         // a table inside a box scrolling vertically (having a max-height) floats its header inside that box,
         // otherwise the header floats along with the page far beyond the visible part of the table, and sticks below
         // the page header as soon as the box is scrolled (an empty result lets the header float with the page);
-        // the max-height is required, because horizontal scrolling (overflow-x) also turns overflow-y into auto;
-        // boxes scrolling with a fixed height (e.g. the content of a right panel tab) are marked by a class instead
+        // the max-height is required, because horizontal scrolling (overflow-x) also turns overflow-y into auto
         scrollContainer: function($table) {
           return $table.parentsUntil(".page-content").filter(function() {
             const $box = jq$(this);
-            if ($box.hasClass("sticky-header-scroll-container")) return true;
             return /(auto|scroll)/.test($box.css("overflow-y")) && $box.css("max-height") !== "none";
           }).first();
         },
