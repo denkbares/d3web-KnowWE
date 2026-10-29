@@ -29,13 +29,26 @@ KNOWWE.core.plugin.rightPanel = function () {
 	const rightPanelStorageKey = "rightPanel";
 	const rightPanelWidthStorageKey = "knowwe.rightPanel.width";
 	const tabOrderStorageKey = "knowwe.rightPanel.tabOrder";
+	// the panel collapsed the left menu because it got too wide, see updateLeftMenu
+	const leftMenuHiddenStorageKey = "knowwe.rightPanel.leftMenuHidden";
 	// mirror of the user's choice for the server, see de.knowwe.core.rightpanel.RightPanel
 	const openCookie = "knowwe-rightpanel-open";
 	const tabCookie = "knowwe-rightpanel-tab";
 	const defaultRightPanelWidth = 300;
 	const minRightPanelWidth = 300;
+	// relative to the window width
+	const maxRightPanelWidthRatio = 0.8;
+	const leftMenuWidthRatio = 0.5;
+	const leftMenuSlideTime = 300;
 
 	let rightPanel = null;
+
+	let leftMenuSliding = false;
+
+	let leftMenuToggling = false;
+
+	// whether the panel was wider than leftMenuWidthRatio when last checked, null if not checked yet on this page
+	let wasWide = null;
 
 	let showSidebar = false;
 
@@ -71,7 +84,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	});
 
 	function getRightPanelMaxWidth() {
-		const maxWidth = jq$(window).width() / 2;
+		const maxWidth = jq$(window).width() * maxRightPanelWidthRatio;
 		return Math.max(minRightPanelWidth, Math.floor(maxWidth));
 	}
 
@@ -108,6 +121,120 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}
 		return clampedWidth;
 	}
+
+	function isLeftMenuHiddenByPanel() {
+		try {
+			return localStorage.getItem(leftMenuHiddenStorageKey) === "true";
+		} catch (e) {
+			return false;
+		}
+	}
+
+	function setLeftMenuHiddenByPanel(hidden) {
+		try {
+			if (hidden) {
+				localStorage.setItem(leftMenuHiddenStorageKey, "true");
+			} else {
+				localStorage.removeItem(leftMenuHiddenStorageKey);
+			}
+		} catch (e) { }
+	}
+
+	/**
+	 * Toggles the left menu with the toggle of Haddock (see ViewTemplate.jsp), which also stores the state in the
+	 * preferences, so the server renders the next page with the left menu in the same state.
+	 */
+	function clickLeftMenuToggle() {
+		const toggle = document.querySelector("li#menu");
+		if (!toggle) return;
+		leftMenuToggling = true;
+		try {
+			toggle.click();
+		} finally {
+			leftMenuToggling = false;
+		}
+	}
+
+	/**
+	 * Shows or hides the left menu. The skin hides it by display:none (no transition), so it is slid out of or into
+	 * the view by a negative margin before or after toggling it.
+	 */
+	function slideLeftMenu(show, animate) {
+		const sidebar = document.querySelector(".content > .sidebar");
+		if (!sidebar) return;
+
+		const style = sidebar.style;
+		const reset = function () {
+			style.removeProperty("transition");
+			style.removeProperty("margin-left");
+		};
+
+		if (!animate) {
+			clickLeftMenuToggle();
+			reset();
+			return;
+		}
+
+		let done = false;
+		const finish = function () {
+			if (done) return;
+			done = true;
+			sidebar.removeEventListener("transitionend", onTransitionEnd);
+			if (!show) clickLeftMenuToggle();
+			reset();
+			leftMenuSliding = false;
+			// the width may have crossed the threshold again while sliding
+			updateLeftMenu(true);
+		};
+		const onTransitionEnd = function (e) {
+			if (e.target === sidebar && e.propertyName === "margin-left") finish();
+		};
+
+		leftMenuSliding = true;
+		if (show) {
+			// shown and moved out of the view in the same task, so no frame shows it in between
+			clickLeftMenuToggle();
+			style.setProperty("margin-left", -sidebar.getBoundingClientRect().width + "px", "important");
+			sidebar.getBoundingClientRect();
+			style.setProperty("transition", "margin-left " + leftMenuSlideTime + "ms ease");
+			style.setProperty("margin-left", "0px", "important");
+		} else {
+			style.setProperty("transition", "margin-left " + leftMenuSlideTime + "ms ease");
+			style.setProperty("margin-left", -sidebar.getBoundingClientRect().width + "px", "important");
+		}
+		sidebar.addEventListener("transitionend", onTransitionEnd);
+		// transitionend is missing, if there is nothing to animate (e.g. an empty left menu)
+		setTimeout(finish, leftMenuSlideTime + 100);
+	}
+
+	/**
+	 * Collapses the left menu when the panel gets wider than half of the window, and shows it again when the panel
+	 * gets narrower (or is hidden), but only if it was collapsed by the panel and not by the user. Only getting wide
+	 * collapses it, so the user can show it again while the panel is wide.
+	 */
+	function updateLeftMenu(animate) {
+		if (leftMenuSliding || isOnBottom) return;
+		const content = document.querySelector(".content");
+		if (!content || !content.querySelector(":scope > .sidebar")) return;
+
+		const wide = showSidebar && getRightPanelWidth() > jq$(window).width() * leftMenuWidthRatio;
+		const gotWide = wide && wasWide === false;
+		wasWide = wide;
+		const shown = content.classList.contains("active");
+		if (gotWide && shown) {
+			setLeftMenuHiddenByPanel(true);
+			slideLeftMenu(false, animate);
+		} else if (!wide && !shown && isLeftMenuHiddenByPanel()) {
+			setLeftMenuHiddenByPanel(false);
+			slideLeftMenu(true, animate);
+		}
+	}
+
+	// if the user toggles the left menu, it is up to the user (Haddock stops the event, so listen while capturing)
+	document.addEventListener("click", function (e) {
+		if (leftMenuToggling || !e.target.closest) return;
+		if (e.target.closest("li#menu, .sidebar > .close")) setLeftMenuHiddenByPanel(false);
+	}, true);
 
 	function getSelected() {
 		let t = '';
@@ -202,6 +329,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		// width would then fight the dragged one until the drag ends
 		if (!resizing) setRightPanelWidth(getStoredRightPanelWidth(), false);
 		rightPanelScroll();
+		updateLeftMenu(true);
 		jq$(KNOWWE.core.util.getPageContentSelector()).css('padding-bottom', '');
 	}
 
@@ -230,6 +358,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 			const delta = startX - e.clientX;
 			setRightPanelWidth(startWidth + delta, false);
 			rightPanelScroll();
+			updateLeftMenu(true);
 			e.preventDefault();
 		});
 
@@ -614,6 +743,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 			bindUiActions();
 			initRightPanelTabs();
 			globalFloatingTime = 500;
+			// on page load, the left menu is already in the state the user left it (see clickLeftMenuToggle)
+			updateLeftMenu(!fromCookie);
 			// when restored on page load, the server already knows the panel is shown (see init)
 			if (!fromCookie) dispatchPanelEvent(true);
 		}
@@ -626,6 +757,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		changeHideToShow();
 		setRightPanelCookie(false);
 		showSidebar = false;
+		updateLeftMenu(true);
 	}
 
 	function buildToolContainer(id) {
@@ -713,6 +845,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 			const isShown = isRightPanelShown() && !isCollapsedOnThisPage();
 			if (isShown) {
 				initRightPanel(true);
+			} else {
+				// so showing a wide panel later collapses the left menu (see updateLeftMenu)
+				wasWide = false;
 			}
 			initRightPanelToggleButton(isShown);
 			// the server renders the page for the state of the cookies, which may be missing or outdated

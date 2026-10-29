@@ -50,6 +50,7 @@ Im Browser (`localStorage`):
 - `knowwe.rightPanel.width`: Breite in px.
 - `knowwe.rightPanel.tabOrder`: Tab-IDs, zuletzt vom Nutzer aktivierte zuerst. Beim Laden wird der erste vorhandene
   Tab aktiviert.
+- `knowwe.rightPanel.leftMenuHidden`: `true`, solange das Panel das LeftMenu eingeklappt hat (siehe unten).
 
 Fuer den Server spiegelt das JS zwei Cookies (Pfad `/`, ein Jahr):
 
@@ -86,6 +87,27 @@ Behandlung sieht also den neuen Zustand.
 Waehrend das Panel animiert, ignoriert es `resize`-Events des Fensters und platziert sich erst danach neu. Aendert
 sich beim Ein- oder Ausblenden der Seiteninhalt, kann die Scrollleiste der Seite erscheinen oder verschwinden, und das
 Fenster meldet ein Resize; das Panel sprang sonst Frame fuer Frame zwischen Animation und Endposition.
+
+## Breite und LeftMenu
+
+Rechts laesst sich das Panel am linken Rand zwischen 300 px und 80 % der Fensterbreite ziehen. Wird es dabei (oder
+beim Einblenden) breiter als 50 %, klappt das JS das LeftMenu ein; wird es wieder schmaler als 50 % oder ausgeblendet,
+klappt es das LeftMenu wieder aus, aber nur, wenn es selbst es eingeklappt hat (`knowwe.rightPanel.leftMenuHidden`).
+
+- Geschaltet wird ueber den Haddock-Toggle (`li#menu`, `data-toggle` an `.content`, Klasse `active`). Der speichert den
+  Zustand in der Preference `Sidebar`, der Server rendert die naechste Seite also schon mit eingeklapptem LeftMenu,
+  ohne Springen beim Laden.
+- Der Skin blendet die Sidebar per `display:none` aus, ohne Transition. Das JS schiebt sie deshalb per negativem
+  `margin-left` (inline, `!important`) hinaus und toggelt danach, bzw. toggelt und schiebt sie im selben Task aus dem
+  Bild und dann hinein. Die Seite waechst und schrumpft dabei stetig mit. Kreuzt die Breite waehrend der Animation die
+  Grenze erneut, gleicht das JS nach der Animation ab.
+- Eingeklappt wird nur beim Ueberschreiten der Grenze. Klappt der Nutzer das LeftMenu bei breitem Panel selbst wieder
+  aus (oder vorher selbst ein), entfaellt die Markierung (Klick-Listener in der Capture-Phase, Haddock stoppt das
+  Event) und das Panel laesst das LeftMenu in Ruhe.
+- Beim Laden schaltet das JS nicht ein (das LeftMenu ist schon im gespeicherten Zustand); es klappt nur aus, wenn das
+  Panel inzwischen schmaler als 50 % ist (z.B. groesseres Fenster). Auf Seiten, auf denen das Panel zu bleibt (z.B.
+  kontextueller Tab fehlt), bleibt auch das LeftMenu eingeklappt, damit es beim Seitenwechsel nicht springt.
+- Unten (Fenster unter 600 px) wird das LeftMenu nicht angefasst.
 
 ## Inaktive Tabs
 
