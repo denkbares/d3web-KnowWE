@@ -319,4 +319,14 @@ public class AttachmentManager implements EventListener {
 	public boolean isAttachmentArticle(String title) {
 		return attachmentArticles.contains(title);
 	}
+
+	/**
+	 * Checks whether there is any article compiled from an attachment (e.g. via %%InterWikiImport or %%Attachment-Markup
+	 * with @compile: true).
+	 *
+	 * @return true if there is at least one attachment article, false otherwise
+	 */
+	public boolean hasAttachmentArticles() {
+		return !attachmentArticles.isEmpty();
+	}
 }

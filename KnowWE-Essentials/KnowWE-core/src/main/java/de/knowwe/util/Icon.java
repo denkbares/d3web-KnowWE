@@ -71,6 +71,7 @@ public class Icon {
 	public static final Icon UPLOAD = new Icon("fa-type fa-upload");
 	public static final Icon ATTACHMENT = new Icon("fa-type fa-paperclip");
 	public static final Icon IMPORT = new Icon("fa-type fa-upload");
+	public static final Icon FILE_IMPORT = new Icon("fa-type fa-file-import");
 	public static final Icon REFRESH = new Icon("fa-type fa-rotate");
 	public static final Icon QRCODE = new Icon("fa-type fa-qrcode");
 	public static final Icon LINK = new Icon("fa-type fa-link");

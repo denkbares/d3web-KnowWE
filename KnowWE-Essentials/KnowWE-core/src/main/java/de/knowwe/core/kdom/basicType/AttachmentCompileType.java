@@ -14,6 +14,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.util.Icon;
 
 /**
  * Interface for section types that specify that an attachment on the same article is compiled
@@ -59,6 +60,16 @@ public interface AttachmentCompileType extends Type {
 	 */
 	default TermCompiler.ReferenceValidationMode getReferenceValidationMode(Section<? extends AttachmentCompileType> section) {
 		return TermCompiler.ReferenceValidationMode.error;
+	}
+
+	/**
+	 * Get the icon indicating that some content was imported by the given section, e.g. in the lists of sections.
+	 *
+	 * @param section the section importing the content
+	 * @return the icon of the import
+	 */
+	default Icon getImportIcon(Section<? extends AttachmentCompileType> section) {
+		return Icon.ATTACHMENT;
 	}
 
 	/**

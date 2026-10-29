@@ -221,6 +221,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	}
 
 	@Override
+	public Icon getImportIcon(Section<? extends AttachmentCompileType> section) {
+		return Icon.FILE_IMPORT;
+	}
+
+	@Override
 	public @Nullable URL getUrl(Section<? extends AttachmentUpdateMarkup> section) {
 		return getUrl(section, getActionFragment() + "/GetWikiSectionTextAction?reference=", true);
 	}

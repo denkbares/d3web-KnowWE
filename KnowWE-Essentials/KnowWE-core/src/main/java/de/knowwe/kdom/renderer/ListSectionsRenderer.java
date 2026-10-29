@@ -34,14 +34,19 @@ import com.denkbares.utils.Pair;
 import com.denkbares.utils.Predicates;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.A;
+import de.knowwe.core.kdom.rendering.elements.HtmlNode;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -75,6 +80,9 @@ public class ListSectionsRenderer<T extends Type> {
 	public static final String CSS_COMPILERS_COLUMN = "list-sections-compilers";
 	public static final String CSS_SEPARATOR_COLUMN = "list-sections-separator";
 	public static final String CSS_LINK = "list-sections-link";
+	public static final String CSS_IMPORTED_COLUMN = "list-sections-imported";
+	private static final String IMPORTED_HEADER = "Import";
+	private static final String ERROR_HEADER = "Messages";
 
 	private final List<Section<T>> sections;
 	private final UserContext context;
@@ -91,6 +99,10 @@ public class ListSectionsRenderer<T extends Type> {
 	private String emptyText = "-- no entries --";
 	private boolean stickyHeader = true;
 	private Set<Integer> skipSearch = new HashSet<>();
+	// headers that only name their column (e.g. for filtering), without displaying anything
+	private final Set<Integer> hiddenHeaders = new HashSet<>();
+	// the plain text to filter the column for, if it differs from the column's content
+	private final Map<Integer, Function<Section<T>, String>> filterContents = new HashMap<>();
 	private String filterProviderAction;
 
 	public ListSectionsRenderer(Sections<T> sections, UserContext context) {
@@ -241,6 +253,12 @@ public class ListSectionsRenderer<T extends Type> {
 	 * @return this instance to chain builder calls
 	 */
 	public ListSectionsRenderer<T> error(Function<Section<T>, Section<?>> mapper) {
+		hiddenHeader(ERROR_HEADER, line -> {
+			Section<?> source = mapper.apply(line);
+			if (Messages.hasMessagesInSubtree(source, Message.Type.ERROR)) return "error";
+			if (Messages.hasMessagesInSubtree(source, Message.Type.WARNING)) return "warning";
+			return "";
+		});
 		return column(CSS_ERROR_COLUMN, line -> {
 			Section<?> source = mapper.apply(line);
 			if (Messages.hasMessagesInSubtree(source, Message.Type.ERROR)) {
@@ -251,6 +269,66 @@ public class ListSectionsRenderer<T extends Type> {
 			}
 			return "";
 		});
+	}
+
+	/**
+	 * Adds a new narrow column that shows an icon for each row whose section is imported, i.e. located in an article
+	 * compiled from an attachment (e.g. via %%InterWikiImport or %%Attachment). The icon links to the importing markup.
+	 * The column has no visible heading, but is named "Import", so the rows can be filtered for "imported" or "local".
+	 * If the wiki does not contain any imported article at all, no column is added.
+	 *
+	 * @return this instance to chain builder calls
+	 */
+	public ListSectionsRenderer<T> imported() {
+		if (!(context.getArticleManager() instanceof DefaultArticleManager articleManager)
+				|| !articleManager.getAttachmentManager().hasAttachmentArticles()) {
+			return this;
+		}
+		hiddenHeader(IMPORTED_HEADER, section -> getImportingSection(section) == null ? "local" : "imported");
+		return column(CSS_IMPORTED_COLUMN, section -> getImportingSection(section) == null ? "" : "imported");
+	}
+
+	/**
+	 * Names the column added next, e.g. to filter for it, without displaying a heading. The specified function
+	 * provides the plain text to filter the column for, instead of its displayed content.
+	 */
+	private void hiddenHeader(String name, Function<Section<T>, String> filterContent) {
+		int index = columns.size();
+		this.headerNames.put(index, name);
+		this.headers.put(index, "");
+		this.hiddenHeaders.add(index);
+		this.filterContents.put(index, filterContent);
+	}
+
+	/**
+	 * Returns whether there is any visible heading, otherwise the header of the table is not rendered at all.
+	 */
+	private boolean hasHeaders() {
+		return !hiddenHeaders.containsAll(headers.keySet());
+	}
+
+	/**
+	 * Returns the section that imports the specified section, i.e. the section that compiles the attachment the
+	 * specified section is located in, or null if the section is not imported.
+	 */
+	@Nullable
+	private static Section<AttachmentCompileType> getImportingSection(Section<?> section) {
+		Article article = section.getArticle();
+		if (article == null || !(article.getArticleManager() instanceof DefaultArticleManager articleManager)) {
+			return null;
+		}
+		if (!articleManager.getAttachmentManager().isAttachmentArticle(article)) return null;
+		return articleManager.getAttachmentManager().getCompilingAttachmentSections(article)
+				.stream().findFirst().orElse(null);
+	}
+
+	private HtmlProvider createImportLink(Section<T> line) {
+		Section<AttachmentCompileType> importing = getImportingSection(line);
+		if (importing == null) return result -> {};
+		Icon icon = importing.get().getImportIcon(importing)
+				.addTitle("Imported via %%" + importing.get().getName());
+		return new A().attributes("href", KnowWEUtils.getURLLink(importing))
+				.children(new HtmlNode(icon.toHtml()));
 	}
 
 	private String getMessagesString(Section<?> section, Message.Type type) {
@@ -514,7 +592,7 @@ public class ListSectionsRenderer<T extends Type> {
 			return;
 		}
 
-		page.appendHtmlTag("table", "class", "list-sections" + (headers.isEmpty() || !stickyHeader ? "" : " sticky-header"));
+		page.appendHtmlTag("table", "class", "list-sections" + (!hasHeaders() || !stickyHeader ? "" : " sticky-header"));
 		renderHeader(page);
 		page.append("\n");
 		int index = 0;
@@ -546,7 +624,7 @@ public class ListSectionsRenderer<T extends Type> {
 
 	private void renderHeader(RenderResult page) {
 		// skip if no headings are defined
-		if (headers.isEmpty()) return;
+		if (!hasHeaders()) return;
 
 		// start header and line
 		page.appendHtmlTag("thead");
@@ -636,6 +714,7 @@ public class ListSectionsRenderer<T extends Type> {
 								"href", KnowWEUtils.getURLLink(line));
 				case CSS_ERROR_COLUMN, CSS_HTML_COLUMN, CSS_NUMBER_COLUMN -> lineResult.appendHtml(text);
 				case CSS_LINK -> lineResult.appendHtmlElement("span", text);
+				case CSS_IMPORTED_COLUMN -> lineResult.append(createImportLink(line));
 				default -> lineResult.appendHtmlElement("span", KnowWEUtils.maskJSPWikiMarkup(text));
 			}
 			lineResult.appendHtmlTag("/td");
@@ -734,7 +813,7 @@ public class ListSectionsRenderer<T extends Type> {
 			if (skipSearch.contains(entry.getKey())) continue;
 			if (columns.size() > entry.getKey()) {
 				Pair<String, Function<Section<T>, String>> column = columns.get(entry.getKey());
-				keyFilters.put(entry.getValue(), column.getB());
+				keyFilters.put(entry.getValue(), filterContents.getOrDefault(entry.getKey(), column.getB()));
 			}
 		}
 		return keyFilters;
@@ -793,19 +872,23 @@ public class ListSectionsRenderer<T extends Type> {
 	@NotNull
 	public Map<String, Function<Section<T>, String>> getFilterableColumns() {
 		Map<String, Function<Section<T>, String>> result = new LinkedHashMap<>();
-		getFilterableColumnNames().forEach((index, name) -> result.put(name, getFilterableContent(columns.get(index))));
+		getFilterableColumnNames().forEach((index, name) -> result.put(name, getFilterableContent(index)));
 		return result;
 	}
 
 	/**
 	 * Returns the accessor to filter the specified column's content for. Columns whose content is rendered as html are
 	 * reduced to their plain text, so that the user is offered the values as they are displayed instead of the markup
-	 * producing them.
+	 * producing them, unless the column defines its own plain text to filter for (see
+	 * {@link #hiddenHeader(String, Function)}).
 	 *
-	 * @param column the column to get the filterable content of
+	 * @param index the index of the column to get the filterable content of
 	 * @return the accessor to the column's plain text content
 	 */
-	private Function<Section<T>, String> getFilterableContent(Pair<String, Function<Section<T>, String>> column) {
+	private Function<Section<T>, String> getFilterableContent(int index) {
+		Function<Section<T>, String> filterContent = filterContents.get(index);
+		if (filterContent != null) return filterContent;
+		Pair<String, Function<Section<T>, String>> column = columns.get(index);
 		Function<Section<T>, String> content = column.getB();
 		// the same css classes that are rendered as html in #renderLine(RenderResult, Section, int)
 		return switch (column.getA().split("\\s+")[0]) {
