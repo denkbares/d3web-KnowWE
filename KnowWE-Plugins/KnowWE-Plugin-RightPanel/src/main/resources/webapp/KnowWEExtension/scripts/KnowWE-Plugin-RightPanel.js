@@ -389,6 +389,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 			$body.attr("data-loaded", "true");
 			// the content is new, updates deferred before are already contained
 			$body.removeAttr("data-rerender-pending");
+			// initialize the server rendered content like re-rendered content (e.g. the tool menus)
+			KNOWWE.helper.observer.notify("afterRerender", $body[0]);
 			onDone();
 		}).fail(_IE.onErrorBehavior);
 	}
