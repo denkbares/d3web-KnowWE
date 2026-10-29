@@ -398,7 +398,12 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 	}
 
-	protected void renderAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, boolean renderPackagesAndCompilers) {
+	/**
+	 * Renders the given annotations of the markup, and below them the packages and compilers of the markup, if
+	 * requested and useful (more than one compiler, or the compiler spans several articles). Public, so the annotations of a
+	 * markup can also be shown elsewhere, e.g. without the packages and compilers, if they are shown otherwise.
+	 */
+	public void renderAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, boolean renderPackagesAndCompilers) {
 		if (listAnnotations) {
 			result.append("\n\n");
 			renderAnnotations(annotations, user, result, "ul", "li");
