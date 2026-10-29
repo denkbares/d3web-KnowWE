@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.NumberAwareComparator;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -410,6 +413,59 @@ public class Compilers {
 		else {
 			return compiler.getClass().getSimpleName();
 		}
+	}
+
+	/**
+	 * Returns the name of the compiler without the prefix and suffix shared by the names of all compilers of the same
+	 * class (e.g. "city" for "ssm-city", if the names of all these compilers start with "ssm-"), to list compilers
+	 * concisely. See {@link #trimSharedAffixes(Collection)}.
+	 *
+	 * @param compiler the compiler to get the short name for
+	 * @return the short name of the compiler
+	 */
+	@NotNull
+	public static String getShortCompilerName(@Nullable Compiler compiler) {
+		String name = getCompilerName(compiler);
+		if (compiler == null || compiler.getCompilerManager() == null) return name;
+		List<String> names = compiler.getCompilerManager().getCompilers().stream()
+				.filter(other -> other.getClass() == compiler.getClass())
+				.map(Compilers::getCompilerName)
+				.toList();
+		return trimSharedAffixes(names).getOrDefault(name, name);
+	}
+
+	/**
+	 * Removes the prefix and the suffix shared by all the given names, e.g. "ssm-city", "ssm-ebike" become "city",
+	 * "ebike". Only whole parts are removed: the prefix ends and the suffix starts with a character that is no letter or
+	 * digit. The names stay unchanged if there are less than two different names or if a name would become blank.
+	 *
+	 * @param names the names to shorten
+	 * @return the short name of each of the names, in the order of the names
+	 */
+	@NotNull
+	public static Map<String, String> trimSharedAffixes(Collection<String> names) {
+		List<String> distinct = new ArrayList<>(new LinkedHashSet<>(names));
+		Map<String, String> result = new LinkedHashMap<>();
+		distinct.forEach(name -> result.put(name, name));
+		if (distinct.size() < 2) return result;
+
+		String prefix = Strings.getSharedPrefix(distinct);
+		int prefixLength = prefix.length();
+		while (prefixLength > 0 && Character.isLetterOrDigit(prefix.charAt(prefixLength - 1))) prefixLength--;
+		String suffix = Strings.getSharedSuffix(distinct);
+		int suffixStart = 0;
+		while (suffixStart < suffix.length() && Character.isLetterOrDigit(suffix.charAt(suffixStart))) suffixStart++;
+		int suffixLength = suffix.length() - suffixStart;
+		if (prefixLength == 0 && suffixLength == 0) return result;
+
+		Map<String, String> trimmed = new LinkedHashMap<>();
+		for (String name : distinct) {
+			if (name.length() <= prefixLength + suffixLength) return result;
+			String shortName = name.substring(prefixLength, name.length() - suffixLength);
+			if (Strings.isBlank(shortName)) return result;
+			trimmed.put(name, shortName);
+		}
+		return trimmed;
 	}
 
 	/**

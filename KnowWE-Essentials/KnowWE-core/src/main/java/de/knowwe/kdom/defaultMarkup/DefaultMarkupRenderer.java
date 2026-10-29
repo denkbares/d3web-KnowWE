@@ -275,7 +275,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (compiler instanceof NamedCompiler) {
 			final String name = ((NamedCompiler) compiler).getName();
 			if (compiler instanceof PackageCompiler) {
-				return KnowWEUtils.getWikiLink(name, ((PackageCompiler) compiler).getCompileSection());
+				// the name without the parts shared by all compilers of its class (e.g. "ssm-")
+				return KnowWEUtils.getWikiLink(Compilers.getShortCompilerName(compiler), ((PackageCompiler) compiler).getCompileSection());
 			}
 			else {
 				return name;
@@ -520,11 +521,16 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (!compilers.isEmpty()) {
 			result.appendHtmlTag("span", "class", "compilerAnnotations");
 			result.appendHtml(Icon.COMPILER.addClasses("packageOpacity").addStyle("margin-right: .3em").toHtml());
+			// the names without the parts shared by all compilers of their class (e.g. "ssm-"), the full names as tooltip
 			result.appendHtmlElement("span",
 					compilers.stream()
+							.map(Compilers::getShortCompilerName)
+							.distinct()
+							.collect(Collectors.joining(", ")), "class", "packageOpacity",
+					"title", compilers.stream()
 							.map(Compilers::getCompilerName)
 							.distinct()
-							.collect(Collectors.joining(", ")), "class", "packageOpacity");
+							.collect(Collectors.joining(", ")));
 			result.appendHtmlTag("/span");
 		}
 	}
