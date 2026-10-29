@@ -62,7 +62,8 @@ public class TableRenderer implements Renderer {
 			string.appendHtml("</thead>");
 		}
 		string.appendHtml("<tbody>");
-		for (Section<TableLine> line : lines.subList(1, lines.size())) {
+		// a table may have no lines at all (e.g. while being typed)
+		for (Section<TableLine> line : lines.subList(Math.min(1, lines.size()), lines.size())) {
 			string.append(line, user);
 		}
 		string.appendHtml("</tbody></table>");
