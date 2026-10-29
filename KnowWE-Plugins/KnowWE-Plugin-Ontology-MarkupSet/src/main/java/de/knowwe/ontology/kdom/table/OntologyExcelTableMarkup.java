@@ -28,6 +28,7 @@ import com.denkbares.strings.QuoteSet;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
+import com.denkbares.utils.XMLUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.Priority;
@@ -402,6 +403,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			if (attachment == null) {
 				throw CompilerMessage.error("Attachment specified at " + ANNOTATION_XLSX + " not found");
 			}
+			// larger workbooks exceed the entity size limits of JDK 24+, POI creates its parsers internally
+			XMLUtils.relaxEntitySizeLimitsGlobally();
 			XSSFWorkbook workbook = new XSSFWorkbook(attachment.getInputStream());
 			attachmentSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
 			return workbook;
