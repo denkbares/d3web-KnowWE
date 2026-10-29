@@ -54,6 +54,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
@@ -400,24 +402,28 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	/**
 	 * Renders the given annotations of the markup, and below them the packages and compilers of the markup, if
-	 * requested and useful (more than one compiler, or the compiler spans several articles). Public, so the annotations of a
-	 * markup can also be shown elsewhere, e.g. without the packages and compilers, if they are shown otherwise.
+	 * requested and useful (more than one compiler, or the compiler spans several articles). The package annotations
+	 * are then part of the line of the packages and compilers. Public, so the annotations of a markup can also be shown
+	 * elsewhere, e.g. without the packages and compilers, if they are shown otherwise.
 	 */
 	public void renderAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, boolean renderPackagesAndCompilers) {
+		boolean packagesAndCompilers = renderPackagesAndCompilers && shouldRenderPackagesAndCompilers(markupSection);
+		List<Section<AnnotationType>> packageAnnotations = packagesAndCompilers
+				? $(annotations).filter(a -> PackageManager.PACKAGE_ATTRIBUTE_NAME.equalsIgnoreCase(a.get().getName())).asList()
+				: List.of();
+		List<Section<AnnotationType>> otherAnnotations = packageAnnotations.isEmpty() ? annotations
+				: annotations.stream().filter(a -> !packageAnnotations.contains(a)).toList();
 		if (listAnnotations) {
 			result.append("\n\n");
-			renderAnnotations(annotations, user, result, "ul", "li");
+			renderAnnotations(otherAnnotations, user, result, "ul", "li");
 		}
 		else {
-			renderAnnotations(annotations, user, result, "div", "span");
+			renderAnnotations(otherAnnotations, user, result, "div", "span");
 		}
 
 		// render package rules and compiler names if necessary
-		if (renderPackagesAndCompilers && shouldRenderPackagesAndCompilers(markupSection)) {
-			if (DefaultMarkupType.getAnnotation(markupSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) == null) {
-				renderPackages(markupSection, result, user);
-			}
-			renderCompilers(markupSection, result);
+		if (packagesAndCompilers) {
+			renderPackagesAndCompilers(markupSection, packageAnnotations, user, result);
 		}
 	}
 
@@ -477,67 +483,53 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	/**
-	 * renders names of packages (i.e. PackageRules) for this section
+	 * Renders the packages and the compilers of the markup as one line with their icons (see {@link
+	 * PackagesAndCompilersLine}), without the package annotations of the markup.
 	 *
-	 * @param markupSection section for which packages should be rendered
-	 * @param result        the render result
-	 * @param user          user context
+	 * @see #renderPackagesAndCompilers(Section, List, UserContext, RenderResult)
 	 */
-	protected void renderPackages(Section<? extends DefaultMarkupType> markupSection, RenderResult result, UserContext user) {
-		// get all package rules
-		List<Section<PackageRule>> packageRules = $(markupSection.getArticle()).successor(DefaultMarkupType.class)
-				.filter(m -> m.get().getName().equals("Package"))
-				.successor(PackageRule.class)
-				.asList();
-
-		// render them
-		if (!packageRules.isEmpty()) {
-			result.appendHtml(Icon.PACKAGE.addClasses("packageOpacity").addStyle("margin-right: .3em").toHtml());
-			for (int i = 0; i < packageRules.size(); i++) {
-				Section<PackageRule> packageRule = packageRules.get(i);
-				if (i > 0) { // separate them with a comma
-					result.appendHtmlElement("span", ", ", "class", "packageOpacity");
-				}
-				packageRule.get().getRenderer().render(packageRule, user, result);
-			}
-		}
+	protected void renderPackagesAndCompilers(Section<? extends DefaultMarkupType> markupSection, UserContext user, RenderResult result) {
+		renderPackagesAndCompilers(markupSection, List.of(), user, result);
 	}
 
 	/**
-	 * renders all compilers that are compiled in a given section
-	 * Compilers that are present within a GroupingCompiler are not displayed here, but the GroupingCompiler is.
+	 * Renders the packages and the compilers of the markup as one line with their icons (see {@link
+	 * PackagesAndCompilersLine}). The packages are the given package annotations of the markup, rendered with their
+	 * renderers (as annotation elements, so the edit tools of the markups find them, see KnowWE-Plugin-CBX.js). If none
+	 * are given, they are the package rules of the %%Package markups of the article, but only if the markup has no
+	 * package annotation (it is rendered with the other annotations).
 	 *
-	 * @param markupSection section for which compilers should be rendered
-	 * @param result        the render result
+	 * @param markupSection      section for which packages and compilers should be rendered
+	 * @param packageAnnotations the package annotations of the markup to render in the line
+	 * @param user               user context
+	 * @param result             the render result
 	 */
-	protected void renderCompilers(Section<? extends DefaultMarkupType> markupSection, RenderResult result) {
-		// get all compilers
-		Collection<PackageCompiler> compilers = Compilers.getCompilers(markupSection, PackageCompiler.class);
-
-		// remove compilers from the collection that are also present in a GroupingCompiler
-		//noinspection SuspiciousMethodCalls
-		compilers.stream()
-				.filter(c -> c instanceof GroupingCompiler)
-				.map(c -> (GroupingCompiler) c)
-				.collect(Collectors.toSet())
-				.forEach(groupingCompiler -> compilers.removeAll(groupingCompiler.getChildCompilers()));
-
-		// render them
-		if (!compilers.isEmpty()) {
-			result.appendHtmlTag("span", "class", "compilerAnnotations");
-			result.appendHtml(Icon.COMPILER.addClasses("packageOpacity").addStyle("margin-right: .3em").toHtml());
-			// the names without the parts shared by all compilers of their class (e.g. "ssm-"), the full names as tooltip
-			result.appendHtmlElement("span",
-					compilers.stream()
-							.map(Compilers::getShortCompilerName)
-							.distinct()
-							.collect(Collectors.joining(", ")), "class", "packageOpacity",
-					"title", compilers.stream()
-							.map(Compilers::getCompilerName)
-							.distinct()
-							.collect(Collectors.joining(", ")));
-			result.appendHtmlTag("/span");
+	protected void renderPackagesAndCompilers(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> packageAnnotations, UserContext user, RenderResult result) {
+		PackagesAndCompilersLine line = new PackagesAndCompilersLine();
+		for (Section<AnnotationType> annotation : packageAnnotations) {
+			Section<AnnotationContentType> content = $(annotation).successor(AnnotationContentType.class).getFirst();
+			line.packagesWithIcon(content == null ? "" : Strings.trim(content.getText()), new Span()
+					.clazz("markupAnnotation")
+					.attributes("data-name", annotation.get().getName())
+					.children(r -> r.append(annotation, user)));
 		}
+		if (packageAnnotations.isEmpty() && DefaultMarkupType.getAnnotation(markupSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) == null) {
+			List<Section<PackageRule>> packageRules = $(markupSection.getArticle()).successor(DefaultMarkupType.class)
+					.filter(m -> m.get().getName().equals("Package"))
+					.successor(PackageRule.class)
+					.asList();
+			if (!packageRules.isEmpty()) {
+				List<HtmlProvider> rendered = new ArrayList<>();
+				for (Section<PackageRule> packageRule : packageRules) {
+					if (!rendered.isEmpty()) rendered.add(new Span().clazz("packageOpacity").plainText(", "));
+					rendered.add(r -> packageRule.get().getRenderer().render(packageRule, user, r));
+				}
+				line.packages(packageRules.stream().map(Section::getText).collect(Collectors.joining(", ")),
+						rendered.toArray(HtmlProvider[]::new));
+			}
+		}
+		line.compilers(markupSection);
+		if (!line.isEmpty()) result.append(line.toHtmlElement());
 	}
 
 	public void renderDefaultMarkupStyled(String title,

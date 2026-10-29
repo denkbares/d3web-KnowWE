@@ -48,12 +48,12 @@
 	padding: 3px 3px 3px 3px;
 }
 
-.defaultMarkup .markupAnnotation, .defaultMarkup .compilerAnnotations {
+.defaultMarkup .markupAnnotation {
 	display: block;
 }
 
 .frameless > .defaultMarkup > .markupText > .markupAnnotation,
-.frameless > .defaultMarkup > .markupText > .compilerAnnotations {
+.frameless > .defaultMarkup > .markupText > .markupPackagesLine > .markupCompilers {
 	display: none;
 }
 
@@ -743,6 +743,35 @@ table.list-sections tr.highlighted {
 i.packageOpacity {
 	color: unset;
 	opacity: 0.4;
+}
+
+/* the packages and compilers of a markup with their icons (see PackagesAndCompilersLine), on one line cut with an
+   ellipsis, the full text is the tooltip */
+.markupPackagesLine {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* never wraps, also not within the rendered packages (e.g. .toolMenuDecorated allows wrapping) */
+.markupPackagesLine * {
+	white-space: nowrap !important;
+}
+
+.markupPackagesLine > .markupIconText:not(:first-child) {
+	margin-left: .6em;
+}
+
+/* the tooltip of the line (tooltipster): the labels and the operators of the package rules in dark grey (the tooltip
+   itself is grey), the packages and compilers in their color (packageOpacity) */
+.markupPackagesTooltipLabel,
+.markupPackagesTooltipSyntax {
+	color: var(--text-color-secondary-shade);
+}
+
+/* the package annotation of the markup, rendered in the line */
+.defaultMarkup .markupPackagesLine > .markupAnnotation {
+	display: inline;
 }
 
 .defaultMarkupFrame.type_Package i.packageOpacity {
