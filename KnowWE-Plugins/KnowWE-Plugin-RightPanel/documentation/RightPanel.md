@@ -13,7 +13,7 @@ Seitenpanel rechts neben dem Artikel (unter 600 px Fensterbreite unten), mit Tab
 | `Plugins.getRightPanelTabs` | KnowWE-core | alle Tabs, sortiert nach Prioritaet, dann ID |
 | `RightPanelAppendHandler` | dieses Plugin | rendert das Geruest hinter den Artikel |
 | `GetRightPanelTabContentAction` | dieses Plugin | liefert den Inhalt eines Lazy-Tabs beim ersten Aktivieren |
-| `CustomContentTabProvider` | dieses Plugin | Tab "Custom": rendert den Artikel `RightPanel` |
+| `CustomContentTabProvider` | dieses Plugin | Tab "Custom": rendert den Artikel `RightPanel`; nur verfuegbar, wenn der Artikel Inhalt ausserhalb deaktivierter Markups (`%%Off:…`) hat |
 | `KnowWE-Plugin-RightPanel.js` | dieses Plugin | Ein-/Ausblenden, Resize, Tabs, Zustand |
 
 ## Tab registrieren
@@ -37,7 +37,8 @@ Oder programmatisch per `Plugins.registerRightPanelTabProvider(environment, id, 
 deklarativ und programmatisch: die deklarative gewinnt.
 
 - `isAvailable(UserContext)` wird bei jedem Seitenaufbau ausgewertet. Ist kein Tab verfuegbar, gibt es weder Panel
-  noch Toggle-Button.
+  noch Toggle-Button. Auch "Custom" ist nicht immer verfuegbar (s.o.): Ohne Inhalt im Artikel `RightPanel`
+  und ohne andere Tabs gibt es also kein Panel; der Artikel wird dann ueber die normale Wiki-Seite angelegt.
 - Nicht-lazy Tabs werden bei jedem Seitenaufbau gerendert, auch bei zugeklapptem Panel. Lazy Tabs werden erst
   geholt, wenn das Panel offen ist und der Tab aktiv wird.
 

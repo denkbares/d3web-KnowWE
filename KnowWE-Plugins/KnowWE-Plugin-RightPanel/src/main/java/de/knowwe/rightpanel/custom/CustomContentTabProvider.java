@@ -21,19 +21,24 @@ package de.knowwe.rightpanel.custom;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.rightpanel.RightPanelTabProvider;
+import de.knowwe.core.tools.OffMarkup;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.util.Icon;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
- * The built-in "Custom" right-panel tab which shows the wiki-editable {@code RightPanel} article. Always available, so
- * a wiki always has at least this one tab.
+ * The built-in "Custom" right-panel tab which shows the wiki-editable {@code RightPanel} article. Available only if
+ * the article has content: it is hidden if the article is missing, empty, or contains only deactivated markups
+ * ({@code %%Off:...}, see {@link OffMarkup}).
  * <p>
  * The body is rendered server-side, inline in the scaffold ({@link #renderContent(UserContext, RenderResult)}), so the
- * panel mounts with no extra AJAX roundtrip. When the {@code RightPanel} article is missing <em>or</em> renders blank
- * it renders the create-page link instead.
+ * panel mounts with no extra AJAX roundtrip. When the {@code RightPanel} article renders blank nevertheless, it renders
+ * the create-page link instead.
  */
 public class CustomContentTabProvider implements RightPanelTabProvider {
 
@@ -52,6 +57,22 @@ public class CustomContentTabProvider implements RightPanelTabProvider {
 	@Override
 	public void renderIcon(UserContext user, RenderResult result) {
 		result.appendHtml(Icon.ARTICLE.toHtml());
+	}
+
+	@Override
+	public boolean isAvailable(UserContext context) {
+		Article article = context.getArticleManager().getArticle(ARTICLE_NAME);
+		return article != null && hasActiveContent(article);
+	}
+
+	/**
+	 * Returns true if the article has any text that is not blank and not part of a deactivated markup.
+	 */
+	static boolean hasActiveContent(Article article) {
+		return $(article.getRootSection()).successor(Type.class)
+				.filter(section -> section.getChildren().isEmpty())
+				.filter(section -> !section.getText().isBlank())
+				.anyMatch(section -> !$(section).hasAncestor(OffMarkup.class));
 	}
 
 	@Override
