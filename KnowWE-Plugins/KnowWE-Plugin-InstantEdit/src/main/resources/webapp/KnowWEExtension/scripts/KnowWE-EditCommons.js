@@ -130,7 +130,10 @@ KNOWWE.editCommons = function () {
 			new _KA(options).send();
 		},
 
-		sendChanges: function (sectionData, params, fn, async) {
+		/**
+		 * Sends the changes to the server and calls `fn` if they are saved, `onError` after the error is shown otherwise.
+		 */
+		sendChanges: function (sectionData, params, fn, async, onError) {
 			if (typeof async === "undefined") async = true;
 			_EC.showAjaxLoader();
 			let xhr = new XMLHttpRequest();
@@ -147,7 +150,10 @@ KNOWWE.editCommons = function () {
 							xhr.open("POST", _KA.setXSRFToken(url, token), async);
 							xhr.setRequestHeader("Content-Type", "application/json");
 							xhr.send(JSON.stringify(sectionData));
-						}, () => _EC.onErrorBehavior.call(xhr));
+						}, () => {
+							_EC.onErrorBehavior.call(xhr);
+							if (onError) onError();
+						});
 						return;
 					}
 					if (xhr.status === 200 && !_KA.isXSRFRejection(xhr.responseURL)) {
@@ -158,6 +164,7 @@ KNOWWE.editCommons = function () {
 						_EC.hideAjaxLoader();
 					} else {
 						_EC.onErrorBehavior.call(xhr);
+						if (onError) onError();
 					}
 				}
 			};

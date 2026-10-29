@@ -53,6 +53,9 @@ KNOWWE.plugin.instantEdit = function() {
 
     enabled: false,
 
+    /** Whether a save is sent, it ends with reloading the page or with an error */
+    saving: false,
+
     enable: function(id, toolNameSpace) {
 
       if (_IE.enabled) {
@@ -149,6 +152,9 @@ KNOWWE.plugin.instantEdit = function() {
      * @param newWikiText is the optional new text for the section with the given id
      */
     save: function(id, newWikiText) {
+      // a second save, e.g. by pressing Ctrl-S twice, would send the id the first one has made obsolete
+      if (_IE.saving) return;
+      _IE.saving = true;
 
       var sectionData = {
         sections: []
@@ -171,7 +177,11 @@ KNOWWE.plugin.instantEdit = function() {
       };
 
       _EC.sendChanges(sectionData, params, function(id) {
+        // reloading may take a while for slowly compiling articles, the indicator stays until then
+        _EC.showAjaxLoader();
         _IE.disable(id, true, null);
+      }, true, function() {
+        _IE.saving = false;
       });
     },
 

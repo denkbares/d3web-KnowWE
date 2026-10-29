@@ -197,7 +197,8 @@ KNOWWE.core.util = function() {
          * the current processing state
          */
         updateProcessingState: function(delta) {
-            activityCounter += delta;
+            // error handlers may hide the indicator more often than it was shown, that must not hide the next one
+            activityCounter = Math.max(0, activityCounter + delta);
             let indicator = jq$("#KnowWEProcessingIndicator");
             if (!indicator.exists()) {
                 // fallback, happens for example on Edit.jsp
