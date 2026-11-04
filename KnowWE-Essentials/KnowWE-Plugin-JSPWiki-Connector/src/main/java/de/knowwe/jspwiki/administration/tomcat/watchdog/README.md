@@ -136,21 +136,34 @@ icacls "C:\tomcat-restart" /grant "DOMÄNE\dienstkonto:(OI)(CI)(M)"
 
 ### 5. Update auf eine neue Version
 
-Das Watchdog-Skript ist **nicht** im WAR enthalten, es wird als eigene Datei `tomcat-restart-watchdog.ps1` mitgeliefert. Erst das Skript, dann das WAR einspielen: Das neue Skript funktioniert auch mit dem alten Wiki (es findet den Dienst dann über `-ServicePattern`), das neue Wiki mit einem alten Skript meldet dagegen `outdated watchdog script?`.
+Das Watchdog-Skript ist **nicht** im WAR enthalten, es wird als eigene Datei `tomcat-restart-watchdog.ps1` mitgeliefert. Erst das Skript, dann das WAR einspielen: Das neue Skript funktioniert auch mit dem alten Wiki (es findet den Dienst dann über `-ServicePattern`), das neue Wiki mit einem alten Skript meldet dagegen `outdated watchdog script?`. Die Schritte gelten auch für ein Update von einem Skript mit fest eingetragenem Dienstnamen (`$service = "…"`, Stand vor 2026-09-28).
 
-1. **Skript ersetzen:** Die neue `tomcat-restart-watchdog.ps1` als `C:\tomcat-restart\watchdog.ps1` ablegen. Im Skript nichts mehr eintragen, weder Dienstnamen noch Pfade. Beginnt der Tomcat-Dienst nicht mit `Tomcat`, `-ServicePattern` in den Argumenten der Aufgabe setzen (Abschnitt 1). Frühere Anpassungen im alten Skript (Dienstname, Pfade) entfallen.
-2. **Aufgabe neu starten**, sonst läuft das alte Skript weiter. Taskplaner → „Tomcat Restart Watchdog“ → „Beenden“, dann „Ausführen“, oder in einer PowerShell als Administrator:
+1. **Anmeldekonto des Tomcat-Dienstes notieren:** `services.msc` → Tomcat-Dienst → Eigenschaften → „Anmelden“. Es wird in Schritt 5 gebraucht.
+2. **Skript ersetzen:** Die neue `tomcat-restart-watchdog.ps1` als `C:\tomcat-restart\watchdog.ps1` ablegen und die alte Datei überschreiben. Im Skript nichts mehr eintragen, weder Dienstnamen noch Pfade. Frühere Anpassungen im alten Skript (z. B. `$service = "Tomcat90122"`) entfallen.
+3. **Argumente der geplanten Aufgabe prüfen:** Taskplaner → „Tomcat Restart Watchdog“ → Eigenschaften → Aktionen → Bearbeiten. Unter „Argumente hinzufügen“ darf nur stehen:
+   ```
+   -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "C:\tomcat-restart\watchdog.ps1"
+   ```
+   Eine Umleitung wie `*> "C:\tomcat-restart\watchdog-console.log" 2>&1` aus älteren Anleitungen unbedingt entfernen. Sie war bisher wirkungslos, das neue Skript bekommt sie aber als Parameter (`-RestartDir`) übergeben und beendet sich sofort. `watchdog-console.log` wird nicht mehr gebraucht. Die Aufgabe läuft weiterhin als `SYSTEM` mit höchsten Privilegien.
+4. **Aufgabe neu starten**, sonst läuft das alte Skript weiter. Taskplaner → „Tomcat Restart Watchdog“ → „Beenden“, dann „Ausführen“, oder in einer PowerShell als Administrator:
    ```powershell
    Stop-ScheduledTask "Tomcat Restart Watchdog"; Start-ScheduledTask "Tomcat Restart Watchdog"
    ```
-   Die Aufgabe muss als `SYSTEM` mit höchsten Privilegien laufen.
-3. **Watchdog prüfen:** Am Ende von `watchdog.log` steht ein neuer Startblock mit `Watchdog started as user: NT-AUTORITÄT\SYSTEM` und `OK Service '…' (…): State=Running, …`. Bei `ERROR Tomcat service not found: …` nennt der Rest der Zeile den Grund.
-4. **Schreibrechte erneuern:** Das Wiki legt jetzt auch `tomcat.pid` und den Unterordner `instances\` an, die Rechte des Tomcat-Kontos müssen also für den ganzen Ordner vererbt werden (`(OI)(CI)`, Abschnitt 3):
+   Danach steht am Ende von `watchdog.log` ein neuer Startblock mit `Watchdog started as user: NT-AUTORITÄT\SYSTEM` und `OK Service 'Tomcat…' (…): State=Running, …`.
+   - `ERROR Tomcat service not found: …`: Der Rest der Zeile nennt den Grund. Beginnen mehrere Dienste mit `Tomcat`, `-ServicePattern "<Dienstname>"` an die Argumente aus Schritt 3 anhängen (Abschnitt 1) und die Aufgabe erneut neu starten.
+   - Letztes Ausführungsergebnis `(0x1)` im Taskplaner: Das Skript hat sich sofort beendet, Schritt 3 prüfen.
+5. **Schreibrechte erweitern:** Das Wiki legt jetzt auch `tomcat.pid` und den Unterordner `instances\` an. Das Konto aus Schritt 1 braucht deshalb vererbte Ändern-Rechte auf den ganzen Ordner (Abschnitt 3):
    ```powershell
+   # Tomcat läuft als "Lokaler Dienst"
    icacls "C:\tomcat-restart" /grant "*S-1-5-19:(OI)(CI)(M)"
+
+   # Tomcat läuft unter einem Domänen-Dienstkonto
+   icacls "C:\tomcat-restart" /grant "DOMÄNE\dienstkonto:(OI)(CI)(M)"
    ```
-5. **WAR einspielen** wie gewohnt (Tomcat stoppen, WAR ersetzen, Tomcat starten).
-6. **Nach dem Start prüfen:** Etwa 30 s nach dem Start steht im Wiki-Log `Tomcat restart watchdog is ready: OK Service '…'`, sonst `Restarting Tomcat via the watchdog will currently not work: …` mit dem Grund. Auf der Administration-Seite steht „Restart Tomcat“ (nicht „Unavailable: …“), der Tooltip nennt den gefundenen Dienst. Optional ein Test-Klick: Nach dem Neustart lädt die Seite von selbst neu und zeigt die Anmeldung, weil die Sitzung mit dem Neustart endet.
+6. **WAR einspielen** wie gewohnt (Tomcat stoppen, WAR ersetzen, Tomcat starten).
+7. **Nach dem Start prüfen:** Etwa 30 s nach dem Start steht im Wiki-Log `Tomcat restart watchdog is ready: OK Service '…'`, sonst `Restarting Tomcat via the watchdog will currently not work: …` mit dem Grund. Auf der Administration-Seite steht „Restart Tomcat“ (nicht „Unavailable: …“), der Tooltip nennt den gefundenen Dienst. Optional ein Test-Klick: Nach dem Neustart lädt die Seite von selbst neu und zeigt die Anmeldung, weil die Sitzung mit dem Neustart endet.
+
+Bei späteren Tomcat-Updates mit neuem Dienstnamen muss am Watchdog nichts mehr geändert werden.
 
 Sollten auf dem Server mehrere Tomcat-Instanzen dasselbe `C:\tomcat-restart` verwenden, ist der Button danach mit Begründung gesperrt, siehe [„Sonderfall“](#-sonderfall-mehrere-tomcat-instanzen-auf-einem-server).
 
