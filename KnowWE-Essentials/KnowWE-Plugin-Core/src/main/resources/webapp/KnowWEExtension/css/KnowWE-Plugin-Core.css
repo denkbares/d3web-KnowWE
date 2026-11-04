@@ -758,7 +758,9 @@ i.packageOpacity {
 	white-space: nowrap !important;
 }
 
-.markupPackagesLine > .markupIconText:not(:first-child) {
+/* also between several package annotations of a markup, which bring their own icon */
+.markupPackagesLine > .markupIconText:not(:first-child),
+.markupPackagesLine > .markupAnnotation:not(:first-child) {
 	margin-left: .6em;
 }
 
