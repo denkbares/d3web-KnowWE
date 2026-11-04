@@ -7,16 +7,6 @@ Die Web-App startet den Tomcat nicht selbst neu, sie darf und kann ihren eigenen
 legt nur eine Datei `restart.flag` an. Ein externes Skript (der Watchdog) überwacht diese Datei, startet den
 Dienst bzw. Container neu und löscht die Datei danach.
 
-Es gibt zwei Varianten:
-
-| Variante | Skript | Neustart per |
-|---|---|---|
-| Windows, Tomcat als Dienst | `tomcat-restart-watchdog.ps1` | `Restart-Service` |
-| Linux, Tomcat im Docker-Container | `docker-restart-watchdog.sh` | `docker restart` |
-
-Diese README beschreibt die Funktionsweise, die Windows-Einrichtung und die Fehlersuche im Wiki. Die
-Einrichtung der Docker-Variante steht in [README-Docker.md](README-Docker.md).
-
 ---
 
 ## ⚙️ Funktionsweise
@@ -46,19 +36,6 @@ Wiki prüft nach: Wurde das Flag
   Fehlermeldung im Browser
 ```
 
-Alle Dateien liegen in einem gemeinsamen Verzeichnis:
-
-```
-C:\tomcat-restart\            (Linux/Docker: /knowwe/tomcat-restart/)
- ├── watchdog.ps1             das Skript (Windows)
- ├── watchdog.log             Log des Watchdogs (wird automatisch erstellt)
- ├── watchdog.alive           Heartbeat mit Dienstzustand, alle ~10 s aktualisiert (wird automatisch erstellt)
- ├── tomcat.pid               Prozess-ID des Wikis, schreibt das Wiki bei jedem Start
- ├── instances\               eine Heartbeat-Datei je laufendem Wiki (Erkennung mehrerer Tomcat-Instanzen)
- ├── restart.flag             Neustart-Anforderung mit PID (legt das Wiki an, löscht der Watchdog)
- └── restart-test.flag        kurzzeitig vom Wiki angelegt, um die Schreibrechte zu prüfen
-```
-
 Im Regelfall läuft auf einem Server genau ein Tomcat, und es ist nichts zu konfigurieren: Wiki und Watchdog
 verwenden `C:\tomcat-restart\` (Windows) bzw. `/knowwe/tomcat-restart/` (Linux/Docker). Beim Start schreibt das
 Wiki ins Wiki-Log, welches Verzeichnis es verwendet, z. B.
@@ -78,18 +55,13 @@ vorgesehen, siehe [„Sonderfall: mehrere Tomcat-Instanzen auf einem Server“](
 Verzeichnis, in dem es liegt.
 
 Ein Dienstname muss **nicht** eingetragen werden. Der Watchdog bestimmt den Dienst bei jedem Durchlauf neu,
-ein neuer Dienstname nach einem Tomcat-Update braucht also keine Änderung am Skript:
+ein neuer Dienstname nach einem Tomcat-Update braucht also keine Änderung am Skript. Nach folgendem Vorgehen
+wird der Dienst bestimmt:
 1. Der Dienst, der die Prozess-ID aus `restart.flag` bzw. `tomcat.pid` ausführt, auch wenn die JVM als
    Kindprozess des Dienstes läuft.
-2. Sonst der einzige Dienst, dessen Name auf `-ServicePattern` passt (Standard `Tomcat*`). Passen mehrere,
-   der einzige davon, der gerade läuft.
-
-Im Skript muss nichts angepasst werden. Optional sind zwei Parameter in den Argumenten der Aufgabe (Abschnitt 2):
-- **`-ServicePattern`** (Standard `Tomcat*`): Nur Dienste mit passendem Namen werden neu gestartet. Nur setzen,
-  falls der Tomcat-Dienst anders heißt, z. B. `KnowSEC*`. Den Dienstnamen (nicht den Anzeigenamen) zeigt
-  `Get-Service` oder `services.msc` → Eigenschaften → „Dienstname“.
-- **`-RestartDir`** (Standard: Verzeichnis des Skripts): nur für mehrere Tomcat-Instanzen auf einem Server, siehe
-  [„Sonderfall“](#-sonderfall-mehrere-tomcat-instanzen-auf-einem-server).
+2. Sonst der einzige Dienst, dessen Dienstnamen (nicht Anzeigename) auf `Tomcat*` matcht. Das Pattern kann
+   auch mit `-ServicePattern` an der Aufgabe überschrieben werden. Passen mehrere Dienste, der einzige davon, 
+   der gerade läuft.
 
 ### 2. Geplante Aufgabe einrichten
 
