@@ -85,6 +85,9 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		}
 	}
 
+	private record SourcePoll(List<ImportInfo> snapshots, PollResult result) {
+	}
+
 	/**
 	 * The environment of the wiki whose imports this service keeps up to date.
 	 */
@@ -214,21 +217,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 			defaultArticleManager.awaitInitialization();
 		}
 
-		articleManager.open();
-		try {
-			List<InterWikiChanges.Update> updates = new ArrayList<>();
-			for (Map.Entry<String, List<ImportInfo>> entry : snapshotsByWiki.entrySet()) {
-				PollResult result = pollSource(entry.getKey(), entry.getValue());
-				recordOutcome(entry.getValue(), result);
-				updates.addAll(result.updates());
-			}
-			if (!updates.isEmpty()) {
-				processUpdates(updates);
-			}
-		}
-		finally {
-			articleManager.commit();
-		}
+		applyPollResults(pollSources(snapshotsByWiki));
 	}
 
 	public void deregister(Section<InterWikiImportMarkup> markup) {
@@ -254,28 +243,10 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		Map<String, List<ImportInfo>> markupsByWiki = snapshots.stream()
 				.collect(Collectors.groupingBy(ImportInfo::wiki));
 
-		int updatedImports = 0;
-		int notAuthorizedSources = 0;
-		int failedSources = 0;
-		List<InterWikiChanges.Update> updates = new ArrayList<>();
-
-		articleManager.open();
-		try {
-			for (Map.Entry<String, List<ImportInfo>> entry : markupsByWiki.entrySet()) {
-				PollResult result = pollSource(entry.getKey(), entry.getValue());
-				recordOutcome(entry.getValue(), result);
-				updates.addAll(result.updates());
-				if (result.notAuthorized()) notAuthorizedSources++;
-				if (result.failed()) failedSources++;
-			}
-
-			if (!updates.isEmpty()) {
-				updatedImports = processUpdates(updates);
-			}
-		}
-		finally {
-			articleManager.commit();
-		}
+		List<SourcePoll> polls = pollSources(markupsByWiki);
+		int notAuthorizedSources = (int) polls.stream().filter(poll -> poll.result().notAuthorized()).count();
+		int failedSources = (int) polls.stream().filter(poll -> poll.result().failed()).count();
+		int updatedImports = applyPollResults(polls);
 
 		StringBuilder summary = new StringBuilder("InterWikiImport polling finished for ")
 				.append(markupsByWiki.size())
@@ -313,6 +284,42 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 					markup.get().getImportSourceLink(markup)));
 		}
 		return snapshots;
+	}
+
+	/**
+	 * Sends the change-poll requests to the source wikis. This must happen WITHOUT holding the
+	 * ArticleManager lock: a slow or unresponsive source wiki would otherwise block every page save
+	 * (and everything else that needs the lock) in this wiki for as long as the request takes.
+	 */
+	private List<SourcePoll> pollSources(Map<String, List<ImportInfo>> snapshotsByWiki) {
+		List<SourcePoll> polls = new ArrayList<>();
+		for (Map.Entry<String, List<ImportInfo>> entry : snapshotsByWiki.entrySet()) {
+			polls.add(new SourcePoll(entry.getValue(), pollSource(entry.getKey(), entry.getValue())));
+		}
+		return polls;
+	}
+
+	/**
+	 * Records the outcome of the given polls and applies their updates, all under one ArticleManager
+	 * lock, so the updates of all polled markups end up in a single page change per page.
+	 *
+	 * @return the number of updated imports
+	 */
+	private int applyPollResults(List<SourcePoll> polls) {
+		List<InterWikiChanges.Update> updates = polls.stream()
+				.flatMap(poll -> poll.result().updates().stream())
+				.toList();
+		ArticleManager articleManager = environment.getArticleManager();
+		articleManager.open();
+		try {
+			for (SourcePoll poll : polls) {
+				recordOutcome(poll.snapshots(), poll.result());
+			}
+			return updates.isEmpty() ? 0 : processUpdates(updates);
+		}
+		finally {
+			articleManager.commit();
+		}
 	}
 
 	private PollResult pollSource(String wiki, List<ImportInfo> snapshots) {

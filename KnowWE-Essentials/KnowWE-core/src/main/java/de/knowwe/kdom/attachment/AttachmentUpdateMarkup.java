@@ -137,6 +137,14 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return section.getEnvironment().getService(AttachmentUpdates.SERVICE);
 	}
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
+	/*
+	 * Without timeouts, HttpURLConnection waits forever for a server that accepted the connection but never
+	 * answers. Some callers (e.g. the InterWikiImport poll during a recompile) hold the ArticleManager lock
+	 * while connecting, so a hanging source would block all page saves of the wiki indefinitely.
+	 * The read timeout applies between two received packets, not to the whole download.
+	 */
+	private static final int CONNECT_TIMEOUT_MILLIS = (int) TimeUnit.SECONDS.toMillis(30);
+	private static final int READ_TIMEOUT_MILLIS = (int) TimeUnit.SECONDS.toMillis(60);
 	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
 
 	private record QueuedAttachment(String path, boolean versioning, Instant waitingSince,
@@ -556,12 +564,17 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	 * Also, loading credentials from the environment is supported by prefixing either the user or password part
 	 * with <tt>env+</tt>.
 	 * Non-existing environment variables will result in an empty user or password.
+	 * <p>
+	 * The connection has a connect and a read timeout, so an unresponsive server results in a
+	 * {@link java.net.SocketTimeoutException} instead of blocking the calling thread forever.
 	 *
 	 * @param url URL to open the connection for
 	 * @return HttpURLConnection instance
 	 */
 	public static HttpURLConnection openHttpConnection(URL url) throws IOException {
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
+		connection.setReadTimeout(READ_TIMEOUT_MILLIS);
 
 		if (url.getUserInfo() != null) {
 			final String[] parts = url.getUserInfo().split(":");
