@@ -278,17 +278,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return Strings.trim(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
 	}
 
+	/**
+	 * @see InterWikiImportAnnotationFormat#normalizeWiki(String)
+	 */
 	static String normalizeWiki(String wiki) {
-		if (wiki == null) return "";
-		String normalized = Strings.trim(wiki);
-		if (normalized.isBlank()) return "";
-		if (!normalized.matches("^https?://.*")) {
-			normalized = "https://" + normalized;
-		}
-		if (!normalized.endsWith("/")) {
-			normalized += "/";
-		}
-		return normalized;
+		return InterWikiImportAnnotationFormat.normalizeWiki(wiki);
 	}
 
 	@Nullable

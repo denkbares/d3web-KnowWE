@@ -25,6 +25,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,9 +34,13 @@ import org.jetbrains.annotations.Nullable;
 import com.denkbares.strings.Strings;
 
 /**
- * Display helpers for the annotations of the InterWikiImport markup, rendered as a label/value list.
+ * Display helpers for the annotations of the InterWikiImport markup, rendered as a label/value list,
+ * and the normalization of the wiki annotation.
  */
 final class InterWikiImportAnnotationFormat {
+
+	/** Optional scheme (case-insensitive), authority (user info and host), rest (path etc.). */
+	private static final Pattern WIKI_URL_PATTERN = Pattern.compile("(?:(?i:(https?))://)?([^/?#]*)(.*)", Pattern.DOTALL);
 
 	private static final Map<String, String> LABELS = Map.ofEntries(
 			Map.entry("wiki", "Wiki"),
@@ -91,6 +97,30 @@ final class InterWikiImportAnnotationFormat {
 
 	private static String plural(long count, String unit) {
 		return count + " " + unit + (count == 1 ? "" : "s");
+	}
+
+	/**
+	 * Normalizes the wiki annotation to a base URL with scheme and trailing slash. Scheme and host
+	 * are lower-cased, because they are case-insensitive (RFC 3986), so differently written
+	 * annotations of the same wiki (e.g. {@code leo2-A8-turm} and {@code leo2-a8-turm}) are polled
+	 * with one request. User info (credentials, {@code env+} variable names) and path are kept as
+	 * they are, since they are case-sensitive.
+	 */
+	static @NotNull String normalizeWiki(@Nullable String wiki) {
+		if (wiki == null) return "";
+		String normalized = Strings.trim(wiki);
+		if (normalized.isBlank()) return "";
+		Matcher matcher = WIKI_URL_PATTERN.matcher(normalized);
+		if (!matcher.matches()) throw new IllegalStateException("pattern matches every string");
+		String scheme = matcher.group(1) == null ? "https" : matcher.group(1).toLowerCase(Locale.ROOT);
+		String authority = matcher.group(2);
+		int hostStart = authority.lastIndexOf('@') + 1;
+		authority = authority.substring(0, hostStart) + authority.substring(hostStart).toLowerCase(Locale.ROOT);
+		normalized = scheme + "://" + authority + matcher.group(3);
+		if (!normalized.endsWith("/")) {
+			normalized += "/";
+		}
+		return normalized;
 	}
 
 	/**
