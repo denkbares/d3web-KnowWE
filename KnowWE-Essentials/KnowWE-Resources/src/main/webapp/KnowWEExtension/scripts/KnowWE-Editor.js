@@ -483,6 +483,7 @@ window.KnowWEEditor = (function () {
 		{text: "The arrows in the gutter fold markups, style and preformatted blocks and the section below a heading."},
 		{text: "The wrap button of the toolbar switches line wrapping, this browser remembers it for all editors.", modes: ["page"]},
 		{text: "Preview shows the rendered page with the current text, without saving it.", modes: ["page"]},
+		{text: "The history button of the toolbar shows who last changed each line and in which version, hover for the date and change note, click to see the changes.", modes: ["page"]},
 		{text: "Line wrapping follows the setting of the wrap button in the page editor.", modes: ["section"]}
 	];
 
@@ -773,7 +774,8 @@ window.KnowWEEditor = (function () {
 	 * Creates an editor on wiki text in the given parent element and returns its view. The editor brings highlighting
 	 * of the wiki language and the registered markups, folding, search, history, completion and the KnowWE theme.
 	 *
-	 * Options are the text as `doc`, the title of the edited `article`, the `mode` "page" for an editor that fills
+	 * Options are the text as `doc`, the title of the edited `article`, the id of the edited `section` if the text is
+	 * one, the `mode` "page" for an editor that fills
 	 * its parent and tints markup blocks or "section" for one that grows with its content, whether to `wrap` lines,
 	 * `onSave(view)` called on Mod-S, `onChange(update)` called on every view update and further `extensions`, which
 	 * follow those of registerExtension().

@@ -141,6 +141,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="css" value="KnowWE-Plugin-ChangeAnnotations.css" />
+		<!-- the annotation gutter of the CodeMirror editors, fetches its data from this action -->
+		<parameter id="script" value="KnowWE-EditorAnnotations.js" />
 	</extension>
 
 </plugin>

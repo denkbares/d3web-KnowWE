@@ -92,6 +92,7 @@ KNOWWE.plugin.codeMirrorEditTool = function () {
 				const view = KnowWEEditor.create(container, {
 					doc: _EC.getWikiText(id),
 					article: KNOWWE.helper.getPagename(),
+					section: id,
 					mode: "section",
 					wrap: isWrapping()
 				});

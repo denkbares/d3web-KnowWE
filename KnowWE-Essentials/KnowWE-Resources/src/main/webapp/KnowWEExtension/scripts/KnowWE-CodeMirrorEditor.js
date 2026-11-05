@@ -145,6 +145,19 @@
 			tablesButton.classList.toggle("active", enabled);
 		}
 
+		// the annotation gutter comes from the change annotations plugin, the button only makes sense with it
+		const annotationsButton = root.querySelector("[data-editor-cmd=annotations]");
+		const hasAnnotations = typeof KnowWEEditorAnnotations !== "undefined" && KnowWEEditorAnnotations.isAvailable();
+		if (annotationsButton) {
+			annotationsButton.hidden = !hasAnnotations;
+			if (hasAnnotations) annotationsButton.classList.toggle("active", KnowWEEditorAnnotations.isEnabled(view));
+		}
+
+		function setAnnotations(enabled) {
+			KnowWEEditorAnnotations.setEnabled(view, enabled);
+			annotationsButton.classList.toggle("active", enabled);
+		}
+
 		root.addEventListener("click", event => {
 			const button = event.target.closest("[data-editor-cmd]");
 			if (!button) return;
@@ -171,6 +184,9 @@
 					break;
 				case "tables":
 					if (hasTables) setTables(!KnowWETableEditor.isEnabled(view));
+					break;
+				case "annotations":
+					if (hasAnnotations) setAnnotations(!KnowWEEditorAnnotations.isEnabled(view));
 					break;
 				case "help":
 					KnowWEEditor.toggleHelp(view);
