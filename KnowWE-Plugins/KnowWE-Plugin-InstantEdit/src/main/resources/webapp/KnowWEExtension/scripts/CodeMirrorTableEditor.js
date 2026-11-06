@@ -27,7 +27,8 @@
  * the grid run the history of the editor, so there is one history for the page and the grid follows the text.
  * A table switches to text while the text cursor is in it after typing, so a table typed in the editor does not turn
  * into a grid under the cursor, and while the search panel is open, so matches in tables stay visible. Each table can
- * also be switched to text and back by a tool next to it.
+ * also be switched to text and back by a tool next to it. Like in the view of the page, the header rows of a long table
+ * stay at the upper edge of the editor while it scrolls.
  */
 window.KnowWETableEditor = (function () {
 	"use strict";
@@ -513,6 +514,19 @@ window.KnowWETableEditor = (function () {
 				right: "0",
 				whiteSpace: "nowrap"
 			},
+			// the header rows at the upper edge of the editor cover the rows scrolling below them, see stickHeader()
+			".cm-knowwe-table-grid table.spreadsheet tr.cm-knowwe-table-stuck": {
+				position: "relative",
+				zIndex: "2"
+			},
+			".cm-knowwe-table-linenumbers > div.cm-knowwe-table-stuck": {
+				zIndex: "1",
+				left: "-14px",
+				right: "-10px",
+				paddingRight: "10px",
+				textAlign: "right",
+				backgroundColor: "var(--bg-color-secondary, #f6f6f6)"
+			},
 			".cm-knowwe-table-grid table.spreadsheet": {
 				margin: "0"
 			},
@@ -625,8 +639,11 @@ window.KnowWETableEditor = (function () {
 			const follow = () => {
 				if (this.isToolbarShown()) this.placeToolbar();
 			};
-			// the row numbers follow the rows of the grid
-			this.rowResizes = new ResizeObserver(() => this.layoutNumbers());
+			// the row numbers and the header rows follow the rows of the grid
+			this.rowResizes = new ResizeObserver(() => {
+				this.layoutNumbers();
+				this.stickHeader();
+			});
 			this.rowResizes.observe(host);
 			if (this.side === "left") {
 				// the toolbar is outside the editor, so it is shown while the grid or the toolbar is hovered or focused
@@ -647,6 +664,7 @@ window.KnowWETableEditor = (function () {
 			// the toolbar of a long table stays at the upper edge of the editor while scrolling
 			view.scrollDOM.addEventListener("scroll", follow, {passive: true, signal: this.listeners.signal});
 			window.addEventListener("resize", follow, {signal: this.listeners.signal});
+			view.scrollDOM.addEventListener("scroll", () => this.stickHeader(), {passive: true, signal: this.listeners.signal});
 			this.dom.addEventListener("focusout", event => {
 				// a cell still being edited is taken over when the focus leaves the grid, e.g. to save
 				if (!this.dom.contains(event.relatedTarget)) this.leave(event.relatedTarget);
@@ -759,7 +777,59 @@ window.KnowWETableEditor = (function () {
 						number.style.height = number.style.lineHeight = row.height + "px";
 						return number;
 					}));
+					this.moveStuckNumbers();
 				}
+			});
+		}
+
+		/**
+		 * Keeps the header rows, the rows from the top whose cells are all headers, at the upper edge of the editor while
+		 * the rest of the table scrolls below them, but not beyond the end of the table. Their line numbers move along.
+		 */
+		stickHeader() {
+			if (!this.stickKey) this.stickKey = {};
+			this.view.requestMeasure({
+				key: this.stickKey,
+				read: () => {
+					const table = this.dom.isConnected ? this.sheet.element[0].querySelector("table") : null;
+					if (!table) return null;
+					const rows = [];
+					for (const row of table.rows) {
+						if (!row.cells.length || ![...row.cells].every(cell => cell.classList.contains("table-header"))) break;
+						rows.push(row);
+					}
+					const box = table.getBoundingClientRect();
+					const editor = this.view.scrollDOM.getBoundingClientRect();
+					const height = rows.reduce((sum, row) => sum + row.getBoundingClientRect().height, 0);
+					const offset = rows.length ? Math.max(0, Math.min(editor.top - box.top, box.height - height)) : 0;
+					return {rows, offset};
+				},
+				write: stick => {
+					if (!stick) return;
+					for (const row of this.stuckRows || []) {
+						if (stick.rows.includes(row)) continue;
+						row.style.transform = "";
+						row.classList.remove("cm-knowwe-table-stuck");
+					}
+					for (const row of stick.rows) {
+						row.style.transform = stick.offset ? "translateY(" + stick.offset + "px)" : "";
+						row.classList.toggle("cm-knowwe-table-stuck", stick.offset > 0);
+					}
+					this.stuckRows = stick.rows;
+					this.stuckOffset = stick.offset;
+					this.moveStuckNumbers();
+				}
+			});
+		}
+
+		moveStuckNumbers() {
+			const dom = numbersOf(this.view).get(this.id);
+			if (!dom) return;
+			const count = this.stuckRows ? this.stuckRows.length : 0;
+			[...dom.children].forEach((number, index) => {
+				const stuck = index < count && this.stuckOffset > 0;
+				number.style.transform = stuck ? "translateY(" + this.stuckOffset + "px)" : "";
+				number.classList.toggle("cm-knowwe-table-stuck", stuck);
 			});
 		}
 
@@ -778,6 +848,7 @@ window.KnowWETableEditor = (function () {
 			const selected = this.sheet.selected;
 			// selects and focuses the first cell
 			this.sheet.setWikiMarkup(text);
+			this.stickHeader();
 			if (focused && selected) {
 				this.sheet.selectCell(Math.min(selected.row, this.sheet.size.rows - 1),
 					Math.min(selected.col, this.sheet.size.cols - 1));
@@ -804,6 +875,8 @@ window.KnowWETableEditor = (function () {
 				annotations: sharedParts().gridChange.of(true),
 				userEvent: "table.edit"
 			});
+			// rows added, removed or turned into header rows are drawn anew
+			this.stickHeader();
 			// in case the editor had to draw the grid anew
 			if (focused && !this.hasFocus()) this.restoreFocus();
 		}
