@@ -34,9 +34,9 @@ import de.knowwe.plugin.Plugins;
  * Scaffolds the right panel DOM inline during page render. Runs as a post {@link PageAppendHandler}, so its output is
  * appended to the viewed article's HTML (the framework already skips support / non-viewed articles, leaving exactly
  * one scaffold per page view). It queries {@link Plugins#getRightPanelTabs(Environment)}, drops tabs whose
- * {@link de.knowwe.core.rightpanel.RightPanelTabProvider#isAvailable(UserContext) isAvailable} is false and, if any
- * remain, emits the panel structure. When no tab is available it emits nothing at all, so no panel and no toggle
- * appear.
+ * {@link de.knowwe.core.rightpanel.RightPanelTabProvider#isAvailable(UserContext) isAvailable} is false and emits the
+ * panel structure. When no tab is available, the panel only says so: the toggle stays on every page, and the panel is
+ * collapsed on these pages unless the user shows it there (see the JS).
  * <p>
  * The scaffold starts {@code hidden} and sits inside the page content body; the RightPanel JS relocates it to the
  * stable panel parent and un-hides it on dom-ready.
@@ -49,9 +49,6 @@ public class RightPanelAppendHandler implements PageAppendHandler {
 		if (article == null) return;
 
 		List<RightPanelTab> available = RightPanel.getAvailableTabs(user);
-
-		// zero tabs -> no panel at all (and the JS adds no toggle)
-		if (available.isEmpty()) return;
 
 		// the JS keeps the panel collapsed if the most recently activated tab is contextual and missing on this page,
 		// and notifies if it shows or hides the panel unlike the server assumed when rendering the page
@@ -88,6 +85,11 @@ public class RightPanelAppendHandler implements PageAppendHandler {
 			result.appendHtml("</button>");
 		}
 		result.appendHtml("</div>");
+
+		// zero tabs -> the panel only says so, the toggle is still shown (and the panel collapsed on this page)
+		if (available.isEmpty()) {
+			result.appendHtmlElement("div", "No content available for this page.", "class", "right-panel-empty");
+		}
 
 		// one body container per tab, the active one is visible, the rest are hidden
 		for (int i = 0; i < available.size(); i++) {

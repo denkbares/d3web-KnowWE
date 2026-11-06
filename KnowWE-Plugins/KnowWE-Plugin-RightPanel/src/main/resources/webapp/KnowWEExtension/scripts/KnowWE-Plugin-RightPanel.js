@@ -565,11 +565,13 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	/**
-	 * Returns true if the tab the user activated most recently is contextual and missing on this page, and no tab of
-	 * its group replaces it. The panel then stays collapsed on this page, without changing the user's choice to show
-	 * it (see RightPanelTabProvider.isContextual).
+	 * Returns true if no tab is available on this page, or if the tab the user activated most recently is contextual
+	 * and missing on this page, and no tab of its group replaces it. The panel then stays collapsed on this page,
+	 * without changing the user's choice to show it (see RightPanelTabProvider.isContextual).
 	 */
 	function isCollapsedOnThisPage() {
+		// the panel only says that there is no content (see RightPanelAppendHandler)
+		if (!rightPanel.find(".right-panel-tablist button[data-tab]").length) return true;
 		const lastTab = getStoredTabOrder()[0];
 		if (!lastTab || availableTab(lastTab)) return false;
 		const contextual = (rightPanel.attr("data-contextual") || "").split(" ");

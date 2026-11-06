@@ -36,9 +36,11 @@ Lazy-Action):
 Oder programmatisch per `Plugins.registerRightPanelTabProvider(environment, id, provider, priority)`. Gleiche ID
 deklarativ und programmatisch: die deklarative gewinnt.
 
-- `isAvailable(UserContext)` wird bei jedem Seitenaufbau ausgewertet. Ist kein Tab verfuegbar, gibt es weder Panel
-  noch Toggle-Button. Auch "Custom" ist nicht immer verfuegbar (s.o.): Ohne Inhalt im Artikel `RightPanel`
-  und ohne andere Tabs gibt es also kein Panel; der Artikel wird dann ueber die normale Wiki-Seite angelegt.
+- `isAvailable(UserContext)` wird bei jedem Seitenaufbau ausgewertet. Ist kein Tab verfuegbar, bleibt der
+  Toggle-Button trotzdem da; das Panel zeigt dann nur "No content available for this page." und bleibt auf solchen
+  Seiten zugeklappt, bis der Nutzer es dort aufklappt (die Wahl des Nutzers, es zu zeigen, bleibt dabei erhalten).
+  Auch "Custom" ist nicht immer verfuegbar (s.o.): Ohne Inhalt im Artikel `RightPanel` und ohne andere Tabs zeigt
+  das Panel also nur diesen Hinweis; der Artikel wird dann ueber die normale Wiki-Seite angelegt.
 - Nicht-lazy Tabs werden bei jedem Seitenaufbau gerendert, auch bei zugeklapptem Panel. Lazy Tabs werden erst
   geholt, wenn das Panel offen ist und der Tab aktiv wird.
 

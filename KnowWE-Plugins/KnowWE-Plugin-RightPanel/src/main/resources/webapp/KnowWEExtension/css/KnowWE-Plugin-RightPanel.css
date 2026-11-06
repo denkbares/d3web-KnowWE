@@ -102,6 +102,13 @@ body.right-panel-resizing {
 	border-bottom-color: var(--text-color-default-head);
 }
 
+/* the panel of a page without any available tab */
+#rightPanel .right-panel-empty {
+	padding: 8px;
+	color: var(--text-color-secondary);
+	font-style: italic;
+}
+
 #rightPanel .right-panel-tab {
 	flex: 1 1 auto;
 	min-height: 0;
