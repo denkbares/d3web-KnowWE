@@ -347,10 +347,25 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public @Nullable String getUserFullName(@Nullable String loginName) {
+		return getUserFullName(engine, loginName);
+	}
+
+	/**
+	 * Returns the full name of the user with the specified login name, from the wiki user database or, for users
+	 * without a profile there, from their identity provider. Returns null if neither knows a full name.
+	 *
+	 * @param engine    the wiki engine to look the user up in
+	 * @param loginName the login name of the user
+	 * @return the full name of the user, or null if it is unknown
+	 */
+	public static @Nullable String getUserFullName(@NotNull Engine engine, @Nullable String loginName) {
 		if (Strings.isBlank(loginName)) return null;
+		UserManager userManager = engine.getManager(UserManager.class);
 		try {
-			String fullName = getUserManager().getUserDatabase().findByLoginName(loginName).getFullname();
-			if (!Strings.isBlank(fullName)) return fullName;
+			if (userManager != null) {
+				String fullName = userManager.getUserDatabase().findByLoginName(loginName).getFullname();
+				if (!Strings.isBlank(fullName)) return fullName;
+			}
 		}
 		catch (NoSuchPrincipalException e) {
 			// not in the user database, the identity provider may still know the user

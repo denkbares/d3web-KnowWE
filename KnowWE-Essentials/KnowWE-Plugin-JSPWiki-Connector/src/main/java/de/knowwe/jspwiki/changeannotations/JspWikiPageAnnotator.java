@@ -3,6 +3,7 @@ package de.knowwe.jspwiki.changeannotations;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import com.denkbares.knowwe.changeannotations.PageAnnotation;
 import com.denkbares.knowwe.changeannotations.PageAnnotator;
 import com.denkbares.knowwe.changeannotations.VersionEntry;
 import com.denkbares.strings.Strings;
+
+import de.knowwe.jspwiki.JSPWikiConnector;
 
 /**
  * Bridges {@link PageManager}'s version history into {@link VersionEntry} input for the
@@ -46,6 +49,7 @@ public final class JspWikiPageAnnotator {
 		List<? extends Page> history = pageManager.getVersionHistory(pageName);
 		if (history == null || history.isEmpty()) return List.of();
 		Map<Integer, String> bulkTexts = bulkTexts(pageManager, pageName, history);
+		Map<String, String> displayNames = new HashMap<>();
 		List<VersionEntry> result = new ArrayList<>(history.size());
 		for (Page page : history) {
 			String text = bulkTexts.containsKey(page.getVersion())
@@ -57,12 +61,21 @@ public final class JspWikiPageAnnotator {
 			String changeNote = page.getAttribute(Page.CHANGENOTE);
 			result.add(new VersionEntry(
 					page.getVersion(),
-					Strings.isBlank(author) ? "unknown" : author,
+					Strings.isBlank(author) ? "unknown" : displayNames.computeIfAbsent(author, name -> displayName(engine, name)),
 					date,
 					changeNote,
 					text == null ? "" : text));
 		}
 		return result;
+	}
+
+	/**
+	 * The name to show for the author of a version: the full name of the user if the wiki knows one for this login
+	 * name, otherwise the author as recorded, e.g. a full name already or the address of an anonymous user.
+	 */
+	private static String displayName(Engine engine, String author) {
+		String fullName = JSPWikiConnector.getUserFullName(engine, author);
+		return Strings.isBlank(fullName) ? author : fullName;
 	}
 
 	/**

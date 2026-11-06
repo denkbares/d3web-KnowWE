@@ -7,6 +7,10 @@ import java.util.List;
 
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
+import org.apache.wiki.auth.NoSuchPrincipalException;
+import org.apache.wiki.auth.UserManager;
+import org.apache.wiki.auth.user.UserDatabase;
+import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.pages.PageManager;
 import org.junit.Test;
 
@@ -48,6 +52,33 @@ public class JspWikiPageAnnotatorTest {
 		assertEquals("bob", entries.get(1).author());
 		assertEquals("fix", entries.get(1).changeNote());
 		assertEquals("alpha\nbeta\n", entries.get(1).text());
+	}
+
+	@Test
+	public void showsTheFullNameOfAuthorsWithAProfile() throws Exception {
+		Engine engine = mock(Engine.class);
+		PageManager pageManager = mock(PageManager.class);
+		when(engine.getManager(PageManager.class)).thenReturn(pageManager);
+		UserManager userManager = mock(UserManager.class);
+		UserDatabase database = mock(UserDatabase.class);
+		when(engine.getManager(UserManager.class)).thenReturn(userManager);
+		when(userManager.getUserDatabase()).thenReturn(database);
+		UserProfile alice = mock(UserProfile.class);
+		when(alice.getFullname()).thenReturn("Alice Example");
+		when(database.findByLoginName("alice")).thenReturn(alice);
+		when(database.findByLoginName("127.0.0.1")).thenThrow(new NoSuchPrincipalException("unknown"));
+
+		Page v1 = pageMock(1, "alice", null, null);
+		Page v2 = pageMock(2, "127.0.0.1", null, null);
+		Page v3 = pageMock(3, "alice", null, null);
+		when(pageManager.getVersionHistory("Main")).thenReturn(List.of(v1, v2, v3));
+		when(pageManager.getPureText(eq("Main"), org.mockito.ArgumentMatchers.anyInt())).thenReturn("alpha\n");
+
+		List<VersionEntry> entries = JspWikiPageAnnotator.collectVersions(engine, "Main");
+
+		assertEquals("Alice Example", entries.get(0).author());
+		assertEquals("127.0.0.1", entries.get(1).author());
+		assertEquals("Alice Example", entries.get(2).author());
 	}
 
 	@Test

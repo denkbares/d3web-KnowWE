@@ -4,8 +4,9 @@
 
 /**
  * Shows the change annotation of the Annotate tab in a gutter of the CodeMirror editors of KnowWEEditor: the version
- * that last changed a line, its author, date and change note. Consecutive lines of the same version form a group
- * that is labeled at its first line, newer versions are tinted stronger.
+ * that last changed a line, its date and author, in the columns of the Annotate tab. Each line repeats them, a line
+ * above the first line of a version separates it from the previous one, and newer versions are tinted stronger. Hover
+ * shows the change note in a tooltip, a click opens the changes of the version.
  *
  * The annotation describes the latest saved version of the page. It is fetched from AnnotatePageAction once the gutter
  * is shown and matched to the lines the editor started with by a hash of each line, so a line whose text differs from
@@ -84,20 +85,98 @@ window.KnowWEEditorAnnotations = (function () {
 		return withTime ? date.toLocaleString() : date.toLocaleDateString();
 	}
 
-	/** Adds the label, the tooltip and the tint of each revision to the data of the action. */
+	function escapeHtml(text) {
+		return String(text).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
+	}
+
+	/** The content of the tooltip of a revision: version, date, author and change note. */
+	function tooltipHtml(revision) {
+		const version = "v" + revision.version;
+		const rows = [
+			["Version", revision.diff
+				? "<a href='" + escapeHtml(revision.diff) + "' target='_blank' title='Show the changes of this version'>"
+				+ version + "</a>"
+				: version],
+			["Date", escapeHtml(formatDate(revision.date, true))],
+			["Author", escapeHtml(revision.author)]
+		];
+		if (revision.changeNote) rows.push(["Change note", escapeHtml(revision.changeNote)]);
+		return "<table class='knowwe-annotation-tooltip'>"
+			+ rows.map(([name, value]) => "<tr><th>" + name + "</th><td>" + value + "</td></tr>").join("")
+			+ "</table>";
+	}
+
+	/**
+	 * Adds the labels, the tooltip and the tint of each revision to the data of the action.
+	 */
 	function prepare(data) {
 		const versions = data.revisions.map(revision => revision.version);
 		const newest = Math.max(...versions), oldest = Math.min(...versions);
 		for (const revision of data.revisions) {
 			const age = newest === oldest ? 1 : (revision.version - oldest) / (newest - oldest);
-			revision.alpha = (0.05 + 0.25 * age).toFixed(3);
-			revision.label = "v" + revision.version + " " + revision.author;
-			revision.title = "Version " + revision.version + " by " + revision.author + ", "
-				+ formatDate(revision.date, true)
-				+ (revision.changeNote ? "\n" + revision.changeNote : "")
-				+ (revision.diff ? "\nClick to show the changes of this version" : "");
+			revision.alpha = (0.04 + 0.22 * age).toFixed(3);
+			revision.versionLabel = "v" + revision.version;
+			// the date column of the Annotate tab, the day in UTC
+			revision.dateLabel = String(revision.date).slice(0, 10);
+			revision.tooltip = tooltipHtml(revision);
 		}
 		return data;
+	}
+
+	// the widest author column, enough for usual names, longer ones end with an ellipsis and show in the tooltip
+	const MAX_AUTHOR_WIDTH = 220;
+
+	/**
+	 * Sets the columns of the data as wide as their widest entry in the font of the gutter, so the gutter is no wider
+	 * than it needs to be and every line shows its entries aligned.
+	 */
+	function measureColumns(view, data) {
+		const probe = document.createElement("span");
+		probe.className = "cm-knowwe-annotation-probe";
+		view.dom.appendChild(probe);
+		const width = text => {
+			probe.textContent = text;
+			return Math.ceil(probe.getBoundingClientRect().width) + 1;
+		};
+		let version = 0, date = 0, author = 0;
+		for (const revision of data.revisions) {
+			version = Math.max(version, width(revision.versionLabel));
+			date = Math.max(date, width(revision.dateLabel));
+			author = Math.max(author, width(revision.author));
+		}
+		probe.remove();
+		data.columns = version + "px " + date + "px " + Math.min(author, MAX_AUTHOR_WIDTH) + "px";
+		return data;
+	}
+
+	/** Shows the tooltip of a revision on hover, with tooltipster where KnowWE provides it, a title otherwise. */
+	function attachTooltip(dom, revision) {
+		if (typeof jq$ === "undefined" || !jq$.fn.tooltipster) {
+			dom.title = revision.versionLabel + ", " + formatDate(revision.date, true) + ", " + revision.author
+				+ (revision.changeNote ? "\n" + revision.changeNote : "");
+			return;
+		}
+		jq$(dom).tooltipster({
+			content: revision.tooltip,
+			contentAsHTML: true,
+			interactive: true,
+			position: "right",
+			delay: 400,
+			updateAnimation: false,
+			theme: ".tooltipster-knowwe"
+		});
+	}
+
+	// the style of the tooltips, which tooltipster puts outside the editor
+	function addTooltipStyle() {
+		if (document.getElementById("knowwe-annotation-tooltip-style")) return;
+		const style = document.createElement("style");
+		style.id = "knowwe-annotation-tooltip-style";
+		style.textContent = ".knowwe-annotation-tooltip { border-collapse: collapse; font-size: 13px; line-height: 18px; }"
+			+ " .knowwe-annotation-tooltip th { padding: 1px 12px 1px 0; text-align: left; font-weight: normal;"
+			+ " color: var(--text-color-secondary, #57606a); vertical-align: top; white-space: nowrap; }"
+			+ " .knowwe-annotation-tooltip td { padding: 1px 0; white-space: pre-wrap; max-width: 420px; }";
+		document.head.appendChild(style);
 	}
 
 	// built on first use, so loading this script does not fail without the CodeMirror bundle
@@ -133,10 +212,11 @@ window.KnowWEEditorAnnotations = (function () {
 		});
 
 		class AnnotationMarker extends GutterMarker {
-			constructor(revision, first) {
+			constructor(revision, first, columns) {
 				super();
 				this.revision = revision;
 				this.first = first;
+				this.columns = columns;
 			}
 
 			eq(other) {
@@ -146,9 +226,16 @@ window.KnowWEEditorAnnotations = (function () {
 			toDOM() {
 				const dom = document.createElement("div");
 				dom.className = "cm-knowwe-annotation" + (this.first ? " cm-knowwe-annotation-first" : "");
-				dom.style.backgroundColor = "rgba(66, 139, 230, " + this.revision.alpha + ")";
-				if (this.first) dom.textContent = this.revision.label;
-				dom.title = this.revision.title;
+				dom.style.gridTemplateColumns = this.columns;
+				dom.style.setProperty("--knowwe-annotation-alpha", this.revision.alpha);
+				for (const [className, text] of [["version", this.revision.versionLabel],
+					["date", this.revision.dateLabel], ["author", this.revision.author]]) {
+					const cell = document.createElement("span");
+					cell.className = "cm-knowwe-annotation-" + className;
+					cell.textContent = text;
+					dom.appendChild(cell);
+				}
+				attachTooltip(dom, this.revision);
 				return dom;
 			}
 		}
@@ -156,10 +243,10 @@ window.KnowWEEditorAnnotations = (function () {
 		// one marker per revision and position in its group, so unchanged lines keep their DOM
 		const markers = new WeakMap();
 
-		function markerFor(revision, first) {
+		function markerFor(data, revision, first) {
 			let pair = markers.get(revision);
 			if (!pair) {
-				pair = [new AnnotationMarker(revision, false), new AnnotationMarker(revision, true)];
+				pair = [new AnnotationMarker(revision, false, data.columns), new AnnotationMarker(revision, true, data.columns)];
 				markers.set(revision, pair);
 			}
 			return pair[first ? 1 : 0];
@@ -180,7 +267,7 @@ window.KnowWEEditorAnnotations = (function () {
 				const revision = revisionAt(view.state, line);
 				if (!revision) return null;
 				const first = line.number === 1 || revisionAt(view.state, doc.line(line.number - 1)) !== revision;
-				return markerFor(revision, first);
+				return markerFor(view.state.field(field).data, revision, first);
 			},
 			lineMarkerChange: update => update.startState.field(field) !== update.state.field(field),
 			domEventHandlers: {
@@ -216,7 +303,7 @@ window.KnowWEEditorAnnotations = (function () {
 			fetch("action/AnnotatePageAction?" + params, {credentials: "same-origin"}).then(response => {
 				if (!response.ok) throw new Error(response.status + " " + response.statusText);
 				return response.json();
-			}).then(data => deliver(prepare(data))).catch(error => {
+			}).then(data => deliver(measureColumns(view, prepare(data)))).catch(error => {
 				console.warn("Line annotations are not available", error);
 				deliver({error: error.message});
 			});
@@ -227,27 +314,52 @@ window.KnowWEEditorAnnotations = (function () {
 			return {};
 		});
 
+		// the look of the Annotate tab: gray version and date, the author in the text color, hover in yellow
 		const theme = EditorView.baseTheme({
 			".cm-gutter.cm-knowwe-annotations": {
-				width: "15ch",
-				fontSize: "12px",
-				color: "var(--text-color-secondary, #888)"
+				fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
+				// the size of the editor text, like the line numbers
+				fontSize: "inherit",
+				fontVariantNumeric: "tabular-nums",
+				color: "var(--text-color-secondary, #57606a)",
+				borderRight: "1px solid var(--border-color-default, #d0d7de)"
+			},
+			// measures the columns in the font of the gutter, see measureColumns()
+			".cm-knowwe-annotation-probe": {
+				position: "absolute",
+				visibility: "hidden",
+				whiteSpace: "nowrap",
+				fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
+				fontVariantNumeric: "tabular-nums"
 			},
 			".cm-knowwe-annotations .cm-gutterElement": {
 				padding: "0"
 			},
 			".cm-knowwe-annotation": {
+				display: "grid",
+				columnGap: "10px",
 				boxSizing: "border-box",
 				height: "100%",
-				padding: "0 6px",
-				overflow: "hidden",
+				padding: "0 10px",
 				whiteSpace: "nowrap",
-				textOverflow: "ellipsis",
-				cursor: "default"
+				backgroundColor: "rgba(66, 139, 230, var(--knowwe-annotation-alpha, 0))",
+				cursor: "pointer"
+			},
+			".cm-knowwe-annotation > span": {
+				overflow: "hidden",
+				textOverflow: "ellipsis"
+			},
+			".cm-knowwe-annotation-version": {
+				color: "var(--link-color, #0969da)"
+			},
+			".cm-knowwe-annotation-author": {
+				color: "var(--text-color-primary, #1f2328)"
 			},
 			".cm-knowwe-annotation-first": {
-				boxShadow: "inset 0 1px 0 var(--border-color-default, #e2e2e9)",
-				color: "var(--text-color-primary, #000)"
+				boxShadow: "inset 0 1px 0 var(--border-color-default, #d0d7de)"
+			},
+			".cm-knowwe-annotation:hover": {
+				backgroundColor: "var(--highlight-color-faint-yellow, #fff8c5)"
 			}
 		});
 
@@ -288,6 +400,7 @@ window.KnowWEEditorAnnotations = (function () {
 	}
 
 	if (isAvailable() && KnowWEEditor.registerExtension) {
+		addTooltipStyle();
 		KnowWEEditor.registerExtension(options => {
 			const parts = sharedParts();
 			return [
