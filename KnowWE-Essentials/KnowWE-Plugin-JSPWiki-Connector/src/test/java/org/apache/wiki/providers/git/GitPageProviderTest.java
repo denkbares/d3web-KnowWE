@@ -41,6 +41,7 @@ import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.cache.CachingManager;
 import org.apache.wiki.providers.AbstractFileProvider;
+import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -191,6 +192,23 @@ public class GitPageProviderTest {
 
 		assertFalse(new File(pageDir, "Doomed.txt").exists());
 		assertFalse(provider.pageExists("Doomed"));
+	}
+
+	@Test
+	public void deleteAndAddMessagesNameThePage() throws Exception {
+		WikiPage page = new WikiPage(engine, "Doomed");
+		page.setAuthor(AUTHOR);
+		provider.putPageText(page, "content");
+		assertEquals("Added page Doomed", latestCommitMessage());
+
+		provider.deletePage(provider.getPageInfo("Doomed", WikiProvider.LATEST_VERSION));
+		assertEquals("Removed page Doomed", latestCommitMessage());
+	}
+
+	private String latestCommitMessage() throws Exception {
+		try (Git git = Git.open(pageDir)) {
+			return git.log().setMaxCount(1).call().iterator().next().getShortMessage();
+		}
 	}
 
 	@Test

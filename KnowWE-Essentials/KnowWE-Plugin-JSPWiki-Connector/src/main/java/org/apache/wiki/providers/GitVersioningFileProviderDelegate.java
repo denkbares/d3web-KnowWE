@@ -206,10 +206,10 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		String comment = gitCommentStrategy.getComment(page, "");
 		if (comment.isEmpty()) {
 			if (addFile) {
-				comment = "Added page";
+				comment = "Added page " + page.getName();
 			}
 			else {
-				comment = "-";
+				comment = "Edited " + page.getName();
 			}
 		}
 
@@ -415,7 +415,9 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		//TODO what happens with ignored files
 
-		String comment = gitCommentStrategy.getComment(page, "removed page");
+		// the page info carries the message of the last commit as change note, which must not label the deletion
+		page.removeAttribute(WikiPage.CHANGENOTE);
+		String comment = gitCommentStrategy.getComment(page, "Removed page " + page.getName());
 		String commitHash = this.gitConnector.commit().deletePath(file.getName(), getUserData(page.getAuthor(), comment), false);
 
 		String author = page.getAuthor();
@@ -482,7 +484,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			this.openCommits.get(author).add(toFile.getName());
 		}
 		else {
-			String comment = gitCommentStrategy.getComment(from, "renamed page " + from + " to " + to);
+			String comment = gitCommentStrategy.getComment(from, "Renamed page " + from.getName() + " to " + to);
 			CommitUserData userData = getUserData(author, comment);
 			String commitHash = this.gitConnector.commit().moveFile(fromFile.toPath(), toFile.toPath(), userData.user, userData.email, userData.message);
 			fireWikiEvent(GitVersioningWikiEvent.MOVED, author, List.of(to), commitHash);

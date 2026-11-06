@@ -158,6 +158,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		}
 
 
+		boolean addFile = !newFile.exists();
 		copyOnFilesystem(att, data, newFile);
 		boolean isIgnored = this.gitConnector.isIgnored(getPath(att));
 
@@ -166,7 +167,8 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		if (!isIgnored) {
 			gitConnector.commit().addPath(getPath(att));
 			att.setSize(newFile.length());
-			commitAttachment(att, GitVersioningWikiEvent.UPDATE, getPath(att));
+			String defaultMessage = (addFile ? "Added attachment " : "Updated attachment ") + displayPath(att);
+			commitAttachment(att, GitVersioningWikiEvent.UPDATE, getPath(att), defaultMessage);
 		}
 		else{
 			//if the file is ignored this will mean that our staging area might get convoluted
@@ -225,7 +227,11 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		}
 	}
 
-	private String getMessage(Attachment att) {
+	private static String displayPath(Attachment att) {
+		return att.getParentName() + "/" + att.getFileName();
+	}
+
+	private String getMessage(Attachment att, String defaultMessage) {
 		String changeNote = att.getAttribute(Attachment.CHANGENOTE);
 		String comment = gitCommentStrategy.getComment(att, gitCommentStrategy.getCommentForUser(att.getAuthor()));
 		if (comment.isEmpty()) {
@@ -233,7 +239,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 				comment = changeNote;
 			}
 			else {
-				comment = "-";
+				comment = defaultMessage;
 			}
 		}
 		return comment;
@@ -431,7 +437,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		// Can't delete version from git
 	}
 
-	private void commitAttachment(Attachment att, int type, String filePath) {
+	private void commitAttachment(Attachment att, int type, String filePath, String defaultMessage) {
 		if (this.gitConnector.isIgnored(getPath(att))) {
 			return;
 		}
@@ -440,11 +446,11 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
 		}
 		else {
-			commitAttachmentGit(att, type, filePath);
+			commitAttachmentGit(att, type, filePath, defaultMessage);
 		}
 	}
 
-	private void commitAttachmentGit(Attachment att, int type, String filePath) {
+	private void commitAttachmentGit(Attachment att, int type, String filePath, String defaultMessage) {
 		//TODO no idea why we might need it, im leaving this here since i dont know!
 //		if (att.getAuthor() == null) {
 //			this.gitBridge.assignAuthor(att);
@@ -455,7 +461,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			gitVersioningFileProvider.commitLock();
 
 			CommitUserData userData = this.gitVersioningFileProvider.getDelegate()
-					.getUserData(att.getAuthor(), getMessage(att));
+					.getUserData(att.getAuthor(), getMessage(att, defaultMessage));
 			//TODO commit only filepath?
 			String commitHash = this.gitConnector.commit().commitForUser(userData);
 			WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
@@ -506,7 +512,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 	private void moveFilesGit(Page oldParent, String newParent, File[] files) throws Exception {
 		//we assume that the files are moved already
 		List<String> filesForEvent = new ArrayList<>();
-		String comment = gitCommentStrategy.getComment(oldParent, "move attachments from " + oldParent.getName() + " to " + newParent);
+		String comment = gitCommentStrategy.getComment(oldParent, "Moved attachments from " + oldParent.getName() + " to " + newParent);
 
 		//if tracked by openCommits we only have to update this list
 		if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
@@ -579,7 +585,9 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		if (this.gitConnector.isIgnored(getPath(att))) {
 			return;
 		}
+		// the attachment info carries the message of the last commit as change note, which must not label the deletion
+		att.removeAttribute(Attachment.CHANGENOTE);
 		this.gitConnector.commit().deletePath(getPath(att), this.gitVersioningFileProvider.getDelegate()
-				.getUserData(att.getAuthor(), getMessage(att)), false);
+				.getUserData(att.getAuthor(), getMessage(att, "Removed attachment " + displayPath(att))), false);
 	}
 }

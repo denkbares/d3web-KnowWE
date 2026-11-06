@@ -46,6 +46,7 @@ import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.AbstractFileProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
+import org.eclipse.jgit.api.Git;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -143,6 +144,26 @@ public class GitAttachmentProviderTest {
 		attachmentProvider.deleteAttachment(att);
 		assertFalse(new File(pageDir, "Topic-att/doc.txt").exists());
 		assertTrue(BareGitConnector.fromPath(pageDir.getAbsolutePath()).status().isClean());
+	}
+
+	@Test
+	public void attachmentWithoutNoteGetsAddedThenUpdatedMessage() throws Exception {
+		putAttachmentWithoutNote("Topic", "doc.txt", "first");
+		assertEquals("Added attachment Topic/doc.txt", latestCommitMessage());
+		putAttachmentWithoutNote("Topic", "doc.txt", "second");
+		assertEquals("Updated attachment Topic/doc.txt", latestCommitMessage());
+	}
+
+	@Test
+	public void deletingByAttachmentInfoDoesNotReuseTheUploadMessage() throws Exception {
+		putAttachment("Topic", "doc.txt", "content");
+		// the info carries the upload's message as change note, as served to the attachment manager before a delete
+		Attachment info = attachmentProvider.getAttachmentInfo(new WikiPage(engine, "Topic"), "doc.txt",
+				WikiProvider.LATEST_VERSION);
+		assertEquals("upload", info.getAttribute(Attachment.CHANGENOTE));
+
+		attachmentProvider.deleteAttachment(info);
+		assertEquals("Removed attachment Topic/doc.txt", latestCommitMessage());
 	}
 
 	@Test
@@ -475,6 +496,21 @@ public class GitAttachmentProviderTest {
 		att.setLastModified(new Date());
 		try (InputStream in = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
 			attachmentProvider.putAttachmentData(att, in);
+		}
+	}
+
+	private void putAttachmentWithoutNote(String parent, String fileName, String content) throws Exception {
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, parent, fileName);
+		att.setAuthor(AUTHOR);
+		att.setLastModified(new Date());
+		try (InputStream in = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
+			attachmentProvider.putAttachmentData(att, in);
+		}
+	}
+
+	private String latestCommitMessage() throws Exception {
+		try (Git git = Git.open(pageDir)) {
+			return git.log().setMaxCount(1).call().iterator().next().getShortMessage();
 		}
 	}
 

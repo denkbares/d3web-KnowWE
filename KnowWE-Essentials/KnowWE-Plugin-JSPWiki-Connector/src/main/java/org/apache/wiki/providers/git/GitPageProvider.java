@@ -174,7 +174,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 			// a meaningful message (not the connector's catch-all "Added page" for every put), a custom
 			// GitCommentStrategy can override it (e.g. to prefix the branch).
 			String comment = context.commentStrategy()
-					.getComment(page, addFile ? "Added page" : "Edited " + page.getName());
+					.getComment(page, (addFile ? "Added page " : "Edited ") + page.getName());
 			CommitUserData userData = context.userData(user, comment);
 			String commitHash = repository.commitFile(file, file.getName(), userData);
 			if (commitHash != null) {
@@ -362,7 +362,7 @@ public class GitPageProvider extends AbstractFileProvider implements GitVersioni
 			return;
 		}
 		String author = authorOrLatest(page);
-		String comment = context.commentStrategy().getComment(page, "Removed page");
+		String comment = context.commentStrategy().getComment(page, "Removed page " + page.getName());
 		// Deletes commit immediately, even inside an open transaction (documented divergence from batching). A page
 		// delete within a bulk transaction is rare, keeping it immediate avoids staging a removal into the batch.
 		String commitHash = repository.commitDelete(file, file.getName(), context.userData(author, comment));

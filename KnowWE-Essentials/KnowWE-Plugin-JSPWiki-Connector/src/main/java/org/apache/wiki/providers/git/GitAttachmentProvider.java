@@ -214,13 +214,16 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		if (contentEquals(attFile, bytes)) {
 			return false;
 		}
+		boolean addFile = !attFile.exists()
+						  && !legacyVersionDir(attachment.getParentName(), attachment.getFileName()).exists();
 		writeFile(attachment, bytes, attFile);
 		attachment.setSize(attFile.length());
 
 		String user = attachment.getAuthor();
 		// attachments may always be new files; the registry stages the git index alongside its bookkeeping
 		if (!backend().batchRegistry().stage(user, relPath, true)) {
-			CommitUserData userData = context().userData(user, message(attachment));
+			String defaultMessage = (addFile ? "Added attachment " : "Updated attachment ") + displayPath(attachment);
+			CommitUserData userData = context().userData(user, message(attachment, defaultMessage));
 			String commitHash = repository.commitFile(attFile, relPath, userData);
 			if (commitHash != null) {
 				fireEvent(GitVersioningWikiEvent.UPDATE, attachment, commitHash, repository);
@@ -273,14 +276,27 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 		}
 	}
 
-	private String message(Attachment attachment) throws ProviderException {
+	private String message(Attachment attachment, String defaultMessage) throws ProviderException {
 		String comment = context().commentStrategy()
 				.getComment(attachment, context().commentStrategy().getCommentForUser(attachment.getAuthor()));
 		if (comment.isEmpty()) {
 			String changeNote = attachment.getAttribute(Attachment.CHANGENOTE);
-			comment = (changeNote != null && !changeNote.isEmpty()) ? changeNote : "-";
+			comment = (changeNote != null && !changeNote.isEmpty()) ? changeNote : defaultMessage;
 		}
 		return comment;
+	}
+
+	/**
+	 * Commit message of a deletion, which ignores the change note because the attachment info carries the message of
+	 * the last commit.
+	 */
+	private String deleteMessage(Attachment attachment) throws ProviderException {
+		attachment.removeAttribute(Attachment.CHANGENOTE);
+		return message(attachment, "Removed attachment " + displayPath(attachment));
+	}
+
+	private static String displayPath(Attachment attachment) {
+		return attachment.getParentName() + "/" + attachment.getFileName();
 	}
 
 	// --- read path -----------------------------------------------------------
@@ -513,7 +529,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			return;
 		}
 		// disk deletion and commit happen inside commitDelete under the repository lock, so no sweep can interleave
-		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
+		CommitUserData userData = context().userData(attachment.getAuthor(), deleteMessage(attachment));
 		File legacyDir = legacyVersionDir(attachment.getParentName(), attachment.getFileName());
 		String commitHash = legacyDir.exists()
 				? deleteBothLayouts(attachment, repository, attFile, legacyDir, userData)
@@ -592,7 +608,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 			LOGGER.debug("Attachment {} was to be deleted but does not exist.", attachmentPath(attachment));
 			return;
 		}
-		CommitUserData userData = context().userData(attachment.getAuthor(), message(attachment));
+		CommitUserData userData = context().userData(attachment.getAuthor(), deleteMessage(attachment));
 		String commitHash;
 		try {
 			// disk deletion and commit share one lock bracket, like the flat delete path
@@ -660,7 +676,7 @@ public class GitAttachmentProvider extends BasicAttachmentProvider {
 					return null;
 				}
 				String comment = context().commentStrategy().getComment(oldParent,
-						"move attachments from " + oldParent.getName() + " to " + newParent);
+						"Moved attachments from " + oldParent.getName() + " to " + newParent);
 				return repository.commitMovedPaths(oldPaths, newPaths, context().userData(user, comment));
 			});
 		}
