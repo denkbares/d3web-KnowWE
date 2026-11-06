@@ -26,7 +26,8 @@
  * history of the editor see it like a change of the text. Rows that did not change keep their text. Undo and redo in
  * the grid run the history of the editor, so there is one history for the page and the grid follows the text.
  * A table switches to text while the text cursor is in it after typing, so a table typed in the editor does not turn
- * into a grid under the cursor, and while the search panel is open, so matches in tables stay visible.
+ * into a grid under the cursor, and while the search panel is open, so matches in tables stay visible. Each table can
+ * also be switched to text and back by a tool next to it.
  */
 window.KnowWETableEditor = (function () {
 	"use strict";
@@ -163,13 +164,15 @@ window.KnowWETableEditor = (function () {
 
 	function sharedParts() {
 		if (shared) return shared;
-		const {StateField, Annotation, Compartment} = CodeMirror.state;
-		const {EditorView, Decoration, WidgetType, ViewPlugin} = CodeMirror.view;
+		const {StateField, StateEffect, Annotation, Compartment} = CodeMirror.state;
+		const {EditorView, Decoration, WidgetType, ViewPlugin, GutterMarker, lineNumberWidgetMarker} = CodeMirror.view;
 		const {syntaxTree, ensureSyntaxTree} = CodeMirror.language;
 		const {searchPanelOpen} = CodeMirror.search;
 
 		// marks the changes written by a grid
 		const gridChange = Annotation.define();
+		// shows the table with the `id` as text or as grid, by `text`
+		const showAsText = StateEffect.define();
 
 		class TableWidget extends WidgetType {
 			constructor(id, text, markup) {
@@ -207,9 +210,34 @@ window.KnowWETableEditor = (function () {
 			}
 		}
 
-		function decorations(state, tables, editing) {
+		// the line numbers of the rows next to a grid, each row is a line of the text, see TableGrid.layoutNumbers()
+		class RowNumbers extends GutterMarker {
+			constructor(id) {
+				super();
+				this.id = id;
+			}
+
+			eq(other) {
+				return other.id === this.id;
+			}
+
+			toDOM(view) {
+				const dom = document.createElement("div");
+				dom.className = "cm-knowwe-table-linenumbers";
+				numbersOf(view).set(this.id, dom);
+				const controller = gridsOf(view).get(this.id);
+				if (controller) controller.layoutNumbers();
+				return dom;
+			}
+		}
+
+		const rowNumbers = lineNumberWidgetMarker
+			? lineNumberWidgetMarker.of((view, widget) => widget instanceof TableWidget ? new RowNumbers(widget.id) : null)
+			: [];
+
+		function decorations(state, tables, editing, asText) {
 			if (searchPanelOpen(state)) return Decoration.none;
-			return Decoration.set(tables.filter(table => table.id !== editing).map(table => Decoration.replace({
+			return Decoration.set(tables.filter(table => table.id !== editing && !asText.has(table.id)).map(table => Decoration.replace({
 				widget: new TableWidget(table.id, state.sliceDoc(table.from, table.to), table.markup),
 				block: true
 			}).range(table.from, table.to)), true);
@@ -223,10 +251,21 @@ window.KnowWETableEditor = (function () {
 			create(state) {
 				ensureSyntaxTree(state, state.doc.length, 100);
 				const tables = identify(tableRanges(state), []);
-				return {tables, editing: null, decorations: decorations(state, tables, null)};
+				const asText = new Set();
+				return {tables, editing: null, asText, decorations: decorations(state, tables, null, asText)};
 			},
 			update(value, tr) {
-				let {tables, editing} = value;
+				let {tables, editing, asText} = value;
+				for (const effect of tr.effects) {
+					if (!effect.is(showAsText)) continue;
+					asText = new Set(asText);
+					if (effect.value.text) {
+						asText.add(effect.value.id);
+					} else {
+						asText.delete(effect.value.id);
+						if (editing === effect.value.id) editing = null;
+					}
+				}
 				const treeChanged = syntaxTree(tr.state) !== syntaxTree(tr.startState);
 				if (tr.docChanged || treeChanged) {
 					const mapped = tables.map(table => ({
@@ -235,6 +274,9 @@ window.KnowWETableEditor = (function () {
 						to: tr.changes.mapPos(table.to, -1)
 					}));
 					tables = identify(tableRanges(tr.state), mapped);
+					if ([...asText].some(id => !tables.some(table => table.id === id))) {
+						asText = new Set([...asText].filter(id => tables.some(table => table.id === id)));
+					}
 				}
 				const head = tr.state.selection.main.head;
 				if (tr.docChanged && !tr.annotation(gridChange) && (tr.isUserEvent("input") || tr.isUserEvent("delete"))) {
@@ -245,11 +287,11 @@ window.KnowWETableEditor = (function () {
 					const table = tables.find(table => table.id === editing);
 					if (!table || head < table.from || head > table.to) editing = null;
 				}
-				if (tables === value.tables && editing === value.editing
+				if (tables === value.tables && editing === value.editing && asText === value.asText
 					&& searchPanelOpen(tr.state) === searchPanelOpen(tr.startState)) {
 					return value;
 				}
-				return {tables, editing, decorations: decorations(tr.state, tables, editing)};
+				return {tables, editing, asText, decorations: decorations(tr.state, tables, editing, asText)};
 			},
 			provide: field => EditorView.decorations.from(field, value => value.decorations)
 		});
@@ -263,6 +305,8 @@ window.KnowWETableEditor = (function () {
 			update(update) {
 				const grids = gridsOf(update.view);
 				if (!grids.size) return;
+				// lines added or removed above a grid change the numbers of its rows
+				if (update.docChanged || update.geometryChanged) grids.forEach(controller => controller.layoutNumbers());
 				const shown = new Set();
 				update.state.field(field).decorations.between(0, update.state.doc.length, (from, to, deco) => {
 					shown.add(deco.spec.widget.id);
@@ -277,6 +321,124 @@ window.KnowWETableEditor = (function () {
 			destroy() {
 				gridsOf(this.view).forEach(controller => controller.destroy());
 				views.delete(this.view);
+			}
+		});
+
+		/**
+		 * The tool next to a table shown as text, to show it as grid again. It shows while the mouse is over the table
+		 * or while the text cursor is in it, left of the text like the tools of a grid, and at the upper edge of the
+		 * editor while a long table scrolls.
+		 */
+		const textTools = ViewPlugin.fromClass(class {
+			constructor(view) {
+				this.view = view;
+				this.hoverId = null;
+				this.overTool = false;
+				this.shownId = null;
+				this.tool = document.createElement("div");
+				this.tool.className = "knowwe-table-tools-floating";
+				this.tool.style.display = "none";
+				this.tool.append(iconButton("table_show_grid", "fa-table", "show as grid"));
+				// keeps the focus and the selection in the editor
+				this.tool.addEventListener("mousedown", event => event.preventDefault());
+				this.tool.addEventListener("click", event => {
+					event.preventDefault();
+					if (this.shownId !== null) this.showGrid(this.shownId);
+				});
+				this.tool.addEventListener("mouseenter", () => this.overTool = true);
+				this.tool.addEventListener("mouseleave", () => {
+					this.overTool = false;
+					this.later();
+				});
+				const signal = (this.listeners = new AbortController()).signal;
+				view.contentDOM.addEventListener("mousemove", event => this.track(event), {signal});
+				view.contentDOM.addEventListener("mouseleave", () => {
+					this.hoverId = null;
+					this.later();
+				}, {signal});
+				view.scrollDOM.addEventListener("scroll", () => this.schedule(), {passive: true, signal});
+				window.addEventListener("resize", () => this.schedule(), {signal});
+			}
+
+			update(update) {
+				if (update.docChanged || update.selectionSet || update.focusChanged || update.geometryChanged
+					|| update.state.field(field) !== update.startState.field(field)) {
+					this.schedule();
+				}
+			}
+
+			destroy() {
+				this.listeners.abort();
+				this.tool.remove();
+			}
+
+			// the tables shown as text, the search panel shows all tables as text and has no tools
+			textTable(id) {
+				const state = this.view.state;
+				const value = state.field(field, false);
+				if (id === null || !value || searchPanelOpen(state)) return null;
+				const table = value.tables.find(table => table.id === id);
+				return table && (table.id === value.editing || value.asText.has(table.id)) ? table : null;
+			}
+
+			track(event) {
+				const pos = this.view.posAtCoords({x: event.clientX, y: event.clientY});
+				const value = this.view.state.field(field, false);
+				const table = pos === null || !value ? null : tableAt(value.tables, pos);
+				const id = table && this.textTable(table.id) ? table.id : null;
+				if (id === this.hoverId) return;
+				this.hoverId = id;
+				// leaving the table for the tool passes the gutter, the delay keeps the tool meanwhile
+				if (id === null) {
+					this.later();
+				} else {
+					this.schedule();
+				}
+			}
+
+			later() {
+				setTimeout(() => this.schedule(), 100);
+			}
+
+			schedule() {
+				this.view.requestMeasure({key: this, read: () => this.measure(), write: place => this.place(place)});
+			}
+
+			measure() {
+				const view = this.view;
+				let table = this.overTool ? this.textTable(this.shownId) : this.textTable(this.hoverId);
+				if (!table && view.hasFocus) {
+					const value = view.state.field(field, false);
+					const atCursor = value && tableAt(value.tables, view.state.selection.main.head);
+					table = atCursor ? this.textTable(atCursor.id) : null;
+				}
+				if (!table) return null;
+				const top = view.lineBlockAt(table.from).top + view.documentTop;
+				const bottom = view.lineBlockAt(table.to).bottom + view.documentTop;
+				const editor = view.scrollDOM.getBoundingClientRect();
+				if (bottom < editor.top || top > editor.bottom) return null;
+				return {id: table.id, top, bottom, editorTop: editor.top, left: view.contentDOM.getBoundingClientRect().left};
+			}
+
+			place(place) {
+				const tool = this.tool;
+				// the button stays under the mouse while the mouse is on it
+				if (this.overTool && place && place.id === this.shownId) return;
+				this.shownId = place ? place.id : null;
+				if (!place) {
+					tool.style.display = "none";
+					return;
+				}
+				if (!tool.isConnected) document.body.append(tool);
+				tool.style.display = "";
+				const height = tool.offsetHeight;
+				tool.style.top = Math.min(Math.max(place.top, place.editorTop), Math.max(place.top, place.bottom - height)) + "px";
+				tool.style.left = (place.left - tool.offsetWidth) + "px";
+			}
+
+			showGrid(id) {
+				this.view.dispatch({effects: showAsText.of({id, text: false})});
+				this.view.focus();
 			}
 		});
 
@@ -325,6 +487,13 @@ window.KnowWETableEditor = (function () {
 				height: "22px",
 				width: "auto"
 			},
+			".cm-knowwe-table-toolbar i": {
+				width: "22px",
+				height: "22px",
+				fontSize: "16px",
+				lineHeight: "22px",
+				textAlign: "center"
+			},
 			".cm-knowwe-table-grid": {
 				overflow: "auto",
 				maxWidth: "100%",
@@ -334,6 +503,15 @@ window.KnowWETableEditor = (function () {
 			},
 			".cm-knowwe-table-sheet": {
 				position: "relative"
+			},
+			".cm-knowwe-table-linenumbers": {
+				position: "relative",
+				height: "0"
+			},
+			".cm-knowwe-table-linenumbers > div": {
+				position: "absolute",
+				right: "0",
+				whiteSpace: "nowrap"
 			},
 			".cm-knowwe-table-grid table.spreadsheet": {
 				margin: "0"
@@ -346,7 +524,7 @@ window.KnowWETableEditor = (function () {
 			}
 		});
 
-		shared = {field, gridChange, cleanup, theme, enabled: new Compartment()};
+		shared = {field, gridChange, showAsText, cleanup, textTools, rowNumbers, theme, enabled: new Compartment()};
 		return shared;
 	}
 
@@ -360,6 +538,14 @@ window.KnowWETableEditor = (function () {
 		return views.get(view);
 	}
 
+	// the elements in the line number gutter of each editor by table id
+	const numberViews = new WeakMap();
+
+	function numbersOf(view) {
+		if (!numberViews.has(view)) numberViews.set(view, new Map());
+		return numberViews.get(view);
+	}
+
 	function grid(view, id, text) {
 		const grids = gridsOf(view);
 		let controller = grids.get(id);
@@ -371,6 +557,14 @@ window.KnowWETableEditor = (function () {
 			controller.update(text);
 		}
 		return controller;
+	}
+
+	function iconButton(name, icon, title) {
+		const button = document.createElement("a");
+		button.className = name;
+		button.title = title;
+		button.innerHTML = "<i class='fa " + icon + "'></i>";
+		return button;
 	}
 
 	function svgButton(iconId) {
@@ -397,7 +591,7 @@ window.KnowWETableEditor = (function () {
 			const toolbar = document.createElement("div");
 			toolbar.className = this.side === "left" ? "knowwe-table-tools-floating" : "cm-knowwe-table-toolbar";
 			this.toolbar = toolbar;
-			toolbar.append(...BUTTONS.map(svgButton));
+			toolbar.append(...BUTTONS.map(svgButton), iconButton("table_show_text", "fa-code", "show as text"));
 			// keeps the focus and the selected cells in the grid
 			toolbar.addEventListener("mousedown", event => event.preventDefault());
 			toolbar.addEventListener("click", event => {
@@ -431,6 +625,9 @@ window.KnowWETableEditor = (function () {
 			const follow = () => {
 				if (this.isToolbarShown()) this.placeToolbar();
 			};
+			// the row numbers follow the rows of the grid
+			this.rowResizes = new ResizeObserver(() => this.layoutNumbers());
+			this.rowResizes.observe(host);
 			if (this.side === "left") {
 				// the toolbar is outside the editor, so it is shown while the grid or the toolbar is hovered or focused
 				this.hovered = new Set();
@@ -464,6 +661,7 @@ window.KnowWETableEditor = (function () {
 
 		destroy() {
 			this.listeners.abort();
+			this.rowResizes.disconnect();
 			if (this.resizes) this.resizes.disconnect();
 			if (this.side === "left") this.toolbar.remove();
 		}
@@ -511,7 +709,7 @@ window.KnowWETableEditor = (function () {
 				toolbar.style.display = hidden ? "none" : "";
 				if (hidden) return;
 				const button = toolbar.firstElementChild.offsetHeight + 1;
-				const rows = Math.max(1, Math.min(BUTTONS.length, Math.floor(box.height / button)));
+				const rows = Math.max(1, Math.min(toolbar.children.length, Math.floor(box.height / button)));
 				toolbar.style.gridTemplateRows = "repeat(" + rows + ", auto)";
 				const top = Math.min(Math.max(box.top, editor.top), Math.max(box.top, box.bottom - toolbar.offsetHeight));
 				toolbar.style.top = top + "px";
@@ -533,6 +731,36 @@ window.KnowWETableEditor = (function () {
 
 		hasFocus() {
 			return this.dom.contains(document.activeElement);
+		}
+
+		/** Writes the line number of each row into the line number gutter, next to the row. */
+		layoutNumbers() {
+			if (!this.numbersKey) this.numbersKey = {};
+			this.view.requestMeasure({
+				key: this.numbersKey,
+				read: () => {
+					const dom = numbersOf(this.view).get(this.id);
+					const range = this.range();
+					if (!dom || !dom.isConnected || !range || !this.dom.isConnected) return null;
+					const base = this.dom.getBoundingClientRect().top;
+					const first = this.view.state.doc.lineAt(range.from).number;
+					const rows = [...this.sheet.element[0].querySelectorAll("tr")].map((row, index) => {
+						const box = row.getBoundingClientRect();
+						return {number: first + index, top: box.top - base, height: box.height};
+					});
+					return {dom, rows};
+				},
+				write: layout => {
+					if (!layout) return;
+					layout.dom.replaceChildren(...layout.rows.map(row => {
+						const number = document.createElement("div");
+						number.textContent = row.number;
+						number.style.top = row.top + "px";
+						number.style.height = number.style.lineHeight = row.height + "px";
+						return number;
+					}));
+				}
+			});
 		}
 
 		/** The current range of the table in the document, null if it is gone. */
@@ -601,6 +829,10 @@ window.KnowWETableEditor = (function () {
 		runButton(name) {
 			const sheet = this.sheet;
 			const selected = sheet.selected;
+			if (name === "table_show_text") {
+				this.showAsText();
+				return;
+			}
 			if (!selected && name !== "table_delete_row" && name !== "table_delete_col") return;
 			switch (name) {
 				case "table_insert_row_before":
@@ -628,6 +860,19 @@ window.KnowWETableEditor = (function () {
 					break;
 				}
 			}
+		}
+
+		/** Shows the table as text with the text cursor at its start, the tool next to it shows it as grid again. */
+		showAsText() {
+			// takes over a cell still being edited
+			this.sheet.stopEditCell();
+			const range = this.range();
+			if (!range) return;
+			this.view.dispatch({
+				effects: sharedParts().showAsText.of({id: this.id, text: true}),
+				selection: {anchor: range.from}
+			});
+			this.view.focus();
 		}
 
 		handleKey(event) {
@@ -715,6 +960,9 @@ window.KnowWETableEditor = (function () {
 }
 .knowwe-table-tools-floating svg {
 	height: 22px; width: auto;
+}
+.knowwe-table-tools-floating i {
+	width: 22px; height: 22px; font-size: 16px; line-height: 22px; text-align: center;
 }`;
 		document.head.append(style);
 	}
@@ -739,7 +987,7 @@ window.KnowWETableEditor = (function () {
 
 	function extension() {
 		const parts = sharedParts();
-		return [parts.field, parts.cleanup, parts.theme];
+		return [parts.field, parts.cleanup, parts.textTools, parts.rowNumbers, parts.theme];
 	}
 
 	/** Shows the tables of an editor created by KnowWEEditor as grids or as text, and remembers the choice. */
