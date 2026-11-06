@@ -99,6 +99,58 @@ table.spreadsheet tr td.copied.selected.multiSelected > div {
 }
 
 
+/* header rows kept at the top while the table scrolls below them, see Spreadsheet.stickHeaderRows() */
+table.spreadsheet tr.stuck {
+	position: relative;
+	z-index: 2;
+}
+
+/* the header rows follow the scrolling of the page up to the end of the table, see Spreadsheet.stickHeaderRows() */
+table.spreadsheet tr.scroll-stuck {
+	position: relative;
+	z-index: 2;
+	animation: spreadsheet-stick-header linear both;
+	animation-timeline: scroll(root block);
+}
+
+@keyframes spreadsheet-stick-header {
+	from {
+		transform: translateY(0);
+	}
+	to {
+		transform: translateY(var(--stick-max, 0px));
+	}
+}
+
+/*
+ * The collapsed borders are drawn by the table and stay behind when the header rows move, the rows below would show
+ * through the gaps. Each moved cell draws an opaque ring over its border instead.
+ */
+table.spreadsheet tr.stuck > td {
+	position: relative;
+}
+
+table.spreadsheet tr.stuck > td::after {
+	content: "";
+	position: absolute;
+	inset: -1px;
+	border: 1px solid var(--border-color-default);
+	pointer-events: none;
+}
+
+/* covers the rows scrolled above the header rows up to the top of the window, moves along with the header rows */
+table.spreadsheet tr.stuck:first-child > td::before {
+	content: "";
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	bottom: calc(100% - 1px);
+	height: calc(var(--stuck-cover, 0px) + 1px);
+	box-sizing: border-box;
+	border-bottom: 1px solid var(--border-color-default);
+	background-color: var(--bg-color-content, #fff);
+}
+
 div.cellEdit {
 	position: absolute;
 	z-index: 10;

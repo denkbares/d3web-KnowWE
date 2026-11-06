@@ -519,6 +519,17 @@ window.KnowWETableEditor = (function () {
 				position: "relative",
 				zIndex: "2"
 			},
+			// the collapsed borders are drawn by the table and stay behind, each moved cell draws an opaque ring instead
+			".cm-knowwe-table-grid table.spreadsheet tr.cm-knowwe-table-stuck > td": {
+				position: "relative"
+			},
+			".cm-knowwe-table-grid table.spreadsheet tr.cm-knowwe-table-stuck > td::after": {
+				content: "''",
+				position: "absolute",
+				inset: "-1px",
+				border: "1px solid var(--border-color-default)",
+				pointerEvents: "none"
+			},
 			".cm-knowwe-table-linenumbers > div.cm-knowwe-table-stuck": {
 				zIndex: "1",
 				left: "-14px",
@@ -801,7 +812,9 @@ window.KnowWETableEditor = (function () {
 					const box = table.getBoundingClientRect();
 					const editor = this.view.scrollDOM.getBoundingClientRect();
 					const height = rows.reduce((sum, row) => sum + row.getBoundingClientRect().height, 0);
-					const offset = rows.length ? Math.max(0, Math.min(editor.top - box.top, box.height - height)) : 0;
+					// the first row starts half a collapsed border below the table, measured without its current offset
+					const top = rows.length ? rows[0].getBoundingClientRect().top - Spreadsheet.rowOffset(rows[0]) : 0;
+					const offset = rows.length ? Math.max(0, Math.min(editor.top - top, box.bottom - top - height)) : 0;
 					return {rows, offset};
 				},
 				write: stick => {

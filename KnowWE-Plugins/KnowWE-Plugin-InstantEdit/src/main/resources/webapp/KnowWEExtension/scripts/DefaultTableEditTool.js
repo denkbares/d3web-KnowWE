@@ -8,6 +8,37 @@ KNOWWE.plugin.tableEditTool = function() {
     return "tableEdit" + id;
   }
 
+  // the lower edge of the page header or of the tool bar of the edit mode that stay at the top of the window while the
+  // page scrolls, or 0
+  function pageHeaderBottom() {
+    let bottom = 0;
+    jq$(".fixed-header > .header, .sticky, #editmaintoolbar").each(function() {
+      const position = getComputedStyle(this).position;
+      if (position !== "fixed" && position !== "sticky") return;
+      const box = this.getBoundingClientRect();
+      if (box.height > 0 && box.top <= 1) bottom = Math.max(bottom, box.bottom);
+    });
+    return bottom;
+  }
+
+  // keeps the header rows of the table below the page header while the page scrolls, until the table is closed
+  function stickHeaderRows(id) {
+    const stick = function() {
+      const sheet = spreadsheet[id];
+      if (!sheet || !document.body.contains(sheet.element[0])) {
+        window.removeEventListener("scroll", stick);
+        window.removeEventListener("resize", stick);
+        return;
+      }
+      sheet.stickHeaderRows(pageHeaderBottom());
+    };
+    window.addEventListener("scroll", stick, {passive: true});
+    window.addEventListener("resize", stick);
+    // rows added, removed or turned into header rows are drawn anew
+    spreadsheet[id].setChangeListener(stick);
+    stick();
+  }
+
   function createSvgButton(iconId) {
     let hoverText = iconId.replace(/_/g, " ").replace("table ", "");
     return "<a class='" + iconId + " action narrow' title='" + hoverText + "'>" +
@@ -96,6 +127,7 @@ KNOWWE.plugin.tableEditTool = function() {
       spreadsheet[id].setSupportLinks(supportLinks[id] == null ? true : supportLinks[id]);
       spreadsheet[id].setWikiMarkup(originalWikiText[id]);
       originalWikiText[id] = spreadsheet[id].getWikiMarkup();
+      stickHeaderRows(id);
 
       const $root = jq$(spreadsheet[id].element).parents(".editarea");
       $root.find(".table_insert_row_before").click(function(event) {
@@ -1315,6 +1347,72 @@ Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
   }
   this.selectCell(tr, tc, false);
   this.selectCell(sr, sc, true);
+};
+
+/**
+ * Returns the header rows of the table, the rows from the top whose cells are all header cells.
+ */
+Spreadsheet.prototype.getHeaderRows = function() {
+  const rows = [];
+  const table = this.element.find("table")[0];
+  if (!table) return rows;
+  for (const row of table.rows) {
+    if (!row.cells.length || ![...row.cells].every(cell => jq$(cell).hasClass("table-header"))) break;
+    rows.push(row);
+  }
+  return rows;
+};
+
+/** Returns the vertical offset a row is currently moved by, also by an animation, see stickHeaderRows(). */
+Spreadsheet.rowOffset = function(row) {
+  const transform = getComputedStyle(row).transform;
+  return transform && transform !== "none" ? new DOMMatrixReadOnly(transform).m42 : 0;
+};
+
+// whether the header rows can follow the scrolling of the page in the browser itself, see stickHeaderRows()
+Spreadsheet.scrollTimeline = typeof CSS !== "undefined" && CSS.supports("animation-timeline", "scroll()");
+
+/**
+ * Keeps the header rows at the given position in the window, e.g. the lower edge of a fixed page header, while the
+ * rest of the table scrolls below them, but not beyond the end of the table. Returns the offset of the rows.
+ *
+ * Where the browser supports scroll driven animations, the rows move by an animation along the scrolling of the page,
+ * so they stay in place while scrolling fast; this function then only sets the range of the animation and has to run
+ * again when the layout changes. Otherwise it moves the rows itself and has to run on every scroll.
+ */
+Spreadsheet.prototype.stickHeaderRows = function(edge) {
+  const table = this.element.find("table")[0];
+  const rows = this.getHeaderRows();
+  this.element.find("tr.stuck, tr.scroll-stuck").each(function() {
+    if (rows.includes(this)) return;
+    jq$(this).removeClass("stuck scroll-stuck").css({transform: "", animation: ""});
+  });
+  if (!table || !rows.length) return 0;
+  const box = table.getBoundingClientRect();
+  const height = rows.reduce((sum, row) => sum + row.getBoundingClientRect().height, 0);
+  // the first row starts half a collapsed border below the table, measured without its current offset
+  const top = rows[0].getBoundingClientRect().top - Spreadsheet.rowOffset(rows[0]);
+  const max = Math.max(0, box.bottom - top - height);
+  const offset = Math.max(0, Math.min(edge - top, max));
+  // the rows scrolled above the header rows would show next to whatever the page keeps above them, a cover above
+  // the header rows hides them, see DefaultTableEditTool.css; it reaches well beyond the top of the window, since
+  // the browser places the moving rows a few pixels apart from this measurement while scrolling
+  table.style.setProperty("--stuck-cover", (edge + 100) + "px");
+  const timeline = Spreadsheet.scrollTimeline && max > 0;
+  for (const row of rows) {
+    if (timeline) {
+      const start = window.scrollY + top - edge;
+      row.style.transform = "";
+      row.style.setProperty("--stick-max", max + "px");
+      row.classList.add("scroll-stuck");
+      row.style.animationRange = start + "px " + (start + max) + "px";
+    } else {
+      row.classList.remove("scroll-stuck");
+      row.style.transform = offset ? "translateY(" + offset + "px)" : "";
+    }
+    jq$(row).toggleClass("stuck", offset > 0);
+  }
+  return offset;
 };
 
 Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
