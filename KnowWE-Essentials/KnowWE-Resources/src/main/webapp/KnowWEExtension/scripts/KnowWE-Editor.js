@@ -185,7 +185,9 @@ window.KnowWEEditor = (function () {
 				color: "var(--text-color-primary, #000)",
 				border: "1px solid var(--border-color-default, #e2e2e9)",
 				borderRadius: "4px",
-				boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)"
+				boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)",
+				// above the page header (1001) and the sidebar (501), below the tool bar of the edit mode (1900)
+				zIndex: "1500"
 			},
 			".cm-tooltip.cm-tooltip-autocomplete > ul": {
 				fontFamily: "ui-monospace, 'JetBrains Mono', Menlo, Monaco, Consolas, 'Courier New', monospace"
@@ -797,7 +799,7 @@ window.KnowWEEditor = (function () {
 		const {EditorState} = CodeMirror.state;
 		const {
 			EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter, drawSelection,
-			dropCursor, rectangularSelection, crosshairCursor, highlightSpecialChars
+			dropCursor, rectangularSelection, crosshairCursor, highlightSpecialChars, tooltips
 		} = CodeMirror.view;
 		const {defaultKeymap, history, historyKeymap, indentWithTab} = CodeMirror.commands;
 		const {searchKeymap, highlightSelectionMatches} = CodeMirror.search;
@@ -850,6 +852,9 @@ window.KnowWEEditor = (function () {
 				closeBrackets(),
 				rectangularSelection(),
 				crosshairCursor(),
+				// the editor is its own stacking context (see baseTheme), so tooltips inside it would lie below the
+				// following page content, e.g. the other sections in the edit mode; in the body they lie above it
+				tooltips({parent: document.body}),
 				highlightActiveLine(),
 				highlightSelectionMatches(),
 				syntaxHighlighting(parts.highlightStyle),
