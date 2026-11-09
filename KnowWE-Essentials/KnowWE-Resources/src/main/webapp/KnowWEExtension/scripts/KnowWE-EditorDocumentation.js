@@ -19,9 +19,8 @@
 
 /**
  * Quick documentation of markups and annotations in the CodeMirror editors of KnowWE, in the page editor as well as
- * in the edit mode. Hovering a markup name like `%%Cable` or an annotation name like `@Plug` shows the documentation
- * of the markup or annotation, F1 shows it for the caret: for the name at the caret, else for the annotation of the
- * line, else for the markup around the caret. The documentation comes as HTML from the MarkupDocumentationAction,
+ * in the edit mode. F1 shows the documentation for the caret: for a markup name like `%%Cable` or an annotation name
+ * like `@Plug` at the caret, else for the annotation of the line, else for the markup around the caret. The documentation comes as HTML from the MarkupDocumentationAction,
  * the same the completion shows next to suggested markups and annotations. Its examples are highlighted like the
  * editor highlights wiki text, see upgrade().
  */
@@ -91,7 +90,7 @@ window.KnowWEEditorDocumentation = (function () {
 		const style = document.createElement("style");
 		style.textContent = `
 .cm-tooltip.cm-knowwe-doc-tooltip, .cm-tooltip.cm-completionInfo:has(.knowwe-doc) {
-	max-width: min(560px, 90vw); max-height: min(420px, 60vh); overflow: auto; padding: 8px 12px;
+	box-sizing: border-box; max-width: min(560px, 90vw); max-height: min(420px, 60vh); overflow: auto; padding: 8px 12px;
 	font-family: var(--font-family, system-ui, sans-serif); font-size: 13px; line-height: 1.45; white-space: normal;
 }
 .knowwe-doc code {
@@ -122,8 +121,8 @@ window.KnowWEEditorDocumentation = (function () {
 .knowwe-doc-annotations, .knowwe-doc-values { margin: 0; padding: 0; list-style: none; }
 .knowwe-doc-annotations > li, .knowwe-doc-values > li { padding: 2px 4px; margin: 0 -4px; border-radius: 3px; }
 .knowwe-doc-annotations > li.knowwe-doc-current { background-color: var(--highlight-color-light, #d9edf7); }
-.cm-knowwe-doc-tooltip .knowwe-doc-annotations > li { cursor: pointer; }
-.cm-knowwe-doc-tooltip .knowwe-doc-annotations > li:hover { background-color: var(--bg-color-secondary-shade, #eee); }
+.cm-knowwe-doc-tooltip .knowwe-doc-annotations > li, .cm-completionInfo .knowwe-doc-annotations > li { cursor: pointer; }
+.cm-knowwe-doc-tooltip .knowwe-doc-annotations > li:hover, .cm-completionInfo .knowwe-doc-annotations > li:hover { background-color: var(--bg-color-secondary-shade, #eee); }
 .knowwe-doc-annotations .knowwe-doc-badge, .knowwe-doc-values .knowwe-doc-summary { margin-left: 6px; }
 .knowwe-doc-summary { color: var(--text-color-secondary, #666); }
 .knowwe-doc-annotations .knowwe-doc-summary { display: block; margin-left: 2px; font-size: 12px; }
@@ -301,15 +300,8 @@ window.KnowWEEditorDocumentation = (function () {
 	}
 
 	function extensions() {
-		const {hoverTooltip} = CodeMirror.view;
 		sharedParts();
-		return [
-			hoverTooltip((view, pos, side) => {
-				const target = targetAt(view.state, pos, side, false);
-				return target ? tooltipFor(target, "F1 shows this documentation for the caret.") : null;
-			}, {hoverTime: 450}),
-			keyTooltip()
-		];
+		return keyTooltip();
 	}
 
 	if (isAvailable() && KnowWEEditor.registerExtension) {

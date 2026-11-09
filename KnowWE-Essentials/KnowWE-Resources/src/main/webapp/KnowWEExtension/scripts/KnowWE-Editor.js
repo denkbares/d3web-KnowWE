@@ -428,7 +428,8 @@ window.KnowWEEditor = (function () {
 				{text: "Undo", key: "Mod-z"},
 				{text: "Redo", key: "Mod-y", mac: "Mod-Shift-z", win: ["Mod-y", "Ctrl-Shift-z"], linux: ["Mod-y", "Ctrl-Shift-z"]},
 				{text: "Show completions", key: "Ctrl-Space", mac: ["Ctrl-Space", "Alt-`"]},
-				{text: "Close completion, search or help", key: "Escape"},
+				{text: "Show documentation of the markup or annotation", key: "F1"},
+				{text: "Close completion, search, documentation or help", key: "Escape"},
 				{text: "Let Tab move the focus (toggle)", key: "Ctrl-m", mac: "Shift-Alt-m"}
 			]
 		},
