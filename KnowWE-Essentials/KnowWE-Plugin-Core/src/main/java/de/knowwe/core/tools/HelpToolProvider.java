@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupDocumentation;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -39,14 +39,10 @@ import de.knowwe.util.Icon;
  */
 public class HelpToolProvider implements ToolProvider {
 
-	public static final String HELP_TOOL_WIKI_PROPERTY = "knowwe.helpTool.externalWiki";
+	public static final String HELP_TOOL_WIKI_PROPERTY = DefaultMarkupDocumentation.HELP_WIKI_PROPERTY;
 
 	private String getExternalHelpWikiLink(UserContext context, Section<?> section) {
-		String wikiProperty = System.getProperty(HELP_TOOL_WIKI_PROPERTY, context.getEnvironment()
-				.getWikiConnector()
-				.getWikiProperty(HELP_TOOL_WIKI_PROPERTY));
-		if (wikiProperty == null) return null;
-		return wikiProperty + "Doc " + section.get().getName();
+		return DefaultMarkupDocumentation.getExternalHelpLink(context, section.get().getName());
 	}
 
 	@Override
@@ -91,15 +87,6 @@ public class HelpToolProvider implements ToolProvider {
 	}
 
 	private Article getDocArticle(Section<?> section, UserContext userContext) {
-		ArticleManager articleManager =
-				userContext.getEnvironment().getArticleManager();
-		String markupName = section.get().getName();
-
-		// looking for possible help articles
-		Article article = articleManager.getArticle("Doc " + markupName);
-		if (article == null) {
-			article = articleManager.getArticle("Doc " + markupName + "s");
-		}
-		return article;
+		return DefaultMarkupDocumentation.getHelpArticle(userContext.getEnvironment().getArticleManager(), section.get().getName());
 	}
 }

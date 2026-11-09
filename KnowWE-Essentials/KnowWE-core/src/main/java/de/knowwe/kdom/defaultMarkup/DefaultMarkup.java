@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -56,6 +57,7 @@ public class DefaultMarkup implements Cloneable {
 	private String documentation = null;
 	private String template = null;
 	private String contentTemplate = "";
+	private List<String> examples = new ArrayList<>();
 
 	public DefaultMarkup(String name) {
 		this.name = name;
@@ -68,6 +70,7 @@ public class DefaultMarkup implements Cloneable {
 		clone.deprecatedAlternative = this.deprecatedAlternative;
 		clone.isInline = this.isInline;
 		clone.documentation = this.documentation;
+		clone.examples = new ArrayList<>(this.examples);
 		return clone;
 	}
 
@@ -122,6 +125,29 @@ public class DefaultMarkup implements Cloneable {
 	 */
 	public void setTemplate(String template) {
 		this.template = template;
+	}
+
+	/**
+	 * Adds an example of this markup, shown in the documentation of the markup in the editor and in the completion.
+	 * The example is wiki text, usually the whole markup from <code>%%Name</code> to the closing <code>%</code>, and
+	 * should show a realistic use of the markup and its most important annotations. If a markup has no example, its
+	 * template serves as one.
+	 *
+	 * @param example the wiki text of the example
+	 * @return this markup, for chaining
+	 */
+	public DefaultMarkup addExample(String example) {
+		this.examples.add(example);
+		return this;
+	}
+
+	/**
+	 * Returns the examples of this markup in the order they were added, see {@link #addExample(String)}.
+	 *
+	 * @return the wiki texts of the examples, empty if the markup has none
+	 */
+	public List<String> getExamples() {
+		return Collections.unmodifiableList(examples);
 	}
 
 	/**
@@ -471,6 +497,7 @@ public class DefaultMarkup implements Cloneable {
 		private boolean deprecated;
 
 		private String documentation = null;
+		private String example = null;
 		private final Map<String, String> valueDocumentation = new LinkedHashMap<>();
 
 		private final Collection<Supplier<Type>> nameTypes = new LinkedList<>();
@@ -515,6 +542,29 @@ public class DefaultMarkup implements Cloneable {
 		public Annotation setDocumentation(String documentation) {
 			this.documentation = documentation;
 			return this;
+		}
+
+		/**
+		 * Sets an example of this annotation, shown in its documentation in the editor and in the completion. The
+		 * example is wiki text, usually one or more complete annotation lines like <code>@name: value</code>. Set
+		 * 'null' to remove the example.
+		 *
+		 * @param example the wiki text of the example
+		 * @return this annotation, for chaining
+		 */
+		public Annotation setExample(String example) {
+			this.example = example;
+			return this;
+		}
+
+		/**
+		 * Returns the example of this annotation, see {@link #setExample(String)}, or 'null' if it has none.
+		 *
+		 * @return the wiki text of the example
+		 */
+		@Nullable
+		public String getExample() {
+			return example;
 		}
 
 		/**
