@@ -93,30 +93,29 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 				<code>skos:prefLabel @de</code>) makes every cell of the column a literal with that language, quotes are
 				not needed then.</p>
 				<p>The first header cell is optional: if it contains a class, each subject is linked to this class with
-				the predicate given in <code>@typeRelation</code>; otherwise leave it blank. Plugins may define special
-				first headers, e.g. <code>TSMID</code> in ServiceMate wikis, where the first column contains TSM ids
-				instead of IRIs.</p>
+				the predicate given in <code>@typeRelation</code>; otherwise leave it blank. Plugins may define further
+				special first headers.</p>
 				""");
-		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: taurok");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: demo");
 		MARKUP.getAnnotation(ANNOTATION_TYPE_RELATION).setExample("@typeRelation: rdf:type");
 		MARKUP.getAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET)
-				.setExample("@defaultPredicateObjectSet: ssc:type ssc:PrimaryLocation");
+				.setExample("@defaultPredicateObjectSet: rdf:type car:Component");
 		MARKUP.addExample("""
 				%%OntologyTable
-				|| ssc:PrimaryLocation || skos:prefLabel @de
-				| taurok:besatzungsraum | Besatzungsraum
-				| taurok:triebwerkraum | Triebwerkraum
-				| taurok:turmraum | Turmraum
-				@typeRelation: ssc:type
+				|| car:Component || rdfs:label @en || rdfs:label @de
+				| car:battery | Battery | Batterie
+				| car:airFilter | Air filter | Luftfilter
+				| car:idleSpeedSystem | Idle speed system | Leerlaufsystem
+				@typeRelation: rdf:type
 				%
 				""");
 		MARKUP.addExample("""
 				%%OntologyTable
-				|| || skos:prefLabel @de || skos:prefLabel @en || rdfs:seeAlso
-				| ex:engine | Motor | Engine | ex:gearbox, ex:clutch
-				| ex:gearbox | Getriebe | Gearbox |
-				| ex:clutch | Kupplung | Clutch |
-				@defaultPredicateObjectSet: rdf:type ex:Component
+				|| || rdfs:label @en || car:partOf
+				| car:airFilter | Air filter | car:airIntakeSystem
+				| car:idleSpeedSystem | Idle speed system | car:engine
+				| car:battery | Battery | car:electricalSystem
+				@defaultPredicateObjectSet: rdf:type car:Component
 				@package: demo
 				%
 				""");

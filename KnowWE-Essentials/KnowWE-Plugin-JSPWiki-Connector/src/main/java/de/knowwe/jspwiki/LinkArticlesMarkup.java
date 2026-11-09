@@ -121,31 +121,31 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 				markups (<code>%%Off:</code>) are shown struck through, errors and warnings of the markup are counted
 				behind the link.</p>
 				""");
-		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: taurok");
-		MARKUP.getAnnotation(ANNOTATION_ARTICLE).setExample("@article: Prototype .*");
-		MARKUP.getAnnotation(ANNOTATION_EXCLUDE).setExample("@exclude: Knowledge Base, System Structure");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: demo");
+		MARKUP.getAnnotation(ANNOTATION_ARTICLE).setExample("@article: Demo - .*");
+		MARKUP.getAnnotation(ANNOTATION_EXCLUDE).setExample("@exclude: Demo - Master, Demo - Terminology");
 		MARKUP.getAnnotation(ANNOTATION_MARKUP).setExample("@markup: Question");
 		MARKUP.getAnnotation(ANNOTATION_TEMPLATE)
 				.setDocumentation("Set a template how each Link-Label should be adapted, e.g.\n"
 								  + "@template: * link.replace(\"\u00ABregex\u00BB\", \"\u00ABreplacement\u00BB\")<br>"
 								  + "The text before <code>link</code> is put in front of each link (default is <code>*</code>, a "
 								  + "bullet list); the optional <code>replace</code> replaces all matches of the regex in the displayed titles.")
-				.setExample("@template: * link.replace(\"Prototype \", \"\")");
+				.setExample("@template: * link.replace(\"Demo - \", \"\")");
 		MARKUP.getAnnotation(ANNOTATION_PREFIX_REDUCTION).setExample("@prefixReduction: true");
 		MARKUP.getAnnotation(ANNOTATION_FRAME).setExample("@frame: false");
 		MARKUP.getAnnotation(ANNOTATION_HEADER).setExample("@header: false");
 		MARKUP.addExample("""
 				%%LinkArticles
-				@package: taurok
-				@exclude: Knowledge Base
-				@exclude: System Structure
+				@package: demo
+				@exclude: Demo - Master
+				@exclude: Demo - Terminology
 				%
 				""");
 		MARKUP.addExample("""
 				%%LinkArticles
-				@markup: TSM
-				@article: Prototype .*
-				@template: * link
+				@markup: CoveringList
+				@article: Demo - .*
+				@template: * link.replace("Demo - ", "")
 				%
 				""");
 	}

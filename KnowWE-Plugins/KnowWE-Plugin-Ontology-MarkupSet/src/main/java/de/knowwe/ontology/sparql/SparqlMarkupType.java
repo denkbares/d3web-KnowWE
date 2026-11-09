@@ -150,11 +150,11 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME)
 				.setDocumentation("Configure the package or package rule of the markup; the query runs against the " +
 								  "ontology compiling this package.")
-				.setExample("@package: taurok");
+				.setExample("@package: demo");
 		MARKUP.getAnnotation(NAME)
 				.setDocumentation("Registers the query under a name that other markups can reference. Such markups are for example " +
 								  "<code>%%InlineSparql</code> or <code>%%ExpectedSparqlResult</code>; the name is also shown in the title.")
-				.setExample("@name: AllPrimaryLocations");
+				.setExample("@name: CarComponents");
 		MARKUP.getAnnotation(RAW_OUTPUT)
 				.setDocumentation("Shows the values as they are in the ontology (default is <code>false</code>). Literals keep their " +
 								  "language tag or datatype, IRIs are shown without abbreviation or links.")
@@ -217,32 +217,30 @@ public class SparqlMarkupType extends DefaultMarkupType {
 				.setExample("@columnWidth: Name 200px");
 		MARKUP.addExample("""
 				%%Sparql
-				SELECT ?Location ?Name WHERE {
-				  ?Location ssc:type ssc:PrimaryLocation .
+				SELECT ?Component ?Label WHERE {
+				  ?Component rdf:type car:Component .
 				  OPTIONAL {
-				    ?Location skos:prefLabel ?Name .
-				    FILTER (lang(?Name) = "de")
+				    ?Component rdfs:label ?Label .
+				    FILTER (lang(?Label) = "en")
 				  }
 				}
-				ORDER BY ?Name
-				@name: PrimaryLocations
+				ORDER BY ?Label
+				@name: CarComponents
 				%
 				""");
 		MARKUP.addExample("""
 				%%Sparql
-				SELECT ?TsmID ?Name ?Type ?Package WHERE {
-				  ?uri ssc:tsmId ?TsmID ;
-				    ssc:type ?Type ;
-				    ssc:isInPackage ?Package .
+				SELECT ?System ?Part ?Label WHERE {
+				  ?Part car:partOf ?System .
 				  OPTIONAL {
-				    ?uri skos:prefLabel ?Name .
-				    FILTER (lang(?Name) = "de")
+				    ?Part rdfs:label ?Label .
+				    FILTER (lang(?Label) = "en")
 				  }
 				}
-				ORDER BY ?TsmID
-				@columnWidth: Name 300px
+				ORDER BY ?System ?Part
+				@columnWidth: Label 300px
 				@zebramode: false
-				@package: taurok
+				@package: demo
 				%
 				""");
 	}

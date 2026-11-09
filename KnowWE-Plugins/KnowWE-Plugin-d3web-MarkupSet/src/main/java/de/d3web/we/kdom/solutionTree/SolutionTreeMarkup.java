@@ -40,16 +40,18 @@ public class SolutionTreeMarkup extends DefaultMarkupType {
 				""");
 		m.addExample("""
 				%%Solution
-				VerificationCompleteSolution
+				Flat battery
+				Clogged air filter ~ "The air filter is clogged and probably just needs some cleaning."
 				%
 				""");
 		m.addExample("""
 				%%Solution
-				Display problem
-				- Main display defective ~ "Replace the main display unit."
-				- Status display defective
-				Power supply problem
-				- Fuse defective
+				Faults
+				- Engine problems
+				-- Bad ignition timing
+				-- Damaged idle speed system
+				- Flat battery
+				Other problem ~ "Sorry, the problem could not be identified."
 				%
 				""");
 	}

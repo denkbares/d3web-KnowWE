@@ -49,20 +49,20 @@ public class PropertyMarkup extends DefaultMarkupType {
 				""");
 		m.addExample("""
 				%%Property
-				UB1.prompt.de = Bordnetzspannung ablesen und eingeben.
-				UB1.prompt.en = Read power supply and enter.
-				UB1.unit = V DC
-				UB1.init = 28
+				Exhaust fumes.prompt.en = What is the color of the exhaust fumes?
+				Exhaust fumes.prompt.de = Welche Farbe haben die Abgase?
+				"Real mileage  /100km".unit = l
+				"Real mileage  /100km".init = 8
 				%
 				""");
 		m.addExample("""
 				%%Property
-				"Hauptdisplay@defekt".prompt.en = Driver main display defective, replace unit
-				Betriebszustand#not_known.prompt.en = Unknown
-				KNOWLEDGEBASE.noErrorSolution = NoErrorSolution
-				NoErrorSolution.description.en = \"""
-				The selected function is not defective,
-				or the error occurs only sporadically.
+				"Check: Battery.".prompt.en = Is the battery voltage above 12 V?
+				Exhaust fumes#black.prompt.de = schwarz
+				#invisible.prompt.de = unsichtbar
+				Flat battery.description.en = \"""
+				The battery cannot provide enough energy
+				to turn over the starter.
 				\"""
 				%
 				""");

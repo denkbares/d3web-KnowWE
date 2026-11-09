@@ -111,7 +111,7 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 		MARKUP.getAnnotation(ATTACHMENT_ANNOTATION)
 				.setDocumentation("The attachment to manage, either a file name of an attachment of this page or " +
 								  "<code>article-name/file-name</code>.")
-				.setExample("@attachment: semantic-service-model-ilme.ttl");
+				.setExample("@attachment: car-terminology.txt");
 		MARKUP.getAnnotation(URL_ANNOTATION)
 				.setDocumentation("URL to download the content of the attachment from.")
 				.setExample("@url: https://www.example.com/downloads/vocabulary.ttl");
@@ -145,8 +145,8 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 				.setExample("@regexReplacement: version=\\d+ -> version=1");
 		MARKUP.addExample("""
 				%%Attachment
-				  @attachment: semantic-service-model-ilme.ttl
-				  @versioning: false
+				  @attachment: car-terminology.txt
+				  @compile: true
 				%
 				""");
 		MARKUP.addExample("""

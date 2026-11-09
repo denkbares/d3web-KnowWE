@@ -134,26 +134,24 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 				<code>default</code> stands for all wiki content without an explicit package. Within
 				<code>%%Property</code>, the knowledge base itself is referenced as <code>KNOWLEDGEBASE</code>.</p>
 				""");
-		MARKUP.getAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME).setExample("@uses: taurok");
+		MARKUP.getAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME).setExample("@uses: demo");
 		MARKUP.getAnnotation(ANNOTATION_AUTHOR).setExample("@author: denkbares GmbH");
-		MARKUP.getAnnotation(ANNOTATION_COMMENT).setExample("@comment: Diagnosis of the Taurok sample vehicle");
-		MARKUP.getAnnotation(ANNOTATION_ID).setExample("@id: taurok-kb");
+		MARKUP.getAnnotation(ANNOTATION_COMMENT).setExample("@comment: Example car fault diagnosis knowledge base.");
+		MARKUP.getAnnotation(ANNOTATION_ID).setExample("@id: car-diagnosis");
 		MARKUP.getAnnotation(ANNOTATION_VERSION).setExample("@version: 0.0.1");
-		MARKUP.getAnnotation(ANNOTATION_FILENAME).setExample("@filename: kb.d3web");
+		MARKUP.getAnnotation(ANNOTATION_FILENAME).setExample("@filename: car-diagnosis.d3web");
 		MARKUP.getAnnotation(ANNOTATION_STATUS).setExample("@status: beta");
 		MARKUP.getAnnotation(ANNOTATION_AFFILIATION).setExample("@affiliation: denkbares GmbH");
 		MARKUP.getAnnotation(ANNOTATION_TERM_MATCHING).setExample("@termMatching: case sensitive");
 		MARKUP.addExample("""
 				%%KnowledgeBase
-				XPS-TAUROK
+				Car faults diagnosis
 
-				@version: 0.0.1
-				@filename: kb.d3web
+				@version: 1.0
+				@filename: car-diagnosis.d3web
+				@comment: Example car fault diagnosis knowledge base.
 
-				@uses: default
-				@uses: taurok
-
-				@termMatching: case sensitive
+				@uses: demo
 				%
 				""");
 

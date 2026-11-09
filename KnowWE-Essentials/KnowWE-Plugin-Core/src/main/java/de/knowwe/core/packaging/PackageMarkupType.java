@@ -38,7 +38,7 @@ public class PackageMarkupType extends DefaultMarkupType {
 				<code>package-a AND NOT package-b</code>. The packages are compiled by markups like
 				<code>%%KnowledgeBase</code> or <code>%%Ontology</code> via <code>@uses</code>.</p>
 				""");
-		MARKUP.addExample("%%package taurok\n");
+		MARKUP.addExample("%%package demo\n");
 	}
 
 	public PackageMarkupType() {

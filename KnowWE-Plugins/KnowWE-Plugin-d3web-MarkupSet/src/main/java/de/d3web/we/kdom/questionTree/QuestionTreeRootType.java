@@ -41,7 +41,7 @@ public class QuestionTreeRootType extends QuestionTree {
 				of a choice question are listed one level deeper.</p>
 				<ul>
 				<li>Numeric questions may declare a unit in braces and a range in parentheses:
-				<code>UB1 [num] {V} (0 30)</code>.</li>
+				<code>Battery voltage [num] {V} (0 15)</code>.</li>
 				<li><code>&lt;abstract&gt;</code> at the end of the line marks a question whose value is derived and not
 				asked.</li>
 				<li><code>~ "Text"</code> adds a prompt to a question or questionnaire.</li>
@@ -53,20 +53,36 @@ public class QuestionTreeRootType extends QuestionTree {
 				""");
 		m.addExample("""
 				%%Question
-				system_states ~ "System States"
-				- Betriebszustand [oc]
-				-- not_known
-				-- hergestellt
+				Observations #2
+				- Exhaust fumes [oc]
+				-- black
+				-- blue
+				-- invisible
+				- Engine start [oc]
+				-- engine barely starts
+				-- engine starts
+				-- does not start
+
+				Technical Examinations ~ "Checks in the workshop"
+				- "Check: Battery." [oc]
+				-- ok
+				-- not ok
 				%
 				""");
 		m.addExample("""
 				%%Question
-				Measurements #1
-				- UB1 [num] {V} (0 30)
-				- Display status [oc]
-				-- dark
-				--- Display fuse checked [yn]
-				-- normal
+				General #1
+				- Make of car [oc]
+				-- VW
+				-- Opel
+				-- Other
+				- Year of construction [num]
+				-- >= 1995
+				--- Does your car have ABS? [yn]
+				- "Real mileage  /100km" [num] {l} (0 50)
+				- Driving [mc]
+				-- unsteady idle speed
+				-- weak acceleration
 				- Remarks [text]
 				%
 				""");

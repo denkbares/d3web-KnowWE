@@ -79,7 +79,7 @@ public class CoveringListMarkup extends DefaultMarkupType {
 				.setExample("@minSupport: 0.1");
 		MARKUP.getAnnotation(DESCRIPTION)
 				.setDocumentation("Sets the description of the solution.")
-				.setExample("@description: The display stays dark because its supply is interrupted.");
+				.setExample("@description: The battery cannot provide enough energy to turn over the starter.");
 		MARKUP.getAnnotation(OTHER_QUESTIONS)
 				.setDocumentation("Defines how answered questions without a relation in this list are treated for this solution.")
 				.setValueDocumentation(OTHER_QUESTIONS_IGNORE, "Only the questions referenced in this list are relevant for the solution.")
@@ -87,19 +87,20 @@ public class CoveringListMarkup extends DefaultMarkupType {
 				.setExample("@otherQuestions: ignore");
 		MARKUP.addExample("""
 				%%CoveringList
-				NoErrorSolution {
-				  malfunction = known,
+				Flat battery {
+				  "Check: Battery." = not ok [++],
 				}
 				%
 				""");
 		MARKUP.addExample("""
 				%%CoveringList
-				Statusdisplay defective {
-				  // the display stays dark
-				  Display status = dark [2],
-				  Display status = normal [--],
-				  Display fuse checked = yes [!],
-				  UB1 > 20,
+				Clogged air filter {
+				  // typical symptoms
+				  Driving = weak acceleration [2],
+				  Exhaust pipe color evaluation = abnormal,
+				  Mileage evaluation = increased,
+				  "Check: Air filter." = not ok [!],
+				  Exhaust fumes = invisible [--],
 				}
 				@establishedThreshold: 0.9
 				%

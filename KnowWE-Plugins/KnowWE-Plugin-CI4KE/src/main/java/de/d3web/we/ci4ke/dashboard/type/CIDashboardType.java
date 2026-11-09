@@ -111,14 +111,14 @@ public class CIDashboardType extends DefaultMarkupType {
 				""");
 		MARKUP.addExample("""
 				%%CIDashboard
-				@name: MyArticle CI
-				@trigger: onSave "MyArticle"
+				@name: Car Diagnosis CI
+				@trigger: onSave "Demo - .*"
 
-				@test: ArticleHasMarkupErrors "MyArticle"
-				@test: CompilerHasErrors MyKnowledgeBase
-				@test: CompilerHasWarnings MyKnowledgeBase
-				ignore: "No relations found for solution.*"
-				@softTest: ArticleHasWarnings "MyArticle"
+				@test: ArticleHasMarkupErrors "Demo - Terminology"
+				@test: CompilerHasErrors "Car faults diagnosis"
+				@test: CompilerHasWarnings "Car faults diagnosis"
+				ignore: ".*Year of construction.*"
+				@softTest: ArticleHasWarnings "Demo - Terminology"
 				%
 				""");
 	}
@@ -168,18 +168,18 @@ public class CIDashboardType extends DefaultMarkupType {
 		markup.getAnnotation(NAME_KEY)
 				.setDocumentation("The name of the dashboard. It identifies the dashboard, e.g. for <code>@template</code> " +
 						"references and in the CI tools, and should be unique in the wiki.")
-				.setExample("@name: MyArticle CI");
+				.setExample("@name: Car Diagnosis CI");
 		markup.getAnnotation(TEST_KEY)
 				.setDocumentation("Adds a test to the dashboard: the test name, followed by the test object and further " +
 						"arguments of the test, if required. Use the annotation once per test. Lines " +
 						"<code>ignore: …</code> directly below the test exclude the given messages or objects from the result.")
 				.setExample("""
-						@test: CompilerHasWarnings MyKnowledgeBase
-						ignore: "No relations found for solution.*"
+						@test: CompilerHasWarnings "Car faults diagnosis"
+						ignore: ".*Year of construction.*"
 						""");
-		markup.getAnnotation(SOFT_TEST_KEY).setExample("@softTest: ArticleHasWarnings \"MyArticle\"");
-		markup.getAnnotation(FROZEN_TEST_KEY).setExample("@frozen: ArticleHasWarnings \"MyArticle\"");
-		markup.getAnnotation(TRIGGER_KEY).setExample("@trigger: onSave \"MyArticle\"");
+		markup.getAnnotation(SOFT_TEST_KEY).setExample("@softTest: ArticleHasWarnings \"Demo - Terminology\"");
+		markup.getAnnotation(FROZEN_TEST_KEY).setExample("@frozen: ArticleHasWarnings \"Demo - Terminology\"");
+		markup.getAnnotation(TRIGGER_KEY).setExample("@trigger: onSave \"Demo - .*\"");
 		markup.getAnnotation(PRIORITY).setExample("@priority: 5");
 		markup.getAnnotation(GROUP_KEY)
 				.setDocumentation("Starts a group of tests with the given title; the following tests are shown below it in the dashboard.")
@@ -192,7 +192,7 @@ public class CIDashboardType extends DefaultMarkupType {
 				.setDocumentation("Includes the tests of the dashboard with the given <code>@name</code>. Tests of this " +
 						"dashboard take precedence: for the same test and test object, the arguments of this dashboard " +
 						"are used and the ignores of both are combined.")
-				.setExample("@template: MyArticle CI");
+				.setExample("@template: Car Diagnosis CI");
 		markup.getAnnotation(SKIP_TESTS)
 				.setDocumentation("Removes tests with the given names (comma separated) from the dashboard, " +
 						"including tests inherited via <code>@template</code>.")

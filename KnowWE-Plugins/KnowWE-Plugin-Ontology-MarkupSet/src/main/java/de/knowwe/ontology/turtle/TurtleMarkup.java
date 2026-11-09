@@ -66,28 +66,28 @@ public class TurtleMarkup extends DefaultMarkupType {
 				ignored with a warning), but with the markup <code>%%Namespace</code> or the
 				<code>@defaultNamespace</code> of the <code>%%Ontology</code>.</p>
 				""");
-		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: taurok");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: demo");
 		MARKUP.getAnnotation(COMPILE)
 				.setDocumentation("Set to <code>false</code> to keep the statements of this markup out of the ontology " +
 								  "without removing the markup (default is <code>true</code>).")
 				.setExample("@compile: false");
 		MARKUP.addExample("""
 				%%Turtle
-				text:visuell a ssc:TextTemplate ;
-				  skos:prefLabel
-				    "%prototype% %ui% von %unit% beobachten:"@de ,
-				    "Observe %prototype% %ui% of %unit%:"@en .
+				car:battery a car:Component ;
+				  rdfs:label "Battery"@en , "Batterie"@de ;
+				  car:partOf car:electricalSystem .
 				%
 				""");
 		MARKUP.addExample("""
 				%%Turtle
-				taurok:turmraum ssc:type ssc:PrimaryLocation ;
-				  skos:prefLabel "Turmraum"@de , "Turret compartment"@en .
+				car:Component a owl:Class ;
+				  rdfs:label "Component"@en .
 
-				taurok:besatzungsraum ssc:type ssc:PrimaryLocation ;
-				  skos:prefLabel "Besatzungsraum"@de .
+				car:partOf a owl:ObjectProperty ;
+				  rdfs:domain car:Component ;
+				  rdfs:range car:Component .
 
-				@package: taurok
+				@package: demo
 				%
 				""");
 	}
