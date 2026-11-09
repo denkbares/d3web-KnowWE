@@ -93,7 +93,6 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
-		MARKUP.setDocumentation("Markup to create a new knowledge base with specified content. Necessary for other d3web markups (like %%Question and %%Rule and so forth) to be compiled.");
 		MARKUP.setTemplate("""
 				%%Knowledgebase
 				«KB-Name»
@@ -122,6 +121,41 @@ public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 				.setDocumentation("Set the affiliation of this knowledge base, e.g. University of Würzburg");
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE)
 				.setDocumentation("Decide whether matching between objects (questions, solutions, choice...) should be case-sensitive or case-insensitive");
+
+		MARKUP.getAnnotation(ANNOTATION_TERM_MATCHING)
+				.setValueDocumentation(CASE_SENSITIVE, "Object names must match exactly, including upper and lower case.")
+				.setValueDocumentation(CASE_INSENSITIVE, "Object names match regardless of upper and lower case (default).");
+
+		MARKUP.setDocumentation("""
+				Defines a d3web knowledge base and the packages it is compiled from. Necessary for other d3web markups
+				(like %%Question, %%Solution or %%Rule) to be compiled.
+				<p>The content is the name of the knowledge base. Each <code>@uses</code> annotation adds a package; all
+				d3web markups in these packages are compiled into the knowledge base. The special package
+				<code>default</code> stands for all wiki content without an explicit package. Within
+				<code>%%Property</code>, the knowledge base itself is referenced as <code>KNOWLEDGEBASE</code>.</p>
+				""");
+		MARKUP.getAnnotation(PackageManager.COMPILE_ATTRIBUTE_NAME).setExample("@uses: taurok");
+		MARKUP.getAnnotation(ANNOTATION_AUTHOR).setExample("@author: denkbares GmbH");
+		MARKUP.getAnnotation(ANNOTATION_COMMENT).setExample("@comment: Diagnosis of the Taurok sample vehicle");
+		MARKUP.getAnnotation(ANNOTATION_ID).setExample("@id: taurok-kb");
+		MARKUP.getAnnotation(ANNOTATION_VERSION).setExample("@version: 0.0.1");
+		MARKUP.getAnnotation(ANNOTATION_FILENAME).setExample("@filename: kb.d3web");
+		MARKUP.getAnnotation(ANNOTATION_STATUS).setExample("@status: beta");
+		MARKUP.getAnnotation(ANNOTATION_AFFILIATION).setExample("@affiliation: denkbares GmbH");
+		MARKUP.getAnnotation(ANNOTATION_TERM_MATCHING).setExample("@termMatching: case sensitive");
+		MARKUP.addExample("""
+				%%KnowledgeBase
+				XPS-TAUROK
+
+				@version: 0.0.1
+				@filename: kb.d3web
+
+				@uses: default
+				@uses: taurok
+
+				@termMatching: case sensitive
+				%
+				""");
 
 		MARKUP.addContentType(() -> new KnowledgeBaseDefinition());
 

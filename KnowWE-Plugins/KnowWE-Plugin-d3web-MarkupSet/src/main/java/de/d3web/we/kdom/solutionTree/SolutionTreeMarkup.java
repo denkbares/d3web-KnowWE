@@ -31,6 +31,27 @@ public class SolutionTreeMarkup extends DefaultMarkupType {
 		m = new DefaultMarkup("Solution");
 		m.addContentType(() -> new SolutionsDashTree());
 		PackageManager.addPackageAnnotation(m);
+
+		m.setDocumentation("""
+				Defines the solutions (diagnoses) of the knowledge base, optionally as a hierarchy.
+				<p>Each line defines one solution. Leading dashes place a solution below the solution of the previous
+				level, so larger sets of solutions can be grouped into problem areas. <code>~ "Text"</code> after a
+				solution sets its description. Prompts and other properties are set with <code>%%Property</code>.</p>
+				""");
+		m.addExample("""
+				%%Solution
+				VerificationCompleteSolution
+				%
+				""");
+		m.addExample("""
+				%%Solution
+				Display problem
+				- Main display defective ~ "Replace the main display unit."
+				- Status display defective
+				Power supply problem
+				- Fuse defective
+				%
+				""");
 	}
 
 	public SolutionTreeMarkup() {

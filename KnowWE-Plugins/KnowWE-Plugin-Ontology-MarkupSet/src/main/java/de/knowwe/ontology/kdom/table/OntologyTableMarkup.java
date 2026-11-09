@@ -84,6 +84,42 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 						"object list) using this annotation. Predicate and object(s) will be added to every concept of the " +
 						"first column, as long as there is no column with the same predicate in the header and a different " +
 						"(non empty) entry in its cell for the same row.");
+
+		MARKUP.setDocumentation("""
+				Defines statements about several resources in a compact table instead of Turtle sentences.
+				<p>Each row describes the resource (subject) given in its first cell. The header cells of the other
+				columns are the predicates, the cells below are the objects for the subject of the row; several objects
+				can be separated by commas, empty cells add no statement. A language tag in the header (e.g.
+				<code>skos:prefLabel @de</code>) makes every cell of the column a literal with that language, quotes are
+				not needed then.</p>
+				<p>The first header cell is optional: if it contains a class, each subject is linked to this class with
+				the predicate given in <code>@typeRelation</code>; otherwise leave it blank. Plugins may define special
+				first headers, e.g. <code>TSMID</code> in ServiceMate wikis, where the first column contains TSM ids
+				instead of IRIs.</p>
+				""");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: taurok");
+		MARKUP.getAnnotation(ANNOTATION_TYPE_RELATION).setExample("@typeRelation: rdf:type");
+		MARKUP.getAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET)
+				.setExample("@defaultPredicateObjectSet: ssc:type ssc:PrimaryLocation");
+		MARKUP.addExample("""
+				%%OntologyTable
+				|| ssc:PrimaryLocation || skos:prefLabel @de
+				| taurok:besatzungsraum | Besatzungsraum
+				| taurok:triebwerkraum | Triebwerkraum
+				| taurok:turmraum | Turmraum
+				@typeRelation: ssc:type
+				%
+				""");
+		MARKUP.addExample("""
+				%%OntologyTable
+				|| || skos:prefLabel @de || skos:prefLabel @en || rdfs:seeAlso
+				| ex:engine | Motor | Engine | ex:gearbox, ex:clutch
+				| ex:gearbox | Getriebe | Gearbox |
+				| ex:clutch | Kupplung | Clutch |
+				@defaultPredicateObjectSet: rdf:type ex:Component
+				@package: demo
+				%
+				""");
 	}
 
 	public OntologyTableMarkup() {

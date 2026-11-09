@@ -35,6 +35,15 @@ public class AdministrationMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Administration");
+		MARKUP.setDocumentation("""
+				Provides administrative tools of the wiki in the tool menu of the markup, visible only to administrators.
+				<p>The tools include switching the read-only mode, downloading thread dumps and log files, and
+				restarting the web application or Tomcat. The markup has no content or annotations.</p>
+				""");
+		MARKUP.addExample("""
+				%%Administration
+				%
+				""");
 	}
 
 	public AdministrationMarkup() {

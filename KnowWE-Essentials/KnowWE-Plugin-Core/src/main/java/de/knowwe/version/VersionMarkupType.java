@@ -52,7 +52,18 @@ public class VersionMarkupType extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("Version");
 		MARKUP.setInline(true);
-		MARKUP.addAnnotation("type", false, "short", "long");
+		MARKUP.addAnnotation("type", false, "short", "long")
+				.setDocumentation("Selects how much build information is shown (default is <code>short</code>).")
+				.setValueDocumentation("short", "Version and build date in one line.")
+				.setValueDocumentation("long", "Labeled version, build date and build branch/version in separate lines.")
+				.setExample("@type: long");
+		MARKUP.setDocumentation("""
+				Shows the version and build date of the running wiki application, read from its manifest.
+				<p>An inline markup, typically placed in the left menu or footer. Nothing is shown if the manifest
+				cannot be read.</p>
+				""");
+		MARKUP.addExample("%%Version /%\n");
+		MARKUP.addExample("%%Version @type: long /%\n");
 	}
 
 	public VersionMarkupType() {

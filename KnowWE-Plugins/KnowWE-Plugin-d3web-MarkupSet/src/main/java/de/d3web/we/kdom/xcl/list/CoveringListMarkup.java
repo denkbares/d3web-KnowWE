@@ -53,6 +53,57 @@ public class CoveringListMarkup extends DefaultMarkupType {
 				"  «...» ,\n" +
 				"}\n" +
 				"%\n\n");
+
+		MARKUP.setDocumentation("""
+				Defines set-covering (XCL) knowledge, the findings that are explained (covered) by a solution.
+				<p>The first line names the solution (several solutions separated by commas share the same list),
+				followed by the covered conditions in braces, separated by commas. A condition may be followed by a
+				weight in square brackets:</p>
+				<ul>
+				<li><code>[2]</code> – numeric weight of the relation (default 1),</li>
+				<li><code>[--]</code> – contradicting: the finding rules out the solution,</li>
+				<li><code>[!]</code> – required: the finding must be present for the solution,</li>
+				<li><code>[++]</code> – sufficient: the finding alone establishes the solution.</li>
+				</ul>
+				<p>Lines starting with <code>//</code> are comments. The thresholds of the score algorithm can be
+				overridden per solution with the annotations.</p>
+				""");
+		MARKUP.getAnnotation(ESTABLISHED_THRESHOLD)
+				.setDocumentation("Score from which this solution is established, overriding the default of the score algorithm (usually 0.8).")
+				.setExample("@establishedThreshold: 0.9");
+		MARKUP.getAnnotation(SUGGESTED_THRESHOLD)
+				.setDocumentation("Score from which this solution is suggested, overriding the default of the score algorithm (usually 0.3).")
+				.setExample("@suggestedThreshold: 0.5");
+		MARKUP.getAnnotation(MIN_SUPPORT)
+				.setDocumentation("Minimal support this solution needs to be rated, overriding the default of the score algorithm (usually 0.01).")
+				.setExample("@minSupport: 0.1");
+		MARKUP.getAnnotation(DESCRIPTION)
+				.setDocumentation("Sets the description of the solution.")
+				.setExample("@description: The display stays dark because its supply is interrupted.");
+		MARKUP.getAnnotation(OTHER_QUESTIONS)
+				.setDocumentation("Defines how answered questions without a relation in this list are treated for this solution.")
+				.setValueDocumentation(OTHER_QUESTIONS_IGNORE, "Only the questions referenced in this list are relevant for the solution.")
+				.setValueDocumentation(OTHER_QUESTIONS_NORMAL_VALUE_COVERED, "Normal values of other questions count as covered by the solution.")
+				.setExample("@otherQuestions: ignore");
+		MARKUP.addExample("""
+				%%CoveringList
+				NoErrorSolution {
+				  malfunction = known,
+				}
+				%
+				""");
+		MARKUP.addExample("""
+				%%CoveringList
+				Statusdisplay defective {
+				  // the display stays dark
+				  Display status = dark [2],
+				  Display status = normal [--],
+				  Display fuse checked = yes [!],
+				  UB1 > 20,
+				}
+				@establishedThreshold: 0.9
+				%
+				""");
 	}
 
 	public CoveringListMarkup() {

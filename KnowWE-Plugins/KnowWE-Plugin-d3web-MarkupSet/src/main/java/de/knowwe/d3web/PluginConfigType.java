@@ -37,6 +37,29 @@ public class PluginConfigType extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("plugin-config");
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addContentType(() -> new AnonymousType("xml", AllTextFinderTrimmed.getInstance()));
+
+		MARKUP.setDocumentation("""
+				Configures a problem solver (PSMethod) of the knowledge base with an XML snippet.
+				<p>The content is one or more <code>&lt;psEntry&gt;</code> elements as they appear in the
+				<code>&lt;psmethods&gt;</code> section of a persisted knowledge base. Each entry names the problem solver
+				by <code>extensionID</code> and <code>pluginID</code> and sets its <code>priority</code> and
+				<code>state</code> (<code>active</code>, <code>deactivated</code> or <code>autodetect</code>); the child
+				elements and further attributes are specific to the problem solver. An entry replaces any previous
+				configuration of the same problem solver.</p>
+				<p>Only edit this with good knowledge of the configured problem solver.</p>
+				""");
+		MARKUP.addExample("""
+				%%plugin-config
+				<!-- configure the scoring of the set-covering problem solver -->
+				<psEntry extensionID="PSMethodXCL" pluginID="d3web-XCL" priority="5.0" state="active">
+				  <scoreAlgorithm name="SprintGroupScoreAlgorithm">
+				    <defaultEstablishedThreshold value="0.9999"/>
+				    <defaultSuggestedThreshold value="0.3"/>
+				    <minSupport value="0.01"/>
+				  </scoreAlgorithm>
+				</psEntry>
+				%
+				""");
 	}
 
 	public PluginConfigType() {

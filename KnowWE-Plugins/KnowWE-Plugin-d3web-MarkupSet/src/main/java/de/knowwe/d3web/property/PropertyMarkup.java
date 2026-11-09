@@ -36,6 +36,36 @@ public class PropertyMarkup extends DefaultMarkupType {
 		m = new DefaultMarkup("Property");
 		m.addContentType(() -> new PropertyDeclarationType());
 		PackageManager.addPackageAnnotation(m);
+
+		m.setDocumentation("""
+				Sets properties (such as prompts, descriptions, units or initial values) of objects of the knowledge base.
+				<p>Each line has the form <code>Object.property = value</code>; add a locale after the property
+				(<code>Object.prompt.en = …</code>) to set a language-specific value. Object names containing dots or
+				other special characters are written in quotes. Answers of a choice question are referenced as
+				<code>Question#Answer</code>; <code>#Answer</code> without a question applies the property to the
+				answer of that name in all questions. Values spanning several lines are enclosed in triple quotes
+				(<code>&quot;&quot;&quot;…&quot;&quot;&quot;</code>).</p>
+				<p>The special object <code>KNOWLEDGEBASE</code> refers to the knowledge base itself.</p>
+				""");
+		m.addExample("""
+				%%Property
+				UB1.prompt.de = Bordnetzspannung ablesen und eingeben.
+				UB1.prompt.en = Read power supply and enter.
+				UB1.unit = V DC
+				UB1.init = 28
+				%
+				""");
+		m.addExample("""
+				%%Property
+				"Hauptdisplay@defekt".prompt.en = Driver main display defective, replace unit
+				Betriebszustand#not_known.prompt.en = Unknown
+				KNOWLEDGEBASE.noErrorSolution = NoErrorSolution
+				NoErrorSolution.description.en = \"""
+				The selected function is not defective,
+				or the error occurs only sporadically.
+				\"""
+				%
+				""");
 	}
 
 	public PropertyMarkup() {

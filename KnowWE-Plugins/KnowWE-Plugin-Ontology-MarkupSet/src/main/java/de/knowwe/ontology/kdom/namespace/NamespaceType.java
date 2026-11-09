@@ -40,6 +40,22 @@ public class NamespaceType extends DefaultMarkupType {
 			return lineType;
 		});
 		MARKUP.setTemplate("%%namespace \u00ABabbreviation\u00BB \u00ABexpanded-URI\u00BB\n");
+		MARKUP.setDocumentation("""
+				Defines a namespace abbreviation for the ontologies compiling the package of the markup.
+				<p>Each line consists of the abbreviation and the namespace IRI it stands for, separated by a space.
+				The abbreviation can then be used in other ontology markups like <code>%%Turtle</code>,
+				<code>%%OntologyTable</code> or <code>%%Sparql</code>, e.g. <code>text:visuell</code> instead of the
+				full IRI. A single namespace can also be written in one line without the closing <code>%</code>.</p>
+				""");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: taurok");
+		MARKUP.addExample("%%Namespace text http://denkbares.com/CBX/TextTemplate#\n");
+		MARKUP.addExample("""
+				%%Namespace
+				ex http://www.example.com/ontology#
+				ex-doc http://www.example.com/documents#
+				@package: default
+				%
+				""");
 	}
 
 	public NamespaceType() {

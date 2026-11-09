@@ -137,6 +137,114 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotation(COLUMN_WIDTH, false);
 		MARKUP.addAnnotationRenderer(COLUMN_WIDTH, NothingRenderer.getInstance());
 		PackageManager.addPackageAnnotation(MARKUP);
+
+		MARKUP.setDocumentation("""
+				Executes a SPARQL query on an ontology and renders the result as a table in the page.
+				<p>The content is a SPARQL 1.1 query (usually <code>SELECT</code>), the namespace abbreviations of the
+				ontology can be used without <code>PREFIX</code> declarations. The query runs against the ontology that
+				compiles the package of the markup (see <code>@package</code> or <code>%%Package</code>).</p>
+				<p>By default the result table is paginated, sortable and filterable by column. Variables become the
+				columns, in the order of the <code>SELECT</code> clause. For a <code>CONSTRUCT</code> query the
+				constructed statements are listed, for an <code>ASK</code> query <code>true</code> or <code>false</code>.</p>
+				""");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME)
+				.setDocumentation("Configure the package or package rule of the markup; the query runs against the " +
+								  "ontology compiling this package.")
+				.setExample("@package: taurok");
+		MARKUP.getAnnotation(NAME)
+				.setDocumentation("Registers the query under a name that other markups can reference. Such markups are for example " +
+								  "<code>%%InlineSparql</code> or <code>%%ExpectedSparqlResult</code>; the name is also shown in the title.")
+				.setExample("@name: AllPrimaryLocations");
+		MARKUP.getAnnotation(RAW_OUTPUT)
+				.setDocumentation("Shows the values as they are in the ontology (default is <code>false</code>). Literals keep their " +
+								  "language tag or datatype, IRIs are shown without abbreviation or links.")
+				.setExample("@rawOutput: true");
+		MARKUP.getAnnotation(NAVIGATION)
+				.setDocumentation("Shows the result paginated, with controls to navigate the pages and to sort and filter " +
+								  "the columns (default is <code>true</code>). Without navigation the result is shown as a " +
+								  "plain table.")
+				.setExample("@navigation: false");
+		MARKUP.getAnnotation(RENDER_QUERY)
+				.setDocumentation("Also shows the query text above the result (default is <code>false</code>).")
+				.setExample("@showQuery: true");
+		MARKUP.getAnnotation(ZEBRA_MODE)
+				.setDocumentation("Renders the rows of the result table alternately shaded (default is <code>true</code>).")
+				.setExample("@zebramode: false");
+		MARKUP.getAnnotation(LOG_LEVEL)
+				.setDocumentation("Colors the border of the result table in the color of the given message level. Useful to " +
+								  "highlight queries listing problems.")
+				.setValueDocumentation(Color.WARNING.name(), "Border in the warning color.")
+				.setValueDocumentation(Color.ERROR.name(), "Border in the error color.")
+				.setExample("@logLevel: " + Color.WARNING.name());
+		MARKUP.getAnnotation(TREE)
+				.setDocumentation("Renders the result as an expandable tree table (default is <code>false</code>). The " +
+								  "first two variables must be the id of the row and the id of its parent row, they are " +
+								  "not shown; at least three variables are required. Disables the navigation.")
+				.setExample("@tree: true");
+		MARKUP.getAnnotation(SORTING)
+				.setDocumentation("Allows sorting the result by clicking the column headers (default is <code>true</code>).")
+				.setExample("@sorting: false");
+		MARKUP.getAnnotation(FILTERING)
+				.setDocumentation("Allows filtering the result by the values of the columns (default is <code>true</code>).")
+				.setExample("@filtering: false");
+		MARKUP.getAnnotation(BORDER)
+				.setDocumentation("Renders the result table with borders (default is <code>true</code>).")
+				.setExample("@border: false");
+		MARKUP.getAnnotation(RENDER_MODE)
+				.setDocumentation("Defines how the values of the result are rendered (default is <code>HTML</code>).")
+				.setValueDocumentation("HTML", "Default; HTML contained in the values is rendered.")
+				.setValueDocumentation("PlainText", "Values are rendered as plain text only.")
+				.setValueDocumentation("ToolMenu", "Adds tool menus to the values where appropriate.")
+				.setExample("@renderMode: PlainText");
+		MARKUP.getAnnotation(AsynchronousRenderer.ASYNCHRONOUS)
+				.setDocumentation("Renders the result asynchronously (default is <code>true</code>). The page is shown first and the " +
+								  "result is loaded afterwards.")
+				.setExample("@asynchronous: false");
+		MARKUP.getAnnotation(TIMEOUT)
+				.setDocumentation("Maximum time the query may run, as number of seconds or as a duration with unit " +
+								  "(<code>ms</code>, <code>s</code>, <code>min</code>, <code>h</code>, <code>d</code>).")
+				.setExample("@timeout: 30s");
+		MARKUP.getAnnotation(CONSTRUCT).setExample("@construct: ?uri skos:prefLabel ?name");
+		MARKUP.getAnnotation(COLUMN_SORTING).setExample("@columnSorting: Formatted_Date date");
+		MARKUP.getAnnotation(COLUMN_STYLE).setExample("@columnStyle: Name width 100px");
+		MARKUP.getAnnotation(TABLE_STYLE).setExample("@tableStyle: width 1000px");
+		MARKUP.getAnnotation(ALLOW_JSPWIKI_MARKUP)
+				.setDocumentation("Whether JSPWiki markup in the values, like links <code>[Page]</code>, is rendered " +
+								  "(default is <code>true</code>). Set to <code>false</code> to show such values literally.")
+				.setExample("@allowJSPWikiMarkup: false");
+		MARKUP.getAnnotation(COLUMN_WIDTH)
+				.setDocumentation("Limits the width of a column; the column name is followed by a CSS width.")
+				.setExample("@columnWidth: Name 200px");
+		MARKUP.addExample("""
+				%%Sparql
+				SELECT ?Location ?Name WHERE {
+				  ?Location ssc:type ssc:PrimaryLocation .
+				  OPTIONAL {
+				    ?Location skos:prefLabel ?Name .
+				    FILTER (lang(?Name) = "de")
+				  }
+				}
+				ORDER BY ?Name
+				@name: PrimaryLocations
+				%
+				""");
+		MARKUP.addExample("""
+				%%Sparql
+				SELECT ?TsmID ?Name ?Type ?Package WHERE {
+				  ?uri ssc:tsmId ?TsmID ;
+				    ssc:type ?Type ;
+				    ssc:isInPackage ?Package .
+				  OPTIONAL {
+				    ?uri skos:prefLabel ?Name .
+				    FILTER (lang(?Name) = "de")
+				  }
+				}
+				ORDER BY ?TsmID
+				@columnWidth: Name 300px
+				@zebramode: false
+				@package: taurok
+				%
+				""");
 	}
 
 	public SparqlMarkupType() {

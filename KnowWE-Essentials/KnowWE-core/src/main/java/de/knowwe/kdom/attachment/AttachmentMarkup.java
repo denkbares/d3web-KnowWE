@@ -99,6 +99,65 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 		MARKUP.addAnnotation(START_ANNOTATION);
 		MARKUP.addAnnotation(VERSIONING_ANNOTATION, false, "true", "false");
 		MARKUP.addAnnotation(ZIP_ENTRY_ANNOTATION);
+
+		MARKUP.setDocumentation("""
+				Manages an attachment of the wiki, keeping it up to date with a file downloaded from a URL and/or
+				compiling its content.
+				<p>With <code>@url</code>, the attachment given in <code>@attachment</code> is replaced by the downloaded
+				file, regularly if <code>@interval</code> is set, otherwise only when the update is triggered manually.
+				The downloaded text can be modified with <code>@replacement</code> and <code>@regexReplacement</code>
+				before it is stored.</p>
+				""");
+		MARKUP.getAnnotation(ATTACHMENT_ANNOTATION)
+				.setDocumentation("The attachment to manage, either a file name of an attachment of this page or " +
+								  "<code>article-name/file-name</code>.")
+				.setExample("@attachment: semantic-service-model-ilme.ttl");
+		MARKUP.getAnnotation(URL_ANNOTATION)
+				.setDocumentation("URL to download the content of the attachment from.")
+				.setExample("@url: https://www.example.com/downloads/vocabulary.ttl");
+		MARKUP.getAnnotation(COMPILE_ANNOTATION)
+				.setDocumentation("Set to <code>true</code> to compile the wiki markup contained in the attachment " +
+								  "as part of this page (default is <code>false</code>).")
+				.setExample("@compile: true");
+		MARKUP.getAnnotation(INTERVAL_ANNOTATION)
+				.setDocumentation("How often the attachment is updated from the URL, as a duration with unit " +
+								  "(<code>s</code>, <code>min</code>, <code>h</code>, <code>d</code>). Without an interval, " +
+								  "the attachment is only updated manually.")
+				.setExample("@interval: 1d");
+		MARKUP.getAnnotation(START_ANNOTATION)
+				.setDocumentation("Time of the first update for intervals of at least one hour, in the format " +
+								  "<code>H:mm</code> or <code>EEEE H:mm</code> (English day of week). Useful to update at night.")
+				.setExample("@start: 3:00");
+		MARKUP.getAnnotation(VERSIONING_ANNOTATION)
+				.setDocumentation("Whether each update creates a new version of the attachment (default is " +
+								  "<code>true</code>). With <code>false</code>, previous versions are removed.")
+				.setExample("@versioning: false");
+		MARKUP.getAnnotation(ZIP_ENTRY_ANNOTATION)
+				.setDocumentation("If the URL provides a ZIP file, the name of the entry in the ZIP file to store as attachment.")
+				.setExample("@zipEntry: data/vocabulary.ttl");
+		MARKUP.getAnnotation(REPLACEMENT)
+				.setDocumentation("Replaces all occurrences of a text in the downloaded content before it is stored, " +
+								  "written as <code>source -&gt; target</code>; <code>\\n</code> in the target is a line break.")
+				.setExample("@replacement: http://old.example.com/ -> http://www.example.com/");
+		MARKUP.getAnnotation(REGEX_REPLACEMENT)
+				.setDocumentation("Like <code>@replacement</code>, but the source is a regular expression and the " +
+								  "target may reference its groups (<code>$1</code>).")
+				.setExample("@regexReplacement: version=\\d+ -> version=1");
+		MARKUP.addExample("""
+				%%Attachment
+				  @attachment: semantic-service-model-ilme.ttl
+				  @versioning: false
+				%
+				""");
+		MARKUP.addExample("""
+				%%Attachment
+				  @attachment: vocabulary.ttl
+				  @url: https://www.example.com/downloads/vocabulary.ttl
+				  @interval: 1d
+				  @start: 3:00
+				  @versioning: false
+				%
+				""");
 	}
 
 	public AttachmentMarkup() {

@@ -55,6 +55,41 @@ public class TurtleMarkup extends DefaultMarkupType {
 		MARKUP.addContentType(() -> new TurtlePrefixType());
 		MARKUP.addContentType(() -> new TurtleContent());
 		MARKUP.addAnnotation(COMPILE, false, "true", "false");
+
+		MARKUP.setDocumentation("""
+				Defines RDF statements in Turtle syntax that are added to the ontologies compiling the package of the markup.
+				<p>Each sentence consists of a subject, predicate-object pairs separated by <code>;</code>, objects
+				separated by <code>,</code>, and ends with a <code>.</code>. Literals may carry a language tag
+				(<code>"text"@en</code>) or an XSD datatype (<code>"42"^^xsd:int</code>), <code>a</code> abbreviates
+				<code>rdf:type</code>.</p>
+				<p>Namespace abbreviations are not declared with <code>@prefix</code> inside the markup (such lines are
+				ignored with a warning), but with the markup <code>%%Namespace</code> or the
+				<code>@defaultNamespace</code> of the <code>%%Ontology</code>.</p>
+				""");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: taurok");
+		MARKUP.getAnnotation(COMPILE)
+				.setDocumentation("Set to <code>false</code> to keep the statements of this markup out of the ontology " +
+								  "without removing the markup (default is <code>true</code>).")
+				.setExample("@compile: false");
+		MARKUP.addExample("""
+				%%Turtle
+				text:visuell a ssc:TextTemplate ;
+				  skos:prefLabel
+				    "%prototype% %ui% von %unit% beobachten:"@de ,
+				    "Observe %prototype% %ui% of %unit%:"@en .
+				%
+				""");
+		MARKUP.addExample("""
+				%%Turtle
+				taurok:turmraum ssc:type ssc:PrimaryLocation ;
+				  skos:prefLabel "Turmraum"@de , "Turret compartment"@en .
+
+				taurok:besatzungsraum ssc:type ssc:PrimaryLocation ;
+				  skos:prefLabel "Besatzungsraum"@de .
+
+				@package: taurok
+				%
+				""");
 	}
 
 	public TurtleMarkup() {

@@ -31,6 +31,14 @@ public class PackageMarkupType extends DefaultMarkupType {
 			return packageRule;
 		});
 		MARKUP.setTemplate("%%package \u00ABpackage-name\u00BB\n");
+		MARKUP.setDocumentation("""
+				Sets the package for all markups of this article that have no own <code>@package</code> annotation.
+				<p>Usually written as a single line anywhere on the page. Without this markup, markups belong to the
+				package <code>default</code>. Instead of a single package name, a package rule can be given, e.g.
+				<code>package-a AND NOT package-b</code>. The packages are compiled by markups like
+				<code>%%KnowledgeBase</code> or <code>%%Ontology</code> via <code>@uses</code>.</p>
+				""");
+		MARKUP.addExample("%%package taurok\n");
 	}
 
 	public PackageMarkupType() {

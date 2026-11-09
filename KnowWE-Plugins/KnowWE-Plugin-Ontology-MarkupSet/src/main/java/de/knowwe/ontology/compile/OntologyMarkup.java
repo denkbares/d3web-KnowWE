@@ -98,8 +98,13 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 
 	static {
 		MARKUP = new DefaultMarkup("Ontology");
-		MARKUP.setDocumentation("Markup to create a new ontology with specified content. " +
-								"Necessary for other ontology markups (like %%TSM) to be compiled.");
+		MARKUP.setDocumentation("""
+				Markup to create a new ontology with specified content. Necessary for other ontology markups (like %%TSM) to be compiled.
+				<p>The content is the name of the ontology. The ontology compiles all ontology markups (e.g.
+				<code>%%Turtle</code>, <code>%%Namespace</code>, <code>%%OntologyTable</code>) of the packages given with
+				<code>@uses</code>; queries of <code>%%Sparql</code> markups in these packages run against it. Further
+				annotations import attachments, set the default namespace and configure reasoning and validation.</p>
+				""");
 		MARKUP.setTemplate("""
 				%%Ontology
 				«Ontology-Name»
@@ -183,6 +188,50 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class)
 				.setDocumentation("Specifies whether changes to a page containing statements for the ontology should be " +
 								  "committed to the ontology database immediately after saving, or on demand (button will be shown in header after changes).");
+
+		MARKUP.getAnnotation(ANNOTATION_COMPILE).setExample("@uses: taurok");
+		MARKUP.getAnnotation(ANNOTATION_IMPORT).setExample("@import: External Resources/skos.rdf");
+		MARKUP.getAnnotation(ANNOTATION_SILENT_IMPORT).setExample("@silentImport: External Resources/large-vocabulary.ttl");
+		MARKUP.getAnnotation(ANNOTATION_EXPORT)
+				.setDocumentation("Specify an attachment to export the ontology to after every change. Use " +
+								  "<code>attachment-name</code> for an attachment of this page or " +
+								  "<code>article-name/attachment-name</code>; the RDF format is derived from the file extension " +
+								  "(Turtle if unknown).")
+				.setExample("@export: SSM-Taurok.ttl");
+		MARKUP.getAnnotation(ANNOTATION_EXPORT_DELAY).setExample("@exportDelay: 5min");
+		MARKUP.getAnnotation(ANNOTATION_TERM_MATCHING).setExample("@termMatching: " + CASE_INSENSITIVE);
+		MARKUP.getAnnotation(ANNOTATION_RULE_SET).setExample("@ruleset: OWL_HORST_OPTIMIZED");
+		MARKUP.getAnnotation(ANNOTATION_MULTI_DEF_MODE).setExample("@multiDefinitionMode: warn");
+		MARKUP.getAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE).setExample("@referenceValidationMode: error");
+		MARKUP.getAnnotation(ANNOTATION_DEFAULT_NAMESPACE).setExample("@defaultNamespace: taurok http://www.denkbares.com/taurok#");
+		MARKUP.getAnnotation(ANNOTATION_COMMIT)
+				.setValueDocumentation(CommitType.onSave.name(), "Default; changes are committed right after saving a page.")
+				.setValueDocumentation(CommitType.onDemand.name(), "Changes are committed when the commit button in the header is pressed.")
+				.setExample("@commit: onDemand");
+		MARKUP.addExample("""
+				%%Ontology
+				SSM-TAUROK
+
+				@uses: default
+				@uses: taurok
+				@uses: ilme-commons
+
+				@import: External Resources/skos.rdf
+				@import: External Resources/semantic-service-model-ilme.ttl
+				@defaultNamespace: taurok http://www.denkbares.com/taurok#
+				@ruleset: OWL_HORST_OPTIMIZED
+				%
+				""");
+		MARKUP.addExample("""
+				%%Ontology
+				Demo Ontology
+
+				@uses: demo
+				@defaultNamespace: demo http://www.example.com/demo#
+				@export: demo-ontology.ttl
+				@commit: onDemand
+				%
+				""");
 	}
 
 	public OntologyMarkup() {

@@ -100,6 +100,27 @@ public class CIDashboardType extends DefaultMarkupType {
 
 	static {
 		MARKUP = createMarkup(CI_DASHBOARD_MARKUP_NAME, true);
+		MARKUP.setDocumentation("""
+				Defines a continuous integration (CI) dashboard that runs a list of tests on the wiki content and shows \
+				the results of its builds.
+				<p>Each <code>@test</code> names a test, its test object (e.g. an article or a compiler) and optional
+				arguments; <code>ignore:</code> lines below a test exclude expected messages. <code>@trigger</code>
+				decides when a new build starts: on demand, whenever matching articles are saved, or on a schedule.
+				Soft and frozen tests are reported but do not affect the overall build result. The available tests are
+				listed by the <code>%%TestDocumentation</code> markup.</p>
+				""");
+		MARKUP.addExample("""
+				%%CIDashboard
+				@name: MyArticle CI
+				@trigger: onSave "MyArticle"
+
+				@test: ArticleHasMarkupErrors "MyArticle"
+				@test: CompilerHasErrors MyKnowledgeBase
+				@test: CompilerHasWarnings MyKnowledgeBase
+				ignore: "No relations found for solution.*"
+				@softTest: ArticleHasWarnings "MyArticle"
+				%
+				""");
 	}
 
 	protected static DefaultMarkup createMarkup(String markupName, boolean testMandatory) {
@@ -143,6 +164,42 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		//allow specification of max tests for the dashboard
 		markup.addAnnotation(MAX_BUILDS, false);
+
+		markup.getAnnotation(NAME_KEY)
+				.setDocumentation("The name of the dashboard. It identifies the dashboard, e.g. for <code>@template</code> " +
+						"references and in the CI tools, and should be unique in the wiki.")
+				.setExample("@name: MyArticle CI");
+		markup.getAnnotation(TEST_KEY)
+				.setDocumentation("Adds a test to the dashboard: the test name, followed by the test object and further " +
+						"arguments of the test, if required. Use the annotation once per test. Lines " +
+						"<code>ignore: …</code> directly below the test exclude the given messages or objects from the result.")
+				.setExample("""
+						@test: CompilerHasWarnings MyKnowledgeBase
+						ignore: "No relations found for solution.*"
+						""");
+		markup.getAnnotation(SOFT_TEST_KEY).setExample("@softTest: ArticleHasWarnings \"MyArticle\"");
+		markup.getAnnotation(FROZEN_TEST_KEY).setExample("@frozen: ArticleHasWarnings \"MyArticle\"");
+		markup.getAnnotation(TRIGGER_KEY).setExample("@trigger: onSave \"MyArticle\"");
+		markup.getAnnotation(PRIORITY).setExample("@priority: 5");
+		markup.getAnnotation(GROUP_KEY)
+				.setDocumentation("Starts a group of tests with the given title; the following tests are shown below it in the dashboard.")
+				.setExample("@group: Knowledge base");
+		markup.getAnnotation(VERBOSE_PERSISTENCE_KEY)
+				.setDocumentation("If <code>true</code>, the stored build results also contain the messages of successful " +
+						"tests and objects; by default, only unexpected outcomes are stored in detail.")
+				.setExample("@persistenceVerbose: true");
+		markup.getAnnotation(TEMPLATE)
+				.setDocumentation("Includes the tests of the dashboard with the given <code>@name</code>. Tests of this " +
+						"dashboard take precedence: for the same test and test object, the arguments of this dashboard " +
+						"are used and the ignores of both are combined.")
+				.setExample("@template: MyArticle CI");
+		markup.getAnnotation(SKIP_TESTS)
+				.setDocumentation("Removes tests with the given names (comma separated) from the dashboard, " +
+						"including tests inherited via <code>@template</code>.")
+				.setExample("@skipTests: ArticleHasWarnings, CompilerHasWarnings");
+		markup.getAnnotation(MAX_BUILDS)
+				.setDocumentation("The maximum number of builds to keep for this dashboard.")
+				.setExample("@max-builds: 100");
 
 		return markup;
 	}

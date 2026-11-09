@@ -31,6 +31,45 @@ public class QuestionTreeRootType extends QuestionTree {
 		m = new DefaultMarkup("Question");
 		m.addContentType(() -> new QuestionDashTree());
 		PackageManager.addPackageAnnotation(m);
+
+		m.setDocumentation("""
+				Defines the questions of the knowledge base as a dash tree, optionally grouped into questionnaires.
+				<p>A line without leading dashes defines a questionnaire (or a top-level question); the questions below
+				it are indented with one dash per level. The question type follows in square brackets:
+				<code>[oc]</code> one choice, <code>[mc]</code> multiple choice, <code>[yn]</code> yes/no,
+				<code>[num]</code> numeric, <code>[date]</code>, <code>[text]</code> and <code>[info]</code>. The answers
+				of a choice question are listed one level deeper.</p>
+				<ul>
+				<li>Numeric questions may declare a unit in braces and a range in parentheses:
+				<code>UB1 [num] {V} (0 30)</code>.</li>
+				<li><code>&lt;abstract&gt;</code> at the end of the line marks a question whose value is derived and not
+				asked.</li>
+				<li><code>~ "Text"</code> adds a prompt to a question or questionnaire.</li>
+				<li>A question or questionnaire below an answer is a follow-up, indicated by that answer;
+				<code>&amp;REF Name</code> references a question defined elsewhere in the tree.</li>
+				<li><code>#1</code>, <code>#2</code>, … after a questionnaire makes it an initial questionnaire,
+				presented at the start of every session in that order.</li>
+				</ul>
+				""");
+		m.addExample("""
+				%%Question
+				system_states ~ "System States"
+				- Betriebszustand [oc]
+				-- not_known
+				-- hergestellt
+				%
+				""");
+		m.addExample("""
+				%%Question
+				Measurements #1
+				- UB1 [num] {V} (0 30)
+				- Display status [oc]
+				-- dark
+				--- Display fuse checked [yn]
+				-- normal
+				- Remarks [text]
+				%
+				""");
 	}
 
 	public QuestionTreeRootType() {

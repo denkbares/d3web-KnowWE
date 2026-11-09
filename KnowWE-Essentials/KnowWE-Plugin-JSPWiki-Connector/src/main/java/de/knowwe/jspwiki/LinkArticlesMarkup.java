@@ -110,6 +110,44 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 				"@article: \u00ABarticle-name-regex\u00BB\n" +
 				"@exclude: \u00ABarticle-name-regex\u00BB\n" +
 				"%");
+
+		MARKUP.setDocumentation("""
+				Renders a sorted list of links to all articles matching the given selectors.
+				<p>Articles are selected with <code>@package</code>, <code>@article</code> and <code>@markup</code> and
+				removed again with <code>@exclude</code>. Different selectors must all match; a selector given several
+				times (or with comma-separated values) matches if any of its values matches. Without any selector, all
+				articles of the wiki are listed.</p>
+				<p>With <code>@markup</code>, each link points to the first matching markup of the article; deactivated
+				markups (<code>%%Off:</code>) are shown struck through, errors and warnings of the markup are counted
+				behind the link.</p>
+				""");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME).setExample("@package: taurok");
+		MARKUP.getAnnotation(ANNOTATION_ARTICLE).setExample("@article: Prototype .*");
+		MARKUP.getAnnotation(ANNOTATION_EXCLUDE).setExample("@exclude: Knowledge Base, System Structure");
+		MARKUP.getAnnotation(ANNOTATION_MARKUP).setExample("@markup: Question");
+		MARKUP.getAnnotation(ANNOTATION_TEMPLATE)
+				.setDocumentation("Set a template how each Link-Label should be adapted, e.g.\n"
+								  + "@template: * link.replace(\"\u00ABregex\u00BB\", \"\u00ABreplacement\u00BB\")<br>"
+								  + "The text before <code>link</code> is put in front of each link (default is <code>*</code>, a "
+								  + "bullet list); the optional <code>replace</code> replaces all matches of the regex in the displayed titles.")
+				.setExample("@template: * link.replace(\"Prototype \", \"\")");
+		MARKUP.getAnnotation(ANNOTATION_PREFIX_REDUCTION).setExample("@prefixReduction: true");
+		MARKUP.getAnnotation(ANNOTATION_FRAME).setExample("@frame: false");
+		MARKUP.getAnnotation(ANNOTATION_HEADER).setExample("@header: false");
+		MARKUP.addExample("""
+				%%LinkArticles
+				@package: taurok
+				@exclude: Knowledge Base
+				@exclude: System Structure
+				%
+				""");
+		MARKUP.addExample("""
+				%%LinkArticles
+				@markup: TSM
+				@article: Prototype .*
+				@template: * link
+				%
+				""");
 	}
 
 	public LinkArticlesMarkup() {

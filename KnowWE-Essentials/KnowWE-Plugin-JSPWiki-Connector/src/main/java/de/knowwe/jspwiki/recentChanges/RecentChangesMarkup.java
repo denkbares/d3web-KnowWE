@@ -33,6 +33,13 @@ public class RecentChangesMarkup extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("RecentChanges");
 		MARKUP.setTemplate("%%RecentChanges %\n");
+		MARKUP.setDocumentation("""
+				Shows the recent changes of the wiki as a table with the columns page, last modified, author and change
+				notes.
+				<p>The table is paginated and can be sorted and filtered by each column, e.g. to show only the changes of
+				one author. The markup has no content and no annotations.</p>
+				""");
+		MARKUP.addExample("%%RecentChanges %\n");
 	}
 
 	public RecentChangesMarkup() {
