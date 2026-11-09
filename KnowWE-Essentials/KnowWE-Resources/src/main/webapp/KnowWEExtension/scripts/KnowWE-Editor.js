@@ -417,7 +417,8 @@ window.KnowWEEditor = (function () {
 	/**
 	 * The shortcuts shown in the help panel, which must follow the keymaps of create(). A binding uses the notation of
 	 * CodeMirror keymaps, `key` holds it for all platforms, `mac`, `win` or `linux` replace it on that platform, and an
-	 * array lists alternatives. Mouse gestures are written like keys. An entry with `modes` only shows in those modes.
+	 * array lists alternatives. Mouse gestures are written like keys. A group or entry with `modes` only shows in those
+	 * modes.
 	 */
 	const HELP_SHORTCUTS = [
 		{
@@ -469,6 +470,17 @@ window.KnowWEEditor = (function () {
 				{text: "Unfold", key: "Ctrl-Shift-]", mac: "Cmd-Alt-]"},
 				{text: "Fold all", key: "Ctrl-Alt-["},
 				{text: "Unfold all", key: "Ctrl-Alt-]"}
+			]
+		},
+		{
+			// the keys of the spreadsheet of DefaultTableEditTool.js, which shows the tables in the page editor
+			title: "Tables", modes: ["page"], entries: [
+				{text: "Edit cell", key: ["Enter", "F2"]},
+				{text: "Insert row below", key: "Mod-Enter"},
+				{text: "Insert row above", key: "Shift-Mod-Enter"},
+				{text: "Delete selected rows", key: ["Mod-d", "Alt-d"]},
+				{text: "Move selected cells", key: ["Alt-ArrowUp", "Alt-ArrowDown"]},
+				{text: "Select range", key: "Shift-Click"}
 			]
 		}
 	];
@@ -591,7 +603,7 @@ window.KnowWEEditor = (function () {
 			closeButton.addEventListener("click", () => close(view));
 
 			const body = element("div", "cm-knowwe-help-body");
-			for (const group of HELP_SHORTCUTS) {
+			for (const group of HELP_SHORTCUTS.filter(group => visible(group, editorMode))) {
 				const section = element("div", "cm-knowwe-help-group",
 					element("div", "cm-knowwe-help-group-title", group.title));
 				for (const entry of group.entries.filter(entry => visible(entry, editorMode))) {

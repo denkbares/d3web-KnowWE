@@ -237,6 +237,21 @@ KNOWWE.editCommons = function () {
 			return mods === 2;
 
 		},
+
+		/**
+		 * Returns the lower edge of the page header, its menu bar or the tool bar of the edit mode where they stay at
+		 * the top of the window while the page scrolls and cover it, or 0.
+		 */
+		pageHeaderBottom: function () {
+			let bottom = 0;
+			jq$(".fixed-header > .header, .navigation, .sticky, #editmaintoolbar").each(function () {
+				const position = getComputedStyle(this).position;
+				if (position !== "fixed" && position !== "sticky") return;
+				const box = this.getBoundingClientRect();
+				if (box.height > 0 && box.top <= 1) bottom = Math.max(bottom, box.bottom);
+			});
+			return bottom;
+		},
 		getWikiArticleText: function (articleName, actionName) {
 			if (actionName == null) actionName = "GetWikiArticleTextAction";
 

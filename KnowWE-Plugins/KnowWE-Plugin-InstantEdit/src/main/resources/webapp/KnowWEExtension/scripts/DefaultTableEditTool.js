@@ -8,19 +8,6 @@ KNOWWE.plugin.tableEditTool = function() {
     return "tableEdit" + id;
   }
 
-  // the lower edge of the page header or of the tool bar of the edit mode that stay at the top of the window while the
-  // page scrolls, or 0
-  function pageHeaderBottom() {
-    let bottom = 0;
-    jq$(".fixed-header > .header, .sticky, #editmaintoolbar").each(function() {
-      const position = getComputedStyle(this).position;
-      if (position !== "fixed" && position !== "sticky") return;
-      const box = this.getBoundingClientRect();
-      if (box.height > 0 && box.top <= 1) bottom = Math.max(bottom, box.bottom);
-    });
-    return bottom;
-  }
-
   // keeps the header rows of the table below the page header while the page scrolls, until the table is closed
   function stickHeaderRows(id) {
     const stick = function() {
@@ -30,7 +17,7 @@ KNOWWE.plugin.tableEditTool = function() {
         window.removeEventListener("resize", stick);
         return;
       }
-      sheet.stickHeaderRows(pageHeaderBottom());
+      sheet.stickHeaderRows(_EC.pageHeaderBottom());
     };
     window.addEventListener("scroll", stick, {passive: true});
     window.addEventListener("resize", stick);
@@ -130,6 +117,10 @@ KNOWWE.plugin.tableEditTool = function() {
       stickHeaderRows(id);
 
       const $root = jq$(spreadsheet[id].element).parents(".editarea");
+      // the buttons keep the focus in the selected cell, so its keys go on to work instead of reaching the browser
+      $root.find(".edittoolbar a").on("mousedown", function(event) {
+        event.preventDefault();
+      });
       $root.find(".table_insert_row_before").click(function(event) {
         if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row);
         event.preventDefault();
@@ -576,6 +567,8 @@ Spreadsheet.prototype.createTable = function(model) {
     const handled = data.spreadsheet.handleKeyDown(cell, event.keyCode, multi, command, alt);
     if (handled) {
       event.preventDefault();
+      // e.g. Mod-D would also switch on the edit mode of the page
+      event.stopPropagation();
     }
   });
 
@@ -595,6 +588,12 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
   // Backspace + ENTF
   if (keyCode === 8 || keyCode === 46) {
     this.clearSelectedCells();
+  }
+  // insert a row: command+return below, command+shift+return above, and select its cell in this column
+  else if (keyCode === 13 && command && !alt) {
+    const newRow = multiSelect ? row : row + 1;
+    this.addRow(newRow);
+    this.selectCell(newRow, col);
   }
   // return, or F2 (Excel Windows), or Ctrl+u (Excel Mac)
   else if (keyCode === 13 || keyCode === 113 || (keyCode === 85 && command)) {
@@ -754,7 +753,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
     const command = event.ctrlKey || event.metaKey;
     // ignore return key if auto-complete is on
     if ((keyCode === 13 || keyCode === 27) && spreadsheet.isAutoCompleteFocused(textAreaID)) return;
-    if ((keyCode === 13 && !event.altKey && !event.shiftKey) || (keyCode === 9 && !event.altKey)) {
+    if ((keyCode === 13 && !event.altKey && (!event.shiftKey || command)) || (keyCode === 9 && !event.altKey)) {
       spreadsheet.setCellText(row, col, editArea.val());
       spreadsheet.snapshot();
 
@@ -778,14 +777,19 @@ Spreadsheet.prototype.editCell = function(row, col) {
     }
     closing = true;
     event.preventDefault();
+    event.stopPropagation();
     editDiv.detach();
     spreadsheet.selectCell(row, col);
-    // on tab or return, select next cell as well
+    // on tab or return, select next cell as well, command+return inserts a row like outside the cell
     if (keyCode === 9) {
       spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), keyCode, event.shiftKey, false, false);
     }
     if (keyCode === 13) {
-      spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), 40, false, false, false);
+      if (command) {
+        spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), 13, event.shiftKey, true, false);
+      } else {
+        spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), 40, false, false, false);
+      }
     }
   };
   editArea.keydown(keyDownFunction);
@@ -948,9 +952,11 @@ Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
   }
   if (row === undefined && col === undefined) {
     this.selected = null;
+    if (Spreadsheet.current === this) Spreadsheet.current = null;
     if (cell) cell.find("div > a").blur();
     return;
   }
+  Spreadsheet.current = this;
   // deselect multi-selected cells
   this.forEachSelected(function(cell) {
     cell.removeClass("multiSelected");
@@ -1478,6 +1484,49 @@ Spreadsheet.prototype.restoreSnapshot = function(snapshot) {
   }
   this.notifyChange();
 };
+
+/**
+ * The spreadsheet whose cell was selected last, until the mouse is pressed elsewhere. When the focus has left its cells
+ * without going to another field, e.g. by a click next to the cells, the keys that insert and delete rows still apply
+ * to it, instead of reaching the browser, which would create a bookmark on Mod-D, or the page, which would switch on
+ * the edit mode.
+ */
+Spreadsheet.current = null;
+
+document.addEventListener("mousedown", function(event) {
+  const sheet = Spreadsheet.current;
+  if (!sheet) return;
+  const target = event.target;
+  if (sheet.element[0].contains(target)) return;
+  if (target.closest && target.closest(".edittoolbar, .knowwe-table-tools-floating, .cm-knowwe-table-toolbar")) return;
+  Spreadsheet.current = null;
+}, true);
+
+document.addEventListener("keydown", function(event) {
+  const sheet = Spreadsheet.current;
+  if (!sheet || !sheet.selected) return;
+  const command = event.ctrlKey || event.metaKey;
+  const deleteRow = event.keyCode === 68 && (command !== event.altKey);
+  const insertRow = event.keyCode === 13 && command && !event.altKey;
+  if (!deleteRow && !insertRow) return;
+  const root = sheet.element[0];
+  if (!root.isConnected) {
+    Spreadsheet.current = null;
+    return;
+  }
+  // the cells handle their keys themselves, other fields and editors keep theirs
+  const focus = document.activeElement;
+  if (focus && focus !== document.body) {
+    if (root.contains(focus) || focus.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(focus.tagName)) return;
+    const area = sheet.element.closest(".editarea, .cm-knowwe-table")[0];
+    if (!area || !area.contains(focus)) return;
+  }
+  event.preventDefault();
+  event.stopPropagation();
+  const cell = sheet.getSelectedCell();
+  cell.find("div > a").focus();
+  sheet.handleKeyDown(cell, event.keyCode, event.shiftKey, command, event.altKey);
+}, true);
 
 Spreadsheet.areEqual = function(x, y) {
   for (let p in y) {
