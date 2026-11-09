@@ -26,8 +26,8 @@ KNOWWE.plugin.tableEditTool = function() {
     stick();
   }
 
-  function createSvgButton(iconId) {
-    let hoverText = iconId.replace(/_/g, " ").replace("table ", "");
+  function createSvgButton(iconId, title) {
+    let hoverText = title || iconId.replace(/_/g, " ").replace("table ", "");
     return "<a class='" + iconId + " action narrow' title='" + hoverText + "'>" +
       "<svg height='20' viewBox='0 0 149 124' fill='none'><use xlink:href='KnowWEExtension/images/table/svg/table-edit-icons.svg#" + iconId + "'></use></svg>" +
       "</a>";
@@ -62,7 +62,8 @@ KNOWWE.plugin.tableEditTool = function() {
         createSvgButton("table_insert_row_after"),
         createSvgButton("table_delete_col"),
         createSvgButton("table_delete_row"),
-        createSvgButton("toggle_header")
+        createSvgButton("toggle_header"),
+        createSvgButton("table_sort", "sort rows by the selected column, again to reverse")
       ]);
     },
 
@@ -154,6 +155,11 @@ KNOWWE.plugin.tableEditTool = function() {
           spreadsheet[id].setHeader(row, col, !header);
         });
         spreadsheet[id].snapshot();
+        event.preventDefault();
+      });
+
+      $root.find(".table_sort").click(function(event) {
+        spreadsheet[id].sortRows();
         event.preventDefault();
       });
     },
@@ -1527,6 +1533,87 @@ document.addEventListener("keydown", function(event) {
   cell.find("div > a").focus();
   sheet.handleKeyDown(cell, event.keyCode, event.shiftKey, command, event.altKey);
 }, true);
+
+// compares like people read, e.g. "A7" before "A10", ignoring case and accents
+Spreadsheet.collator = new Intl.Collator(undefined, {numeric: true, sensitivity: "base"});
+
+/**
+ * Returns the new order of the rows fromRow to toRow if they are sorted by the texts of the given column, as the list
+ * of the old row numbers. Rows with header cells only keep their places, e.g. the header at the top, and the rows
+ * between them are sorted each on their own. Empty cells come last, also in descending order. Rows with equal texts
+ * keep their order.
+ */
+SpreadsheetModel.prototype.sortedRows = function(col, descending, fromRow, toRow) {
+  const model = this;
+  const isHeaderRow = function(row) {
+    let header = false;
+    for (let c = 0; c < model.width; c++) {
+      if (model.isHeader(row, c)) header = true;
+      else if (model.getCellText(row, c).trim()) return false;
+    }
+    return header;
+  };
+  const compare = function(a, b) {
+    const textA = model.getCellText(a, col).trim();
+    const textB = model.getCellText(b, col).trim();
+    if (!textA || !textB) return (textA ? 0 : 1) - (textB ? 0 : 1);
+    const result = Spreadsheet.collator.compare(textA, textB);
+    return descending ? -result : result;
+  };
+  const order = [];
+  let block = [];
+  for (let row = fromRow; row <= toRow; row++) {
+    if (isHeaderRow(row)) {
+      order.push(...block.sort(compare), row);
+      block = [];
+    } else {
+      block.push(row);
+    }
+  }
+  order.push(...block.sort(compare));
+  return order;
+};
+
+/**
+ * Sorts the rows by the column of the selected cell, see SpreadsheetModel.sortedRows(). With several rows selected,
+ * only these rows are sorted. If the rows are already in ascending order, they are sorted in descending order, so
+ * using it twice reverses the order. The selection stays on the cells it was on.
+ */
+Spreadsheet.prototype.sortRows = function() {
+  if (!this.selected) return;
+  this.stopEditCell();
+  const col = this.selected.col;
+  const range = this.selectedRange;
+  let fromRow = 0, toRow = this.size.rows - 1;
+  if (range && range.toRow !== this.selected.row) {
+    fromRow = Math.min(this.selected.row, range.toRow);
+    toRow = Math.max(this.selected.row, range.toRow);
+  }
+  const model = this.getModel();
+  const unchanged = function(order) {
+    return order.every((row, i) => row === fromRow + i);
+  };
+  let order = model.sortedRows(col, false, fromRow, toRow);
+  if (unchanged(order)) order = model.sortedRows(col, true, fromRow, toRow);
+  if (unchanged(order)) return;
+
+  const sorted = new SpreadsheetModel();
+  const newRow = [];
+  for (let row = 0; row < model.height; row++) {
+    const source = row >= fromRow && row <= toRow ? order[row - fromRow] : row;
+    newRow[source] = row;
+    for (let c = 0; c < model.width; c++) {
+      sorted.setCell(row, c, model.getCellText(source, c), model.isHeader(source, c));
+    }
+  }
+  sorted.textBeforeTable = model.textBeforeTable;
+  sorted.textAfterTable = model.textAfterTable;
+  const selected = this.selected;
+  this.setModel(sorted);
+  if (range) this.selectCell(range.toRow, range.toCol);
+  this.selectCell(range ? selected.row : newRow[selected.row], selected.col, !!range);
+  this.snapshot();
+};
 
 Spreadsheet.areEqual = function(x, y) {
   for (let p in y) {

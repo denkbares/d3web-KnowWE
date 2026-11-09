@@ -38,8 +38,9 @@ window.KnowWETableEditor = (function () {
 	const TOOLS_KEY = "knowwe.editor.tableTools";
 	const BUTTONS = [
 		"table_insert_col_before", "table_insert_col_after", "table_insert_row_before", "table_insert_row_after",
-		"table_delete_col", "table_delete_row", "toggle_header"
+		"table_delete_col", "table_delete_row", "toggle_header", "table_sort"
 	];
+	const TITLES = {table_sort: "sort rows by the selected column, again to reverse"};
 
 	let nextTableId = 1;
 	let nextElementId = 1;
@@ -595,7 +596,7 @@ window.KnowWETableEditor = (function () {
 	function svgButton(iconId) {
 		const button = document.createElement("a");
 		button.className = iconId;
-		button.title = iconId.replace(/_/g, " ").replace("table ", "");
+		button.title = TITLES[iconId] || iconId.replace(/_/g, " ").replace("table ", "");
 		button.innerHTML = "<svg height='22' viewBox='0 0 149 124' fill='none'>"
 			+ "<use xlink:href='KnowWEExtension/images/table/svg/table-edit-icons.svg#" + iconId + "'></use></svg>";
 		return button;
@@ -945,6 +946,9 @@ window.KnowWETableEditor = (function () {
 					sheet.snapshot();
 					break;
 				}
+				case "table_sort":
+					sheet.sortRows();
+					break;
 			}
 		}
 

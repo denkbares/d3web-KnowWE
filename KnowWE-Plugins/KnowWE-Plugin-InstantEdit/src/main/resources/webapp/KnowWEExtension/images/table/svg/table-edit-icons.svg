@@ -60,5 +60,17 @@
 		<line x1="119.951" y1="110.33" x2="92.5508" y2="35.0494" stroke="var(--text-color-primary)" stroke-width="11" stroke-linecap="round"/>
 		<line x1="88.4329" y1="0.250205" x2="25.4329" y2="109.25" stroke="var(--text-color-primary)" stroke-width="4"/>
 	</symbol>
+
+	<symbol id="table_sort">
+		<path stroke="var(--table-icon-stroke)" d="M12 2H78C83.5228 2 88 6.47715 88 12V112C88 117.523 83.5228 122 78 122H12C6.47715 122 2 117.523 2 112V12C2 6.47715 6.47715 2 12 2Z" stroke-width="4" stroke-linejoin="round"/>
+		<line stroke="var(--table-icon-stroke)" x1="45" y1="2" x2="45" y2="122" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="2" y1="42" x2="88" y2="42" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="2" y1="82" x2="88" y2="82" stroke-width="4"/>
+		<line stroke="var(--table-icon-insert-accent)" x1="104" y1="8" x2="104" y2="110" stroke-width="6" stroke-linecap="round"/>
+		<path stroke="var(--table-icon-insert-accent)" d="M93 99L104 114L115 99" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+		<line stroke="var(--table-icon-insert-accent)" x1="124" y1="22" x2="134" y2="22" stroke-width="6" stroke-linecap="round"/>
+		<line stroke="var(--table-icon-insert-accent)" x1="124" y1="62" x2="140" y2="62" stroke-width="6" stroke-linecap="round"/>
+		<line stroke="var(--table-icon-insert-accent)" x1="124" y1="102" x2="146" y2="102" stroke-width="6" stroke-linecap="round"/>
+	</symbol>
 </svg>
 
