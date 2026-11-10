@@ -588,9 +588,21 @@
             e.preventDefault(); // prevent the default action (scroll / move caret)
           });
 
-          $(window).on('resize.sumo', () => {
+          // denkbares: the handler is kept, so it can be removed again; a select that has been removed from the
+          // page without unload() (e.g. by replacing its form) releases the handler on the next resize, otherwise
+          // one handler per select ever created stays on the window
+          let attached = false;
+          O.onWindowResize = () => {
+            if (O.E[0].isConnected) {
+              attached = true;
+            }
+            else if (attached) {
+              $(window).off('resize.sumo', O.onWindowResize);
+              return;
+            }
             O.floatingList();
-          });
+          };
+          $(window).on('resize.sumo', O.onWindowResize);
         },
 
         onOptClick(li) {
@@ -853,6 +865,7 @@
             O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
           }
           O.select.remove();
+          $(window).off('resize.sumo', O.onWindowResize); // denkbares: see basicEvents()
           delete selObj.sumo;
           O.E.trigger('sumo:unloaded', O);
           return selObj;
