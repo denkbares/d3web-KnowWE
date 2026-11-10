@@ -52,7 +52,12 @@ public record FileChange(
 				new TextDiff(oldContent, newContent));
 	}
 
+	/**
+	 * There is no article manager available here, so attachment articles are not redirected to the article compiling
+	 * them. File changes describe edits of wiki pages, so this is not required.
+	 */
 	@NotNull
+	@SuppressWarnings("deprecation")
 	private static String articleUrl(@NotNull String articleName) {
 		return KnowWEUtils.getURLLink(articleName, emptyUrlParameters());
 	}

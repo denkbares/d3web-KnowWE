@@ -653,7 +653,7 @@ public class SparqlResultRenderer {
 								 && user.getArticleManager().getArticle(matcher.group(2)) != null;
 			boolean internal = matcher.group(3) == null;
 			if (internal && pageExists) {
-				linkUrl = KnowWEUtils.getURLLink(linkUrl);
+				linkUrl = KnowWEUtils.getURLLink(user.getArticleManager(), linkUrl);
 			}
 			else if (internal) {
 				continue; // probably not a link, just ignore

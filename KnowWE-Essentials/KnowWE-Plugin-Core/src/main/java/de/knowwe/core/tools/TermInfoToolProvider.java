@@ -130,7 +130,7 @@ public class TermInfoToolProvider implements ToolProvider {
 			Section<?> definition = articles.get(title);
 			String link;
 			if (definition == null) {
-				link = KnowWEUtils.getURLLink(title);
+				link = KnowWEUtils.getURLLink(articleManager, title);
 			}
 			else {
 				link = KnowWEUtils.getURLLink(definition);

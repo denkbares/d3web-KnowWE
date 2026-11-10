@@ -105,10 +105,10 @@ public class RecentChangesRenderer implements Renderer {
 
 				string.appendHtml("<td>");
 				if (pageVersion != totalVersionCount) {
-					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()) + "&version=" + page.getVersion());
+					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(user.getArticleManager(), page.getName(), page.getVersion()));
 				}
 				else {
-					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
+					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(user.getArticleManager(), page.getName()));
 				}
 				string.appendHtml("</td>");
 			}

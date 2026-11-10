@@ -32,7 +32,7 @@ public class ArticleRenderer implements ObjectNameRenderer {
 
 	@Override
 	public void render(UserContext context, String objectName, RenderResult result) {
-		result.appendHtml(KnowWEUtils.getLinkHTMLToArticle(objectName));
+		result.appendHtml(KnowWEUtils.getLinkHTMLToArticle(context.getArticleManager(), objectName));
 	}
 
 }

@@ -53,15 +53,8 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	public String getLinkToTermDefinition(Identifier name, String masterArticle) {
 		TerminologyManager terminologyManager = getTerminologyManager(environment, masterArticle);
 		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(name);
-		String targetArticle = name.toString();
-		if (!termDefinitions.isEmpty()) {
-			targetArticle = termDefinitions.iterator().next().getTitle();
-		}
-		else {
-			return null;
-		}
-
-		return KnowWEUtils.getURLLink(targetArticle);
+		if (termDefinitions.isEmpty()) return null;
+		return KnowWEUtils.getURLLink(termDefinitions.iterator().next().getArticle());
 	}
 
 	public static TerminologyManager getTerminologyManager(@NotNull Environment environment, String master) {

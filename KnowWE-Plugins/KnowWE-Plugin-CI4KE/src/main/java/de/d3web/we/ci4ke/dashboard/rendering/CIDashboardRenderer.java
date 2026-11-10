@@ -220,7 +220,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				else {
 					articleLinks.append(", ");
 				}
-				articleLinks.append(KnowWEUtils.getLinkHTMLToArticle(articleTitle));
+				articleLinks.append(KnowWEUtils.getLinkHTMLToArticle(KnowWEUtils.getArticleManager(dashboard.getDashboardSection()), articleTitle));
 			}
 
 			RenderResult errorText = new RenderResult(string);

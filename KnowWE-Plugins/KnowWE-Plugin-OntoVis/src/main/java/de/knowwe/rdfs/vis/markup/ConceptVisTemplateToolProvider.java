@@ -43,7 +43,7 @@ public class ConceptVisTemplateToolProvider implements ToolProvider {
 		if (compiler == null || uri == null) return new Tool[] {};
 
 		String reducedConceptIRI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri.toString());
-		String link = KnowWEUtils.getURLLink(templateSection.getTitle());
+		String link = KnowWEUtils.getURLLink(templateSection.getArticle());
 
 		link += "&concept=" + Strings.encodeURL(reducedConceptIRI);
 

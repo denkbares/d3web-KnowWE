@@ -34,7 +34,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 		ArticleManager articleManager = user.getArticleManager();
 		if (articleManager.getArticle(text) != null) {
 			if (mode == RenderMode.HTML) {
-				return getLinkHTMLToArticle(text);
+				return getLinkHTMLToArticle(articleManager, text);
 			}
 			if (mode == RenderMode.PlainText) {
 				return text;
@@ -47,7 +47,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 			String title = decodeSilent(text.substring(lns.length()));
 			if (user.getArticleManager().getArticle(title) != null) {
 				if (mode == RenderMode.HTML) {
-					return getLinkHTMLToArticle(title);
+					return getLinkHTMLToArticle(articleManager, title);
 				}
 				if (mode == RenderMode.PlainText) {
 					return title;
@@ -70,8 +70,8 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 	}
 
 	@NotNull
-	public String getLinkHTMLToArticle(String title) {
-		return KnowWEUtils.getLinkHTMLToArticle(title);
+	public String getLinkHTMLToArticle(ArticleManager articleManager, String title) {
+		return KnowWEUtils.getLinkHTMLToArticle(articleManager, title);
 	}
 
 	private boolean tryGroupedLinks(String text, UserContext user, String lns, RenderMode mode, StringBuilder newText, Pattern pattern) {
@@ -118,7 +118,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 	}
 
 	private int replaceGroupWithLinkAndUpdateOffset(UserContext user, Matcher matcher, StringBuilder newText, int offSet, String title) {
-		String htmlLink = RenderResult.mask(KnowWEUtils.getLinkHTMLToArticle(title), user);
+		String htmlLink = RenderResult.mask(getLinkHTMLToArticle(user.getArticleManager(), title), user);
 		newText.replace(matcher.start(1) + offSet, matcher.end(1) + offSet, htmlLink);
 		offSet += htmlLink.length() - matcher.group(1).length();
 		return offSet;

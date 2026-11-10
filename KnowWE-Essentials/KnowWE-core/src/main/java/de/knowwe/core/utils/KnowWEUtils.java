@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -876,7 +875,47 @@ public class KnowWEUtils {
 	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getLinkHTMLToArticle(final Article article) {
-		return getLinkHTMLToArticle(article.getTitle());
+		return getLinkHTMLToArticle(article, article.getTitle());
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article. Attachment articles are linked to the article
+	 * compiling them.
+	 *
+	 * @param article  the article to create the link for
+	 * @param linkText the text for the link
+	 * @return the created link
+	 * @see #getURLLink(Article)
+	 */
+	public static String getLinkHTMLToArticle(final Article article, final String linkText) {
+		return getLinkHTMLToURL(getURLLink(article), linkText);
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article. Attachment articles are linked to the article
+	 * compiling them.
+	 *
+	 * @param manager the article manager to resolve attachment articles with
+	 * @param title   the article title to create the link for
+	 * @return the created link
+	 * @see #getURLLink(ArticleManager, String)
+	 */
+	public static String getLinkHTMLToArticle(@NotNull ArticleManager manager, final String title) {
+		return getLinkHTMLToArticle(manager, title, title);
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified article. Attachment articles are linked to the article
+	 * compiling them.
+	 *
+	 * @param manager  the article manager to resolve attachment articles with
+	 * @param title    the article title to create the link for
+	 * @param linkText the text for the link
+	 * @return the created link
+	 * @see #getURLLink(ArticleManager, String)
+	 */
+	public static String getLinkHTMLToArticle(@NotNull ArticleManager manager, final String title, final String linkText) {
+		return getLinkHTMLToURL(getURLLink(manager, title), linkText);
 	}
 
 	/**
@@ -886,9 +925,12 @@ public class KnowWEUtils {
 	 * @return the created link
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLinkPart(Section)
+	 * @deprecated attachment articles are not redirected to the article compiling them, use
+	 * {@link #getLinkHTMLToArticle(ArticleManager, String)} or {@link #getLinkHTMLToArticle(Article)} instead
 	 */
+	@Deprecated
 	public static String getLinkHTMLToArticle(final String title) {
-		return getLinkHTMLToArticle(title, title);
+		return getLinkHTMLToURL(buildURLLink(title), title);
 	}
 
 	/**
@@ -899,9 +941,17 @@ public class KnowWEUtils {
 	 * @return the created link
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLinkPart(Section)
+	 * @deprecated attachment articles are not redirected to the article compiling them, use
+	 * {@link #getLinkHTMLToArticle(ArticleManager, String, String)} or {@link #getLinkHTMLToArticle(Article, String)}
+	 * instead
 	 */
+	@Deprecated
 	public static String getLinkHTMLToArticle(final String title, final String linkText) {
-		return "<a href='" + getURLLink(title) + "' >" + Strings.encodeHtml(linkText) + "</a>";
+		return getLinkHTMLToURL(buildURLLink(title), linkText);
+	}
+
+	private static String getLinkHTMLToURL(String url, String linkText) {
+		return "<a href='" + url + "' >" + Strings.encodeHtml(linkText) + "</a>";
 	}
 
 	/**
@@ -932,15 +982,39 @@ public class KnowWEUtils {
 
 	/**
 	 * Creates an url link with GET parameters that can be placed into a &lt;a href="..."&gt; tag to reference
+	 * the specified article, e.g., <code>Wiki.jsp?page=MyPage&foo=1&bar=baz</code>. Attachment articles are linked to
+	 * the article compiling them.
+	 * Note, that both parameter keys and values will be URL encoded by this method.
+	 *
+	 * @param manager    the article manager to resolve attachment articles with
+	 * @param title      the article title to create the link for
+	 * @param parameters the set of GET parameters, where the first entry is the key and the second entry the value
+	 * @return the link with GET parameters
+	 */
+	@SafeVarargs
+	public static String getURLLink(@NotNull ArticleManager manager, String title, Pair<String, String>... parameters) {
+		return buildURLLink(fixAttachmentArticleLinks(manager, title), parameters);
+	}
+
+	/**
+	 * Creates an url link with GET parameters that can be placed into a &lt;a href="..."&gt; tag to reference
 	 * the specified article, e.g., <code>Wiki.jsp?page=MyPage&foo=1&bar=baz</code>.
 	 * Note, that both parameter keys and values will be URL encoded by this method.
 	 *
 	 * @param title      the article title to create the link for
 	 * @param parameters the set of GET parameters, where the first entry is the key and the second entry the value
 	 * @return the link with GET parameters
+	 * @deprecated attachment articles are not redirected to the article compiling them, use
+	 * {@link #getURLLink(ArticleManager, String, Pair[])} or {@link #getURLLink(Article)} instead
 	 */
+	@Deprecated
 	@SafeVarargs
 	public static String getURLLink(String title, Pair<String, String>... parameters) {
+		return buildURLLink(title, parameters);
+	}
+
+	@SafeVarargs
+	private static String buildURLLink(String title, Pair<String, String>... parameters) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Wiki.jsp?page=")
 				.append(Strings.encodeURL(title));
@@ -970,7 +1044,10 @@ public class KnowWEUtils {
 	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getURLLink(final Article article) {
-		return getURLLink(article.getTitle());
+		if (article.getArticleManager() != null) {
+			return getURLLink(article.getArticleManager(), article.getTitle());
+		}
+		return buildURLLink(article.getTitle());
 	}
 
 	/**

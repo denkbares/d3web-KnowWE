@@ -742,8 +742,8 @@ public class CIRenderer {
 				+ "', '"
 				+ dashboard.getDashboardArticle()
 				+ "', '"
-				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
-				+ dashboardNameEncoded)
+				+ KnowWEUtils.getURLLink(dashboard.getDashboardSection().getArticle()) + "#"
+				+ dashboardNameEncoded
 				+ "')\"><img class='tooltipster ci-abort-build' height='16' title='Stops the current build' " +
 				"src='KnowWEExtension/images/cross.png' /></a>");
 	}
