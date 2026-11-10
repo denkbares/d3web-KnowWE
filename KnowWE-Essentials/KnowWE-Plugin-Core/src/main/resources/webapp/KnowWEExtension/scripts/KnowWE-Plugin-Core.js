@@ -638,6 +638,39 @@ KNOWWE.tooltips.enrich = function(element) {
   });
 };
 
+/**
+ * Closes the drop-downs of expandable tools in section lists (see ListSectionsRenderer#expandableTools) like a menu:
+ * when clicking outside (or on one of its tools), when pressing escape, and when scrolling, as the drop-down does not
+ * move along with a horizontally scrolled table. The listeners are installed once on the document, so they also cover
+ * the lists of rerendered sections.
+ */
+(function() {
+  const selector = "details.list-sections-expandable-tools";
+
+  function close(except) {
+    document.querySelectorAll(selector + "[open]").forEach(function(details) {
+      if (details !== except) details.open = false;
+    });
+  }
+
+  document.addEventListener("click", function(event) {
+    const details = event.target.closest ? event.target.closest(selector) : null;
+    // a click on the summary toggles its own drop-down (natively), a click on a tool closes it after the tool's action
+    const onSummary = details && event.target.closest("summary") && event.target.closest("summary").parentElement === details;
+    close(onSummary ? details : null);
+  });
+
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") close(null);
+  });
+
+  // scroll events do not bubble, so capture them to also get the ones of scrolling boxes (e.g. the list itself);
+  // synthetic ones (e.g. dispatched to update sticky headers) are ignored
+  document.addEventListener("scroll", function(event) {
+    if (event.isTrusted) close(null);
+  }, {capture: true, passive: true});
+})();
+
 KNOWWE.kdomtreetable = {};
 
 KNOWWE.kdomtreetable.init = function() {

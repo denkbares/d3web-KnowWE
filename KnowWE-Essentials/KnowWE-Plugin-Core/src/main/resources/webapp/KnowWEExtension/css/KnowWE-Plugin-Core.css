@@ -401,6 +401,44 @@ table.list-sections td.list-sections-tools {
 	white-space: nowrap;
 }
 
+/* multiple tools of a row, collapsed into an expandable element (see ListSectionsRenderer#expandableTools) */
+table.list-sections details.list-sections-expandable-tools > summary {
+	list-style: none;
+	cursor: pointer;
+}
+
+table.list-sections details.list-sections-expandable-tools > summary::-webkit-details-marker {
+	display: none;
+}
+
+table.list-sections details.list-sections-expandable-tools .list-sections-tools-caret {
+	transition: transform 0.15s;
+}
+
+table.list-sections details.list-sections-expandable-tools[open] .list-sections-tools-caret {
+	transform: rotate(90deg);
+}
+
+/* if any row is expandable, indent single tools by the caret's width (fa-fw), so the tool icons are aligned */
+table.list-sections:has(details.list-sections-expandable-tools) td.list-sections-expandable-tools-column > a:first-child {
+	margin-left: 1.25em;
+}
+
+/*
+ * the expanded tools are a drop-down below the caret, lying above the following content: without insets, the
+ * absolute box stays at its place in the flow (below the summary); and as neither the details nor the table are
+ * positioned, its containing block is outside a scrolling parent of the table, so that parent does not cut it off
+ */
+table.list-sections details.list-sections-expandable-tools > .list-sections-expanded-tools {
+	position: absolute;
+	z-index: 10;
+	padding: 0.25em 0.5em;
+	background: var(--bg-color-primary);
+	border: 1px solid var(--border-color-default);
+	border-radius: 3px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
 table.list-sections td.list-sections-number {
 	text-align: right;
 }

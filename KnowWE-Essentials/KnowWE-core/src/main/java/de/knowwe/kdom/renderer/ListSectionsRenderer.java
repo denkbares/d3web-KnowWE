@@ -45,8 +45,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.elements.A;
+import de.knowwe.core.kdom.rendering.elements.Div;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.kdom.rendering.elements.HtmlNode;
 import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
@@ -93,6 +96,8 @@ public class ListSectionsRenderer<T extends Type> {
 	private final TreeMap<Integer, String> superheaders = new TreeMap<>();
 	private final List<Pair<String, Function<Section<T>, String>>> columns = new ArrayList<>();
 	private final List<Function<Section<T>, Collection<? extends Tool>>> tools = new ArrayList<>();
+	// indices of the tool columns that collapse multiple tools of a row into an expandable element
+	private final Set<Integer> expandableToolColumns = new HashSet<>();
 
 	private Function<Section<T>, Boolean> greyoutFunction; // decides which lines are greyed out
 
@@ -460,6 +465,20 @@ public class ListSectionsRenderer<T extends Type> {
 	}
 
 	/**
+	 * Makes the most recently added tool column expandable: If a row has more than one tool in this column, the tools
+	 * are not rendered as a row of icons, but as a collapsed element (an expand caret and the icon of the first tool),
+	 * that lists each tool with its icon and title when being expanded. Rows with a single tool are rendered as usual.
+	 *
+	 * @return this instance to chain builder calls
+	 * @throws IllegalStateException if no tool column has been added yet
+	 */
+	public ListSectionsRenderer<T> expandableTools() {
+		if (tools.isEmpty()) throw new IllegalStateException("no tool column has been added yet");
+		this.expandableToolColumns.add(tools.size() - 1);
+		return this;
+	}
+
+	/**
 	 * Adds a new column to show all ServiceMateCompilers for each section. The column will contain plain text of all
 	 * compiler names separated by a comma
 	 *
@@ -685,10 +704,19 @@ public class ListSectionsRenderer<T extends Type> {
 		lineResult.appendHtml(greyoutFunction != null && greyoutFunction.apply(line) ? " greyed-out'>" : "'>");
 
 		// render tool columns for the section
-		for (Function<Section<T>, Collection<? extends Tool>> provider : tools) {
-			lineResult.appendHtmlTag("td", "class", CSS_TOOL_COLUMN);
-			for (Tool tool : provider.apply(line)) {
-				renderTool(lineResult, tool);
+		for (int column = 0; column < tools.size(); column++) {
+			List<Tool> lineTools = new ArrayList<>(tools.get(column).apply(line));
+			boolean expandable = expandableToolColumns.contains(column);
+			// expandable columns are marked, so single tools can be aligned with the tools behind the expand caret
+			lineResult.appendHtmlTag("td", "class",
+					expandable ? CSS_TOOL_COLUMN + " list-sections-expandable-tools-column" : CSS_TOOL_COLUMN);
+			if (lineTools.size() > 1 && expandable) {
+				lineResult.append(createExpandableTools(lineTools));
+			}
+			else {
+				for (Tool tool : lineTools) {
+					lineResult.append(createToolLink(tool, getToolTooltip(tool), getToolIcon(tool)));
+				}
 			}
 			lineResult.appendHtmlTag("/td");
 		}
@@ -724,35 +752,97 @@ public class ListSectionsRenderer<T extends Type> {
 		page.append(lineResult); // only append if we don't get exceptions while rendering
 	}
 
-	private void renderTool(RenderResult page, Tool tool) {
+	/**
+	 * Creates a collapsed element for multiple tools, showing an expand caret and the icon of the first tool. When
+	 * being expanded, it shows a drop-down below the caret, that lists each tool as a link with its icon and title.
+	 * The drop-down lies above the following content (see KnowWE-Plugin-Core.css), so it neither widens the tool
+	 * column, nor enlarges the surrounding box, nor is it cut off by a scrolling parent of the table.
+	 */
+	private static HtmlProvider createExpandableTools(List<Tool> tools) {
+		Icon icon = tools.get(0).getIcon();
+		HtmlElement summary = new HtmlElement("summary").children(
+				Icon.CARET_RIGHT.addClasses("list-sections-tools-caret").fixWidth().toHtmlElement());
+		if (icon != null) summary.children(icon.fixWidth().toHtmlElement());
+
+		HtmlElement list = new Div().clazz("list-sections-expanded-tools");
+		for (Tool tool : tools) {
+			// the title is shown as the link text, so the tooltip only contains the description
+			String description = tool.getDescription();
+			String tooltip = Strings.isBlank(description) ? null : toHtml(description);
+			HtmlElement title = new Span().children(new HtmlNode(tool.getTitle()));
+			HtmlProvider link = (tool.getIcon() == null)
+					? createToolLink(tool, tooltip, title)
+					: createToolLink(tool, tooltip, tool.getIcon().fixWidth().toHtmlElement(), title);
+			list.children(new Div().clazz("list-sections-expanded-tool").children(link));
+		}
+		return new HtmlElement("details").clazz("list-sections-expandable-tools").children(summary, list);
+	}
+
+	/**
+	 * Returns the html of the tooltip for a tool, rendered as an icon (or a plain title, if there is no icon). The
+	 * title of a tool may contain html markup, the description is plain text.
+	 */
+	private static String getToolTooltip(Tool tool) {
 		String description = tool.getDescription();
-		String id = tool.getId();
-		String tooltip = Strings.isBlank(description)
+		return Strings.isBlank(description)
 				? tool.getTitle()
-				: tool.getTitle() + ":\n" + description;
+				: tool.getTitle() + ":<br>" + toHtml(description);
+	}
+
+	private static String toHtml(String plainText) {
+		return Strings.encodeHtml(plainText).replace("\n", "<br>");
+	}
+
+	private static HtmlProvider getToolIcon(Tool tool) {
+		return (tool.getIcon() == null)
+				? new Span().children(new HtmlNode(tool.getTitle()))
+				: tool.getIcon().fixWidth().toHtmlElement();
+	}
+
+	/**
+	 * Creates a link for the specified tool, with the specified content and tooltip. The tooltip is html, shown by
+	 * tooltipster, it may be null for no tooltip.
+	 */
+	private static HtmlProvider createToolLink(Tool tool, @Nullable String tooltipHtml, HtmlProvider... content) {
+		List<String> cssClasses = new ArrayList<>();
 		List<String> attributePairs = new ArrayList<>(Arrays.asList(
-				"title", Strings.encodeHtml(tooltip),
 				ToolUtils.getActionAttributeName(tool), ToolUtils.getActionAttributeValue(tool)
 		));
+		if (tooltipHtml != null) {
+			cssClasses.add("tooltipster");
+			attributePairs.add("title");
+			attributePairs.add(Strings.encodeHtml(tooltipHtml));
+		}
 
+		String id = tool.getId();
 		if (id != null) {
 			attributePairs.add("id");
 			attributePairs.add(Strings.encodeHtml(id));
 		}
 
 		for (Map.Entry<String, String> entry : tool.getAttributes().entrySet()) {
+			if ("class".equals(entry.getKey())) {
+				// merge the tool's classes, as a second class attribute would be ignored
+				cssClasses.add(entry.getValue());
+				continue;
+			}
 			attributePairs.add(entry.getKey());
 			attributePairs.add(entry.getValue());
 		}
+		if (!cssClasses.isEmpty()) {
+			attributePairs.add("class");
+			attributePairs.add(String.join(" ", cssClasses));
+		}
 
-		page.appendHtmlTag("a", false, attributePairs.toArray(new String[0]));
-		if (tool.getIcon() != null) {
-			page.appendHtml(tool.getIcon().fixWidth().toHtml());
-		}
-		else {
-			page.appendHtmlElement("span", tool.getTitle());
-		}
-		page.appendHtmlTag("/a");
+		// the action and the attributes of tools are already html-encoded, so the tag is written without encoding,
+		// which is not possible with HtmlElement
+		return result -> {
+			result.appendHtmlTag("a", false, attributePairs.toArray(new String[0]));
+			for (HtmlProvider child : content) {
+				child.write(result);
+			}
+			result.appendHtmlTag("/a");
+		};
 	}
 
 	/**
