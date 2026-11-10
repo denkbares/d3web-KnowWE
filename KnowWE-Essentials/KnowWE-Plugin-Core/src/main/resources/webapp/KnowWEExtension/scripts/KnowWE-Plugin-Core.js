@@ -966,45 +966,66 @@ KNOWWE.core.plugin.switchCompiler = function() {
 
 KNOWWE.core.plugin.stickyTableHeaders = function() {
   let pageResizeObserver = null;
-  return {
-    init: function() {
-      // the tables in a box marked as sticky-header-scroll-container get sticky headers by CSS (see
-      // KnowWE-Plugin-Core.css), floatThead would only handle one table filling the box
-      jq$(".haddock table.sticky-header, .haddock .wikitable").not(".renderKDOMTable")
-          .not(".sticky-header-scroll-container table").floatThead({
-        top: function() {
-          let $header = jq$(".header .navigation");
-          let rect = $header[0].getBoundingClientRect();
-          return rect.top + rect.height;
-        },
-        responsiveContainer: function($table) {
-          return $table.closest(".zebra-table, .scroll-parent");
-        },
-        // a table inside a box scrolling vertically (having a max-height) floats its header inside that box,
-        // otherwise the header floats along with the page far beyond the visible part of the table, and sticks below
-        // the page header as soon as the box is scrolled (an empty result lets the header float with the page);
-        // the max-height is required, because horizontal scrolling (overflow-x) also turns overflow-y into auto
-        scrollContainer: function($table) {
-          return $table.parentsUntil(".page-content").filter(function() {
-            const $box = jq$(this);
-            return /(auto|scroll)/.test($box.css("overflow-y")) && $box.css("max-height") !== "none";
-          }).first();
-        },
-        zIndex: 400 // has to be < than wiki header, which is 1001
-      });
+  let accordionObserver = null;
+  let listenersInstalled = false;
+  // the floatThead instances by their table: a rerender replaces tables without telling floatThead, so the
+  // instances of the tables that are gone have to be destroyed here, otherwise their window handlers pile up
+  const floatingTables = new Map();
 
-      function update() {
-        window.dispatchEvent(new CustomEvent("resize"));
-        window.dispatchEvent(new CustomEvent("scroll"));
+  function update() {
+    window.dispatchEvent(new CustomEvent("resize"));
+    window.dispatchEvent(new CustomEvent("scroll"));
+  }
+
+  function destroyDetachedTables() {
+    floatingTables.forEach(function(instance, table) {
+      if (table.isConnected) return;
+      floatingTables.delete(table);
+      try {
+        instance.destroy();
       }
+      catch (e) {
+        console.warn("Could not release the sticky header of a removed table", e);
+      }
+    });
+  }
 
-      // trigger scroll and resize event to make sure sticky position gets recalculated when page height changes
-      KNOWWE.helper.observer.subscribe("afterRerender", update);
-      // also add extra event contentChange for every time the site changes
-      KNOWWE.helper.observer.subscribe("contentChange", update);
-      jq$(".haddock .header").on("transitionend", update);
+  function attachTables() {
+    // the tables in a box marked as sticky-header-scroll-container get sticky headers by CSS (see
+    // KnowWE-Plugin-Core.css), floatThead would only handle one table filling the box
+    const $tables = jq$(".haddock table.sticky-header, .haddock .wikitable").not(".renderKDOMTable")
+        .not(".sticky-header-scroll-container table");
+    // tables that already have a floating header are skipped by floatThead
+    $tables.floatThead({
+      top: function() {
+        let $header = jq$(".header .navigation");
+        let rect = $header[0].getBoundingClientRect();
+        return rect.top + rect.height;
+      },
+      responsiveContainer: function($table) {
+        return $table.closest(".zebra-table, .scroll-parent");
+      },
+      // a table inside a box scrolling vertically (having a max-height) floats its header inside that box,
+      // otherwise the header floats along with the page far beyond the visible part of the table, and sticks below
+      // the page header as soon as the box is scrolled (an empty result lets the header float with the page);
+      // the max-height is required, because horizontal scrolling (overflow-x) also turns overflow-y into auto
+      scrollContainer: function($table) {
+        return $table.parentsUntil(".page-content").filter(function() {
+          const $box = jq$(this);
+          return /(auto|scroll)/.test($box.css("overflow-y")) && $box.css("max-height") !== "none";
+        }).first();
+      },
+      zIndex: 400 // has to be < than wiki header, which is 1001
+    });
+    $tables.each(function() {
+      const instance = jq$(this).data("floatThead-attached");
+      if (instance) floatingTables.set(this, instance);
+    });
+  }
 
-      // trigger scroll and resize event for %%accordion animation
+  // trigger scroll and resize event for %%accordion animation
+  function observeAccordions() {
+    if (!accordionObserver) {
       let mutationCallBack = function(mutations) {
         window.requestAnimationFrame(function() {
           update();
@@ -1013,57 +1034,81 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
           }
         });
       };
-      let observer = new MutationObserver(mutationCallBack);
-      document.querySelectorAll(".accordion .panel-heading").forEach(function(heading) {
-        observer.observe(heading, {attributes: true, childList: true, characterData: true});
-      });
+      accordionObserver = new MutationObserver(mutationCallBack);
+    }
+    // observing a heading again does not add it a second time, so headings added by a rerender are covered as well
+    document.querySelectorAll(".accordion .panel-heading").forEach(function(heading) {
+      accordionObserver.observe(heading, {attributes: true, childList: true, characterData: true});
+    });
+  }
 
-      // special handling for sidebar, we want to continuously update while animating
-      let transitionOngoing = false;
-      jq$(".haddock .sidebar").on("transitionstart", function() {
-        transitionOngoing = true;
+  // installs everything that listens for changes of the page, must run only once: this is called after every
+  // rerender, and listeners added again each time would all fire on every following rerender
+  function installListeners() {
+    // trigger scroll and resize event to make sure sticky position gets recalculated when page height changes
+    KNOWWE.helper.observer.subscribe("afterRerender", update);
+    // also add extra event contentChange for every time the site changes
+    KNOWWE.helper.observer.subscribe("contentChange", update);
+    jq$(".haddock .header").on("transitionend", update);
 
-        function continuousUpdate() {
-          if (!transitionOngoing) return;
-          window.dispatchEvent(new CustomEvent("scroll"));
-          window.requestAnimationFrame(continuousUpdate);
-        }
+    // special handling for sidebar, we want to continuously update while animating
+    let transitionOngoing = false;
+    jq$(".haddock .sidebar").on("transitionstart", function() {
+      transitionOngoing = true;
 
+      function continuousUpdate() {
+        if (!transitionOngoing) return;
+        window.dispatchEvent(new CustomEvent("scroll"));
         window.requestAnimationFrame(continuousUpdate);
-      });
-      jq$(".haddock .sidebar").on("transitionend transitioncancel", function() {
-        transitionOngoing = false;
-        update();
-      });
+      }
 
-      // The sidebar is resizable and toggles via display:none, both without a css transition on
-      // the sidebar itself, so the handlers above do not fire for it. Content may also change its
-      // height without any event, e.g. by expanding a <details> element above a table. Watch the
-      // width of the page and the height of its content instead (the page itself does not shrink,
-      // the skin sets its min-height), that way the headers are recalculated after such changes.
-      if (window.ResizeObserver && !pageResizeObserver) {
-        let page = document.querySelector(".haddock .page");
-        if (page) {
-          let content = page.querySelector(".page-content") || page;
-          let getSize = function() {
-            return page.getBoundingClientRect().width + "x" + content.getBoundingClientRect().height;
-          };
-          let lastSize = getSize();
-          let updateScheduled = false;
-          pageResizeObserver = new ResizeObserver(function() {
-            let size = getSize();
-            if (size === lastSize) return;
-            lastSize = size;
-            if (updateScheduled) return; // coalesce, resizing produces one event per frame
-            updateScheduled = true;
-            window.requestAnimationFrame(function() {
-              updateScheduled = false;
-              update();
-            });
+      window.requestAnimationFrame(continuousUpdate);
+    });
+    jq$(".haddock .sidebar").on("transitionend transitioncancel", function() {
+      transitionOngoing = false;
+      update();
+    });
+
+    // The sidebar is resizable and toggles via display:none, both without a css transition on
+    // the sidebar itself, so the handlers above do not fire for it. Content may also change its
+    // height without any event, e.g. by expanding a <details> element above a table. Watch the
+    // width of the page and the height of its content instead (the page itself does not shrink,
+    // the skin sets its min-height), that way the headers are recalculated after such changes.
+    if (window.ResizeObserver && !pageResizeObserver) {
+      let page = document.querySelector(".haddock .page");
+      if (page) {
+        let content = page.querySelector(".page-content") || page;
+        let getSize = function() {
+          return page.getBoundingClientRect().width + "x" + content.getBoundingClientRect().height;
+        };
+        let lastSize = getSize();
+        let updateScheduled = false;
+        pageResizeObserver = new ResizeObserver(function() {
+          let size = getSize();
+          if (size === lastSize) return;
+          lastSize = size;
+          if (updateScheduled) return; // coalesce, resizing produces one event per frame
+          updateScheduled = true;
+          window.requestAnimationFrame(function() {
+            updateScheduled = false;
+            update();
           });
-          pageResizeObserver.observe(page);
-          if (content !== page) pageResizeObserver.observe(content);
-        }
+        });
+        pageResizeObserver.observe(page);
+        if (content !== page) pageResizeObserver.observe(content);
+      }
+    }
+  }
+
+  return {
+    // called on page load and after every rerender, so everything in here has to be repeatable
+    init: function() {
+      destroyDetachedTables();
+      attachTables();
+      observeAccordions();
+      if (!listenersInstalled) {
+        listenersInstalled = true;
+        installListeners();
       }
     }
   };
