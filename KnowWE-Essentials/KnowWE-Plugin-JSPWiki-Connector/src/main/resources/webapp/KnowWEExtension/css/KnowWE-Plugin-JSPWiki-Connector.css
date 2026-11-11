@@ -298,6 +298,10 @@
 	font-weight: bold;
 }
 
+.delete-pages-dialog .delete-pages-success {
+	color: #3c763d;
+}
+
 .delete-pages-dialog .delete-pages-report summary {
 	display: list-item;
 	cursor: pointer;

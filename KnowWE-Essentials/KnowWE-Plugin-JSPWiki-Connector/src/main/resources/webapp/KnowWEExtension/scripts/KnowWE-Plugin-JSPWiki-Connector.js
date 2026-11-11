@@ -184,15 +184,25 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
   const getMode = () => dialog.find("input[name=delete-pages-mode]:checked").val();
 
 
-  const request = function(preview) {
+  // while a request runs (deleting a thousand pages takes a while), the input is locked and the action button is
+  // disabled and tells what happens, so it cannot be clicked twice
+  const request = function(preview, busyLabel) {
+    const button = actionButton();
+    const label = button.button("option", "label");
+    const inputs = dialog.find("textarea, input");
+    button.button("option", "label", busyLabel).button("disable");
+    inputs.prop("disabled", true);
     KNOWWE.editCommons.showAjaxLoader();
     return jq$.ajax({
       url: "action/DeletePagesAction",
       method: "POST",
       dataType: "json",
       data: { pages: namesArea.val(), mode: getMode(), preview: preview }
-    }).always(() => KNOWWE.editCommons.hideAjaxLoader())
-      .fail(jqXHR => KNOWWE.notification.error_jqXHR(jqXHR));
+    }).always(() => {
+      KNOWWE.editCommons.hideAjaxLoader();
+      inputs.prop("disabled", false);
+      button.button("option", "label", label).button("enable");
+    }).fail(jqXHR => KNOWWE.notification.error_jqXHR(jqXHR));
   };
 
   const countOk = result => result.results.filter(entry => entry.status === "OK").length;
@@ -206,8 +216,9 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     }
     const groups = {};
     result.results.forEach(entry => (groups[entry.status] = groups[entry.status] || []).push(entry));
-    const title = result.preview ? "Preview:" : "Done:";
-    report.append(jq$("<p class='delete-pages-report-title'>").text(title));
+    report.append(jq$("<p class='delete-pages-report-title'></p>", document).text(result.preview ? "Preview:" : "Done:"));
+    // the pages actually cleared resp. deleted get a check mark, the summary line as well as each page
+    const success = () => result.preview ? [] : [" ", jq$("<i class='fa-regular fa-circle-check delete-pages-success'></i>", document)];
     ["OK", "FAILED", "NOT_FOUND", "NO_PERMISSION", "ALREADY_CLEARED", "DUPLICATE"].forEach(status => {
       const entries = groups[status];
       if (!entries) return;
@@ -215,9 +226,10 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
       const details = jq$("<details>").addClass("delete-pages-" + status.toLowerCase());
       // problems are shown expanded, the (possibly long) list of pages that are fine is collapsed
       if (status !== "OK") details.attr("open", "open");
-      details.append(jq$("<summary>").text(pages(entries.length) + " " + label));
+      const done = status === "OK" ? success : () => [];
+      details.append(jq$("<summary>").text(pages(entries.length) + " " + label).append(done()));
       const list = jq$("<ul>");
-      entries.forEach(entry => list.append(jq$("<li>").text(entry.page + (entry.message ? ": " + entry.message : ""))));
+      entries.forEach(entry => list.append(jq$("<li>").text(entry.page + (entry.message ? ": " + entry.message : "")).append(done())));
       details.append(list);
       report.append(details);
     });
@@ -226,11 +238,12 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
   // The action button first shows the preview together with the question, and only a second click clears or deletes
   // the previewed pages. The question is asked in the dialog instead of with confirm(): embedded browsers may suppress
   // native dialogs and silently answer "no".
-  let confirming = false;
+  // the number of previewed pages to confirm, 0 if there is no preview to confirm
+  let confirming = 0;
   const actionButton = () => dialog.dialog("widget").find(".delete-pages-action");
 
   const reset = function() {
-    confirming = false;
+    confirming = 0;
     report.empty();
     const verb = getMode() === "CLEAR" ? "Clear" : "Delete";
     actionButton().button("option", "label", verb + " (Preview)")
@@ -256,18 +269,21 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     actionButton().button("option", "label", (clear ? "Clear " : "Delete ") + pages(count))
       .addClass(clear ? "admin-tool-warning" : "admin-tool-danger")
       .trigger("focus");
-    confirming = true;
+    confirming = count;
   };
 
   const act = function() {
     if (confirming) {
-      request(false).done(result => {
+      const busyLabel = (getMode() === "CLEAR" ? "Clearing " : "Deleting ") + pages(confirming) + " ...";
+      request(false, busyLabel).done(result => {
         reset();
         renderReport(result);
+        // the pages are done, the report tells what happened to them (setting the value fires no input event)
+        namesArea.val("");
       });
     }
     else {
-      request(true).done(result => {
+      request(true, "Checking pages ...").done(result => {
         renderReport(result);
         askToConfirm(result);
       });
