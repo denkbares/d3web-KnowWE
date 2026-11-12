@@ -302,6 +302,11 @@
 	color: #3c763d;
 }
 
+/* the button stays disabled while the pages are processed, but has to stay readable with its spinner */
+.ui-dialog.admin-tool-dialog .ui-button.delete-pages-busy.ui-state-disabled {
+	opacity: 0.8 !important;
+}
+
 .delete-pages-dialog .delete-pages-report summary {
 	display: list-item;
 	cursor: pointer;

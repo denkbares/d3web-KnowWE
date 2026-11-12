@@ -190,7 +190,9 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     const button = actionButton();
     const label = button.button("option", "label");
     const inputs = dialog.find("textarea, input");
-    button.button("option", "label", busyLabel).button("disable");
+    // the label option is html, the spinner shows right where the user clicked that something is going on
+    button.button("option", "label", "<i class='fa-solid fa-spinner fa-spin'></i> " + busyLabel).button("disable")
+      .addClass("delete-pages-busy");
     inputs.prop("disabled", true);
     KNOWWE.editCommons.showAjaxLoader();
     return jq$.ajax({
@@ -201,7 +203,7 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     }).always(() => {
       KNOWWE.editCommons.hideAjaxLoader();
       inputs.prop("disabled", false);
-      button.button("option", "label", label).button("enable");
+      button.button("option", "label", label).button("enable").removeClass("delete-pages-busy");
     }).fail(jqXHR => KNOWWE.notification.error_jqXHR(jqXHR));
   };
 
