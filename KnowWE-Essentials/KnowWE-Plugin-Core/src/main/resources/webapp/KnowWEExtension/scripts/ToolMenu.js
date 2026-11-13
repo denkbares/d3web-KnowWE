@@ -220,13 +220,13 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
       header.find('.markupMenuIndicator').hide();
     }
 
-    header.unbind('mouseout').on('mouseout', function() {
+    header.off('mouseleave').on('mouseleave', function() {
       header.stop().animate({'max-width': 35, 'z-index': 1000, opacity: 0.3}, 200);
       if (menu) {
         menu.hide();
         menu.css("margin-top", "");
       }
-    }).unbind('mouseover').on('mouseover', function() {
+    }).off('mouseenter').on('mouseenter', function() {
       header.stop().animate({'max-width': 250, 'z-index': 1500, opacity: 1}, 200);
       if (menu) {
         menu.show();
