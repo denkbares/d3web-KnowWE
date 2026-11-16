@@ -133,6 +133,9 @@ ToolMenu.prototype.showToolPopupMenu = function ($node, args = {}) {
   document.body.appendChild(parent);
   parent.innerHTML =
     "<div class='toolMenuFrame'>" + this.getToolMenuHtml(node, args) + "</div>";
+  this.decorateToolTargets(jq$(parent));
+  // let plugins decorate the tools of the menu, e.g. with additional controls
+  KNOWWE.helper.observer.notify("toolMenuShown", parent);
 
   const menu = jq$(parent).find(".markupMenu");
   let menuRect = menu[0].getBoundingClientRect();
@@ -198,6 +201,95 @@ ToolMenu.prototype.getToolMenuHtml = function (node, args = {}) {
     }
   }
   return this.cache[toolMenuIdentifier];
+};
+
+/**
+ * Merged tools with several targets (see de.knowwe.tools.ToolTarget) have an arrow at their right side. Hovering or
+ * clicking the arrow shows the list of the targets next to the tool, clicking a target executes the tool for it. The
+ * list stays a DOM descendant of the tool (shown in the top layer as popover), so the surrounding menu stays open
+ * while the mouse is over the list.
+ *
+ * @param {jQuery} $parent the element to decorate the tools in
+ */
+ToolMenu.prototype.decorateToolTargets = function($parent) {
+  if (!$parent || $parent.length === 0) return;
+  $parent.find(".tool-target-arrow").each(function() {
+    const $arrow = jq$(this);
+    if ($arrow.data("toolTargetsDecorated")) return;
+    $arrow.data("toolTargetsDecorated", true);
+    const $targets = $arrow.closest("a.markupMenuItem").siblings(".tool-targets").first();
+    if ($targets.length === 0) return;
+
+    // small delay before closing, so the mouse can move from the arrow into the list
+    let closeTimeout = null;
+    const cancelClose = function() {
+      if (closeTimeout) clearTimeout(closeTimeout);
+      closeTimeout = null;
+    };
+    const scheduleClose = function() {
+      cancelClose();
+      closeTimeout = setTimeout(() => _TM.closeToolTargets($targets), 200);
+    };
+
+    $arrow.on("mouseenter", function() {
+      cancelClose();
+      _TM.openToolTargets($arrow, $targets);
+    });
+    // the arrow is inside the tool's link: don't execute the tool when clicking the arrow
+    $arrow.on("click", function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      cancelClose();
+      _TM.openToolTargets($arrow, $targets);
+    });
+    $arrow.on("mouseleave", scheduleClose);
+    $targets.on("mouseenter", cancelClose).on("mouseleave", scheduleClose);
+    $targets.on("click", "a.tool-target", function() {
+      cancelClose();
+      _TM.closeToolTargets($targets);
+    });
+  });
+};
+
+ToolMenu.prototype.openToolTargets = function($arrow, $targets) {
+  if ($targets.hasClass("open")) return;
+  jq$(".tool-targets.open").each(function() {
+    _TM.closeToolTargets(jq$(this));
+  });
+
+  const targets = $targets[0];
+  $targets.addClass("open");
+  $arrow.addClass("open");
+  $targets.css({position: "fixed", top: -9999, left: -9999});
+  if (typeof targets.showPopover === "function") {
+    targets.showPopover();
+  }
+
+  // show the list below the arrow (like the editor selection of the XCL tools), so the mouse moves directly into it,
+  // shifted to the left if there is not enough space, above the arrow if there is not enough space below
+  const margin = 8;
+  const arrowRect = $arrow[0].getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  $targets.css({maxWidth: viewportWidth - 2 * margin, maxHeight: viewportHeight - 2 * margin});
+  const width = $targets.outerWidth();
+  const height = $targets.outerHeight();
+  const left = Math.max(margin, Math.min(arrowRect.left, viewportWidth - width - margin));
+  let top = arrowRect.bottom;
+  if (top + height > viewportHeight - margin) {
+    top = Math.max(margin, arrowRect.top - height);
+  }
+  $targets.css({left: left, top: top});
+};
+
+ToolMenu.prototype.closeToolTargets = function($targets) {
+  const targets = $targets[0];
+  if (!targets) return;
+  if (typeof targets.hidePopover === "function" && targets.matches(":popover-open")) {
+    targets.hidePopover();
+  }
+  $targets.removeClass("open");
+  $targets.siblings("a.markupMenuItem").find(".tool-target-arrow").removeClass("open");
 };
 
 ToolMenu.prototype.hideToolsPopupMenu = function() {
@@ -284,6 +376,7 @@ const _TM = new ToolMenu();
 jq$(function() {
   _TM.animateDefaultMarkupMenu();
   _TM.decorateToolMenus();
+  _TM.decorateToolTargets(jq$(document.body));
 });
 
 KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
@@ -293,5 +386,6 @@ KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
   _TM.animateDefaultMarkupMenu(jq$(this));
   _TM.decorateToolMenus(jq$(this));
+  _TM.decorateToolTargets(jq$(this));
 });
 

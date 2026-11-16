@@ -1212,3 +1212,83 @@ table.knowwe-pagination th img.filter:hover {
 	z-index: 2;
 	background-clip: padding-box;
 }
+
+/*
+ * Merged tools with several targets (see de.knowwe.tools.ToolTarget): the tool acts on the default target, the arrow
+ * opens the list of all targets.
+ */
+a.markupMenuItem:has(> .tool-target-arrow) {
+	position: relative;
+	padding-right: 38px !important;
+}
+
+.tool-target-arrow {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	min-width: 16px;
+	min-height: 16px;
+	padding: 2px 8px 2px 10px;
+	font-size: 0.85em;
+	cursor: pointer;
+	color: #666;
+	background-color: var(--bg-color-base);
+}
+
+.tool-target-arrow > .fa-caret-down {
+	transform: scale(1.5);
+}
+
+a.markupMenuItem:hover > .tool-target-arrow {
+	background-color: inherit;
+}
+
+.tool-target-arrow:hover,
+.tool-target-arrow.open {
+	color: var(--text-color-primary-link, #1a56db);
+}
+
+.tool-targets {
+	display: none;
+	box-sizing: border-box;
+	overflow: auto;
+	z-index: 100000;
+	background: var(--bg-color-base, #fff);
+	border: 1px solid var(--border-color-default, #d0d0d0);
+	border-radius: 10px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+	padding: 6px 0;
+	white-space: nowrap;
+}
+
+.tool-targets.open {
+	display: block;
+}
+
+.tool-targets[popover] {
+	/* reset the centering of the browser, the position is set by ToolMenu.js */
+	margin: 0;
+	inset: auto;
+}
+
+.tool-targets a.tool-target {
+	display: block;
+	padding: 0.3em 1em 0.3em calc(1em + var(--tool-target-indent, 0) * 1.2em);
+	color: var(--text-color-default-head);
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.tool-targets a.tool-target:hover {
+	background-color: var(--hover-bg-color-btn-default, #e8f0fe);
+	color: var(--text-color-primary-link);
+	text-decoration: none;
+}
+
+.tool-targets a.tool-target.is-default {
+	font-weight: 600;
+}

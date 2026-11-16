@@ -169,6 +169,18 @@ public class CompositeEditToolProvider implements ToolProvider {
 		public CompositeEditTool(String title, Identifier identifier) {
 			super(Icon.INFO, title, "Shows information about this object", CompositeEditToolProvider.createCompositeEditModeAction(identifier), Tool.CATEGORY_INFO);
 			this.identifier = identifier;
+			// several "Show Info" tools of a menu are merged into one with a dropdown of the objects
+			setTarget(SHOW_INFO, getTargetLabel(title), 0);
+		}
+
+		/**
+		 * Returns the label of the object in the dropdown of the merged "Show Info" tool: the title without the
+		 * leading "Show Info".
+		 */
+		public static String getTargetLabel(String title) {
+			String label = title.startsWith(SHOW_INFO) ? title.substring(SHOW_INFO.length()) : title;
+			label = label.replaceFirst("^\\s*:?\\s*", "");
+			return label.isBlank() ? title : label;
 		}
 
 		public Identifier getIdentifier() {

@@ -23,6 +23,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.util.Icon;
@@ -43,6 +46,7 @@ public class DefaultTool implements Tool {
 	private final ActionType type;
 	private final String category;
 	private final Map<String, String> attributes;
+	private ToolTarget target = null;
 
 	public DefaultTool(Icon icon, String title, String description, String jsAction, ActionType type, String category) {
 		this(icon, title, description, jsAction, type, category, null);
@@ -107,6 +111,35 @@ public class DefaultTool implements Tool {
 	@Override
 	public Map<String, String> getAttributes() {
 		return attributes;
+	}
+
+	@Override
+	public @Nullable ToolTarget getTarget() {
+		return target;
+	}
+
+	/**
+	 * Sets the element this tool acts on, so it is merged with the other tools of the menu with the same target group,
+	 * see {@link ToolTarget}.
+	 *
+	 * @param target the target of this tool, null to not merge this tool with others
+	 * @return this tool, for chaining
+	 */
+	public DefaultTool setTarget(@Nullable ToolTarget target) {
+		this.target = target;
+		return this;
+	}
+
+	/**
+	 * Sets the element this tool acts on, see {@link #setTarget(ToolTarget)}.
+	 *
+	 * @param group the title of the merged tool, e.g. "Show Info"
+	 * @param label the label of the element in the dropdown of the merged tool
+	 * @param depth the depth of the element, the deepest target is the default of the merged tool
+	 * @return this tool, for chaining
+	 */
+	public DefaultTool setTarget(@NotNull String group, @NotNull String label, int depth) {
+		return setTarget(new ToolTarget(group, label, depth));
 	}
 
 	/**

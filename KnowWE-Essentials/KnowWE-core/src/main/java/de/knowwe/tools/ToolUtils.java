@@ -105,6 +105,21 @@ public class ToolUtils {
 	}
 
 	/**
+	 * Merges the tools with the same {@link ToolTarget#group()} into one {@link TargetedTool}, see {@link ToolTarget}.
+	 * The merged tool takes the position of the first tool of its group. Its targets are sorted by depth (stable),
+	 * tools with the same action as a previous one of the group are dropped. The deepest target is the default, if
+	 * several targets have the deepest depth, the first of them (non-secondary targets preferred). A group with a
+	 * single remaining tool is not merged, the tool keeps its own title. Tools without target are left unchanged.
+	 *
+	 * @param tools the tools to merge
+	 * @return the merged tools
+	 * @created 16.11.2026
+	 */
+	public static ToolSet mergeTargets(ToolSet tools) {
+		return TargetedTool.mergeTargets(tools);
+	}
+
+	/**
 	 * This method sorts the tool list by the category string.
 	 * <p/>
 	 * The category string can contain at most one forward slash (/)

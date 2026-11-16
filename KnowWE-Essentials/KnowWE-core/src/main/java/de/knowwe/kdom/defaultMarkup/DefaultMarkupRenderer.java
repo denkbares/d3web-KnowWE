@@ -54,6 +54,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.A;
+import de.knowwe.core.kdom.rendering.elements.Div;
 import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
 import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.report.Message;
@@ -62,8 +64,10 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.progress.ProgressRenderer;
+import de.knowwe.tools.TargetedTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
+import de.knowwe.tools.ToolTarget;
 import de.knowwe.tools.ToolUtils;
 import de.knowwe.util.Icon;
 
@@ -687,6 +691,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		if (!tools.hasTools()) return;
 
+		tools = ToolUtils.mergeTargets(tools);
 		Map<String, Map<String, List<Tool>>> groupedTools = ToolUtils.groupTools(tools);
 
 		result.appendHtml("<div id='menu_" + id + "' class='markupMenu'>");
@@ -774,10 +779,47 @@ public class DefaultMarkupRenderer implements Renderer {
 			result.append(" ");
 		}
 		result.appendHtmlElement("span", tool.getTitle());
+		List<Tool> targetTools = tool.getTargetTools();
+		if (targetTools.size() > 1) {
+			result.append(new Span().clazz("tool-target-arrow")
+					.title("Choose the element")
+					.children(r -> r.appendHtml("<i class='fa fa-caret-down'></i>")));
+		}
 		result.appendHtmlTag("/a");
+		if (targetTools.size() > 1) {
+			appendToolTargets(tool, targetTools, result);
+		}
 		result.appendHtmlTag("/div");
 		result.appendHtmlTag("/div");
 		result.append("\n");
+	}
+
+	/**
+	 * Appends the (hidden) dropdown of the targets of a merged tool, see {@link de.knowwe.tools.ToolTarget}. The
+	 * targets are indented by their depth, the default target (the one executed by the tool itself) is marked.
+	 */
+	private void appendToolTargets(Tool tool, List<Tool> targetTools, RenderResult result) {
+		Tool defaultTool = tool instanceof TargetedTool targeted ? targeted.getDefaultTool() : null;
+		// elements without depth (0) are not indented, the elements of a path are indented relative to its root
+		int minDepth = targetTools.stream()
+				.map(Tool::getTarget)
+				.filter(Objects::nonNull)
+				.mapToInt(ToolTarget::depth)
+				.filter(depth -> depth > 0)
+				.min().orElse(0);
+		Div targets = new Div();
+		targets.clazz("tool-targets").attributes("popover", "manual");
+		for (Tool targetTool : targetTools) {
+			ToolTarget target = targetTool.getTarget();
+			int indent = target == null || target.depth() <= 0 ? 0 : Math.min(target.depth() - minDepth, 6);
+			targets.children(new A()
+					.clazz("tool-target" + (targetTool == defaultTool ? " is-default" : ""))
+					.style("--tool-target-indent: " + indent)
+					.title(targetTool.getDescription())
+					.attributes(ToolUtils.getActionAttributeName(targetTool), ToolUtils.getActionAttributeValue(targetTool))
+					.children(new Span().content(target == null ? targetTool.getTitle() : target.label())));
+		}
+		result.append(targets);
 	}
 
 	@SuppressWarnings("unused")

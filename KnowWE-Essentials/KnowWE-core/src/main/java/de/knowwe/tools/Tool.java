@@ -19,7 +19,11 @@
 
 package de.knowwe.tools;
 
+import java.util.List;
 import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.util.Icon;
 
@@ -174,4 +178,29 @@ public interface Tool {
 	* @created 18.09.2026
 	*/
 	Map<String, String> getAttributes();
+
+	/**
+	 * Returns the element this tool acts on, if the same action is offered for several elements of a tool menu. Tools
+	 * of a menu with the same target group are rendered as one tool with a dropdown of the targets, see
+	 * {@link ToolTarget}.
+	 *
+	 * @return the target of this tool, or null if the tool is not merged with others
+	 * @created 16.11.2026
+	 */
+	@Nullable
+	default ToolTarget getTarget() {
+		return null;
+	}
+
+	/**
+	 * Returns the tools merged into this tool, one per target, if this tool is the result of merging tools with the
+	 * same target group (see {@link ToolUtils#mergeTargets(ToolSet)}), sorted by the depth of their targets.
+	 *
+	 * @return the merged tools, or an empty list for an ordinary tool
+	 * @created 16.11.2026
+	 */
+	@NotNull
+	default List<Tool> getTargetTools() {
+		return List.of();
+	}
 }
