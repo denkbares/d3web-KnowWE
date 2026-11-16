@@ -59,9 +59,16 @@ public class WatchesTabProvider implements RightPanelTabProvider {
 
 	@Override
 	public boolean isAvailable(UserContext context) {
+		return isWatchesAvailable(context);
+	}
+
+	/**
+	 * Returns whether the watches tab is available on the current page of the user, so terms can be added to the
+	 * watches there (see {@link AddToWatchesToolProvider}).
+	 */
+	public static boolean isWatchesAvailable(UserContext context) {
 		// only on pages that compile a d3web knowledge base (same notion of "d3web page" the watch
 		// resolver relies on), re-evaluated on every panel load
-//		return true;
 		Article article = context.getArticle();
 		if (article == null) return false;
 		return !Compilers.getCompilers(article.getRootSection(), D3webCompiler.class).isEmpty();

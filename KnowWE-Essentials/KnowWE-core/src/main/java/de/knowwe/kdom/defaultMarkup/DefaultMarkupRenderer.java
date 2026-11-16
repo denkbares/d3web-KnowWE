@@ -807,6 +807,13 @@ public class DefaultMarkupRenderer implements Renderer {
 				.mapToInt(ToolTarget::depth)
 				.filter(depth -> depth > 0)
 				.min().orElse(0);
+		// the elements of the targets are only named, if the targets belong to different elements
+		boolean showContext = targetTools.stream()
+				.map(Tool::getTarget)
+				.filter(Objects::nonNull)
+				.map(ToolTarget::context)
+				.filter(Objects::nonNull)
+				.distinct().count() > 1;
 		Div targets = new Div();
 		targets.clazz("tool-targets").attributes("popover", "manual");
 		for (Tool targetTool : targetTools) {
@@ -817,7 +824,10 @@ public class DefaultMarkupRenderer implements Renderer {
 					.style("--tool-target-indent: " + indent)
 					.title(targetTool.getDescription())
 					.attributes(ToolUtils.getActionAttributeName(targetTool), ToolUtils.getActionAttributeValue(targetTool))
-					.children(new Span().content(target == null ? targetTool.getTitle() : target.label())));
+					.children(new Span().content(target == null ? targetTool.getTitle()
+							: showContext && target.context() != null
+							? target.label() + " <span class='dehighlighted-text'>(" + target.context() + ")</span>"
+							: target.label())));
 		}
 		result.append(targets);
 	}

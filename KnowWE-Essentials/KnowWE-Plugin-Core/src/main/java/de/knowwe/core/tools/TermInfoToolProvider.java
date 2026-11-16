@@ -46,6 +46,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
+import de.knowwe.tools.ToolTarget;
 import de.knowwe.tools.ToolUtils;
 import de.knowwe.util.Icon;
 
@@ -56,6 +57,11 @@ import de.knowwe.util.Icon;
  * @created 01.12.2010
  */
 public class TermInfoToolProvider implements ToolProvider {
+
+	/**
+	 * The title of the merged tool, if there are several pages to open in a tool menu, see {@link ToolTarget}.
+	 */
+	public static final String OPEN_PAGE = "Open definition page";
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
@@ -135,21 +141,17 @@ public class TermInfoToolProvider implements ToolProvider {
 			else {
 				link = KnowWEUtils.getURLLink(definition);
 			}
-			String description;
-			String titleText;
-
 			if (title.equals(userContext.getTitle())) {
-				titleText = "Highlight on this page";
-				description = "Highlights the occurrence of the term on this page";
+				tools[index++] = new DefaultTool(Icon.ARTICLE, "Highlight on this page",
+						"Highlights the occurrence of the term on this page", link, Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE);
 			}
 			else {
-				titleText = getTitle(title);
-				description = getDescription(home, title);
+				// several pages to open are merged into one tool, with the pages in its dropdown
+				tools[index++] = new DefaultTool(Icon.ARTICLE, getTitle(title), getDescription(home, title),
+						link, Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE)
+						.setTarget(new ToolTarget(OPEN_PAGE, Strings.encodeHtml(title), 0)
+								.withContext(getTargetContext(section, identifier)));
 			}
-			tools[index++] = new DefaultTool(
-					Icon.ARTICLE,
-					titleText, description,
-					link, Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE);
 		}
 		return tools;
 	}
@@ -157,6 +159,15 @@ public class TermInfoToolProvider implements ToolProvider {
 	protected @NotNull Collection<Section<?>> getTermDefiningSections(TermCompiler termCompiler, Section<?> section) {
 		Identifier identifierForCompiler = getIdentifier(termCompiler, section);
 		return termCompiler.getTerminologyManager().getTermDefiningSections(identifierForCompiler);
+	}
+
+	/**
+	 * Returns the element the pages to open are about, shown in the dropdown of the merged tool, if a tool menu has
+	 * pages of several elements (see {@link ToolTarget#context()}).
+	 */
+	@NotNull
+	protected String getTargetContext(Section<?> section, Identifier identifier) {
+		return Strings.encodeHtml(identifier.toPrettyPrint());
 	}
 
 	@NotNull

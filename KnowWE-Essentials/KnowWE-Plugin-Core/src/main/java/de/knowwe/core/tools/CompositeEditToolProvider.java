@@ -166,11 +166,19 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 		private final Identifier identifier;
 
-		public CompositeEditTool(String title, Identifier identifier) {
-			super(Icon.INFO, title, "Shows information about this object", CompositeEditToolProvider.createCompositeEditModeAction(identifier), Tool.CATEGORY_INFO);
+		/**
+		 * Creates the tool to show the info of the object. The tool is always titled "Show Info": the object it shows
+		 * is the one of the tool menu, or, if several "Show Info" tools are in one menu, they are merged into one with
+		 * a dropdown of the objects, labeled by the given text.
+		 *
+		 * @param text       the text describing the object, e.g. "Show Info: Unit.Socket (Socket)", see
+		 *                   {@link CompositeEditToolProvider#createToolText(String)}
+		 * @param identifier the identifier of the object
+		 */
+		public CompositeEditTool(String text, Identifier identifier) {
+			super(Icon.INFO, SHOW_INFO, "Shows information about this object", CompositeEditToolProvider.createCompositeEditModeAction(identifier), Tool.CATEGORY_INFO);
 			this.identifier = identifier;
-			// several "Show Info" tools of a menu are merged into one with a dropdown of the objects
-			setTarget(SHOW_INFO, getTargetLabel(title), 0);
+			setTarget(SHOW_INFO, getTargetLabel(text), 0);
 		}
 
 		/**

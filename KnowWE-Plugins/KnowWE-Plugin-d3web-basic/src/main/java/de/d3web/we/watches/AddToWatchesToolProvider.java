@@ -38,6 +38,8 @@ import de.knowwe.util.Icon;
  */
 public class AddToWatchesToolProvider implements ToolProvider {
 
+	private static final String TITLE = "Add to watches";
+
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		if (hasTools(section, userContext)) {
@@ -49,6 +51,8 @@ public class AddToWatchesToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
+		// the watches are shown in their tab of the right panel, which is not available on every page
+		if (!WatchesTabProvider.isWatchesAvailable(userContext)) return false;
 		if (section.get() instanceof Term) {
 			final Section<Term> termSection = Sections.cast(section, Term.class);
 			return termSection.get().getTermIdentifier(getTermCompiler(section), termSection) != null;
@@ -61,15 +65,17 @@ public class AddToWatchesToolProvider implements ToolProvider {
 	}
 
 	private Tool getAddToWatchesTool(Section<? extends Term> section) {
+		Identifier termIdentifier = section.get().getTermIdentifier(getTermCompiler(section), section);
+		// the tools of several terms in a tool menu (e.g. of a term and the terms it contains) are merged into one
 		return new DefaultTool(Icon.ADD,
-				"Add to watches",
+				TITLE,
 				"Add this term to the watches for debugging.",
-				createAddToWatchesAction(section),
-				Tool.CATEGORY_UTIL);
+				createAddToWatchesAction(termIdentifier),
+				Tool.CATEGORY_UTIL)
+				.setTarget(TITLE, Strings.encodeHtml(termIdentifier.toPrettyPrint()), 0);
 	}
 
-	private String createAddToWatchesAction(Section<? extends Term> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(getTermCompiler(section), section);
+	private String createAddToWatchesAction(Identifier termIdentifier) {
 		return "KNOWWE.plugin.d3webbasic.watches.addToWatches('" + Strings.encodeHtml(termIdentifier.toExternalForm()) + "')";
 	}
 }

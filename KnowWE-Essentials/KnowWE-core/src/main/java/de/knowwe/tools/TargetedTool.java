@@ -136,19 +136,28 @@ public class TargetedTool implements Tool {
 				continue;
 			}
 			group.sort(Comparator.comparingInt(t -> Objects.requireNonNull(t.getTarget()).depth()));
-			// the default is the first of the deepest targets, preferring the non-secondary ones
-			List<Tool> candidates = group.stream().filter(t -> !Objects.requireNonNull(t.getTarget()).secondary()).toList();
-			if (candidates.isEmpty()) candidates = group;
-			int maxDepth = candidates.stream().mapToInt(t -> Objects.requireNonNull(t.getTarget()).depth()).max().orElseThrow();
-			Tool defaultTool = candidates.stream()
-					.filter(t -> Objects.requireNonNull(t.getTarget()).depth() == maxDepth)
-					.findFirst().orElseThrow();
+			// the default is the first of the deepest targets with the highest priority
+			Tool defaultTool = group.stream()
+					.max(Comparator.<Tool>comparingInt(t -> Objects.requireNonNull(t.getTarget()).priority())
+							.thenComparingInt(t -> Objects.requireNonNull(t.getTarget()).depth())
+							.thenComparing(Comparator.comparingInt(group::indexOf).reversed()))
+					.orElseThrow();
 			result.add(new TargetedTool(target.group(), defaultTool, group));
 		}
 		return new DefaultToolSet(result);
 	}
 
 	private static boolean isSameAction(Tool tool, Tool other) {
-		return tool.getActionType() == other.getActionType() && Objects.equals(tool.getAction(), other.getAction());
+		if (tool.getActionType() != other.getActionType()) return false;
+		if (Objects.equals(tool.getAction(), other.getAction())) return true;
+		// links to the same page with the same label (e.g. "Open page" for two sections of the page) are not
+		// distinguishable in the dropdown
+		return tool.getActionType() == ActionType.HREF
+			   && Objects.equals(stripFragment(tool.getAction()), stripFragment(other.getAction()))
+			   && Objects.equals(Objects.requireNonNull(tool.getTarget()).label(), Objects.requireNonNull(other.getTarget()).label());
+	}
+
+	private static String stripFragment(String link) {
+		return link == null ? null : link.replaceAll("#.*$", "");
 	}
 }

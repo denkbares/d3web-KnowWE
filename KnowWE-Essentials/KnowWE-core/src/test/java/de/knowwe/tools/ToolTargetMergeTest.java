@@ -66,6 +66,21 @@ public class ToolTargetMergeTest {
 	}
 
 	@Test
+	public void dropsLinksToSamePageWithSameLabel() {
+		Tool open = new DefaultTool(null, "Open 'P'", "", "Wiki.jsp?page=P#section-a", Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE)
+				.setTarget("Open page", "P", 0);
+		Tool sameLabel = new DefaultTool(null, "Open 'P' (Unit U)", "", "Wiki.jsp?page=P#section-b", Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE)
+				.setTarget("Open page", "P", 0);
+		Tool other = new DefaultTool(null, "Open 'Q'", "", "Wiki.jsp?page=Q", Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE)
+				.setTarget("Open page", "Q", 0);
+
+		TargetedTool merged = (TargetedTool) TargetedTool.mergeTargets(new DefaultToolSet(open, sameLabel, other)).getTools()[0];
+
+		assertEquals("Open page", merged.getTitle());
+		assertEquals(List.of(open, other), merged.getTargetTools());
+	}
+
+	@Test
 	public void firstOfDeepestTargetsIsDefault() {
 		Tool question = tool("Show Info: Q", "info('q')").setTarget("Show Info", "Q", 0);
 		Tool numeric = tool("Show Info: Q_numeric", "info('qn')").setTarget("Show Info", "Q_numeric", 0);
@@ -76,15 +91,20 @@ public class ToolTargetMergeTest {
 	}
 
 	@Test
-	public void secondaryTargetsAreNoDefault() {
-		Tool plug = tool("Show Info: P", "info('p')").setTarget("Show Info", "P", 2);
-		Tool child = tool("Show Info: P.child", "info('c')")
-				.setTarget(new ToolTarget("Show Info", "child", 3).asSecondary());
+	public void highestPriorityIsDefault() {
+		Tool plug = tool("Show Info: P", "info('p')").setTarget(new ToolTarget("Show Info", "P", 2, -1));
+		Tool child = tool("Show Info: P.child", "info('c')").setTarget(new ToolTarget("Show Info", "child", 3, -2));
 
 		TargetedTool merged = (TargetedTool) TargetedTool.mergeTargets(new DefaultToolSet(child, plug)).getTools()[0];
 
 		assertSame(plug, merged.getDefaultTool());
 		assertEquals(List.of(plug, child), merged.getTargetTools());
+
+		// a target with higher priority is the default, even if it is less deep
+		Tool solution = tool("Show Info: S", "info('s')").setTarget("Show Info", "S", 0);
+		merged = (TargetedTool) TargetedTool.mergeTargets(new DefaultToolSet(child, plug, solution)).getTools()[0];
+		assertSame(solution, merged.getDefaultTool());
+		assertEquals(List.of(solution, plug, child), merged.getTargetTools());
 	}
 
 	@Test

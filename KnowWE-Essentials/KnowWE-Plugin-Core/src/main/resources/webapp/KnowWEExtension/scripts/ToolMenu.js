@@ -79,39 +79,36 @@ ToolMenu.prototype.showToolPopupMenu = function ($node, args = {}) {
     position: "fixed",
   };
   const mouseMovePadding = 5;
-  if (nodeRect.top > windowHeight - nodeRect.top + nodeRect.height) {
-    // show above
+  // the row of the node, extended to the width of the menu: moving the mouse from the node to a tool of the menu
+  // (e.g. to the dropdown arrow at its right side), the mouse often passes this area outside both, the menu stays open
+  const isInNodeRow = function (event) {
+    event = event.event || event; // mootools events wrap the native one
+    const menu = document.getElementById("toolPopupMenuID");
+    const menuRect = menu ? menu.getBoundingClientRect() : nodeRect;
+    return (
+      event.clientY >= nodeRect.top &&
+      event.clientY <= nodeRect.bottom &&
+      event.clientX >= Math.min(nodeRect.left, menuRect.left) - mouseMovePadding &&
+      event.clientX <= Math.max(nodeRect.right, menuRect.right) + mouseMovePadding
+    );
+  };
+  const showAbove = nodeRect.top > windowHeight - nodeRect.top + nodeRect.height;
+  if (showAbove) {
     styles.bottom = windowHeight - nodeRect.top - 1 + "px";
-    jq$(document.body)
-      .unbind(ToolMenu.mouseMoveEvent)
-      .bind(ToolMenu.mouseMoveEvent, function (event) {
-        if (
-          event.clientY > nodeRect.bottom ||
-          (event.clientY > nodeRect.top &&
-            (event.clientX > nodeRect.right + mouseMovePadding ||
-              event.clientX < nodeRect.left - mouseMovePadding))
-        ) {
-          _TM.hideToolsPopupMenu();
-          jq$(this).unbind(ToolMenu.mouseMoveEvent);
-        }
-      });
   } else {
-    // show below
     styles.top = nodeRect.top + nodeRect.height + "px";
-    jq$(document.body)
-      .unbind(ToolMenu.mouseMoveEvent)
-      .bind(ToolMenu.mouseMoveEvent, function (event) {
-        if (
-          event.clientY < nodeRect.top ||
-          (event.clientY < nodeRect.bottom &&
-            (event.clientX > nodeRect.right + mouseMovePadding ||
-              event.clientX < nodeRect.left - mouseMovePadding))
-        ) {
-          _TM.hideToolsPopupMenu();
-          jq$(this).unbind(ToolMenu.mouseMoveEvent);
-        }
-      });
   }
+  jq$(document.body)
+    .unbind(ToolMenu.mouseMoveEvent)
+    .bind(ToolMenu.mouseMoveEvent, function (event) {
+      // beyond the node, on the side opposite to the menu, or beside the node and the menu
+      const beyond = showAbove ? event.clientY > nodeRect.bottom : event.clientY < nodeRect.top;
+      const besideNode = event.clientY >= nodeRect.top && event.clientY <= nodeRect.bottom && !isInNodeRow(event);
+      if (beyond || besideNode) {
+        _TM.hideToolsPopupMenu();
+        jq$(this).unbind(ToolMenu.mouseMoveEvent);
+      }
+    });
   if (nodeRect.left > windowWidth - nodeRect.left + nodeRect.width) {
     // expand to the left
     styles.right =
@@ -126,7 +123,10 @@ ToolMenu.prototype.showToolPopupMenu = function ($node, args = {}) {
     "data-menu-id": currentMenuId,
     styles: styles,
     events: {
-      mouseleave: _TM.hideToolsPopupMenu,
+      mouseleave: function (event) {
+        // leaving the menu towards the node, the mouse move handler above closes the menu if necessary
+        if (!isInNodeRow(event)) _TM.hideToolsPopupMenu();
+      },
     },
   });
 

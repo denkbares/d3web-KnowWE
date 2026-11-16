@@ -20,6 +20,7 @@
 package de.knowwe.tools;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Describes the element a tool acts on, if the same action is offered for several elements of one tool menu, e.g.
@@ -29,23 +30,38 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param group     the title of the merged tool, tools with the same group are merged, e.g. "Show Info"
  * @param label     the label of the element in the dropdown, may contain html like the tool titles
- * @param depth     the depth of the element (e.g. in a path), the targets are sorted and indented by it, the deepest
- *                  (most specific) target is the default of the merged tool
- * @param secondary if the element is only related to the element the tool menu is about (e.g. a child of it), so it is
- *                  listed but not used as the default of the merged tool (unless all targets are secondary)
+ * @param depth    the depth of the element (e.g. in a path), the targets are sorted and indented by it
+ * @param priority the priority of the element as default of the merged tool: the default is the target with the
+ *                 highest priority, among them the deepest (most specific) one, among them the first one; use a
+ *                 negative priority for elements that are only related to the element the tool menu is about (e.g. the
+ *                 elements of a path it contains), so they are listed but are the default only without other targets
+ * @param context  the element the target belongs to, if the label does not name it (e.g. the label is the page to
+ *                 open, and the context the term defined there), or null; it is shown behind the label in the dropdown
+ *                 only if the targets of the merged tool belong to different elements
  * @author Albrecht Striffler (denkbares GmbH) + Claude
  * @created 16.11.2026
  */
-public record ToolTarget(@NotNull String group, @NotNull String label, int depth, boolean secondary) {
+public record ToolTarget(@NotNull String group, @NotNull String label, int depth, int priority, @Nullable String context) {
 
 	public ToolTarget(@NotNull String group, @NotNull String label, int depth) {
-		this(group, label, depth, false);
+		this(group, label, depth, 0, null);
+	}
+
+	public ToolTarget(@NotNull String group, @NotNull String label, int depth, int priority) {
+		this(group, label, depth, priority, null);
 	}
 
 	/**
-	 * Returns this target as secondary target, see {@link #secondary()}.
+	 * Returns this target with the given priority, see {@link #priority()}.
 	 */
-	public ToolTarget asSecondary() {
-		return new ToolTarget(group, label, depth, true);
+	public ToolTarget withPriority(int priority) {
+		return new ToolTarget(group, label, depth, priority, context);
+	}
+
+	/**
+	 * Returns this target with the given context, see {@link #context()}.
+	 */
+	public ToolTarget withContext(@Nullable String context) {
+		return new ToolTarget(group, label, depth, priority, context);
 	}
 }
