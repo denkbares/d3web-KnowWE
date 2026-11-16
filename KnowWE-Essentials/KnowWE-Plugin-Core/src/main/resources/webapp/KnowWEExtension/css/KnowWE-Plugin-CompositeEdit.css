@@ -131,6 +131,15 @@
 	margin-bottom: 10px;
 }
 
+/* the panels of the references are opened by the class open (the skins show .objectInfoPanel.hidden elsewhere) */
+#compositeEdit .objectInfoPanel {
+	display: none !important;
+}
+
+#compositeEdit .objectInfoPanel.open {
+	display: inline !important;
+}
+
 #compositeEdit .defaultEditTool {
 	margin: 0 0 0 0 !important;
 	padding: 0 5px 0 5px !important;
@@ -179,21 +188,139 @@
 	margin-bottom: 10px;
 }
 
-#compositeEdit .ueeditmarker {
-	background-color: var(--highlight-color-light);
-	position: absolute;
-	width: 3px;
-	left: -9px;
-	top: 0px;
-	z-index: 1000;
+/* the z-indexes of the previews (e.g. of TSM lines or their menus) stay inside the content, below the bar */
+#compositeEdit > .markupText {
+	isolation: isolate;
 }
 
-#compositeEdit .ueeditmarker:after {
-	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
-	content: "\f040";
-	display: block;
+/* the elements of the dialog, for several elements with a bar of checkboxes to hide them */
+#compositeEdit .showinfo-elements {
+	/* sticks to the top edge of the dialog, also covering its padding (.5em 1em, see jQuery UI .ui-dialog-content),
+	   so no scrolled content shows above or beside it */
+	position: sticky;
+	top: -.5em;
+	z-index: 10;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 16px;
+	margin: -.5em -1em 8px -1em;
+	padding: calc(.5em + 6px) calc(1em + .4em) 6px calc(1em + .4em);
+	background-color: var(--bg-color-content);
+	border-bottom: 1px solid var(--border-color-light);
+}
+
+#compositeEdit .showinfo-elements label {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	margin: 0;
+	font-weight: normal;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+#compositeEdit .showinfo-elements input {
+	margin: 0;
+}
+
+#compositeEdit .showinfo-element-type {
+	font-weight: normal;
+	opacity: .6;
+}
+
+/* the elements are rendered as in the wiki, but only toggle their checkbox */
+#compositeEdit .showinfo-element-label,
+#compositeEdit .showinfo-element-label * {
+	cursor: pointer;
+}
+
+/* hidden elements are not saved, their changes are marked in the bar */
+#compositeEdit .showinfo-elements label.has-hidden-changes .showinfo-element-label::after {
+	content: " \2022";
+	color: var(--highlight-color, #e88a00);
+}
+
+/* the parts of unchecked elements, also open panels */
+#compositeEdit .showinfo-hidden,
+#compositeEdit .objectInfoPanel.open.showinfo-hidden {
+	display: none !important;
+}
+
+/* edit mode: the previews of the sections are edit elements, opened in edit areas */
+#compositeEdit.edit-mode .editelement {
 	position: relative;
-	left: -15px;
+	cursor: pointer;
+}
+
+#compositeEdit.edit-mode .editelement:not(.editelement-duplicate):hover::before {
+	content: "";
+	position: absolute;
+	left: -9px;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background-color: var(--highlight-color-light);
+}
+
+#compositeEdit.edit-mode .editelement:not(.editelement-duplicate):hover::after {
+	content: "\f040";
+	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
+	font-weight: 900;
+	position: absolute;
+	left: -24px;
+	top: 0;
+	color: var(--highlight-color-light);
+}
+
+#compositeEdit.edit-mode .editelement-duplicate {
+	opacity: .55;
+	cursor: default;
+}
+
+#compositeEdit .editelement-deleted {
+	display: none;
+}
+
+#compositeEdit .editarea {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 10px;
+}
+
+#compositeEdit .editarea > .edittoolbar {
+	order: -1;
+	position: static !important;
+	left: auto !important;
+	width: auto;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin: 0 0 4px 0;
+	padding: 4px 0;
+	border: none;
+	border-radius: 0;
+	background-color: transparent;
+}
+
+#compositeEdit .editarea > .edittoolbar::before {
+	display: none;
+}
+
+#compositeEdit .editarea > .edittoolbar .editbuttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+#compositeEdit .editarea > .edittoolbar p {
+	float: none;
+	margin: 0;
+}
+
+#compositeEdit .editarea > .edittoolbar a.action {
+	width: auto;
+	padding: 0.2em 0.7em;
 }
 
 .tool-menu-click input {
@@ -317,4 +444,30 @@ Only if the second selector matches (to select all non-nested preview titles), t
 
 .dehighlighted-text {
 	opacity: .6;
+}
+
+/* the numbers of the elements in the bar, also at the definitions and panels containing them */
+#compositeEdit .showinfo-badges {
+	display: inline-flex;
+	gap: 2px;
+	margin-left: 8px;
+	vertical-align: middle;
+}
+
+#compositeEdit .showinfo-badge {
+	display: inline-block;
+	min-width: 1.4em;
+	padding: 0 4px;
+	border-radius: 0.7em;
+	font-size: 75%;
+	font-weight: normal;
+	line-height: 1.4em;
+	text-align: center;
+	color: var(--text-color-primary, #333);
+	background-color: var(--bg-color-table-th-highlighted, #e4e8ee);
+	border: 1px solid var(--border-color-light, #ccc);
+}
+
+#compositeEdit .showinfo-badge-all {
+	opacity: .7;
 }

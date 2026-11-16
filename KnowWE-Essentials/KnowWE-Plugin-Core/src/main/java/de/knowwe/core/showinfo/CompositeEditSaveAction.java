@@ -42,7 +42,13 @@ public class CompositeEditSaveAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
+		// the sections are sent as request body (parameter "data"), formerly as parameter "replaceSections"
 		String replaceSectionsString = context.getParameter("replaceSections");
+		if (replaceSectionsString == null) replaceSectionsString = context.getParameter("data");
+		if (replaceSectionsString == null) {
+			context.sendError(400, "No sections to save");
+			return;
+		}
 		try {
 			JSONArray replaceSections = new JSONArray(replaceSectionsString);
 
@@ -61,7 +67,6 @@ public class CompositeEditSaveAction extends AbstractAction {
 			Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		}
 		catch (JSONException e) {
-			// TODO Auto-generated catch block
 			throw new IOException(e);
 		}
 

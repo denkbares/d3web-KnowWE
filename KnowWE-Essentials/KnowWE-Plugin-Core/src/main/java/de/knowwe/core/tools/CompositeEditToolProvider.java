@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -36,6 +37,7 @@ import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.tools.CombinableTool;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -157,12 +159,24 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	public static String createCompositeEditModeAction(Identifier termIdentifier) {
-		String externalTermIdentifierForm = termIdentifier.toExternalForm();
-		return "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
-			   + TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
+		return "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(" + toJavaScriptString(termIdentifier) + ")";
 	}
 
-	public static class CompositeEditTool extends DefaultTool {
+	/**
+	 * Creates the action opening one "Show Info" dialog with all the given objects.
+	 */
+	public static String createCompositeEditModeAction(Collection<Identifier> termIdentifiers) {
+		if (termIdentifiers.size() == 1) return createCompositeEditModeAction(termIdentifiers.iterator().next());
+		return "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(["
+			   + termIdentifiers.stream().map(CompositeEditToolProvider::toJavaScriptString).collect(Collectors.joining(", "))
+			   + "])";
+	}
+
+	private static String toJavaScriptString(Identifier termIdentifier) {
+		return "'" + TermInfoToolProvider.maskTermForHTML(termIdentifier.toExternalForm()) + "'";
+	}
+
+	public static class CompositeEditTool extends DefaultTool implements CombinableTool {
 
 		private final Identifier identifier;
 
@@ -193,6 +207,27 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 		public Identifier getIdentifier() {
 			return identifier;
+		}
+
+		/**
+		 * If the "Show Info" tools of several objects are merged into one tool, clicking it shows all the objects in
+		 * one dialog, see {@link CombinableTool}.
+		 */
+		@Override
+		public @Nullable String getCombinedAction(@NotNull List<Tool> targetTools) {
+			List<Identifier> identifiers = new ArrayList<>();
+			for (Tool tool : targetTools) {
+				if (!(tool instanceof CompositeEditTool compositeEditTool)) return null;
+				if (!identifiers.contains(compositeEditTool.getIdentifier())) {
+					identifiers.add(compositeEditTool.getIdentifier());
+				}
+			}
+			return identifiers.size() > 1 ? createCompositeEditModeAction(identifiers) : null;
+		}
+
+		@Override
+		public String getCombinedDescription(@NotNull List<Tool> targetTools) {
+			return "Shows information about all these objects, the dropdown shows a single one";
 		}
 	}
 }

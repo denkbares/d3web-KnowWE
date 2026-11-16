@@ -796,10 +796,12 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	/**
 	 * Appends the (hidden) dropdown of the targets of a merged tool, see {@link de.knowwe.tools.ToolTarget}. The
-	 * targets are indented by their depth, the default target (the one executed by the tool itself) is marked.
+	 * targets are indented by their depth, the default target (the one executed by the tool itself) is marked, unless
+	 * the tool is executed for all targets at once (see {@link de.knowwe.tools.CombinableTool}).
 	 */
 	private void appendToolTargets(Tool tool, List<Tool> targetTools, RenderResult result) {
-		Tool defaultTool = tool instanceof TargetedTool targeted ? targeted.getDefaultTool() : null;
+		Tool defaultTool = tool instanceof TargetedTool targeted && !targeted.isCombined()
+				? targeted.getDefaultTool() : null;
 		// elements without depth (0) are not indented, the elements of a path are indented relative to its root
 		int minDepth = targetTools.stream()
 				.map(Tool::getTarget)

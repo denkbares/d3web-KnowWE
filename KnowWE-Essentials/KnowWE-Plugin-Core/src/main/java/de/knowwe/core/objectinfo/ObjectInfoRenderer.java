@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +35,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.json.JSONException;
@@ -46,6 +48,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -245,8 +248,44 @@ public class ObjectInfoRenderer implements Renderer {
 		renderSectionEnd(result);
 	}
 
+	/**
+	 * Renders the references grouped into collapsible panels, by the type of their markup or by their article, like
+	 * {@link #renderTermReferences(Identifier, UserContext, RenderResult)} does for the references of one term. Unlike
+	 * there, each preview is shown in one panel only: references of several types in the same preview (e.g. a test
+	 * step referencing the term in its conditions and its transitions) are shown in the panel of the first type.
+	 *
+	 * @param references     the references to render
+	 * @param groupByArticle true to group by article (e.g. for packages), false to group by type
+	 * @param elementsOf     returns for the sections of a panel the value of its attribute <code>data-elements</code>
+	 *                       (e.g. the terms the sections belong to, if the references of several terms are shown), or
+	 *                       null for no attribute
+	 */
+	public static void renderReferences(Collection<Section<?>> references, boolean groupByArticle, UserContext user, RenderResult result, @Nullable Function<Collection<Section<?>>, String> elementsOf) {
+		if (groupByArticle) {
+			renderGroupedByArticle(new HashSet<>(references), user, result, elementsOf);
+		}
+		else {
+			renderGroupedByType(user, result, new HashSet<>(references), elementsOf, true);
+		}
+	}
+
+	/**
+	 * Returns the section rendered as the preview of the given section, or the section itself if there is no preview
+	 * for it, see {@link PreviewManager#getPreviewAncestor(Section)}.
+	 */
+	@NotNull
+	public static Section<?> getPreviewSection(@NotNull Section<?> section) {
+		Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
+		return previewSection == null ? section : previewSection;
+	}
+
 	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
+		renderGroupedByType(user, result, references, null, false);
+	}
+
+	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references, @Nullable Function<Collection<Section<?>>, String> elementsOf, boolean onePanelPerPreview) {
 		Map<TypeGroup, List<Section<?>>> typeGroups = groupByType(user, references);
+		if (onePanelPerPreview) typeGroups = mergePreviews(typeGroups);
 		for (Entry<TypeGroup, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
 			// prepare group information
 			List<Section<?>> groupSections = typeEntry.getValue();
@@ -267,7 +306,7 @@ public class ObjectInfoRenderer implements Renderer {
 					renderTermReferencesPreviewsAsync(sectionOfArticle, user, innerResult);
 					String subtitle = getSubtitleForSections(user, sectionOfArticle);
 					wrapInExtendPanel(articleEntry.getKey().getTitle(),
-							subtitle, innerResult, groupResult);
+							subtitle, innerResult, groupResult, false, elementsOf(elementsOf, sectionOfArticle));
 				}
 			}
 			else {
@@ -280,8 +319,29 @@ public class ObjectInfoRenderer implements Renderer {
 			info += (articleCount > 1)
 					? "in " + Strings.pluralOf(articleCount, "article")
 					: "in '" + groupSections.get(0).getTitle() + "'";
-			wrapInExtendPanel(groupName, info, groupResult, result, cascadingWrapPanels);
+			wrapInExtendPanel(groupName, info, groupResult, result, cascadingWrapPanels, elementsOf(elementsOf, groupSections));
 		}
+	}
+
+	/**
+	 * Moves the sections of each preview into the first group with a section of the preview, so each preview is shown
+	 * in one group only, with all its sections.
+	 */
+	private static Map<TypeGroup, List<Section<?>>> mergePreviews(Map<TypeGroup, List<Section<?>>> typeGroups) {
+		Map<Section<?>, TypeGroup> groupOfPreview = new HashMap<>();
+		Map<TypeGroup, List<Section<?>>> merged = new LinkedHashMap<>();
+		for (Entry<TypeGroup, List<Section<?>>> entry : typeGroups.entrySet()) {
+			for (Section<?> section : entry.getValue()) {
+				TypeGroup group = groupOfPreview.computeIfAbsent(getPreviewSection(section), k -> entry.getKey());
+				merged.computeIfAbsent(group, k -> new ArrayList<>()).add(section);
+			}
+		}
+		return merged;
+	}
+
+	@Nullable
+	private static String elementsOf(@Nullable Function<Collection<Section<?>>, String> elementsOf, Collection<Section<?>> sections) {
+		return elementsOf == null ? null : elementsOf.apply(sections);
 	}
 
 	/**
@@ -316,10 +376,11 @@ public class ObjectInfoRenderer implements Renderer {
 		return builder.toString();
 	}
 
-	private static void renderGroupOfSingleType(UserContext user, List<Section<?>> groupSections, RenderResult groupResult) {
+	public static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
+		renderGroupedByArticle(references, user, result, null);
 	}
 
-	public static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
+	private static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result, @Nullable Function<Collection<Section<?>>, String> elementsOf) {
 		Map<Article, List<Section<?>>> articleGroups = groupByArticle(references);
 		for (Entry<Article, List<Section<?>>> articleEntry : articleGroups.entrySet()) {
 			RenderResult innerResult = new RenderResult(result);
@@ -327,7 +388,7 @@ public class ObjectInfoRenderer implements Renderer {
 				renderTermReferencesPreviewsAsync(typeEntry.getValue(), user, innerResult);
 			}
 			wrapInExtendPanel(articleEntry.getKey().getTitle(),
-					getSurroundingMarkupNames(articleEntry.getValue()), innerResult, result);
+					getSurroundingMarkupNames(articleEntry.getValue()), innerResult, result, elementsOf(elementsOf, articleEntry.getValue()));
 		}
 	}
 
@@ -342,7 +403,7 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("</div>\n");
 	}
 
-	protected static Set<Section<?>> findTermDefinitionSections(@NotNull ArticleManager articleManager, Identifier termIdentifier) {
+	public static Set<Section<?>> findTermDefinitionSections(@NotNull ArticleManager articleManager, Identifier termIdentifier) {
 		TermInfo termInfo = TermUtils.getTermInfo(articleManager, termIdentifier);
 		Set<Section<?>> sections = new HashSet<>();
 		if (termInfo == null) {
@@ -366,7 +427,7 @@ public class ObjectInfoRenderer implements Renderer {
 		return sections;
 	}
 
-	private static String getTermObjectClassesVerbalization(UserContext user, Identifier identifier) {
+	public static String getTermObjectClassesVerbalization(UserContext user, Identifier identifier) {
 		TreeSet<String> termClasses = new TreeSet<>();
 		for (Class<?> termObjectClass : getTermObjectClasses(user, identifier)) {
 			termClasses.add(termObjectClass.getSimpleName());
@@ -374,7 +435,7 @@ public class ObjectInfoRenderer implements Renderer {
 		return Strings.concat(", ", termClasses);
 	}
 
-	private static Collection<Class<?>> getTermObjectClasses(UserContext user, Identifier identifier) {
+	public static Collection<Class<?>> getTermObjectClasses(UserContext user, Identifier identifier) {
 		Set<Class<?>> termClasses = new HashSet<>();
 		for (TerminologyManager manager : KnowWEUtils.getTerminologyManagers(user.getArticleManager())) {
 			termClasses.addAll(manager.getTermClasses(identifier));
@@ -551,11 +612,7 @@ public class ObjectInfoRenderer implements Renderer {
 		return types;
 	}
 
-	private static void wrapInExtendPanel(String surroundingMarkupType, CountingSet<Type> occurrences, RenderResult content, RenderResult result) {
-		wrapInExtendPanel(surroundingMarkupType, occurrences, content, result, false);
-	}
-
-	private static void wrapInExtendPanel(String surroundingMarkupType, CountingSet<Type> occurrences, RenderResult content, RenderResult result, boolean expandable) {
+	private static void wrapInExtendPanel(String surroundingMarkupType, CountingSet<Type> occurrences, RenderResult content, RenderResult result, @Nullable String elements) {
 		StringBuilder info = new StringBuilder();
 		for (Type occurrence : occurrences) {
 			if (!info.isEmpty()) info.append(", ");
@@ -563,15 +620,17 @@ public class ObjectInfoRenderer implements Renderer {
 			if (count > 1) info.append(count).append("&times; ");
 			info.append(occurrence.getName());
 		}
-		wrapInExtendPanel(surroundingMarkupType, info.toString(), content, result, expandable);
+		wrapInExtendPanel(surroundingMarkupType, info.toString(), content, result, false, elements);
 	}
 
-	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result) {
-		wrapInExtendPanel(surroundingMarkupType, info, content, result, false);
-	}
-
-	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result, boolean expandable) {
-		result.appendHtml("<p class=\"extend-panel pointer extend-panel-right\" >");
+	/**
+	 * Renders a collapsible panel with the content, its header shows the type and the info.
+	 *
+	 * @param expandable whether the header gets a button to expand the panel and all its sub-panels
+	 * @param elements   the value of the attribute <code>data-elements</code> of the header and the panel, or null
+	 */
+	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result, boolean expandable, @Nullable String elements) {
+		result.appendHtmlTag("p", "class", "extend-panel pointer extend-panel-right", "data-elements", elements);
 		result.appendHtml(Icon.CARET_RIGHT.addClasses("pointRightCaret").toHtml());
 		result.appendHtml(Icon.CARET_DOWN.addClasses("pointDownCaret").addStyle("display: none;").toHtml());
 		result.appendHtml("<strong>");
@@ -586,7 +645,7 @@ public class ObjectInfoRenderer implements Renderer {
 			result.appendHtml("<span class=expandPanelButton>Expand All</span>");
 		}
 		result.appendHtml("</p>");
-		result.appendHtml("<div class=\"objectInfoPanel hidden\" style=\"display:none !important\">");
+		result.appendHtmlTag("div", "class", "objectInfoPanel hidden", "style", "display:none !important", "data-elements", elements);
 		result.append(content);
 		result.appendHtml("</div>");
 	}

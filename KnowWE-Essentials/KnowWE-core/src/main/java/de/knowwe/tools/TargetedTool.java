@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.util.Icon;
 
@@ -43,21 +44,34 @@ public class TargetedTool implements Tool {
 	private final String title;
 	private final Tool defaultTool;
 	private final List<Tool> targetTools;
+	@Nullable
+	private final String combinedAction;
 
 	/**
 	 * @param title       the title of the tool, usually the target group
-	 * @param defaultTool the tool executed when clicking this tool, must be one of the target tools
+	 * @param defaultTool the tool executed when clicking this tool, must be one of the target tools; if it is a
+	 *                    {@link CombinableTool}, clicking this tool executes its combined action for all targets instead
 	 * @param targetTools the tools of all targets, sorted by the depth of their targets
 	 */
 	public TargetedTool(@NotNull String title, @NotNull Tool defaultTool, @NotNull List<Tool> targetTools) {
 		this.title = title;
 		this.defaultTool = defaultTool;
 		this.targetTools = List.copyOf(targetTools);
+		this.combinedAction = defaultTool instanceof CombinableTool combinable
+				? combinable.getCombinedAction(this.targetTools) : null;
 	}
 
 	@NotNull
 	public Tool getDefaultTool() {
 		return defaultTool;
+	}
+
+	/**
+	 * Returns whether clicking this tool executes it for all targets at once, see {@link CombinableTool}, instead of
+	 * executing the {@link #getDefaultTool() default tool}.
+	 */
+	public boolean isCombined() {
+		return combinedAction != null;
 	}
 
 	@Override
@@ -77,12 +91,14 @@ public class TargetedTool implements Tool {
 
 	@Override
 	public String getDescription() {
-		return defaultTool.getDescription();
+		return isCombined()
+				? ((CombinableTool) defaultTool).getCombinedDescription(targetTools)
+				: defaultTool.getDescription();
 	}
 
 	@Override
 	public String getAction() {
-		return defaultTool.getAction();
+		return isCombined() ? combinedAction : defaultTool.getAction();
 	}
 
 	@Override

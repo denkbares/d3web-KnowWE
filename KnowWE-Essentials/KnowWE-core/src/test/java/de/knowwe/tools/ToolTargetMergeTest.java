@@ -5,6 +5,9 @@
 package de.knowwe.tools;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 
 import org.junit.Test;
 
@@ -105,6 +108,57 @@ public class ToolTargetMergeTest {
 		merged = (TargetedTool) TargetedTool.mergeTargets(new DefaultToolSet(child, plug, solution)).getTools()[0];
 		assertSame(solution, merged.getDefaultTool());
 		assertEquals(List.of(solution, plug, child), merged.getTargetTools());
+	}
+
+	/** A tool executed for all its targets at once, as long as all targets are of this kind. */
+	private static class CombinedInfo extends DefaultTool implements CombinableTool {
+		private final String element;
+
+		CombinedInfo(String element, int depth) {
+			super(null, "Show Info", "Shows " + element, "info('" + element + "')", Tool.CATEGORY_INFO);
+			this.element = element;
+			setTarget("Show Info", element, depth);
+		}
+
+		@Override
+		public String getCombinedAction(@NotNull List<Tool> targetTools) {
+			if (!targetTools.stream().allMatch(t -> t instanceof CombinedInfo)) return null;
+			return "info(" + targetTools.stream().map(t -> "'" + ((CombinedInfo) t).element + "'")
+					.collect(Collectors.joining(",")) + ")";
+		}
+
+		@Override
+		public String getCombinedDescription(@NotNull List<Tool> targetTools) {
+			return "Shows all";
+		}
+	}
+
+	@Test
+	public void combinesCombinableTools() {
+		Tool unit = new CombinedInfo("U", 1);
+		Tool pin = new CombinedInfo("P", 2);
+
+		TargetedTool merged = (TargetedTool) TargetedTool.mergeTargets(new DefaultToolSet(pin, unit)).getTools()[0];
+
+		assertTrue(merged.isCombined());
+		assertSame(pin, merged.getDefaultTool());
+		assertEquals("info('U','P')", merged.getAction());
+		assertEquals("Shows all", merged.getDescription());
+		// the targets still execute the tool of their element
+		assertEquals("info('U')", merged.getTargetTools().get(0).getAction());
+	}
+
+	@Test
+	public void doesNotCombineWithOtherTools() {
+		Tool unit = new CombinedInfo("U", 2);
+		Tool question = tool("Show Info: Q", "info('Q')").setTarget("Show Info", "Q", 1);
+
+		TargetedTool merged = (TargetedTool) TargetedTool.mergeTargets(new DefaultToolSet(question, unit)).getTools()[0];
+
+		// the default tool is combinable, but not the other target, so only the default is executed
+		assertSame(unit, merged.getDefaultTool());
+		assertFalse(merged.isCombined());
+		assertEquals("info('U')", merged.getAction());
 	}
 
 	@Test
