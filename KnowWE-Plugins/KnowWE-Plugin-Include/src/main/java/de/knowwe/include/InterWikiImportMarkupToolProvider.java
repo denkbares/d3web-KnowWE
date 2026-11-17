@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.compile.variables.InterWikiVariableMarkup;
+import de.knowwe.core.compile.variables.VariableIndex;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -76,7 +78,34 @@ public class InterWikiImportMarkupToolProvider implements ToolProvider {
 					Tool.CATEGORY_EDIT));
 		}
 
+		if (markup != null) addVariableTools(markup, userContext, tools);
+
 		return tools.toArray(new Tool[0]);
+	}
+
+	/**
+	 * For an import using a variable: a tool leading to the definition of the variable that is valid for the variant
+	 * selected by the user. If that variant has no definition, the tools lead to the definitions there are, as one of
+	 * them probably has to be changed.
+	 */
+	private static void addVariableTools(Section<InterWikiImportMarkup> markup, UserContext userContext, List<Tool> tools) {
+		String variable = markup.get().getWikiVariable(markup);
+		if (variable == null) return;
+		List<Section<InterWikiVariableMarkup>> definitions = markup.get().getVariableDefinitions(markup, userContext);
+		if (definitions.isEmpty()) {
+			VariableIndex index = VariableIndex.get(markup);
+			if (index != null) definitions = index.getDefinitions(variable);
+		}
+		for (Section<InterWikiVariableMarkup> definition : definitions) {
+			String value = InterWikiVariableMarkup.getVariableValue(definition);
+			tools.add(new DefaultTool(Icon.OPENPAGE,
+					definitions.size() == 1 ? "Go to wiki variable" : "Go to wiki variable (" + value + ")",
+					"Opens the definition of the wiki variable '" + variable + "' on page '" + definition.getTitle()
+							+ "', where it stands for " + value,
+					KnowWEUtils.getURLLink(definition),
+					Tool.ActionType.HREF,
+					Tool.CATEGORY_NAVIGATE));
+		}
 	}
 
 	@Override

@@ -37,11 +37,11 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import de.knowwe.core.compile.CompilerManager;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.compile.variables.VariableIndex;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
 import de.knowwe.event.ArticleManagerCommitStartEvent;
 import de.knowwe.event.ArticleRegisteredEvent;
@@ -68,6 +68,8 @@ public class DefaultArticleManager implements ArticleManager {
 
 	private final AttachmentManager attachmentManager;
 
+	private final VariableIndex variableIndex;
+
 	private final ReentrantLock mainLock = new ReentrantLock(true);
 	private volatile boolean registrationFrameOpen;
 	private final Set<Article> added = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -85,6 +87,7 @@ public class DefaultArticleManager implements ArticleManager {
 		this.environment = Objects.requireNonNull(environment, "environment");
 		this.compilerManager = new CompilerManager(this);
 		this.attachmentManager = new AttachmentManager(this);
+		this.variableIndex = new VariableIndex(this);
 	}
 
 	@Override
@@ -125,6 +128,13 @@ public class DefaultArticleManager implements ArticleManager {
 
 	public AttachmentManager getAttachmentManager() {
 		return attachmentManager;
+	}
+
+	/**
+	 * Returns the index of the variables defined in the articles of this manager.
+	 */
+	public VariableIndex getVariableIndex() {
+		return variableIndex;
 	}
 
 	/**
@@ -215,6 +225,17 @@ public class DefaultArticleManager implements ArticleManager {
 				.map(article -> Article.createArticle(article.getText(), article.getTitle(), this))
 				.toList();
 		sectionizedArticles.forEach(this::queueArticle);
+	}
+
+	/**
+	 * Queues up the deletion of an article like {@link #queueArticle(String, String)} queues up its registration: the
+	 * article is deleted with the compilation of the current registration frame, which is not opened or committed by
+	 * this method. Unlike {@link #deleteArticle(String)}, this can be used by threads not owning the frame.
+	 */
+	void queueArticleDeletion(String title) {
+		requireOpenRegistrationFrame();
+		queueArticle(Article.createArticle("", title, this));
+		deleteAfterCompile.add(title.toLowerCase());
 	}
 
 	private void requireOpenRegistrationFrame() {

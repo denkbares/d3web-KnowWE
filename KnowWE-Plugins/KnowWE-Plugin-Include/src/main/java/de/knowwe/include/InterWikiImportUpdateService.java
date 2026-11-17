@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,9 +42,12 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.EnvironmentService;
 import de.knowwe.core.ServiceKey;
 import de.knowwe.core.action.Action;
+import de.knowwe.core.compile.variables.InterWikiVariableMarkup;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.ArticleManagerCommitDoneEvent;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
@@ -85,8 +89,28 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		}
 	}
 
-	private record SourcePoll(List<ImportInfo> snapshots, PollResult result) {
+	private record SourcePoll(String wiki, List<ImportInfo> snapshots, PollResult result) {
 	}
+
+	/**
+	 * Asks a source wiki for the changes of the given imports. The service only talks to other wikis through this
+	 * interface, so tests can stand in for the source wikis.
+	 */
+	interface ChangeRequester {
+
+		/**
+		 * @param wiki             the normalized URL of the source wiki
+		 * @param requestedImports the imports to get the changes for, each with the latest change already imported
+		 * @return the changes of the source wiki, or null if there is no answer
+		 */
+		@Nullable
+		InterWikiChanges requestChanges(String wiki, List<InterWikiChanges.RequestedImport> requestedImports) throws IOException;
+	}
+
+	private volatile ChangeRequester changeRequester = InterWikiImportUpdateService::requestChangesByHttp;
+
+	/** The time of the last check of the imports using a variable, by their attachment path without source wiki. */
+	private final Map<String, Long> lastChecks = new ConcurrentHashMap<>();
 
 	/**
 	 * The environment of the wiki whose imports this service keeps up to date.
@@ -160,15 +184,75 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 
 	private void forceUpdateAfterSave(ArticleManager articleManager, List<String> titles) {
 		List<Section<InterWikiImportMarkup>> markups = new ArrayList<>();
+		boolean variablesSaved = false;
 		for (String title : titles) {
 			Article article = articleManager.getArticle(title);
-			if (article != null) markups.addAll($(article).successor(InterWikiImportMarkup.class).asList());
+			if (article == null) continue;
+			markups.addAll($(article).successor(InterWikiImportMarkup.class).asList());
+			variablesSaved |= !$(article).successor(InterWikiVariableMarkup.class).isEmpty();
 		}
 		try {
 			pollMarkups(markups, true);
+			// a new value of a variable is a new source wiki for the imports using the variable: fetch its content
+			// right away instead of with the next regular poll
+			if (variablesSaved) pollMarkups(getRegisteredMarkupsUsingVariables(), false);
 		}
 		catch (RuntimeException e) {
 			LOGGER.warn("Unable to update InterWikiImports after saving pages {}", titles, e);
+		}
+	}
+
+	private List<Section<InterWikiImportMarkup>> getRegisteredMarkupsUsingVariables() {
+		List<Section<InterWikiImportMarkup>> markups = new ArrayList<>();
+		for (String markupId : registeredMarkupIds) {
+			Section<InterWikiImportMarkup> markup = Sections.get(environment, markupId, InterWikiImportMarkup.class);
+			if (Sections.isLive(markup) && markup.get().getWikiVariable(markup) != null) markups.add(markup);
+		}
+		return markups;
+	}
+
+	/**
+	 * Replaces the access to the source wikis. For tests, which must not import from a real wiki.
+	 */
+	void setChangeRequester(@NotNull ChangeRequester changeRequester) {
+		this.changeRequester = changeRequester;
+	}
+
+	void logLastCheck(String key) {
+		lastChecks.put(key, System.currentTimeMillis());
+	}
+
+	@Nullable
+	Long getLastCheck(String key) {
+		return lastChecks.get(key);
+	}
+
+	/**
+	 * Adds one snapshot for each source wiki of the given import. An import with <code>@wiki</code> has one source
+	 * wiki, an import using a variable one for each value of the variable.
+	 */
+	private void addSnapshots(Section<InterWikiImportMarkup> markup, boolean force, Collection<ImportInfo> snapshots) {
+		List<String> wikis = markup.get().getWikis(markup);
+		if (wikis.size() > 1) {
+			// the local text of a tracking import can only follow one source
+			if (markup.get().isTrackingMode(markup)) return;
+			// two wikis sharing one attachment would overwrite each other
+			if (markup.get().getSourceKeyConflict(markup) != null) return;
+		}
+		for (String wiki : wikis) {
+			Instant latestChange = force ? null : markup.get().getLatestChange(markup, wiki);
+			// Without attachment the latest change is of no use: the content has to be fetched whether it has
+			// changed since then or not. This happens if the attachment was deleted, e.g. because a variable did
+			// not have this wiki as its value for a while.
+			if (latestChange != null && !markup.get().hasWikiAttachment(markup, wiki)) latestChange = null;
+			snapshots.add(new ImportInfo(
+					markup.getID(),
+					wiki,
+					markup.get().getPageName(markup),
+					markup.get().getSectionName(markup),
+					latestChange,
+					markup.get().getImportSourceLabel(markup),
+					markup.get().getImportSourceLink(markup)));
 		}
 	}
 
@@ -196,19 +280,14 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	 */
 	public void pollMarkups(Collection<Section<InterWikiImportMarkup>> markups, boolean force) {
 		if (!AttachmentUpdateMarkup.isAutoUpdatingActive(environment) && !force) return;
-		Map<String, List<ImportInfo>> snapshotsByWiki = new LinkedHashMap<>();
+		List<ImportInfo> snapshots = new ArrayList<>();
 		for (Section<InterWikiImportMarkup> markup : markups) {
 			if (!Sections.isLive(markup)) continue;
-			String wiki = InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup));
-			if (wiki.isBlank()) continue;
-			snapshotsByWiki.computeIfAbsent(wiki, k -> new ArrayList<>()).add(new ImportInfo(
-					markup.getID(),
-					wiki,
-					markup.get().getPageName(markup),
-					markup.get().getSectionName(markup),
-					force ? null : markup.get().getLatestChange(markup),
-					markup.get().getImportSourceLabel(markup),
-					markup.get().getImportSourceLink(markup)));
+			addSnapshots(markup, force, snapshots);
+		}
+		Map<String, List<ImportInfo>> snapshotsByWiki = new LinkedHashMap<>();
+		for (ImportInfo snapshot : snapshots) {
+			snapshotsByWiki.computeIfAbsent(snapshot.wiki(), k -> new ArrayList<>()).add(snapshot);
 		}
 		if (snapshotsByWiki.isEmpty()) return;
 
@@ -231,11 +310,20 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 
 	private void pollAllSources() {
 		if (!AttachmentUpdateMarkup.isAutoUpdatingActive(environment)) return;
+		pollRegisteredMarkups();
+	}
 
+	/**
+	 * Polls the source wikis of all registered imports once, like the periodic poll does, and removes the attachments
+	 * of source wikis no import imports from any more.
+	 */
+	void pollRegisteredMarkups() {
 		ArticleManager articleManager = environment.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager defaultArticleManager) {
 			defaultArticleManager.awaitInitialization();
 		}
+
+		deleteObsoleteAttachments();
 
 		List<ImportInfo> snapshots = getImportSnapshots();
 		if (snapshots.isEmpty()) return;
@@ -274,16 +362,51 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 				continue;
 			}
 
-			snapshots.add(new ImportInfo(
-					markup.getID(),
-					InterWikiImportMarkup.normalizeWiki(markup.get().getWiki(markup)),
-					markup.get().getPageName(markup),
-					markup.get().getSectionName(markup),
-					markup.get().getLatestChange(markup),
-					markup.get().getImportSourceLabel(markup),
-					markup.get().getImportSourceLink(markup)));
+			addSnapshots(markup, false, snapshots);
 		}
 		return snapshots;
+	}
+
+	/**
+	 * Deletes the attachments of imports using a variable that belong to a source wiki the variable no longer has as
+	 * a value. Their content is not compiled any more. Only attachments named like the ones of these imports are
+	 * deleted, and none of imports in tracking mode, as these keep the history of their reference.
+	 */
+	private void deleteObsoleteAttachments() {
+		Map<String, List<Section<InterWikiImportMarkup>>> markupsByTitle = new LinkedHashMap<>();
+		for (Section<InterWikiImportMarkup> markup : getRegisteredMarkupsUsingVariables()) {
+			markupsByTitle.computeIfAbsent(markup.getTitle(), k -> new ArrayList<>()).add(markup);
+		}
+		WikiConnector connector = environment.getWikiConnector();
+		for (Map.Entry<String, List<Section<InterWikiImportMarkup>>> entry : markupsByTitle.entrySet()) {
+			String title = entry.getKey();
+			Set<String> prefixes = new LinkedHashSet<>();
+			Set<String> usedPaths = new LinkedHashSet<>();
+			for (Section<InterWikiImportMarkup> markup : entry.getValue()) {
+				if (markup.get().isTrackingMode(markup)) continue;
+				prefixes.add(markup.get().getSourceAttachmentPathPrefix(markup));
+			}
+			if (prefixes.isEmpty()) continue;
+			// whatever any import of the page uses must stay
+			for (Section<InterWikiImportMarkup> markup : $(markupsByTitle.get(title).get(0).getArticle()).successor(InterWikiImportMarkup.class)) {
+				for (String wiki : markup.get().getWikis(markup)) {
+					String path = markup.get().getWikiAttachmentPath(markup, wiki);
+					if (path != null) usedPaths.add(path);
+				}
+			}
+			try {
+				for (WikiAttachment attachment : connector.getRootAttachments(title)) {
+					String path = attachment.getPath();
+					if (usedPaths.contains(path) || !path.endsWith(".txt")) continue;
+					if (prefixes.stream().noneMatch(path::startsWith)) continue;
+					LOGGER.info("Deleting attachment {}, its wiki is no longer a source of the InterWikiImport.", path);
+					connector.deleteAttachment(title, attachment.getFileName(), "SYSTEM");
+				}
+			}
+			catch (IOException | RuntimeException e) {
+				LOGGER.warn("Unable to delete obsolete InterWikiImport attachments of page {}: {}", title, e.getMessage());
+			}
+		}
 	}
 
 	/**
@@ -294,7 +417,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	private List<SourcePoll> pollSources(Map<String, List<ImportInfo>> snapshotsByWiki) {
 		List<SourcePoll> polls = new ArrayList<>();
 		for (Map.Entry<String, List<ImportInfo>> entry : snapshotsByWiki.entrySet()) {
-			polls.add(new SourcePoll(entry.getValue(), pollSource(entry.getKey(), entry.getValue())));
+			polls.add(new SourcePoll(entry.getKey(), entry.getValue(), pollSource(entry.getKey(), entry.getValue())));
 		}
 		return polls;
 	}
@@ -306,16 +429,14 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	 * @return the number of updated imports
 	 */
 	private int applyPollResults(List<SourcePoll> polls) {
-		List<InterWikiChanges.Update> updates = polls.stream()
-				.flatMap(poll -> poll.result().updates().stream())
-				.toList();
+		boolean hasUpdates = polls.stream().anyMatch(poll -> !poll.result().updates().isEmpty());
 		ArticleManager articleManager = environment.getArticleManager();
 		articleManager.open();
 		try {
 			for (SourcePoll poll : polls) {
 				recordOutcome(poll.snapshots(), poll.result());
 			}
-			return updates.isEmpty() ? 0 : processUpdates(updates);
+			return hasUpdates ? processUpdates(polls) : 0;
 		}
 		finally {
 			articleManager.commit();
@@ -329,7 +450,16 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 
 		try {
 			Stopwatch stopwatch = new Stopwatch();
-			InterWikiChanges changes = requestChanges(wiki, snapshots);
+			List<InterWikiChanges.RequestedImport> requestedImports = snapshots.stream()
+					.map(snapshot -> new InterWikiChanges.RequestedImport(
+							snapshot.sectionId(),
+							snapshot.page(),
+							snapshot.sectionHeading(),
+							snapshot.latestChange(),
+							snapshot.from(),
+							snapshot.link()))
+					.toList();
+			InterWikiChanges changes = changeRequester.requestChanges(wiki, requestedImports);
 			if (changes == null) return new PollResult(List.of(), false, false, null);
 
 			if (changes.getStatus() == InterWikiChanges.Status.not_authorized) {
@@ -362,38 +492,43 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 	 * or clears a previous warning on success.
 	 */
 	private void recordOutcome(List<ImportInfo> snapshots, PollResult result) {
-		String message = syncFailureMessage(result);
 		for (ImportInfo snapshot : snapshots) {
 			Section<InterWikiImportMarkup> markup = Sections.get(environment, snapshot.sectionId(), InterWikiImportMarkup.class);
 			if (!Sections.isLive(markup)) continue;
-			markup.get().recordSyncOutcome(markup, message);
+			// an import using a variable has several source wikis, so its message has to tell which one failed
+			String wiki = markup.get().getWikiVariable(markup) == null ? null : snapshot.wiki();
+			markup.get().recordSyncOutcome(markup, snapshot.wiki(), syncFailureMessage(result, wiki));
+			markup.get().clearObsoleteSyncMessages(markup);
 		}
 	}
 
 	@Nullable
-	private static String syncFailureMessage(PollResult result) {
+	private static String syncFailureMessage(PollResult result, @Nullable String wiki) {
 		if (!result.notAuthorized() && !result.failed()) return null;
 		String detail = result.error();
-		return "Last attempt to check for changes in the source wiki failed"
+		return "Last attempt to check for changes in the source wiki" + (wiki == null ? "" : " " + wiki) + " failed"
 				+ (detail == null ? "." : ": " + detail);
 	}
 
-	private int processUpdates(List<InterWikiChanges.Update> updates) {
+	private int processUpdates(List<SourcePoll> polls) {
 		Map<String, String> replacements = new LinkedHashMap<>();
 		int updatedImports = 0;
-		for (InterWikiChanges.Update update : updates) {
-			Section<InterWikiImportMarkup> markup = Sections.get(environment, update.requestingSectionId(), InterWikiImportMarkup.class);
-			if (!Sections.isLive(markup)) {
-				registeredMarkupIds.remove(update.requestingSectionId());
-				continue;
-			}
+		for (SourcePoll poll : polls) {
+			String wiki = poll.wiki();
+			for (InterWikiChanges.Update update : poll.result().updates()) {
+				Section<InterWikiImportMarkup> markup = Sections.get(environment, update.requestingSectionId(), InterWikiImportMarkup.class);
+				if (!Sections.isLive(markup)) {
+					registeredMarkupIds.remove(update.requestingSectionId());
+					continue;
+				}
 
-			boolean attachmentChanged = markup.get().updateAttachmentWithSourceText(markup, update.sourceText());
-			if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)
-					&& !update.sourceLatestChange().equals(markup.get().getLatestChange(markup))) {
-				markup.get().collectLatestChangeReplacement(markup, update.sourceLatestChange(), replacements);
+				boolean attachmentChanged = markup.get().updateAttachmentWithSourceText(markup, wiki, update.sourceText());
+				if (markup.get().shouldUpdateLatestChange(markup, attachmentChanged)
+						&& !update.sourceLatestChange().equals(markup.get().getLatestChange(markup, wiki))) {
+					markup.get().collectLatestChangeReplacement(markup, wiki, update.sourceLatestChange(), replacements);
+				}
+				updatedImports++;
 			}
-			updatedImports++;
 		}
 		if (!replacements.isEmpty()) {
 			Sections.replaceAsSystem(environment, replacements, "Update after changes in remote wiki");
@@ -401,17 +536,7 @@ public final class InterWikiImportUpdateService implements EnvironmentService {
 		return updatedImports;
 	}
 
-	private InterWikiChanges requestChanges(String wiki, List<ImportInfo> snapshots) throws IOException {
-		List<InterWikiChanges.RequestedImport> requestedImports = snapshots.stream()
-				.map(snapshot -> new InterWikiChanges.RequestedImport(
-						snapshot.sectionId(),
-						snapshot.page(),
-						snapshot.sectionHeading(),
-						snapshot.latestChange(),
-						snapshot.from(),
-						snapshot.link()))
-				.toList();
-
+	private static InterWikiChanges requestChangesByHttp(String wiki, List<InterWikiChanges.RequestedImport> requestedImports) throws IOException {
 		String urlString = wiki + AttachmentUpdateMarkup.getActionFragment() + "/GetWikiChangesSinceAction";
 		URL url = new URL(urlString);
 		HttpURLConnection connection = AttachmentUpdateMarkup.openHttpConnection(url);

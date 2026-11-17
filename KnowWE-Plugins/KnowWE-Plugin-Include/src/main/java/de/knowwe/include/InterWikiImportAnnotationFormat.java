@@ -44,6 +44,7 @@ final class InterWikiImportAnnotationFormat {
 
 	private static final Map<String, String> LABELS = Map.ofEntries(
 			Map.entry("wiki", "Wiki"),
+			Map.entry("wikiVariable", "Wiki variable"),
 			Map.entry("page", "Page"),
 			Map.entry("section", "Section"),
 			Map.entry("mode", "Mode"),
@@ -121,6 +122,19 @@ final class InterWikiImportAnnotationFormat {
 			normalized += "/";
 		}
 		return normalized;
+	}
+
+	/**
+	 * Returns a key for the given wiki that can be used in a file name: the normalized wiki without scheme, user
+	 * info and trailing slash, where every character except letters, digits, '.' and '-' is replaced by '_', e.g.
+	 * "wiki.example.com_KnowWE" for "https://user@Wiki.example.com/KnowWE/". Different wikis usually have different
+	 * keys, but this is not guaranteed.
+	 */
+	static @NotNull String toSourceKey(@Nullable String wiki) {
+		String key = normalizeWiki(wiki).replaceAll("^https?://", "").replaceAll("/+$", "");
+		int pathStart = key.indexOf('/');
+		int hostStart = key.lastIndexOf('@', pathStart < 0 ? key.length() : pathStart) + 1;
+		return key.substring(hostStart).replaceAll("[^A-Za-z0-9.-]", "_");
 	}
 
 	/**

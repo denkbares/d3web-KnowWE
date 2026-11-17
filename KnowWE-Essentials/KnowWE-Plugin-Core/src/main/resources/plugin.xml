@@ -538,6 +538,15 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="InterWikiVariableMarkup">
+		<parameter id="class" value="de.knowwe.core.compile.variables.InterWikiVariableMarkup" />
+		<parameter id="name" value="InterWikiVariableMarkup" />
+		<parameter id="description" value="Markup to define a variable for the URL of another wiki" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AttachmentUpdateMarkup">
 		<parameter id="class" value="de.knowwe.kdom.attachment.AttachmentUpdaterMarkup" />
 		<parameter id="name" value="AttachmentUpdateMarkup" />

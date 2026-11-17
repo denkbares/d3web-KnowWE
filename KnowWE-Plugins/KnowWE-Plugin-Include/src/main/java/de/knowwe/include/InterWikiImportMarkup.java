@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,25 +41,33 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import org.apache.wiki.util.CsrfProtectionAllowList;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.knowwe.textdiff.DiffHtmlRenderer;
 import com.denkbares.knowwe.textdiff.DiffRenderOptions;
 import com.denkbares.knowwe.textdiff.DiffView;
 import com.denkbares.knowwe.textdiff.TextDiff;
+import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.compile.variables.InterWikiVariableMarkup;
+import de.knowwe.core.compile.variables.VariableIndex;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.rendering.elements.A;
 import de.knowwe.core.kdom.rendering.elements.Div;
 import de.knowwe.core.kdom.rendering.elements.HtmlElement;
@@ -68,6 +77,7 @@ import de.knowwe.core.kdom.rendering.elements.P;
 import de.knowwe.core.kdom.rendering.elements.PlainTextNode;
 import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.kdom.rendering.elements.TextNode;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.tools.HelpToolProvider;
@@ -98,6 +108,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements AttachmentCompileType {
 
 	private static final String WIKI_ANNOTATION = "wiki";
+	private static final String WIKI_VARIABLE_ANNOTATION = "wikiVariable";
 	private static final String PAGE_ANNOTATION = "page";
 	private static final String SECTION_ANNOTATION = "section";
 	private static final String COMPILE_ANNOTATION = "compile";
@@ -105,6 +116,12 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final String VALIDATION_MODE_ANNOTATION = "validationMode";
 	private static final String LATEST_CHANGE_ANNOTATION = "latestChange";
 	private static final String TRACKING_ACCEPTED_AT_ANNOTATION = "trackingAcceptedAt";
+
+	/**
+	 * Separates the key of the source wiki from the name of the attachment, for imports using a variable. These have
+	 * one attachment per source wiki.
+	 */
+	private static final String SOURCE_SEPARATOR = "@";
 
 	/** Maximum number of entries of the "Compare with source" selection, including the complete comparison. */
 	private static final int MAX_DIFF_OPTIONS = 10;
@@ -132,7 +149,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(MODE_ANNOTATION, false, "import", "tracking");
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
 		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
-		MARKUP.addAnnotation(WIKI_ANNOTATION, true);
+		MARKUP.addAnnotation(WIKI_ANNOTATION, false);
+		MARKUP.addAnnotation(WIKI_VARIABLE_ANNOTATION, false, Pattern.compile("[\\w.-]+"));
 		MARKUP.addAnnotation(PAGE_ANNOTATION, true);
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
 		MARKUP.addAnnotation(VALIDATION_MODE_ANNOTATION, false, TermCompiler.ReferenceValidationMode.class);
@@ -140,12 +158,16 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(TRACKING_ACCEPTED_AT_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
 		// the source wiki must accept the change polls of other wikis, also if it has no imports of its own and
-		// therefore never starts an update service; the allowlist is global, so register it once with the type
-		CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
+		// therefore never starts an update service; the allowlist is global, so register it once with the type;
+		// without plugins there are no actions to be called (e.g. in tests running below the plugin layer)
+		if (PluginManager.isInitialized()) {
+			CsrfProtectionAllowList.register(new ActionAllowListChecker(GetWikiChangesSinceAction.class));
+		}
 	}
 
 	public InterWikiImportMarkup() {
 		super(MARKUP);
+		addCompileScript(new SourceAnnotationCheck());
 		addCompileScript(new RegistrationScript());
 		setRenderer(new AsynchronousRenderer(new InterWikiImportRenderer()));
 	}
@@ -157,17 +179,84 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		Section<InterWikiImportMarkup> interWikiSection = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (interWikiSection == null) return null;
 		String path = getWikiAttachmentPath(interWikiSection);
+		if (path == null) return null;
 		return section.getEnvironment().getWikiConnector().getAttachment(path);
 	}
 
+	/**
+	 * Returns the attachment with the content imported from the given wiki, or null if there is none (yet).
+	 */
+	@Nullable
+	WikiAttachment getWikiAttachment(Section<InterWikiImportMarkup> section, @Nullable String wiki) throws IOException {
+		String path = getWikiAttachmentPath(section, wiki);
+		if (path == null) return null;
+		return section.getEnvironment().getWikiConnector().getAttachment(path);
+	}
+
+	/**
+	 * Whether there is an attachment with content imported from the given wiki. If this cannot be found out, the
+	 * attachment is assumed to be there.
+	 */
+	boolean hasWikiAttachment(Section<InterWikiImportMarkup> section, @Nullable String wiki) {
+		try {
+			return getWikiAttachment(section, wiki) != null;
+		}
+		catch (IOException e) {
+			return true;
+		}
+	}
+
+	/**
+	 * Returns the path of the attachment of the given import, if there is exactly one. An import using a variable has
+	 * one attachment per source wiki. If its variable has several values, or none, null is returned; use
+	 * {@link #getWikiAttachmentPath(Section, String)} or {@link #getWikiAttachmentPath(Section, UserContext)} then.
+	 */
 	@Override
 	public String getWikiAttachmentPath(Section<? extends AttachmentUpdateMarkup> section) {
 		Section<InterWikiImportMarkup> interWikiSection = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (interWikiSection == null) return null;
-		String pageName = "-" + getPageName(interWikiSection);
-		String sectionName = getSectionName(interWikiSection);
+		if (getWikiVariable(interWikiSection) == null) return getAttachmentBasePath(interWikiSection) + ".txt";
+		return getWikiAttachmentPath(interWikiSection, getWiki(interWikiSection));
+	}
+
+	/**
+	 * Returns the path of the attachment with the content imported from the given wiki. For imports with
+	 * <code>@wiki</code> the path does not depend on the wiki; for imports using a variable null is returned if no
+	 * wiki is given.
+	 */
+	@Nullable
+	String getWikiAttachmentPath(Section<InterWikiImportMarkup> section, @Nullable String wiki) {
+		String basePath = getAttachmentBasePath(section);
+		if (getWikiVariable(section) == null) return basePath + ".txt";
+		if (Strings.isBlank(wiki)) return null;
+		return basePath + SOURCE_SEPARATOR + InterWikiImportAnnotationFormat.toSourceKey(wiki) + ".txt";
+	}
+
+	/**
+	 * Returns the path of the attachment with the content imported for the variant currently selected by the user,
+	 * or null if nothing is imported for that variant.
+	 */
+	@Nullable
+	String getWikiAttachmentPath(Section<InterWikiImportMarkup> section, UserContext user) {
+		if (getWikiVariable(section) == null) return getAttachmentBasePath(section) + ".txt";
+		return getWikiAttachmentPath(section, getWiki(section, user));
+	}
+
+	/**
+	 * The path of the attachment without its extension and, for imports using a variable, without the source wiki.
+	 */
+	private String getAttachmentBasePath(Section<InterWikiImportMarkup> section) {
+		String pageName = "-" + getPageName(section);
+		String sectionName = getSectionName(section);
 		sectionName = sectionName == null ? "" : "-" + sectionName;
-		return section.getTitle() + PATH_SEPARATOR + "WikiImport" + pageName + sectionName + ".txt";
+		return section.getTitle() + PATH_SEPARATOR + "WikiImport" + pageName + sectionName;
+	}
+
+	/**
+	 * The start of the paths of all attachments of the given import using a variable, whatever the source wiki is.
+	 */
+	String getSourceAttachmentPathPrefix(Section<InterWikiImportMarkup> section) {
+		return getAttachmentBasePath(section) + SOURCE_SEPARATOR;
 	}
 
 	@Override
@@ -211,7 +300,34 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	@Override
 	public String getCompiledAttachmentPath(Section<? extends AttachmentCompileType> section) {
 		if (isTrackingMode(section)) return null;
-		return $(section).closest(AttachmentUpdateMarkup.class).mapFirst(this::getWikiAttachmentPath);
+		return $(section).closest(AttachmentUpdateMarkup.class).mapFirst(markup -> getWikiAttachmentPath(markup));
+	}
+
+	@Override
+	public @NotNull Collection<String> getCompiledAttachmentPaths(Section<? extends AttachmentCompileType> section) {
+		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+		if (markup == null || isTrackingMode(markup)) return List.of();
+		if (getWikiVariable(markup) == null) return List.of(getAttachmentBasePath(markup) + ".txt");
+		// one attachment per source wiki, each compiled by the variants importing from that wiki
+		return getWikis(markup).stream().map(wiki -> getWikiAttachmentPath(markup, wiki)).distinct().toList();
+	}
+
+	/**
+	 * For an import using a variable, the attachment of a source wiki is only compiled by the compilers that also
+	 * compile a definition giving the variable that wiki as its value, i.e. by the variants importing from it.
+	 */
+	@Override
+	public @Nullable Collection<? extends Section<?>> getCompileConditionSections(Section<? extends AttachmentCompileType> section, String path) {
+		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+		if (markup == null) return null;
+		String variable = getWikiVariable(markup);
+		if (variable == null) return null;
+		VariableIndex index = VariableIndex.get(markup);
+		if (index == null) return List.of();
+		List<Section<InterWikiVariableMarkup>> definitions = index.getDefinitions(variable);
+		definitions.removeIf(definition -> !path.equals(
+				getWikiAttachmentPath(markup, normalizeWiki(InterWikiVariableMarkup.getVariableValue(definition)))));
+		return definitions;
 	}
 
 	@Override
@@ -234,7 +350,12 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private URL getUrl(Section<? extends AttachmentUpdateMarkup> sec, String command, boolean params) {
 		Section<InterWikiImportMarkup> section = $(sec).closest(InterWikiImportMarkup.class).getFirst();
 		if (section == null) return null;
-		String wikiAnnotation = normalizeWiki(getWiki(section));
+		return getUrl(section, getWiki(section), command, params);
+	}
+
+	@Nullable
+	private URL getUrl(Section<InterWikiImportMarkup> section, @Nullable String wiki, String command, boolean params) {
+		String wikiAnnotation = normalizeWiki(wiki);
 
 		String pageName = section.get().getPageName(section);
 		String reference = Strings.encodeURL(pageName);
@@ -273,9 +394,180 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return KnowWEUtils.getAsAbsoluteLink(section.getEnvironment(), KnowWEUtils.getURLLink(section));
 	}
 
+	/**
+	 * Returns the wiki the given import imports from, if there is exactly one: the wiki given with
+	 * <code>@wiki</code>, or the value of the variable given with <code>@wikiVariable</code> if it has the same value
+	 * in the whole wiki. Returns null if no wiki is given or if the variable has several values or none.
+	 *
+	 * @see #getWikis(Section)
+	 * @see #getWiki(Section, UserContext)
+	 */
 	@Nullable
 	String getWiki(Section<InterWikiImportMarkup> section) {
-		return Strings.trim(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
+		if (getWikiVariable(section) == null) {
+			return Strings.trim(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
+		}
+		List<String> wikis = getWikis(section);
+		return wikis.size() == 1 ? wikis.get(0) : null;
+	}
+
+	/**
+	 * Returns the name of the variable the given import takes its source wiki from, or null if it does not use one.
+	 */
+	@Nullable
+	String getWikiVariable(Section<InterWikiImportMarkup> section) {
+		String variable = Strings.trim(DefaultMarkupType.getAnnotation(section, WIKI_VARIABLE_ANNOTATION));
+		return Strings.isBlank(variable) ? null : variable;
+	}
+
+	/**
+	 * Returns all wikis the given import imports from, normalized: the one given with <code>@wiki</code>, or all
+	 * values the variable given with <code>@wikiVariable</code> has in this wiki, whatever the variant is. The
+	 * values are read from the {@link VariableIndex}, so they are already available while the wiki starts.
+	 */
+	@NotNull
+	List<String> getWikis(Section<InterWikiImportMarkup> section) {
+		String variable = getWikiVariable(section);
+		if (variable == null) {
+			String wiki = normalizeWiki(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
+			return wiki.isBlank() ? List.of() : List.of(wiki);
+		}
+		VariableIndex index = VariableIndex.get(section);
+		if (index == null) return List.of();
+		return index.getValues(variable).stream()
+				.map(InterWikiImportMarkup::normalizeWiki)
+				.filter(wiki -> !wiki.isBlank())
+				.distinct().toList();
+	}
+
+	/**
+	 * Returns the definitions of the variable of the given import that are valid for the variant currently selected
+	 * by the user. The variant is given by the compilers selected by the user that compile the import: the
+	 * definitions they compile count, so a variant may have none, even if all other variants agree on a value. Only
+	 * if the import is not compiled by any package compiler, there are no variants to distinguish and all
+	 * definitions of the variable are returned.
+	 */
+	@NotNull
+	List<Section<InterWikiVariableMarkup>> getVariableDefinitions(Section<InterWikiImportMarkup> section, UserContext user) {
+		String variable = getWikiVariable(section);
+		VariableIndex index = VariableIndex.get(section);
+		if (variable == null || index == null) return List.of();
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(section, PackageCompiler.class);
+		if (compilers.isEmpty()) return index.getDefinitions(variable);
+
+		LinkedHashSet<Section<InterWikiVariableMarkup>> definitions = new LinkedHashSet<>();
+		for (PackageCompiler compiler : compilers) {
+			if (!Compilers.isDefaultCompiler(user, compiler)) continue;
+			definitions.addAll(index.getDefinitions(variable, compiler));
+		}
+		return List.copyOf(definitions);
+	}
+
+	/**
+	 * Returns the name to show for the source of the given import in the variant currently selected by the user:
+	 * the display name of the definition of the variable that is valid for the variant, or the name of the variable
+	 * if the definition has none (or the variant no definition). Null for imports not using a variable.
+	 */
+	@Nullable
+	String getSourceDisplayName(Section<InterWikiImportMarkup> section, UserContext user) {
+		String variable = getWikiVariable(section);
+		if (variable == null) return null;
+		for (Section<InterWikiVariableMarkup> definition : getVariableDefinitions(section, user)) {
+			String displayName = InterWikiVariableMarkup.getDisplayName(definition);
+			if (displayName != null) return displayName;
+		}
+		return variable;
+	}
+
+	/**
+	 * Returns the name to show for the given source wiki of the given import: the display name of a definition
+	 * giving the variable of the import this wiki as its value, or the wiki itself without protocol if there is
+	 * none.
+	 */
+	@NotNull
+	String getWikiDisplayName(Section<InterWikiImportMarkup> section, String wiki) {
+		String variable = getWikiVariable(section);
+		VariableIndex index = VariableIndex.get(section);
+		if (variable != null && index != null) {
+			for (Section<InterWikiVariableMarkup> definition : index.getDefinitions(variable)) {
+				if (!wiki.equals(normalizeWiki(InterWikiVariableMarkup.getVariableValue(definition)))) continue;
+				String displayName = InterWikiVariableMarkup.getDisplayName(definition);
+				if (displayName != null) return displayName;
+			}
+		}
+		return InterWikiImportAnnotationFormat.formatWiki(wiki);
+	}
+
+	/**
+	 * Returns the wikis the given import imports from for the variant currently selected by the user, normalized.
+	 * A properly configured import has exactly one. For an import using a variable these are the values of the
+	 * definitions valid for that variant, see {@link #getVariableDefinitions(Section, UserContext)}.
+	 */
+	@NotNull
+	List<String> getWikis(Section<InterWikiImportMarkup> section, UserContext user) {
+		if (getWikiVariable(section) == null) return getWikis(section);
+		return getVariableDefinitions(section, user).stream()
+				.map(definition -> normalizeWiki(InterWikiVariableMarkup.getVariableValue(definition)))
+				.filter(wiki -> !wiki.isBlank())
+				.distinct().toList();
+	}
+
+	/**
+	 * Returns the wiki the given import imports from for the variant currently selected by the user, or null if
+	 * there is none or if it is ambiguous.
+	 */
+	@Nullable
+	String getWiki(Section<InterWikiImportMarkup> section, UserContext user) {
+		if (getWikiVariable(section) == null) return getWiki(section);
+		List<String> wikis = getWikis(section, user);
+		return wikis.size() == 1 ? wikis.get(0) : null;
+	}
+
+	/**
+	 * Returns two different source wikis of the given import that would use the same attachment, or null if there
+	 * are none, which is the usual case.
+	 */
+	@Nullable
+	String[] getSourceKeyConflict(Section<InterWikiImportMarkup> section) {
+		List<String> wikis = getWikis(section);
+		for (int i = 0; i < wikis.size(); i++) {
+			for (int j = i + 1; j < wikis.size(); j++) {
+				if (InterWikiImportAnnotationFormat.toSourceKey(wikis.get(i))
+						.equals(InterWikiImportAnnotationFormat.toSourceKey(wikis.get(j)))) {
+					return new String[] { wikis.get(i), wikis.get(j) };
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Explains why nothing can be imported for the variant currently selected by the user, for an import using a
+	 * variable, or returns null if there is a source wiki for that variant.
+	 */
+	@Nullable
+	String getMissingSourceMessage(Section<InterWikiImportMarkup> section, UserContext user) {
+		String variable = getWikiVariable(section);
+		if (variable == null) return null;
+		String[] conflict = getSourceKeyConflict(section);
+		if (conflict != null) {
+			return "The wikis " + conflict[0] + " and " + conflict[1] + " of the variable '" + variable
+					+ "' cannot be distinguished by the import. Nothing is imported until this is changed.";
+		}
+		if (getWikis(section).isEmpty()) {
+			return "The variable '" + variable + "' is not defined, so nothing is imported. "
+					+ "Define it with the markup InterWikiVariable.";
+		}
+		List<String> wikis = getWikis(section, user);
+		if (wikis.isEmpty()) {
+			return "The variable '" + variable + "' has no value for the currently selected variant, "
+					+ "so nothing is imported for it.";
+		}
+		if (wikis.size() > 1) {
+			return "The variable '" + variable + "' has several values for the currently selected variant: "
+					+ String.join(", ", wikis) + ". Each variant must have exactly one.";
+		}
+		return null;
 	}
 
 	/**
@@ -285,22 +577,78 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return InterWikiImportAnnotationFormat.normalizeWiki(wiki);
 	}
 
-	@Nullable
-	Instant getLatestChange(Section<InterWikiImportMarkup> section) {
-		String latestChangeText = DefaultMarkupType.getAnnotation(section, LATEST_CHANGE_ANNOTATION);
-		return InterWikiChanges.parseInstant(latestChangeText);
+	/**
+	 * The content of a <code>@latestChange</code> annotation: the time of the latest change in the source and, for
+	 * imports using a variable, the (normalized) source wiki it belongs to. These have one annotation per source
+	 * wiki, written as <code>@latestChange: 2026-11-16T09:30:00Z https://wiki.example.com/</code>.
+	 */
+	record LatestChange(Instant instant, @Nullable String wiki) {
+
+		@Nullable
+		static LatestChange parse(@Nullable String text) {
+			String trimmed = Strings.trim(text);
+			if (Strings.isBlank(trimmed)) return null;
+			String[] parts = trimmed.split("\\s+", 2);
+			Instant instant = InterWikiChanges.parseInstant(parts[0]);
+			if (instant == null) return null;
+			return new LatestChange(instant, parts.length > 1 ? normalizeWiki(parts[1]) : null);
+		}
 	}
 
-	void collectLatestChangeReplacement(Section<InterWikiImportMarkup> section, Instant latestChange, Map<String, String> replacements) {
-		Section<?> latestChangeContent = DefaultMarkupType.getAnnotationContentSection(section, LATEST_CHANGE_ANNOTATION);
-		if (latestChangeContent != null) {
-			replacements.put(latestChangeContent.getID(), latestChange.toString());
+	/**
+	 * Returns the latest change in the given source wiki that was imported by the given import. For imports with
+	 * <code>@wiki</code> the wiki is not needed.
+	 */
+	@Nullable
+	Instant getLatestChange(Section<InterWikiImportMarkup> section, @Nullable String wiki) {
+		if (getWikiVariable(section) == null) {
+			String latestChangeText = DefaultMarkupType.getAnnotation(section, LATEST_CHANGE_ANNOTATION);
+			return InterWikiChanges.parseInstant(latestChangeText);
+		}
+		if (wiki == null) return null;
+		for (Section<?> content : DefaultMarkupType.getAnnotationContentSections(section, LATEST_CHANGE_ANNOTATION)) {
+			LatestChange latestChange = LatestChange.parse(content.getText());
+			if (latestChange != null && wiki.equals(latestChange.wiki())) return latestChange.instant();
+		}
+		return null;
+	}
+
+	/**
+	 * Collects the replacements that set <code>@latestChange</code> for the given source wiki. For imports using a
+	 * variable this is the annotation of that wiki; annotations of wikis the import no longer imports from are
+	 * removed along the way.
+	 */
+	void collectLatestChangeReplacement(Section<InterWikiImportMarkup> section, @Nullable String wiki, Instant latestChange, Map<String, String> replacements) {
+		boolean usesVariable = getWikiVariable(section) != null;
+		if (usesVariable && wiki == null) return;
+		String text = usesVariable ? latestChange + " " + wiki : latestChange.toString();
+		List<String> wikis = usesVariable ? getWikis(section) : List.of();
+
+		Section<?> target = null;
+		for (Section<?> content : DefaultMarkupType.getAnnotationContentSections(section, LATEST_CHANGE_ANNOTATION)) {
+			LatestChange existing = LatestChange.parse(content.getText());
+			String existingWiki = existing == null ? null : existing.wiki();
+			boolean isTarget = target == null && (!usesVariable || wiki.equals(existingWiki));
+			if (isTarget) {
+				target = content;
+			}
+			else if (!usesVariable || existingWiki == null || wiki.equals(existingWiki) || !wikis.contains(existingWiki)) {
+				// outdated: a duplicate, or of a wiki that is no source of this import (any more)
+				Section<AnnotationType> annotation = $(content).ancestor(AnnotationType.class).getFirst();
+				if (annotation != null) replacements.put(annotation.getID(), "");
+			}
+		}
+
+		if (target != null) {
+			replacements.put(target.getID(), text);
 		}
 		else {
 			Section<?> closingTag = $(section).children().getLast();
 			if (closingTag == null || !"%".equals(Strings.trim(closingTag.getText()))) return;
+			// merge with a possibly existing replacement for this closing tag, e.g. of another source wiki
+			String closingText = replacements.getOrDefault(closingTag.getID(), closingTag.getText());
 			replacements.put(closingTag.getID(),
-					"\n@" + LATEST_CHANGE_ANNOTATION + ": " + latestChange + "\n" + Strings.trimLeft(closingTag.getText()));
+					"\n@" + LATEST_CHANGE_ANNOTATION + ": " + text + "\n" + Strings.trimLeft(closingText));
 		}
 	}
 
@@ -336,13 +684,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return getSectionName(section) == null || attachmentChanged;
 	}
 
-	boolean updateAttachmentWithSourceText(Section<InterWikiImportMarkup> section, String sourceText) {
+	boolean updateAttachmentWithSourceText(Section<InterWikiImportMarkup> section, @Nullable String wiki, String sourceText) {
 		if (section.getArticleManager() == null) return false;
 
 		logLastRun(section);
 		Messages.clearMessages(section, getClass());
 
-		String path = getWikiAttachmentPath(section);
+		String path = getWikiAttachmentPath(section, wiki);
 		if (path == null) return false;
 		if (path.split("/").length > 2) {
 			Messages.storeMessage(section, getClass(), Messages.error("Unable to update entries in zipped attachments!"));
@@ -357,7 +705,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		try {
 			byte[] sourceBytes = Streams.getBytesAndClose(applyReplacements(section,
 					new ByteArrayInputStream(sourceText.getBytes(StandardCharsets.UTF_8))));
-			WikiAttachment attachment = getWikiAttachment(section);
+			WikiAttachment attachment = getWikiAttachment(section, wiki);
 			if (attachment != null) {
 				byte[] attachmentBytes = Streams.getBytesAndClose(attachment.getInputStream());
 				if (java.util.Arrays.equals(sourceBytes, attachmentBytes)) {
@@ -528,34 +876,103 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	private static final class SyncMessages {
 	}
 
+	/** Like {@link SyncMessages}, for the warning of one source wiki of an import using a variable. */
+	private record SourceSyncMessages(String wiki) {
+	}
+
+	private static final String SYNCED_WIKIS_KEY = "syncedWikis";
+
+	private Object syncMessageSource(Section<InterWikiImportMarkup> section, @Nullable String wiki) {
+		return getWikiVariable(section) == null || wiki == null ? SyncMessages.class : new SourceSyncMessages(wiki);
+	}
+
 	/**
-	 * Records the outcome of a remote-change poll on this markup, called by
+	 * Records the outcome of a remote-change poll of the given source wiki on this markup, called by
 	 * {@link InterWikiImportUpdateService} after every attempt (whether or not anything changed).
 	 * Always refreshes the "last check" timestamp; on failure ({@code errorMessage != null}) it
 	 * stores a warning so the failing sync is visible in the markup instead of silently showing
 	 * "No check yet", on success it clears any previous warning. The failure is also remembered
 	 * per attachment path so {@link RegistrationScript} can re-apply it after a recompile.
 	 */
-	void recordSyncOutcome(Section<InterWikiImportMarkup> section, @Nullable String errorMessage) {
+	void recordSyncOutcome(Section<InterWikiImportMarkup> section, @Nullable String wiki, @Nullable String errorMessage) {
 		logLastRun(section);
-		String path = getWikiAttachmentPath(section);
+		String path = getWikiAttachmentPath(section, wiki);
+		Object source = syncMessageSource(section, wiki);
+		if (source instanceof SourceSyncMessages) {
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (section) {
+				Set<String> syncedWikis = section.getObject(SYNCED_WIKIS_KEY);
+				if (syncedWikis == null) {
+					syncedWikis = ConcurrentHashMap.newKeySet();
+					section.storeObject(SYNCED_WIKIS_KEY, syncedWikis);
+				}
+				syncedWikis.add(wiki);
+			}
+		}
 		if (errorMessage == null) {
 			if (path != null) LAST_SYNC_ERRORS.remove(path);
-			Messages.clearMessages(section, SyncMessages.class);
+			Messages.clearMessages(section, source);
 		}
 		else {
 			if (path != null) LAST_SYNC_ERRORS.put(path, errorMessage);
-			Messages.storeMessage(section, SyncMessages.class, Messages.warning(errorMessage));
+			Messages.storeMessage(section, source, Messages.warning(errorMessage));
 		}
 	}
 
-	/** Re-applies a remembered sync-failure warning after a recompile cleared the section messages. */
-	private void restoreSyncMessage(Section<InterWikiImportMarkup> section) {
-		String path = getWikiAttachmentPath(section);
-		String error = path == null ? null : LAST_SYNC_ERRORS.get(path);
-		if (error != null) {
-			Messages.storeMessage(section, SyncMessages.class, Messages.warning(error));
+	/**
+	 * Clears the sync warnings of source wikis the given import no longer imports from.
+	 */
+	void clearObsoleteSyncMessages(Section<InterWikiImportMarkup> section) {
+		Set<String> syncedWikis = section.getObject(SYNCED_WIKIS_KEY);
+		if (syncedWikis == null) return;
+		List<String> wikis = getWikis(section);
+		for (String wiki : List.copyOf(syncedWikis)) {
+			if (wikis.contains(wiki)) continue;
+			syncedWikis.remove(wiki);
+			Messages.clearMessages(section, new SourceSyncMessages(wiki));
+			String path = getWikiAttachmentPath(section, wiki);
+			if (path != null) LAST_SYNC_ERRORS.remove(path);
 		}
+	}
+
+	/** Re-applies remembered sync-failure warnings after a recompile cleared the section messages. */
+	private void restoreSyncMessages(Section<InterWikiImportMarkup> section) {
+		if (getWikiVariable(section) == null) {
+			String path = getWikiAttachmentPath(section);
+			String error = path == null ? null : LAST_SYNC_ERRORS.get(path);
+			if (error != null) {
+				Messages.storeMessage(section, SyncMessages.class, Messages.warning(error));
+			}
+			return;
+		}
+		for (String wiki : getWikis(section)) {
+			String path = getWikiAttachmentPath(section, wiki);
+			String error = path == null ? null : LAST_SYNC_ERRORS.get(path);
+			if (error != null) recordSyncOutcome(section, wiki, error);
+		}
+	}
+
+	/**
+	 * Imports using a variable have no single attachment the time of the last check could be remembered for, so it
+	 * is remembered for the import as a whole.
+	 */
+	@Override
+	protected void logLastRun(Section<? extends AttachmentUpdateMarkup> section) {
+		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+		if (markup == null || getWikiVariable(markup) == null) {
+			super.logLastRun(section);
+			return;
+		}
+		updateService(markup).logLastCheck(getAttachmentBasePath(markup));
+	}
+
+	@Override
+	protected long timeSinceLastRun(Section<? extends AttachmentUpdateMarkup> section) {
+		if (section == null) return Long.MAX_VALUE;
+		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+		if (markup == null || getWikiVariable(markup) == null) return super.timeSinceLastRun(section);
+		Long lastCheck = updateService(markup).getLastCheck(getAttachmentBasePath(markup));
+		return lastCheck == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastCheck;
 	}
 
 	void collectTrackingInitializationReplacement(Section<InterWikiImportMarkup> section, Map<String, String> replacements) throws IOException {
@@ -704,6 +1121,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	private class InterWikiImportRenderer extends DefaultMarkupRenderer implements AsyncPreviewRenderer {
 
+		InterWikiImportRenderer() {
+			// like the renderer of %%Include: with the pre-formatted style each blank line of the imported page
+			// becomes masked html, and JSPWiki sees no line start after it, so everything that has to start a
+			// line (headings, lists, rulers) would stay raw text
+			setPreFormattedStyle(false);
+		}
+
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 			render(section, user, result, true);
@@ -734,7 +1158,9 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 				if (markup != null) {
 					if (markup.get().isTrackingMode(markup)) return;
-					String path = markup.get().getWikiAttachmentPath(markup);
+					// the attachment of the variant selected by the user; nothing to wait for if there is none
+					String path = markup.get().getWikiAttachmentPath(markup, user);
+					if (path == null) return;
 					ArticleManager articleManager = user.getArticleManager();
 					try {
 						Stopwatch stopwatch = new Stopwatch();
@@ -757,9 +1183,18 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			if (markup == null) return;
 
 			renderHeader(markup, user, result);
-			renderLastChangesMessage(markup, result);
+			renderLastChangesMessage(markup, user, result);
 			if (markup.get().isTrackingMode(markup)) {
-				renderTracking(markup, user, result);
+				if (markup.get().getWikis(markup).size() > 1) {
+					// the local text below the markup is the same for all variants, so it can only follow one source
+					result.append(new Span().clazz("error").plainText("Tracking is not possible, because the variable '"
+							+ markup.get().getWikiVariable(markup) + "' has different values: "
+							+ String.join(", ", markup.get().getWikis(markup))
+							+ ". Use a separate markup and local text for each of them."));
+				}
+				else {
+					renderTracking(markup, user, result);
+				}
 			}
 			else {
 				renderImport(markup, user, result);
@@ -807,6 +1242,21 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					return new HtmlProvider[] {
 							new A().attributes("href", normalizeWiki(text)).plainText(InterWikiImportAnnotationFormat.formatWiki(text)) };
 				}
+				case WIKI_VARIABLE_ANNOTATION -> {
+					// the variable and the wikis it stands for, the one of the selected variant first
+					List<HtmlProvider> value = new ArrayList<>();
+					value.add(new HtmlElement("code").plainText(text));
+					LinkedHashSet<String> wikis = new LinkedHashSet<>(markup.get().getWikis(markup, user));
+					wikis.addAll(markup.get().getWikis(markup));
+					String separator = "\u2192";
+					for (String wiki : wikis) {
+						value.add(new Span().clazz("iwi-annotation-arrow").plainText(separator));
+						value.add(new A().attributes("href", wiki, "title", InterWikiImportAnnotationFormat.formatWiki(wiki))
+								.plainText(markup.get().getWikiDisplayName(markup, wiki)));
+						separator = ",";
+					}
+					return value.toArray(new HtmlProvider[0]);
+				}
 				case PAGE_ANNOTATION -> {
 					URL url = markup.get().getUrl(markup, "Wiki.jsp?page=", false);
 					if (url == null) return new HtmlProvider[] { new PlainTextNode(text) };
@@ -820,12 +1270,17 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					return new HtmlProvider[] { new PlainTextNode("false".equalsIgnoreCase(text) ? "No" : "Yes") };
 				}
 				case LATEST_CHANGE_ANNOTATION, TRACKING_ACCEPTED_AT_ANNOTATION -> {
-					Instant instant = InterWikiChanges.parseInstant(text);
-					if (instant == null) return new HtmlProvider[] { plainValue };
+					// the latest change may be followed by the source wiki it belongs to
+					LatestChange latestChange = LatestChange.parse(text);
+					if (latestChange == null) return new HtmlProvider[] { plainValue };
+					Instant instant = latestChange.instant();
 					HtmlElement date = new Span().title(instant.toString())
 							.plainText(InterWikiImportAnnotationFormat.formatDateTime(instant, getLocale(user), ZoneId.systemDefault()));
-					return new HtmlProvider[] { date, new Span().clazz("iwi-annotation-hint")
-							.plainText(InterWikiImportAnnotationFormat.formatRelative(instant, Instant.now())) };
+					String hint = InterWikiImportAnnotationFormat.formatRelative(instant, Instant.now());
+					if (latestChange.wiki() != null) {
+						hint += ", " + markup.get().getWikiDisplayName(markup, latestChange.wiki());
+					}
+					return new HtmlProvider[] { date, new Span().clazz("iwi-annotation-hint").plainText(hint) };
 				}
 				case REPLACEMENT, REGEX_REPLACEMENT -> {
 					String[] parts = InterWikiImportAnnotationFormat.splitReplacement(text);
@@ -855,15 +1310,20 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
 			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 			if (markup == null) return true;
+			String path = markup.get().isTrackingMode(markup)
+					? markup.get().getWikiAttachmentPath(markup)
+					: markup.get().getWikiAttachmentPath(markup, user);
+			// an import using a variable without (single) source for this variant: there is nothing to wait for
+			if (path == null && markup.get().getWikiVariable(markup) != null) return false;
 			try {
-				if (markup.get().getWikiAttachment(markup) == null) {
+				if (path == null || markup.getEnvironment().getWikiConnector().getAttachment(path) == null) {
 					return true;
 				}
 			}
 			catch (IOException e) {
 				return true;
 			}
-			Article article = user.getArticleManager().getArticle(markup.get().getWikiAttachmentPath(markup));
+			Article article = user.getArticleManager().getArticle(path);
 			if (article == null) return true;
 			return getLock(markup).isLocked();
 		}
@@ -1083,8 +1543,15 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 
 		private void renderImport(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
-			String path = markup.get().getWikiAttachmentPath(markup);
-			Article article = user.getArticleManager().getArticle(path);
+			String missingSource = markup.get().getMissingSourceMessage(markup, user);
+			if (missingSource != null) {
+				// plain text: the message contains wiki URLs and the name of a markup
+				result.append(new Span().clazz("warning").plainText(missingSource));
+				return;
+			}
+			// the content imported for the variant selected by the user
+			String path = markup.get().getWikiAttachmentPath(markup, user);
+			Article article = path == null ? null : user.getArticleManager().getArticle(path);
 			if (article == null) {
 				result.append(new Span("Included article not (yet) available").clazz("warning"));
 			}
@@ -1092,19 +1559,52 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				boolean framed = isFramed();
 				// the imported content is set off from the import markup itself
 				result.append(new Div().clazz("iwi-imported-content").children(content -> {
+					Section<RootType> root = article.getRootSection();
+					RenderResult lines = new RenderResult(content);
+					lines.addCustomRenderer(section -> section == root, new LineStartRootRenderer());
+					// the content itself must start on a new line too, not right behind the surrounding html
+					lines.append("\n");
 					if (framed) {
 						// used the framing renderer
-						new FramedIncludedSectionRenderer(true).render(article.getRootSection(), user, content);
+						new FramedIncludedSectionRenderer(true).render(root, user, lines);
 					}
 					else {
 						// or simply render the sections belonging to the header
-						FramedIncludedSectionRenderer.renderTargetSections(article.getRootSection(), true, user, content);
+						FramedIncludedSectionRenderer.renderTargetSections(root, true, user, lines);
 					}
+					content.append(lines);
 				}));
 			}
 		}
 
-		private void renderLastChangesMessage(Section<InterWikiImportMarkup> markup, RenderResult result) {
+		/**
+		 * Renders the root section of an imported article with each of its top-level sections starting on a line of
+		 * its own. On a page of the wiki this is given (the edit mode puts its anchors there), but not for the
+		 * articles of attachments. A markup section ends with its closing "%" and the line break after it, so e.g. a
+		 * heading right after a markup would not be at the start of a line and would stay raw text.
+		 */
+		private static class LineStartRootRenderer implements Renderer {
+
+			@Override
+			public void render(Section<?> section, UserContext user, RenderResult result) {
+				// the messages of the article, as the renderer of the root type shows them
+				for (Collection<Message> messages : Messages.getMessagesMap(section).values()) {
+					for (Message message : messages) {
+						String tag = message.getType() == Message.Type.ERROR ? "error"
+								: message.getType() == Message.Type.WARNING ? "warning" : "information";
+						result.append("\n%%").append(tag).append("\n");
+						result.append(message.getVerbalization());
+						result.append("\n/%\n\n");
+					}
+				}
+				for (Section<?> child : section.getChildren()) {
+					result.append("\n");
+					result.append(child, user);
+				}
+			}
+		}
+
+		private void renderLastChangesMessage(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
 			if (getLock(markup).isLocked()) {
 				result.append(new HtmlElement("p").attributes("style", "color:green").content("Update currently ongoing..."));
 			}
@@ -1116,7 +1616,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					message = "Last check for changes: "
 							+ InterWikiImportAnnotationFormat.formatRelative(now.minusMillis(lastRun), now);
 					// the change in the source (@latestChange), not the local update of the attachment
-					Instant latestChange = markup.get().getLatestChange(markup);
+					Instant latestChange = markup.get().getLatestChange(markup, markup.get().getWiki(markup, user));
 					if (latestChange != null) {
 						message += ", last change in source: " + InterWikiImportAnnotationFormat.formatRelative(latestChange, now);
 					}
@@ -1144,21 +1644,39 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 
 		private void renderHeader(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
-			URL url = markup.get().getUrl(markup, "Wiki.jsp?page=", false);
-			String wiki = markup.get().getWiki(markup);
-			if (url != null && wiki != null) {
-				String wikiName = wiki.replaceAll("^https?://", "").replaceAll("/$", "");
+			// for an import using a variable, the wiki of the variant selected by the user
+			String variable = markup.get().getWikiVariable(markup);
+			String wiki = markup.get().getWiki(markup, user);
+			URL url = markup.get().getUrl(markup, wiki, "Wiki.jsp?page=", false);
+			if ((url != null && wiki != null) || variable != null) {
 				String pageName = markup.get().getPageName(markup);
 				String sectionName = markup.get().getSectionName(markup);
-				String linkLabel = wikiName + ": " + pageName;
+				String reference = pageName;
 				if (sectionName != null) {
-					linkLabel += " - " + sectionName;
+					reference += " - " + sectionName;
 				}
 
+				HtmlElement header = new HtmlElement("h2");
+				if (variable != null) {
+					// the display name of the definition valid for the selected variant (or the name of the variable)
+					// stands for the wiki, linked to the imported page if the wiki is known for that variant; the
+					// definition of the variable is reached by a tool of the markup
+					String label = markup.get().getSourceDisplayName(markup, user) + ": " + reference;
+					if (url != null && wiki != null) {
+						String shortenedUrl = url.toString().replaceAll("%23.+$", "");
+						header.children(new TextNode("Import from "), new A()
+								.attributes("href", shortenedUrl, "title", InterWikiImportAnnotationFormat.formatWiki(wiki))
+								.plainText(label));
+					}
+					else {
+						header.children(new PlainTextNode("Import from " + label));
+					}
+				}
+				else {
+					String wikiName = wiki.replaceAll("^https?://", "").replaceAll("/$", "");
 					String shortenedUrl = url.toString().replaceAll("%23.+$", "");
-					HtmlElement header = new HtmlElement("h2").children(
-							new TextNode("Import from wiki "),
-							new A(linkLabel, shortenedUrl));
+					header.children(new TextNode("Import from wiki "), new A(wikiName + ": " + reference, shortenedUrl));
+				}
 
 				HelpToolProvider helpToolProvider = new HelpToolProvider();
 				if (helpToolProvider.hasTools(markup, user)) {
@@ -1191,14 +1709,15 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) {
-			if (section.get().getUrl(section) == null) {
+			// an import using a variable is also registered if the variable has no (single) value at the moment
+			if (section.get().getWikiVariable(section) == null && section.get().getUrl(section) == null) {
 				updateService(section).deregister(section);
 				Messages.clearMessages(section, TrackingMessages.class);
 				return;
 			}
 			updateService(section).register(section);
 			section.get().refreshTrackingMessages(section);
-			section.get().restoreSyncMessage(section);
+			section.get().restoreSyncMessages(section);
 		}
 
 		@Override
@@ -1206,6 +1725,29 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			updateService(section).deregister(section);
 			Messages.clearMessages(section, TrackingMessages.class);
 			Messages.clearMessages(section, SyncMessages.class);
+			for (String wiki : section.get().getWikis(section)) {
+				Messages.clearMessages(section, new SourceSyncMessages(wiki));
+			}
+		}
+	}
+
+	/**
+	 * Checks that the source wiki is given exactly once, either directly or by a variable.
+	 */
+	private static class SourceAnnotationCheck extends DefaultGlobalCompiler.DefaultGlobalScript<InterWikiImportMarkup> {
+
+		@Override
+		public void compile(DefaultGlobalCompiler compiler, Section<InterWikiImportMarkup> section) throws CompilerMessage {
+			boolean hasWiki = !Strings.isBlank(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
+			boolean hasVariable = section.get().getWikiVariable(section) != null;
+			if (!hasWiki && !hasVariable) {
+				throw CompilerMessage.error("Either @" + WIKI_ANNOTATION + " or @" + WIKI_VARIABLE_ANNOTATION
+						+ " has to be specified.");
+			}
+			if (hasWiki && hasVariable) {
+				throw CompilerMessage.error("@" + WIKI_ANNOTATION + " and @" + WIKI_VARIABLE_ANNOTATION
+						+ " must not be specified together.");
+			}
 		}
 	}
 }
