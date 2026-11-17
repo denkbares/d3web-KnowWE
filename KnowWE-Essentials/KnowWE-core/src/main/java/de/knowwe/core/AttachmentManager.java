@@ -80,6 +80,8 @@ public class AttachmentManager implements EventListener {
 	 */
 	private final Map<String, List<String>> packageStatements = new HashMap<>();
 	private boolean allArticlesInitialized = false;
+	/** From this duration on, a refresh of the compiled attachment paths is logged as info instead of debug. */
+	private static final long REFRESH_LOG_THRESHOLD_MILLIS = 50;
 
 	public AttachmentManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
@@ -215,12 +217,15 @@ public class AttachmentManager implements EventListener {
 	 * given if it is called while handling an {@link ArticleRegisteredEvent}.
 	 */
 	public synchronized void refreshCompiledAttachmentPaths() {
+		long start = System.currentTimeMillis();
+		int checkedSections = 0;
 		Set<String> newPaths = new LinkedHashSet<>();
 		Set<String> removedPaths = new LinkedHashSet<>();
 		Set<String> changedPaths = new LinkedHashSet<>();
 		for (Section<AttachmentCompileType> section : new ArrayList<>(articleTitleToSectionsMap.valueSet())) {
 			// sections of outdated article versions are replaced as soon as the new version is handled
 			if (!Sections.isLive(section)) continue;
+			checkedSections++;
 			Set<String> registeredPaths = new LinkedHashSet<>(pathToSectionsMap.getKeys(section));
 			Set<String> currentPaths = getCompiledAttachmentPaths(section);
 			for (String path : currentPaths) {
@@ -238,8 +243,20 @@ public class AttachmentManager implements EventListener {
 				removedPaths.add(path);
 			}
 		}
+		long checked = System.currentTimeMillis();
 		// only now change the articles: this causes events and may lead to reentrant calls of this method
 		applyPathChanges(newPaths, removedPaths, changedPaths);
+
+		long applied = System.currentTimeMillis();
+		String message = "Refreshed the compiled attachments of " + checkedSections + " sections in "
+				+ (checked - start) + "ms: " + newPaths.size() + " new, " + removedPaths.size() + " removed, "
+				+ changedPaths.size() + " to compile again; registering their articles took " + (applied - checked) + "ms";
+		if (applied - start >= REFRESH_LOG_THRESHOLD_MILLIS) {
+			LOGGER.info(message);
+		}
+		else {
+			LOGGER.debug(message);
+		}
 	}
 
 	/**

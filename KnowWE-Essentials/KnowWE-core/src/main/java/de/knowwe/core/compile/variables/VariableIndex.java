@@ -11,15 +11,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.LongAdder;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
+import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -50,8 +55,20 @@ import de.knowwe.event.ArticleRegisteredEvent;
  * @created 16.11.2026
  */
 public class VariableIndex implements EventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(VariableIndex.class);
+
+	/** From this time spent since the previous compilation on, the statistics are logged as info instead of debug. */
+	private static final long LOG_THRESHOLD_MILLIS = 50;
 
 	private final DefaultArticleManager articleManager;
+
+	// what this index was used for since the last compilation has finished, logged with each compilation
+	private final LongAdder updates = new LongAdder();
+	private final LongAdder updateNanos = new LongAdder();
+	private final LongAdder refreshes = new LongAdder();
+	private final LongAdder refreshNanos = new LongAdder();
+	private final LongAdder lookups = new LongAdder();
+	private final LongAdder lookupNanos = new LongAdder();
 
 	/**
 	 * The definitions of each article having some, by the lower case title of the article. The map is sorted and the
@@ -98,7 +115,7 @@ public class VariableIndex implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		return List.of(ArticleRegisteredEvent.class);
+		return List.of(ArticleRegisteredEvent.class, CompilationFinishedEvent.class);
 	}
 
 	@Override
@@ -106,19 +123,52 @@ public class VariableIndex implements EventListener {
 		if (event instanceof ArticleRegisteredEvent articleRegisteredEvent) {
 			update(articleRegisteredEvent.getArticle());
 		}
+		else if (event instanceof CompilationFinishedEvent) {
+			logStatistics();
+		}
+	}
+
+	/**
+	 * Logs how often this index was updated and asked since the last compilation has finished, and how long that
+	 * took in total. The lookups are done by many threads, so their time may exceed the time of the compilation.
+	 */
+	private void logStatistics() {
+		long updateCount = updates.sumThenReset();
+		long refreshCount = refreshes.sumThenReset();
+		long lookupCount = lookups.sumThenReset();
+		long updateMillis = TimeUnit.NANOSECONDS.toMillis(updateNanos.sumThenReset());
+		long refreshMillis = TimeUnit.NANOSECONDS.toMillis(refreshNanos.sumThenReset());
+		long lookupMillis = TimeUnit.NANOSECONDS.toMillis(lookupNanos.sumThenReset());
+		if (refreshCount == 0 && lookupCount == 0) return;
+		String message = "Wiki variables since the last compilation: " + updateCount + " articles checked for definitions in "
+				+ updateMillis + "ms, " + refreshCount + " refreshes of the compiled attachments in " + refreshMillis
+				+ "ms, " + lookupCount + " lookups of definitions in " + lookupMillis + "ms ("
+				+ definitionsByArticle.size() + " articles with definitions)";
+		if (updateMillis + refreshMillis + lookupMillis >= LOG_THRESHOLD_MILLIS) {
+			LOGGER.info(message);
+		}
+		else {
+			LOGGER.debug(message);
+		}
 	}
 
 	private void update(Article article) {
+		long start = System.nanoTime();
 		String key = article.getTitle().toLowerCase();
 		List<Definition> definitions = readDefinitions(article);
 		Definitions previous = definitions.isEmpty()
 				? definitionsByArticle.remove(key)
 				: definitionsByArticle.put(key, new Definitions(article, definitions));
+		updates.increment();
+		updateNanos.add(System.nanoTime() - start);
 		if (previous == null && definitions.isEmpty()) return;
 
 		// The definitions of this article have changed (or at least their sections, which also decide about the
 		// packages of dependent attachments). Readers already see the new state, so we can ask for the refresh now.
+		long refreshStart = System.nanoTime();
 		articleManager.getAttachmentManager().refreshCompiledAttachmentPaths();
+		refreshes.increment();
+		refreshNanos.add(System.nanoTime() - refreshStart);
 	}
 
 	/**
@@ -175,6 +225,7 @@ public class VariableIndex implements EventListener {
 	 */
 	@NotNull
 	public List<Section<InterWikiVariableMarkup>> getDefinitions(@NotNull String name, @Nullable String value) {
+		long start = System.nanoTime();
 		List<Section<InterWikiVariableMarkup>> result = new ArrayList<>();
 		for (Map.Entry<String, Definitions> entry : definitionsByArticle.entrySet()) {
 			for (Definition definition : getDefinitions(entry.getKey(), entry.getValue())) {
@@ -183,6 +234,8 @@ public class VariableIndex implements EventListener {
 				result.add(definition.section());
 			}
 		}
+		lookups.increment();
+		lookupNanos.add(System.nanoTime() - start);
 		return result;
 	}
 
