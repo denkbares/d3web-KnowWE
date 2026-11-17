@@ -1,0 +1,100 @@
+!!! InterWikiImport mit Wiki-Variablen
+
+Ein {{%%InterWikiImport}} kann sein Quell-Wiki aus einer Variable nehmen statt aus einer festen URL. Die Variable kann je Variante (z. B. je Fahrzeug) auf ein anderes Wiki zeigen. So importiert dieselbe Import-Seite für Fahrzeug A aus FG-Wiki 1 und für Fahrzeug B aus FG-Wiki 2, ohne dass die Seite doppelt gepflegt wird. Ticket: ILMERED-2279.
+
+!! Kurzfassung
+
+* Variable definieren: {{%%InterWikiVariable}} mit {{@name}}, {{@value}} (URL des Wikis), optional {{@displayName}}, und {{@package}}.
+* Variable verwenden: im Import {{@wikiVariable: <Name>}} statt {{@wiki: <URL>}}.
+* Je Variante genau eine Definition: Die Definition liegt in einem Package, das nur die Compiler dieser Variante einbinden.
+
+!! Beispiel
+
+Zwei Definitionen derselben Variable, je Fahrzeug eine:
+
+{{{
+%%InterWikiVariable
+@name: FG-Wiki
+@value: https://fg-wiki-1.example.com/KnowWE
+@displayName: FG-Wiki A
+@package: Fahrzeug-A
+%
+
+%%InterWikiVariable
+@name: FG-Wiki
+@value: https://fg-wiki-2.example.com/KnowWE
+@displayName: FG-Wiki B
+@package: Fahrzeug-B
+%
+}}}
+
+Der Import verwendet die Variable:
+
+{{{
+%%InterWikiImport
+@wikiVariable: FG-Wiki
+@page: Fehlercodes
+@package: shared
+%
+}}}
+
+Ergebnis: Die Import-Seite bekommt zwei Attachments, eines je Quell-Wiki. Fahrzeug A kompiliert und zeigt den Inhalt aus FG-Wiki 1, Fahrzeug B den aus FG-Wiki 2.
+
+!! Annotationen von InterWikiVariable
+
+|| Annotation || Pflicht || Bedeutung
+| {{@name}} | ja | Name der Variable. Erlaubt sind Buchstaben, Ziffern, {{_}}, {{.}} und {{-}}.
+| {{@value}} | ja | URL des Quell-Wikis, wie bisher bei {{@wiki}}.
+| {{@displayName}} | nein | Name, unter dem dieses Wiki angezeigt wird, z. B. in der Kopfzeile des Imports. Ohne Angabe wird der Name der Variable gezeigt.
+| {{@package}} | empfohlen | Package der Variante, für die diese Definition gilt. Ohne Angabe gilt das Default-Package der Seite ({{%%Package}}).
+
+!! Regeln für Redakteure
+
+* __Entweder {{@wiki}} oder {{@wikiVariable}}.__ Beides oder keines ist ein Fehler am Import.
+* __Das Package der Definition muss von allen Compilern der Variante eingebunden sein__ (ServiceMate, Ontologie, Wissensbasis). Am einfachsten ist ein Package je Fahrzeug, das alle Compiler des Fahrzeugs verwenden.
+* __Der Import selbst liegt in einem Package, das alle beteiligten Varianten einbinden__ (im Beispiel {{shared}}). Der importierte Inhalt wird trotzdem nur von der Variante kompiliert, deren Definition das jeweilige Wiki nennt. An den importierten Markups steht nur das Package des Imports; welche Variante sie kompiliert, zeigt das Compiler-Symbol daneben.
+* __Mehrere Varianten dürfen dasselbe Wiki verwenden.__ Sie teilen sich dann das Attachment.
+* __Definitionen gehören auf Seiten dieses Wikis.__ Definitionen in importierten Inhalten werden ignoriert und zeigen eine Warnung.
+* __Tracking__ ({{@mode: tracking}}) geht nur, wenn die Variable im ganzen Wiki genau einen Wert hat. Der lokale Text unter dem Markup gilt für alle Varianten und kann nur einer Quelle folgen.
+
+!! Was man im Wiki sieht
+
+* __Kopfzeile des Imports:__ „Import from FG-Wiki A: Fehlercodes“, verlinkt auf die Seite im Wiki der gewählten Variante. Beim Umschalten der Variante wechseln Kopfzeile und Inhalt.
+* __Toolmenü:__ „Go to wiki variable“ führt zur Definition, die für die gewählte Variante gilt.
+* __Attachments:__ {{WikiImport-<Seite>@<Wiki>.txt}}, eines je Quell-Wiki. Importe mit {{@wiki}} heißen weiter {{WikiImport-<Seite>.txt}}.
+* __{{@latestChange}}:__ eine Zeile je Quell-Wiki, Zeitstempel gefolgt von der URL. Die Zeilen schreibt der Import selbst.
+* __Attachments entfallener Quellen__ werden beim nächsten regulären Abruf gelöscht (nicht bei Tracking-Importen).
+
+!! Meldungen
+
+|| Meldung || Wo || Bedeutung
+| Warnung „Nothing is imported in this variant …“ | am Import, je Variante | Die Variable hat in dieser Variante keinen Wert. Das kann Absicht sein.
+| Fehler „… has several values in this variant …“ | am Import, je Variante | Die Variante hat mehrere Definitionen mit verschiedenen Werten und kompiliert die Inhalte aller dieser Wikis. Eine Definition korrigieren oder ihr Package ändern.
+| Warnung „… has other values in this variant too …“ | an den beteiligten Definitionen | Wie oben, mit Verweis auf die jeweils anderen Definitionen.
+| Hinweis statt Inhalt | im Import | Für die gewählte Variante gibt es keinen oder keinen eindeutigen Wert, oder die Variable ist gar nicht definiert.
+| Warnung „Last attempt to check for changes in the source wiki <URL> failed …“ | am Import | Ein Quell-Wiki war nicht erreichbar oder hat die Abfrage abgelehnt. Die anderen Quellen werden trotzdem aktualisiert.
+
+Die Meldungen je Variante gibt es nur in Wikis mit ServiceMate-Compilern (CBX). Sie aktualisieren sich auch dann, wenn nur eine Definitions-Seite gespeichert wird.
+
+!! Technik in Kürze
+
+* __KnowWE-core, {{de.knowwe.core.compile.variables}}:__ {{InterWikiVariableMarkup}} und {{VariableIndex}}. Der Index wird beim Registrieren einer Seite gefüllt, nicht beim Kompilieren, und steht deshalb schon während des Starts bereit.
+* __Mehrere Attachments je Markup:__ {{AttachmentCompileType.getCompiledAttachmentPaths}} und {{getCompiledAttachmentArticles}}. Wer importierte Inhalte einsammelt, nimmt die Mehrzahl-Variante; {{getCompiledAttachmentArticle}} liefert bei mehreren Attachments {{null}}.
+* __Wer kompiliert welches Attachment:__ {{getCompileConditionSections}} nennt die Definitionen des jeweiligen Wikis. {{DefaultMarkupPackageScript}} macht daraus die Package-Regel „(Packages des Imports) AND (Packages der Definitionen)“.
+* __Startreihenfolge:__ Der {{AttachmentManager}} trägt eine Section erst ein und liest dann ihre Pfade; der Index trägt erst die Definition ein und ruft dann {{refreshCompiledAttachmentPaths()}}. Dadurch ist das Ergebnis unabhängig davon, ob Import oder Definition zuerst registriert wird, und es bleibt bei einer Kompilation beim Start.
+* __Include-Plugin:__ {{InterWikiImportMarkup}} ({{getWikis}}, Pfad je Quelle, {{@latestChange}} je Quelle, Anzeige je Variante), {{InterWikiImportUpdateService}} (Abruf je Quelle; der Zugriff auf die Quell-Wikis läuft über {{ChangeRequester}} und ist in Tests ersetzbar), {{WikiVariableCheckScript}} (Prüfung je Variante, generisch über den Compiler).
+* __CBX:__ {{ServiceMateWikiVariableCheck}} bindet die Prüfung an den {{ServiceMateCompiler}}.
+* __Logging:__ {{VariableIndex}} protokolliert je Kompilation Anzahl und Dauer von Seitenprüfungen, Refreshes und Abfragen, {{AttachmentManager}} jeden Refresh; als Debug, ab 50 ms als Info.
+
+!! Tests und Testinstanz
+
+* KnowWE-core: {{VariableAttachmentStartOrderTest}} (alle Reihenfolgen und paralleles Registrieren), {{VariableAttachmentChangeTest}} (Änderungen im Betrieb, Vergleich mit Neustart), {{VariableIndexTest}}. Das Test-Wiki dazu ist {{VariantAttachmentWiki}}.
+* Include-Plugin: {{InterWikiVariableImportTest}} mit {{InterWikiImportTestWiki}}. Kein Test importiert aus einem echten Wiki; {{SourceWikis}} antwortet anstelle der Quell-Wikis. Die Tests laufen ohne Plugin-Schicht und nur im Reactor: {{mvn -o test -pl KnowWE-Plugins/KnowWE-Plugin-Include -am}}.
+* Testinstanz mit drei Wikis (Turm als CBX, zwei Quell-Wikis): {{~/knowwe-iwi}}, Seiten dauerhaft unter {{Projects/Main/wikis/}}.
+
+!! Noch offen
+
+* Migration: bestehende Importe von {{@wiki}} auf {{@wikiVariable}} umstellen (Skript geplant). Das alte Attachment {{WikiImport-<Seite>.txt}} bleibt dabei zunächst liegen.
+* Die Export- und Abgleichwerkzeuge in CBX ({{A8WikiExportTurm}}, {{ReferenceWikiAligner}}) kennen nur Importe mit {{@wiki}}.
+
+Ausführliches Konzept mit Begründungen: {{KnowWE-Plugin-Include/documentation/InterWikiImport-Wiki-Variablen-Konzept.md}} im KnowWE-Repository.
