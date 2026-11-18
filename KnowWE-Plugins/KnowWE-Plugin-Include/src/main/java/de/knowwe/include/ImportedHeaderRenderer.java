@@ -19,9 +19,6 @@
 
 package de.knowwe.include;
 
-import java.util.List;
-import java.util.Set;
-
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -39,9 +36,6 @@ public class ImportedHeaderRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		DelegateRenderer.getInstance().render(section, user, result);
-		List<ImportMarker> importMarkers = ImportMarker.getImportMarkers(section);
-		for (ImportMarker marker : importMarkers) {
-			result.append(marker.getInfoText("section"));
-		}
+		ImportMarkerRenderer.renderSectionNote(ImportMarker.getImportMarkers(section), user, result);
 	}
 }

@@ -19,14 +19,16 @@
 
 package de.knowwe.include;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,14 +38,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * Marks the section as imported into another wiki at a specific time
+ * Marks the section as imported into another wiki at a specific time. The markers are only kept in memory and are
+ * refreshed with every import request of the importing wiki (its poller asks every 10 minutes). A marker that was not
+ * refreshed for {@link #TIME_TO_LIVE} is no longer shown, so removed imports and wikis that stopped asking disappear.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 01.02.22
@@ -53,6 +56,15 @@ public class ImportMarker {
 	public static final String REQUEST_FROM = "requestFrom";
 	public static final String REQUEST_LINK = "requestLink";
 	public static final String REFERENCE = "reference";
+
+	/**
+	 * How long a marker is shown after the last import request. Several times the poll interval of the importing wikis
+	 * (10 minutes), so a few failed polls do not make the marker flicker.
+	 */
+	public static final Duration TIME_TO_LIVE = Duration.ofHours(3);
+
+	private static final String DEFAULT_WIKI_LABEL = "another wiki";
+
 	private final Date creationDate;
 	private final String reference;
 	private final String sourceLabel;
@@ -75,6 +87,14 @@ public class ImportMarker {
 	}
 
 	/**
+	 * The reference the importing wiki asked for, e.g. the page or the page and header of the imported section
+	 */
+	@NotNull
+	public String getReference() {
+		return reference;
+	}
+
+	/**
 	 * The source label to where the section was imported. May be null, if the source is unknown
 	 */
 	@Nullable
@@ -88,6 +108,56 @@ public class ImportMarker {
 	@Nullable
 	public String getSourceLink() {
 		return sourceLink;
+	}
+
+	/**
+	 * Whether the last import request is longer ago than {@link #TIME_TO_LIVE}.
+	 */
+	public boolean isExpired(@NotNull Instant now) {
+		return creationDate.toInstant().plus(TIME_TO_LIVE).isBefore(now);
+	}
+
+	/**
+	 * The name of the importing wiki, the part of the label before the first ": " (the importing wiki sends
+	 * "&lt;wiki&gt;: &lt;page&gt;"), or "another wiki" if it is not known.
+	 */
+	@NotNull
+	public String getWikiLabel() {
+		if (sourceLabel == null) return DEFAULT_WIKI_LABEL;
+		int separator = sourceLabel.indexOf(": ");
+		if (separator <= 0) return DEFAULT_WIKI_LABEL;
+		return sourceLabel.substring(0, separator);
+	}
+
+	/**
+	 * The title of the importing page, the part of the label after the first ": ", or the whole label if it has no
+	 * wiki part. Null if the label is not known.
+	 */
+	@Nullable
+	public String getPageLabel() {
+		if (sourceLabel == null) return null;
+		int separator = sourceLabel.indexOf(": ");
+		return separator < 0 ? sourceLabel : sourceLabel.substring(separator + 2);
+	}
+
+	/**
+	 * The base URL of the importing wiki, the link up to "Wiki.jsp", or null if there is no such link.
+	 */
+	@Nullable
+	public String getWikiUrl() {
+		if (sourceLink == null) return null;
+		int index = sourceLink.indexOf("Wiki.jsp");
+		return index < 0 ? null : sourceLink.substring(0, index);
+	}
+
+	/**
+	 * The link to the importing page without the anchor of the importing section, or null if there is no link.
+	 */
+	@Nullable
+	public String getPageLink() {
+		if (sourceLink == null) return null;
+		int anchor = sourceLink.indexOf('#');
+		return anchor < 0 ? sourceLink : sourceLink.substring(0, anchor);
 	}
 
 	@Override
@@ -116,9 +186,12 @@ public class ImportMarker {
 	 */
 	public static void markAsImported(Section<? extends Type> section, @NotNull String reference,
 									  @Nullable String sourceLabel, @Nullable String sourceLink) {
+		markAsImported(section, new ImportMarker(new Date(), reference, sourceLabel, sourceLink));
+	}
+
+	static void markAsImported(Section<? extends Type> section, ImportMarker marker) {
 		Set<ImportMarker> markers = section.computeIfAbsent(null, ImportMarker.class.getName(),
 				(c, s) -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
-		ImportMarker marker = new ImportMarker(new Date(), reference, sourceLabel, sourceLink);
 
 		// remove+add so the creation date (the "... ago" shown in the marker) refreshes on every import
 		markers.remove(marker);
@@ -128,19 +201,27 @@ public class ImportMarker {
 		Set<ImportMarker> staticMarkersOfPage = IMPORT_MARKERS.computeIfAbsent(section.getTitle(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
 		staticMarkersOfPage.remove(marker);
 		staticMarkersOfPage.add(marker);
-		Date twoHoursAgo = Date.from(Instant.now().minus(2, ChronoUnit.HOURS));
-		staticMarkersOfPage.removeIf(m -> m.getCreationDate().before(twoHoursAgo)); // cleanup
 	}
 
+	/**
+	 * Returns the markers of the section that are not expired. For the root section of a page, the markers of all
+	 * sections of the page are returned, also the ones of sections that no longer exist since the page was changed.
+	 */
 	@NotNull
 	public static List<ImportMarker> getImportMarkers(Section<?> section) {
-		Collection<? extends ImportMarker> markers = section.getObject(ImportMarker.class.getName());
+		Instant now = Instant.now();
+		Collection<ImportMarker> markers = section.getObject(ImportMarker.class.getName());
 		if (markers == null) markers = Set.of();
+		else markers.removeIf(marker -> marker.isExpired(now));
 		List<ImportMarker> markerList = new ArrayList<>(markers);
 		if (section.get() instanceof RootType) {
-			Set<ImportMarker> staticMarkers = new HashSet<>(IMPORT_MARKERS.getOrDefault(section.getTitle(), Set.of()));
-			staticMarkers.removeAll(markers); // don't duplicate
-			markerList.addAll(staticMarkers);
+			Set<ImportMarker> staticMarkersOfPage = IMPORT_MARKERS.get(section.getTitle());
+			if (staticMarkersOfPage != null) {
+				staticMarkersOfPage.removeIf(marker -> marker.isExpired(now));
+				Set<ImportMarker> staticMarkers = new HashSet<>(staticMarkersOfPage);
+				staticMarkers.removeAll(markers); // don't duplicate
+				markerList.addAll(staticMarkers);
+			}
 		}
 		markerList.sort(Comparator.comparing((ImportMarker m) -> m.getSourceLabel() == null ? "" : m.getSourceLabel())
 				.thenComparing(m -> m.getSourceLink() == null ? "" : m.getSourceLink())
@@ -148,27 +229,76 @@ public class ImportMarker {
 		return List.copyOf(markerList);
 	}
 
-	public String getInfoText() {
-		return getInfoText("content");
+	/**
+	 * The imports of one importing page, i.e. of all its import markups asking for the same source page or section.
+	 *
+	 * @param label   the title of the importing page, null if not known
+	 * @param link    the link to the importing page, null if not known
+	 * @param markers the markers of the imports, at least one
+	 */
+	public record PageImports(@Nullable String label, @Nullable String link, @NotNull List<ImportMarker> markers) {
+
+		/** The time of the most recent import of this page */
+		@NotNull
+		public Instant latestImport() {
+			return latest(markers);
+		}
 	}
 
-	public String getInfoText(String contentName) {
-		String source;
-		String sourceLabel = getSourceLabel();
-		if (sourceLabel == null) {
-			sourceLabel = "another wiki";
-		}
-		String sourceLink = getSourceLink();
-		if (sourceLink == null) {
-			source = sourceLabel;
-		}
-		else {
-			// the link points into the source wiki, so there is no attachment article to resolve here
-			source = "[" + sourceLabel + "|" + sourceLink + "]";
+	/**
+	 * The imports of one importing wiki, grouped by importing page.
+	 *
+	 * @param label the name of the importing wiki
+	 * @param url   the base URL of the importing wiki, null if not known
+	 * @param pages the importing pages, at least one
+	 */
+	public record WikiImports(@NotNull String label, @Nullable String url, @NotNull List<PageImports> pages) {
+
+		/** The time of the most recent import of this wiki */
+		@NotNull
+		public Instant latestImport() {
+			return latest(pages.stream().flatMap(page -> page.markers().stream()).toList());
 		}
 
-		return "%%information This " + contentName + " was imported by " + source + " "
-				+ Stopwatch.getDisplay(System.currentTimeMillis() - getCreationDate()
-				.getTime()) + " ago /%";
+		/** The number of imports (import markups and source wikis) of this wiki */
+		public int importCount() {
+			return pages.stream().mapToInt(page -> page.markers().size()).sum();
+		}
+	}
+
+	private static Instant latest(List<ImportMarker> markers) {
+		return markers.stream()
+				.map(marker -> marker.getCreationDate().toInstant())
+				.max(Comparator.naturalOrder())
+				.orElse(Instant.EPOCH);
+	}
+
+	/**
+	 * Groups the markers by importing wiki and, within each wiki, by importing page, so several imports of the same
+	 * wiki or page can be shown as one entry. Wikis and pages keep the order of their first marker.
+	 */
+	@NotNull
+	public static List<WikiImports> groupByWiki(@NotNull List<ImportMarker> markers) {
+		Map<List<String>, Map<List<String>, List<ImportMarker>>> wikis = new LinkedHashMap<>();
+		for (ImportMarker marker : markers) {
+			List<String> wikiKey = Arrays.asList(marker.getWikiLabel(), marker.getWikiUrl());
+			List<String> pageKey = Arrays.asList(marker.getPageLabel(), marker.getPageLink());
+			wikis.computeIfAbsent(wikiKey, k -> new LinkedHashMap<>())
+					.computeIfAbsent(pageKey, k -> new ArrayList<>())
+					.add(marker);
+		}
+		List<WikiImports> result = new ArrayList<>();
+		wikis.forEach((wikiKey, pages) -> {
+			List<PageImports> pageImports = new ArrayList<>();
+			pages.forEach((pageKey, pageMarkers) ->
+					pageImports.add(new PageImports(pageKey.get(0), pageKey.get(1), List.copyOf(pageMarkers))));
+			result.add(new WikiImports(wikiKey.get(0), wikiKey.get(1), List.copyOf(pageImports)));
+		});
+		return List.copyOf(result);
+	}
+
+	/** Removes all markers kept for the pages, only for tests. */
+	static void clearStaticMarkers() {
+		IMPORT_MARKERS.clear();
 	}
 }

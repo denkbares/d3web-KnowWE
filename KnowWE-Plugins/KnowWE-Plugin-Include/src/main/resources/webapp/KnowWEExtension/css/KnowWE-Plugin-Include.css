@@ -211,3 +211,49 @@
 .tracking-diff knowwe-text-diff + p {
 	margin-top: 1em;
 }
+
+/* "imported by" note on the source page of an InterWikiImport, one line per importing wiki */
+.iwi-imported-by .iwi-imported-by-wikis,
+.iwi-imported-by .iwi-imported-by-pages {
+	margin: 0.15em 0 0;
+	padding-left: 1.25em;
+}
+
+/* no bullets: the wiki names are bold, and a collapsed wiki has its own disclosure marker */
+.iwi-imported-by .iwi-imported-by-wikis,
+.iwi-imported-by .iwi-imported-by-pages {
+	list-style: none;
+	padding-left: 1em;
+}
+
+.iwi-imported-by .iwi-imported-by-wiki-name {
+	font-weight: 600;
+}
+
+.iwi-imported-by .iwi-imported-by-count,
+.iwi-imported-by .iwi-imported-by-separator,
+.iwi-imported-by .iwi-imported-by-time {
+	color: var(--text-color-secondary);
+}
+
+.iwi-imported-by details.iwi-imported-by-wiki {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.iwi-imported-by details.iwi-imported-by-wiki > summary {
+	display: list-item;
+	list-style: disclosure-closed inside;
+	cursor: pointer;
+}
+
+.iwi-imported-by details.iwi-imported-by-wiki[open] > summary {
+	list-style-type: disclosure-open;
+}
+
+/* below an imported header: a small line instead of an information box */
+.iwi-imported-by.iwi-imported-by-section {
+	font-size: 0.85em;
+	color: var(--text-color-secondary);
+	margin: -0.25em 0 0.5em;
+}

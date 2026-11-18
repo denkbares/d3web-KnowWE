@@ -19,9 +19,6 @@
 
 package de.knowwe.include;
 
-import java.util.List;
-import java.util.Set;
-
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -36,10 +33,7 @@ public class ImportMarkerPageAppender implements PageAppendHandler {
 
 	@Override
 	public void append(Article article, UserContext user, RenderResult result) {
-		List<ImportMarker> importMarkers = ImportMarker.getImportMarkers(article.getRootSection());
-		for (ImportMarker marker : importMarkers) {
-			result.append(marker.getInfoText("page"));
-		}
+		ImportMarkerRenderer.renderPageNote(ImportMarker.getImportMarkers(article.getRootSection()), user, result);
 	}
 
 	@Override
