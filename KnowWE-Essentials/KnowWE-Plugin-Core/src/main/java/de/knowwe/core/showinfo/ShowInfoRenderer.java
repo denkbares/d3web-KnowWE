@@ -174,7 +174,7 @@ public class ShowInfoRenderer {
 	 * Renders the element as in the wiki, preferably as in the section the dialog was opened for: e.g. for the tool
 	 * menu of "Unit.UI@state" the state question as "Unit.UI@state", the unit as "Unit" and the UI as "UI". Otherwise,
 	 * one of its definitions, or one of its references if it has no definition, preferring the ones naming the element
-	 * as a whole.
+	 * as a whole. Types rendering more than the element itself render the label as {@link ShowInfoLabelRenderer}.
 	 */
 	public void renderLabel(Identifier identifier, RenderResult result) {
 		Element element = elements.stream().filter(e -> e.identifier().equals(identifier)).findFirst().orElseThrow();
@@ -190,6 +190,9 @@ public class ShowInfoRenderer {
 				.orElse(candidates.isEmpty() ? null : candidates.get(0));
 		if (section == null) {
 			result.append(identifier.toPrettyPrint());
+		}
+		else if (section.get() instanceof ShowInfoLabelRenderer labelRenderer) {
+			labelRenderer.renderShowInfoLabel(section, user, result);
 		}
 		else {
 			result.append(section, user);

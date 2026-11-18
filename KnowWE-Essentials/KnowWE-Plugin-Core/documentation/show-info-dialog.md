@@ -13,6 +13,7 @@ Fassung und ihre Fehler stehen am Ende.
 | `CompositeEditToolVerbalizer` | `de.knowwe.core.tools` | Typen bestimmen den Text des Tools/Ziel-Labels und ob es für ein Identifier erscheint |
 | `CompositeEditOpenDialogAction` | `de.knowwe.core.showinfo` | rendert den Dialog für `termIdentifier` (ein Term) oder `termIdentifiers` (JSON-Array) |
 | `ShowInfoRenderer` | `de.knowwe.core.showinfo` | Definitionen und Referenzen aller Elemente zusammen, jede Preview einmal, Teile mit `data-elements` markiert; Labels der Elemente |
+| `ShowInfoLabelRenderer` | `de.knowwe.core.showinfo` | von Typen implementiert, deren Section im Wiki mehr als das Element rendert (z.B. Kabelname + Prompts in CBX): rendert nur das Element als Label |
 | `ObjectInfoRenderer` | `de.knowwe.core.objectinfo` | rendert Kopf, Definitionen und Referenzen (auch für die ObjectInfo-Seite); `renderReferences(…, elementsOf)` gruppiert für den Dialog (eine Gruppe je Preview) |
 | `CompositeEditSaveAction` | `de.knowwe.core.showinfo` | ersetzt Sections: JSON-Array `{id, text}` als Request-Body (`data`) oder wie früher als Parameter `replaceSections` |
 | `RenderPreviewAction` | `de.knowwe.core.action` | rendert die zugeklappten Referenzgruppen nach (Previews, mit `editanchor`) |
@@ -37,7 +38,8 @@ Fassung und ihre Fehler stehen am Ende.
   Definition/Referenz des Elements in dieser Section (bzw. darüber). Bei `Bedienkonsole.Hauptschalter@state` in L0008:
   1 = `Bedienkonsole.Hauptschalter@state`, 2 = `Bedienkonsole`, 3 = `Bedienkonsole.Hauptschalter`. Ohne Kontext (z.B.
   generierte Testschritt-Elemente): eine Definition, sonst eine Referenz, bevorzugt mit dem Namen des Elements als
-  Text. Klicks ins Label schalten nur die Checkbox (keine Links/Tool-Menüs).
+  Text. Implementiert der Typ der Section `ShowInfoLabelRenderer`, rendert dieser das Label (nur das Element, z.B. ohne
+  die Prompts eines Kabels). Klicks ins Label schalten nur die Checkbox (keine Links/Tool-Menüs).
 - Die Nummern stehen als Badges auch an jeder Definition und jeder (Unter-)Gruppe der Referenzen: welche Elemente
   darin vorkommen, „all“ wenn alle.
 - Inhalt wie bei einem Element: **Definition** (alle Definitionen aller Elemente), dann **References** (alle Referenzen,
