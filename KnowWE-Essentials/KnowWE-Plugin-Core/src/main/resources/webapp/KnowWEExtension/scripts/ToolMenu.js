@@ -56,6 +56,30 @@ ToolMenu.prototype.selectTerm = function(element) {
 ToolMenu.mouseMoveEvent = 'mousemove.toolmenu';
 
 /**
+ * Distance in pixels the mouse may move out of a tool menu or one of its dropdowns without closing it.
+ */
+ToolMenu.mouseTolerance = 30;
+
+/**
+ * Returns whether the mouse of the given event is over one of the given elements or at most the given distance away
+ * from it. Hidden elements (without size) are ignored.
+ *
+ * @param {Event} event the mouse event (also a wrapped mootools/jQuery event)
+ * @param {Element[]} elements the elements to check
+ * @param {number} [tolerance=ToolMenu.mouseTolerance] the distance in pixels
+ */
+ToolMenu.prototype.isMouseNear = function (event, elements, tolerance = ToolMenu.mouseTolerance) {
+  event = event.event || event.originalEvent || event;
+  return Array.from(elements).some(element => {
+    if (!element) return false;
+    const rect = element.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return false;
+    return event.clientX >= rect.left - tolerance && event.clientX <= rect.right + tolerance
+      && event.clientY >= rect.top - tolerance && event.clientY <= rect.bottom + tolerance;
+  });
+};
+
+/**
  * @param {jQuery} $node HTML element for which to display the tool menu (used for positioning)
  * @param {Object} [args={}] optional set of additional arguments for the KnowWE action that returns the KnowWE tools
  */
@@ -92,6 +116,15 @@ ToolMenu.prototype.showToolPopupMenu = function ($node, args = {}) {
       event.clientX <= Math.max(nodeRect.right, menuRect.right) + mouseMovePadding
     );
   };
+  // the mouse may leave the menu and its open dropdowns by this distance without closing the menu
+  const isNearMenu = function (event) {
+    const menu = document.getElementById("toolPopupMenuID");
+    if (!menu) return false;
+    return _TM.isMouseNear(event, [menu, ...menu.querySelectorAll(".tool-targets.open, .xcl-editor-dropdown")],
+      ToolMenu.mouseTolerance);
+  };
+  // set as soon as the mouse left the menu, from then on the menu closes if the mouse is no longer near it
+  let leftMenu = false;
   const showAbove = nodeRect.top > windowHeight - nodeRect.top + nodeRect.height;
   if (showAbove) {
     styles.bottom = windowHeight - nodeRect.top - 1 + "px";
@@ -104,7 +137,8 @@ ToolMenu.prototype.showToolPopupMenu = function ($node, args = {}) {
       // beyond the node, on the side opposite to the menu, or beside the node and the menu
       const beyond = showAbove ? event.clientY > nodeRect.bottom : event.clientY < nodeRect.top;
       const besideNode = event.clientY >= nodeRect.top && event.clientY <= nodeRect.bottom && !isInNodeRow(event);
-      if (beyond || besideNode) {
+      const awayFromMenu = leftMenu && !isInNodeRow(event);
+      if ((beyond || besideNode || awayFromMenu) && !isNearMenu(event)) {
         _TM.hideToolsPopupMenu();
         jq$(this).unbind(ToolMenu.mouseMoveEvent);
       }
@@ -124,8 +158,9 @@ ToolMenu.prototype.showToolPopupMenu = function ($node, args = {}) {
     styles: styles,
     events: {
       mouseleave: function (event) {
-        // leaving the menu towards the node, the mouse move handler above closes the menu if necessary
-        if (!isInNodeRow(event)) _TM.hideToolsPopupMenu();
+        // leaving the menu towards the node or just a little, the mouse move handler above closes the menu if necessary
+        if (!isInNodeRow(event) && !isNearMenu(event)) _TM.hideToolsPopupMenu();
+        else leftMenu = true;
       },
     },
   });
@@ -231,19 +266,25 @@ ToolMenu.prototype.decorateToolTargets = function($parent) {
       closeTimeout = setTimeout(() => _TM.closeToolTargets($targets), 200);
     };
 
-    $arrow.on("mouseenter", function() {
+    // while the list is open, it closes as soon as the mouse is no longer near the arrow or the list
+    const watchMouse = function(event) {
+      if (_TM.isMouseNear(event, [$arrow[0], $targets[0]])) cancelClose();
+      else if (!closeTimeout) scheduleClose();
+    };
+    const open = function() {
       cancelClose();
       _TM.openToolTargets($arrow, $targets);
-    });
+      jq$(document).off("mousemove.toolTargets").on("mousemove.toolTargets", watchMouse);
+    };
+
+    $arrow.on("mouseenter", open);
     // the arrow is inside the tool's link: don't execute the tool when clicking the arrow
     $arrow.on("click", function(event) {
       event.preventDefault();
       event.stopPropagation();
-      cancelClose();
-      _TM.openToolTargets($arrow, $targets);
+      open();
     });
-    $arrow.on("mouseleave", scheduleClose);
-    $targets.on("mouseenter", cancelClose).on("mouseleave", scheduleClose);
+    $targets.on("mouseenter", cancelClose);
     $targets.on("click", "a.tool-target", function() {
       cancelClose();
       _TM.closeToolTargets($targets);
@@ -289,6 +330,7 @@ ToolMenu.prototype.closeToolTargets = function($targets) {
     targets.hidePopover();
   }
   $targets.removeClass("open");
+  jq$(document).off("mousemove.toolTargets");
   $targets.siblings("a.markupMenuItem").find(".tool-target-arrow").removeClass("open");
 };
 

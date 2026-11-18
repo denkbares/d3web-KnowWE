@@ -821,11 +821,14 @@ public class DefaultMarkupRenderer implements Renderer {
 		for (Tool targetTool : targetTools) {
 			ToolTarget target = targetTool.getTarget();
 			int indent = target == null || target.depth() <= 0 ? 0 : Math.min(target.depth() - minDepth, 6);
+			// tool actions are already encoded for an attribute (see appendToolAsMenuItem), but the builder encodes
+			// the attributes itself, so decode the action like the browser does, otherwise it is encoded twice
+			String action = Strings.decodeHtml(ToolUtils.getActionAttributeValue(targetTool));
 			targets.children(new A()
 					.clazz("tool-target" + (targetTool == defaultTool ? " is-default" : ""))
 					.style("--tool-target-indent: " + indent)
 					.title(targetTool.getDescription())
-					.attributes(ToolUtils.getActionAttributeName(targetTool), ToolUtils.getActionAttributeValue(targetTool))
+					.attributes(ToolUtils.getActionAttributeName(targetTool), action)
 					.children(new Span().content(target == null ? targetTool.getTitle()
 							: showContext && target.context() != null
 							? target.label() + " <span class='dehighlighted-text'>(" + target.context() + ")</span>"
