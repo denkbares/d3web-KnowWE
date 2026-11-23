@@ -103,6 +103,13 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	ArrayList<Section<? extends Type>> children;
 
 	/**
+	 * The read-only view on the children handed out by {@link #getChildren()}. It is created on demand and kept,
+	 * because the children are requested in every traversal of the KDOM. Fits into the alignment gap of the section,
+	 * so it does not enlarge it.
+	 */
+	private List<Section<? extends Type>> childrenView;
+
+	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through the tree
 	 */
 	private Section<? extends Type> parent;
@@ -261,7 +268,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Adds a child to this node. Use for KDOM creation and editing only!
 	 */
 	public void addChild(int index, Section<?> child) {
-		if (children == null) children = new ArrayList<>(5);
+		if (children == null) {
+			children = new ArrayList<>(5);
+			childrenView = null;
+		}
 		children.add(index, child);
 		// Appending touches only the new child. Inserting already shifts this ArrayList's suffix, so update that suffix.
 		for (int i = index; i < children.size(); i++) {
@@ -337,6 +347,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	public void removeAllChildren() {
 		if (children != null) children = null;
+		childrenView = null;
 	}
 
 	/**
@@ -344,7 +355,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public List<Section<? extends Type>> getChildren() {
 		if (children == null) return Collections.emptyList();
-		return Collections.unmodifiableList(children);
+		List<Section<? extends Type>> view = childrenView;
+		if (view == null) {
+			// the view is backed by the list of children, so it also shows children added later on
+			childrenView = view = Collections.unmodifiableList(children);
+		}
+		return view;
 	}
 
 	/**
