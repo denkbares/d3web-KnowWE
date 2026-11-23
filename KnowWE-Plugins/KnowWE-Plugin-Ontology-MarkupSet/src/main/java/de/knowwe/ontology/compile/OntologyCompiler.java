@@ -35,13 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
-import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.AbstractPackageCompiler;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.Priority;
@@ -55,6 +52,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.notification.NotificationManager;
@@ -66,7 +64,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.compile;
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
-import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -102,7 +99,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		}
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
 		this.referenceValidationMode = referenceValidationMode == null ? ReferenceValidationMode.error : referenceValidationMode;
-		this.scriptCompiler = new ParallelScriptCompiler<>(this, compile);
+		this.scriptCompiler = createScriptCompiler();
 		this.ruleSet = ruleSet;
 		this.caseSensitive = true;
 		this.isIncrementalBuild = false;
@@ -254,9 +251,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 					"click <a onclick=\"KNOWWE.plugin.ontology.commitOntology('" + getCompileSection().getID() + "')\">here</a>.",
 					Message.Type.INFO, getCommitNotificationId(this)));
 		}
-		else {
-			commitOntology(this);
-		}
+		// otherwise the changes are committed already, see commitBeforeDone()
 
 		// fire proper CompilerFinishedEvent providing information about newly registered terms
 		Set<TermRegistrationEvent<OntologyCompiler>> registeredTerms = new HashSet<>(termsRegistered.values());
@@ -274,7 +269,24 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		termsUnregistered.clear();
 		shutDownScriptCompilers();
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this, destroy);
-		scriptCompiler = new ParallelScriptCompiler<>(this, compile);
+		scriptCompiler = createScriptCompiler();
+	}
+
+	private ParallelScriptCompiler<OntologyCompiler> createScriptCompiler() {
+		ParallelScriptCompiler<OntologyCompiler> scriptCompiler = new ParallelScriptCompiler<>(this, compile);
+		scriptCompiler.setBeforeDone(this::commitBeforeDone);
+		return scriptCompiler;
+	}
+
+	/**
+	 * Called when the last script is compiled, before this compiler is reported to be done: as soon as this compiler
+	 * is done, everything it added is in the repository. The commit may take long, but it does not hold back the
+	 * threads that add statements meanwhile, only the SPARQL queries of compile threads wait for it (see
+	 * {@link Rdf2GoCore#awaitCommit()}).
+	 */
+	private void commitBeforeDone() {
+		if (this.rdf2GoCore == null || getCommitType(this) == CommitType.onDemand) return;
+		commitOntology(this);
 	}
 
 	private void shutDownScriptCompilers() {

@@ -17,14 +17,13 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.compile;
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
@@ -69,8 +68,12 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 
 	private final C compiler;
 
-	/** resolved lazily: the compiler joins its compiler manager (and thus its environment) after construction */
+	/**
+	 * resolved lazily: the compiler joins its compiler manager (and thus its environment) after construction
+	 */
 	private ScriptManager<C> scriptManager;
+
+	private Runnable beforeDone = null;
 
 	/**
 	 * Creates a new script compiler that runs scripts of the same priority in parallel.
@@ -81,7 +84,6 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	 * @param mode       the step/mode of the compilation, either <tt>compile</tt> or <tt>destroy</tt>
 	 * @param typeFilter optional filters for compile script that should be run
 	 */
-	@SuppressWarnings("unchecked")
 	public ParallelScriptCompiler(C compiler, Mode mode, Class<?>... typeFilter) {
 		this.compiler = compiler;
 		this.step = mode;
@@ -95,6 +97,18 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	@Override
 	public C getCompiler() {
 		return compiler;
+	}
+
+	/**
+	 * Sets a task to be run when the last script is compiled, right before the compiler is reported to have completed
+	 * all its priorities. Compilers waiting for this one (see
+	 * {@link CompilerManager#awaitCompilePriorityCompleted(Compiler, Priority)}) continue only after the task
+	 * returned, so it can prepare what they rely on.
+	 *
+	 * @param beforeDone the task to run, or null to run nothing
+	 */
+	public void setBeforeDone(Runnable beforeDone) {
+		this.beforeDone = beforeDone;
 	}
 
 	/**
@@ -258,13 +272,14 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while compiling.\n" +
-								 "Script: " + script + ", @priority " + currentPriority.intValue() + ":\n"
-								 + e.getClass().getSimpleName() + ": " + e.getMessage();
+							"Script: " + script + ", @priority " + currentPriority.intValue() + ":\n"
+							+ e.getClass().getSimpleName() + ": " + e.getMessage();
 					Messages.storeMessage(compiler, section, ParallelScriptCompiler.class, Messages.error(msg));
 					LOGGER.error(msg, e);
 				}
 			});
 		}
+		if (beforeDone != null) beforeDone.run();
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
@@ -297,7 +312,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 					}
 					catch (Exception e) {
 						String msg = "Unexpected internal exception while destroying with script "
-									 + pair.getB();
+								+ pair.getB();
 						LOGGER.error(msg, e);
 					}
 				});
@@ -314,10 +329,8 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 
 	private ScriptManager<C> scriptManager() {
 		if (scriptManager == null) {
-			//noinspection unchecked
 			scriptManager = CompilerManager.getScriptManager(compiler);
 		}
 		return scriptManager;
 	}
-
 }

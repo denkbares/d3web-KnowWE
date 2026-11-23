@@ -42,6 +42,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -53,6 +54,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -101,7 +103,6 @@ import com.denkbares.strings.Text;
 import com.denkbares.utils.Stopwatch;
 import de.d3web.core.inference.RuleSet;
 import de.knowwe.core.Environment;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -146,7 +147,25 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(MultiMaps.minimizedFactory(), MultiMaps.minimizedFactory());
 
+	/**
+	 * Guards the statement cache and the caches of the statements to be inserted and removed with the next commit. It
+	 * is only held for this bookkeeping, never while the repository is committing: statements can be added and removed
+	 * while a commit is running, they are part of the next commit then.
+	 */
 	private final Object statementMutex = new Object();
+
+	/**
+	 * Only one commit at a time. A call of {@link #commit()} returns, when all statements added or removed before the
+	 * call are in the repository, also those taken over by a commit that was already running.
+	 */
+	private final ReentrantLock commitLock = new ReentrantLock();
+
+	/**
+	 * Present while a commit is writing to the repository, completed as soon as the repository is up to date, see
+	 * {@link #awaitCommit()}. Only changed by the thread holding the {@link #commitLock}.
+	 */
+	private volatile CompletableFuture<Void> runningCommit = null;
+
 	private final Object namespaceMutex = new Object();
 	private volatile boolean imported = false;
 
@@ -556,6 +575,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * Commit is automatically called every time an article has finished compiling. When commit is called, all {@link
 	 * Statement}s that were cached to be removed from the triple store are removed and all {@link Statement} s that
 	 * were cached to be added to the triple store are added.
+	 * <p>
+	 * Only one commit is running at a time. The method returns, when all statements added or removed before the call
+	 * are in the repository. While the commit is writing to the repository, statements can still be added and removed
+	 * by other threads without waiting, they are part of the next commit. SPARQL queries of compile threads wait for
+	 * the commit, see {@link #awaitCommit()}.
 	 *
 	 * @return true, if the underlying model was changed due to the commit, false if it was not changed
 	 * @created 12.06.2012
@@ -563,7 +587,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public boolean commit() {
 		boolean removedStatements = false;
 		boolean insertedStatements = false;
+		commitLock.lock();
 		try {
+			Set<Statement> removed;
+			Set<Statement> inserted;
+			// take over the collected changes; the statement mutex is only held for that, not for the commit itself
 			synchronized (this.statementMutex) {
 
 				int removeSize = this.removeCache.size();
@@ -582,17 +610,26 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				if (stopwatch.getTime() > 10) stopwatch.log("Hazard filtering");
 
 				// check again
-				removeSize = this.removeCache.size();
-				insertSize = this.insertCache.size();
-				if (removeSize == 0 && insertSize == 0) {
+				if (this.removeCache.isEmpty() && this.insertCache.isEmpty()) {
 					return false;
 				}
 
-				// verbose log if only a few changes are recorded
-				boolean verboseLog = (removeSize + insertSize < 50) && !LOGGER.isDebugEnabled();
+				removed = this.removeCache;
+				inserted = this.insertCache;
+				this.removeCache = new HashSet<>();
+				this.insertCache = new HashSet<>();
+			}
+			int removeSize = removed.size();
+			int insertSize = inserted.size();
 
-				// Do actual changes on the model
-				Stopwatch connectionStopwatch = new Stopwatch();
+			// verbose log if only a few changes are recorded
+			boolean verboseLog = (removeSize + insertSize < 50) && !LOGGER.isDebugEnabled();
+
+			// Do actual changes on the model
+			Stopwatch connectionStopwatch = new Stopwatch();
+			CompletableFuture<Void> writing = new CompletableFuture<>();
+			this.runningCommit = writing;
+			try {
 				runInThread(() -> {
 					coreUsageLock.readLock().lock();
 					try {
@@ -600,8 +637,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 						try (RepositoryConnection connection = this.semanticCore.getConnection()) {
 							connection.begin();
 
-							connection.remove(this.removeCache);
-							connection.add(this.insertCache);
+							connection.remove(removed);
+							connection.add(inserted);
 
 							connection.commit();
 						}
@@ -610,53 +647,81 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 						coreUsageLock.readLock().unlock();
 					}
 				});
-
-				// Fire events
-				if (!this.removeCache.isEmpty()) {
-					getEventManager().fireEvent(new RemoveStatementsEvent(
-							Collections.unmodifiableCollection(this.removeCache), this));
-					removedStatements = true;
-				}
-				if (!this.insertCache.isEmpty()) {
-					getEventManager().fireEvent(new InsertStatementsEvent(
-							Collections.unmodifiableCollection(this.removeCache),
-							Collections.unmodifiableCollection(this.insertCache), this));
-					insertedStatements = true;
-				}
-				if (removedStatements || insertedStatements) {
-					// invalidate the result cache if there are any changes
-					sparqlCache.invalidate();
-					getEventManager().fireEvent(new ChangedStatementsEvent(this));
-				}
-
-				// Logging
-				if (verboseLog) {
-					logStatements(this.removeCache, connectionStopwatch, "Removed statements:\n");
-					logStatements(this.insertCache, connectionStopwatch, "Inserted statements:\n");
-				}
-				else {
-					LOGGER.info("Removed " + removeSize + " statements from and added "
-								+ insertSize
-								+ " statements to " + Rdf2GoCore.class.getSimpleName() + " " + getName() + " in "
-								+ connectionStopwatch.getDisplay() + ".");
-				}
-
-				LOGGER.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size() + " cached, " + this.uncachedStatementsCounter + " uncached.");
-
-				// Reset caches
-				this.removeCache = new HashSet<>();
-				this.insertCache = new HashSet<>();
 			}
+			catch (RuntimeException e) {
+				// the changes did not reach the repository, keep them for the next commit
+				synchronized (this.statementMutex) {
+					this.removeCache.addAll(removed);
+					this.insertCache.addAll(inserted);
+				}
+				throw e;
+			}
+			finally {
+				// the queries waiting for the commit continue before the events are fired, so no listener can
+				// be blocked by a thread that is waiting for this commit
+				this.runningCommit = null;
+				writing.complete(null);
+			}
+
+			// Fire events
+			if (!removed.isEmpty()) {
+				getEventManager().fireEvent(new RemoveStatementsEvent(
+						Collections.unmodifiableCollection(removed), this));
+				removedStatements = true;
+			}
+			if (!inserted.isEmpty()) {
+				getEventManager().fireEvent(new InsertStatementsEvent(
+						Collections.unmodifiableCollection(removed),
+						Collections.unmodifiableCollection(inserted), this));
+				insertedStatements = true;
+			}
+			if (removedStatements || insertedStatements) {
+				// invalidate the result cache if there are any changes
+				sparqlCache.invalidate();
+				getEventManager().fireEvent(new ChangedStatementsEvent(this));
+			}
+
+			// Logging
+			if (verboseLog) {
+				logStatements(removed, connectionStopwatch, "Removed statements:\n");
+				logStatements(inserted, connectionStopwatch, "Inserted statements:\n");
+			}
+			else {
+				LOGGER.info("Removed " + removeSize + " statements from and added "
+							+ insertSize
+							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " " + getName() + " in "
+							+ connectionStopwatch.getDisplay() + ".");
+			}
+
+			LOGGER.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size() + " cached, " + this.uncachedStatementsCounter + " uncached.");
 		}
 		catch (RepositoryException e) {
 			LOGGER.error("Exception while committing changes to repository", e);
 		}
 		finally {
+			commitLock.unlock();
 			// outside of commit an auto committing connection seems to be ok
 			this.lastModified = System.currentTimeMillis();
 			getEventManager().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 		}
 		return removedStatements || insertedStatements;
+	}
+
+	/**
+	 * Waits until no commit is writing to the repository any more. Afterwards, everything that has been committed so
+	 * far is visible to queries. SPARQL queries of compile threads call this implicitly, so compile scripts do not
+	 * have to care; the statements they add themselves without committing are still not visible.
+	 */
+	public void awaitCommit() {
+		CompletableFuture<Void> writing = this.runningCommit;
+		if (writing != null) writing.join();
+	}
+
+	/**
+	 * @return whether a commit is writing to the repository right now, see {@link #awaitCommit()}
+	 */
+	public boolean isCommitting() {
+		return this.runningCommit != null;
 	}
 
 	public BNode createBlankNode() {
@@ -1423,6 +1488,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
+			// a running commit will change what we read, so wait for it; this takes the place of the statement mutex,
+			// that formerly held back the compile threads by chance while a commit was running
+			awaitCommit();
+			stopwatch.start();
 			try {
 				SparqlCallable callable = newSparqlCallable(query, type, 1000 * 60 * 2 /* 2 min*/, true, preparedAsk, preparedSelect, bindings);
 				AtomicReference<Object> result = new AtomicReference<>();
