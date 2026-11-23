@@ -12,9 +12,9 @@ Fassung und ihre Fehler stehen am Ende.
 | `TargetedTool` | KnowWE-core, `de.knowwe.tools` | zusammengefasstes Tool; ist das Default-Tool ein `CombinableTool`, führt der Klick dessen kombinierte Aktion aus (`isCombined()`), sonst das Default-Ziel |
 | `CompositeEditToolVerbalizer` | `de.knowwe.core.tools` | Typen bestimmen den Text des Tools/Ziel-Labels und ob es für ein Identifier erscheint |
 | `CompositeEditOpenDialogAction` | `de.knowwe.core.showinfo` | rendert den Dialog für `termIdentifier` (ein Term) oder `termIdentifiers` (JSON-Array) |
-| `ShowInfoRenderer` | `de.knowwe.core.showinfo` | Definitionen und Referenzen aller Elemente zusammen, jede Preview einmal, Teile mit `data-elements` markiert; Labels der Elemente |
+| `ShowInfoRenderer` | `de.knowwe.core.showinfo` | Definitionen und Referenzen aller Elemente, Teile mit `data-elements` markiert; Labels der Elemente |
 | `ShowInfoLabelRenderer` | `de.knowwe.core.showinfo` | von Typen implementiert, deren Section im Wiki mehr als das Element rendert (z.B. Kabelname + Prompts in CBX): rendert nur das Element als Label |
-| `ObjectInfoRenderer` | `de.knowwe.core.objectinfo` | rendert Kopf, Definitionen und Referenzen (auch für die ObjectInfo-Seite); `renderReferences(…, elementsOf)` gruppiert für den Dialog (eine Gruppe je Preview) |
+| `ObjectInfoRenderer` | `de.knowwe.core.objectinfo` | rendert Kopf, Definitionen und Referenzen (auch für die ObjectInfo-Seite); `renderReferences(…, elementsOf)` gruppiert die Referenzen für den Dialog |
 | `CompositeEditSaveAction` | `de.knowwe.core.showinfo` | ersetzt Sections: JSON-Array `{id, text}` als Request-Body (`data`) oder wie früher als Parameter `replaceSections` |
 | `RenderPreviewAction` | `de.knowwe.core.action` | rendert die zugeklappten Referenzgruppen nach (Previews, mit `editanchor`) |
 | `KnowWE-Plugin-Core-CompositeEdit.js` | `webapp/KnowWEExtension/scripts` | Dialog, Element-Leiste, Zuklappen, Edit-Modus (`_CE`) |
@@ -45,14 +45,13 @@ Fassung und ihre Fehler stehen am Ende.
 - Inhalt wie bei einem Element: **Definition** (alle Definitionen aller Elemente), dann **References** (alle Referenzen,
   nach Typ gruppiert, Pakete nach Artikel). Elemente ohne Definition bekommen eine Zeile „<Name>: No definitions
   found!“ bzw. „Term not defined“.
-- **Duplikate werden gemergt:** Jede Preview-Section erscheint genau einmal und markiert die Sections aller Elemente.
-  Eine Preview unter den Definitionen erscheint nicht noch einmal unter den Referenzen; eine Preview mit Referenzen
-  verschiedener Typen (z.B. Testschritt mit Term in Required und Transitions) erscheint nur in der ersten Typgruppe
-  (gilt auch für ein einzelnes Element; Zahlen in den Gruppenköpfen zählen die Sections).
+- **Previews werden je Kategorie zusammengeführt:** Eine Preview-Section erscheint einmal je Kategorie mit allen
+  zugehörigen Fundstellen. Ein Testschritt mit Fundstellen in Required und Transitions erscheint in beiden
+  Referenzgruppen. Definitionen erscheinen in ihrer eigenen Kategorie. Die Gruppenköpfe zählen die Referenz-Sections.
 - **Filter:** Alle Teile (Definitionen, Gruppen, Untergruppen, nachgeladene Previews) tragen `data-elements` (Indizes
   der Elemente). Ein Teil wird ausgeblendet (`.showinfo-hidden`), wenn keins seiner Elemente angehakt ist; Abhaken
-  verwirft nichts. Die Elemente der nachgeladenen Previews liefert die Open-Action als `previewElements`
-  (Preview-Section-ID → Elemente), zugeordnet über den `editanchor` der Preview. Die Zahlen in den Gruppenköpfen bleiben
+  verwirft nichts. Die Open-Action liefert `referenceElements` (Referenz-Section-ID → Elemente). Nachgeladene Previews
+  verwenden die Referenzen aus ihrem Attribut `data-references`. Die Zahlen in den Gruppenköpfen bleiben
   die Gesamtzahlen.
 - Große Teile (Referenzgruppen) sind wie bisher zugeklappt; geöffnete Gruppen merkt sich der Dialog in `simpleStorage`
   unter `CompositeEditCollapseState-<Termname>` bzw. `…-<Name1> | <Name2> | …` und dem Gruppennamen. Panels öffnen
@@ -62,7 +61,7 @@ Fassung und ihre Fehler stehen am Ende.
 
 1. `openCompositeEditDialog(identifier | [identifier…], contextSection?)` bzw. `openDialog(identifier | [identifier…], action)`
    holt per `_KA` die Action (Default `CompositeEditOpenDialogAction`). Antwort: `header`, `result`, `canWriteAll`,
-   `elements` (je `term`, `name`, `type`, bei mehreren `label`), `previewElements`. Andere Actions (CBX
+   `elements` (je `term`, `name`, `type`, bei mehreren `label`), `referenceElements`. Andere Actions (CBX
    `ShowMeasurementsTool`) liefern nur `header`, `result`, `canWriteAll`; ihr Inhalt wird unverändert gezeigt.
 2. Modaler jQuery-UI-Dialog (90 % Höhe, 60 % Breite, Maximieren-Icon), Buttons Close/Edit.
 3. Aufklappen lädt die Previews per `RenderPreviewAction` (Mode `list`), markiert die Sections (`highlight`) und

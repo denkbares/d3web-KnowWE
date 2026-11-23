@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +37,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -46,11 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.compile.Compilers;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -149,7 +146,9 @@ public class ObjectInfoRenderer implements Renderer {
 			Section<?> previewSection = entry.getKey();
 			Collection<Section<?>> group = entry.getValue();
 
-			result.appendHtml("<div class='previewItem'>");
+			String referenceIds = group.isEmpty() ? previewSection.getID()
+					: group.stream().map(Section::getID).collect(Collectors.joining(","));
+			result.appendHtmlTag("div", "class", "previewItem", "data-references", referenceIds);
 			result.appendHtmlTag("p", "class", "previewTitle")
 					.appendHtmlElement("strong", previewSection.getTitle())
 					.appendHtmlTag("/p");
@@ -242,7 +241,7 @@ public class ObjectInfoRenderer implements Renderer {
 				renderGroupedByArticle(references, user, result);
 			}
 			else {
-				renderGroupedByType(user, result, references);
+				renderGroupedByType(user, result, references, null);
 			}
 		}
 		renderSectionEnd(result);
@@ -250,9 +249,9 @@ public class ObjectInfoRenderer implements Renderer {
 
 	/**
 	 * Renders the references grouped into collapsible panels, by the type of their markup or by their article, like
-	 * {@link #renderTermReferences(Identifier, UserContext, RenderResult)} does for the references of one term. Unlike
-	 * there, each preview is shown in one panel only: references of several types in the same preview (e.g. a test
-	 * step referencing the term in its conditions and its transitions) are shown in the panel of the first type.
+	 * {@link #renderTermReferences(Identifier, UserContext, RenderResult)} does for the references of one term.
+	 * Each panel loads its own references. {@link #renderTermReferencesPreviews(List, UserContext, RenderResult)}
+	 * combines the references in that panel that share a preview section.
 	 *
 	 * @param references     the references to render
 	 * @param groupByArticle true to group by article (e.g. for packages), false to group by type
@@ -265,7 +264,7 @@ public class ObjectInfoRenderer implements Renderer {
 			renderGroupedByArticle(new HashSet<>(references), user, result, elementsOf);
 		}
 		else {
-			renderGroupedByType(user, result, new HashSet<>(references), elementsOf, true);
+			renderGroupedByType(user, result, new HashSet<>(references), elementsOf);
 		}
 	}
 
@@ -279,13 +278,8 @@ public class ObjectInfoRenderer implements Renderer {
 		return previewSection == null ? section : previewSection;
 	}
 
-	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
-		renderGroupedByType(user, result, references, null, false);
-	}
-
-	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references, @Nullable Function<Collection<Section<?>>, String> elementsOf, boolean onePanelPerPreview) {
+	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references, @Nullable Function<Collection<Section<?>>, String> elementsOf) {
 		Map<TypeGroup, List<Section<?>>> typeGroups = groupByType(user, references);
-		if (onePanelPerPreview) typeGroups = mergePreviews(typeGroups);
 		for (Entry<TypeGroup, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
 			// prepare group information
 			List<Section<?>> groupSections = typeEntry.getValue();
@@ -296,7 +290,7 @@ public class ObjectInfoRenderer implements Renderer {
 			Map<Article, List<Section<?>>> groupedByArticle = groupByArticle(groupSections);
 			// if we have to many sections of one type, we additionally create sub-groups by article
 			// but only if the sections are places on multiple pages
-			int articleCount = groupedByArticle.keySet().size();
+			int articleCount = groupedByArticle.size();
 			boolean cascadingWrapPanels = groupSections.size() > MAX_NUMBER_BY_TYPE && articleCount > 1;
 			if (cascadingWrapPanels) {
 				// if there are multiple pages, create a group for each page
@@ -321,22 +315,6 @@ public class ObjectInfoRenderer implements Renderer {
 					: "in '" + groupSections.get(0).getTitle() + "'";
 			wrapInExtendPanel(groupName, info, groupResult, result, cascadingWrapPanels, elementsOf(elementsOf, groupSections));
 		}
-	}
-
-	/**
-	 * Moves the sections of each preview into the first group with a section of the preview, so each preview is shown
-	 * in one group only, with all its sections.
-	 */
-	private static Map<TypeGroup, List<Section<?>>> mergePreviews(Map<TypeGroup, List<Section<?>>> typeGroups) {
-		Map<Section<?>, TypeGroup> groupOfPreview = new HashMap<>();
-		Map<TypeGroup, List<Section<?>>> merged = new LinkedHashMap<>();
-		for (Entry<TypeGroup, List<Section<?>>> entry : typeGroups.entrySet()) {
-			for (Section<?> section : entry.getValue()) {
-				TypeGroup group = groupOfPreview.computeIfAbsent(getPreviewSection(section), k -> entry.getKey());
-				merged.computeIfAbsent(group, k -> new ArrayList<>()).add(section);
-			}
-		}
-		return merged;
 	}
 
 	@Nullable
@@ -720,8 +698,8 @@ public class ObjectInfoRenderer implements Renderer {
 					.getAllDefinedTerms();
 			for (Identifier definition : allDefinedTerms) {
 				String externalForm = definition.toExternalForm()
-						.replaceAll("&", "&amp;")
-						.replaceAll("<", "&lt;");
+						.replace("&", "&amp;")
+						.replace("<", "&lt;");
 				allTerms.add(externalForm);
 			}
 		}

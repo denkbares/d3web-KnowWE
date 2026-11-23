@@ -21,7 +21,6 @@ package de.knowwe.core.showinfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,14 +42,13 @@ import de.knowwe.core.user.UserContext;
 
 /**
  * Renders the content of the "Show Info" dialog for one or several terms (elements): the definitions of all elements
- * together, then their references together, grouped as for a single term. Each preview of a section is rendered only
- * once, marking the sections of all elements in it; a preview in the definitions is not repeated in the references. So
- * each section is edited and saved at most once.
+ * together, then the references grouped by category. Occurrences that share a preview are combined within their
+ * category. Each preview marks the occurrences of all elements in that category.
  * <p>
  * For several elements, the rendered parts are tagged with the elements they belong to (attribute
  * <code>data-elements</code>, the indices of the elements separated by spaces), so the dialog can hide the parts of
  * hidden elements; the previews of the references are rendered later, their elements are given by
- * {@link #getPreviewElements()}.
+ * {@link #getReferenceElements()}.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 16.11.2026
@@ -70,14 +68,8 @@ public class ShowInfoRenderer {
 	@Nullable
 	private final Section<?> context;
 	private final List<Element> elements = new ArrayList<>();
-	/**
-	 * The elements of each definition or reference
-	 */
-	private final Map<Section<?>, Set<Integer>> elementsBySection = new HashMap<>();
-	/**
-	 * The definitions and references of all elements by the section rendered as their preview
-	 */
-	private final Map<Section<?>, Set<Section<?>>> sectionsByPreview = new LinkedHashMap<>();
+	private final Map<Section<?>, Set<Integer>> definitions = new LinkedHashMap<>();
+	private final Map<Section<?>, Set<Integer>> references = new LinkedHashMap<>();
 
 	/**
 	 * @param identifiers the terms to show
@@ -93,16 +85,14 @@ public class ShowInfoRenderer {
 					ObjectInfoRenderer.findTermDefinitionSections(user.getArticleManager(), identifier),
 					ObjectInfoRenderer.findTermReferenceSections(user.getArticleManager(), identifier));
 			elements.add(element);
-			addSections(element, element.definitions());
-			addSections(element, element.references());
+			addSections(definitions, element.definitions(), element.index());
+			addSections(references, element.references(), element.index());
 		}
 	}
 
-	private void addSections(Element element, Collection<Section<?>> sections) {
+	private static void addSections(Map<Section<?>, Set<Integer>> elementsBySection, Set<Section<?>> sections, int elementIndex) {
 		for (Section<?> section : sections) {
-			elementsBySection.computeIfAbsent(section, k -> new TreeSet<>()).add(element.index());
-			sectionsByPreview.computeIfAbsent(ObjectInfoRenderer.getPreviewSection(section), k -> new LinkedHashSet<>())
-					.add(section);
+			elementsBySection.computeIfAbsent(section, k -> new TreeSet<>()).add(elementIndex);
 		}
 	}
 
@@ -125,17 +115,19 @@ public class ShowInfoRenderer {
 	 * Returns the sections that can be edited in the dialog: the definitions and references of all elements.
 	 */
 	public Set<Section<?>> getEditableSections() {
-		return elementsBySection.keySet();
+		Set<Section<?>> editable = new LinkedHashSet<>(definitions.keySet());
+		editable.addAll(references.keySet());
+		return editable;
 	}
 
 	/**
-	 * Returns the elements of the previews, see {@link #getElementsAttribute(Collection)}, by the id of the preview
-	 * section; empty for a single element.
+	 * Returns the elements by reference section ID. Each preview uses the IDs of the references in its category.
+	 * Empty for a single element.
 	 */
-	public Map<String, String> getPreviewElements() {
+	public Map<String, String> getReferenceElements() {
 		if (!isMultiple()) return Map.of();
 		Map<String, String> result = new LinkedHashMap<>();
-		sectionsByPreview.forEach((preview, sections) -> result.put(preview.getID(), getElementsAttribute(sections)));
+		references.forEach((section, indices) -> result.put(section.getID(), formatElementIndices(indices)));
 		return result;
 	}
 
@@ -144,12 +136,16 @@ public class ShowInfoRenderer {
 	 * of their elements, separated by spaces, or null for a single element.
 	 */
 	@Nullable
-	private String getElementsAttribute(Collection<Section<?>> sections) {
+	private String getElementsAttribute(Collection<Section<?>> sections, Map<Section<?>, Set<Integer>> elementsBySection) {
 		if (!isMultiple()) return null;
 		Set<Integer> indices = new TreeSet<>();
 		for (Section<?> section : sections) {
-			indices.addAll(elementsBySection.getOrDefault(section, Set.of()));
+			indices.addAll(elementsBySection.get(section));
 		}
+		return formatElementIndices(indices);
+	}
+
+	private static String formatElementIndices(Set<Integer> indices) {
 		return indices.stream().map(String::valueOf).collect(Collectors.joining(" "));
 	}
 
@@ -203,13 +199,11 @@ public class ShowInfoRenderer {
 	 * Renders the definitions and then the references of all elements.
 	 */
 	public void renderContent(RenderResult result) {
-		Map<Section<?>, Collection<Section<?>>> definitionPreviews = renderDefinitions(result);
-		renderReferences(definitionPreviews.keySet(), result);
+		renderDefinitions(result);
+		renderReferences(result);
 	}
 
-	private Map<Section<?>, Collection<Section<?>>> renderDefinitions(RenderResult result) {
-		Set<Section<?>> definitions = new LinkedHashSet<>();
-		elements.forEach(element -> definitions.addAll(element.definitions()));
+	private void renderDefinitions(RenderResult result) {
 		ObjectInfoRenderer.renderSectionStart("Definition", result);
 		for (Element element : elements) {
 			if (!element.definitions().isEmpty()) continue;
@@ -220,11 +214,11 @@ public class ShowInfoRenderer {
 			result.append(referenced ? "No definitions found!" : "Term not defined");
 			result.appendHtmlTag("/p");
 		}
-		Map<Section<?>, Collection<Section<?>>> previews = PreviewManager.getInstance().groupByPreview(definitions);
-		for (Section<?> previewSection : previews.keySet()) {
-			// the preview marks all sections of all elements in it, also the references
-			Set<Section<?>> sections = sectionsByPreview.getOrDefault(previewSection, Set.of(previewSection));
-			String elementsAttribute = getElementsAttribute(sections);
+		Map<Section<?>, Collection<Section<?>>> previews = PreviewManager.getInstance().groupByPreview(definitions.keySet());
+		for (Map.Entry<Section<?>, Collection<Section<?>>> entry : previews.entrySet()) {
+			Section<?> previewSection = entry.getKey();
+			Collection<Section<?>> sections = entry.getValue();
+			String elementsAttribute = getElementsAttribute(sections.isEmpty() ? List.of(previewSection) : sections, definitions);
 			result.appendHtmlTag("div", "class", "articleName", "data-elements", elementsAttribute);
 			result.appendHtml(ObjectInfoRenderer.getNameForSection(user, previewSection));
 			result.appendHtmlTag("/div");
@@ -235,39 +229,26 @@ public class ShowInfoRenderer {
 			result.appendHtmlTag("param", "class", "editanchor", "sectionid", previewSection.getID());
 		}
 		if (!definitions.isEmpty()) {
-			Set<String> highlighted = new LinkedHashSet<>();
-			previews.keySet().forEach(preview -> sectionsByPreview.getOrDefault(preview, Set.of())
-					.forEach(section -> highlighted.add(section.getID())));
-			result.appendHtmlTag("div", "class", "relevantSections hidden", "rel", String.join(",", highlighted));
+			String highlighted = definitions.keySet().stream().map(Section::getID).collect(Collectors.joining(","));
+			result.appendHtmlTag("div", "class", "relevantSections hidden", "rel", highlighted);
 			result.appendHtmlTag("/div");
 		}
 		ObjectInfoRenderer.renderSectionEnd(result);
-		return previews;
 	}
 
-	private void renderReferences(Set<Section<?>> definitionPreviews, RenderResult result) {
-		Set<Section<?>> references = new LinkedHashSet<>();
-		elements.forEach(element -> references.addAll(element.references()));
-		// references in the previews of the definitions are already shown there
-		List<Section<?>> shown = references.stream()
-				.filter(reference -> !definitionPreviews.contains(ObjectInfoRenderer.getPreviewSection(reference)))
-				.toList();
+	private void renderReferences(RenderResult result) {
 		ObjectInfoRenderer.renderSectionStart("References", result);
 		if (references.isEmpty()) {
 			result.appendHtml("<p style=\"color:#888;font-style:italic\">");
 			result.append("No references found!");
 			result.appendHtml("</p>");
 		}
-		else if (shown.isEmpty()) {
-			result.appendHtml("<p style=\"color:#888;font-style:italic\">");
-			result.append("The references are shown with the definitions.");
-			result.appendHtml("</p>");
-		}
 		else {
 			boolean packages = elements.stream()
 					.allMatch(element -> ObjectInfoRenderer.getTermObjectClasses(user, element.identifier())
 							.contains(Package.class));
-			ObjectInfoRenderer.renderReferences(shown, packages, user, result, this::getElementsAttribute);
+			ObjectInfoRenderer.renderReferences(references.keySet(), packages, user, result,
+					sections -> getElementsAttribute(sections, references));
 		}
 		ObjectInfoRenderer.renderSectionEnd(result);
 	}

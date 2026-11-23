@@ -41,8 +41,8 @@ import de.knowwe.core.utils.KnowWEUtils;
  * the one of the clicked tool menu, see {@link ShowInfoRenderer#renderLabel(Identifier, RenderResult)}). The response is a JSON object with the title of the dialog (<code>header</code>), its
  * content (<code>result</code>), whether the user may edit it (<code>canWriteAll</code>), the shown elements
  * (<code>elements</code>, each with <code>term</code>, <code>name</code>, <code>type</code> and for several elements
- * <code>label</code>, the element rendered as in the wiki) and the elements of the previews loaded later
- * (<code>previewElements</code>, see {@link ShowInfoRenderer#getPreviewElements()}).
+ * <code>label</code>, the element rendered as in the wiki) and the elements by reference section
+ * (<code>referenceElements</code>, see {@link ShowInfoRenderer#getReferenceElements()}).
  *
  * @author stefan
  * @created 12.12.2013
@@ -91,7 +91,7 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 				elements.put(element);
 			}
 			response.put("elements", elements);
-			response.put("previewElements", new JSONObject(renderer.getPreviewElements()));
+			response.put("referenceElements", new JSONObject(renderer.getReferenceElements()));
 			context.setContentType(JSON);
 			response.write(context.getWriter());
 		}
