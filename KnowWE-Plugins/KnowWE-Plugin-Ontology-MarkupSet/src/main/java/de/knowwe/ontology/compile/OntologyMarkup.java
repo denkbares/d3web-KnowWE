@@ -52,7 +52,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
@@ -64,6 +66,7 @@ import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.ontology.kdom.namespace.Namespace;
 import de.knowwe.ontology.kdom.namespace.NamespaceAbbreviationDefinition;
 import de.knowwe.ontology.kdom.namespace.NamespaceDefinition;
+import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -81,6 +84,11 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 
 	public static final String ANNOTATION_COMPILE = PackageManager.COMPILE_ATTRIBUTE_NAME;
 	public static final String ANNOTATION_RULE_SET = "ruleset";
+	/**
+	 * System property to use the given rule set for all ontologies, whatever their markups say. It is meant for
+	 * comparing rule sets on an existing wiki without changing its pages, not for regular operation.
+	 */
+	public static final String RULE_SET_OVERRIDE_PROPERTY = "knowwe.ontology.ruleset.override";
 	public static final String ANNOTATION_MULTI_DEF_MODE = "multiDefinitionMode";
 	public static final String ANNOTATION_REFERENCE_VALIDATION_MODE = "referenceValidationMode";
 	public static final String ANNOTATION_COMMIT = "commit";
@@ -243,17 +251,74 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 				Section<?> title = $(section).successor(OntologyDefinition.class).getFirst();
 				string.appendHtml("<div><b>").append(title, user).appendHtml("</b></div>\n");
 
+				RepositoryConfig ruleSetOverride = getRuleSetOverride();
+				boolean ruleSetRendered = false;
 				List<Section<AnnotationType>> annotations = Sections.successors(section, AnnotationType.class);
 				for (Section<AnnotationType> annotation : annotations) {
 					Section<AnnotationNameType> annotationName = Sections.successor(annotation, AnnotationNameType.class);
 					assert annotationName != null;
 					if (annotationName.getText().startsWith("@" + ANNOTATION_COMPILE)) continue;
-					DelegateRenderer.getInstance().render(annotation, user, string);
+					if (ruleSetOverride != null && ANNOTATION_RULE_SET.equalsIgnoreCase(annotation.get().getName())) {
+						// the rule set of the markup is not the one in use: strike it out and show the one used instead
+						KnowWEUtils.renderAnchor(annotation, string);
+						renderOverridingRuleSet(section, ruleSetOverride, annotationName.getText().trim(),
+								DefaultMarkupType.getAnnotation(section, ANNOTATION_RULE_SET), string);
+						ruleSetRendered = true;
+					}
+					else {
+						DelegateRenderer.getInstance().render(annotation, user, string);
+					}
+					string.appendHtml("<br>");
+				}
+				if (ruleSetOverride != null && !ruleSetRendered) {
+					// no rule set in the markup: show the one in use like an annotation
+					renderOverridingRuleSet(section, ruleSetOverride, "@" + ANNOTATION_RULE_SET + ":", null, string);
 					string.appendHtml("<br>");
 				}
 				super.renderContentsAndAnnotations(section, user, string);
 			}
 		});
+	}
+
+	/**
+	 * Returns the rule set given by the system property {@link #RULE_SET_OVERRIDE_PROPERTY}, that is used for all
+	 * ontologies instead of the rule sets of their markups, or null if there is no such (existing) rule set.
+	 */
+	@Nullable
+	public static RepositoryConfig getRuleSetOverride() {
+		String name = getRuleSetOverrideName();
+		return name.isEmpty() ? null : RepositoryConfigs.get(name);
+	}
+
+	@NotNull
+	private static String getRuleSetOverrideName() {
+		String name = System.getProperty(RULE_SET_OVERRIDE_PROPERTY);
+		return name == null ? "" : name.trim();
+	}
+
+	/**
+	 * Renders the rule set the ontology is using, if the rule sets of the markups are overridden. It looks like the
+	 * annotation of the rule set, with the rule set of the markup struck out, if there is one. The tooltips tell where
+	 * the rule sets come from.
+	 */
+	private static void renderOverridingRuleSet(Section<?> section, RepositoryConfig ruleSetOverride, String annotationName, @Nullable String configuredRuleSet, RenderResult string) {
+		// prefer what the ontology really uses over what the system property says by now
+		OntologyCompiler compiler = Compilers.getCompiler(Sections.successor(section, PackageCompileType.class), OntologyCompiler.class);
+		Rdf2GoCore core = compiler == null ? null : compiler.getRdf2GoCore();
+		String usedRuleSet = core == null ? ruleSetOverride.getName() : core.getRuleSet().getName();
+
+		new Span().plainText(annotationName + " ").write(string);
+		if (configuredRuleSet != null) {
+			new Span().style("text-decoration: line-through")
+					.title("Rule set of this markup, overridden by the system property '" + RULE_SET_OVERRIDE_PROPERTY + "'")
+					.plainText(configuredRuleSet.trim())
+					.write(string);
+			new Span().plainText(" ").write(string);
+		}
+		new Span()
+				.title("Rule set in use, set for all ontologies by the system property '" + RULE_SET_OVERRIDE_PROPERTY + "'")
+				.plainText(usedRuleSet)
+				.write(string);
 	}
 
 	@NotNull
@@ -306,7 +371,8 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 		public void compile(PackageRegistrationCompiler compiler, Section<OntologyMarkup> section) throws CompilerMessage {
 			if (!Sections.isLive(section)) return; // may happen on GroupingPackageCompiler.recompile... maybe find better fix for that?
 			String ruleSetValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_RULE_SET);
-			RepositoryConfig ruleSet = getRuleSet(ruleSetValue);
+			RepositoryConfig overridingRuleSet = getRuleSetOverride();
+			RepositoryConfig ruleSet = overridingRuleSet == null ? getRuleSet(ruleSetValue) : overridingRuleSet;
 			String multiDefModeValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_MULTI_DEF_MODE);
 			MultiDefinitionMode multiDefMode = getMultiDefinitionMode(multiDefModeValue);
 			String referenceValidationModeValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_REFERENCE_VALIDATION_MODE);
@@ -318,6 +384,15 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 					compiler.getPackageManager(), section, OntologyMarkup.class, ruleSet, multiDefMode, referenceValidationMode, caseSensitive);
 			compiler.getCompilerManager().addCompiler(getCompilerPriority(section), ontologyCompiler);
 
+			if (overridingRuleSet != null) {
+				// the markup itself shows that its rule set is overridden, see the renderer
+				LOGGER.warn(ontologyCompiler + ": the rule set is overridden by the system property '" + RULE_SET_OVERRIDE_PROPERTY
+						+ "', using " + overridingRuleSet.getName() + " instead of " + (ruleSetValue == null ? "the default" : ruleSetValue));
+			}
+			else if (!getRuleSetOverrideName().isEmpty()) {
+				throw CompilerMessage.warning("The rule set \"" + getRuleSetOverrideName() + "\" given by the system property '"
+						+ RULE_SET_OVERRIDE_PROPERTY + "' does not exist, the rule set of the markup is used.");
+			}
 			if (ruleSetValue != null && ruleSet == null) {
 				throw CompilerMessage.warning("The rule set \"" + ruleSetValue + "\" does not exist.");
 			}
