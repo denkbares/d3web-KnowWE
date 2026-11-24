@@ -595,7 +595,7 @@ public class ObjectInfoRenderer implements Renderer {
 		for (Type occurrence : occurrences) {
 			if (!info.isEmpty()) info.append(", ");
 			int count = occurrences.getCount(occurrence);
-			if (count > 1) info.append(count).append("&times; ");
+			if (count > 1) info.append(count).append("× ");
 			info.append(occurrence.getName());
 		}
 		wrapInExtendPanel(surroundingMarkupType, info.toString(), content, result, false, elements);
@@ -616,7 +616,7 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("</strong>");
 		if (!Strings.isBlank(info)) {
 			result.appendHtml("<span class='typeInfo'>");
-			result.append(" (").append(info).append(")");
+			result.appendPlainText(" (" + info + ")");
 			result.appendHtml("</span>");
 		}
 		if (expandable) {
