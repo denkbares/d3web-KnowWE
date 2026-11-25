@@ -200,7 +200,8 @@ KNOWWE.plugin.jspwikiConnector.deletePages = function() {
     inputs.prop("disabled", true);
     KNOWWE.editCommons.showAjaxLoader();
     return jq$.ajax({
-      url: "action/DeletePagesAction",
+      // the CSRF filter reads its token from the query string
+      url: KNOWWE.helper.ajax.appendXSRFToken("action/DeletePagesAction"),
       method: "POST",
       dataType: "json",
       data: { pages: namesArea.val(), mode: getMode(), preview: preview }

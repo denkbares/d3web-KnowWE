@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,9 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -161,6 +159,14 @@ public class DeletePagesAction extends AbstractAction {
 		String getText(String title);
 	}
 
+	/**
+	 * Deletes or clears pages of other users in bulk, so it is admin only.
+	 */
+	@Override
+	public Access requiredAccess() {
+		return Access.ADMIN;
+	}
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		if (!context.userIsAdmin()) {
@@ -178,8 +184,8 @@ public class DeletePagesAction extends AbstractAction {
 			failUnexpected(context, "Unknown mode: " + context.getParameter(MODE));
 		}
 
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		ArticleManager articleManager = KnowWEUtils.getDefaultArticleManager();
+		WikiConnector connector = context.getEnvironment().getWikiConnector();
+		ArticleManager articleManager = context.getEnvironment().getArticleManager();
 		List<Entry> entries = plan(parsePageNames(context.getParameter(PAGES)), mode, new PageLookup() {
 			@Override
 			public @Nullable String findTitle(String name) {
@@ -297,14 +303,14 @@ public class DeletePagesAction extends AbstractAction {
 								continue;
 							}
 							articleManager.registerArticle(title, note);
-							fire(new ArticleUpdateEvent(title, user));
+							fire(articleManager, new ArticleUpdateEvent(title, user));
 							LOGGER.info("Cleared page {}", title);
 						}
 						else {
 							Article existing = articleManager.getArticle(title);
 							if (existing != null) {
 								articleManager.deleteArticle(title);
-								fire(new ArticleDeletedEvent(existing));
+								fire(articleManager, new ArticleDeletedEvent(existing));
 							}
 							deferredDeletes.add(entry);
 						}
@@ -351,9 +357,9 @@ public class DeletePagesAction extends AbstractAction {
 		}
 	}
 
-	private static void fire(@NotNull Event event) {
+	private static void fire(@NotNull ArticleManager articleManager, @NotNull Event event) {
 		try {
-			EventManager.getInstance().fireEvent(event);
+			KnowWEUtils.getEventManager(articleManager).fireEvent(event);
 		}
 		catch (Exception e) {
 			// a failing listener must not stop the batch, the article manager is already changed

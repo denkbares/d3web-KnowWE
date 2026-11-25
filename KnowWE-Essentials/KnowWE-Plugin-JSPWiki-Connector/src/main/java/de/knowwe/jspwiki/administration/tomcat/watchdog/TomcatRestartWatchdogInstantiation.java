@@ -19,6 +19,9 @@
 
 package de.knowwe.jspwiki.administration.tomcat.watchdog;
 
+import org.jetbrains.annotations.NotNull;
+
+import de.knowwe.core.Environment;
 import de.knowwe.plugin.Instantiation;
 
 /**
@@ -30,7 +33,7 @@ import de.knowwe.plugin.Instantiation;
 public class TomcatRestartWatchdogInstantiation implements Instantiation {
 
 	@Override
-	public void init(String web) {
+	public void init(@NotNull Environment environment) {
 		TomcatServiceRestarter.onStartup();
 	}
 }
