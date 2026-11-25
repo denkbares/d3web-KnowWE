@@ -100,6 +100,19 @@
 		<filter-class>org.apache.wiki.http.filter.CsrfProtectionFilter</filter-class>
 		<async-supported>true</async-supported>
 	</filter>
+	<!-- OWASP response headers from jspwiki's web.xml, only those without side effects on KnowWE: no MIME sniffing,
+	     no cross-domain policy files. COEP/CORP, Referrer-Policy and HSTS are left out on purpose, they would block
+	     embedded external content (e.g. videos) or pin HTTPS for the whole domain and belong to the reverse proxy. -->
+	<filter>
+		<filter-name>ContentTypeOptionsFilter</filter-name>
+		<filter-class>org.apache.wiki.http.filter.ContentTypeOptionsFilter</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
+	<filter>
+		<filter-name>CrossDomainFilter</filter-name>
+		<filter-class>org.apache.wiki.http.filter.CrossDomainFilter</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
     <filter>
         <filter-name>WikiServletFilter</filter-name>
         <filter-class>org.apache.wiki.ui.WikiServletFilter</filter-class>
@@ -135,6 +148,14 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>CsrfProtectionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>ContentTypeOptionsFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CrossDomainFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

@@ -115,13 +115,14 @@ public class Resource extends AbstractAction {
 						+ archiveFile.getPath() + "'");
 			}
 
-			InputStream in = zipFile.getInputStream(entry);
-			Streams.stream(in, context.getOutputStream());
-			in.close();
-
-			context.setContentLength((int) entry.getSize());
+			// headers must be set before streaming: once the response buffer is flushed they are ignored, and a
+			// script or stylesheet without content type is rejected by the browser (X-Content-Type-Options: nosniff)
+			if (entry.getSize() >= 0) context.setContentLength((int) entry.getSize());
 			context.setContentType(getContentType(entry.getName()));
 			context.setHeader("Cache-Control", "public, max-age=60, s-maxage=60");
+			try (InputStream in = zipFile.getInputStream(entry)) {
+				Streams.stream(in, context.getOutputStream());
+			}
 		}
 	}
 
