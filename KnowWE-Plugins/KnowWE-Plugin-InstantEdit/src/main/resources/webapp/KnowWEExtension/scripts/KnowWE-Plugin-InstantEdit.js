@@ -201,6 +201,8 @@ KNOWWE.plugin.instantEdit = function() {
       const redirect = parameters["redirect"];
       const reload = parameters["reload"];
       const fn = parameters["callback"];
+      // optional, called if the article could not be saved
+      const onError = parameters["onError"];
 
       var sectionData = {
         sections: []
@@ -231,7 +233,7 @@ KNOWWE.plugin.instantEdit = function() {
         if (redirect) {
           window.location.search = "?page=" + title;
         }
-      });
+      }, undefined, onError);
 
     },
 
