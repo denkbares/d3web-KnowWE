@@ -60,6 +60,7 @@ import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.variables.InterWikiVariableMarkup;
+import de.knowwe.core.compile.variables.InterWikiVariableReference;
 import de.knowwe.core.compile.variables.VariableIndex;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
@@ -151,6 +152,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->(.|[\r\n])*"));
 		MARKUP.addAnnotation(WIKI_ANNOTATION, false);
 		MARKUP.addAnnotation(WIKI_VARIABLE_ANNOTATION, false, Pattern.compile("[\\w.-]+"));
+		MARKUP.addAnnotationContentType(WIKI_VARIABLE_ANNOTATION, InterWikiVariableReference::new);
 		MARKUP.addAnnotation(PAGE_ANNOTATION, true);
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
 		MARKUP.addAnnotation(VALIDATION_MODE_ANNOTATION, false, TermCompiler.ReferenceValidationMode.class);
@@ -1245,7 +1247,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				case WIKI_VARIABLE_ANNOTATION -> {
 					// the variable and the wikis it stands for, the one of the selected variant first
 					List<HtmlProvider> value = new ArrayList<>();
-					value.add(new HtmlElement("code").plainText(text));
+					// rendered as the term it is, with its tools, e.g. to show the definitions and all usages
+					value.add(plainValue);
 					LinkedHashSet<String> wikis = new LinkedHashSet<>(markup.get().getWikis(markup, user));
 					wikis.addAll(markup.get().getWikis(markup));
 					String separator = "\u2192";

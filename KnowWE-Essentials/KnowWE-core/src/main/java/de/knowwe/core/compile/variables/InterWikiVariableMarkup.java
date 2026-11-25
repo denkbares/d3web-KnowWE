@@ -40,6 +40,8 @@ public class InterWikiVariableMarkup extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("InterWikiVariable");
 		MARKUP.addAnnotation(NAME_ANNOTATION, true, Pattern.compile("[\\w.-]+"));
+		// the name is a term, so the usages of a variable can be found from its definitions and the other way round
+		MARKUP.addAnnotationContentType(NAME_ANNOTATION, InterWikiVariableDefinition::new);
 		MARKUP.addAnnotation(VALUE_ANNOTATION, true);
 		MARKUP.addAnnotation(DISPLAY_NAME_ANNOTATION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
@@ -80,6 +82,7 @@ public class InterWikiVariableMarkup extends DefaultMarkupType {
 	public InterWikiVariableMarkup() {
 		super(MARKUP);
 		addCompileScript(new AttachmentArticleCheck());
+		setRenderer(new InterWikiVariableRenderer());
 	}
 
 	/**

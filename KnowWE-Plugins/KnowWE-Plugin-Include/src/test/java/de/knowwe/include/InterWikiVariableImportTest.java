@@ -557,6 +557,29 @@ public class InterWikiVariableImportTest {
 		}
 	}
 
+	@Test
+	public void variableIsATermWithDefinitionsAndReferences() throws Exception {
+		startAndImport();
+		var terminology = de.knowwe.core.compile.Compilers.getGlobalCompiler(wiki.manager).getTerminologyManager();
+		var identifier = de.knowwe.core.compile.variables.InterWikiVariable.toIdentifier("fgWiki");
+		assertEquals(List.of("DefinitionA", "DefinitionB"),
+				terminology.getTermDefiningSections(identifier).stream().map(Section::getTitle).sorted().toList());
+		assertEquals(List.of("Import"),
+				terminology.getTermReferenceSections(identifier).stream().map(Section::getTitle).toList());
+		// several definitions of a variable are the usual case, not a conflict of terms
+		for (String page : List.of("DefinitionA", "DefinitionB", "Import")) {
+			assertEquals(page, List.of(), wiki.messages(page).stream().filter(m -> !m.startsWith("Auto updating")).toList());
+		}
+		// the annotations are still read as before
+		Section<InterWikiImportMarkup> markup = wiki.importMarkup("Import");
+		assertEquals("fgWiki", markup.get().getWikiVariable(markup));
+
+		// a variable that is not defined (yet) is no error of the reference, the import explains it
+		wiki.save(variableImport("Other", "unknownWiki", "Codes", "shared"));
+		assertEquals(List.of(), wiki.messages("Other").stream()
+				.filter(m -> !m.startsWith("Auto updating") && !m.startsWith("Nothing is imported")).toList());
+	}
+
 	/* ------------------------------------------------ formats ------------------------------------------------ */
 
 	@Test
