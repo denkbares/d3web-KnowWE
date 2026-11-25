@@ -347,6 +347,13 @@ Häufige Fehler im `watchdog.log`:
 
 ## 📝 Änderungen
 
+**2026-11-25** (bei UBA meldete der Button nach 10 Minuten rot einen Fehler, obwohl KnowSEC dort über 30 Minuten
+zum Start braucht)
+
+- **Button (JS):** Wartet bis zu 2 Stunden auf den neu gestarteten Tomcat statt 10 Minuten. Danach kommt kein roter
+  Fehler mehr, sondern ein gelber Hinweis, die Seite später neu zu laden. Schon während des Wartens steht da, dass
+  der Start dauern kann und man die Seite auch selbst neu laden kann.
+
 **2026-09-29** (der Neustart schlug fehl, weil nach einem Tomcat-Update der Dienstname nicht mehr stimmte: Er war
 im Skript zwar angepasst, die laufende Aufgabe aber nicht neu gestartet)
 

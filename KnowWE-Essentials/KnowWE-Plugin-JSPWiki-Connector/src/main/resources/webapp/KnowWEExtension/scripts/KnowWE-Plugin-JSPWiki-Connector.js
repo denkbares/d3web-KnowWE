@@ -93,8 +93,8 @@ KNOWWE.plugin.jspwikiConnector.performTomcatRestart = function() {
 
   const messageId = "tomcat-restart";
   const pollInterval = 3000;
-  // give up waiting for tomcat to come back after this time
-  const maxWaitMillis = 10 * 60 * 1000;
+  // stop waiting for tomcat to come back after this time, starting a large wiki can take more than half an hour
+  const maxWaitMillis = 2 * 60 * 60 * 1000;
   const started = Date.now();
   let jvmStartTime = null;
 
@@ -132,8 +132,10 @@ KNOWWE.plugin.jspwikiConnector.performTomcatRestart = function() {
 
   const poll = function() {
     if (Date.now() - started > maxWaitMillis) {
-      stop(() => KNOWWE.notification.error("Tomcat restart failed",
-        "Tomcat did not come back within " + (maxWaitMillis / 60000) + " minutes. Please contact the server administrator.",
+      // tomcat may still be starting, so this is no error, the user can reload the page later
+      stop(() => KNOWWE.notification.warn("Restarting Tomcat",
+        "The wiki is still not available after " + (maxWaitMillis / 3600000) + " hours, it may still be starting. "
+        + "Please reload the page later. If the wiki stays unavailable, contact the server administrator.",
         messageId));
       return;
     }
@@ -144,7 +146,9 @@ KNOWWE.plugin.jspwikiConnector.performTomcatRestart = function() {
         return;
       }
       // tomcat is shutting down or starting, wait for it to be available again
-      KNOWWE.notification.warn("Restarting Tomcat", "The server is currently not available, waiting for it to come back...", messageId);
+      KNOWWE.notification.warn("Restarting Tomcat", "The wiki is restarting, this can take a while (with many pages "
+        + "more than half an hour). This page reloads as soon as the wiki is available again, you can also reload it "
+        + "yourself later.", messageId);
       poll();
     }), pollInterval);
   };
