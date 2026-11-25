@@ -55,7 +55,7 @@
 
   <wiki:Permission permission="viewGroup">
   <wiki:Tab id="viewgroup" title='<%=LocaleSupport.getLocalizedMessage(pageContext, "actions.viewgroup")%>'
-           url='<%=c.getURL(WikiContext.NONE, "Group.jsp", "group="+request.getParameter("group") ) %>'
+           url='<%=c.getURL(WikiContext.NONE, "Group.jsp", "group="+TextUtil.urlEncodeUTF8(request.getParameter("group")) ) %>'
            accesskey="v" >
   </wiki:Tab>
   </wiki:Permission>
@@ -117,7 +117,7 @@
         method="POST" accept-charset="UTF-8">
     <wiki:CsrfProtection/>
       <input type="submit" name="ok" value="<fmt:message key="actions.deletegroup"/>" />
-      <input type="hidden" name="group" value="${param.group}" />
+      <input type="hidden" name="group" value="<%=name%>" />
   </form>
   </wiki:Permission>
 

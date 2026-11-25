@@ -23,6 +23,7 @@
 <%@ page import="org.apache.wiki.ui.progress.*" %>
 <%@ page import="org.apache.wiki.auth.permissions.*" %>
 <%@ page import="java.security.Permission" %>
+<%@ page import="org.apache.wiki.util.TextUtil" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
@@ -113,10 +114,13 @@
     <%
       String name = att.getFileName();
       int dot = name.lastIndexOf(".");
-      String attachtype = ( dot != -1 ) ? name.substring(dot+1).toLowerCase() : "&nbsp;";
+      String attachtype = ( dot != -1 ) ? TextUtil.replaceEntities( name.substring(dot+1).toLowerCase() ) : "&nbsp;";
 
       String sname = name;
       if( sname.length() > MAXATTACHNAMELENGTH ) sname = sname.substring(0,MAXATTACHNAMELENGTH) + "...";
+      // attachment names are user input
+      name = TextUtil.replaceEntities( name );
+      sname = TextUtil.replaceEntities( sname );
     %>
     <tr>
       <td><div id="attach-<%= attachtype %>" class="attachtype"><%= attachtype %></div></td>
@@ -143,7 +147,7 @@
       <%
          String changeNote = (String)att.getAttribute(WikiPage.CHANGENOTE);
          if( changeNote != null ) {
-         %><%=changeNote%><%
+         %><%=TextUtil.replaceEntities(changeNote)%><%
          }
       %>
       </td>

@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.denkbares.strings.Strings;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -170,13 +172,15 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 				for (WikiAttachment wikiAttachment : attachments) {
 					String fileName = wikiAttachment.getFileName();
 					if (fileName.endsWith("xml")) {
+						// file names are user input and end up in html here
+						String encodedFileName = Strings.encodeHtml(fileName);
 						counter++;
 						String buttonId = "attachment-" + sectionId + "-" + counter;
 						builder.append("<input id=\"")
 								.append(buttonId)
 								.append("\" type=\"radio\" style=\"margin-right:10px\" name=\"quicki-session-record\" value=\"")
-								.append(fileName).append("\" /><label for=\"").append(buttonId).append("\">")
-								.append(fileName)
+								.append(encodedFileName).append("\" /><label for=\"").append(buttonId).append("\">")
+								.append(encodedFileName)
 								.append("</label><br>");
 					}
 				}

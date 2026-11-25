@@ -65,6 +65,8 @@
     }
   }
   name = TextUtil.replaceEntities(name);
+  if ( creator != null ) creator = TextUtil.replaceEntities( creator );
+  if ( modifier != null ) modifier = TextUtil.replaceEntities( modifier );
 %>
 
 <wiki:TabbedSection defaultTab="${param.tab}">
@@ -116,7 +118,7 @@
       <td><%
             for ( int i = 0; i < members.length; i++ )
             {
-              out.println( members[i].getName().trim() );
+              out.println( TextUtil.replaceEntities( members[i].getName().trim() ) );
               if ( i < ( members.length - 1 ) )
               {
                 out.println( "<br/>" );
@@ -154,7 +156,7 @@
         && Wiki.submitOnce(this) );"
         method="POST" accept-charset="UTF-8">
       <input type="submit" name="ok" value="<fmt:message key="actions.deletegroup"/>" />
-      <input type="hidden" name="group" value="${param.group}" />
+      <input type="hidden" name="group" value="<%=name%>" />
       <wiki:CsrfProtection/>
   </form>
   </wiki:Permission>
@@ -163,7 +165,7 @@
 
 <wiki:Permission permission="editGroup">
   <wiki:Tab id="editgroup" title='<%=LocaleSupport.getLocalizedMessage(pageContext, "actions.editgroup")%>'
-           url='<%=c.getURL(WikiContext.NONE, "EditGroup.jsp", "group="+request.getParameter("group") ) %>'
+           url='<%=c.getURL(WikiContext.NONE, "EditGroup.jsp", "group="+TextUtil.urlEncodeUTF8(request.getParameter("group")) ) %>'
            accesskey="e" >
   </wiki:Tab>
 </wiki:Permission>

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -77,7 +78,11 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 			html.appendHtml("<div type='hidden' style='display:none' id='knowWEInfoAttachments'>");
 			try {
 				for (WikiAttachment wikiAttachment : connector.getAttachments(article.getTitle())) {
-					html.appendHtmlElement("span", wikiAttachment.getFileName(), "class", "knowWEInfoAttachmentName", "data-size", String.valueOf(wikiAttachment.getSize()));
+					// file names are user input, so render them as plain text, never as wiki markup or html
+					new Span().clazz("knowWEInfoAttachmentName")
+							.attributes("data-size", String.valueOf(wikiAttachment.getSize()))
+							.plainText(wikiAttachment.getFileName())
+							.write(html);
 					html.append("\n");
 				}
 			}

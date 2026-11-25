@@ -144,7 +144,7 @@
       <p>
       <input type="hidden" name="page" value="<wiki:Variable var='pagename' />" />
       <input type="submit" name="rename" value="<fmt:message key='info.rename.submit' />" />
-      <input type="text" name="renameto" value="<%= parm_renameto %>" size="40" />
+      <input type="text" name="renameto" value="<%= TextUtil.replaceEntities( parm_renameto ) %>" size="40" />
       &nbsp;&nbsp;
       <input type="checkbox" name="references" checked="checked" />
       <fmt:message key="info.updatereferrers"/>
@@ -250,7 +250,7 @@
 
          <td class="changenote">
            <% String changenote = (String) currentPage.getAttribute( WikiPage.CHANGENOTE );  %>
-		   <%= (changenote==null) ? "" : changenote  %>
+		   <%= (changenote==null) ? "" : TextUtil.replaceEntities(changenote)  %>
          </td>
 
       </tr>
@@ -367,10 +367,13 @@
     <%
       String name = att.getName(); //att.getFileName();
       int dot = name.lastIndexOf(".");
-      String attachtype = ( dot != -1 ) ? name.substring(dot+1) : "&nbsp;";
+      String attachtype = ( dot != -1 ) ? TextUtil.replaceEntities( name.substring(dot+1) ) : "&nbsp;";
 
       String sname = name;
       if( sname.length() > MAXATTACHNAMELENGTH ) sname = sname.substring(0,MAXATTACHNAMELENGTH) + "...";
+      // attachment names are user input
+      name = TextUtil.replaceEntities( name );
+      sname = TextUtil.replaceEntities( sname );
     %>
 
     <tr>
@@ -403,7 +406,7 @@
       --%>
       <td class='changenote'>
         <% String changenote = (String) att.getAttribute( WikiPage.CHANGENOTE ); %>
-		<%= (changenote==null) ? "" : changenote  %>
+		<%= (changenote==null) ? "" : TextUtil.replaceEntities(changenote)  %>
       </td>
     </tr>
     </wiki:HistoryIterator><%-- </wiki:AttachmentsIterator> --%>
