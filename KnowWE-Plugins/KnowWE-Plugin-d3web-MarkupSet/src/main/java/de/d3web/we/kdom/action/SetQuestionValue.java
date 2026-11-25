@@ -120,7 +120,9 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 				actionSetQuestion.setValue(dateValue);
 			}
 			catch (IllegalArgumentException e) {
-				return null;
+				// the text is used as is, so a quoted date like "15.03.2026" fails here as well
+				throw CompilerMessage.warning("'" + text + "' is not a valid date for '" + question.getName()
+						+ "' (expected e.g. 15.03.2026 or 2026-03-15, without quotes), the rule will have no effect");
 			}
 			return actionSetQuestion;
 		}

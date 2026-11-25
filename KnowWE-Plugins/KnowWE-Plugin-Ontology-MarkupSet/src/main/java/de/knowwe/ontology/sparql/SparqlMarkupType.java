@@ -134,6 +134,16 @@ public class SparqlMarkupType extends DefaultMarkupType {
 								  "@" + TABLE_STYLE + ": width 1000px");
 		MARKUP.addAnnotation(ALLOW_JSPWIKI_MARKUP, false);
 		MARKUP.addAnnotationRenderer(ALLOW_JSPWIKI_MARKUP, NothingRenderer.getInstance());
+		MARKUP.getAnnotation(ALLOW_JSPWIKI_MARKUP)
+				.setDocumentation("Controls whether JSPWiki markup in the cells of the SPARQL result is rendered by the wiki. " +
+								  "The default is 'true': a cell value like %%(color:gray)Text%% (e.g. built in the query with BIND/CONCAT) " +
+								  "is displayed in gray, and HTML tags in the values are passed through.<br>" +
+								  "Set it to 'false' to display JSPWiki markup in the cell values literally, " +
+								  "e.g. if the values may contain markup characters that are not meant as markup.<p>" +
+								  "The table itself (headers, sorting, pagination and its generated HTML) is not affected " +
+								  "and always protected from the markup in the values.<p>" +
+								  "Example for a table showing its values literally:<br>" +
+								  "@" + ALLOW_JSPWIKI_MARKUP + ": false");
 		MARKUP.addAnnotation(COLUMN_WIDTH, false);
 		MARKUP.addAnnotationRenderer(COLUMN_WIDTH, NothingRenderer.getInstance());
 		PackageManager.addPackageAnnotation(MARKUP);

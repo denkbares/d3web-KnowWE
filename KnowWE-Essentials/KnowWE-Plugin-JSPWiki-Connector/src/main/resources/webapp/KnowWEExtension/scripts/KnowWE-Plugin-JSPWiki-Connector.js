@@ -48,18 +48,272 @@ KNOWWE.plugin.jspwikiConnector.setReadOnly = function(active) {
   new _KA(options).send();
 };
 
+/**
+ * Asks for confirmation in a dialog of the page and calls onConfirm if confirmed. Used instead of confirm(), which
+ * embedded browsers may suppress: they answer "no" without showing anything. The severity "warning" (yellow) or
+ * "danger" (red) colors the confirming button.
+ */
+KNOWWE.plugin.jspwikiConnector.confirmAction = function(title, question, confirmText, severity, onConfirm) {
+  // the dialog is attached to the document of its content, so create it in this one
+  const box = jq$("<div class='admin-tool-question'></div>", document).text(question);
+  box.dialog({
+    title: title,
+    modal: true,
+    resizable: false,
+    width: Math.min(480, jq$(window).width() * 0.9),
+    classes: { "ui-dialog": "admin-tool-dialog" },
+    close: () => box.dialog("destroy").remove(),
+    buttons: [
+      {
+        text: confirmText, "class": "admin-tool-" + severity, click: () => {
+          box.dialog("close");
+          onConfirm();
+        }
+      },
+      { text: "Cancel", click: () => box.dialog("close") }
+    ]
+  });
+};
+
 KNOWWE.plugin.jspwikiConnector.restartWebApp = function() {
-  if (confirm("Are you sure you want to restart the web app? This may take a while...")) {
-    KNOWWE.editCommons.showAjaxLoader();
-    setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-webapp"}).done(() => window.location.reload()), 500);
-  }
+  KNOWWE.plugin.jspwikiConnector.confirmAction("Restart web app",
+    "Are you sure you want to restart the web app? This may take a while...", "Restart web app", "warning", () => {
+      KNOWWE.editCommons.showAjaxLoader();
+      setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-webapp"}).done(() => window.location.reload()), 500);
+    });
 };
 
 KNOWWE.plugin.jspwikiConnector.restartTomcat = function() {
-  if (confirm("Are you sure you want to restart tomcat? This may take a while...")) {
+  KNOWWE.plugin.jspwikiConnector.confirmAction("Restart Tomcat",
+    "Are you sure you want to restart Tomcat? This may take a while...", "Restart Tomcat", "warning",
+    KNOWWE.plugin.jspwikiConnector.performTomcatRestart);
+};
+
+KNOWWE.plugin.jspwikiConnector.performTomcatRestart = function() {
+
+  const messageId = "tomcat-restart";
+  const pollInterval = 3000;
+  // stop waiting for tomcat to come back after this time, starting a large wiki can take more than half an hour
+  const maxWaitMillis = 2 * 60 * 60 * 1000;
+  const started = Date.now();
+  let jvmStartTime = null;
+
+  const getStatus = function(type) {
+    return jq$.ajax({
+      url: "action/AdministrationToolProvider?type=" + type,
+      dataType: "json",
+      cache: false,
+      timeout: 10000
+    });
+  };
+
+  const stop = function(showMessage) {
+    KNOWWE.editCommons.hideAjaxLoader();
+    KNOWWE.notification.removeNotification(messageId);
+    showMessage();
+  };
+
+  const handleStatus = function(status) {
+    if (jvmStartTime !== null && status.jvmStartTime !== jvmStartTime) {
+      // a new JVM answers, so the restart was successful
+      window.location.reload();
+      return;
+    }
+    jvmStartTime = status.jvmStartTime;
+    if (status.pending) {
+      KNOWWE.notification.warn("Restarting Tomcat", status.message, messageId);
+      poll();
+    }
+    else {
+      stop(() => KNOWWE.notification.error("Tomcat restart failed", status.message
+        + " Details are in the wiki log (Download recent logs).", messageId));
+    }
+  };
+
+  const poll = function() {
+    if (Date.now() - started > maxWaitMillis) {
+      // tomcat may still be starting, so this is no error, the user can reload the page later
+      stop(() => KNOWWE.notification.warn("Restarting Tomcat",
+        "The wiki is still not available after " + (maxWaitMillis / 3600000) + " hours, it may still be starting. "
+        + "Please reload the page later. If the wiki stays unavailable, contact the server administrator.",
+        messageId));
+      return;
+    }
+    setTimeout(() => getStatus("restart-tomcat-status").done(handleStatus).fail(jqXHR => {
+      if (jqXHR.status === 401 || jqXHR.status === 403) {
+        // a server answers, but does not know our session any more (it was lost by the restart), so reload to log in again
+        window.location.reload();
+        return;
+      }
+      // tomcat is shutting down or starting, wait for it to be available again
+      KNOWWE.notification.warn("Restarting Tomcat", "The wiki is restarting, this can take a while (with many pages "
+        + "more than half an hour). This page reloads as soon as the wiki is available again, you can also reload it "
+        + "yourself later.", messageId);
+      poll();
+    }), pollInterval);
+  };
+
+  KNOWWE.editCommons.showAjaxLoader();
+  getStatus("restart-tomcat").done(handleStatus).fail(jqXHR => stop(() => KNOWWE.notification.error_jqXHR(jqXHR)));
+};
+
+KNOWWE.plugin.jspwikiConnector.deletePages = function() {
+
+  const statusLabels = {
+    NOT_FOUND: "not found",
+    NO_PERMISSION: "no permission",
+    DUPLICATE: "listed more than once",
+    ALREADY_CLEARED: "already cleared",
+    FAILED: "failed"
+  };
+  const okLabel = function(result) {
+    const verb = result.mode === "CLEAR" ? "cleared" : "deleted";
+    return result.preview ? "will be " + verb : verb;
+  };
+
+  const dialog = jq$(
+    "<div class='delete-pages-dialog'>" +
+    "<p>One page name per line, the names have to match exactly (upper and lower case do not matter).</p>" +
+    "<textarea class='delete-pages-names' spellcheck='false'></textarea>" +
+    "<div class='delete-pages-mode'>" +
+    "<label><input type='radio' name='delete-pages-mode' value='CLEAR' checked> " +
+    "Clear pages (the content can be restored from the page history)</label>" +
+    "<label><input type='radio' name='delete-pages-mode' value='DELETE'> " +
+    "Delete pages including their attachments and revision history (cannot be undone)</label>" +
+    "</div>" +
+    "<div class='delete-pages-report'></div>" +
+    "</div>", document); // the dialog is attached to the document of its content, so create it in this one
+  const namesArea = dialog.find(".delete-pages-names");
+  const report = dialog.find(".delete-pages-report");
+  const getMode = () => dialog.find("input[name=delete-pages-mode]:checked").val();
+
+
+  // while a request runs (deleting a thousand pages takes a while), the input is locked and the action button is
+  // disabled and tells what happens, so it cannot be clicked twice
+  const request = function(preview, busyLabel) {
+    const button = actionButton();
+    const label = button.button("option", "label");
+    const inputs = dialog.find("textarea, input");
+    // the label option is html, the spinner shows right where the user clicked that something is going on
+    button.button("option", "label", "<i class='fa-solid fa-spinner fa-spin'></i> " + busyLabel).button("disable")
+      .addClass("delete-pages-busy");
+    inputs.prop("disabled", true);
     KNOWWE.editCommons.showAjaxLoader();
-    setTimeout(() => jq$.ajax({url: "action/AdministrationToolProvider?type=restart-tomcat"}).done(() => window.location.reload()), 12000);
-  }
+    return jq$.ajax({
+      url: "action/DeletePagesAction",
+      method: "POST",
+      dataType: "json",
+      data: { pages: namesArea.val(), mode: getMode(), preview: preview }
+    }).always(() => {
+      KNOWWE.editCommons.hideAjaxLoader();
+      inputs.prop("disabled", false);
+      button.button("option", "label", label).button("enable").removeClass("delete-pages-busy");
+    }).fail(jqXHR => KNOWWE.notification.error_jqXHR(jqXHR));
+  };
+
+  const countOk = result => result.results.filter(entry => entry.status === "OK").length;
+  const pages = count => count + (count === 1 ? " page" : " pages");
+
+  const renderReport = function(result) {
+    report.empty();
+    if (result.results.length === 0) {
+      report.append(jq$("<p>").text("No page names entered."));
+      return;
+    }
+    const groups = {};
+    result.results.forEach(entry => (groups[entry.status] = groups[entry.status] || []).push(entry));
+    report.append(jq$("<p class='delete-pages-report-title'></p>", document).text(result.preview ? "Preview:" : "Done:"));
+    // the pages actually cleared resp. deleted get a check mark, the summary line as well as each page
+    const success = () => result.preview ? [] : [" ", jq$("<i class='fa-regular fa-circle-check delete-pages-success'></i>", document)];
+    ["OK", "FAILED", "NOT_FOUND", "NO_PERMISSION", "ALREADY_CLEARED", "DUPLICATE"].forEach(status => {
+      const entries = groups[status];
+      if (!entries) return;
+      const label = status === "OK" ? okLabel(result) : statusLabels[status];
+      const details = jq$("<details>").addClass("delete-pages-" + status.toLowerCase());
+      // problems are shown expanded, the (possibly long) list of pages that are fine is collapsed
+      if (status !== "OK") details.attr("open", "open");
+      const done = status === "OK" ? success : () => [];
+      details.append(jq$("<summary>").text(pages(entries.length) + " " + label).append(done()));
+      const list = jq$("<ul>");
+      entries.forEach(entry => list.append(jq$("<li>").text(entry.page + (entry.message ? ": " + entry.message : "")).append(done())));
+      details.append(list);
+      report.append(details);
+    });
+  };
+
+  // The action button first shows the preview together with the question, and only a second click clears or deletes
+  // the previewed pages. The question is asked in the dialog instead of with confirm(): embedded browsers may suppress
+  // native dialogs and silently answer "no".
+  // the number of previewed pages to confirm, 0 if there is no preview to confirm
+  let confirming = 0;
+  const actionButton = () => dialog.dialog("widget").find(".delete-pages-action");
+
+  const reset = function() {
+    confirming = 0;
+    report.empty();
+    const verb = getMode() === "CLEAR" ? "Clear" : "Delete";
+    actionButton().button("option", "label", verb + " (Preview)")
+      .removeClass("admin-tool-warning admin-tool-danger");
+  };
+
+  const askToConfirm = function(result) {
+    const count = countOk(result);
+    const clear = result.mode === "CLEAR";
+    if (count === 0) {
+      if (result.results.length > 0) report.append(jq$("<p></p>", document).text(clear ? "Nothing to clear." : "Nothing to delete."));
+      return;
+    }
+    const their = count === 1 ? "its" : "their";
+    const question = clear
+      ? "Really clear " + pages(count) + "? The content can be restored from the page history."
+      : "Really delete " + pages(count) + " including " + their + " attachments and revision history? This cannot be undone!";
+    const box = jq$("<div class='delete-pages-confirm'></div>", document)
+      .addClass(clear ? "delete-pages-confirm-warning" : "delete-pages-confirm-danger")
+      .text(question);
+    report.append(box);
+    box[0].scrollIntoView({ block: "nearest" });
+    actionButton().button("option", "label", (clear ? "Clear " : "Delete ") + pages(count))
+      .addClass(clear ? "admin-tool-warning" : "admin-tool-danger")
+      .trigger("focus");
+    confirming = count;
+  };
+
+  const act = function() {
+    if (confirming) {
+      const busyLabel = (getMode() === "CLEAR" ? "Clearing " : "Deleting ") + pages(confirming) + " ...";
+      request(false, busyLabel).done(result => {
+        reset();
+        renderReport(result);
+        // the pages are done, the report tells what happened to them (setting the value fires no input event)
+        namesArea.val("");
+      });
+    }
+    else {
+      request(true, "Checking pages ...").done(result => {
+        renderReport(result);
+        askToConfirm(result);
+      });
+    }
+  };
+
+  // what was previewed and confirmed must be what gets changed, so every change of the input starts over
+  namesArea.on("input", reset);
+  dialog.find("input[name=delete-pages-mode]").on("change", reset);
+
+  dialog.dialog({
+    title: "Delete multiple pages",
+    modal: true,
+    resizable: true,
+    width: Math.min(800, jq$(window).width() * 0.9),
+    maxHeight: jq$(window).height() * 0.9,
+    classes: { "ui-dialog": "admin-tool-dialog" },
+    close: () => dialog.dialog("destroy").remove(),
+    buttons: [
+      { text: "Clear (Preview)", "class": "delete-pages-action", click: act },
+      { text: "Close", click: () => dialog.dialog("close") }
+    ]
+  });
+  reset();
 };
 
 KNOWWE.plugin.jspwikiConnector.initCompileWarning = function() {

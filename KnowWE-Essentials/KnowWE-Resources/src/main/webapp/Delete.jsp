@@ -122,7 +122,13 @@
 	if (deleteall != null || deleteAdmin != null) {
 		log.info("Deleting page " + pagereq + ". User=" + request.getRemoteUser() + ", host=" + HttpUtil.getRemoteAddress(request));
 
-		wiki.getManager(PageManager.class).deletePage(pagereq);
+		if (wikipage instanceof Attachment) {
+			wiki.getManager(PageManager.class).deletePage(pagereq);
+		}
+		else {
+			// deletes the attachments as well, but only after the page is compiled away, which may still need them
+			Environment.of(request).getWikiConnector().deleteArticle(pagereq, wikiContext.getCurrentUser().getName());
+		}
 
 		FixedQueue trail = (FixedQueue) session.getAttribute(BreadcrumbsTag.BREADCRUMBTRAIL_KEY);
 		if (trail != null) {

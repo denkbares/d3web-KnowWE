@@ -200,3 +200,126 @@
 .copy-tooltipster.visible {
 	opacity: 1;
 }
+
+/* the jQuery UI theme sets a smaller font (Arial 1.1em), use the one of the wiki pages (the dialog is a child of the body) */
+.ui-dialog.admin-tool-dialog,
+.ui-dialog.admin-tool-dialog .ui-dialog-title,
+.ui-dialog.admin-tool-dialog .ui-dialog-content,
+.ui-dialog.admin-tool-dialog .ui-button,
+.ui-dialog.admin-tool-dialog input,
+.ui-dialog.admin-tool-dialog textarea {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+.ui-dialog.admin-tool-dialog .ui-dialog-title {
+	font-weight: bold;
+}
+
+.ui-dialog.admin-tool-dialog .delete-pages-names {
+	font-family: monospace;
+}
+
+/* the jQuery UI icon sprite for the close button is not available, so show a plain "x" instead, centered vertically */
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close {
+	top: 50%;
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	transform: translateY(-50%);
+	border: none;
+	background: none;
+	text-indent: 0;
+	font-size: 0;
+	color: inherit;
+	cursor: pointer;
+}
+
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close .ui-icon {
+	display: none;
+}
+
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close::before {
+	content: "\00d7";
+	font-size: 20px;
+	line-height: 24px;
+}
+
+.ui-dialog.admin-tool-dialog .ui-dialog-titlebar-close:hover::before {
+	color: #c9302c;
+}
+
+.delete-pages-dialog .delete-pages-confirm {
+	margin: 0.8em 0 0.3em;
+	padding: 0.6em 0.8em;
+	border-left: 4px solid;
+}
+
+.delete-pages-dialog .delete-pages-confirm-warning {
+	border-left-color: #ec971f;
+	background: #fcf8e3;
+}
+
+.delete-pages-dialog .delete-pages-confirm-danger {
+	border-left-color: #c9302c;
+	background: #fdf2f2;
+}
+
+/* KnowWE sets the colors of all dialog buttons with !important (KnowWE-Plugin-CompositeEdit.css), so the confirming
+   buttons of the admin tools need it as well: yellow for what can be undone, red for what cannot */
+.ui-dialog.admin-tool-dialog .ui-button.admin-tool-warning {
+	color: #fff !important;
+	background-color: #f0ad4e !important;
+	border-color: #eea236 !important;
+}
+
+.ui-dialog.admin-tool-dialog .ui-button.admin-tool-danger {
+	color: #fff !important;
+	background-color: #d9534f !important;
+	border-color: #d43f3a !important;
+}
+
+
+.delete-pages-dialog .delete-pages-names {
+	width: 100%;
+	height: 14em;
+	box-sizing: border-box;
+}
+
+.delete-pages-dialog .delete-pages-mode label {
+	display: block;
+	margin: 0.3em 0;
+	font-weight: normal;
+}
+
+.delete-pages-dialog .delete-pages-report-title {
+	margin: 0.8em 0 0.3em;
+	font-weight: bold;
+}
+
+.delete-pages-dialog .delete-pages-success {
+	color: #3c763d;
+}
+
+/* the button stays disabled while the pages are processed, but has to stay readable with its spinner */
+.ui-dialog.admin-tool-dialog .ui-button.delete-pages-busy.ui-state-disabled {
+	opacity: 0.8 !important;
+}
+
+.delete-pages-dialog .delete-pages-report summary {
+	display: list-item;
+	cursor: pointer;
+}
+
+.delete-pages-dialog .delete-pages-report ul {
+	max-height: 12em;
+	overflow-y: auto;
+	margin: 0.2em 0 0.5em;
+}
+
+.delete-pages-dialog .delete-pages-failed summary,
+.delete-pages-dialog .delete-pages-not_found summary,
+.delete-pages-dialog .delete-pages-no_permission summary {
+	color: #c9302c;
+}

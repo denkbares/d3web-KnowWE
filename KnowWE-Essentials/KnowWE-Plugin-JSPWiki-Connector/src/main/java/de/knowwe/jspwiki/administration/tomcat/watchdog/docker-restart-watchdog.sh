@@ -6,12 +6,16 @@
 # ==============================================================
 
 # --- Configuration ---
-# Passen Sie diese Pfade an Ihre Server-Umgebung an!
-FLAG_FILE="/knowwe/tomcat-restart/restart.flag"
-ALIVE_FILE="/knowwe/tomcat-restart/watchdog.alive"
-LOG_FILE="/knowwe/tomcat-restart/watchdog.log"
-LOG_MAX_SIZE=1048576 # 1 MB
+# Aufruf: docker-restart-watchdog.sh <containername> [<verzeichnis>]
+# Das Verzeichnis ist das mit dem Container geteilte (-Dknowwe.tomcat.restart.dir im Container), alternativ per
+# Umgebungsvariable RESTART_DIR, Standard /knowwe/tomcat-restart. Mehrere Container brauchen je ein eigenes.
 CONTAINER_NAME="$1" # Name Ihres Docker-Containers
+RESTART_DIR="${2:-${RESTART_DIR:-/knowwe/tomcat-restart}}"
+RESTART_DIR="${RESTART_DIR%/}"
+FLAG_FILE="$RESTART_DIR/restart.flag"
+ALIVE_FILE="$RESTART_DIR/watchdog.alive"
+LOG_FILE="$RESTART_DIR/watchdog.log"
+LOG_MAX_SIZE=1048576 # 1 MB
 
 # --- Helper: Logging ---
 log() {
@@ -44,8 +48,10 @@ log "------------------------------------------------------------"
 if [ -f "$FLAG_FILE" ]; then
     log "Flag detected -> attempting to restart container '$CONTAINER_NAME'"
     
+    log "Before restart: $(docker inspect -f 'State={{.State.Status}}, StartedAt={{.State.StartedAt}}' "$CONTAINER_NAME" 2>&1)"
+
     # Docker Container neustarten
-    if docker restart "$CONTAINER_NAME" >/dev/null 2>&1; then
+    if output=$(docker restart "$CONTAINER_NAME" 2>&1); then
         log "Container '$CONTAINER_NAME' restarted successfully."
         
         # Flag löschen
@@ -55,9 +61,14 @@ if [ -f "$FLAG_FILE" ]; then
             log "ERROR removing flag: $?"
         fi
     else
-        log "ERROR while restarting container '$CONTAINER_NAME'. Ist der Name korrekt?"
+        log "ERROR while restarting container '$CONTAINER_NAME' (running as $(whoami)): $output"
     fi
 fi
 
-# Heartbeat aktualisieren
-echo "$(date -u +'%Y-%m-%d %H:%M:%SZ')" > "$ALIVE_FILE" || log "ERROR updating alive file"
+# Heartbeat aktualisieren: erste Zeile Zeitstempel, zweite Zeile Zustand des Containers (OK/ERROR), liest das Wiki
+if state=$(docker inspect -f '{{.State.Status}}' "$CONTAINER_NAME" 2>&1); then
+    container_state="OK Container '$CONTAINER_NAME': State=$state"
+else
+    container_state="ERROR Container '$CONTAINER_NAME' not found or not accessible (running as $(whoami)): $state"
+fi
+printf '%s\n%s\n' "$(date -u +'%Y-%m-%d %H:%M:%SZ')" "$container_state" > "$ALIVE_FILE" || log "ERROR updating alive file"

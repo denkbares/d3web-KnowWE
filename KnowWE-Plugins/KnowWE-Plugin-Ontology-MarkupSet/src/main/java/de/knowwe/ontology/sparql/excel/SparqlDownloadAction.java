@@ -232,9 +232,13 @@ public class SparqlDownloadAction extends AbstractAction {
 		// some node renderers my already produce html, so we remove it
 		result = Strings.htmlToPlain(result);
 
-		// get rid of all JSPWiki-Markup, just render it to HTML and the remove the html
-		result = user.getEnvironment().getWikiConnector().renderWikiSyntax(result, user.getRequest());
-		result = Strings.htmlToPlain(result);
+		// get rid of all JSPWiki-Markup, just render it to HTML and the remove the html;
+		// with allowJSPWikiMarkup=false the values are displayed literally in the table (see
+		// SparqlResultRenderer#renderNode), so the markup tokens have to stay literal in the export as well
+		if (opts.isAllowJSPWikiMarkup()) {
+			result = user.getEnvironment().getWikiConnector().renderWikiSyntax(result, user.getRequest());
+			result = Strings.htmlToPlain(result);
+		}
 		// translate html emojis
 		result = StringEscapeUtils.unescapeHtml4(result);
 		// other clenaup

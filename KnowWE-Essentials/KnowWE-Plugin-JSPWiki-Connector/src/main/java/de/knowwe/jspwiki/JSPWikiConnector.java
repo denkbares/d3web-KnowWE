@@ -106,8 +106,10 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
@@ -116,6 +118,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.event.ArticleDeletedEvent;
 import de.knowwe.jspwiki.auth.AuthenticatedIdentities;
 import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
 
@@ -1111,12 +1114,21 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public void deleteArticle(String title, String user) throws IOException {
+		// compile the page away before its attachments are deleted: that compilation may still need them, e.g. KnowSEC
+		// reads the session cache attachment to remove the session statements from the ontology
+		compileDeletion(title);
 		WikiPage page = new WikiPage(getEngine(), title);
 		page.setAuthor(user);
 		try {
 			boolean wasLocked = isArticleLocked(title);
 			if (!wasLocked) lockArticle(title, user);
 
+			// the attachments go with the page, like in PageManager#deletePage(String), but keeping the author
+			AttachmentManager attachmentManager = getAttachmentManager();
+			for (org.apache.wiki.api.core.Attachment attachment : attachmentManager.listAttachments(page)) {
+				attachment.setAuthor(user);
+				attachmentManager.deleteAttachment(attachment);
+			}
 			getPageManager().deletePage(page);
 
 			if (!wasLocked) unlockArticle(title, user);
@@ -1124,6 +1136,40 @@ public class JSPWikiConnector implements WikiConnector {
 		catch (ProviderException e) {
 			LOGGER.error("Can't delete article " + title, e);
 			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * Removes the article from the article manager (as the KnowWEPlugin would when the page is deleted) and waits for
+	 * the compilation. Afterwards the KnowWEPlugin finds no article any more and does nothing. Skipped, so the
+	 * KnowWEPlugin removes the article as before, for pages that are not compiled, on compile threads (the article
+	 * manager cannot be opened there), and if the caller holds the article manager open itself: the compilation would
+	 * only start with its commit, so it cannot be awaited here.
+	 */
+	private void compileDeletion(String title) {
+		if (CompilerManager.isCompileThread()) return;
+		ArticleManager articleManager = getEnvironment().getArticleManager();
+		if (articleManager.isOpenedByCurrentThread()) return;
+		Article article = articleManager.getArticle(title);
+		if (article == null) return;
+		articleManager.open();
+		try {
+			articleManager.deleteArticle(title);
+			KnowWEUtils.getEventManager(articleManager).fireEvent(new ArticleDeletedEvent(article));
+		}
+		catch (RuntimeException e) {
+			// a failing listener must not keep the page from being deleted
+			LOGGER.warn("Exception while removing article " + title + " from the article manager", e);
+		}
+		finally {
+			articleManager.commit();
+		}
+		try {
+			articleManager.getCompilerManager().awaitTermination();
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			LOGGER.warn("Interrupted while waiting for the compilation, deleting page " + title + " anyway");
 		}
 	}
 

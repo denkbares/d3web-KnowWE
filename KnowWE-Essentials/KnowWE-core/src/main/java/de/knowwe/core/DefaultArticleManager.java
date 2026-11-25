@@ -348,6 +348,11 @@ public class DefaultArticleManager implements ArticleManager {
 		}
 	}
 
+	@Override
+	public boolean isOpenedByCurrentThread() {
+		return mainLock.isHeldByCurrentThread();
+	}
+
 	/**
 	 * Calls this method after opening with {@link ArticleManager#open()}. It causes the compilation of articles
 	 * registered or queued since calling the method {@link ArticleManager#open()}. Make sure to always call commit in

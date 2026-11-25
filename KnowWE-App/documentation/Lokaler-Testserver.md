@@ -179,11 +179,21 @@ cp <instanz>/jspwiki-custom.properties <instanz>/tomcat/webapps/KnowWE/WEB-INF/c
 export JAVA_HOME=<jdk-25> CATALINA_OPTS="-Xmx2g -Duser.language=en -Duser.country=US"
 <instanz>/tomcat/bin/catalina.sh start          # Windows: catalina.bat start
 
-# warten, bis die erste Seite mit 200 antwortet
-until [ "$(curl -s -o /dev/null -m 5 -w '%{http_code}' 'http://localhost:8080/KnowWE/Wiki.jsp?page=Main')" = 200 ]; do sleep 2; done
+# warten, bis die Login-Seite mit 200 antwortet (höchstens 5 min, sonst Exit 1)
+for i in $(seq 150); do
+  [ "$(curl -s -o /dev/null -m 5 -w '%{http_code}' 'http://localhost:8080/KnowWE/Login.jsp')" = 200 ] && exit 0
+  sleep 2
+done; exit 1
 ```
 
-- **Erfolg prüfen:** `Wiki.jsp?page=Main` liefert 200, und `catalina.out` enthält ab der letzten Zeile
+- **Bereitschaft richtig erkennen:** Die URL immer in einfache Anführungszeichen setzen, sonst liest zsh das `?`
+  als Dateimuster und bricht mit `no matches found` ab, bevor `curl` überhaupt läuft. Die Schleife wartet dann
+  bis zum Timeout. `Login.jsp` prüfen, nicht `Wiki.jsp?page=Main`: Verlangt das Wiki eine Anmeldung (KnowSEC),
+  leitet `Main` ohne Login mit 302 um und liefert nie 200. Der Pfad braucht den Kontext (`/KnowWE/Login.jsp`).
+  Ein Timeout muss mit Exit 1 enden, sonst sieht er aus wie Erfolg. Kein `pkill -f` mit Wörtern aus der
+  eigenen Befehlszeile, das beendet die eigene Shell (Exit 144).
+
+- **Erfolg prüfen:** `Login.jsp` liefert 200, und `catalina.out` enthält ab der letzten Zeile
   `Deploying web application directory [...KnowWE]` weder `Error in plugin` noch `startup failed`. Ein 404
   bei laufendem Prozess heißt, dass der Kontext nicht gestartet ist -- dann dort `Caused by` lesen.
 - **Stoppen:** `catalina.sh stop` reicht mit KnowWE oft nicht, der Prozess bleibt hängen. Ihn dann hart
