@@ -1170,8 +1170,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void removeNamespace(String abbreviation) throws RepositoryException {
-		runInThread(() -> {
-			synchronized (namespaceMutex) {
+		// the mutex is taken here and not in the pool thread, like everywhere else: holders of the mutex wait for tasks of the
+		// pool, so pool threads waiting for the mutex could leave nobody to run those tasks
+		synchronized (namespaceMutex) {
+			runInThread(() -> {
 				coreUsageLock.readLock().lock();
 				try {
 					if (isShutdown()) return;
@@ -1184,8 +1186,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				finally {
 					coreUsageLock.readLock().unlock();
 				}
-			}
-		});
+			});
+		}
 	}
 
 	/**
