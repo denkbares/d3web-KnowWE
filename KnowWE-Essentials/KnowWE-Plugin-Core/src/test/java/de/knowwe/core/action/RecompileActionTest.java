@@ -19,6 +19,8 @@
 
 package de.knowwe.core.action;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +35,15 @@ import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import utils.OwnedEnvironment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class RecompileActionTest {
 
@@ -55,6 +62,68 @@ public class RecompileActionTest {
 
 			assertEquals(1, resolvedArticles.size());
 			assertSame(currentArticle, resolvedArticles.get(0));
+		}
+	}
+
+	/**
+	 * Recompiling a single article also updates the attachments its markups load from URLs. Loading them may take
+	 * long, or hang on an unresponsive server, so it must not happen while the recompilation holds the article manager:
+	 * that would block every save of the wiki meanwhile.
+	 */
+	@Test
+	public void attachmentsAreUpdatedAfterTheRegistrationFrameIsClosed() throws Exception {
+		RecordingUpdateMarkup markup = new RecordingUpdateMarkup();
+		RootType rootType = new RootType();
+		rootType.addChildType(0, markup);
+		try (OwnedEnvironment owned = OwnedEnvironment.create(new DummyConnector(), rootType)) {
+			ArticleManager articleManager = owned.get().getArticleManager();
+			Article article = articleManager.registerArticle("Page", "%%RecordingUpdate\n%\n");
+			articleManager.getCompilerManager().awaitTermination();
+
+			RecompileAction.recompile(List.of(article), RecompileAction.Mode.single, "test", "tester");
+			articleManager.getCompilerManager().awaitTermination();
+
+			assertEquals("The markup must be updated once", 1, markup.updates.size());
+			Update update = markup.updates.get(0);
+			assertFalse("The update must not hold the article manager", update.articleManagerOpened());
+			Article recompiled = articleManager.getArticle("Page");
+			assertTrue("The update must get the sections of the recompiled article",
+					update.sections().stream().allMatch(section -> section.getArticle() == recompiled));
+			assertEquals(1, update.sections().size());
+		}
+	}
+
+	private record Update(boolean articleManagerOpened, List<Section<?>> sections) {
+	}
+
+	private static final class RecordingUpdateMarkup extends AttachmentUpdateMarkup {
+
+		private static final DefaultMarkup MARKUP = new DefaultMarkup("RecordingUpdate");
+		private final List<Update> updates = new ArrayList<>();
+
+		RecordingUpdateMarkup() {
+			super(MARKUP);
+		}
+
+		@Override
+		public void performUpdates(Collection<? extends Section<? extends AttachmentUpdateMarkup>> sections, boolean force, boolean allowWaitForOtherDownloads) {
+			Section<?> first = sections.iterator().next();
+			updates.add(new Update(first.getArticleManager().isOpenedByCurrentThread(), List.copyOf(sections)));
+		}
+
+		@Override
+		public WikiAttachment getWikiAttachment(Section<? extends AttachmentUpdateMarkup> section) {
+			return null;
+		}
+
+		@Override
+		public String getWikiAttachmentPath(Section<? extends AttachmentUpdateMarkup> section) {
+			return section.getTitle() + "/data.txt";
+		}
+
+		@Override
+		public URL getUrl(Section<? extends AttachmentUpdateMarkup> section) {
+			return null;
 		}
 	}
 

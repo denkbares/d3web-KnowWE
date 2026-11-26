@@ -159,6 +159,7 @@ public class RecompileAction extends AbstractAction {
 		if (firstArticle == null) return;
 		ArticleManager articleManager = firstArticle.getArticleManager();
 		Objects.requireNonNull(articleManager);
+		List<Section<AttachmentUpdateMarkup>> markupsToUpdate = List.of();
 		articleManager.open();
 		try {
 			List<Article> currentArticlesToRecompile = resolveCurrentArticles(articleManager, articlesToRecompile);
@@ -185,19 +186,26 @@ public class RecompileAction extends AbstractAction {
 				Article previousArticle = currentArticlesToRecompile.get(0);
 				Article recreatedArticle = Objects.requireNonNullElse(
 						articleManager.getArticle(previousArticle.getTitle()), previousArticle);
-				// update all markups of a type together, so they can change the article only once
-				Map<AttachmentUpdateMarkup, List<Section<AttachmentUpdateMarkup>>> markupsByType =
-						$(recreatedArticle).successor(AttachmentUpdateMarkup.class).stream()
-								.collect(Collectors.groupingBy(Section::get, LinkedHashMap::new, Collectors.toList()));
-				markupsByType.forEach((type, markups) -> {
-					markups.forEach(markup -> LOGGER.info("Checking {} for updates...", markup.get().getUrl(markup)));
-					type.performUpdates(markups, true, false);
-				});
+				markupsToUpdate = $(recreatedArticle).successor(AttachmentUpdateMarkup.class).asList();
 			}
 		}
 		finally {
 			articleManager.commit();
 		}
+		// The markups load their attachments from URLs, which may take long or hang on a server that does not answer.
+		// So they are updated only after the commit: holding the article manager meanwhile would block every save of
+		// the wiki. Storing the loaded attachments opens the article manager again, once the compilation has finished.
+		updateAttachments(markupsToUpdate);
+	}
+
+	private static void updateAttachments(List<Section<AttachmentUpdateMarkup>> markupsToUpdate) {
+		// update all markups of a type together, so they can change the article only once
+		Map<AttachmentUpdateMarkup, List<Section<AttachmentUpdateMarkup>>> markupsByType = markupsToUpdate.stream()
+				.collect(Collectors.groupingBy(Section::get, LinkedHashMap::new, Collectors.toList()));
+		markupsByType.forEach((type, markups) -> {
+			markups.forEach(markup -> LOGGER.info("Checking {} for updates...", markup.get().getUrl(markup)));
+			type.performUpdates(markups, true, false);
+		});
 	}
 
 	static List<Article> resolveCurrentArticles(ArticleManager articleManager, Collection<Article> requestedArticles) {
