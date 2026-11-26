@@ -168,7 +168,10 @@ public class RepositoryInterceptor extends ServerInterceptor {
 	}
 
 	public static Repository getRepository(HttpServletRequest request) throws RepositoryException {
-		return getRepositoryConnection(request).getRepository();
+		// the connection is only needed to get to the repository, it must not stay open
+		try (RepositoryConnection connection = getRepositoryConnection(request)) {
+			return connection.getRepository();
+		}
 	}
 
 	@NotNull

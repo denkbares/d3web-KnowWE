@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,7 +36,6 @@ import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.UnsupportedQueryLanguageException;
 import org.eclipse.rdf4j.query.resultio.BooleanQueryResultWriterRegistry;
 import org.eclipse.rdf4j.query.resultio.TupleQueryResultWriterRegistry;
-import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
@@ -80,13 +80,20 @@ public class RepositoryController extends AbstractController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
+		return handleQuery(RepositoryInterceptor.getRdf2GoCore(request), request, response);
+	}
+
+	/**
+	 * Prepares and evaluates the query of the request on a new connection of the specified core. The result is read
+	 * lazily from the connection while the returned view renders it, so the view closes the connection afterwards
+	 * (see {@link QueryResultView#CONNECTION_KEY}). If no view is returned, the connection is closed here.
+	 */
+	ModelAndView handleQuery(Rdf2GoCore rdf2GoCore, HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 		String reqMethod = request.getMethod();
 		String queryStr = request.getParameter(QUERY_PARAM_NAME);
-		Rdf2GoCore rdf2GoCore = RepositoryInterceptor.getRdf2GoCore(request);
 		queryStr = rdf2GoCore.prependPrefixesToQuery(rdf2GoCore.getNamespaces(), queryStr);
 		queryStr = Rdf2GoUtils.createSparqlString(rdf2GoCore, queryStr);
-
-		Repository repository = RepositoryInterceptor.getRepository(request);
 
 		int qryCode = 0;
 		if (logger.isInfoEnabled() || logger.isDebugEnabled()) {
@@ -112,75 +119,83 @@ public class RepositoryController extends AbstractController {
 
 		//logger.debug("query {} = {}", qryCode, queryStr);
 
-		if (queryStr != null) {
-			RepositoryConnection repositoryCon = repository.getConnection();
-
-			synchronized (repositoryCon) {
-				Query query = getQuery(repository, repositoryCon, queryStr, request, response);
-
-				View view;
-				Object queryResult;
-				FileFormatServiceRegistry<? extends FileFormat, ?> registry;
-
-				try {
-					if (query instanceof TupleQuery) {
-						TupleQuery tQuery = (TupleQuery) query;
-
-						queryResult = headersOnly ? null : tQuery.evaluate();
-						registry = TupleQueryResultWriterRegistry.getInstance();
-						view = TupleQueryResultView.getInstance();
-					}
-					else if (query instanceof GraphQuery) {
-						GraphQuery gQuery = (GraphQuery) query;
-
-						queryResult = headersOnly ? null : gQuery.evaluate();
-						registry = RDFWriterRegistry.getInstance();
-						view = GraphQueryResultView.getInstance();
-					}
-					else if (query instanceof BooleanQuery) {
-						BooleanQuery bQuery = (BooleanQuery) query;
-
-						queryResult = headersOnly ? null : bQuery.evaluate();
-						registry = BooleanQueryResultWriterRegistry.getInstance();
-						view = BooleanQueryResultView.getInstance();
-					}
-					else {
-						throw new ClientHTTPException(SC_BAD_REQUEST, "Unsupported query type: "
-								+ query.getClass().getName());
-					}
-				}
-				catch (QueryInterruptedException e) {
-					logger.info("Query interrupted", e);
-					throw new ServerHTTPException(SC_SERVICE_UNAVAILABLE, "Query evaluation took too long");
-				}
-				catch (QueryEvaluationException e) {
-					logger.info("Query evaluation error", e);
-					if (e.getCause() != null && e.getCause() instanceof HTTPException) {
-						// custom signal from the backend, throw as HTTPException
-						// directly (see SES-1016).
-						throw (HTTPException) e.getCause();
-					}
-					else {
-						throw new ServerHTTPException("Query evaluation error: " + e.getMessage());
-					}
-				}
-				Object factory = ProtocolUtil.getAcceptableService(request, response, registry);
-
-				Map<String, Object> model = new HashMap<>();
-				model.put(QueryResultView.FILENAME_HINT_KEY, "query-result");
-				model.put(QueryResultView.QUERY_RESULT_KEY, queryResult);
-				model.put(QueryResultView.FACTORY_KEY, factory);
-				model.put(QueryResultView.HEADERS_ONLY, headersOnly);
-
-				return new ModelAndView(view, model);
-			}
-		}
-		else {
+		if (queryStr == null) {
 			throw new ClientHTTPException(SC_BAD_REQUEST, "Missing parameter: " + QUERY_PARAM_NAME);
+		}
+
+		RepositoryConnection repositoryCon = rdf2GoCore.getRepositoryConnection();
+		try {
+			Query query = getQuery(repositoryCon, queryStr, request, response);
+
+			View view;
+			Object queryResult;
+			FileFormatServiceRegistry<? extends FileFormat, ?> registry;
+
+			try {
+				if (query instanceof TupleQuery) {
+					TupleQuery tQuery = (TupleQuery) query;
+
+					queryResult = headersOnly ? null : tQuery.evaluate();
+					registry = TupleQueryResultWriterRegistry.getInstance();
+					view = TupleQueryResultView.getInstance();
+				}
+				else if (query instanceof GraphQuery) {
+					GraphQuery gQuery = (GraphQuery) query;
+
+					queryResult = headersOnly ? null : gQuery.evaluate();
+					registry = RDFWriterRegistry.getInstance();
+					view = GraphQueryResultView.getInstance();
+				}
+				else if (query instanceof BooleanQuery) {
+					BooleanQuery bQuery = (BooleanQuery) query;
+
+					queryResult = headersOnly ? null : bQuery.evaluate();
+					registry = BooleanQueryResultWriterRegistry.getInstance();
+					view = BooleanQueryResultView.getInstance();
+				}
+				else {
+					throw new ClientHTTPException(SC_BAD_REQUEST, "Unsupported query type: "
+							+ query.getClass().getName());
+				}
+			}
+			catch (QueryInterruptedException e) {
+				logger.info("Query interrupted", e);
+				throw new ServerHTTPException(SC_SERVICE_UNAVAILABLE, "Query evaluation took too long");
+			}
+			catch (QueryEvaluationException e) {
+				logger.info("Query evaluation error", e);
+				if (e.getCause() != null && e.getCause() instanceof HTTPException) {
+					// custom signal from the backend, throw as HTTPException
+					// directly (see SES-1016).
+					throw (HTTPException) e.getCause();
+				}
+				else {
+					throw new ServerHTTPException("Query evaluation error: " + e.getMessage());
+				}
+			}
+			Object factory = ProtocolUtil.getAcceptableService(request, response, registry);
+
+			Map<String, Object> model = new HashMap<>();
+			model.put(QueryResultView.FILENAME_HINT_KEY, "query-result");
+			model.put(QueryResultView.QUERY_RESULT_KEY, queryResult);
+			model.put(QueryResultView.FACTORY_KEY, factory);
+			model.put(QueryResultView.HEADERS_ONLY, headersOnly);
+			model.put(QueryResultView.CONNECTION_KEY, repositoryCon);
+
+			return new ModelAndView(view, model);
+		}
+		catch (Exception | Error e) {
+			try {
+				repositoryCon.close();
+			}
+			catch (RepositoryException closeFailure) {
+				e.addSuppressed(closeFailure);
+			}
+			throw e;
 		}
 	}
 
-	private Query getQuery(Repository repository, RepositoryConnection repositoryCon, String queryStr,
+	private Query getQuery(RepositoryConnection repositoryCon, String queryStr,
 						   HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ClientHTTPException {
 		Query result = null;
@@ -204,11 +219,14 @@ public class RepositoryController extends AbstractController {
 		// determine if inferred triples should be included in query evaluation
 		boolean includeInferred = ProtocolUtil.parseBooleanParam(request, INCLUDE_INFERRED_PARAM_NAME, true);
 
+		// Without a time limit of the client, the one of the other SPARQL queries of the wiki applies: the result is
+		// read from an open connection while it is sent to the client, so a query must not run without limit.
 		String timeout = request.getParameter(Protocol.TIMEOUT_PARAM_NAME);
-		int maxQueryTime = 0;
+		int maxQueryTime = (int) TimeUnit.MILLISECONDS.toSeconds(Rdf2GoCore.DEFAULT_TIMEOUT);
 		if (timeout != null) {
 			try {
-				maxQueryTime = Integer.parseInt(timeout);
+				int requestedTime = Integer.parseInt(timeout);
+				if (requestedTime > 0) maxQueryTime = requestedTime;
 			}
 			catch (NumberFormatException e) {
 				throw new ClientHTTPException(SC_BAD_REQUEST, "Invalid timeout value: " + timeout);
@@ -226,7 +244,7 @@ public class RepositoryController extends AbstractController {
 			if (defaultGraphURIs != null) {
 				for (String defaultGraphURI : defaultGraphURIs) {
 					try {
-						IRI uri = createURIOrNull(repository, defaultGraphURI);
+						IRI uri = createURIOrNull(repositoryCon, defaultGraphURI);
 						dataset.addDefaultGraph(uri);
 					}
 					catch (IllegalArgumentException e) {
@@ -239,7 +257,7 @@ public class RepositoryController extends AbstractController {
 			if (namedGraphURIs != null) {
 				for (String namedGraphURI : namedGraphURIs) {
 					try {
-						IRI uri = createURIOrNull(repository, namedGraphURI);
+						IRI uri = createURIOrNull(repositoryCon, namedGraphURI);
 						dataset.addNamedGraph(uri);
 					}
 					catch (IllegalArgumentException e) {
@@ -255,9 +273,7 @@ public class RepositoryController extends AbstractController {
 
 			result.setIncludeInferred(includeInferred);
 
-			if (maxQueryTime > 0) {
-				result.setMaxQueryTime(maxQueryTime);
-			}
+			result.setMaxExecutionTime(maxQueryTime);
 
 			if (dataset != null) {
 				result.setDataset(dataset);
@@ -273,7 +289,7 @@ public class RepositoryController extends AbstractController {
 				if (parameterName.startsWith(BINDING_PREFIX) && parameterName.length() > BINDING_PREFIX.length()) {
 					String bindingName = parameterName.substring(BINDING_PREFIX.length());
 					Value bindingValue = ProtocolUtil.parseValueParam(request, parameterName,
-							repository.getValueFactory());
+							repositoryCon.getValueFactory());
 					result.setBinding(bindingName, bindingValue);
 				}
 			}
@@ -294,10 +310,10 @@ public class RepositoryController extends AbstractController {
 		return result;
 	}
 
-	private IRI createURIOrNull(Repository repository, String graphURI) {
+	private IRI createURIOrNull(RepositoryConnection repositoryCon, String graphURI) {
 		if ("null".equals(graphURI)) {
 			return null;
 		}
-		return repository.getValueFactory().createIRI(graphURI);
+		return repositoryCon.getValueFactory().createIRI(graphURI);
 	}
 }

@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.eclipse.rdf4j.common.lang.FileFormat;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.View;
@@ -47,6 +49,39 @@ public abstract class QueryResultView implements View {
 	public static final String FILENAME_HINT_KEY = "filenameHint";
 
 	public static final String HEADERS_ONLY = "headersOnly";
+
+	/**
+	 * Key by which the connection the query result is read from is stored in the model. The view closes it after
+	 * rendering the result.
+	 */
+	public static final String CONNECTION_KEY = "connection";
+
+	/**
+	 * Renders the query result and closes the connection it was read from. The result is read lazily while it is
+	 * rendered, so the connection can only be closed here.
+	 */
+	@Override
+	@SuppressWarnings("rawtypes")
+	public final void render(Map model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		try {
+			renderInternal(model, request, response);
+		}
+		finally {
+			RepositoryConnection connection = (RepositoryConnection) model.get(CONNECTION_KEY);
+			if (connection != null) {
+				try {
+					connection.close();
+				}
+				catch (RepositoryException e) {
+					logger.warn("Unable to close the connection of the query result", e);
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected abstract void renderInternal(Map model, HttpServletRequest request, HttpServletResponse response)
+			throws IOException;
 
 	protected void setContentType(HttpServletResponse response, FileFormat fileFormat)
 			throws IOException {

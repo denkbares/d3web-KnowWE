@@ -41,7 +41,7 @@ public class BooleanQueryResultView extends QueryResultView {
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public void render(Map model, HttpServletRequest request, HttpServletResponse response)
+	protected void renderInternal(Map model, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		BooleanQueryResultWriterFactory brWriterFactory = (BooleanQueryResultWriterFactory) model.get(FACTORY_KEY);
 		BooleanQueryResultFormat brFormat = brWriterFactory.getBooleanQueryResultFormat();
