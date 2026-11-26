@@ -326,16 +326,32 @@ public class CompilerManager {
 				LOGGER.error("Unexpected internal error while starting compilation.", e);
 			}
 			finally {
-				// we fire this before the synchronization, so the method awaitCompilation waits
-				// till after this event is handled completely
-				KnowWEUtils.getEventManager(articleManager).fireEvent(new CompilationFinishedEvent(CompilerManager.this));
-				synchronized (lock) {
-					running = null;
-					compileMessage = null;
-					currentlyCompiledArticles.clear();
-					currentlyCompiledPriority.clear();
-					logCompilation(added, removed, stopwatch);
-					lock.notifyAll();
+				try {
+					// we fire this before the synchronization, so the method awaitCompilation waits
+					// till after this event is handled completely
+					KnowWEUtils.getEventManager(articleManager).fireEvent(new CompilationFinishedEvent(CompilerManager.this));
+				}
+				catch (Throwable e) {
+					// the event manager only catches exceptions: whatever a listener throws, the compilation must end here,
+					// otherwise it counts as running forever and no other compilation starts
+					LOGGER.error("Unexpected internal error while finishing compilation.", e);
+				}
+				finally {
+					synchronized (lock) {
+						running = null;
+						compileMessage = null;
+						currentlyCompiledArticles.clear();
+						currentlyCompiledPriority.clear();
+						try {
+							logCompilation(added, removed, stopwatch);
+						}
+						catch (RuntimeException e) {
+							LOGGER.error("Unable to log the compilation.", e);
+						}
+						finally {
+							lock.notifyAll();
+						}
+					}
 				}
 			}
 		});
@@ -478,9 +494,12 @@ public class CompilerManager {
 		if (!shouldWait(compiler, priority)) return;
 
 		synchronized (lock) {
-			try {
-				awaitedCompilers.add(compiler);
-				while (true) {
+			awaitedCompilers.add(compiler);
+		}
+		try {
+			while (true) {
+				boolean takeThreadDump = false;
+				synchronized (lock) {
 					if (!shouldWait(compiler, priority)) return;
 
 					// in case we have a small CPU and only a few compile threads -> increase compile threads until we
@@ -495,32 +514,39 @@ public class CompilerManager {
 					}
 
 					else if (deadlockDetected()) {
-						threadDump(compiler, priority);
+						LOGGER.error(deadlockMessage(compiler, priority));
+						// one dump per compilation, to avoid log spam
+						takeThreadDump = this.lastThreadDumpThrown != this.compilationCount;
+						this.lastThreadDumpThrown = this.compilationCount;
 					}
 
 					// otherwise wait for notification...
 					// we use a timeout to have a chance of detecting dead locks
-					lock.wait(5000);
+					if (!takeThreadDump) lock.wait(5000);
 				}
+				// without holding the lock: everything else of the compiler manager needs it, and taking the dump may take
+				// a while, in just the situation that the dump is meant to explain
+				if (takeThreadDump) logThreadDump(compiler, priority);
 			}
-			finally {
+		}
+		finally {
+			synchronized (lock) {
 				awaitedCompilers.remove(compiler);
 			}
 		}
 	}
 
-	private void threadDump(@NotNull Compiler compiler, @NotNull Priority priority) {
-		String message = "Potential deadlock detected, while compiler " + Compilers.getCompilerName(compiler)
-						 + " was waiting for the compilation to complete priority " + priority;
-		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid log spam
-			message += "\n####################\n" +
-					   "\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n" +
-					   KnowWEUtils.getThreadDumpViaJcmd() +
-					   "Thread-Dump-End!\n####################";
-			this.lastThreadDumpThrown = this.compilationCount;
-		}
-		LOGGER.error(message);
-//		throw new InterruptedException(message);
+	private static String deadlockMessage(@NotNull Compiler compiler, @NotNull Priority priority) {
+		return "Potential deadlock detected, while compiler " + Compilers.getCompilerName(compiler)
+			   + " was waiting for the compilation to complete priority " + priority;
+	}
+
+	private void logThreadDump(@NotNull Compiler compiler, @NotNull Priority priority) {
+		LOGGER.error(deadlockMessage(compiler, priority)
+					 + "\n####################\n"
+					 + "\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n"
+					 + KnowWEUtils.getThreadDumpViaJcmd()
+					 + "Thread-Dump-End!\n####################");
 	}
 
 	private boolean deadlockDetected() {

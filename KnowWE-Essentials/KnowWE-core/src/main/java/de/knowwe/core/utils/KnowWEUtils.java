@@ -19,17 +19,17 @@
 
 package de.knowwe.core.utils;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -1739,20 +1740,36 @@ public class KnowWEUtils {
 	}
 
 	public static String getThreadDumpViaJcmd() {
+		File output = null;
 		try {
+			output = File.createTempFile("thread-dump-", ".txt");
 			Process process = new ProcessBuilder("jcmd", Long.toString(ProcessHandle.current()
 					.pid()), "Thread.print", "-l")
 					.redirectErrorStream(true)
+					.redirectOutput(output)
 					.start();
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-				return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+			// a dump is taken when something hangs: it must not hang itself
+			if (!process.waitFor(JCMD_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+				process.destroyForcibly();
+				LOGGER.warn("jcmd did not finish within {} seconds, taking the thread dump without it", JCMD_TIMEOUT_SECONDS);
+				return getThreadDump(); // fallback
 			}
+			return Files.readString(output.toPath(), StandardCharsets.UTF_8);
 		}
 		catch (IOException e) {
 			LOGGER.warn("Unable to generate thread dump via jcmd: {}: {}", e.getClass(), e.getMessage());
 			return getThreadDump(); // fallback
 		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return getThreadDump(); // fallback
+		}
+		finally {
+			if (output != null && !output.delete()) output.deleteOnExit();
+		}
 	}
+
+	private static final int JCMD_TIMEOUT_SECONDS = 60;
 
 	/**
 	 * Checks whether the given user created the page or attachment within the last hour.

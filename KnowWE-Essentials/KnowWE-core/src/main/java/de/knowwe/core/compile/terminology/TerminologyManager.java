@@ -258,21 +258,24 @@ public class TerminologyManager {
 			Section<?> termDefinition,
 			Class<?> termClass, Identifier termIdentifier) {
 
+		boolean unregistered = false;
 		synchronized (this) {
 			TermLog termRefLog = termLogManager.getLog(termIdentifier);
 			if (termRefLog == null) {
 				LOGGER.warn("Trying to unregister unknown term: " + termIdentifier);
 			}
 			else {
-				boolean removedTermDefinition = termRefLog.removeTermDefinition(compiler, termDefinition,
-						termClass, termIdentifier);
-				//if(removedTermDefinition) {
-				KnowWEUtils.getEventManager(compiler)
-						.fireEvent(new TermDefinitionUnregisteredEvent<>(compiler, termIdentifier, termClass));
-				//}
+				termRefLog.removeTermDefinition(compiler, termDefinition, termClass, termIdentifier);
+				unregistered = true;
 			}
 			termDefinition.getObjectOrDefault(compiler, DEFINITIONS_KEY, new MinimizedHashSet<>())
 					.remove(termIdentifier);
+		}
+		// fired without holding this manager, like the registration: a listener may read the terminology or wait for a thread
+		// that does, which used to stop the compile thread forever
+		if (unregistered) {
+			KnowWEUtils.getEventManager(compiler)
+					.fireEvent(new TermDefinitionUnregisteredEvent<>(compiler, termIdentifier, termClass));
 		}
 	}
 
