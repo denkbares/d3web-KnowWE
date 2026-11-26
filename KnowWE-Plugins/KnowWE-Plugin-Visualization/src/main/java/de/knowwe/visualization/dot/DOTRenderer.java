@@ -20,6 +20,7 @@ package de.knowwe.visualization.dot;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.visualization.ConceptNode;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
@@ -63,6 +65,11 @@ public class DOTRenderer {
 	// appearance of outer node
 	private static final String outerLabel = "[ shape=\"none\" fontsize=\"0\" fontcolor=\"white\" ];\n";
 	private static final int TIMEOUT = 50000;
+	/**
+	 * The maximum run time of dot. Large graphs take their time, but a hanging dot must not block the rendering
+	 * forever.
+	 */
+	private static final long DOT_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(5);
 
 	private static final Set<String> cleanedCacheDirectories = new HashSet<>();
 
@@ -734,18 +741,23 @@ public class DOTRenderer {
 	static boolean checkDotInstallation(Config config) {
 		String dotApp = config.getDotApp();
 		try {
-			ProcessBuilder builder = new ProcessBuilder(dotApp, "-V");
-			Process process = builder.start();
-			process.waitFor(1, TimeUnit.SECONDS);
-			int exitValue = process.exitValue();
-			if (exitValue != 0) {
+			Process process = new ProcessBuilder(dotApp, "-V")
+					.redirectOutput(ProcessBuilder.Redirect.DISCARD)
+					.redirectError(ProcessBuilder.Redirect.DISCARD)
+					.start();
+			if (!process.waitFor(1, TimeUnit.SECONDS)) {
+				process.destroyForcibly();
 				return false;
 			}
+			return process.exitValue() == 0;
 		}
-		catch (IOException | InterruptedException e) {
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			return false;
 		}
-		return true;
+		catch (IOException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -813,23 +825,50 @@ public class DOTRenderer {
 	}
 
 	public static void convertDot(File outputFile, File dot, String... command) throws IOException {
+		convertDot(outputFile, dot, DOT_TIMEOUT_MILLIS, command);
+	}
+
+	/**
+	 * Runs the specified dot command, which converts the dot file into the output file. Dot is killed if it does not
+	 * finish within the specified time, so a hanging dot cannot block the calling thread forever.
+	 */
+	static void convertDot(File outputFile, File dot, long timeoutMillis, String... command) throws IOException {
 		FileUtils.checkWriteable(outputFile);
 		FileUtils.checkReadable(dot);
+		// the error output goes into a file: with a pipe, dot would block as soon as its buffer is full
+		File errorFile = File.createTempFile("dot-errors-", ".txt");
 		try {
-			ProcessBuilder processBuilder = new ProcessBuilder(command);
-			Process process = processBuilder.start();
-			process.waitFor();
+			Process process = new ProcessBuilder(command)
+					.redirectOutput(ProcessBuilder.Redirect.DISCARD)
+					.redirectError(errorFile)
+					.start();
+			try {
+				if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
+					throw new IOException("Command timed out after " + Stopwatch.getDisplay(timeoutMillis)
+							+ ": " + Strings.concat(" ", command));
+				}
+			}
+			finally {
+				// dot must not keep running after a timeout or an interrupt
+				if (process.isAlive()) process.destroyForcibly();
+			}
 			int exitValue = process.exitValue();
 			if (exitValue != 0) {
 				Config.GRAPH_HAS_ERRORS = true;
-				Config.GRAPH_ERROR_MESSAGE = getProcessErrorMessage(process.getErrorStream());
-				FileUtils.printStream(process.getErrorStream());
+				try (InputStream errors = new FileInputStream(errorFile)) {
+					Config.GRAPH_ERROR_MESSAGE = getProcessErrorMessage(errors);
+				}
+				LOGGER.warn("dot failed with exit value " + exitValue + ": " + Config.GRAPH_ERROR_MESSAGE);
 				throw new IOException("Command could not successfully be executed: " + Strings.concat(" ", command));
 			}
 		}
 		catch (InterruptedException e) {
-			//Thread was interrupted by GraphReRenderer
-			//LOGGER.warn(e.getMessage(), e);
+			// Thread was interrupted, e.g. by a cancelled rendering, dot was killed above
+			Thread.currentThread().interrupt();
+		}
+		finally {
+			//noinspection ResultOfMethodCallIgnored
+			errorFile.delete();
 		}
 	}
 
