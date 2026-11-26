@@ -45,6 +45,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -134,6 +135,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	private static final AtomicLong coreId = new AtomicLong(0);
 
 	public static final int DEFAULT_TIMEOUT = 60000; // 60 seconds
+
+	private static final String CANCELLED_AT_SHUTDOWN = "Core is already shut down, the task was cancelled";
 
 	private final SparqlCache sparqlCache = new SparqlCache(this);
 
@@ -1809,18 +1812,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		// a closed environment really owns nothing any more. Only a core replaced during normal operation (e.g.
 		// on recompile) is released in the background, so that the compiling thread is not blocked.
 		if (ServletContextEventListener.isDestroyInProgress() || isEnvironmentClosing()) {
-			coreUsageLock.writeLock().lock();
-			try {
-				if (isShutdown()) return;
-				this.isShutdown = true;
-				getEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-				this.semanticCore.close();
-				this.threadPool.shutdownNow();
-				this.sparqlThreadPool.shutdownNow();
-			}
-			finally {
-				coreUsageLock.writeLock().unlock();
-			}
+			closeNow();
 		}
 		else {
 			new Thread(() -> {
@@ -1843,6 +1835,36 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					coreUsageLock.writeLock().unlock();
 				}
 			}).start();
+		}
+	}
+
+	/**
+	 * Tears this core down in the calling thread, as needed when the whole environment (or the servlet) is shutting
+	 * down.
+	 */
+	void closeNow() {
+		coreUsageLock.writeLock().lock();
+		try {
+			if (isShutdown()) return;
+			this.isShutdown = true;
+			getEventManager().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+			this.semanticCore.close();
+			cancelQueuedTasks(this.threadPool.shutdownNow());
+			cancelQueuedTasks(this.sparqlThreadPool.shutdownNow());
+		}
+		finally {
+			coreUsageLock.writeLock().unlock();
+		}
+	}
+
+	/**
+	 * Cancels the tasks a pool did not start before it was shut down. They will never run, and their callers wait for
+	 * them (see {@link #runInThread(Runnable, ThreadPoolExecutor)}): cancelled, the callers get an exception instead of
+	 * waiting forever.
+	 */
+	private static void cancelQueuedTasks(List<Runnable> queuedTasks) {
+		for (Runnable task : queuedTasks) {
+			if (task instanceof Future<?> future) future.cancel(false);
 		}
 	}
 
@@ -1889,6 +1911,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		}
+		catch (CancellationException e) {
+			throw new IllegalStateException(CANCELLED_AT_SHUTDOWN, e);
+		}
 	}
 
 	private void runInIOThread(RunnableWithIO runnable) throws IOException {
@@ -1910,6 +1935,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		catch (ExecutionException e) {
 			throw new IOException(e);
+		}
+		catch (CancellationException e) {
+			throw new IOException(CANCELLED_AT_SHUTDOWN, e);
 		}
 		if (exception.get() != null) {
 			throw exception.get();
