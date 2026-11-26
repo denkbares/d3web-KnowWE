@@ -128,6 +128,10 @@ public class CIHookManager implements EventListener, EnvironmentService {
 
 	/**
 	 * Triggers the registered hooks for a given Article.
+	 * <p>
+	 * Lock order: this method calls into the {@link CIBuildManager} while holding the monitor of this manager, so the
+	 * build manager must never call into this manager while holding its own monitor (see
+	 * {@link CIBuildManager#notify(Event)}).
 	 *
 	 * @param monitoredArticles the article to trigger hooks for
 	 */

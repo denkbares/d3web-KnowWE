@@ -515,25 +515,35 @@ public class CIBuildManager implements EventListener, EnvironmentService {
 	 * Handles build lifecycle events. A compilation start only requests shutdown and registers affected dashboards for
 	 * the next trigger; it never waits on the compilation thread. When the next trigger starts a replacement, the
 	 * normal predecessor handover ensures that it cannot overlap the terminating build.
+	 * <p>
+	 * Lock order: {@link CIHookManager} calls into this manager while holding its own monitor (see {@link
+	 * #startBuilds(Set)}), so this manager must never call into the hook manager while holding its monitor. Otherwise,
+	 * a request triggering the hooks and the compile thread starting a compilation can deadlock, which hangs every
+	 * further compilation.
 	 *
 	 * @param event lifecycle event to handle
 	 */
 	@Override
-	public synchronized void notify(Event event) {
-		// Exclude new build registration while running builds are marked for asynchronous shutdown/restart.
+	public void notify(Event event) {
+		Set<CIDashboard> restartWithNextTrigger = null;
+		synchronized (this) {
+			// Exclude new build registration while running builds are marked for asynchronous shutdown.
+			if (event instanceof CompilationStartEvent) {
+				restartWithNextTrigger = shutDownNow();
+			}
+			else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {
+				priorityOverride.put(prioEvent.getDashboard().getDashboardName(), prioEvent.getPriority());
+			}
+			else if (event instanceof WikiContentReplacedEvent) {
+				// wiki content has been replaced; re-initialization with compile follows; hence we can shut down
+				shutDownNow();
+			}
+		}
+		// restart them with next trigger, outside of this manager's monitor (see lock order above)
 		if (event instanceof CompilationStartEvent startEvent) {
-			Set<CIDashboard> ciDashboards = shutDownNow();
-			// restart them with next trigger
 			Environment hookEnvironment = environment != null ? environment
 					: startEvent.getCompilerManager().getArticleManager().getEnvironment();
-			CIHookManager.of(hookEnvironment).restartWithNextTrigger(ciDashboards);
-		}
-		else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {
-			priorityOverride.put(prioEvent.getDashboard().getDashboardName(), prioEvent.getPriority());
-		}
-		else if (event instanceof WikiContentReplacedEvent) {
-			// wiki content has been replaced; re-initialization with compile follows; hence we can shut down
-			shutDownNow();
+			CIHookManager.of(hookEnvironment).restartWithNextTrigger(restartWithNextTrigger);
 		}
 	}
 }
