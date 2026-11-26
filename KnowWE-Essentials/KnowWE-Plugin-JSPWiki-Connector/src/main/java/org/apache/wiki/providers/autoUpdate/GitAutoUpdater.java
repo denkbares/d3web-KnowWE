@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -43,6 +44,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
 import de.uniwue.d3web.gitConnector.GitConnector;
+import de.uniwue.d3web.gitConnector.GitConnectorPull;
 import de.knowwe.core.Environment;
 
 
@@ -59,13 +61,22 @@ public class GitAutoUpdater {
 	private static boolean running;
 	private final String filesystemPath;
 	private final GitConnector gitConnector;
+	private final Supplier<ArticleManager> articleManager;
 
 	public GitAutoUpdater(Engine engine, GitVersioningFileProvider fileProvider) {
+		this(engine, fileProvider, () -> Environment.of(engine.getServletContext()).getArticleManager());
+	}
+
+	/**
+	 * Creates an updater using the given article manager, which is looked up only when updating.
+	 */
+	GitAutoUpdater(Engine engine, GitVersioningFileProvider fileProvider, Supplier<ArticleManager> articleManager) {
 		this.fileProvider = fileProvider;
 		this.filesystemPath = fileProvider.getFilesystemPath();
 		this.repository = fileProvider.getRepository();
 		this.engine = engine;
 		this.gitConnector = fileProvider.getGitConnector();
+		this.articleManager = articleManager;
 	}
 
 	public static boolean running() {
@@ -82,7 +93,7 @@ public class GitAutoUpdater {
 		}
 
 		Git git = new Git(repository);
-		ArticleManager articleManager = Environment.of(engine.getServletContext()).getArticleManager();
+		ArticleManager articleManager = this.articleManager.get();
 
 		updateMasterBranch(articleManager, git);
 	}
@@ -107,6 +118,11 @@ public class GitAutoUpdater {
 	}
 
 	private void performRebase(ArticleManager articleManager, Git git) throws IOException, GitAPIException {
+		// Contact the remote before taking any lock: a remote that is slow or does not answer must not block the saves
+		// and compilations of the wiki. Fetching only updates the remote-tracking branch; the branch, the index and
+		// the working tree stay as they are until the rebase below.
+		boolean fetched = gitConnector.pull().fetchCurrentBranch(GitConnectorPull.ORIGIN);
+
 		// Warten bis der KnowWe-Compiler fertig ist
 		Compilers.awaitTermination(articleManager.getCompilerManager());
 
@@ -144,9 +160,9 @@ public class GitAutoUpdater {
 		ObjectId oldLocalHead = repository.resolve(Constants.HEAD);
 		String oldLocalHeadHash = oldLocalHead.getName();
 
-		// *** NEU: Kein fetch() mehr zum Erkennen von Änderungen. ***
-		// Pull (mit Rebase) ist idempotent: wenn nichts zu tun ist, macht er nichts.
-		boolean pullResultSuccess = getPullResult(gitConnector);
+		// Rebase onto what was fetched above, without contacting the remote. Like the pull it replaces, it does nothing
+		// if there is nothing to do.
+		boolean pullResultSuccess = fetched && gitConnector.pull().currentBranchOntoFetched(GitConnectorPull.ORIGIN, null);
 
 		if (pullResultSuccess == false) {
 			LOGGER.error("unsuccessful pull, aborting!");
@@ -188,11 +204,6 @@ public class GitAutoUpdater {
 			}
 		}
 		return pullAfterReset;
-	}
-
-	@Nullable
-	private boolean getPullResult(GitConnector gitConnector) throws GitAPIException {
-		return gitConnector.pull().allWithRebase();
 	}
 
 	private void postprocess(ArticleManager articleManager) {
