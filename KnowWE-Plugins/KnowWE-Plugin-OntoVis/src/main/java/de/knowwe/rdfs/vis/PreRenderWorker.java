@@ -19,10 +19,13 @@
 
 package de.knowwe.rdfs.vis;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +49,27 @@ public class PreRenderWorker implements EnvironmentService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PreRenderWorker.class);
 
-	private static final Object mutex = new Object();
+	private static final String KEY = PreRenderWorker.class.getName();
+	private static final String LOCK_KEY = KEY + ".lock";
 
 	private final ExecutorService executor;
 
+	/**
+	 * The maximum time to wait for a pre-rendering. The pre-rendering runs external processes and queries, a hanging
+	 * one must not keep the rendering threads waiting forever.
+	 */
+	private final long maxWaitMillis;
+
 	private PreRenderWorker() {
+		this(TimeUnit.MINUTES.toMillis(10));
+	}
+
+	/**
+	 * Creates a worker waiting at most the specified time for a pre-rendering. For tests, which cannot wait for the
+	 * default time.
+	 */
+	PreRenderWorker(long maxWaitMillis) {
+		this.maxWaitMillis = maxWaitMillis;
 		executor = Executors.newFixedThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
 	}
 
@@ -67,44 +86,74 @@ public class PreRenderWorker implements EnvironmentService {
 
 	@Override
 	public void close() {
-		executor.shutdownNow();
+		// queued tasks will never run, cancel them, so nobody waits for them
+		for (Runnable task : executor.shutdownNow()) {
+			if (task instanceof Future<?> future) future.cancel(false);
+		}
+	}
+
+	/**
+	 * Returns the lock ordering the clearing and the new pre-rendering of the specified section: a new pre-rendering
+	 * starts only after the former artefact of the section is cleaned up, as both may use the same files. The lock is
+	 * per section, so a slow section does not hold up the others.
+	 */
+	private static Object getLock(Section<?> section) {
+		return section.computeIfAbsent(null, LOCK_KEY, (c, s) -> new Object());
 	}
 
 	/**
 	 * Queues a rendering task for the given section.
 	 */
 	private <Artefact extends CleanableArtefact> Future<Artefact> getPreRenderFuture(Section<? extends Type> section, UserContext user, PreRenderer<Artefact> preRenderer) {
-		synchronized (mutex) {
-			return section.computeIfAbsent(null, this.getClass().getName(),
+		synchronized (getLock(section)) {
+			return section.computeIfAbsent(null, KEY,
 					(c, s) -> executor.submit(() -> preRenderer.preRender(section, user)));
 		}
 	}
 
 	/**
-	 * Starts and caches a prerender job for each section. Waits until the prerendering is done. If this method is
+	 * Starts and caches a prerender job for each section. Waits until the prerendering is done, but at most the
+	 * maximum waiting time; returns null if the prerendering fails or does not finish in time. If this method is
 	 * called multiple times for the same section, the prerendering will only be done once, until the cache is cleared.
 	 */
 	public <Artefact extends CleanableArtefact> Artefact getPreRenderedArtefact(Section<?> section, UserContext user, PreRenderer<Artefact> preRenderer) {
 		// create a new rendering task or get currently running task
 		try {
-			return getPreRenderFuture(section, user, preRenderer).get();
+			return getPreRenderFuture(section, user, preRenderer).get(maxWaitMillis, TimeUnit.MILLISECONDS);
 		}
-		catch (ExecutionException | InterruptedException e) {
+		catch (TimeoutException e) {
+			// the task stays cached, a later rendering gets its result once it is done
+			LOGGER.warn("Pre-rendering of a visualization on page {} did not finish within {} ms", section.getTitle(), maxWaitMillis);
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			LOGGER.error("Interrupted while waiting for the generation of graphs", e);
+		}
+		catch (ExecutionException | CancellationException e) {
 			LOGGER.error("Exception while generating and caching graphs", e);
 		}
 		return null;
 	}
 
 	public void clearCache(Section<?> section) {
-		synchronized (mutex) {
-			Future<CleanableArtefact> future = section.removeObject(null, this.getClass().getName());
+		synchronized (getLock(section)) {
+			Future<CleanableArtefact> future = section.removeObject(null, KEY);
 			if (future == null) return;
 			try {
-				CleanableArtefact artefact = future.get();
+				CleanableArtefact artefact = future.get(maxWaitMillis, TimeUnit.MILLISECONDS);
 				if (artefact == null) return;
 				artefact.cleanUp();
 			}
-			catch (ExecutionException | InterruptedException e) {
+			catch (TimeoutException e) {
+				// it will not be used any more, stop it, so the section can be pre-rendered anew
+				future.cancel(true);
+				LOGGER.warn("Pre-rendering of a visualization on page {} did not finish within {} ms, cancelled it", section.getTitle(), maxWaitMillis);
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				LOGGER.error("Interrupted while waiting for the generation of graphs", e);
+			}
+			catch (ExecutionException | CancellationException e) {
 				LOGGER.error("Exception while generating and caching graphs", e);
 			}
 		}
