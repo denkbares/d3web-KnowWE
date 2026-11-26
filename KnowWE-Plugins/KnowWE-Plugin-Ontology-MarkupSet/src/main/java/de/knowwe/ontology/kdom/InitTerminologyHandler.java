@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,6 +47,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +84,13 @@ import de.knowwe.core.Environment;
  */
 public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitTerminologyHandler.class);
+
+	// timeouts for ontologies imported from a URL, the same as for the attachment updates from a URL
+	// (AttachmentUpdateMarkup.openHttpConnection)
+	static final int DEFAULT_CONNECT_TIMEOUT_MILLIS = (int) TimeUnit.SECONDS.toMillis(30);
+	static final int DEFAULT_READ_TIMEOUT_MILLIS = (int) TimeUnit.SECONDS.toMillis(60);
+	private static volatile int connectTimeoutMillis = DEFAULT_CONNECT_TIMEOUT_MILLIS;
+	private static volatile int readTimeoutMillis = DEFAULT_READ_TIMEOUT_MILLIS;
 
 	private static final Map<String, TermCache> importCache = new HashMap<>();
 	private final AtomicLong threadCount = new AtomicLong(1);
@@ -289,7 +300,10 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 			}
 			else {
 				String attachmentName = cacheOntology(compiler, annotationContentSection, url, importString);
-				importAttachment(compiler, annotationContentSection, attachmentName, silent);
+				// without attachment, caching has already stored the error
+				if (attachmentName != null) {
+					importAttachment(compiler, annotationContentSection, attachmentName, silent);
+				}
 			}
 		}
 	}
@@ -312,33 +326,73 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 		}
 		if (attachment == null) {
 			WikiConnector wc = section.getEnvironment().getWikiConnector();
+			Path download = null;
 			try {
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				String extension;
-				// first try to use the Content-Location field, i.e. support content negotiation
-				connection.setRequestMethod("HEAD");
-				connection.connect();
-				List<String> locations = connection.getHeaderFields().get("Content-Location");
-				if (locations != null && !locations.isEmpty()) {
-					String location = locations.iterator().next();
-					extension = getExtension(location);
-				}
+				// The download runs on the compile thread, so it must not wait for the server without limit. And it goes
+				// into a temporary file first: storing an attachment blocks all other attachment writes of the wiki, so
+				// the stored stream must be a local one, not the one of a (possibly slow) server.
+				download = Files.createTempFile("ontology-import-", ".tmp");
+				String location = download(url, download);
+				// first try to use the Content-Location field, i.e. support content negotiation,
 				// if content-location is not defined, we probably access a file directly...
-				else {
-					String fileName = new File(importString).getName();
-					extension = getExtension(fileName);
+				String fileName = location != null ? location : new File(importString).getName();
+				attachmentName = attachmentName + getExtension(fileName);
+				try (InputStream stream = Files.newInputStream(download)) {
+					wc.storeAttachment(section.getTitle(), attachmentName, "SYSTEM", stream);
 				}
-				attachmentName = attachmentName + extension;
-				connection.disconnect();
-				wc.storeAttachment(section.getTitle(), attachmentName, "SYSTEM", url.openStream());
 			}
 			catch (Exception e) {
 				Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Unable to cache ontology file from '"
 						+ importString + "': " + e.getMessage()));
 				return null;
 			}
+			finally {
+				deleteQuietly(download);
+			}
 		}
 		return attachmentName;
+	}
+
+	/**
+	 * Downloads the content of the specified URL into the specified file, with connect and read timeouts, so an
+	 * unresponsive server results in an exception instead of blocking the calling thread forever.
+	 *
+	 * @return the Content-Location of the response, null if the server sent none
+	 */
+	@Nullable
+	private static String download(URL url, Path target) throws IOException {
+		if (!(url.openConnection() instanceof HttpURLConnection connection)) {
+			throw new IOException("only http and https URLs are supported");
+		}
+		connection.setConnectTimeout(connectTimeoutMillis);
+		connection.setReadTimeout(readTimeoutMillis);
+		try (InputStream stream = connection.getInputStream()) {
+			Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
+			// header names are case-insensitive, unlike the keys of getHeaderFields()
+			return connection.getHeaderField("Content-Location");
+		}
+		finally {
+			connection.disconnect();
+		}
+	}
+
+	private static void deleteQuietly(@Nullable Path file) {
+		if (file == null) return;
+		try {
+			Files.deleteIfExists(file);
+		}
+		catch (IOException e) {
+			LOGGER.warn("Unable to delete temporary file {}", file, e);
+		}
+	}
+
+	/**
+	 * Sets the connect and read timeouts for downloading ontologies imported from a URL. For tests, which cannot wait
+	 * for the default timeouts.
+	 */
+	static void setDownloadTimeouts(int connectTimeoutMillis, int readTimeoutMillis) {
+		InitTerminologyHandler.connectTimeoutMillis = connectTimeoutMillis;
+		InitTerminologyHandler.readTimeoutMillis = readTimeoutMillis;
 	}
 
 	@NotNull
