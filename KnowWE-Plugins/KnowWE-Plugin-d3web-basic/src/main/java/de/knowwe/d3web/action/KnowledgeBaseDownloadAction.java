@@ -24,6 +24,7 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.RecompileAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.CompilerManager.CompilationBlock;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
@@ -65,42 +66,45 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			}
 		}
 
-		try (AutoCloseable ignore = compiler.getCompilerManager().blockCompilation()) {
+		File file = null;
+		try {
+			// Only saving the knowledge base blocks the compilation, streaming it to the client must not: every page
+			// save waits for the compilation to be unblocked, so a slow client would keep the whole wiki from saving.
+			try (CompilationBlock ignore = compiler.getCompilerManager().blockCompilation()) {
 
-			KnowledgeBase base = compiler.getKnowledgeBase();
+				KnowledgeBase base = compiler.getKnowledgeBase();
 
-			// sanitize, the name is used as suffix of a temp file and as part of the response headers
-			String filename = Strings.encodeFileName(context.getParameter(PARAM_FILENAME));
-			if (filename == null) {
-				filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
-			}
-			if (filename == null) {
-				filename = compiler.getName() + ".d3web";
-			}
-
-			context.setContentType(BINARY);
-			context.setContentDisposition("attachment", filename);
-			context.getResponse()
-					.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
-
-			// write the timestamp of the creation (Now!) into the knowledge base
-			base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
-
-			File file = Files.createTempFile(compiler.getName(), filename).toFile();
-			try {
-				PersistenceManager.getInstance().save(base, file);
-				try (InputStream input = new FileInputStream(file)) {
-					try (OutputStream outs = context.getOutputStream()) {
-						Streams.stream(input, outs);
-					}
+				// sanitize, the name is used as suffix of a temp file and as part of the response headers
+				String filename = Strings.encodeFileName(context.getParameter(PARAM_FILENAME));
+				if (filename == null) {
+					filename = base.getInfoStore().getValue(BasicProperties.FILENAME);
 				}
+				if (filename == null) {
+					filename = compiler.getName() + ".d3web";
+				}
+
+				context.setContentType(BINARY);
+				context.setContentDisposition("attachment", filename);
+				context.getResponse()
+						.addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
+
+				// write the timestamp of the creation (Now!) into the knowledge base
+				base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
+
+				file = Files.createTempFile(compiler.getName(), filename).toFile();
+				PersistenceManager.getInstance().save(base, file);
 			}
-			finally {
-				file.delete();
+			try (InputStream input = new FileInputStream(file);
+				 OutputStream outs = context.getOutputStream()) {
+				Streams.stream(input, outs);
 			}
 		}
 		catch (Exception e) {
 			throw new IOException(e);
+		}
+		finally {
+			//noinspection ResultOfMethodCallIgnored
+			if (file != null) file.delete();
 		}
 	}
 
