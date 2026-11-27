@@ -338,6 +338,7 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
   this.lastMenuId = null;
   const old = jq$('#toolPopupMenuID')[0];
   if (old) {
+    jq$(old).find(".tooltipstered").tooltipster("hide");
     old.remove();
     jq$(document.body).unbind(ToolMenu.mouseMoveEvent)
   }
@@ -413,9 +414,48 @@ ToolMenu.prototype.adjustSingletonMenus = function($parent) {
   });
 };
 
+/**
+ * Shows the descriptions of the tools in the tool menus (their titles) as tooltipster tooltips instead of the native
+ * ones, beside the menu, so they do not cover the other tools of the menu. As the menus are created lazily, a tooltip
+ * is created when the mouse enters the tool for the first time. Elements whose tooltips are managed by KNOWWE.tooltips
+ * (class "tooltipster") are left alone, and only the outermost element with a title gets a tooltip (as nested
+ * tooltipster tooltips would be shown at the same time).
+ */
+ToolMenu.prototype.initToolTooltips = function() {
+  jq$(document).on("mouseenter", ".markupMenu [title]", function() {
+    const $item = jq$(this);
+    if ($item.is(".tooltipster, .tooltipstered")) return;
+    if ($item.parent().closest(".markupMenu [title], .markupMenu .tooltipstered").length > 0) return;
+    const title = $item.attr("title");
+    if (!title || !title.trim()) return;
+    $item.tooltipster({
+      position: _TM.getToolTooltipPosition($item),
+      delay: 600,
+      updateAnimation: false,
+      theme: ".tooltipster-knowwe",
+      functionBefore: function(origin, continueTooltip) {
+        // the menu may have been closed meanwhile
+        if (document.contains(origin[0])) continueTooltip();
+      }
+    });
+    // the tooltip is created while the mouse is already on the tool, so the hover has to be triggered
+    $item.trigger("mouseenter");
+  });
+};
+
+/**
+ * Returns the side of the menu of the given tool with more room for its tooltip.
+ */
+ToolMenu.prototype.getToolTooltipPosition = function($item) {
+  const menu = $item.closest("#toolPopupMenuID, .markupMenu")[0] || $item[0];
+  const rect = menu.getBoundingClientRect();
+  return rect.left + rect.width / 2 > window.innerWidth / 2 ? "left" : "right";
+};
+
 const _TM = new ToolMenu();
 
 jq$(function() {
+  _TM.initToolTooltips();
   _TM.animateDefaultMarkupMenu();
   _TM.decorateToolMenus();
   _TM.decorateToolTargets(jq$(document.body));
