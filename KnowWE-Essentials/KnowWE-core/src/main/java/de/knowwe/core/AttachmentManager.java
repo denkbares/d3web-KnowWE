@@ -14,10 +14,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,17 +34,18 @@ import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.packaging.PackageRule;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitializedArticlesEvent;
+import de.knowwe.event.WikiContentReplacedEvent;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -79,7 +80,14 @@ public class AttachmentManager implements EventListener {
 	 * to detect changes of the packages. Only accessed while holding the monitor of this manager.
 	 */
 	private final Map<String, List<String>> packageStatements = new HashMap<>();
-	private boolean allArticlesInitialized = false;
+	/**
+	 * Whether the articles of the wiki are initialized. Until then, the articles of compiled attachments are queued into
+	 * the registration frame of the initialization instead of being registered: the initialization queues the articles
+	 * of the wiki on the workers of a parallel stream, which handle the resulting events, and a worker opening the
+	 * article manager would wait for the frame, while its owner waits for the workers. Reset when the wiki content is
+	 * replaced, as the wiki then initializes its articles again.
+	 */
+	private volatile boolean allArticlesInitialized = false;
 	/** From this duration on, a refresh of the compiled attachment paths is logged as info instead of debug. */
 	private static final long REFRESH_LOG_THRESHOLD_MILLIS = 50;
 
@@ -113,7 +121,8 @@ public class AttachmentManager implements EventListener {
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
 		return Arrays.asList(AttachmentStoredEvent.class, AttachmentDeletedEvent.class,
-				ArticleRegisteredEvent.class, InitializedArticlesEvent.class, FullParseEvent.class);
+				ArticleRegisteredEvent.class, InitializedArticlesEvent.class, WikiContentReplacedEvent.class,
+				FullParseEvent.class);
 	}
 
 	@Override
@@ -132,6 +141,9 @@ public class AttachmentManager implements EventListener {
 		}
 		else if (event instanceof InitializedArticlesEvent) {
 			allArticlesInitialized = true;
+		}
+		else if (event instanceof WikiContentReplacedEvent) {
+			allArticlesInitialized = false;
 		}
 	}
 
