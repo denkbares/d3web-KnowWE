@@ -18,6 +18,9 @@
  */
 package de.knowwe.include;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +51,6 @@ import de.knowwe.util.Icon;
  */
 public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 
-	private static final Set<Section<?>> cycleDetection = new HashSet<>();
 	private final boolean skipHeader;
 
 	public FramedIncludedSectionRenderer(boolean skipHeader) {
@@ -84,32 +86,60 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 		renderTargetSections(section, skipHeader, user, result);
 	}
 
-	// method must be synchronized due to using only
-	// a static cycle detection field
-	// --> otherwise multiple parallel renderings would interfere negatively
-	public synchronized static void renderTargetSections(Section<?> targetSection, boolean skipHeader, UserContext user, RenderResult result) {
+	public static void renderTargetSections(Section<?> targetSection, boolean skipHeader, UserContext user, RenderResult result) {
 
 		// check for cycles
-		boolean isNew = cycleDetection.add(targetSection);
-		if (!isNew) {
+		if (includesItself(targetSection, user)) {
 			result.append("\n\n%%error Cyclic include detected, please check you include declarations /%\n");
 			return;
 		}
 
 		// render the target section
 		// but don't forget to check the user access rights
-		try {
-			if (KnowWEUtils.canView(targetSection, user)) {
-				renderTargetSectionsSecure(targetSection, skipHeader, user, result);
-			}
-			else {
-				result.append("\n\n%%error you are not allowed to view the referenced article '" +
-						targetSection.getTitle() + "' /%\n");
-			}
+		if (KnowWEUtils.canView(targetSection, user)) {
+			renderTargetSectionsSecure(targetSection, skipHeader, user, result);
 		}
-		finally {
-			cycleDetection.remove(targetSection);
+		else {
+			result.append("\n\n%%error you are not allowed to view the referenced article '" +
+					targetSection.getTitle() + "' /%\n");
 		}
+	}
+
+	/**
+	 * Whether rendering the given included section would include the section itself again, directly or through the
+	 * sections it includes (see {@link IncludingType}). This is decided from the KDOM alone, without any state of the
+	 * renderings in progress, so renderings of other users or threads do not affect it, and nothing has to be guarded
+	 * against them. If included sections include each other, the first of them already refuses to render, so a cycle
+	 * never renders recursively.
+	 */
+	static boolean includesItself(Section<?> targetSection, UserContext user) {
+		Set<Section<?>> visited = new HashSet<>();
+		Deque<Section<?>> pending = new ArrayDeque<>(getIncludedSections(targetSection, user));
+		while (!pending.isEmpty()) {
+			Section<?> included = pending.pop();
+			if (included == targetSection) return true;
+			if (visited.add(included)) pending.addAll(getIncludedSections(included, user));
+		}
+		return false;
+	}
+
+	/**
+	 * The sections included by the markups within what is rendered for the given included section: the header and
+	 * the sections belonging to it for a header, the section with its successors otherwise.
+	 */
+	private static List<Section<?>> getIncludedSections(Section<?> targetSection, UserContext user) {
+		List<Section<?>> rendered = new ArrayList<>();
+		if (targetSection.get() instanceof HeaderType) {
+			rendered.addAll(JSPWikiMarkupUtils.getContent(Sections.cast(targetSection, HeaderType.class), true));
+		}
+		else {
+			rendered.add(targetSection);
+		}
+		List<Section<?>> included = new ArrayList<>();
+		for (Section<IncludingType> including : Sections.successors(rendered, IncludingType.class)) {
+			included.addAll(including.get().getIncludedSections(including, user));
+		}
+		return included;
 	}
 
 	private static void renderTargetSectionsSecure(Section<?> targetSection, boolean skipHeader, UserContext user, RenderResult result) {

@@ -19,10 +19,17 @@ package de.knowwe.include;
  * site: http://www.fsf.org.
  */
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.basicType.CommentLineType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -87,7 +94,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author Benedikt Kaemmerer, Volker Belli
  * @created 06.07.2012
  */
-public class IncludeMarkup extends DefaultMarkupType {
+public class IncludeMarkup extends DefaultMarkupType implements IncludingType {
 
 	private static DefaultMarkup m = null;
 
@@ -123,5 +130,15 @@ public class IncludeMarkup extends DefaultMarkupType {
 	public IncludeMarkup() {
 		super(m);
 		this.setRenderer(new IncludeRenderer());
+	}
+
+	@Override
+	public @NotNull List<Section<?>> getIncludedSections(Section<?> section, UserContext user) {
+		List<Section<?>> included = new ArrayList<>();
+		for (Section<WikiReference> reference : Sections.successors(section, WikiReference.class)) {
+			Section<?> target = WikiReference.getReferencedSection(reference);
+			if (target != null) included.add(target);
+		}
+		return included;
 	}
 }

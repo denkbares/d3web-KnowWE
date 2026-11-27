@@ -106,7 +106,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 06.12.21
  */
-public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements AttachmentCompileType {
+public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements AttachmentCompileType, IncludingType {
 
 	private static final String WIKI_ANNOTATION = "wiki";
 	private static final String WIKI_VARIABLE_ANNOTATION = "wikiVariable";
@@ -289,6 +289,19 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 	public boolean isTrackingMode(Section<?> markupOrSuccessor) {
 		Section<InterWikiImportMarkup> markup = $(markupOrSuccessor).closest(InterWikiImportMarkup.class).getFirst();
 		return markup != null && getMode(markup) == Mode.TRACKING;
+	}
+
+	/**
+	 * In import mode, the root section of the article imported for the variant of the user, as rendered below the
+	 * markup.
+	 */
+	@Override
+	public @NotNull List<Section<?>> getIncludedSections(Section<?> section, UserContext user) {
+		Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+		if (markup == null || getMode(markup) == Mode.TRACKING) return List.of();
+		String path = getWikiAttachmentPath(markup, user);
+		Article article = path == null ? null : user.getArticleManager().getArticle(path);
+		return article == null ? List.of() : List.of(article.getRootSection());
 	}
 
 	@Override
