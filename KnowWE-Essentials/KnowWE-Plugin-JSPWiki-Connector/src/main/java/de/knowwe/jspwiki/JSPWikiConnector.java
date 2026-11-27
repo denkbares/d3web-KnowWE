@@ -1048,9 +1048,8 @@ public class JSPWikiConnector implements WikiConnector {
 		if (lowerCase.endsWith(".jsp") || lowerCase.endsWith(".jspf")) {
 			throw new IOException("Attachments must not be jsp files: " + filename);
 		}
+		PageLock lock = lockIfUnlocked(title, user);
 		try {
-			boolean wasLocked = isArticleLocked(title);
-			if (!wasLocked) lockArticle(title, user);
 			AttachmentManager attachmentManager = getAttachmentManager();
 
 			Attachment attachment = new Attachment(getEngine(), title, safeName);
@@ -1061,11 +1060,13 @@ public class JSPWikiConnector implements WikiConnector {
 			attachmentManager.storeAttachment(attachment, stream);
 			String path = toPath(title, safeName);
 			LOGGER.info("Stored attachment '" + path + "'");
-			if (!wasLocked) unlockArticle(title, user);
 			return new JSPWikiAttachment(attachment, attachmentManager);
 		}
 		catch (ProviderException e) {
 			throw new IOException("could not store attachment", e);
+		}
+		finally {
+			release(lock);
 		}
 	}
 
@@ -1119,10 +1120,8 @@ public class JSPWikiConnector implements WikiConnector {
 		compileDeletion(title);
 		WikiPage page = new WikiPage(getEngine(), title);
 		page.setAuthor(user);
+		PageLock lock = lockIfUnlocked(title, user);
 		try {
-			boolean wasLocked = isArticleLocked(title);
-			if (!wasLocked) lockArticle(title, user);
-
 			// the attachments go with the page, like in PageManager#deletePage(String), but keeping the author
 			AttachmentManager attachmentManager = getAttachmentManager();
 			for (org.apache.wiki.api.core.Attachment attachment : attachmentManager.listAttachments(page)) {
@@ -1130,12 +1129,13 @@ public class JSPWikiConnector implements WikiConnector {
 				attachmentManager.deleteAttachment(attachment);
 			}
 			getPageManager().deletePage(page);
-
-			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
 			LOGGER.error("Can't delete article " + title, e);
 			throw new IOException(e);
+		}
+		finally {
+			release(lock);
 		}
 	}
 
@@ -1180,9 +1180,8 @@ public class JSPWikiConnector implements WikiConnector {
 			throw new IOException("Unable to delete zip entry (" + path
 								  + ") in zip attachment. Try to delete attachment instead.");
 		}
+		PageLock lock = lockIfUnlocked(title, user);
 		try {
-			boolean wasLocked = isArticleLocked(title);
-			if (!wasLocked) lockArticle(title, user);
 			AttachmentManager attachmentManager = getAttachmentManager();
 			Attachment attachment = (Attachment) attachmentManager.getAttachmentInfo(path);
 
@@ -1196,11 +1195,38 @@ public class JSPWikiConnector implements WikiConnector {
 				attachmentManager.deleteAttachment(attachment);
 				LOGGER.info("Deleted attachment '" + path + "'");
 			}
-			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
 			LOGGER.error("Can't delete attachment " + title, e);
 			throw new IOException(e);
+		}
+		finally {
+			release(lock);
+		}
+	}
+
+	/**
+	 * Locks the given page for the given user for the duration of a change, unless the page is locked already, e.g. by
+	 * the user editing it. Release the returned lock with {@link #release(PageLock)} in a finally block, so a failing
+	 * change does not leave the page locked until the lock expires.
+	 *
+	 * @return the lock taken, or null if the page was locked already
+	 */
+	@Nullable
+	private PageLock lockIfUnlocked(String title, String user) {
+		if (isArticleLocked(title)) return null;
+		return getPageManager().lockPage(new WikiPage(getEngine(), title), user);
+	}
+
+	/**
+	 * Releases a lock taken by {@link #lockIfUnlocked(String, String)}, if it still is the lock of its page: it may have
+	 * expired meanwhile, and the page may be locked by somebody else now.
+	 */
+	private void release(@Nullable PageLock lock) {
+		if (lock == null) return;
+		PageManager pageManager = getPageManager();
+		if (pageManager.getCurrentLock(new WikiPage(getEngine(), lock.getPage())) == lock) {
+			pageManager.unlockPage(lock);
 		}
 	}
 
@@ -1256,23 +1282,17 @@ public class JSPWikiConnector implements WikiConnector {
 		return changed;
 	}
 
+	/**
+	 * Releases the lock on the given page, if the given user holds it, or whoever holds it if no user is given. Locks on
+	 * other pages stay, also those of the same user: a user may edit several pages at once, e.g. in several tabs.
+	 */
 	@Override
 	public void unlockArticle(String title, String user) {
-		WikiPage page = new WikiPage(getEngine(), title);
-
-		PageManager mgr = getPageManager();
-		if (isArticleLocked(title)) {
-			if (user == null) {
-				PageLock lock = mgr.getCurrentLock(page);
-				mgr.unlockPage(lock);
-			}
-			else {
-				for (PageLock other : mgr.getActiveLocks()) {
-					if (other.getLocker().equals(user)) {
-						mgr.unlockPage(other);
-					}
-				}
-			}
+		PageManager pageManager = getPageManager();
+		PageLock lock = pageManager.getCurrentLock(new WikiPage(getEngine(), title));
+		if (lock == null) return;
+		if (user == null || user.equals(lock.getLocker())) {
+			pageManager.unlockPage(lock);
 		}
 	}
 

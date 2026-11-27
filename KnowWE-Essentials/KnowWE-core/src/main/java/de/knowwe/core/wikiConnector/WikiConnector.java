@@ -549,10 +549,11 @@ public interface WikiConnector {
 	}
 
 	/**
-	 * Removes the lock for the article.
+	 * Removes the lock for the article. Locks on other articles stay, also those of the same user.
 	 *
 	 * @param title the title of the article to be unlocked
-	 * @param user  the user whose lock shall be removed, if null the most recent lock will be removed
+	 * @param user  the user whose lock on the article shall be removed, a lock of another user stays; if null, the
+	 *              lock is removed whoever holds it
 	 */
 	void unlockArticle(String title, String user);
 
