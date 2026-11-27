@@ -17,19 +17,30 @@
  * site: http://www.fsf.org.
  */
 
+/* the dialogs of the wiki (jQuery UI): no frame, rounded corners and a soft shadow, a light title bar and button pane,
+   separated by thin lines, and a darker overlay behind modal dialogs (see .ui-widget-overlay) */
 .ui-dialog {
-	border: 1px solid var(--border-color-light) !important;
+	border: none !important;
+	border-radius: 10px;
+	box-shadow: 0 16px 48px rgba(15, 23, 42, 0.28), 0 2px 8px rgba(15, 23, 42, 0.12);
 	padding: 0 0 0 0 !important;
 	z-index: 1900 !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {
-	padding: .4em 1em;
+	padding: .7em 1em;
 	position: relative;
 	background-image: none !important;
-	background-color: var(--bg-color-table-th-highlighted) !important;
-	color: var(--text-color-default-head) !important;
+	background-color: var(--bg-color-primary, #fff) !important;
+	color: var(--text-color-primary) !important;
 	border: none;
+	border-bottom: 1px solid var(--border-color-default, #e2e2e9);
+	border-radius: 10px 10px 0 0;
+}
+
+.ui-dialog .ui-dialog-title {
+	font-size: 14px;
+	font-weight: 600;
 }
 
 .ui-dialog-titlebar h3 {
@@ -336,8 +347,8 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: var(--color-grey) !important;
-	opacity: 0.7 !important;
+	background: rgba(15, 23, 42, 0.45) !important;
+	opacity: 1 !important;
 	z-index: 999 !important;
 }
 
@@ -350,10 +361,12 @@
 	border-width: 1px 0 0 0;
 	background-image: none;
 	margin: 0 0 0 0;
-	padding: .4em 1em !important;
-	background-color: var(--bg-color-table-th-highlighted) !important;
+	padding: .6em 1em !important;
+	background-color: var(--bg-color-secondary, #f6f6f6) !important;
 	position: relative;
 	border: none;
+	border-top: 1px solid var(--border-color-default, #e2e2e9);
+	border-radius: 0 0 10px 10px;
 	/* bottom: 0px; */
 	/* right: 0px; */
 	/* left: 0px; */
@@ -386,14 +399,22 @@
  */
 .ui-dialog.ui-widget .ui-dialog-titlebar-close {
 	top: 50% !important;
-	width: 24px;
-	height: 24px;
+	right: .6em;
+	width: 30px;
+	height: 30px;
 	margin: 0 !important;
 	padding: 0 !important;
 	transform: translateY(-50%);
 	overflow: hidden;
 	font-size: 0 !important;
 	text-indent: 0 !important;
+	border: none !important;
+	border-radius: 6px;
+	background: transparent !important;
+}
+
+.ui-dialog.ui-widget .ui-dialog-titlebar-close:hover {
+	background: var(--bg-color-secondary, #f6f6f6) !important;
 }
 
 .ui-dialog.ui-widget .ui-dialog-titlebar-close > .ui-icon,
@@ -408,11 +429,15 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: var(--text-color-primary, #333);
+	color: var(--text-color-secondary, #888);
 	font-family: Arial, sans-serif;
-	font-size: 20px;
+	font-size: 22px;
 	font-weight: normal;
 	line-height: 1;
+}
+
+.ui-dialog.ui-widget .ui-dialog-titlebar-close:hover::before {
+	color: var(--text-color-primary, #333);
 }
 
 .ui-dialog:has(> #compositeEdit) .ui-dialog-titlebar-close {
