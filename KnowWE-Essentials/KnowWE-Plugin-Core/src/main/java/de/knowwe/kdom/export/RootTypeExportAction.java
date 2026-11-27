@@ -20,23 +20,21 @@ package de.knowwe.kdom.export;
 
 import de.knowwe.core.utils.KnowWEUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.servlet.ServletContext;
 
-import com.denkbares.utils.OS;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action.Access;
 import de.knowwe.core.action.UserActionContext;
@@ -62,6 +60,8 @@ public class RootTypeExportAction extends AbstractAction {
 
 	// path of the local dot-Installation
 	private static String DOT_INSTALLATION;
+	/** The time dot may take to lay out the type hierarchy. */
+	private static final Duration DOT_TIMEOUT = Duration.ofMinutes(2);
 
 	// sources for the dot-file
 	private String dotSource;
@@ -249,16 +249,8 @@ public class RootTypeExportAction extends AbstractAction {
 
 		writeDot(dot);
 		// create svg
-		String command;
-		if (OS.WINDOWS.isCurrentOS()) {
-			command = DOT_INSTALLATION + " \"" + dot.getAbsolutePath() +
-					"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
-		}
-		else {
-			command = DOT_INSTALLATION + " " + dot.getAbsolutePath() +
-					" -Tsvg -o " + svg.getAbsolutePath() + "";
-		}
-		createFileOutOfDot(svg, dot, command);
+		createFileOutOfDot(svg, dot,
+				List.of(DOT_INSTALLATION, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath()));
 	}
 
 	/**
@@ -339,30 +331,47 @@ public class RootTypeExportAction extends AbstractAction {
 	 * @param command
 	 * @throws IOException
 	 */
-	private void createFileOutOfDot(File file, File dot, String command) throws IOException {
+	private void createFileOutOfDot(File file, File dot, List<String> command) throws IOException {
 		checkWriteable(file);
 		checkReadable(dot);
-		try {
-			Process process = Runtime.getRuntime().exec(command);
-			process.waitFor();
-			int exitValue = process.exitValue();
-			if (exitValue != 0) {
-				printStream(process.getErrorStream());
-				throw new IOException("Command could not successfully be executed: " + command);
-			}
-
-		}
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		runCommand(command, DOT_TIMEOUT);
 	}
 
-	private void printStream(InputStream str) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(str));
-		String inputLine;
-		while ((inputLine = in.readLine()) != null)
-			System.out.println(inputLine);
-		in.close();
+	/**
+	 * Runs the given command and waits for it to end, at most for the given time. A command that does not end in time
+	 * is killed. The error output of the command goes to the error output of the server, so the command cannot block
+	 * on a full pipe nobody reads.
+	 *
+	 * @throws IOException if the command cannot be started, does not end in time or ends with an error
+	 */
+	static void runCommand(List<String> command, Duration timeout) throws IOException {
+		Process process = new ProcessBuilder(command)
+				.redirectOutput(ProcessBuilder.Redirect.DISCARD)
+				.redirectError(ProcessBuilder.Redirect.INHERIT)
+				.start();
+		try {
+			if (!process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+				throw new IOException("Command did not end within " + timeout.toSeconds() + " seconds: " + command);
+			}
+			if (process.exitValue() != 0) {
+				throw new IOException("Command could not successfully be executed: " + command);
+			}
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IOException("Interrupted while waiting for command: " + command, e);
+		}
+		finally {
+			if (process.isAlive()) {
+				process.destroyForcibly();
+				try {
+					process.waitFor(5, TimeUnit.SECONDS);
+				}
+				catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
+		}
 	}
 
 	/**
